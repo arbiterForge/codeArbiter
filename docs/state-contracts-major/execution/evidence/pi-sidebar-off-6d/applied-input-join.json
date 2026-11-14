@@ -1,0 +1,27 @@
+{
+  "epoch": "Actual checks on literal6d+two-file Temp successor; Root subsequently applied exact same source/test and built parent bundle separately",
+  "source_epoch": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "applied_files": {
+    "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+      "before_sha256": "9434a127d94ea06b6e9d46f844ca1ce02b36048ed3270e8ef8912d543337008f",
+      "current_Root_WIP_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    "plugins/ca-pi/tools/test/sidebar-manager.test.ts": {
+      "before_sha256": "7fd059d6121f2695392a81606ab8d3c7e94126b3d43d9ae04440608ab51f8a99",
+      "current_Root_WIP_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca"
+    },
+    "plugins/ca-pi/extensions/codearbiter.js": {
+      "before_sha256": "23a247992039e26523377cda1b113da87c75db6b72f199bb53b9f47167f31621",
+      "current_Root_WIP_sha256": "630c5eaeacbfb4303c0d1bbdec7ce6f3f7d7d175aeae7f6915a07d7560db378a"
+    }
+  },
+  "source_test_match_frozen": true,
+  "original_metrics_and_raw_reports_not_rewritten": true,
+  "bundled_parent_runtime_not_executed_by_these_unit_tests": true,
+  "input_count": 140,
+  "original_before_metadata": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-fix-40mw6i7c\\inputs-before.json",
+    "sha256": "fcfc0ee36232d89ebc2843189908d52a083a7e3a8b4075bb6573f8ca7f609acc"
+  },
+  "current_Gov_no_execution": true
+}

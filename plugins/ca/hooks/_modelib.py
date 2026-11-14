@@ -349,9 +349,100 @@ def _mode_audit_line(verb, mode, host_name=None, now=None, session_id=None):
             f"| MODE: {mode} {verb} | NOTE: —\n")
 
 
+def effective_mode(session_id, root=None, payload=None):
+    """(mode, diagnostic) actually in effect for `session_id`: the raw marker
+    value only when the audit trail backs it (AC-11), else `arbiter` with a
+    `mode-not-ledger-backed:<raw>` diagnostic. The single definition shared by
+    the persona injector and the flip outcome (HW-02), so the message and the
+    delivered persona can never disagree about which mode is in effect."""
+    root = root if root is not None else marker_root(payload)
+    mode, diag = current_mode(session_id, root=root, payload=payload)
+    if mode != MODES[0] and not ledger_backs(root, mode, session_id=session_id):
+        return MODES[0], "mode-not-ledger-backed:" + mode
+    return mode, diag
+
+
+def owed_audit_rows(root):
+    """Audit rows still owed to overrides.log by the write-ahead record (lines
+    staged but not yet confirmed). Never raises; an unreadable record is 0
+    here because `_read_dev_pending_close` already discards it."""
+    rec = _read_dev_pending_close(root)
+    return len(rec["lines"]) if rec else 0
+
+
+def _owes_enter_row(root, mode, session_id):
+    """True iff the write-ahead record still owes a `MODE: <mode> enter` row
+    for `session_id` — i.e. a later settle can still back the marker."""
+    rec = _read_dev_pending_close(root)
+    if not rec:
+        return False
+    enter = re.compile(r"\|\s*MODE:\s*" + re.escape(mode) + r"\s+enter\s*(?:\||$)")
+    session = re.compile(r"\|\s*SESSION:\s*" + re.escape(str(session_id)) + r"\s*\|")
+    return any(enter.search(ln) and session.search(ln) for ln in rec["lines"])
+
+
+# Audit axis of a flip outcome (HW-02). Distinct from the result sentinel:
+# FLIP_FAILED can mean "nothing was written" OR "the marker changed and its
+# row is owed", and only this axis tells them apart.
+AUDIT_NOT_REQUIRED = "not-required"     # no-op: nothing to record
+AUDIT_NOT_ATTEMPTED = "not-attempted"   # the marker write failed first
+AUDIT_SETTLED = "settled"               # the requested row is on the trail
+AUDIT_OWED = "owed"                     # staged write-ahead, not yet confirmed
+
+
+def flip_outcome(session_id, mode, root=None, payload=None, host_name=None, now=None):
+    """Attempt the flip and report its ACTUAL commit point (HW-02).
+
+    Returns a dict:
+      requested          the mode asked for
+      result             FLIP_FLIPPED / FLIP_NOOP / FLIP_FAILED (legacy sentinel)
+      raw_before/after   the session marker value read before and RE-READ
+                         after the attempt (never assumed from the request)
+      raw_changed        raw_after != raw_before
+      raw_diagnostic     current_mode's diagnostic after, or None
+      effective_before/after  the ledger-backed mode in effect
+      audit              AUDIT_* — the requested row's state
+      owed_rows          rows the write-ahead record still owes overrides.log
+      next_action        what recovers a partial outcome, or None
+
+    No rollback is ever attempted or claimed: a written marker whose row is
+    owed stays written, is NOT effective (ledger_backs refuses it), and
+    becomes effective when the owed row lands — at the next SessionStart
+    replay (restart/compaction) or a re-sent token. Never raises."""
+    root = root if root is not None else marker_root(payload)
+    raw_before, _ = current_mode(session_id, root=root, payload=payload)
+    effective_before, _ = effective_mode(session_id, root=root, payload=payload)
+    result, audit = _flip(session_id, mode, root, payload, host_name, now, raw_before)
+    raw_after, raw_diag = current_mode(session_id, root=root, payload=payload)
+    effective_after, _ = effective_mode(session_id, root=root, payload=payload)
+    owed = owed_audit_rows(root)
+    next_action = None
+    if result == FLIP_FAILED:
+        if audit == AUDIT_OWED:
+            next_action = ("the owed row replays at the next session start or "
+                           "compaction; re-send `mode --{}` to retry now".format(mode))
+        else:
+            next_action = "re-send `mode --{}` once the marker directory is writable".format(mode)
+    return {
+        "requested": mode,
+        "result": result,
+        "raw_before": raw_before,
+        "raw_after": raw_after,
+        "raw_changed": raw_after != raw_before,
+        "raw_diagnostic": raw_diag,
+        "effective_before": effective_before,
+        "effective_after": effective_after,
+        "audit": audit,
+        "owed_rows": owed,
+        "next_action": next_action,
+    }
+
+
 def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
     """Attempt to set `session_id`'s mode to `mode`. Returns one of
-    FLIP_FLIPPED / FLIP_NOOP / FLIP_FAILED. Never raises.
+    FLIP_FLIPPED / FLIP_NOOP / FLIP_FAILED. Never raises. The legacy-sentinel
+    view of `flip_outcome` — callers that report to a user should render the
+    full outcome instead (HW-02).
 
     AC-6: a flip TO AN ALREADY-ACTIVE, LEDGER-BACKED mode is a no-op — no
     write is attempted and no audit row is appended, so `overrides.log` is
@@ -367,17 +458,32 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
     the opposite ordering — a ledger row minted for a flip that never
     actually landed, which would let an unbacked marker masquerade as an
     audited one."""
-    root = root if root is not None else marker_root(payload)
-    current, _diag = current_mode(session_id, root=root, payload=payload)
+    return flip_outcome(session_id, mode, root=root, payload=payload,
+                        host_name=host_name, now=now)["result"]
+
+
+def _flip(session_id, mode, root, payload, host_name, now, current):
+    """(result, audit) — the flip state machine behind `flip_outcome`.
+    `current` is the raw mode read immediately before."""
     if current == mode:
         if mode == MODES[0] or ledger_backs(root, mode, session_id=session_id):
-            return FLIP_NOOP
-        _settle_dev_close(root, host_name=host_name)
-        return (FLIP_FLIPPED
-                if ledger_backs(root, mode, session_id=session_id)
-                else FLIP_FAILED)
+            return FLIP_NOOP, AUDIT_NOT_REQUIRED
+        # Raw marker already says `mode` but nothing backs it. Settle whatever
+        # is owed; if this session's enter row is owed NOWHERE (the marker was
+        # written outside a flip, or the bounded record discarded the row),
+        # stage a fresh one for this explicit request — otherwise the token
+        # could never recover the marker. A row still owed is not re-minted,
+        # so retries never duplicate history.
+        new_line = None
+        if not _owes_enter_row(root, mode, session_id):
+            new_line = _mode_audit_line("enter", mode, host_name=host_name, now=now,
+                                        session_id=session_id)
+        _settle_dev_close(root, new_line=new_line, host_name=host_name)
+        if ledger_backs(root, mode, session_id=session_id):
+            return FLIP_FLIPPED, AUDIT_SETTLED
+        return FLIP_FAILED, AUDIT_OWED
     if not write_mode(session_id, mode, root=root, payload=payload):
-        return FLIP_FAILED
+        return FLIP_FAILED, AUDIT_NOT_ATTEMPTED
     # ADR-0030 position 4: EVERY transition row is staged through the #396
     # write-ahead ledger, never a bare append. The exit half already complied;
     # this one did not, so an unwritable overrides.log dropped the `MODE: …
@@ -398,8 +504,8 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
                             session_id=session_id)
     _settle_dev_close(root, new_line=line, host_name=host_name)
     if not _overrides_has_line(root, line):
-        return FLIP_FAILED
-    return FLIP_FLIPPED
+        return FLIP_FAILED, AUDIT_OWED
+    return FLIP_FLIPPED, AUDIT_SETTLED
 
 
 # ---------------------------------------------------------------------------

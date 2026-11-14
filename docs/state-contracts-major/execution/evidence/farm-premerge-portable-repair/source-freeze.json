@@ -1,0 +1,85 @@
+{
+  "state": "TEMP_TEST_ONLY_FIX_AUTHOR_FREEZE_PENDING_ROOT_REVIEW",
+  "task": "farm-premerge",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_base": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "source_epoch": "Actual6d owning source plus one-file Temp test overlay, not a run on future committed source",
+  "path": "plugins/ca/tools/farm-interruption.test.ts",
+  "before_sha256": "b624d890cdf8064a5dfb520a33443f9fe63df4776d746e27177fda1ec1137f36",
+  "after_sha256": "3d7da328c90cadb512f6711a438b761cf00ad9541a438052dd009eeb5572826f",
+  "patch_sha256": "3829acf6e2bb832e73dcfe92aaeb0a58415970ad3e5585bae21acb56347f6982",
+  "bug_origin": {
+    "kind": "Confirmed test-harness metadata assumption, no product defect",
+    "hosted_red": {
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-6d4c858f-farm-original.log",
+      "sha256": "fd1f3de899a993b0adf2eb94a5601aaf3b2946283ead6221914f4bf5b8ae25ff",
+      "run_id": 43572058255,
+      "job_id": 132378425857,
+      "observed": "LinuxGit2.56.1 source+bundle ENOENT at MERGE_HEAD read after actual producer death"
+    },
+    "WSL_source_causal_trace": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-linux-premerge-diagnosis-r1h7s_62\\git-lifecycle-discriminator.json",
+      "sha256": "986b7870f86a8424b9bc7fbdedd6d4ab637e7304b51d4fac15dc27f6cfdcf06c",
+      "observer": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-linux-premerge-diagnosis-r1h7s_62\\diagnose.py",
+      "observer_sha256": "f28ea8951fc7a771dea97e903de73b84ac4e3f06013f9936485bc0e65438f3c0",
+      "result": "NativeWSL Git2.53/Python3.14: openreaders exit1/markerpresent; closedreaders SIGPIPE13/markerabsent; both staged payload/base retained; hookparent exactGitPID. Distinct runtime, not full LinuxFarmGREEN."
+    },
+    "diagnosis": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-linux-premerge-diagnosis-r1h7s_62\\diagnosis.json"
+  },
+  "implementation": "Read-only tagged present-bytes/ENOENT-absence observation; other errors throw. Candidate marker validated when present. Both actual pre/post-hook staged indexes must equal qualified candidate by read-only git diff --cached --exit-code; exact observed metadata state/index/implementation/ref/registry/all original run bytes preserved across concurrent receipt-only recovery. No OS/version branch, skip, added sleep/retry, production change or simulated success.",
+  "new_reader_control": "Actual owned FS missing path -> absent, file bytes -> present, directory -> thrown read error; no platform skip.",
+  "commands": [
+    {
+      "label": "focused-nine",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-interruption.test.ts",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\focused-nine.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "seconds": 11.51562980003655,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "inputs_unchanged": true
+    },
+    {
+      "label": "typecheck",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "seconds": 1.1551922999788076,
+      "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\home",
+      "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "inputs_unchanged": true
+    }
+  ],
+  "actual_passed_names": [
+    "FARM interruption fixture excludes unrelated credential markers and inherited home aliases",
+    "Farm interruption metadata observation distinguishes real absence, retained bytes and read failure",
+    "FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)",
+    "FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)",
+    "FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)",
+    "FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)",
+    "FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)",
+    "FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)",
+    "FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)"
+  ],
+  "source_inputs_count": 30,
+  "policy": "Complete prior security policy reused unchanged at8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e; Root actor packet consumed/actual source checked.",
+  "coverage": "Only test source changed. Owning9 behavioral cases and typecheck PASS; no production scope/numeric threshold change or full941 rerun.",
+  "limits": [
+    "Local9run Windows/amd64 SafeNode24.22.1 only; fixed full LinuxFarm target awaits replacement hostedCI, not labelled qualified.",
+    "Original LinuxRED, Windows8PASS and WSLrealGit discriminator remain original epochs; none overwritten by new9PASS.",
+    "Root alone stages/commits/pushes; no Gov/index/ledger/progress/marker/source writes by author.",
+    "No product cleanup bug/runtime policy/dependency/endpoint/provider/nativebuild/newDocker qualification claimed.",
+    "Original pending merge marker may be absent after POSIX pipe failure; exact observed state is retained. Index/tree/worktree/no-author/no-reset controls remain asserted, not weakened to mere process exit."
+  ]
+}

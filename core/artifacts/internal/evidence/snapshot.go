@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
@@ -40,6 +41,14 @@ func inputReadError(rel string, err error) error {
 		return fault.At("MAX_BYTES", "", "verification_inputs", fmt.Sprintf("input %q exceeds the %d-byte (32 MiB) file limit; review roots and explicit repository-relative exclude_directories for generated dependencies or output", rel, MaxInputFile))
 	}
 	return err
+}
+
+// recognizedOutputDirectories is the closed set of reserved output directories
+// whose entries this recognizer validates. It must cover store.DerivedKinds().
+var recognizedOutputDirectories = map[string]bool{
+	"authority-sources": true, "events": true, "receipts": true, "context-tokens": true,
+	"evidence-contexts": true, "observations": true, "farm-bindings": true, "farm-seals": true,
+	"farm-markers": true, contextdocument.PreviewDirectory: true,
 }
 
 // internalOutputs returns every engine-generated output path, including each
@@ -136,11 +145,10 @@ func internalOutputsWith(f *store.FS) (map[string]bool, map[string]map[string]bo
 			}
 			return nil, nil, fault.New("UNRECOGNIZED_OUTPUT", "file in reserved artifact output root")
 		}
-		switch d.Name() {
-		case "transactions", "history":
+		switch name := d.Name(); {
+		case name == "transactions" || name == "history":
 			continue
-		case "authority-sources", "events", "receipts", "context-tokens", "evidence-contexts", "observations", "farm-bindings", "farm-seals", "farm-markers":
-		default:
+		case !recognizedOutputDirectories[name]:
 			return nil, nil, fault.New("UNRECOGNIZED_OUTPUT", "unrecognized reserved output directory")
 		}
 		ordered = append(ordered, d)
@@ -224,6 +232,12 @@ func internalOutputsWith(f *store.FS) (map[string]bool, map[string]map[string]bo
 						return nil, nil, &es[0]
 					}
 					memo.Mark(d.Name()+":schema", h)
+				}
+			} else if d.Name() == contextdocument.PreviewDirectory {
+				// Stored-format validation only: a retained preview stays a valid
+				// output after its target changes; context-apply owns currentness.
+				if e := contextdocument.ValidateStoredPreview(b); e != nil {
+					return nil, nil, fault.New("INVALID_OUTPUT", "invalid generated context preview")
 				}
 			} else if d.Name() == "context-tokens" {
 				v, e := canonical.Object(b)

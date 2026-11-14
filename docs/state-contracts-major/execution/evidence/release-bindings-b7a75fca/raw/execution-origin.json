@@ -1,0 +1,45 @@
+{
+  "schema": "codearbiter-tested-source-origin/1",
+  "actual_run_head": "32e46e45cf632deb0acc5f0231632684f8d75f87",
+  "working_subject": "Canonical classifier/test and three generated helper copies; exact frozen hashes subsequently committedb7a75fca. No run atb7a75fca is claimed.",
+  "source_identity_join": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "inputs": {
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/test_release_lib.py": "2f9ac6af5a32da6901dd38ffb5440b4e4e18e4c29de8506d9e6b090c313e956f",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "raw_green": {
+    "argv": [
+      "C:/Python314/python.exe",
+      "-X",
+      "utf8",
+      ".github/scripts/test_release_lib.py",
+      "CoreClassifyPublishStateTest",
+      "CoreMergeReadinessArmsTest",
+      "MergeReadinessTest",
+      "-v"
+    ],
+    "exit_code": 0,
+    "seconds": 0.22670390002895147,
+    "summary": [
+      "----------------------------------------------------------------------",
+      "Ran 24 tests in 0.001s",
+      "",
+      "OK"
+    ],
+    "inputs": {
+      "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      ".github/scripts/test_release_lib.py": "2f9ac6af5a32da6901dd38ffb5440b4e4e18e4c29de8506d9e6b090c313e956f",
+      ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+    },
+    "actual_head": "32e46e45cf632deb0acc5f0231632684f8d75f87",
+    "working_changes": "Canonical classifier and regression methods only; no actual release/merge effects"
+  },
+  "local_identity": "Absolute C:/Python314/python.exe with disposable user directories and finite OS/PATH environment before imports; no provider credentials or network/GitHub side effect",
+  "named_results": "24 methods pass after17 invalid-vector failures in3 new methods before production repair; three existing real CLI/required-parameter checks also pass",
+  "scope_limits": [
+    "Pure classification over synthetic fields, not actual hosted status, merged approval, publication, TLS or installed host acceptance.",
+    "Existing duplicate-red refusal is executed; a separate duplicate-green-plus-pending fixture was not run and its all-match conjunction is source-inspected.",
+    "No whole release task or machine promotion."
+  ]
+}

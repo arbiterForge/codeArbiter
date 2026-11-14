@@ -1,0 +1,49 @@
+{
+  "schema": "codearbiter-local-observation-source-join/1",
+  "subject": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+  "primary_observation": {
+    "source": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+    "tests": 14,
+    "result": "PASSED",
+    "before_after_literal_Git": true
+  },
+  "supplementary_observation": {
+    "actual_source": "338ed6a17a783d233a24edd10cd565777655e934",
+    "tests": 44,
+    "result": "PASSED",
+    "inputs": {
+      ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15",
+      ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99"
+    },
+    "subject_literal_Git_identical": true,
+    "execution": "python -B -m unittest -v test_hook_ci_partition; this does NOT execute CLI main or its test_suite_hermeticity read"
+  },
+  "fixture_Git_parameters": {
+    "docs/state-contracts-major/execution/progress.json": {
+      "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "sha256": "2327c6a6d64d5eb8c73a6cd12537cde4b2a9316241cb7c0957272f06d33b6188",
+      "join": "Immutable subject Git bytes equal original338ed captured fixture parameters; selected14 fixture resolves actual566375bb SOURCE at import."
+    },
+    "docs/state-contracts-major/execution/coverage-ledger.json": {
+      "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "sha256": "e2ea10eaae0fe733839b9f78f7b6c8babc3cc7f0be2e11ea23c6e9b591cd20d2",
+      "join": "Immutable subject Git bytes equal original338ed captured fixture parameters; selected14 fixture resolves actual566375bb SOURCE at import."
+    }
+  },
+  "fixture_new_transition_rows": 48,
+  "frozen_corpus": {
+    "manifest": "docs/state-contracts-major/MANIFEST.json",
+    "sha256": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "scope": "Existing immutable105-file corpus is read through fixture loader and original manifest; no corpus copy or new runtime claim."
+  },
+  "excluded_diagnostic": {
+    "actual_source": "338ed6a17a783d233a24edd10cd565777655e934",
+    "original_suite": "integration35",
+    "result": "FAILED",
+    "passed": 34,
+    "failed": 1,
+    "qualification_witness": false,
+    "reason": "Obsolete all-hooks20min assertion. Neither original34 nor failed35 command is used to establish this successor."
+  },
+  "supplementary_source_gap": "Actual44 source/CI captures are literal before/after from original338ed record; other prior captured inputs do not become44 dependencies."
+}

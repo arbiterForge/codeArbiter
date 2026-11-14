@@ -1,0 +1,29 @@
+{
+  "schema": "codearbiter.original-local-python-observation/1",
+  "script": ".github\\scripts\\test_artifact_manifest_contract.py",
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "win32",
+  "results": [
+    {
+      "id": "__main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+      "status": "PASSED",
+      "seconds": 0.00010830000974237919
+    },
+    {
+      "id": "__main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+      "status": "PASSED",
+      "seconds": 0.0590004000114277
+    },
+    {
+      "id": "__main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+      "status": "PASSED",
+      "seconds": 0.0001564000267535448
+    },
+    {
+      "id": "__main__.ManifestContract.test_shared_declarations_and_negative_cases",
+      "status": "PASSED",
+      "seconds": 0.001417500083334744
+    }
+  ],
+  "exit_code": 0
+}

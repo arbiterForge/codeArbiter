@@ -6,6 +6,7 @@ import { BridgeClient, resolveGitExecutable, resolvePythonCommand } from "./brid
 import { runApprovalDialog, validApprovalLaunch } from "./approval-dialog.ts";
 import type { ApprovalDialogContext } from "./approval-dialog.ts";
 import { resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
+import { PRIVATE_APPROVAL_LEGACY_PI_VERSION } from "./compatibility.ts";
 
 interface NativeContext extends ApprovalDialogContext {
   ui: ApprovalDialogContext["ui"] & { notify(message: string, type?: "info" | "warning" | "error"): void };
@@ -35,7 +36,7 @@ export default function approvalEntry(pi: NativePi): void {
         throw new Error("unsupported launch profile");
       }
       const runtime = await resolvePiRuntimeIdentity();
-      if (runtime.version !== "1.0.2") throw new Error("unqualified host version");
+      if (runtime.version !== PRIVATE_APPROVAL_LEGACY_PI_VERSION) throw new Error("unqualified host version");
       const packageRoot = resolve(dirname(entry), "..");
       const result = await runApprovalDialog(context, {
         isCurrent: () => generation === lease,

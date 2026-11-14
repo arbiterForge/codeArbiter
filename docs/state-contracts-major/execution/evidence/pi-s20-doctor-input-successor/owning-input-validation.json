@@ -1,0 +1,62 @@
+{
+  "source_commit": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
+  "owner": ".github/scripts/major_readiness.py:evidence_paths",
+  "owner_sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+  "contract_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "checks": [
+    {
+      "id": "S20:01",
+      "required_owning_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "successor_missing": [],
+      "predecessor_missing": [
+        "plugins/ca-pi/tools/src/doctor.ts"
+      ]
+    },
+    {
+      "id": "S20:03",
+      "required_owning_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "successor_missing": [],
+      "predecessor_missing": [
+        "plugins/ca-pi/tools/src/doctor.ts"
+      ]
+    },
+    {
+      "id": "S20:04",
+      "required_owning_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "successor_missing": [],
+      "predecessor_missing": [
+        "plugins/ca-pi/tools/src/doctor.ts"
+      ]
+    },
+    {
+      "id": "S20:05",
+      "required_owning_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "successor_missing": [],
+      "predecessor_missing": [
+        "plugins/ca-pi/tools/src/doctor.ts"
+      ]
+    }
+  ],
+  "result": "PASS_ALL_FOUR_COMPLETE; ORIGINAL_CONE_MISSING_DOCTOR_REPRODUCED",
+  "new_test_or_runtime_execution": false
+}

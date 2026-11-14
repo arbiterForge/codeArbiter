@@ -1,0 +1,19 @@
+{
+  "kind": "post_execution_context_consumption_check",
+  "delivery_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-error-delivery.txt",
+  "delivery_sha256": "2ed62e3fb6a9bdbf08d322d2c86595ad8abc702552c93d0ab5c99848106c544c",
+  "delivery_received_and_read_after_completed_characterization": true,
+  "no_claim_of_pre_run_delivery_consumption": true,
+  "task": "farm-outer-error",
+  "caller": "feature/test_change",
+  "work_identity": "Root owned existing authorized major program/FARM-R01",
+  "actual_execution_source_base": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+  "actual_current_test_subject": "5768d4f24994ee628538b39ffb921691cd54264b",
+  "package_declaration_sha256": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+  "package_declared_test": "npm run test",
+  "selected_command": "Same owning Vitest runner, bounded original 2new+1normal selection, tsc noEmit",
+  "policy_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+  "scope_match": "Complete composedpacket and returned delivery_text read. Maintained FARM-R01, current package command/source, actual WindowsSafeNode/privateHOME and all30 tested bytes match completed work. Missing optional map/provenance advisory; actual owning source inspected directly.",
+  "literal_join": "All30 actually tested final-before/after input bytes equal immutable5768 blobs; commit changed only retained test subject relative to actual45a WIP run, no invented new execution.",
+  "no_rerun": true
+}

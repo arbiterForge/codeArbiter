@@ -49,14 +49,21 @@ Read `package.json` `license` field; if absent, check the source repository dire
 
 ### 3. Maintenance signal
 
-Evaluate last release date, archived/abandoned status, and unanswered critical/security issues. Flag as **HIGH** when the package is unmaintained. Do not block on maintenance alone — surface for user evaluation.
+Evaluate last release date, archived/abandoned status, and unanswered critical/security issues.
+
+- **Maintenance-only risk is MEDIUM** (non-blocking): an unmaintained, archived or abandoned
+  package with no security finding is flagged **MEDIUM** and surfaced for user evaluation. This is
+  the one severity rule for maintenance (D-HIGH, B 2026-11-12); it is not a non-blocking HIGH.
+- **Mixed maintenance + security keeps the security severity**: an unpatched vulnerability, an
+  unanswered security issue, or an ownership/takeover signal is reported at its own severity
+  (HIGH or CRITICAL), and that finding blocks like any other HIGH.
 
 ### 4. Known CVEs
 
 Run the audit command from `tech-stack.md` against the new dependency.
 
-- **BLOCK on any known CRITICAL CVE** absent a documented justification in `security-controls.md`.
-- Flag HIGH CVEs for user evaluation.
+- **BLOCK on any known CRITICAL or HIGH CVE** absent a documented justification in
+  `security-controls.md`. HIGH has one meaning everywhere: it blocks.
 
 ### 5. Supply-chain posture
 
@@ -64,7 +71,7 @@ Run the audit command from `tech-stack.md` against the new dependency.
 - Dependency tree unusually large or deep for the stated purpose?
 - Typosquatting risk (name near a popular package)?
 
-Flag suspicious install scripts as **HIGH**.
+Flag suspicious install scripts as **HIGH** (blocking).
 
 ## Findings Format
 
@@ -79,9 +86,9 @@ by one verdict line per check dimension:
 ```
 ### License: <SPDX> — PASS | BLOCK
 ### Provenance: <registry/source> — PASS | BLOCK
-### Maintenance signal: <last release, archived> — PASS | FLAG
+### Maintenance signal: <last release, archived> — PASS | FLAG (MEDIUM)
 ### Known CVEs: N critical, N high — PASS | BLOCK
-### Supply chain: <install script: yes/no; notes> — PASS | FLAG
+### Supply chain: <install script: yes/no; notes> — PASS | BLOCK
 ```
 
 and the gate-status BLOCK arm worded `BLOCK (N CRITICAL, N HIGH; do not install)` — an install,

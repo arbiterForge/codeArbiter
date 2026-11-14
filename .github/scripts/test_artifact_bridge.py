@@ -364,6 +364,11 @@ class PageValidationTests(unittest.TestCase):
 
 
 class BridgeTests(unittest.TestCase):
+    def test_malformed_optional_context_qualification_is_not_ignored(self):
+        destination = self.damaged_installation('bad-context', lambda _root, release: release.update(context_qualification={'windows/amd64':42}))
+        with self.assertRaises(ArtifactError):
+            ArtifactClient(self.root,destination).call('capabilities')
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.test_directory=physical_test_directory(self.tmp.name)

@@ -310,6 +310,39 @@ class ArtifactFarmTest(unittest.TestCase):
         self.assertIn("FARM_BINDING_MISSING", result.stderr)
         self.assertFalse((self.root / ".farm").exists())
 
+    def test_real_dispatcher_accepts_supported_optional_manifest_declaration(self) -> None:
+        # This tests decoder compatibility with actual installed engine bytes.
+        # Synthetic qualification metadata is NOT trusted qualification evidence.
+        from _artifactmanifestlib import CONTRACT
+        projected = self.project()
+        plugin = self.test_directory / "isolated-plugin"
+        (plugin / "tools").mkdir(parents=True)
+        shutil.copy2(REPO / "plugins/ca/tools/farm.js", plugin / "tools/farm.js")
+        payload = plugin / "helpers/artifacts"
+        shutil.copytree(self.installation, payload)
+        manifest_path = payload / "release.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["context_qualification"] = {platform: {
+            "source_commit": "a" * 40, "workflow": CONTRACT["workflow"], "run_id": "1",
+            "binary_sha256": entry["sha256"], "observation_sha256": "b" * 64,
+            "module_sha256": "c" * 64, "native_cases": CONTRACT["native_cases"],
+        } for platform, entry in manifest["binaries"].items() if entry["native_tested"]}
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        script = """import(process.argv[1]).then(farm => farm.verifyFarmArtifactBoundary(process.argv[2], 'canary', '0'.repeat(64))).then(()=>process.exit(2)).catch(e=>{console.error(e.message);process.exit(1)});"""
+        def invoke():
+            return subprocess.run(["node", "--input-type=module", "-e", script,
+                (plugin / "tools/farm.js").as_uri(), str(self.root / projected["path"])],
+                cwd=self.root, text=True, capture_output=True, timeout=30)
+        result = invoke()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("verified different projection bytes", result.stderr)
+        manifest["context_qualification"] = 42
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        refused = invoke()
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("context qualification", refused.stderr)
+        self.assertFalse((self.root / ".farm").exists())
+
     def test_dispatcher_rejects_projection_bytes_other_than_the_parsed_bytes(self) -> None:
         projected = self.project()
         plugin = self.test_directory / "isolated-plugin"

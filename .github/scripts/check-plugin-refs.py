@@ -128,6 +128,10 @@ _IMMUTABLE_HISTORY_FILES = {
     ".github/fixtures/tribunal/qualification/incumbent-bundle.json",
 }
 _IMMUTABLE_HISTORY_SHA256 = {
+    # Exact failed-test stderr preserves quoted native syntax as inert evidence.
+    # Whole-file bytes and path are pinned; changed or neighbouring logs refuse.
+    "docs/state-contracts-major/execution/evidence/ci-6083-followup/p02-original-failed35.stderr.log":
+        "fc68997dbb38b9b76adde4b9bc4053d2d29e7faa7761446f4018024b1506c4e7",
     # This inert JSON string preserves exact historical changelog bytes. Both
     # the path and the encoded whole file are pinned; neighbours remain active.
     "site/scripts/execution-maps/atlas-data/packet-preparation-changelog.json":

@@ -1,0 +1,380 @@
+{
+  "schema": "codearbiter-lane-evidence/1",
+  "owner": "packaging-site-tools",
+  "program_work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
+  "branch": "codex/program-hooks-state-contracts",
+  "status": "IMPLEMENTED_UNQUALIFIED",
+  "source_head_at_record": "38c8b8e75d47d5502a487fb7af6e303ae651a5ad",
+  "tasks": {
+    "BUILD-G01": {
+      "findings": [
+        "SF13"
+      ],
+      "machines": [
+        "S64",
+        "S65",
+        "S67",
+        "S75",
+        "S76"
+      ],
+      "checks": [
+        "generator-faults",
+        "core-sync",
+        "surface-write",
+        "site-source",
+        "final-production-site"
+      ],
+      "candidate_transition_scope": [
+        "S64:05",
+        "S65:05",
+        "S65:06",
+        "S65:08",
+        "S67:04",
+        "S67:06",
+        "S75:05",
+        "S75:08",
+        "S76:04",
+        "S76:06"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "DIST-M01": {
+      "findings": [
+        "SF04"
+      ],
+      "machines": [
+        "S68",
+        "S69",
+        "S70",
+        "S71"
+      ],
+      "checks": [
+        "manifest-python",
+        "manifest-ts",
+        "bridge",
+        "farm-installed-manifest",
+        "packaging-affected"
+      ],
+      "candidate_transition_scope": [
+        "S69:03",
+        "S70:01",
+        "S70:02",
+        "S71:07"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "HW-25": {
+      "findings": [
+        "HOOK-B05"
+      ],
+      "machines": [
+        "hooks:native-client"
+      ],
+      "checks": [
+        "manifest-python",
+        "manifest-ts",
+        "bridge",
+        "farm-installed-manifest"
+      ],
+      "candidate_transition_scope": [],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "DIST-M02": {
+      "findings": [
+        "SF15"
+      ],
+      "machines": [
+        "S73",
+        "S74"
+      ],
+      "checks": [
+        "marketplace"
+      ],
+      "candidate_transition_scope": [
+        "S73:05",
+        "S73:08",
+        "S73:09",
+        "S73:10",
+        "S74:03",
+        "S74:04",
+        "S74:08",
+        "S74:09"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "SITE-U01": {
+      "findings": [
+        "SF11"
+      ],
+      "machines": [
+        "S55"
+      ],
+      "checks": [
+        "site-dom",
+        "final-production-site"
+      ],
+      "candidate_transition_scope": [
+        "S55:07",
+        "S55:09",
+        "S55:10"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "SITE-U02": {
+      "findings": [
+        "SF16"
+      ],
+      "machines": [
+        "S62"
+      ],
+      "checks": [
+        "site-dom",
+        "final-production-site"
+      ],
+      "candidate_transition_scope": [
+        "S62:01",
+        "S62:02",
+        "S62:04",
+        "S62:05"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "T-01": {
+      "findings": [
+        "T-F01",
+        "T-F02",
+        "T-F03",
+        "T-F04"
+      ],
+      "machines": [
+        "T04",
+        "T08",
+        "T10",
+        "T11"
+      ],
+      "checks": [
+        "measurement",
+        "ci20",
+        "real-benchmark"
+      ],
+      "candidate_transition_scope": [
+        "T04:06",
+        "T08:03",
+        "T08:05",
+        "T10:07",
+        "T10:08",
+        "T11:01",
+        "T11:03",
+        "T11:04"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    },
+    "R-08": {
+      "findings": [
+        "SX-F01"
+      ],
+      "machines": [
+        "SX03"
+      ],
+      "checks": [
+        "site-source",
+        "final-production-site"
+      ],
+      "candidate_transition_scope": [
+        "SX03:02",
+        "SX03:05",
+        "SX03:06"
+      ],
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "mapping_boundary": "These are affected candidate transitions and scoped checks, not blanket executed qualification of every machine edge."
+    }
+  },
+  "checks": [
+    {
+      "id": "generator-faults",
+      "command": "python -B .github/scripts/test_generated_output.py",
+      "result": "PASS",
+      "tests": 9,
+      "skipped": 0,
+      "scope": "actual bounded publisher fault injection, real Windows junction, contract producer atomic rename and pending-consumer gate"
+    },
+    {
+      "id": "core-sync",
+      "command": "python -B .github/scripts/test_sync_core.py",
+      "result": "PASS",
+      "tests": 16,
+      "skipped": 1,
+      "limit": "POSIX chmod case skipped on Windows"
+    },
+    {
+      "id": "surface-write",
+      "command": "python -B .github/scripts/test_build_surface.py WriteAndCheckTest",
+      "result": "PASS",
+      "tests": 7,
+      "skipped": 0
+    },
+    {
+      "id": "site-source",
+      "command": "site locked vitest: owned-output/pagefind/Academy/reference and release applicability8 files",
+      "result": "PASS",
+      "tests": 153,
+      "skipped": 0
+    },
+    {
+      "id": "site-dom",
+      "command": "site locked playwright --config playwright.components.config.ts",
+      "result": "PASS",
+      "tests": 5,
+      "baseline": "COMPONENT_SOURCE_REF=HEAD before fixes:4 expected failures,1 preserved stale-result pass",
+      "limit": "actual component scripts + fixture DOM; production-page build remains pending Atlas bindings"
+    },
+    {
+      "id": "manifest-python",
+      "command": "python -B .github/scripts/test_artifact_manifest_contract.py",
+      "result": "PASS",
+      "tests": 4,
+      "skipped": 0
+    },
+    {
+      "id": "manifest-ts",
+      "command": "farm locked vitest artifact-manifest.test.ts",
+      "result": "PASS",
+      "tests": 12,
+      "skipped": 0,
+      "observer": "independent recovery reviewer executed final12"
+    },
+    {
+      "id": "bridge",
+      "command": "python -B .github/scripts/test_artifact_bridge.py",
+      "result": "PASS",
+      "tests": 47,
+      "skipped": 0,
+      "payload_sha256": "575d399ad5d36453140a78dbc3afa81bbd551e38ccce18ffd8130eef2b5adafb"
+    },
+    {
+      "id": "farm-installed-manifest",
+      "command": "python -B .github/scripts/test_artifact_farm.py ArtifactFarmTest.test_real_dispatcher_accepts_supported_optional_manifest_declaration",
+      "result": "PASS",
+      "tests": 1,
+      "skipped": 0,
+      "limit": "real native bridge admission then projection-digest refusal; synthetic optional context declaration is not authenticated qualification evidence"
+    },
+    {
+      "id": "marketplace",
+      "command": "python -B .github/scripts/test_marketplace_git_channels.py",
+      "result": "PASS",
+      "tests": 19,
+      "skipped": 0,
+      "scope": "disposable bare remotes, including server-updated ref followed by lost push response; no external publication"
+    },
+    {
+      "id": "measurement",
+      "command": "python -B tools/test_measurement_contracts.py",
+      "result": "PASS",
+      "tests": 9,
+      "skipped": 0
+    },
+    {
+      "id": "ci20",
+      "command": "python -B tools/test_ci20_baseline.py",
+      "result": "PASS",
+      "tests": 10,
+      "skipped": 0
+    },
+    {
+      "id": "real-benchmark",
+      "command": "statusline-bench run --checkout . --scenario p1k_c0; compare final report to itself --structural-only",
+      "result": "PASS",
+      "scope": "one actual measured subset, harness self-comparison only; no performance improvement/full-population claim",
+      "report": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-statusline-measured-final-subset.json"
+    },
+    {
+      "id": "packaging-affected",
+      "result": "PASS",
+      "scope": "8 focused package refusal/staging/offline guard checks, including transitive pure-decoder negative controls",
+      "limit": "earlier full39-case run had2 cold lifecycle errors and diagnostic mismatches; diagnostics/offline cases fixed individually, full cohort pending native historical fixture treatment"
+    },
+    {
+      "id": "final-production-site",
+      "command": "normal npm run build; scoped normal production Playwright; tsx rendered applicability",
+      "result": "PASS_WITH_LIMITS",
+      "record": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-site-qualification.json"
+    }
+  ],
+  "source_sha256": {
+    ".github/scripts/_contextverificationlib.py": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4",
+    ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/farm.js": "4f2fb82f02435ec62755aab1a3012ff6b8124bf13c9af97eab4050c88badd031",
+    "plugins/ca/tools/farm.ts": "0ce099a0d277cf8a1cb00a782c089a54e02791f9b02186a689cc47b00d0ff223",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/scripts/generator/generate.ts": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/components/HookProof.astro": "daa63c0ba6f2f9855fc41502427a60845f3a487694b66faa675288d7b7c27249",
+    "site/src/components/ReleaseApplicability.astro": "79bd685468bc5a5066c84b9b2fb750f515001a1ff644022dfe17297211532371",
+    "site/src/components/Search.astro": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+    "site/src/components/SplashDocsRail.astro": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+    "tools/build-artifact-manifest-contract.py": "5101eba17adae23ad847a3e71ad12790bf3a4630179a97ca38a82416bdb76134",
+    "tools/build-artifacts.py": "532c774402cb95a8c96581e740f80c0120ccadd4d95628d9025d84c7d6b2d9e7",
+    "tools/build-host-packages.py": "b82537486f17ff7c933d2c0215f4af503f6957463993de028a80e0e52bd7b693",
+    "tools/build-surface.py": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+    "tools/ci20_baseline.py": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+    "tools/ci20_inventory.py": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+    "tools/farm-first-pass.py": "8f64f88d8174d5696fbb431bde4d79e86a93b2e9989b009883191c1f0792810c",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+    "tools/live-smarts-exercise.py": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/statusline-bench.py": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+    "tools/statusline-screenshot.py": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c"
+  },
+  "ownership": {
+    "python": "rendered host files and orphans only; all canonical core Python target files plus LICENSE/THIRD_PARTY_NOTICES, no _host.py/user files",
+    "reference": "commands/skills/agents/tribunal-lenses directories, index.md and exact sidebar file; standalone mixed reference pages retained",
+    "academy": "academy generated subtree plus exact academy-content.ts/academy-sidebar.json",
+    "pagefind": "pagefind generated assets only; unrelated site build files retained",
+    "failure_protocol": "stage all candidate bytes before replacement; serialized pending marker; rollback or explicitly unusable journal; consumers reject pending root generation"
+  },
+  "independent_review": {
+    "packet": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-independent-security-coverage-review.json",
+    "verdict": "PASS_WITH_LIMITS",
+    "unresolved": 0,
+    "fixed_findings": [
+      "actual Windows junction escape",
+      "new contract generator truncate publication"
+    ]
+  },
+  "limits": [
+    "Final exact retained cohort and six native platform qualification remain Q-01 ownership; synthetic manifests/observations are declarations only.",
+    "Qualified native575d historical cold lifecycle reaches evidence-context AUTHORITY_UNVERIFIED in reconcile-review; preserve rejection until native owner resolves fixture treatment.",
+    "No live Claude/provider execution, no SMARTS qualitative quality certification, no invented premium spend/cause.",
+    "No main merge, publication, stage, commit or push by this lane."
+  ],
+  "actor_context": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-site-actor-input.txt",
+    "boundary": "compose_feature_actor_input scoped author packet; advisory action, not permission"
+  },
+  "local_production_site_qualification": {
+    "record": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-site-qualification.json",
+    "verdict": "PASS_WITH_LIMITS",
+    "normal_build": "164 rendered pages;194 search pages;200 search assets",
+    "browser": "18 distinct production lifecycle/accessibility tests successful across initial14 plus5 focused rerun with1 overlap",
+    "rendered_applicability": "PASS visible labels + proof applicability + built JSON endpoint agreement",
+    "remaining_boundary": "final retained cohort and cross-platform hosted qualification remain separate"
+  }
+}

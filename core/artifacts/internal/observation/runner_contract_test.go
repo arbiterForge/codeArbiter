@@ -353,3 +353,29 @@ func TestQualifiedRunnerContractRejectsPrefixHelperWithoutNativeNPM(t *testing.T
 		t.Fatal("non-native npm binding accepted a prefix helper")
 	}
 }
+
+// NT-04: the shared bound admits the largest native layout (37 files with 32
+// workspace manifests) and rejects one more manifest or one more file.
+func TestQualifiedRunnerContractSharesLaunchFileBound(t *testing.T) {
+	if MaxWorkspaceManifests != 32 || MaxLaunchFiles != 37 {
+		t.Fatalf("launch bounds changed without a versioned contract: %d/%d", MaxWorkspaceManifests, MaxLaunchFiles)
+	}
+	observed, event, context, contextHash := workspaceRunnerObservation(true, MaxWorkspaceManifests)
+	files := model.A(model.M(model.A(model.M(observed["producer_result"])["command_bindings"])[0])["launch_files"])
+	if len(files) != MaxLaunchFiles || !runnerAccepted(observed, event, context, contextHash) {
+		t.Fatalf("largest admitted native npm layout (%d files) was rejected", len(files))
+	}
+	for _, native := range []bool{false, true} {
+		observed, event, context, contextHash = workspaceRunnerObservation(native, MaxWorkspaceManifests+1)
+		if runnerAccepted(observed, event, context, contextHash) {
+			t.Fatalf("native=%v: %d workspace manifests were admitted", native, MaxWorkspaceManifests+1)
+		}
+	}
+	binding := model.M(model.A(model.M(observed["producer_result"])["command_bindings"])[0])
+	if n := len(model.A(binding["launch_files"])); n != MaxLaunchFiles+1 {
+		t.Fatalf("fixture has %d files, want %d", n, MaxLaunchFiles+1)
+	}
+	if es := schema.ValidateWith(QualifiedCommandBindingsSchema(), []any{binding}); len(es) == 0 {
+		t.Fatal("qualified schema admitted 38 launch files")
+	}
+}

@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import copy
 from pathlib import Path
 import subprocess
 import tempfile
@@ -223,6 +224,11 @@ class ObserveIntegrationTest(unittest.TestCase):
         registry = {
             "compatibility": {
                 "clockStarts": "confirmed-non-draft-github-release",
+                "removalRequires": {
+                    "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+                    "decision": "separately-approved-named-removal",
+                    "evidence": "fresh-exact-confirmed-non-draft-release",
+                },
                 "targets": {
                     "claude": {
                         "publishedWithoutMetadata": "2.16.0",
@@ -298,6 +304,30 @@ class ObserveIntegrationTest(unittest.TestCase):
         self.assertEqual(code, 0, output)
         self.assertEqual(output.count(": published"), 3)
 
+    def test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy(self):
+        path = self.repo / "core/surface/command-routes.json"
+        original = json.loads(path.read_text(encoding="utf-8"))
+        valid = original["compatibility"]["removalRequires"]
+        cases = ["minor-release-with-changelog-notice", {"minimumVersion": valid["minimumVersion"]}]
+        for key in ("decision", "evidence"):
+            missing = copy.deepcopy(valid)
+            del missing[key]
+            cases.append(missing)
+        for target in ("claude", "codex", "pi"):
+            wrong_floor = copy.deepcopy(valid)
+            wrong_floor["minimumVersion"][target] = "0.0.0"
+            cases.append(wrong_floor)
+        cases.append(dict(valid, automaticApproval=True))
+        for rule in cases:
+            with self.subTest(rule=rule):
+                changed = copy.deepcopy(original)
+                changed["compatibility"]["removalRequires"] = rule
+                path.write_text(json.dumps(changed), encoding="utf-8")
+                with self.assertRaisesRegex(RELEASE_STATE.ContractError, "removalRequires"):
+                    RELEASE_STATE.load_declarations(self.repo)
+        path.write_text(json.dumps(original), encoding="utf-8")
+        self.assertEqual(len(RELEASE_STATE.load_declarations(self.repo)), 3)
+
     def test_tag_only_response_fails_the_aggregate_end_to_end(self):
         (self.evidence_dir / "claude.http").write_text(
             "HTTP/2.0 404 Not Found\ncontent-type: application/json\n\n{}\n",
@@ -307,6 +337,118 @@ class ObserveIntegrationTest(unittest.TestCase):
         code, output = self.observe()
         self.assertEqual(code, 1)
         self.assertIn("claude: v2.17.0: tag-only", output)
+
+
+class RecordedObservationTest(ObserveIntegrationTest):
+    """R-04 / C-F04: the release workflow persists an actual observation.
+
+    `record` classifies every declared first-containing Release from the
+    draft-inclusive Release list plus local tag evidence, writes a durable
+    record bound to the observing source, and never fails or undoes a
+    publication: an unreadable API is recorded as unknown, not published.
+    """
+
+    SOURCE = "c" * 40
+
+    def releases(self, **drafts):
+        rows = []
+        for target, tag in (("claude", "v2.17.0"), ("codex", "ca-codex-v0.9.0"),
+                            ("pi", "ca-pi-v0.10.0")):
+            if drafts.get(target) == "absent":
+                continue
+            rows.append({"id": len(rows) + 1, "tag_name": tag,
+                         "draft": drafts.get(target) == "draft",
+                         "target_commitish": drafts.get("commitish", self.commit)})
+        return json.dumps([rows])
+
+    def record(self, response, exit_code=0, visibility="draft-inclusive"):
+        listing = Path(self.temporary.name) / "releases.json"
+        listing.write_text(response, encoding="utf-8")
+        output = Path(self.temporary.name) / "observation.json"
+        if output.exists():
+            output.unlink()
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            code = RELEASE_STATE.main([
+                "record", "--repo", str(self.repo), "--releases", str(listing),
+                "--releases-exit", str(exit_code), "--releases-visibility", visibility,
+                "--source", self.SOURCE,
+                "--run-id", "77", "--output", str(output)])
+        return code, json.loads(output.read_text(encoding="utf-8"))
+
+    def states(self, document):
+        return {row["target"]: row["state"] for row in document["observations"]}
+
+    def test_published_draft_tag_only_and_identity_are_recorded(self):
+        code, document = self.record(self.releases(codex="draft", pi="absent"))
+        self.assertEqual(code, 0)
+        self.assertEqual(self.states(document),
+                         {"claude": "published", "codex": "draft", "pi": "tag-only"})
+        self.assertEqual(document["source_commit"], self.SOURCE)
+        self.assertEqual(document["workflow_run"], "77")
+        claude = document["observations"][0]
+        self.assertEqual((claude["tag"], claude["tag_commit"], claude["release_id"]),
+                         ("v2.17.0", self.commit, 1))
+
+    def test_missing_tag_is_planned_and_api_failure_is_unknown_not_published(self):
+        subprocess.run(["git", "tag", "-d", "ca-pi-v0.10.0"], cwd=self.repo, check=True,
+                       capture_output=True)
+        code, document = self.record(self.releases(pi="absent"))
+        self.assertEqual(self.states(document)["pi"], "planned")
+        code, document = self.record("", exit_code=1)
+        self.assertEqual(code, 0, "observation failure must not fail or undo publication")
+        self.assertEqual(set(self.states(document).values()), {"api-unavailable"})
+
+    def test_public_list_cannot_prove_draft_absence(self):
+        # Read-only observer credentials cannot establish a draft-inclusive
+        # listing. An omitted draft must not become planned or tag-only.
+        for tag_exists in (True, False):
+            if not tag_exists:
+                subprocess.run(["git", "tag", "-d", "ca-pi-v0.10.0"],
+                               cwd=self.repo, check=True, capture_output=True)
+            with self.subTest(tag_exists=tag_exists):
+                document = RELEASE_STATE.record_observations(
+                    self.repo, RELEASE_STATE.load_declarations(self.repo),
+                    0, self.releases(pi="absent"), source=self.SOURCE,
+                    run_id="77", observed_at="2026-11-13T00:00:00Z")
+                self.assertEqual(self.states(document)["pi"], "api-unavailable")
+                self.assertEqual(self.states(document)["claude"], "published")
+        code, document = self.record(self.releases(pi="absent"), visibility="public")
+        self.assertEqual(code, 0)
+        self.assertEqual(document["release_visibility"], "public")
+        self.assertEqual(self.states(document)["pi"], "api-unavailable")
+
+    def test_identity_mismatch_is_not_publication(self):
+        code, document = self.record(self.releases(commitish="d" * 40))
+        self.assertEqual(set(self.states(document).values()), {"mismatch"})
+        duplicate = json.dumps([[{"tag_name": "v2.17.0", "draft": False},
+                                 {"tag_name": "v2.17.0", "draft": True}]])
+        self.assertEqual(self.states(self.record(duplicate)[1])["claude"], "mismatch")
+
+    def test_branch_named_target_commitish_is_not_identity_evidence(self):
+        # The publisher creates Releases with target_commitish "main"; only a
+        # SHA-shaped value can contradict the tag's own commit.
+        code, document = self.record(self.releases(commitish="main"))
+        self.assertEqual(set(self.states(document).values()), {"published"})
+        self.assertEqual(RELEASE_STATE.classify_release_state(
+            expected_tag=EXPECTED_TAG, expected_version="2.17.0",
+            evidence=evidence(release={"draft": False, "tag_name": EXPECTED_TAG,
+                                       "target_commitish": "main"})), "published")
+
+    def test_repeat_observation_is_idempotent_and_grants_no_removal(self):
+        first = self.record(self.releases())[1]
+        second = self.record(self.releases())[1]
+        first.pop("observed_at"); second.pop("observed_at")
+        self.assertEqual(first, second)
+        # Publication evidence never authorizes alias removal by itself.
+        self.assertEqual(first["removal_authorization"], "not-evaluated")
+        self.assertNotIn("removable", json.dumps(first))
+
+    def test_policy_declarations_alone_never_produce_published_evidence(self):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            RELEASE_STATE.main(["declarations", "--repo", str(self.repo)])
+        self.assertNotIn("published", output.getvalue())
 
 
 if __name__ == "__main__":

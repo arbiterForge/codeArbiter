@@ -51,7 +51,7 @@ func (e *Engine) recordPrerequisite(r object, entry repository.Entry) (any, erro
 		"origin": reported["origin"], "provenance": "caller_reported",
 		"recorded_at": time.Now().UTC().Format(time.RFC3339), "definition_sha256": hash,
 	}
-	next.Data["schema_version"] = model.SchemaVersion
+	next.Data["schema_version"] = model.AtLeast(next.Data, model.SchemaVersion)
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)
 	if err != nil {
@@ -96,7 +96,7 @@ func (e *Engine) finishScope(r object, entry repository.Entry) (any, error) {
 		s["state"] = "DONE"
 		s["reason"] = model.S(r["reason"]) + " Implementation completion only; verification and review are not assessed."
 	}
-	next.Data["schema_version"] = model.SchemaVersion
+	next.Data["schema_version"] = model.AtLeast(next.Data, model.SchemaVersion)
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)
 	if err != nil {

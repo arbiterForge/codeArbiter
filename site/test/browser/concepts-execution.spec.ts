@@ -40,6 +40,26 @@ async function textGeometry(page: Page) {
   });
 }
 
+test('the same documentation drawer reconnects without duplicate local or Escape listeners', async ({ page }) => {
+  await page.goto('/');
+  const drawer = page.locator('ca-splash-docs');
+  await expect(drawer).toHaveCount(1);
+  for (let cycle = 0; cycle < 3; cycle++) {
+    await drawer.evaluate(element => {
+      const parent = element.parentElement!;
+      const next = element.nextSibling;
+      element.remove();
+      parent.insertBefore(element, next);
+    });
+    const opener = drawer.locator('.ca-docs-rail__opener');
+    await opener.click();
+    await expect(opener).toHaveAttribute('aria-expanded', 'true');
+    await page.keyboard.press('Escape');
+    await expect(opener).toHaveAttribute('aria-expanded', 'false');
+    await expect(opener).toBeFocused();
+  }
+});
+
 test('all chapters retain their sequence, roles, outputs and source links', async ({ page }) => {
   await page.goto('/concepts/');
   await expect(map(page).locator('.ca-execution-map__controls')).toBeVisible();

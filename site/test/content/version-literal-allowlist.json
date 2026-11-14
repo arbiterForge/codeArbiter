@@ -201,5 +201,12 @@
     "context": "bounded 0.9.4",
     "category": "historical",
     "reason": "Names the one dated 0.9.4 installed-charter review receipt; a historical evidence record."
+  },
+  {
+    "file": "scripts/release-applicability.ts",
+    "literal": "0.1.0",
+    "context": "record.format !== \"codearbiter.route-publication-observation/0.1.0\"",
+    "category": "sentinel",
+    "reason": "Exact durable publication-observation protocol discriminator; this schema identity is independent of the current plugin version."
   }
 ]

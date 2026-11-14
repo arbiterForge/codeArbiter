@@ -1,0 +1,51 @@
+{
+  "kind": "TEMP_ONLY_PROJECTED_CARRY_THROUGH_UNMODIFIED_WHOLE_INTEGRATION_OWNER",
+  "source_commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+  "result": "PASSED",
+  "frozen_files": 105,
+  "counts": {
+    "findings": {
+      "PLANNED": 54,
+      "TESTED": 16
+    },
+    "machines": {
+      "PRESERVED": 5,
+      "PLANNED": 264,
+      "TESTED": 18
+    },
+    "transitions": {
+      "PRESERVED": 210,
+      "PLANNED": 1296,
+      "TESTED": 239,
+      "NOT_APPLICABLE": 3
+    },
+    "added_transitions": {
+      "TESTED": 48
+    }
+  },
+  "selected_current_applicability": {
+    "disposition:findings:HOOK-F05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:statusline-wiring:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:statusline-wiring:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    }
+  },
+  "immutable_blobs_read": 2303,
+  "seconds": 2.204359899973497,
+  "owner_inputs": {
+    ".github/scripts/check_state_contracts_integration.py": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc"
+  },
+  "qualification": "Actual whole validate executes all existing immutable recorded dispositions and topology, with only three proposed ledger rows/new retained proof files supplied by exact Temp bytes. No Git object or Gov metadata changed; final committed carry is Root-owned.",
+  "publication_readiness": "NOT_ASSESSED"
+}

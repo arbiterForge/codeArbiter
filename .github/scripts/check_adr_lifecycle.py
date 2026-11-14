@@ -204,15 +204,8 @@ def _local_pending_acceptance(root, events, blobs):
         if index_tree.returncode != 0:
             return None
         obligations = packet.get("obligations")
-        synthetic = {
-            "schema": "adr-lifecycle/v1", "event": "acceptance", "adr": stem,
-            "recorded_at": packet["reviewed_at"], "source_commit": "0" * 40,
-            "blob_sha256": digest(index_adr),
-            "body_sha256": digest(al.immutable_body(index_adr)),
-            "obligations": obligations,
-            "obligations_sha256": al.obligation_set_digest(obligations),
-            "obligations_sealed": True,
-        }
+        synthetic = al.acceptance_event(stem, index_adr, "0" * 40,
+                                        obligations, packet["reviewed_at"])
         if (packet["repository"] != paa.repository_identity(root) or
                 packet["head"] != _git(root, "rev-parse", "HEAD").stdout.decode().strip() or
                 packet["index_tree"] != index_tree.stdout.decode().strip() or
@@ -342,7 +335,7 @@ def _local_binding_transition_error(root, events, blobs):
         expected_event_fields = {
             "schema", "event", "adr", "recorded_at", "source_commit",
             "blob_sha256", "body_sha256", "obligations",
-            "obligations_sha256", "obligations_sealed",
+            "obligations_sha256", "obligations_sealed", "reviewed_by",
         }
         if (set(packet) != expected_packet_fields or
                 set(event) != expected_event_fields or
@@ -364,6 +357,7 @@ def _local_binding_transition_error(root, events, blobs):
                 not packet.get("reviewed_by") or
                 any(not isinstance(item, str) or not item.strip()
                     for item in packet.get("reviewed_by")) or
+                event.get("reviewed_by") not in packet.get("reviewed_by") or
                 packet.get("obligations_sha256") != al.obligation_set_digest(
                     packet.get("obligations")) or
                 event.get("schema") != "adr-lifecycle/v1" or

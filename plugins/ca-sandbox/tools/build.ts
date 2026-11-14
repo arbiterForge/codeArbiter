@@ -1,47 +1,11 @@
-/**
- * build.ts — ca-sandbox image build + dephash cache (T-05, covers AC-04 / AC-05).
- *
- * `buildOrReuseImage(repoDir, dephash)` is the nixpacks-wrap + dephash-cache seam:
- *
- *   1. Derive the cache tag `ca-sbx:<repo>-<dephash>` (repo = sanitized basename of
- *      repoDir; the dephash is computed by the caller via dephash.ts's
- *      computeDepHash — passed in here as the cache discriminator).
- *   2. CACHE CHECK — `docker image inspect <tag>`. Exit 0 => the image exists =>
- *      REUSE, run NO build (AC-04: a `create` from an unchanged repo recomputes the
- *      SAME dephash, finds the tag, and skips the build).
- *   3. CACHE MISS — build the image and tag it `<tag>`:
- *        a. nixpacks is the intended builder. If `nixpacks --version` works we wrap
- *           it (`nixpacks build <repoDir> --name <tag>`).
- *        b. If nixpacks is absent we FAIL CLOSED — ca-sandbox never acquires it
- *           (issue #401: acquiring a builder means executing remote bytes on the
- *           developer host, before any container boundary exists; nixpacks is a
- *           documented prerequisite instead). We FALL BACK to a generated
- *           Dockerfile that mimics what nixpacks bakes, and we NOTE the missing
- *           dependency in the result so the user can install the real builder.
- *      Either way, the build RELOCATES installed deps OUT OF TREE to `/deps` and
- *      exports `NODE_PATH=/deps/node_modules` / `PYTHONPATH=/deps/site-packages`
- *      via image ENV (Spike A: mounting the source volume over the app dir at
- *      `/work/repo` would otherwise shadow deps; out-of-tree `/deps` survives).
- *   4. A manifest/lockfile change recomputes a DIFFERENT dephash => DIFFERENT tag =>
- *      cache miss => rebuild (AC-05). Source-only edits leave the dephash stable.
- *
- * Toolchain note (Spike A driver note): `docker build --label` is unreliable, so
- * sandbox images are tracked by their namespaced TAG, never by an image label.
- * Windows (Spike A/B): MSYS_NO_PATHCONV=1 is set when shelling docker so in-
- * container paths and `-e HOME` are not mangled by Git Bash path conversion —
- * the guard itself is imported from the shared docker.ts primitive
- * (architecture-007), the single definition site.
- *
- * Process/shell handling mirrors farm.ts: a `run()` child-process helper returning
- * a RunResult (this module's own shape — {code, out, stdout, stderr} — since
- * callers here also want the merged stdout+stderr `out` for build logs; it is
- * NOT the plain {code,stdout,stderr} docker.ts contract other modules share),
- * and the docker/build effects are injectable (BuildDeps) so the pure
- * cache/tag/relocation logic is unit-testable without real docker, while the
- * docker-gated test drives the real defaults.
- */
+/** Image builds use a V2 content identity over manifests, effective builder/version,
+ * daemon platform and build templates/options. Cache reuse verifies label + immutable
+ * image ID. Missing nixpacks uses the supported Node/Python fallback; no host tool is
+ * installed. Runtime source is volume-backed; create.ts owns transient host staging. */
+import { createHash } from "node:crypto";
 import { spawn, type SpawnOptionsWithoutStdio } from "node:child_process";
-import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, rm, lstat, open, realpath, opendir } from "node:fs/promises";
+import { constants } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { DEFAULT_DOCKER_TIMEOUT_MS, DOCKER_TIMEOUT_EXIT_CODE, timeoutForArgs, DOCKER_ENV } from "./docker.ts";
@@ -68,6 +32,112 @@ export const NIXPACKS_APP_DIR = "/app";
  */
 export const FALLBACK_BASE_IMAGE =
   "node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0";
+
+/** Reviewed immutable multi-arch Nixpacks base. The generator's merge-last
+ * --json-plan is the supported v1.41 interface; no ambient override is used. */
+export const NIXPACKS_BASE_IMAGE =
+  "ghcr.io/railwayapp/nixpacks@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de";
+const NIXPACKS_GENERATOR_ARGS = Object.freeze(["--no-error-without-start"]);
+const NATIVE_RUNTIME_START = Object.freeze({ runImage: NIXPACKS_BASE_IMAGE, onlyIncludeFiles: Object.freeze(["."]) });
+export const MAX_NATIVE_INPUT_BYTES = 1024 * 1024;
+/** The same fixed inputs govern generation and V2 cache admission. Change this
+ * policy identity when generation/environment/FROM or builder admission rules change. */
+export const NIXPACKS_BUILD_PROFILE = Object.freeze({
+  schema: 3, buildImage: NIXPACKS_BASE_IMAGE, generatorArgs: NIXPACKS_GENERATOR_ARGS,
+  builderObservationPolicy: "pre-build-capability-version-invocation-v1",
+  environmentPolicy: "minimal-os-v1", dockerfilePolicy: "all-image-refs-sha256-no-frontend-v2",
+  inputPolicy: "no-project-config-or-existing-output-v1",
+  providerPolicy: "explicit-node-python-go-mod-nonworkspace-rust-v2",
+  nativeInputPolicy: "owned-utf8-max1MiB-rust-no-workspace-or-backslash-v1",
+  nativeRuntime: NATIVE_RUNTIME_START,
+});
+function nixpacksEnvironment(): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { MSYS_NO_PATHCONV: "1" };
+  for (const key of ["PATH", "Path", "PATHEXT", "SystemRoot", "SYSTEMROOT", "WINDIR",
+                     "ComSpec", "COMSPEC", "TEMP", "TMP", "HOME", "USERPROFILE", "LANG", "LC_ALL"]) {
+    if (process.env[key] !== undefined) env[key] = process.env[key];
+  }
+  return env;
+}
+
+/** Support the generated Dockerfile grammar without evaluating build ARGs.
+ * FROM and COPY/mount external images must be immutable; aliases may only
+ * name prior stages. Numeric prior stages are supported for native COPY.
+ * Nixpacks v1.41 emits no frontend directive, so custom #syntax is unsupported.
+ * This checks declarations, not registry provenance or arbitrary RUN behavior. */
+export function validateGeneratedImageInputs(dockerfile: string): void {
+  if (/^\s*#\s*syntax\s*=/im.test(dockerfile))
+    throw new Error("ca-sandbox: unsupported Dockerfile frontend; pinned image profile required");
+  const escape = /^\s*#\s*escape\s*=\s*(\S+)/im.exec(dockerfile);
+  if (escape && escape[1] !== "\\")
+    throw new Error("ca-sandbox: unsupported Dockerfile escape in pinned image profile");
+  const stages = new Map<string, number>();
+  let count = 0;
+  const pinned = (image: string) => /^[a-zA-Z0-9][a-zA-Z0-9._:/-]*@sha256:[a-f0-9]{64}$/.test(image);
+  const source = (image: string, numeric: boolean): void => {
+    const stage = stages.get(image.toLowerCase());
+    if (pinned(image) || (stage !== undefined && stage < count - 1)
+        || (numeric && /^(?:0|[1-9][0-9]*)$/.test(image) && Number(image) < count - 1)) return;
+    throw new Error("ca-sandbox: unpinned or unsupported external image source; pinned digest or prior stage required");
+  };
+  // Docker discards full comment lines BEFORE processing continuations. A
+  // comment ending in backslash must never swallow the following active FROM.
+  const active = dockerfile.split(/\r?\n/).filter(line => !/^\s*#/.test(line)).join("\n");
+  for (const line of active.replace(/\\[ \t]*\r?\n/g, " ").split(/\r?\n/)) {
+    const tokens = line.trim().split(/\s+/);
+    const instruction = tokens.shift()?.toUpperCase();
+    if (instruction === "ONBUILD")
+      throw new Error("ca-sandbox: unsupported deferred image instructions in pinned profile");
+    if (instruction === "FROM") {
+      if (tokens[0]?.startsWith("--platform=")) tokens.shift();
+      if (tokens.length !== 1 && !(tokens.length === 3 && tokens[1].toUpperCase() === "AS"
+          && /^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(tokens[2])))
+        throw new Error("ca-sandbox: unsupported FROM declaration; immutable image required");
+      const image = tokens[0];
+      if (!image || (image.toLowerCase() !== "scratch" && !stages.has(image.toLowerCase()) && !pinned(image)))
+        throw new Error("ca-sandbox: unpinned external FROM image; every generated image requires a sha256 digest");
+      if (tokens.length === 3) {
+        const alias = tokens[2].toLowerCase();
+        if (stages.has(alias)) throw new Error("ca-sandbox: ambiguous FROM stage alias");
+        stages.set(alias, count);
+      }
+      count++;
+      continue;
+    }
+    if (instruction !== "COPY" && instruction !== "ADD" && instruction !== "RUN") continue;
+    const seen = new Set<string>();
+    for (const flag of tokens) {
+      if (!flag.startsWith("--")) break;
+      // Generated flags need no shell-style quoting or ARG expansion. Refuse
+      // unsupported forms instead of letting quoted whitespace hide a source.
+      if (/["'\\$`]/.test(flag)) throw new Error("ca-sandbox: unsupported quoted/dynamic image flag in pinned profile");
+      const option = /^--([a-z-]+)(?:=(.+))?$/.exec(flag);
+      if (!option) throw new Error("ca-sandbox: unsupported image flag in pinned profile");
+      const [, key, value] = option;
+      if (instruction === "RUN") {
+        if (!value || !["mount", "network", "security"].includes(key))
+          throw new Error("ca-sandbox: unsupported RUN flag in pinned image profile");
+        if (key !== "mount") continue;
+        const origins = value.split(",").filter(part => part.split("=", 1)[0].toLowerCase() === "from");
+        if (origins.length > 1) throw new Error("ca-sandbox: ambiguous mount image source in pinned profile");
+        if (origins.length) {
+          const origin = /^from=(.+)$/i.exec(origins[0]);
+          if (!origin) throw new Error("ca-sandbox: unsupported mount image source in pinned profile");
+          source(origin[1], false);
+        }
+      } else {
+        if (!value && !["link", "parents"].includes(key))
+          throw new Error("ca-sandbox: unsupported COPY/ADD flag in pinned image profile");
+        if (key === "from") {
+          if (seen.has(key)) throw new Error("ca-sandbox: ambiguous COPY image source in pinned profile");
+          source(value, true);
+        }
+        seen.add(key);
+      }
+    }
+  }
+  if (!count) throw new Error("ca-sandbox: generated Dockerfile has no supported pinned FROM declaration");
+}
 
 // --------------------------------------------------------------------------
 // process helper (mirrors farm.ts run()/RunResult)
@@ -167,27 +237,12 @@ export const runForTests = run;
 // --------------------------------------------------------------------------
 // tag derivation
 // --------------------------------------------------------------------------
-/**
- * Docker tags allow only [A-Za-z0-9_.-] and must not start with a separator.
- * The repo segment is the sanitized basename of repoDir; any other char folds to
- * `-`, runs collapse, and a leading separator is trimmed. An empty result falls
- * back to "repo" so the tag is always well-formed.
- */
-function sanitizeRepoName(repoDir: string): string {
-  const base = path.basename(repoDir.replace(/[\\/]+$/, "")) || "repo";
-  const cleaned = base
-    .replace(/[^A-Za-z0-9_.-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^[-._]+/, "")
-    .replace(/[-._]+$/, "")
-    .toLowerCase();
-  return cleaned || "repo";
+/** V2 tags are content identities; staging directory names are cosmetic. */
+export function imageTag(_repoDir: string, cacheKey: string): string {
+  return `${IMAGE_PREFIX}:v2-${cacheKey}`;
 }
-
-/** The cache tag for a repo + dephash: `ca-sbx:<repo>-<dephash>`. */
-export function imageTag(repoDir: string, dephash: string): string {
-  return `${IMAGE_PREFIX}:${sanitizeRepoName(repoDir)}-${dephash}`;
-}
+export const CACHE_LABEL = "ca.sandbox.cache-key";
+export type ImageIdentity = { id: string; cacheKey: string };
 
 // --------------------------------------------------------------------------
 // injectable build effects
@@ -210,6 +265,10 @@ export type NixpacksInvocation =
 export type BuildContext = {
   repoDir: string;
   builder: Builder;
+  cacheKey?: string;
+  platform?: string;
+  signal?: AbortSignal;
+  nativeProviderInputs?: NativeProviderInputs;
   /** How to invoke nixpacks (only set when builder === "nixpacks"). */
   nixpacks?: NixpacksInvocation;
   /** Notes accumulated so far (e.g. the nixpacks-missing fallback note). */
@@ -222,8 +281,7 @@ export type EnsureNixpacksResult = {
   via?: NixpacksInvocation;
   /** When unavailable, why (install blocked / not installed) — surfaced to the user. */
   note?: string;
-  /** The resolved nixpacks version when available, folded into nothing here (the
-   *  dephash already pins the toolchain version via computeDepHash). */
+  /** The observed installed builder version, included in the final V2 key. */
   version?: string;
 };
 
@@ -234,17 +292,24 @@ export type EnsureNixpacksResult = {
 export type BuildDeps = {
   /** `docker image inspect <tag>` exit code (0 => exists/reuse). */
   imageInspect: (tag: string) => Promise<number>;
+  /** A tag existing is insufficient: verify its immutable ID and provenance. */
+  imageIdentity?: (tag: string) => Promise<ImageIdentity | null>;
+  targetPlatform?: () => Promise<string>;
+  detectStack?: (repoDir:string) => Promise<{node:boolean;python:boolean}>;
+  nativeProviderInputs?: (repoDir:string) => Promise<NativeProviderInputs | undefined>;
   /** Build + tag the image for the given builder; resolves with the build result. */
-  runBuild: (tag: string, ctx: BuildContext) => Promise<{ code: number; out: string }>;
+  runBuild: (tag: string, ctx: BuildContext) => Promise<{ code: number; out: string; imageId?:string }>;
   /** Resolve the installed nixpacks version; rejects if nixpacks is absent. */
   nixpacksVersion: () => Promise<string>;
-  /** Ensure nixpacks is usable, installing it if needed; reports availability. */
+  /** Probe an already installed nixpacks; never installs it. */
   ensureNixpacks: () => Promise<EnsureNixpacksResult>;
 };
 
 export type BuildResult = {
   /** The image tag `ca-sbx:<repo>-<dephash>`. */
   tag: string;
+  cacheKey?: string;
+  imageId?: string;
   /** True when an existing tag was reused (cache hit, NO build). */
   reused: boolean;
   /** True when a build ran (cache miss). */
@@ -276,15 +341,39 @@ function reportBuildStage(reporter: BuildStageReporter | undefined, stage: Build
 // --------------------------------------------------------------------------
 async function defaultImageInspect(tag: string): Promise<number> {
   const r = await run("docker", ["image", "inspect", tag]);
+  if(r.code!==0 && !/no such image/i.test(r.out)) throw new Error("ca-sandbox: cache observation unavailable");
   return r.code;
 }
 
+async function defaultImageIdentity(tag: string): Promise<ImageIdentity | null> {
+  const r = await run("docker", ["image", "inspect", tag]);
+  if (r.code !== 0) return null;
+  try {
+    const image = JSON.parse(r.stdout)[0];
+    return { id: image.Id, cacheKey: image.Config?.Labels?.[CACHE_LABEL] };
+  } catch { return null; }
+}
+async function defaultTargetPlatform(): Promise<string> {
+  const r = await run("docker", ["version", "--format", "{{.Server.Os}}/{{.Server.Arch}}"]);
+  const platform = r.stdout.trim();
+  if (r.code !== 0 || !/^[a-z0-9]+\/[a-z0-9_]+(?:\/[a-z0-9]+)?$/.test(platform)) {
+    throw new Error("ca-sandbox: target Docker platform observation unavailable; no cache reuse or build");
+  }
+  return platform;
+}
+function buildIdentityArgs(ctx: BuildContext): string[] {
+  if (!ctx.cacheKey || !ctx.platform) throw new Error("ca-sandbox: missing build identity");
+  return ["--platform", ctx.platform, "--label", `${CACHE_LABEL}=${ctx.cacheKey}`];
+}
+
+function observedNixpacksVersion(output:string):string {
+  return /^(?:nixpacks\s+)?(\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)$/.exec(output.trim())?.[1] ?? output.trim();
+}
 async function defaultNixpacksVersion(): Promise<string> {
   const r = await run("nixpacks", ["--version"]);
   if (r.code !== 0) throw new Error(`nixpacks --version failed: ${r.out.trim()}`);
   // `nixpacks --version` prints e.g. "nixpacks 1.40.0" or "1.40.0".
-  const m = r.stdout.match(/(\d+\.\d+\.\d+)/);
-  return m ? m[1] : r.stdout.trim();
+  return observedNixpacksVersion(r.stdout);
 }
 
 /**
@@ -308,8 +397,7 @@ async function detectWslNixpacks(exec: ProbeRun = run): Promise<{ bin: string; v
   // Verify it actually runs in WSL (the fallback path may not exist).
   const ver = await exec("wsl.exe", ["--", bin, "--version"]);
   if (ver.code !== 0) return null;
-  const m = ver.stdout.match(/(\d+\.\d+\.\d+)/);
-  return { bin, version: m ? m[1] : ver.stdout.trim() };
+  return { bin, version: observedNixpacksVersion(ver.stdout) };
 }
 
 /**
@@ -328,8 +416,7 @@ async function detectWslNixpacks(exec: ProbeRun = run): Promise<{ bin: string; v
 export async function defaultEnsureNixpacks(exec: ProbeRun = run): Promise<EnsureNixpacksResult> {
   const probe = await exec("nixpacks", ["--version"]);
   if (probe.code === 0) {
-    const m = probe.stdout.match(/(\d+\.\d+\.\d+)/);
-    return { available: true, via: { via: "host" }, version: m ? m[1] : probe.stdout.trim() };
+    return { available: true, via: { via: "host" }, version: observedNixpacksVersion(probe.stdout) };
   }
 
   // WSL bridge: only meaningful on Windows, but the probe is harmless elsewhere
@@ -410,6 +497,12 @@ export function generateDockerfile(stack: { node: boolean; python: boolean }): s
   return lines.join("\n") + "\n";
 }
 
+/** The driver's prerequisite owner; source docs describe these exact capabilities. */
+export function buildCapabilities(stack:{node:boolean;python:boolean}, nixpacksAvailable:boolean) {
+  return {builder:nixpacksAvailable?"nixpacks" as const:"dockerfile-fallback" as const,
+    supported:nixpacksAvailable || stack.node || stack.python,
+    fallbackStacks:["Node (package.json)","Python (requirements.txt)"]};
+}
 async function detectStack(repoDir: string): Promise<{ node: boolean; python: boolean }> {
   const { access } = await import("node:fs/promises");
   const has = async (f: string) => {
@@ -421,6 +514,100 @@ async function detectStack(repoDir: string): Promise<{ node: boolean; python: bo
     }
   };
   return { node: await has("package.json"), python: await has("requirements.txt") };
+}
+
+export type NativeProviderInputs = { providers: string[]; sha256: string };
+
+/** Fixed native-provider reads stay within an inert, owned staging root.
+ * Optional inputs may be genuinely absent; present unsafe/unreadable inputs
+ * refuse. This is not a sandbox against another same-user writer racing the
+ * later upstream generator. No TOML parser or manifest code is executed here. */
+export async function inspectNativeProviderInputs(repoDir: string): Promise<NativeProviderInputs | undefined> {
+  const rootInfo = await lstat(repoDir);
+  if (!rootInfo.isDirectory() || rootInfo.isSymbolicLink()) throw new Error("ca-sandbox: unsafe native input root");
+  const root = await realpath(repoDir);
+  const records: Array<{path:string; sha256?:string; absent?:boolean; entries?:string[]}> = [];
+  const owned = async (relative:string, kind:"file"|"directory"|"either", optional:boolean) => {
+    let current = root;
+    const parts = relative.split("/");
+    for (let index = 0; index < parts.length; index++) {
+      current = path.join(current, parts[index]);
+      let info;
+      try { info = await lstat(current); }
+      catch (error) {
+        if (optional && (error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw new Error(`ca-sandbox: native input unavailable: ${relative}`);
+      }
+      const last = index === parts.length - 1;
+      if (info.isSymbolicLink() || path.relative(current, await realpath(current)) !== "" ||
+          (!last || kind === "directory" ? !info.isDirectory() :
+            kind === "file" ? !info.isFile() || info.nlink !== 1 :
+            !info.isDirectory() && (!info.isFile() || info.nlink !== 1)))
+        throw new Error(`ca-sandbox: unsafe native input: ${relative}`);
+      if (last) return { file: current, info };
+    }
+    throw new Error("ca-sandbox: unsafe native input path");
+  };
+  const read = async (relative:string):Promise<string|undefined> => {
+    const found = await owned(relative, "file", true);
+    if (!found) { records.push({path:relative,absent:true}); return undefined; }
+    const before = found.info;
+    if (before.size > MAX_NATIVE_INPUT_BYTES) throw new Error(`ca-sandbox: oversized native input: ${relative}`);
+    const flags = constants.O_RDONLY | (process.platform === "win32" ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    const handle = await open(found.file, flags);
+    try {
+      const unchanged = (info:typeof before) => info.isFile() && !info.isSymbolicLink() && info.nlink === 1 &&
+        info.dev === before.dev && info.ino === before.ino && info.size === before.size &&
+        info.mtimeMs === before.mtimeMs && info.ctimeMs === before.ctimeMs;
+      if (!unchanged(await handle.stat())) throw new Error(`ca-sandbox: changed native input: ${relative}`);
+      const buffer = Buffer.alloc(MAX_NATIVE_INPUT_BYTES + 1);
+      let length = 0;
+      while (length < buffer.length) {
+        const {bytesRead} = await handle.read(buffer, length, buffer.length - length, length);
+        if (!bytesRead) break;
+        length += bytesRead;
+      }
+      if (length > MAX_NATIVE_INPUT_BYTES) throw new Error(`ca-sandbox: oversized native input: ${relative}`);
+      const after = await owned(relative, "file", false);
+      if (length !== before.size || !unchanged(await handle.stat()) || !after || !unchanged(after.info))
+        throw new Error(`ca-sandbox: changed native input: ${relative}`);
+      const bytes = buffer.subarray(0,length);
+      let text:string;
+      try { text = new TextDecoder("utf-8", {fatal:true}).decode(bytes); }
+      catch { throw new Error(`ca-sandbox: invalid UTF-8 native input: ${relative}`); }
+      records.push({path:relative,sha256:createHash("sha256").update(bytes).digest("hex")});
+      return text;
+    } finally { await handle.close(); }
+  };
+  const entries = async (relative:string, maximum:number, rootGoOnly=false) => {
+    const dir = relative === "." ? {file:root} : await owned(relative, "directory", true);
+    if (!dir) { records.push({path:relative,absent:true}); return; }
+    const names:string[] = [];
+    let count = 0;
+    for await (const entry of await opendir(dir.file)) {
+      if (++count > maximum) throw new Error("ca-sandbox: native input metadata limit exceeded");
+      if (rootGoOnly && !entry.name.endsWith(".go")) continue;
+      const rel = relative === "." ? entry.name : `${relative}/${entry.name}`;
+      const item = await owned(rel, rootGoOnly ? "file" : "either", false);
+      if (!item) throw new Error("ca-sandbox: native input metadata unavailable");
+      names.push(`${entry.name}:${item.info.isDirectory() ? "directory" : "file"}`);
+    }
+    if (relative !== ".") await owned(relative,"directory",false);
+    records.push({path:relative,entries:names.sort()});
+  };
+  const go = await read("go.mod"), rust = await read("Cargo.toml");
+  if (go === undefined && rust === undefined) return undefined;
+  const providers:string[] = [];
+  if (go !== undefined) {
+    providers.push("go"); await read("go.sum"); await entries(".",4096,true); await entries("cmd",256);
+  }
+  if (rust !== undefined) {
+    if (rust.includes("workspace")) throw new Error("ca-sandbox: unsupported Rust workspace metadata; bounded non-workspace profile required");
+    if (rust.includes("\\")) throw new Error("ca-sandbox: unsupported Rust backslash/escaped manifest; bounded ordinary UTF-8 profile required");
+    providers.push("rust");
+    for (const name of ["Cargo.lock",".cargo/config.toml","rust-toolchain","rust-toolchain.toml"]) await read(name);
+  }
+  return {providers,sha256:createHash("sha256").update(JSON.stringify(records)).digest("hex")};
 }
 
 /**
@@ -460,16 +647,19 @@ export function relocationOverlay(): string {
  * SAME physical dir (visible to the host at repoDir). The host's Docker then
  * builds it (see runNixpacksBuild).
  */
-async function generateNixpacks(repoDir: string, nx: NixpacksInvocation): Promise<RunResult> {
+async function generateNixpacks(repoDir: string, nx: NixpacksInvocation, providers: string[], signal?:AbortSignal): Promise<RunResult> {
   // ca-sandbox never RUNS the repo as an app (the container runs `sleep infinity`
   // and you exec in), so a library / bare repo with no start command must still
   // build. `--no-error-without-start` tells nixpacks not to fail in that case.
+  const nativeRuntime = providers.some(provider => provider === "go" || provider === "rust");
+  const args = [...NIXPACKS_GENERATOR_ARGS, "--json-plan", JSON.stringify({ buildImage: NIXPACKS_BASE_IMAGE, providers,
+    ...(nativeRuntime ? { start: NATIVE_RUNTIME_START } : {}) })];
   if (nx.via === "host") {
-    return run("nixpacks", ["build", repoDir, "--out", repoDir, "--no-error-without-start"]);
+    return run("nixpacks", ["build", repoDir, "--out", repoDir, ...args], { env: nixpacksEnvironment(), signal });
   }
   // wsl.exe eats backslashes in args, so hand wslpath a forward-slash Windows
   // path (wslpath accepts `C:/Users/...`); backslashes would arrive stripped.
-  const wp = await run("wsl.exe", ["wslpath", "-a", repoDir.replace(/\\/g, "/")]);
+  const wp = await run("wsl.exe", ["wslpath", "-a", repoDir.replace(/\\/g, "/")], { env: nixpacksEnvironment(), signal });
   if (wp.code !== 0)
     return { code: wp.code || 1, out: `wslpath failed: ${wp.out}`, stdout: "", stderr: wp.out };
   const wslRepo = wp.stdout.trim();
@@ -482,8 +672,8 @@ async function generateNixpacks(repoDir: string, nx: NixpacksInvocation): Promis
     wslRepo,
     "--out",
     wslRepo,
-    "--no-error-without-start",
-  ]);
+    ...args,
+  ], { env: nixpacksEnvironment(), signal });
 }
 
 /**
@@ -496,28 +686,50 @@ async function runNixpacksBuild(
   ctx: BuildContext,
 ): Promise<{ code: number; out: string }> {
   const nx = ctx.nixpacks ?? { via: "host" };
-  const gen = await generateNixpacks(ctx.repoDir, nx);
-  if (gen.code !== 0) return { code: gen.code, out: gen.out };
-
-  const genPath = path.join(ctx.repoDir, ".nixpacks", "Dockerfile");
-  let generated: string;
-  try {
-    generated = await readFile(genPath, "utf8");
-  } catch (e) {
-    return { code: 1, out: `nixpacks did not produce ${genPath}: ${String(e)}\n${gen.out}` };
-  }
-
   const dfPath = path.join(ctx.repoDir, ".ca-sandbox.nixpacks.Dockerfile");
-  await writeFile(dfPath, generated + relocationOverlay());
+  // Nixpacks writes staticAssets on the HOST even with --out. Its config
+  // permits absolute/parent-traversing keys, so Dockerfile validation is too
+  // late. Refuse every default config entry (including dangling links) and
+  // preexisting output before starting generation or entering owned cleanup.
+  // The caller owns an inert staging directory; this is not a defense against
+  // another same-user process racing to mutate that directory during generation.
+  for (const name of ["nixpacks.toml", "nixpacks.json", ".nixpacks", ".ca-sandbox.nixpacks.Dockerfile"]) {
+    let present: boolean;
+    try { await lstat(path.join(ctx.repoDir, name)); present = true; }
+    catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      present = false;
+    }
+    if (present) throw new Error(`ca-sandbox: unsupported Nixpacks input ${name}; project config and preexisting output are refused`);
+  }
+  const stack = await detectStack(ctx.repoDir);
+  const nativeInputs = await inspectNativeProviderInputs(ctx.repoDir);
+  if (JSON.stringify(nativeInputs) !== JSON.stringify(ctx.nativeProviderInputs))
+    throw new Error("ca-sandbox: native provider inputs changed after cache admission; retry with a fresh observation");
+  const providers = [...(stack.node ? ["node"] : []), ...(stack.python ? ["python"] : []), ...(nativeInputs?.providers ?? [])];
+  if (!providers.length) throw new Error("ca-sandbox: supported Nixpacks providers require Node package.json, Python requirements.txt, Go go.mod or bounded non-workspace Rust Cargo.toml");
+  // The explicit list replaces autodetection. Node/Python plans are unchanged.
+  // Go/Rust add no host static assets and use our pinned runtime/source policy.
+  // Rust workspace/escaped metadata is refused before the upstream reader.
   try {
-    const b = await run("docker", ["build", "-t", tag, "-f", dfPath, ctx.repoDir], {
-      env: BUILD_ENV,
+    const gen = await generateNixpacks(ctx.repoDir, nx, providers, ctx.signal);
+    if (gen.code !== 0) return { code: gen.code, out: gen.out };
+    const genPath = path.join(ctx.repoDir, ".nixpacks", "Dockerfile");
+    let generated: string;
+    try {
+      generated = await readFile(genPath, "utf8");
+    } catch (error) {
+      return { code: 1, out: `nixpacks did not produce ${genPath}: ${String(error)}\n${gen.out}` };
+    }
+    validateGeneratedImageInputs(generated);
+    await writeFile(dfPath, generated + relocationOverlay());
+    const built = await run("docker", ["build", ...buildIdentityArgs(ctx), "-t", tag, "-f", dfPath, ctx.repoDir], {
+      env: BUILD_ENV, signal: ctx.signal,
     });
-    return { code: b.code, out: gen.out + "\n" + b.out };
+    return { code: built.code, out: gen.out + "\n" + built.out };
   } finally {
-    // Clean up the generated build artifacts so they never pollute the context
-    // dir. This matters for the fixture-based tests, where repoDir IS a committed
-    // fixture dir: without this, every test run would leave a stray `.nixpacks/`.
+    // Generation/validation failure is also an owned cleanup path. The caller's
+    // create staging directory contains these generated files, never user state.
     await rm(dfPath, { force: true }).catch(() => {});
     await rm(path.join(ctx.repoDir, ".nixpacks"), { recursive: true, force: true }).catch(() => {});
   }
@@ -528,12 +740,19 @@ async function runNixpacksBuild(
  * bridge) + relocation overlay, then docker build. Fallback path: `docker build`
  * the generated Dockerfile, which already installs deps to /deps.
  */
+async function verifyBuiltIdentity(result:{code:number;out:string},tag:string,ctx:BuildContext) {
+  if(result.code!==0) return result;
+  const identity=await defaultImageIdentity(tag);
+  if(!identity || !/^sha256:[a-f0-9]{64}$/.test(identity.id) || identity.cacheKey!==ctx.cacheKey)
+    return {code:1,out:"build effect succeeded but image identity/provenance observation is unavailable; inspect the retained cache tag"};
+  return {...result,imageId:identity.id};
+}
 async function defaultRunBuild(
   tag: string,
   ctx: BuildContext,
-): Promise<{ code: number; out: string }> {
+): Promise<{ code: number; out: string; imageId?:string }> {
   if (ctx.builder === "nixpacks") {
-    return runNixpacksBuild(tag, ctx);
+    return verifyBuiltIdentity(await runNixpacksBuild(tag, ctx),tag,ctx);
   }
 
   // Fallback: generated Dockerfile (already installs deps to /deps + ENV).
@@ -542,15 +761,19 @@ async function defaultRunBuild(
   const dockerfile = path.join(ctx.repoDir, ".ca-sandbox.Dockerfile");
   await writeFile(dockerfile, dockerfileContent);
   try {
-    const b = await run("docker", ["build", "-t", tag, "-f", dockerfile, ctx.repoDir]);
-    return { code: b.code, out: b.out };
+    const b = await run("docker", ["build", ...buildIdentityArgs(ctx), "-t", tag, "-f", dockerfile, ctx.repoDir], { signal: ctx.signal });
+    return verifyBuiltIdentity({ code: b.code, out: b.out },tag,ctx);
   } finally {
     await rm(dockerfile, { force: true }).catch(() => {});
   }
 }
 
-const defaultDeps = (): BuildDeps => ({
+export const defaultBuildDeps = (): BuildDeps => ({
   imageInspect: defaultImageInspect,
+  imageIdentity: defaultImageIdentity,
+  targetPlatform: defaultTargetPlatform,
+  detectStack,
+  nativeProviderInputs: inspectNativeProviderInputs,
   runBuild: defaultRunBuild,
   nixpacksVersion: defaultNixpacksVersion,
   ensureNixpacks: defaultEnsureNixpacks,
@@ -574,43 +797,69 @@ const defaultDeps = (): BuildDeps => ({
 export async function buildOrReuseImage(
   repoDir: string,
   dephash: string,
-  deps: BuildDeps = defaultDeps(),
+  deps: BuildDeps = defaultBuildDeps(),
   reportStage?: BuildStageReporter,
+  signal?: AbortSignal,
 ): Promise<BuildResult> {
-  const tag = imageTag(repoDir, dephash);
+  signal?.throwIfAborted();
   const notes: string[] = [];
-
-  // CACHE CHECK (AC-04): an existing tag => reuse, NO build.
-  reportBuildStage(reportStage, "image-inspect");
-  const inspectCode = await deps.imageInspect(tag);
-  if (inspectCode === 0) {
-    return { tag, reused: true, built: false, builder: null, notes };
-  }
-
-  // CACHE MISS (AC-05): decide the builder. Prefer nixpacks; fall back to the
-  // generated Dockerfile (and NOTE the dependency) when nixpacks is unavailable.
   reportBuildStage(reportStage, "nixpacks-probe");
   const nixpacks = await deps.ensureNixpacks();
-  let builder: Builder;
-  if (nixpacks.available) {
-    builder = "nixpacks";
-    // Surface the WSL-bridge note (or any availability note) so the user knows
-    // which build path ran.
-    if (nixpacks.note) notes.push(nixpacks.note);
-  } else {
-    builder = "dockerfile-fallback";
-    if (nixpacks.note) notes.push(nixpacks.note);
+  const builder: Builder = nixpacks.available ? "nixpacks" : "dockerfile-fallback";
+  if(deps.detectStack && !buildCapabilities(await deps.detectStack(repoDir),nixpacks.available).supported)
+    throw new Error("ca-sandbox: unsupported fallback stack; install/provide an already usable nixpacks builder; fallback supports Node package.json or Python requirements.txt");
+  if (nixpacks.note) notes.push(nixpacks.note);
+  const version = nixpacks.available ? (nixpacks.version ?? await deps.nixpacksVersion()) : "fallback-v2";
+  if (nixpacks.available && !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
+    throw new Error("ca-sandbox: malformed nixpacks version; no cache reuse or build");
   }
-
-  const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes };
+  const nativeProviderInputs = nixpacks.available && deps.nativeProviderInputs
+    ? await deps.nativeProviderInputs(repoDir) : undefined;
+  // Observe the target daemon; never substitute the client host platform.
+  if(!deps.targetPlatform) throw new Error("ca-sandbox: target Docker platform observation unavailable");
+  const platform = await deps.targetPlatform();
+  if(!/^[a-z0-9]+\/[a-z0-9_]+(?:\/[a-z0-9]+)?$/.test(platform)) throw new Error("ca-sandbox: target Docker platform observation unavailable");
+  const cacheKey = createHash("sha256").update(JSON.stringify({
+    schema: 2, manifests: dephash, builder, version, platform,
+    ...(builder === "nixpacks" ? { nixpacksProfile: NIXPACKS_BUILD_PROFILE } : {}),
+    ...(nativeProviderInputs ? {nativeProviderInputs} : {}),
+    fallback: generateDockerfile({ node: true, python: true }),
+    relocation: relocationOverlay(),
+  })).digest("hex");
+  const tag = imageTag(repoDir, cacheKey);
+  reportBuildStage(reportStage, "image-inspect");
+  const inspectCode = await deps.imageInspect(tag);
+  if (inspectCode === 0 && deps.imageIdentity) {
+    const identity = await deps.imageIdentity(tag);
+    if (identity && /^sha256:[a-f0-9]{64}$/.test(identity.id) && identity.cacheKey === cacheKey) {
+      return { tag, cacheKey, imageId: identity.id, reused: true, built: false, builder, notes };
+    }
+  }
+  const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes, cacheKey, platform, signal, nativeProviderInputs };
+  signal?.throwIfAborted();
+  // Cache inspection can await other effects while the installed builder changes.
+  // Revalidate immediately before a build; do not label a different builder with
+  // the earlier key. This is cooperative observation, not an atomic executable
+  // pin against a concurrent same-user replacement between probe and spawn.
+  const current = await deps.ensureNixpacks();
+  signal?.throwIfAborted();
+  let changed = current.available !== nixpacks.available;
+  if (!changed && nixpacks.available) {
+    const currentVersion = current.version ?? await deps.nixpacksVersion();
+    const before = nixpacks.via ?? { via: "host" as const };
+    const after = current.via ?? { via: "host" as const };
+    changed = currentVersion !== version || before.via !== after.via ||
+      (before.via === "wsl" && after.via === "wsl" &&
+        (before.bin !== after.bin || before.distro !== after.distro));
+  }
+  if (changed) throw new Error("ca-sandbox: builder capability changed after cache observation; retry with a fresh observation");
+  signal?.throwIfAborted();
   reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);
   if (result.code !== 0) {
     throw new Error(
-      `ca-sandbox: build failed for ${tag} (builder=${builder}, exit ${result.code})\n` +
-        result.out.slice(-2000),
+      `ca-sandbox: build failed for ${tag} (builder=${builder}, exit ${result.code})\n` + result.out.slice(-2000),
     );
   }
-
-  return { tag, reused: false, built: true, builder, notes };
+  return { tag, cacheKey, imageId:result.imageId, reused: false, built: true, builder, notes };
 }

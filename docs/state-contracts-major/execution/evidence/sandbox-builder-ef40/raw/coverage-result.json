@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+    "run",
+    "coverage",
+    "--",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-builder-admission-w_0306cr\\coverage-tests.json"
+  ],
+  "exit_code": 0,
+  "seconds": 13.790526866912842,
+  "input_drift": []
+}

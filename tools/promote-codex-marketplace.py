@@ -58,6 +58,19 @@ def _remote_commit(repo: Path, ref: str) -> str | None:
         raise ValueError(f"remote ref does not resolve to a full commit: {ref}")
     return rows[0][0]
 
+def _push_observed(repo: Path, ref: str, expected: str, *options: str):
+    """One push attempt; recover an uncertain response only by fresh exact readback."""
+    try:
+        _git(repo, "push", *options, "publication", f"{expected}:{ref}")
+    except (subprocess.SubprocessError, OSError):
+        # A connection may fail after the server committed the ref. Never retry
+        # a mutating operation or accept a different/unknown observed head.
+        if _remote_commit(repo, ref) != expected:
+            raise
+    if _remote_commit(repo, ref) != expected:
+        raise RuntimeError(f"publication readback drifted: {ref}")
+
+
 def _commit_tree(repo: Path, tree: str, *, message: str, parents: list[str]) -> str:
     environment = dict(os.environ)
     environment.update({"GIT_AUTHOR_NAME":"codeArbiter release",
@@ -71,6 +84,19 @@ def _commit_tree(repo: Path, tree: str, *, message: str, parents: list[str]) -> 
     commit = done.stdout.strip()
     if re.fullmatch(r"[0-9a-f]{40}", commit) is None: raise ValueError("invalid Git commit identity")
     return commit
+
+def channel_commit_carrying(repo: Path, fetched_ref: str, distribution_commit: str) -> str | None:
+    """Return the newest channel commit that promoted `distribution_commit`.
+
+    Every promotion commit names its immutable distribution commit as a
+    parent, so this reads the channel effect back without assuming the
+    channel head still serves this version (a later release may follow it).
+    """
+    for row in _git(repo, "rev-list", "--parents", fetched_ref).stdout.splitlines():
+        commit, *parents = row.split()
+        if distribution_commit in parents:
+            return commit
+    return None
 
 def _source_object(repo: Path, commit: str, path: str) -> bytes:
     observed = _git(repo, "show", f"{commit}:{path}", text=False, check=False)
@@ -98,7 +124,8 @@ def promote(*, package_root: Path, cohort_sha256: str, source_repo: Path,
             expected_marketplace_head: str | None=None,
             expected_npm_integrity: str | None=None,
             expected_npm_sha256: str | None=None,
-            catalog_mode: str="git") -> dict[str, object]:
+            catalog_mode: str="git", readback: bool=False) -> dict[str, object]:
+    if readback and push: raise ValueError("Codex channel readback never pushes")
     if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None: raise ValueError("source commit must be a full lowercase commit id")
     if not remote_url or "\n" in remote_url or "\r" in remote_url: raise ValueError("publication remote URL is invalid")
     if PACKAGER.semver_key(version) is None: raise ValueError("Codex distribution version must be SemVer")
@@ -141,6 +168,21 @@ def promote(*, package_root: Path, cohort_sha256: str, source_repo: Path,
     if existing_distribution is not None and existing_distribution != distribution_commit:
         raise ValueError("same-version Codex distribution ref already names different bytes")
     existing_marketplace = _remote_commit(distribution,MARKETPLACE_REF)
+    if readback:
+        # Observe a completed channel effect for receipt recovery: no push,
+        # and no rollback refusal, because the channel may have moved on.
+        if existing_distribution != distribution_commit:
+            raise ValueError(f"Codex channel readback: {distribution_ref} does not name the qualified bytes")
+        if existing_marketplace is None:
+            raise ValueError("Codex channel readback: the marketplace channel does not exist")
+        _git(distribution,"fetch","--quiet","--no-tags","publication",f"{MARKETPLACE_REF}:refs/remotes/codearbiter/marketplace")
+        carried = channel_commit_carrying(distribution,"refs/remotes/codearbiter/marketplace",distribution_commit)
+        if carried is None:
+            raise ValueError(f"Codex channel readback: the marketplace channel never promoted {distribution_ref}")
+        return {**staged,"source_commit":source_commit,"distribution_ref":distribution_ref,
+                "distribution_commit":distribution_commit,"marketplace_ref":MARKETPLACE_REF,
+                "marketplace_previous_commit":existing_marketplace,"marketplace_commit":carried,
+                "npm_file":npm["file"],"npm_sha256":npm["sha256"],"npm_integrity":npm["integrity"]}
     expected = None if expected_marketplace_head == "absent" else expected_marketplace_head
     if expected_marketplace_head is not None and existing_marketplace != expected:
         raise ValueError("Codex marketplace expected head drifted")
@@ -186,11 +228,11 @@ def promote(*, package_root: Path, cohort_sha256: str, source_repo: Path,
         "npm_file":npm["file"],"npm_sha256":npm["sha256"],
         "npm_integrity":npm["integrity"]}
     if push:
-        if existing_distribution is None: _git(distribution,"push","publication",f"{distribution_commit}:{distribution_ref}")
+        if existing_distribution is None: _push_observed(distribution, distribution_ref, distribution_commit)
         if _remote_commit(distribution,distribution_ref) != distribution_commit: raise RuntimeError("Codex distribution tag readback drifted")
         if advance_channel and existing_marketplace != catalog_commit:
             lease=f"--force-with-lease={MARKETPLACE_REF}:{existing_marketplace or '0000000000000000000000000000000000000000'}"
-            _git(distribution,"push",lease,"publication",f"{catalog_commit}:{MARKETPLACE_REF}")
+            _push_observed(distribution, MARKETPLACE_REF, catalog_commit, lease)
         if advance_channel and _remote_commit(distribution,MARKETPLACE_REF) != catalog_commit: raise RuntimeError("Codex marketplace channel readback drifted")
     return result
 
@@ -198,7 +240,9 @@ def main(argv=None):
     p=argparse.ArgumentParser()
     for name in ("cohort-sha256","source-commit","remote-url","catalog-url","version"): p.add_argument("--"+name,required=True)
     for name in ("package-root","source-repo","work"): p.add_argument("--"+name,type=Path,required=True)
-    p.add_argument("--push",action="store_true"); p.add_argument("--advance-channel",action="store_true"); p.add_argument("--expected-marketplace-head")
+    mode=p.add_mutually_exclusive_group()
+    mode.add_argument("--push",action="store_true"); mode.add_argument("--readback",action="store_true")
+    p.add_argument("--advance-channel",action="store_true"); p.add_argument("--expected-marketplace-head")
     p.add_argument("--expected-npm-integrity"); p.add_argument("--expected-npm-sha256")
     p.add_argument("--catalog-mode",choices=("git","npm"),default="git")
     a=p.parse_args(argv)
@@ -206,5 +250,5 @@ def main(argv=None):
         source_commit=a.source_commit,remote_url=a.remote_url,catalog_url=a.catalog_url,version=a.version,work=a.work,
         push=a.push,advance_channel=a.advance_channel,expected_marketplace_head=a.expected_marketplace_head,
         expected_npm_integrity=a.expected_npm_integrity,expected_npm_sha256=a.expected_npm_sha256,
-        catalog_mode=a.catalog_mode),indent=2)); return 0
+        catalog_mode=a.catalog_mode,readback=a.readback),indent=2)); return 0
 if __name__ == "__main__": raise SystemExit(main())

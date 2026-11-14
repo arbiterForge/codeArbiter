@@ -54,6 +54,11 @@ on:
       - ".github/published-tags.json"
       - ".codearbiter/release-targets.md"
       - ".github/workflows/docs.yml"
+      # R-05 (C-F05): the voice gate and its detector select PR validation
+      # too; validation inputs equal the push list (test_ci_impact pins it).
+      # Deploy rights still come only from the deploy job's main-only guard.
+      - ".github/scripts/check_site_voice.py"
+      - "core/pysrc/_sloplib.py"
       - ".github/scripts/npm_audit_gate.py"
       - "plugins/ca-pi/tools/src/compatibility.ts"
       - "plugins/ca-pi/package.json"
@@ -235,6 +240,8 @@ jobs:
         # The npm lockfile does not authenticate browser bytes.
         # No exact hosted Chrome version is claimed; this log records the observed one.
         run: google-chrome --version
+      - name: Browser component acceptance
+        run: npm run test:components
       - name: Browser publication gate
         id: browser-gate
         run: npm run test:browser

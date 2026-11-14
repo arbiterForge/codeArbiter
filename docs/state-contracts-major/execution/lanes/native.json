@@ -1,0 +1,247 @@
+{
+  "schema": "codearbiter-owner-execution/1",
+  "owner": "native",
+  "source_head": "1deff7ceaa0da12a098657001c1ed6a77929a37c",
+  "uncommitted_subject": {
+    "tracked_diff_sha256": "0deacd191ec7aa56f3a3437430f62ef06c44025aa02be602203e1d8aafc02b75",
+    "corrected_attempt_test_sha256": "9b30e65feb7a18f2f548e16cc5616645740250b17a89f79f2bbce358ab02c843",
+    "retirement_test_sha256": "252c07a52977b00a1dd6bb3d2500b46d288d3bd6b0997e8a61d13d75ed9b117d",
+    "smarts_epoch_test_sha256": "0036ec7d7ff8ee65a95536cf90ca20ab6a86dcfd0e9909ebfdeadeb8797fe7a0",
+    "note": "Tracked diff uses git diff --binary --no-ext-diff --no-textconv. New evidence file itself is excluded to avoid self-reference. Commit identity remains pending.",
+    "descriptor_effects_test_sha256": "c7f28165e4fda90cd8038caac1805882177161a625dc23a796114559672e1873"
+  },
+  "baseline": "Preserved inherited 25-path NT-05 work in place; no reset, stash, cleanup or commit.",
+  "obligations": [
+    {
+      "task": "NT-05",
+      "approach": "Characterize inherited typed retirement implementation, preserve exact retained histories and version labels; fix newly proven defects with regression RED/GREEN.",
+      "checks": [
+        "retirement sequence tests",
+        "model/validate/render tests",
+        "old-client mixed schema fixture"
+      ]
+    },
+    {
+      "task": "NT-09",
+      "approach": "D-PROGRESS=B. Replace explicitly identified legacy propagation assertions with tests requiring preserved recorded progress and independently derived dependency readiness; observe target RED before changing implementation.",
+      "checks": [
+        "intentional_change_test.go progress/dependency sequences",
+        "dependency_advice_test.go",
+        "assistive and task-check sequences",
+        "old/new schema read/write matrix"
+      ]
+    },
+    {
+      "task": "NT-06",
+      "approach": "Correct effect claims from actual handlers and platform lock implementations without changing locks to match prose.",
+      "checks": [
+        "operation descriptor closure",
+        "bounded task-context source assessment tests",
+        "platform source matrix"
+      ]
+    },
+    {
+      "task": "NT-10",
+      "approach": "Coordinate existing Git-common host-owned Pi claim/outcome journal; preserve native canonical transaction integrity and avoid a broad new source-effect API.",
+      "checks": [
+        "Pi journal/interruption tests owned by Pi lane",
+        "native pending-journal isolation and replay sequences"
+      ]
+    },
+    {
+      "task": "NT-11",
+      "approach": "Characterize native successful observation closure and fresh attempt acceptance; rejected host attempts remain host-owned immutable history.",
+      "checks": [
+        "native observation profile/tampering tests",
+        "corrected fresh launch sequence with retained prior rejection"
+      ]
+    },
+    {
+      "task": "NT-12",
+      "approach": "Run combined native tests, vet, generated parity and available exact-client fixtures; other-platform execution belongs to hosted CI and stays pending until observed.",
+      "checks": [
+        "go test -buildvcs=false ./...",
+        "go vet -buildvcs=false ./...",
+        "type generation parity",
+        "mixed schema and old work client integration"
+      ]
+    }
+  ],
+  "observed_checks": [
+    {
+      "command": "go test -buildvcs=false ./internal/model ./internal/operations ./internal/validate ./internal/render",
+      "cwd": "core/artifacts",
+      "result": "pass",
+      "notes": "Inherited baseline passed; operations155.431s."
+    },
+    {
+      "command": "go test -buildvcs=false ./internal/operations -run '^TestUntypedTombstoneDoesNotOwnHistory$' -count=1",
+      "cwd": "core/artifacts",
+      "result": "pass",
+      "notes": "Added malformed original-kind cases already refused by orphan-history validation; this is characterization, not regression RED."
+    }
+  ],
+  "implemented_tasks": {
+    "NT-01": "Existing preservation fixtures retained; exact Windows old-client upgrade/restore/replay matrices executed for fixed 0.3.1 source, clean current 0.3.2 baseline and fixed pre-cycle work source.",
+    "NT-02": "Inherited committed closed context-preview/output-consumer repair; current full native tests pass.",
+    "NT-03": "Inherited committed operation descriptor/discovery closure; current full native tests pass.",
+    "NT-04": "Inherited committed role-aware 37-file launch bound and completion parity; current full native tests pass.",
+    "NT-05": "Typed original-kind retirement 0.3.4 preserves checked-task/checkpoint history and prevents ID reuse/downgrade. New regression proved invented kind accepted before fix; original kinds now derived from closed normative schemas including nested records.",
+    "NT-06": "Corrected task-context source-read and init-store effect comments; documented Linux/Darwin/Windows lock metadata effects and bounded declared source applicability without changing platform locks.",
+    "NT-07": "Inherited committed honest schema-only work check statuses; current full native tests pass.",
+    "NT-08": "Inherited committed unsupported-platform diagnostic; current full native tests pass.",
+    "NT-09": "D-PROGRESS=B implemented: dependency stops preserve all seven dependent progress labels and their reasons; readiness derives independently. Legacy STALE remains raw and interpreted unresolved. Ordinary REVIEW/DONE and historical receipt-bearing labels carry explicit unassessed basis. Changed propagation writes use0.3.4; ordinary start/review preserve normative identity. Old HTML rendering remains byte-compatible.",
+    "NT-10": "Interface agreed with Pi owner: Git-common host-owned claims/started/outcomes under closed storage envelope codearbiter.pi-delegation-storage/1 with canonical repository/worktree identity hashes, inner recordv1 and processId observation only. No artifact namespace or broad source-effect API. Native transaction/CAS/replay kernel unchanged and existing native preservation tests pass; Pi implementation and supported-host effects remain Pi-owned qualification.",
+    "NT-11": "Native characterization fixture rejects changes_requested as successful native observation, retains rejected packet outside native success namespace, accepts fresh corrected launch/request, and replays exact success without laundering prior rejection. Explicitly synthetic contract fixture; actual host sequence remains hook/qualification-owned.",
+    "NT-12": "Windows native suites, vet, generated parity, exact-client matrix and actual installed Python bridge tests passed. Linux/Darwin/arm64 execution, race/coverage union and complete installed-host composition remain hosted qualification obligations."
+  },
+  "regression_sequences": [
+    {
+      "task": "NT-09",
+      "test": "TestNT09TaskBlockPreservesDependentRecordedProgress / TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+      "red": "Both failed because dependent REVIEW was overwritten as STALE.",
+      "green": "Both passed after destructive propagation removed; independent-stop test passed."
+    },
+    {
+      "task": "NT-09",
+      "test": "TestNT09LegacyStaleIsUnresolvedAndRetainsRawReason / TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+      "red": "Valid fixture failed because progress projection was absent.",
+      "green": "Both pass with recorded-progress/1 projection. Seven-label dependency stop/recovery table also passes."
+    },
+    {
+      "task": "NT-05",
+      "test": "TestRetirementKindMustNameAnActualCollection",
+      "red": "Invented imaginary original_kind was accepted.",
+      "green": "Passes after original-kind ownership is derived from closed schema record collections."
+    }
+  ],
+  "current_verification": {
+    "go_test_all": "PASS latest Windows477selected/474PASS3SKIP+vet128.263s on exactmodule28dc; prior471/472epochs retained historically.",
+    "go_vet_all": "PASS, both direct invocation and final native qualified build.",
+    "generated_types": "PASS, python -B tools/generate-artifact-types.py --check.",
+    "generated_python": "PASS, python -B tools/sync-core.py --check,93 canonical files x3 hosts. Python bridge currently validates envelope and preserves native result object; no runtime bridge edit needed.",
+    "diff_check": "PASS, git diff --check.",
+    "python_installed_bridge": "PASS: ArtifactAuthoringTest.test_installed_bridge_preserves_progress_and_separate_dependency_readiness and test_installed_bootstrap_example_reads_native_task_context,2tests/5.361s using final ARTIFACT_TEST_INSTALLATION=C:/Users/brenn/nt-clients/state-contracts-native-20261113-smarts-qualified. Initial development package correctly refused as UNVERIFIED_PLATFORM; no guard weakened."
+  },
+  "exact_client_matrix": {
+    "candidate_sha256": "575d399ad5d36453140a78dbc3afa81bbd551e38ccce18ffd8130eef2b5adafb",
+    "candidate_path": "C:/Users/brenn/nt-clients/state-contracts-native-20261113-smarts-qualified/ca-artifact-windows-amd64.exe",
+    "candidate_build": "Normal build-artifacts.py with actual native tests and vet. module_tests_passed=true, upstream_host_qualified=false. All four listed exact-client variants rerun and passed on these final bytes after the SMARTS fix. Prior8454d260 candidate superseded; no actual upstream host claim.",
+    "platform": "Windows11 amd64; Go1.27.1; Python3.14",
+    "legacy031": {
+      "source": "045c0812888f20f4c843677cfb37b802e2084770",
+      "sha256": "56a696e4f3aca730c1344daea93e6b0f8ba188e8264b646e67bbb6b26266a870",
+      "result": "PASS0.3.1 to0.3.2; exact source files compared to committed blobs with no extra files before offline build."
+    },
+    "baseline032": {
+      "source": "c8b1e600b7064e4ce579b3fadcd52d899b0cd1d3",
+      "sha256": "6b6d9d6f1866b731c7a09b9b53fe03fa0029d8e8617a924622c29ad53565a9d2",
+      "result": "PASS0.3.2 to0.3.4 typed retirement, plus separate --progress-upgrade sequence preserving dependent REVIEW and derived waiting_on; clean Git worktree baseline rebuilt."
+    },
+    "workold": {
+      "source": "a89d42e67d4eb2e5253233fac85fd6453ccf4e46",
+      "sha256": "48de0c3f436518a364df9ad2b34e07b364285d6846a7700a3962b0d4d2c507f7",
+      "result": "PASS pre-cycle work read/write refusal and preserved later bytes/identity; exact committed source verified with no extra files before offline build."
+    },
+    "preserved": "All exercised upgrade variants retain stops, stable IDs, true journal before-images, later saved work, exact operation replay, separate-root complete-store restoration and forward export. Old clients refuse unsupported state before write.",
+    "superseded_by": "ci_repair_native_qualification (new c36 actual4variants+2bridge checks; old575d results remain historical)"
+  },
+  "qualification": "Windows local implementation/conformance and native-qualified binary evidence available; other-platform, actual upstream host, Pi effect composition and complete program qualification remain pending.",
+  "review_corrections": [
+    {
+      "finding": "MEDIUM: SMARTS after-hash reconstructed0.3.2 for a progress-only0.3.4 plan.",
+      "red": "Portable TestSMARTSComposesWithActualPlanEpoch:0.3.4 subcase genuinely failed OBSERVATION_UNVERIFIED after real task-block schema upgrade with no tombstones;0.3.2 parity subcase passed.",
+      "fix": "Closed smarts-plan-method/0.3.0 record binds actual before/after schema epochs and normative hashes. Validator rehashes both identities, refuses unknown/feature-incompatible epochs and downgrade; producer preserves actual d/next labels. Legacy0.1.0/0.2.0 schemas and vocabulary remain unchanged.",
+      "green": "Both composed epoch subcases and replay/current approved-consumer checks pass. Missing/work-only epochs, altered before/after digest, recomputed downgrade and interpreting V3 as V2 all refuse. Observation/authority suites and vet pass. Linux operations tests crosscompile; actual Linux run remains hosted obligation.",
+      "python_wrapper": "test_smarts_engine_contract exact-name map follows TestSMARTSRecordsProfile030 and adds TestSMARTSComposesWithActualPlanEpoch. Syntax checked; WSL/full wrapper not executed locally."
+    },
+    {
+      "finding": "MEDIUM peer review: sprint-approve and smarts-apply capabilities omitted actual event/receipt/derived write classes.",
+      "scope": "Only two Writes rows changed. Locks, evidence classification, journal admission, handlers, authority and replay remain unchanged. Sprint approval consumes observations/authority sources; it does not create them.",
+      "red": "TestApprovalDescriptorsCoverActualEffects executed actual paired approval and SMARTS producers, snapshotting after all host fixture inputs. RED precisely named undeclared events/receipts for sprint-approve and five derived classes for smarts-apply.",
+      "green": "Actual changed-byte classes now equal descriptor writes; required canonical/transaction/history classes also observed. Portable focused descriptor closure, actual epoch composition and regression suite PASS2.167s; go vet ./internal/operations PASS.",
+      "fresh_binary": {
+        "path": "C:/Users/brenn/nt-clients/state-contracts-native-20261113-descriptors/ca-artifact-windows-amd64.exe",
+        "sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+        "build": "python tools/build-artifacts.py --skip-tests --output C:/Users/brenn/nt-clients/state-contracts-native-20261113-descriptors",
+        "native_tested": false,
+        "upstream_host_qualified": false,
+        "scope": "Fresh development candidate for final descriptor delta; prior full native/compatibility evidence belongs to575d399a. Exact final installed/native qualification remains integrator/hosted obligation."
+      },
+      "binary_projection_check": "Actual old575d and newf974 capabilities compared: only smarts-apply/sprint-approve rows differ, and only their writes fields; all other rows and traits equal.",
+      "compatibility": "Four old-client matrices not repeated for metadata-only correction. Prior exact575d results retained without claiming they ran on f974."
+    }
+  ],
+  "remaining": [
+    "Exactnewsource hosted Linux/Darwin/Windows sixplatform/race/coverage, actual supported host/provider compositions and current retained productioncohort.",
+    "Complete frozen disposition/task/scenario reconciliation; no suite-total or source-only installed qualification.",
+    "PR1098 stays draft and unmerged for user full testing; no publication."
+  ],
+  "rollback_boundary": "Retain typed tombstones, journals, before-images and later writes. Older readers refuse0.3.4 before write. Complete preupgrade store restoration is tested only in a separate root; never restore an old single HTML file over later live work.",
+  "commit": null,
+  "integration_source_commit": {
+    "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+    "branch": "codex/state-contracts-governance",
+    "scope": "60 changed core/artifacts paths; complete243-file module bytes joined to retained original owner epoch",
+    "module_sha256": "0cc6bd0afa9b4b373267ef9170b20fd7c107bfdf52f51f6f248062a77b0f6016",
+    "local_scope": "Retained471PASS/3skip and exact-client matrices apply to575d; final two descriptor rows have separately retained focused proof. Final same-source six-platform native/coverage and installed qualification remain pending.",
+    "evidence_packet": "C:/Users/brenn/AppData/Local/Temp/ca-gov-native-source-commit.json"
+  },
+  "final_descriptor_native_qualification": {
+    "recorded_at": "2026-11-13T19:31:02.598316+00:00",
+    "source_commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+    "module_sha256": "0cc6bd0afa9b4b373267ef9170b20fd7c107bfdf52f51f6f248062a77b0f6016",
+    "payload": "C:/Users/brenn/AppData/Local/Temp/msc-major-final-native-86x8qv5o/payload",
+    "sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+    "native_tested": true,
+    "named_selected": 475,
+    "passed": 472,
+    "skipped": 3,
+    "complete": true,
+    "go_vet": "PASS",
+    "scope": "Actual normal current Windows amd64 build and module tests. Separate new qualified manifest; prior DEV manifest unchanged. Not Linux/macOS or actual upstream host qualification. Current exact-client and installed bridge reruns assigned.",
+    "exact_client_and_bridge_followup": {
+      "result": "PASS",
+      "older_client_variants": 4,
+      "installed_bridge_named_tests": 2,
+      "raw_evidence": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/windows-native-final/native-tests.json",
+          "sha256": "662e928b8ba8e0b6db50b3ad599acdc8eeee2e16fe3bc6c4d13ae4f040e7cb8e",
+          "bytes": 173014
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/windows-native-final/release.json",
+          "sha256": "a5e1288533268e5ff8f348cf95cbbd4e4e7d8245fab8406d7624a2364d097ef6",
+          "bytes": 374
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/windows-native-final/older-clients-and-bridge.json",
+          "sha256": "09f5e5cff37b6f57f98aca9f6ee9e257efa6986b460d727e42f011836bf57a4c",
+          "bytes": 13881
+        }
+      ],
+      "binary_and_source_stable": true,
+      "scope": "Actual Windows amd64 qualified native payload only. No other-platform, visible-parent/provider or publication claim."
+    }
+  },
+  "ci_repair_native_qualification": {
+    "recorded_at": "2026-11-13T20:57:01.385663+00:00",
+    "source_commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+    "actual_execution_base": "55509ec54327c61b94f6648aa21ac41452e0d28f plus exact frozen6Go files",
+    "module_sha256": "28dc44c2486928f9086f8ced09ea44a8aa2fc0391a46470d42b50a1a6c1645c3",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "native_tested": true,
+    "selected": 477,
+    "passed": 474,
+    "skipped": 3,
+    "complete": true,
+    "vet": "PASS",
+    "older_client_variants": 4,
+    "installed_bridge_named_tests": 2,
+    "raw_evidence": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/raw/",
+    "refreshed_TESTED_dispositions": 92,
+    "refreshed_PRESERVED_dispositions": 9,
+    "qualification_scope": "Actual Windows native module/client/installed Python bridge fixtures only; Linux compile-only, other actual hosted platforms/hosts remain pending."
+  }
+}

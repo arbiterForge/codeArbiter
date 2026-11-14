@@ -1,0 +1,1255 @@
+{
+  "before": {
+    "source": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+    "index_sha256": "2cd344a7fde8860bae8a239b2a797533bbb4428a382e09108e879fbbe5db9a74",
+    "inputs": {
+      "core/hosts.json": {
+        "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+        "bytes": 6084,
+        "git_blob_oid": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/extensions/codearbiter-child.js": {
+        "sha256": "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb",
+        "bytes": 99667,
+        "git_blob_oid": "28054b93d7c04bc5c409aabca54c45681ca2b097",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/extensions/codearbiter.js": {
+        "sha256": "630c5eaeacbfb4303c0d1bbdec7ce6f3f7d7d175aeae7f6915a07d7560db378a",
+        "bytes": 552669,
+        "git_blob_oid": "fdf33737f588b7020b943502fef9642abfcdbd1d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/package-lock.json": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619,
+        "git_blob_oid": "46c8a74396b93a46a15e2672a5d2a231a01c1486",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/package.json": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505,
+        "git_blob_oid": "278c9927bfad1ca66939f0d683ec2e77b18b22f8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/activation.ts": {
+        "sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+        "bytes": 3634,
+        "git_blob_oid": "2897ef473a6d7c965b7bfa3bb22cab8efaf3eae9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/activity.ts": {
+        "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+        "bytes": 8980,
+        "git_blob_oid": "800c2f3beb1dbcac54cf68dc377a35b028f9e59f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/approval-dialog.ts": {
+        "sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+        "bytes": 5573,
+        "git_blob_oid": "c44158a42089cd4de256375d772cd4bf43fb12b3",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/approval-entry.ts": {
+        "sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+        "bytes": 3373,
+        "git_blob_oid": "46eba33b0730a55d6980f649bb06779993e6cc5a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/attestation.ts": {
+        "sha256": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+        "bytes": 872,
+        "git_blob_oid": "f975bbf2e042aeda8c8182b5ce1d01739ea659b8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/audit-sink.ts": {
+        "sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+        "bytes": 8336,
+        "git_blob_oid": "12273ef810eb0bd876edfd54880744535eefd159",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/background-jobs.ts": {
+        "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+        "bytes": 37964,
+        "git_blob_oid": "49e8cb5cbc4cef16bf2bf92eb243b1737102d371",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/bridge.ts": {
+        "sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+        "bytes": 45663,
+        "git_blob_oid": "bb104be761a509be8fbebe26816c32503f7a6479",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/child-env.ts": {
+        "sha256": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+        "bytes": 46199,
+        "git_blob_oid": "575ec5c6a998344b92e7c1b1334455ff4dacacd2",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/child-extension.ts": {
+        "sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+        "bytes": 11408,
+        "git_blob_oid": "65ae1ed7779123d56b9a69ce05e3cb2c1659bb4e",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/command-ownership.ts": {
+        "sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+        "bytes": 9913,
+        "git_blob_oid": "1afd91e771db5b81f343a365ca152f2e906c2d8d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/commands.ts": {
+        "sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+        "bytes": 5045,
+        "git_blob_oid": "0d4f977f31dcecf0ec5f2355a7bce4e3be4db85a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/compaction.ts": {
+        "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+        "bytes": 22497,
+        "git_blob_oid": "f6cadc620f2c208da53077ab431330443c6bf39c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/compatibility.ts": {
+        "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+        "bytes": 2400,
+        "git_blob_oid": "011fb90363563e275df72e74c9644ed3cb7f3fc4",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/contracts.ts": {
+        "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+        "bytes": 7509,
+        "git_blob_oid": "a31105774d85096c6875acb0409bedf1823d7b82",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegated-executor.ts": {
+        "sha256": "74b556c921450dc022399e0ed029646d8ab487c1736bd5af7fd640c5f9bc38b1",
+        "bytes": 28847,
+        "git_blob_oid": "0bf63064db84b836307211df9dabc3cfc9eac7fb",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-client.ts": {
+        "sha256": "718cc65ee5c0fd493c2cb5310630fd84a392c2c48c89f26c24d26ba7ea010d0e",
+        "bytes": 3640,
+        "git_blob_oid": "86004ec83fcff29c34db23c53162e8665a75dde1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-contract.ts": {
+        "sha256": "2cafdd5191c2021a02e6d7594b407c83a542f1778c0b11acc8942e9a3fbf7d2e",
+        "bytes": 26929,
+        "git_blob_oid": "39bb80f15beca90757223b7d113398b0b595f01f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-journal.ts": {
+        "sha256": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+        "bytes": 18853,
+        "git_blob_oid": "e6a9d83885120ae880c2c0558b9915ad984cc226",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-session.ts": {
+        "sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+        "bytes": 7391,
+        "git_blob_oid": "390417ca0601c3c95806c8b4dee5f30af5a2e977",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/dispatch.ts": {
+        "sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+        "bytes": 25752,
+        "git_blob_oid": "95f7e74bf20d1c46cabd6e23434ba69687e8a89a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/doctor.ts": {
+        "sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+        "bytes": 22344,
+        "git_blob_oid": "cc568f8491eac59a32af16279915b672c5d2ff82",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/extension.ts": {
+        "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+        "bytes": 64790,
+        "git_blob_oid": "efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/farm.ts": {
+        "sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b",
+        "bytes": 11126,
+        "git_blob_oid": "6c9584ae08069c9d7914f498d5525b2ae46bc5cf",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/footer-state.ts": {
+        "sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+        "bytes": 9563,
+        "git_blob_oid": "e16b1678060857d7e10a729b2e201661220e6fcc",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/footer.ts": {
+        "sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+        "bytes": 20869,
+        "git_blob_oid": "ea328d8b5fb1329125e6eb1e32d50e2fdb4a87e1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/git-facts.ts": {
+        "sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+        "bytes": 5478,
+        "git_blob_oid": "5627ee570a74903e7a8126864b19d5badc00e505",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/inference-broker.ts": {
+        "sha256": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+        "bytes": 25851,
+        "git_blob_oid": "c4e579c34a619034795b05067265a5e15311e582",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/native-background.ts": {
+        "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+        "bytes": 18809,
+        "git_blob_oid": "4be0d19ada0205afe27c308866ba4ee1ae554506",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/native-plan.ts": {
+        "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+        "bytes": 16091,
+        "git_blob_oid": "025576315d5120c52453c51c675a851bcac0bfaa",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/notices.ts": {
+        "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+        "bytes": 2690,
+        "git_blob_oid": "9adc9bc49f0166cc013f0a91934ecbe09e7bb0c8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/parent-delegation.ts": {
+        "sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+        "bytes": 3929,
+        "git_blob_oid": "c8f75ba1ecfe38964ca05948d4de6d1e204b2d80",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/path-boundary.ts": {
+        "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+        "bytes": 2993,
+        "git_blob_oid": "9875b1f1f0fd1f051ba658dfb6a36a3f04237c4f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/pi-api.d.ts": {
+        "sha256": "12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2",
+        "bytes": 3342,
+        "git_blob_oid": "d4cf48b26afa383bc0e35f1dc4d0d570513b39c1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/plan-mode.ts": {
+        "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+        "bytes": 25588,
+        "git_blob_oid": "cc9c93b21c88b426a2d4fae6cd3d059b1287d5cf",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/policy.ts": {
+        "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+        "bytes": 12721,
+        "git_blob_oid": "733aed5fe68a865e53acd9b4f4fd676be2d49571",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/process-tree.ts": {
+        "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+        "bytes": 51594,
+        "git_blob_oid": "404c1068078e1a1d2d7c956ea4a31bc3fa3a6495",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/redaction.ts": {
+        "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+        "bytes": 4571,
+        "git_blob_oid": "cdb1825417ded089fad81b4f586bcee65a344be1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/roles.ts": {
+        "sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+        "bytes": 3142,
+        "git_blob_oid": "6dff1db98262341560bb331e7ab6ff0258e5ccda",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/runner.ts": {
+        "sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+        "bytes": 56027,
+        "git_blob_oid": "0f5498e5a9b8cb9c44ac5fa7287f3f116c465697",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/runtime-resolver.ts": {
+        "sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+        "bytes": 9101,
+        "git_blob_oid": "71acaf097fbef9b883c2849d7700e2dc29286d4d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/session-identity.ts": {
+        "sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+        "bytes": 1455,
+        "git_blob_oid": "675b7f04b937d78d7afba04ec55e1c215c4ad33e",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-compositor.ts": {
+        "sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+        "bytes": 13463,
+        "git_blob_oid": "b469be80e444743e80f357701a9db52ae2451462",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-data.ts": {
+        "sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+        "bytes": 3298,
+        "git_blob_oid": "833f950a6b0924fde21ba705b6e2697de9794b02",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+        "sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+        "bytes": 9210,
+        "git_blob_oid": "cab4e87b6d38ea2f3decdeb921d70a0e2dad1fd5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar.ts": {
+        "sha256": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+        "bytes": 11762,
+        "git_blob_oid": "a67301529035b84559c41aaf2186cd843662a538",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/status.ts": {
+        "sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+        "bytes": 11759,
+        "git_blob_oid": "c201adc31895209a66dcb21feea869afe30725be",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/tool-guard.ts": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425,
+        "git_blob_oid": "2d4cd560f4571c759040ea756b2ae7d4db270acb",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/windows-supervisor.ts": {
+        "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+        "bytes": 10979,
+        "git_blob_oid": "acc0b304b1c433d4a969b5a6213b0081f100eea1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/activation.test.ts": {
+        "sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+        "bytes": 55027,
+        "git_blob_oid": "0a27d50d3a141a530dae2e9340121c9b2946e402",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/activity.test.ts": {
+        "sha256": "b17944eff2918308ba1d920894826391cc2a9ad2f06748d0443b588741a85ae5",
+        "bytes": 5712,
+        "git_blob_oid": "7104ca836d29f450fd782c6061e897204bfebbbc",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/approval-dialog.test.ts": {
+        "sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+        "bytes": 5976,
+        "git_blob_oid": "f71da140f710538395384e62ddddcccd34f0ee56",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/audit-sink.test.ts": {
+        "sha256": "2cb576607d0af8b1489f7814e5171f11e714db13737e604bb5ccbb30ec96f808",
+        "bytes": 11531,
+        "git_blob_oid": "ea901e1a3014890466770404b01fec294e854082",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/background-jobs.test.ts": {
+        "sha256": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+        "bytes": 61879,
+        "git_blob_oid": "2c576dadeddabad916756ee609da2c756064ebc8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699,
+        "git_blob_oid": "5bf7549f5e890cddd93fce741984392dde3361bd",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/bridge.test.ts": {
+        "sha256": "4ffd191ced446c2b76066d15e24277e92ff1cb107d28ca8d72484c2d269e3420",
+        "bytes": 77687,
+        "git_blob_oid": "817708057df7a69d7d0c9b62a98ea78fa2b888b5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/child-env.test.ts": {
+        "sha256": "a804d23de882627858aede6802b834fff5de06444c5c2f210471c8b98a9ac2ef",
+        "bytes": 45358,
+        "git_blob_oid": "725a583c2e5f5d8a773e18ec5bfb981d44b11642",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/commands.test.ts": {
+        "sha256": "5a831ecae4a0613808d5fb5c95687ed5dd8a8a42fe61189dc85ea1c5686ecdf3",
+        "bytes": 71525,
+        "git_blob_oid": "1633f08acbe57f3782937515685af9e1a12caa46",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/compaction.test.ts": {
+        "sha256": "d834a875f37ade4025c40f96386efc09f46adc7f2b05a3233594b0f216a7b776",
+        "bytes": 24990,
+        "git_blob_oid": "24f41118efcb570c9050606d783fa3ae7b9a9761",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegated-executor.test.ts": {
+        "sha256": "9c3449e913347836cf75805a57ddccb1df4b7ba85f18b953651ce206b106207f",
+        "bytes": 15353,
+        "git_blob_oid": "4c48058de763a83a5e1987b1601f89172184a181",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-contract.test.ts": {
+        "sha256": "1ce5130d2b2532d9aae666823cd18a4ca623a8e7174c02429e27f3998214ee14",
+        "bytes": 15728,
+        "git_blob_oid": "e1389a4a1fe0d999c9a78623241a7fcf4d6bf562",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-journal.test.ts": {
+        "sha256": "3c9fe93d54d304bb5786f3402a19aa520a4df2ce1e389bb09e467c22331034ec",
+        "bytes": 12162,
+        "git_blob_oid": "7f64aaf4638d91116fc01980cf95221a54c4692d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-session.test.ts": {
+        "sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+        "bytes": 5343,
+        "git_blob_oid": "ea96c72a2e4f6932c19283dfb2180e343c3719f1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/dispatch.test.ts": {
+        "sha256": "c4eb4c06004a30cba5c0044b2fda5ec2f377c835892f6dd0f2e2f07e681f2e76",
+        "bytes": 35862,
+        "git_blob_oid": "25b8490558d20fb9addc1af4aeb05384f5469040",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/doctor.test.ts": {
+        "sha256": "f70bdb4e60767aaac544e5739d9874ce7928e1cfdd61e69f1fa2e1522b25c4b4",
+        "bytes": 29178,
+        "git_blob_oid": "0c984649723811bec6b102c28d7e6f31af403935",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/farm.test.ts": {
+        "sha256": "526234fa1314c0d7ef31419b6dc462f4f9f5b4119b16f2af3780abc998bfe7e2",
+        "bytes": 14002,
+        "git_blob_oid": "c14db52854b30033ea9899b9937286313fa0a247",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/final-arguments-live.test.ts": {
+        "sha256": "26723789a91ab6c3f003758308f888e7b96f3184d7bbaa9de30e4ba3c19ea91d",
+        "bytes": 13498,
+        "git_blob_oid": "3047b1b3a1ef60fdedac80977791443ec45e069c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/final-arguments.test.ts": {
+        "sha256": "2f840602c7cb5277580481120f16b6bc134f84b529a5dcf5e74f745fe8a7d159",
+        "bytes": 6297,
+        "git_blob_oid": "c5a527c4f770ff42bc8e96bdead355e6793b01d7",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/footer.test.ts": {
+        "sha256": "78dbd5207b9b7bef0e062344fa83efb9a0c233c2e6d2cbc9357c4efd21c43468",
+        "bytes": 30254,
+        "git_blob_oid": "1e3e5ec538b8692501eda06582db1afd713b404f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/git-facts.test.ts": {
+        "sha256": "0aa84dbff30a0f559e1af71bfe81a91e1fbb622817178a50ac36e94852b6b41f",
+        "bytes": 8444,
+        "git_blob_oid": "b351f69bb0cc6e9dfd5246ef8367ca8be23c071c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/inference-broker.test.ts": {
+        "sha256": "69742040aa5e301797b3ad38d9dd80e9d05e9dff0bf2ec4d4ec8c6da45b4874f",
+        "bytes": 33342,
+        "git_blob_oid": "3cc9ba6eb40a1a1e6111f90f14b153396cbd56b7",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/live-pi-host.ts": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266,
+        "git_blob_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/module-structure.test.ts": {
+        "sha256": "6926407df813b420fb5cbf491dfa298020e7cdcf31927465ea2ab21107b01a9c",
+        "bytes": 5467,
+        "git_blob_oid": "f9edc2a1f4f45b8e58f66a3ba2fb0dba61788920",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/notices.test.ts": {
+        "sha256": "c192dd669a18b1dbcbc5b09d3581112c21587cf102b87028b51917a0d81eccd9",
+        "bytes": 6696,
+        "git_blob_oid": "1f03f12d97d5cd873e5e7ff467d1014b8594323d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/package.test.ts": {
+        "sha256": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+        "bytes": 53893,
+        "git_blob_oid": "175e85f728b00ce7ea34f07e8b64557a0d0855d6",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/parent-delegation.test.ts": {
+        "sha256": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+        "bytes": 14306,
+        "git_blob_oid": "5156e219eab45be4337bc9977e39f24b256e3dad",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/path-boundary.test.ts": {
+        "sha256": "d60edbff1fdde44da8138f6ab8caa8a357f1907235d3a8b2cccceb7cc558d294",
+        "bytes": 7381,
+        "git_blob_oid": "5ffd74ba5c28312d12bb25e70184418902279dee",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/plan-mode.test.ts": {
+        "sha256": "25c15a8f9d3db0314230ce503aa929900f396ea77c5d64aaa03ce4debe62ed4d",
+        "bytes": 17063,
+        "git_blob_oid": "0c3837672ba747527f7b52e69a0556564868a4b9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/policy.test.ts": {
+        "sha256": "0f86fb0612a166f009101ace058b554be3dee10cc8f392158d682e0107559df1",
+        "bytes": 17034,
+        "git_blob_oid": "24fee9278d50be3b074bd6bb44dc450594743c3d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/process-tree.test.ts": {
+        "sha256": "4885395b9f888fc057ea8de748585845d782a4ae362872548785c7c0ae71f187",
+        "bytes": 37451,
+        "git_blob_oid": "f03cfccff2293fa3f3bdf1702a9c981c33b7b2ed",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts": {
+        "sha256": "69c05c96180b86e6bdec4f723518619a8d11406beb210e329c621185594780d6",
+        "bytes": 11503,
+        "git_blob_oid": "0bfb21b69b7663b7f2ee0e41a7c26f80007384fe",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540,
+        "git_blob_oid": "e51ebdbef34026026da17aef116e3e90dcbd2e86",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runtime-resolver.test.ts": {
+        "sha256": "1140d710f1110605fad87a73bff67e977b7354f2eec2cb9c4c20293516f58c0d",
+        "bytes": 17920,
+        "git_blob_oid": "8d1229782d741b10604ff8607c7266930253aaba",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/security.test.ts": {
+        "sha256": "ae58b1033b5794213ac4a330d76325ea8b9cee99bf5933dfcaf63cc97c62c323",
+        "bytes": 24717,
+        "git_blob_oid": "8b013cf052427cd17bea234b9b73cc9da8367b59",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729,
+        "git_blob_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-compositor.test.ts": {
+        "sha256": "c3f454bd3b89170ad7971c62be88f7092d401d65afd2a86da3e785b41bed8f58",
+        "bytes": 9830,
+        "git_blob_oid": "9a7af6db9b533ac26ccfec0555e1ec523103a1ba",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-data.test.ts": {
+        "sha256": "6f3ffd142fce3ea2a402fcdc4fb45c08382902c88a4c4734e8b32f924965db9e",
+        "bytes": 3723,
+        "git_blob_oid": "ae4104c586fd89f9050ae6799392b7e6f4e27d39",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-manager.test.ts": {
+        "sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+        "bytes": 18760,
+        "git_blob_oid": "a3466fd5623b407b8641d49a7c8d7a094dd90a87",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts": {
+        "sha256": "7e23342d208f3eb394f6b68ccd121541fccf666005350386793b9cc778b70717",
+        "bytes": 4214,
+        "git_blob_oid": "1a79cf74c2245536bdb389ed34cd97a3ae8e0bd0",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-window-contract.test.ts": {
+        "sha256": "dffad0bfe389194b81ef1ac0768ec8cbc81672b45d7dfe68b347425ed8060bc1",
+        "bytes": 5235,
+        "git_blob_oid": "56fd8d1c05287d67a2f64b53485727e68a7a2006",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar.test.ts": {
+        "sha256": "ac59afaea7159b28061063f2c625142a7e2d0c5d1f04469738d3d66f7dd2d77e",
+        "bytes": 5843,
+        "git_blob_oid": "25b085e67863d4027e8e329236bf0ab976898897",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/status.test.ts": {
+        "sha256": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9",
+        "bytes": 52231,
+        "git_blob_oid": "a042934fe09cf93fd9a9401e1d07bd29a216f5ad",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/tool-guard.test.ts": {
+        "sha256": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+        "bytes": 95610,
+        "git_blob_oid": "5d555369a6179f5fd7512442a64e37de99957c80",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/windows-supervisor.test.ts": {
+        "sha256": "0481277cd3b9e0d8383e222dccd4dd504f327a521b9b8a61a1481b6858f4531a",
+        "bytes": 11390,
+        "git_blob_oid": "423ff80e06244c0c18789b59f95852ed4f43c2c1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/workflow-recovery.test.ts": {
+        "sha256": "c2f9e122bb6e700546f61d8d6d6a911f147d81e4b54db7b822c7d17670d72553",
+        "bytes": 5762,
+        "git_blob_oid": "72cc9dc910376eb798550f8116d64159f5eb0d88",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/tsconfig.json": {
+        "sha256": "558973c3547ee0cca6872c5c13e9b0f1bbf29f8bdccd4bc96b8039b89c60f7c5",
+        "bytes": 329,
+        "git_blob_oid": "5031e761f2717b073d49c0f8efec21c32f5296a5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/vitest.config.ts": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558,
+        "git_blob_oid": "db8c38d4e99d6cf27117d86657dc2878917282b1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca/hooks/secret-detection-corpus.json": {
+        "sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+        "bytes": 2206,
+        "git_blob_oid": "c4eb2c7e02b8acd46ec444805a24fe27d3548ee1",
+        "physical_equals_immutable_git": true
+      }
+    },
+    "input_count": 103,
+    "working_status": " M docs/state-contracts-major/execution/coverage-ledger.json\n M docs/state-contracts-major/execution/progress.json\n?? .codearbiter/.artifacts/\n?? docs/state-contracts-major/execution/evidence/farm-premerge-portable-repair/\n?? docs/state-contracts-major/execution/evidence/pi-sidebar-off-6d/\n?? docs/state-contracts-major/execution/evidence/site-component-current-6d4c/\n"
+  },
+  "after": {
+    "source": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+    "index_sha256": "2cd344a7fde8860bae8a239b2a797533bbb4428a382e09108e879fbbe5db9a74",
+    "inputs": {
+      "core/hosts.json": {
+        "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+        "bytes": 6084,
+        "git_blob_oid": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/extensions/codearbiter-child.js": {
+        "sha256": "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb",
+        "bytes": 99667,
+        "git_blob_oid": "28054b93d7c04bc5c409aabca54c45681ca2b097",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/extensions/codearbiter.js": {
+        "sha256": "630c5eaeacbfb4303c0d1bbdec7ce6f3f7d7d175aeae7f6915a07d7560db378a",
+        "bytes": 552669,
+        "git_blob_oid": "fdf33737f588b7020b943502fef9642abfcdbd1d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/package-lock.json": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619,
+        "git_blob_oid": "46c8a74396b93a46a15e2672a5d2a231a01c1486",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/package.json": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505,
+        "git_blob_oid": "278c9927bfad1ca66939f0d683ec2e77b18b22f8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/activation.ts": {
+        "sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+        "bytes": 3634,
+        "git_blob_oid": "2897ef473a6d7c965b7bfa3bb22cab8efaf3eae9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/activity.ts": {
+        "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+        "bytes": 8980,
+        "git_blob_oid": "800c2f3beb1dbcac54cf68dc377a35b028f9e59f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/approval-dialog.ts": {
+        "sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+        "bytes": 5573,
+        "git_blob_oid": "c44158a42089cd4de256375d772cd4bf43fb12b3",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/approval-entry.ts": {
+        "sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+        "bytes": 3373,
+        "git_blob_oid": "46eba33b0730a55d6980f649bb06779993e6cc5a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/attestation.ts": {
+        "sha256": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+        "bytes": 872,
+        "git_blob_oid": "f975bbf2e042aeda8c8182b5ce1d01739ea659b8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/audit-sink.ts": {
+        "sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+        "bytes": 8336,
+        "git_blob_oid": "12273ef810eb0bd876edfd54880744535eefd159",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/background-jobs.ts": {
+        "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+        "bytes": 37964,
+        "git_blob_oid": "49e8cb5cbc4cef16bf2bf92eb243b1737102d371",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/bridge.ts": {
+        "sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+        "bytes": 45663,
+        "git_blob_oid": "bb104be761a509be8fbebe26816c32503f7a6479",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/child-env.ts": {
+        "sha256": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+        "bytes": 46199,
+        "git_blob_oid": "575ec5c6a998344b92e7c1b1334455ff4dacacd2",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/child-extension.ts": {
+        "sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+        "bytes": 11408,
+        "git_blob_oid": "65ae1ed7779123d56b9a69ce05e3cb2c1659bb4e",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/command-ownership.ts": {
+        "sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+        "bytes": 9913,
+        "git_blob_oid": "1afd91e771db5b81f343a365ca152f2e906c2d8d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/commands.ts": {
+        "sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+        "bytes": 5045,
+        "git_blob_oid": "0d4f977f31dcecf0ec5f2355a7bce4e3be4db85a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/compaction.ts": {
+        "sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+        "bytes": 22497,
+        "git_blob_oid": "f6cadc620f2c208da53077ab431330443c6bf39c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/compatibility.ts": {
+        "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+        "bytes": 2400,
+        "git_blob_oid": "011fb90363563e275df72e74c9644ed3cb7f3fc4",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/contracts.ts": {
+        "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+        "bytes": 7509,
+        "git_blob_oid": "a31105774d85096c6875acb0409bedf1823d7b82",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegated-executor.ts": {
+        "sha256": "74b556c921450dc022399e0ed029646d8ab487c1736bd5af7fd640c5f9bc38b1",
+        "bytes": 28847,
+        "git_blob_oid": "0bf63064db84b836307211df9dabc3cfc9eac7fb",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-client.ts": {
+        "sha256": "718cc65ee5c0fd493c2cb5310630fd84a392c2c48c89f26c24d26ba7ea010d0e",
+        "bytes": 3640,
+        "git_blob_oid": "86004ec83fcff29c34db23c53162e8665a75dde1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-contract.ts": {
+        "sha256": "2cafdd5191c2021a02e6d7594b407c83a542f1778c0b11acc8942e9a3fbf7d2e",
+        "bytes": 26929,
+        "git_blob_oid": "39bb80f15beca90757223b7d113398b0b595f01f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-journal.ts": {
+        "sha256": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+        "bytes": 18853,
+        "git_blob_oid": "e6a9d83885120ae880c2c0558b9915ad984cc226",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/delegation-session.ts": {
+        "sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+        "bytes": 7391,
+        "git_blob_oid": "390417ca0601c3c95806c8b4dee5f30af5a2e977",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/dispatch.ts": {
+        "sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+        "bytes": 25752,
+        "git_blob_oid": "95f7e74bf20d1c46cabd6e23434ba69687e8a89a",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/doctor.ts": {
+        "sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+        "bytes": 22344,
+        "git_blob_oid": "cc568f8491eac59a32af16279915b672c5d2ff82",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/extension.ts": {
+        "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+        "bytes": 64790,
+        "git_blob_oid": "efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/farm.ts": {
+        "sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b",
+        "bytes": 11126,
+        "git_blob_oid": "6c9584ae08069c9d7914f498d5525b2ae46bc5cf",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/footer-state.ts": {
+        "sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+        "bytes": 9563,
+        "git_blob_oid": "e16b1678060857d7e10a729b2e201661220e6fcc",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/footer.ts": {
+        "sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+        "bytes": 20869,
+        "git_blob_oid": "ea328d8b5fb1329125e6eb1e32d50e2fdb4a87e1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/git-facts.ts": {
+        "sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+        "bytes": 5478,
+        "git_blob_oid": "5627ee570a74903e7a8126864b19d5badc00e505",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/inference-broker.ts": {
+        "sha256": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+        "bytes": 25851,
+        "git_blob_oid": "c4e579c34a619034795b05067265a5e15311e582",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/native-background.ts": {
+        "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+        "bytes": 18809,
+        "git_blob_oid": "4be0d19ada0205afe27c308866ba4ee1ae554506",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/native-plan.ts": {
+        "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+        "bytes": 16091,
+        "git_blob_oid": "025576315d5120c52453c51c675a851bcac0bfaa",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/notices.ts": {
+        "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+        "bytes": 2690,
+        "git_blob_oid": "9adc9bc49f0166cc013f0a91934ecbe09e7bb0c8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/parent-delegation.ts": {
+        "sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+        "bytes": 3929,
+        "git_blob_oid": "c8f75ba1ecfe38964ca05948d4de6d1e204b2d80",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/path-boundary.ts": {
+        "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+        "bytes": 2993,
+        "git_blob_oid": "9875b1f1f0fd1f051ba658dfb6a36a3f04237c4f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/pi-api.d.ts": {
+        "sha256": "12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2",
+        "bytes": 3342,
+        "git_blob_oid": "d4cf48b26afa383bc0e35f1dc4d0d570513b39c1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/plan-mode.ts": {
+        "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+        "bytes": 25588,
+        "git_blob_oid": "cc9c93b21c88b426a2d4fae6cd3d059b1287d5cf",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/policy.ts": {
+        "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+        "bytes": 12721,
+        "git_blob_oid": "733aed5fe68a865e53acd9b4f4fd676be2d49571",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/process-tree.ts": {
+        "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+        "bytes": 51594,
+        "git_blob_oid": "404c1068078e1a1d2d7c956ea4a31bc3fa3a6495",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/redaction.ts": {
+        "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+        "bytes": 4571,
+        "git_blob_oid": "cdb1825417ded089fad81b4f586bcee65a344be1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/roles.ts": {
+        "sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+        "bytes": 3142,
+        "git_blob_oid": "6dff1db98262341560bb331e7ab6ff0258e5ccda",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/runner.ts": {
+        "sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+        "bytes": 56027,
+        "git_blob_oid": "0f5498e5a9b8cb9c44ac5fa7287f3f116c465697",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/runtime-resolver.ts": {
+        "sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+        "bytes": 9101,
+        "git_blob_oid": "71acaf097fbef9b883c2849d7700e2dc29286d4d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/session-identity.ts": {
+        "sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+        "bytes": 1455,
+        "git_blob_oid": "675b7f04b937d78d7afba04ec55e1c215c4ad33e",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-compositor.ts": {
+        "sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+        "bytes": 13463,
+        "git_blob_oid": "b469be80e444743e80f357701a9db52ae2451462",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-data.ts": {
+        "sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+        "bytes": 3298,
+        "git_blob_oid": "833f950a6b0924fde21ba705b6e2697de9794b02",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+        "sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+        "bytes": 9210,
+        "git_blob_oid": "cab4e87b6d38ea2f3decdeb921d70a0e2dad1fd5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/sidebar.ts": {
+        "sha256": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+        "bytes": 11762,
+        "git_blob_oid": "a67301529035b84559c41aaf2186cd843662a538",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/status.ts": {
+        "sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+        "bytes": 11759,
+        "git_blob_oid": "c201adc31895209a66dcb21feea869afe30725be",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/tool-guard.ts": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425,
+        "git_blob_oid": "2d4cd560f4571c759040ea756b2ae7d4db270acb",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/src/windows-supervisor.ts": {
+        "sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+        "bytes": 10979,
+        "git_blob_oid": "acc0b304b1c433d4a969b5a6213b0081f100eea1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/activation.test.ts": {
+        "sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+        "bytes": 55027,
+        "git_blob_oid": "0a27d50d3a141a530dae2e9340121c9b2946e402",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/activity.test.ts": {
+        "sha256": "b17944eff2918308ba1d920894826391cc2a9ad2f06748d0443b588741a85ae5",
+        "bytes": 5712,
+        "git_blob_oid": "7104ca836d29f450fd782c6061e897204bfebbbc",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/approval-dialog.test.ts": {
+        "sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+        "bytes": 5976,
+        "git_blob_oid": "f71da140f710538395384e62ddddcccd34f0ee56",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/audit-sink.test.ts": {
+        "sha256": "2cb576607d0af8b1489f7814e5171f11e714db13737e604bb5ccbb30ec96f808",
+        "bytes": 11531,
+        "git_blob_oid": "ea901e1a3014890466770404b01fec294e854082",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/background-jobs.test.ts": {
+        "sha256": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+        "bytes": 61879,
+        "git_blob_oid": "2c576dadeddabad916756ee609da2c756064ebc8",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699,
+        "git_blob_oid": "5bf7549f5e890cddd93fce741984392dde3361bd",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/bridge.test.ts": {
+        "sha256": "4ffd191ced446c2b76066d15e24277e92ff1cb107d28ca8d72484c2d269e3420",
+        "bytes": 77687,
+        "git_blob_oid": "817708057df7a69d7d0c9b62a98ea78fa2b888b5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/child-env.test.ts": {
+        "sha256": "a804d23de882627858aede6802b834fff5de06444c5c2f210471c8b98a9ac2ef",
+        "bytes": 45358,
+        "git_blob_oid": "725a583c2e5f5d8a773e18ec5bfb981d44b11642",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/commands.test.ts": {
+        "sha256": "5a831ecae4a0613808d5fb5c95687ed5dd8a8a42fe61189dc85ea1c5686ecdf3",
+        "bytes": 71525,
+        "git_blob_oid": "1633f08acbe57f3782937515685af9e1a12caa46",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/compaction.test.ts": {
+        "sha256": "d834a875f37ade4025c40f96386efc09f46adc7f2b05a3233594b0f216a7b776",
+        "bytes": 24990,
+        "git_blob_oid": "24f41118efcb570c9050606d783fa3ae7b9a9761",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegated-executor.test.ts": {
+        "sha256": "9c3449e913347836cf75805a57ddccb1df4b7ba85f18b953651ce206b106207f",
+        "bytes": 15353,
+        "git_blob_oid": "4c48058de763a83a5e1987b1601f89172184a181",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-contract.test.ts": {
+        "sha256": "1ce5130d2b2532d9aae666823cd18a4ca623a8e7174c02429e27f3998214ee14",
+        "bytes": 15728,
+        "git_blob_oid": "e1389a4a1fe0d999c9a78623241a7fcf4d6bf562",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-journal.test.ts": {
+        "sha256": "3c9fe93d54d304bb5786f3402a19aa520a4df2ce1e389bb09e467c22331034ec",
+        "bytes": 12162,
+        "git_blob_oid": "7f64aaf4638d91116fc01980cf95221a54c4692d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/delegation-session.test.ts": {
+        "sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+        "bytes": 5343,
+        "git_blob_oid": "ea96c72a2e4f6932c19283dfb2180e343c3719f1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/dispatch.test.ts": {
+        "sha256": "c4eb4c06004a30cba5c0044b2fda5ec2f377c835892f6dd0f2e2f07e681f2e76",
+        "bytes": 35862,
+        "git_blob_oid": "25b8490558d20fb9addc1af4aeb05384f5469040",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/doctor.test.ts": {
+        "sha256": "f70bdb4e60767aaac544e5739d9874ce7928e1cfdd61e69f1fa2e1522b25c4b4",
+        "bytes": 29178,
+        "git_blob_oid": "0c984649723811bec6b102c28d7e6f31af403935",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/farm.test.ts": {
+        "sha256": "526234fa1314c0d7ef31419b6dc462f4f9f5b4119b16f2af3780abc998bfe7e2",
+        "bytes": 14002,
+        "git_blob_oid": "c14db52854b30033ea9899b9937286313fa0a247",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/final-arguments-live.test.ts": {
+        "sha256": "26723789a91ab6c3f003758308f888e7b96f3184d7bbaa9de30e4ba3c19ea91d",
+        "bytes": 13498,
+        "git_blob_oid": "3047b1b3a1ef60fdedac80977791443ec45e069c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/final-arguments.test.ts": {
+        "sha256": "2f840602c7cb5277580481120f16b6bc134f84b529a5dcf5e74f745fe8a7d159",
+        "bytes": 6297,
+        "git_blob_oid": "c5a527c4f770ff42bc8e96bdead355e6793b01d7",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/footer.test.ts": {
+        "sha256": "78dbd5207b9b7bef0e062344fa83efb9a0c233c2e6d2cbc9357c4efd21c43468",
+        "bytes": 30254,
+        "git_blob_oid": "1e3e5ec538b8692501eda06582db1afd713b404f",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/git-facts.test.ts": {
+        "sha256": "0aa84dbff30a0f559e1af71bfe81a91e1fbb622817178a50ac36e94852b6b41f",
+        "bytes": 8444,
+        "git_blob_oid": "b351f69bb0cc6e9dfd5246ef8367ca8be23c071c",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/inference-broker.test.ts": {
+        "sha256": "69742040aa5e301797b3ad38d9dd80e9d05e9dff0bf2ec4d4ec8c6da45b4874f",
+        "bytes": 33342,
+        "git_blob_oid": "3cc9ba6eb40a1a1e6111f90f14b153396cbd56b7",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/live-pi-host.ts": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266,
+        "git_blob_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/module-structure.test.ts": {
+        "sha256": "6926407df813b420fb5cbf491dfa298020e7cdcf31927465ea2ab21107b01a9c",
+        "bytes": 5467,
+        "git_blob_oid": "f9edc2a1f4f45b8e58f66a3ba2fb0dba61788920",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/notices.test.ts": {
+        "sha256": "c192dd669a18b1dbcbc5b09d3581112c21587cf102b87028b51917a0d81eccd9",
+        "bytes": 6696,
+        "git_blob_oid": "1f03f12d97d5cd873e5e7ff467d1014b8594323d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/package.test.ts": {
+        "sha256": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+        "bytes": 53893,
+        "git_blob_oid": "175e85f728b00ce7ea34f07e8b64557a0d0855d6",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/parent-delegation.test.ts": {
+        "sha256": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+        "bytes": 14306,
+        "git_blob_oid": "5156e219eab45be4337bc9977e39f24b256e3dad",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/path-boundary.test.ts": {
+        "sha256": "d60edbff1fdde44da8138f6ab8caa8a357f1907235d3a8b2cccceb7cc558d294",
+        "bytes": 7381,
+        "git_blob_oid": "5ffd74ba5c28312d12bb25e70184418902279dee",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/plan-mode.test.ts": {
+        "sha256": "25c15a8f9d3db0314230ce503aa929900f396ea77c5d64aaa03ce4debe62ed4d",
+        "bytes": 17063,
+        "git_blob_oid": "0c3837672ba747527f7b52e69a0556564868a4b9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/policy.test.ts": {
+        "sha256": "0f86fb0612a166f009101ace058b554be3dee10cc8f392158d682e0107559df1",
+        "bytes": 17034,
+        "git_blob_oid": "24fee9278d50be3b074bd6bb44dc450594743c3d",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/process-tree.test.ts": {
+        "sha256": "4885395b9f888fc057ea8de748585845d782a4ae362872548785c7c0ae71f187",
+        "bytes": 37451,
+        "git_blob_oid": "f03cfccff2293fa3f3bdf1702a9c981c33b7b2ed",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts": {
+        "sha256": "69c05c96180b86e6bdec4f723518619a8d11406beb210e329c621185594780d6",
+        "bytes": 11503,
+        "git_blob_oid": "0bfb21b69b7663b7f2ee0e41a7c26f80007384fe",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540,
+        "git_blob_oid": "e51ebdbef34026026da17aef116e3e90dcbd2e86",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/runtime-resolver.test.ts": {
+        "sha256": "1140d710f1110605fad87a73bff67e977b7354f2eec2cb9c4c20293516f58c0d",
+        "bytes": 17920,
+        "git_blob_oid": "8d1229782d741b10604ff8607c7266930253aaba",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/security.test.ts": {
+        "sha256": "ae58b1033b5794213ac4a330d76325ea8b9cee99bf5933dfcaf63cc97c62c323",
+        "bytes": 24717,
+        "git_blob_oid": "8b013cf052427cd17bea234b9b73cc9da8367b59",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729,
+        "git_blob_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-compositor.test.ts": {
+        "sha256": "c3f454bd3b89170ad7971c62be88f7092d401d65afd2a86da3e785b41bed8f58",
+        "bytes": 9830,
+        "git_blob_oid": "9a7af6db9b533ac26ccfec0555e1ec523103a1ba",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-data.test.ts": {
+        "sha256": "6f3ffd142fce3ea2a402fcdc4fb45c08382902c88a4c4734e8b32f924965db9e",
+        "bytes": 3723,
+        "git_blob_oid": "ae4104c586fd89f9050ae6799392b7e6f4e27d39",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-manager.test.ts": {
+        "sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+        "bytes": 18760,
+        "git_blob_oid": "a3466fd5623b407b8641d49a7c8d7a094dd90a87",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-probe-live.test.ts": {
+        "sha256": "7e23342d208f3eb394f6b68ccd121541fccf666005350386793b9cc778b70717",
+        "bytes": 4214,
+        "git_blob_oid": "1a79cf74c2245536bdb389ed34cd97a3ae8e0bd0",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar-window-contract.test.ts": {
+        "sha256": "dffad0bfe389194b81ef1ac0768ec8cbc81672b45d7dfe68b347425ed8060bc1",
+        "bytes": 5235,
+        "git_blob_oid": "56fd8d1c05287d67a2f64b53485727e68a7a2006",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/sidebar.test.ts": {
+        "sha256": "ac59afaea7159b28061063f2c625142a7e2d0c5d1f04469738d3d66f7dd2d77e",
+        "bytes": 5843,
+        "git_blob_oid": "25b085e67863d4027e8e329236bf0ab976898897",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/status.test.ts": {
+        "sha256": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9",
+        "bytes": 52231,
+        "git_blob_oid": "a042934fe09cf93fd9a9401e1d07bd29a216f5ad",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/tool-guard.test.ts": {
+        "sha256": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+        "bytes": 95610,
+        "git_blob_oid": "5d555369a6179f5fd7512442a64e37de99957c80",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/windows-supervisor.test.ts": {
+        "sha256": "0481277cd3b9e0d8383e222dccd4dd504f327a521b9b8a61a1481b6858f4531a",
+        "bytes": 11390,
+        "git_blob_oid": "423ff80e06244c0c18789b59f95852ed4f43c2c1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/test/workflow-recovery.test.ts": {
+        "sha256": "c2f9e122bb6e700546f61d8d6d6a911f147d81e4b54db7b822c7d17670d72553",
+        "bytes": 5762,
+        "git_blob_oid": "72cc9dc910376eb798550f8116d64159f5eb0d88",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/tsconfig.json": {
+        "sha256": "558973c3547ee0cca6872c5c13e9b0f1bbf29f8bdccd4bc96b8039b89c60f7c5",
+        "bytes": 329,
+        "git_blob_oid": "5031e761f2717b073d49c0f8efec21c32f5296a5",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca-pi/tools/vitest.config.ts": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558,
+        "git_blob_oid": "db8c38d4e99d6cf27117d86657dc2878917282b1",
+        "physical_equals_immutable_git": true
+      },
+      "plugins/ca/hooks/secret-detection-corpus.json": {
+        "sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+        "bytes": 2206,
+        "git_blob_oid": "c4eb2c7e02b8acd46ec444805a24fe27d3548ee1",
+        "physical_equals_immutable_git": true
+      }
+    },
+    "input_count": 103,
+    "working_status": " M docs/state-contracts-major/execution/coverage-ledger.json\n M docs/state-contracts-major/execution/progress.json\n?? .codearbiter/.artifacts/\n?? docs/state-contracts-major/execution/evidence/farm-premerge-portable-repair/\n?? docs/state-contracts-major/execution/evidence/pi-sidebar-off-6d/\n?? docs/state-contracts-major/execution/evidence/site-component-current-6d4c/\n"
+  },
+  "comparison": "All103 physical bytes equal immutable45a6 Git before/after; HEAD and full index stable. Unrelated working_status is retained, not used as a source mutation oracle."
+}

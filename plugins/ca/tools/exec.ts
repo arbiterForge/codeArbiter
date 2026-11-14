@@ -34,6 +34,7 @@ export type RunResult = {
   stderr: string;
   timedOut?: true;
   cleanupFailed?: true;
+  processId?: number;
 };
 
 // #395: two distinguishable timeout outcomes. Both are non-zero, so every
@@ -321,6 +322,7 @@ export function run(
             stdout,
             stderr: stderr + note,
             timedOut: true,
+            processId:c.pid,
             ...(k.ok ? {} : { cleanupFailed: true as const }),
           });
         })();

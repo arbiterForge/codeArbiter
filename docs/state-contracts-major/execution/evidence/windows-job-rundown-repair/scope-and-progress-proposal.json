@@ -1,0 +1,12 @@
+{
+  "kind": "repair evidence and progress wording proposal, no disposition or ledger claim",
+  "limits": [
+    "Final execution was one local Windows amd64 CPython3.14.6 run on an explicit Temp overlay of immutable0830 dependencies; not a run on the later Gov commit.",
+    "Final15 comprised13 new focused methods and2 existing authority methods; no full295-case authority suite, hosted Python3.14.10, POSIX, native rebuild, installed host, provider or parent UI observation.",
+    "Private job/process/completion-port shutdown uses one10-second deadline. Existing stdout/stderr reader joins retain their original per-reader10-second behavior; this packet does not establish a new bound for the entire inherited pipe lifecycle.",
+    "Initial diagnostics and regressions retain their original outcomes. The observed exit-code0 with Wait258 and first cwd WinError32 is not overwritten by successful later cleanup.",
+    "The real regression retains an inert duplicate job handle to exercise normal-return cleanup without relying on last-handle job-close timing. The separate original diagnostic observed the same unsignaled/cwd-busy defect without that instrumentation.",
+    "Unknown/dropped member observations, unavailable queries and deadline exhaustion refuse. No deletion retry, arbitrary PID termination, authority grant or cleanup-ignore behavior was introduced."
+  ],
+  "proposed_progress_text": "Confirmed and repaired Windows Job Object rundown: exit-code visibility can precede descendant rundown and owned-cwd release. The shared authority supervisor now observes private job creation identities before launch, terminates its job and waits for identity-bound member completion; incomplete observation refuses. Genuine local rundown and fast-exit output-error counterexamples are retained;15 focused Windows checks and normal98-helper/three-host sync parity passed. Existing inherited pipe-reader shutdown bounds remain unchanged. Hosted/full-suite/installed acceptance remains owned by normal CI and the host proof owners."
+}

@@ -10,9 +10,9 @@ Go-test-to-method mappings without a second module:
   (package internal/observation) attest that the observation contract
   routes 0.1.0 and 0.2.0 records to their own schema and validator.
 - TestSMARTSRefusesDecisionCriticalUnknownSelection and
-  TestSMARTSRecordsProfile020 (package internal/operations) attest that
-  smarts-apply records 0.2.0 decisions and refuses a decision-critical
-  Unknown.
+  TestSMARTSRecordsProfile030 and TestSMARTSComposesWithActualPlanEpoch
+  (package internal/operations) attest that smarts-apply records actual schema
+  epochs under profile 0.3.0 while retaining the 0.2.0 decision vocabulary.
 - test_engine_module_passes runs the whole core/artifacts module and fails
   on any fail event or nonzero exit; on a non-Linux host it also runs every
   Linux-only package in full through the WSL path below.
@@ -56,7 +56,8 @@ CASES: list[tuple[str, str, str]] = [
     ("test_legacy_profile_accepted", PACKAGE_OBSERVATION, "TestSMARTSProfileLegacyAccepted"),
     ("test_legacy_profile_rejects_unknown", PACKAGE_OBSERVATION, "TestSMARTSProfileLegacyRejectsUnknown"),
     ("test_smarts_apply_refuses_critical_unknown_selection", PACKAGE_OPERATIONS, "TestSMARTSRefusesDecisionCriticalUnknownSelection"),
-    ("test_smarts_apply_records_profile_020", PACKAGE_OPERATIONS, "TestSMARTSRecordsProfile020"),
+    ("test_smarts_apply_records_profile_030", PACKAGE_OPERATIONS, "TestSMARTSRecordsProfile030"),
+    ("test_smarts_composes_progress_epoch", PACKAGE_OPERATIONS, "TestSMARTSComposesWithActualPlanEpoch"),
 ]
 
 
@@ -233,8 +234,11 @@ class SMARTSEngineContract(unittest.TestCase):
     def test_smarts_apply_refuses_critical_unknown_selection(self) -> None:
         self._assert_go_test_passed("TestSMARTSRefusesDecisionCriticalUnknownSelection")
 
-    def test_smarts_apply_records_profile_020(self) -> None:
-        self._assert_go_test_passed("TestSMARTSRecordsProfile020")
+    def test_smarts_apply_records_profile_030(self) -> None:
+        self._assert_go_test_passed("TestSMARTSRecordsProfile030")
+
+    def test_smarts_composes_progress_epoch(self) -> None:
+        self._assert_go_test_passed("TestSMARTSComposesWithActualPlanEpoch")
 
     def test_engine_module_passes(self) -> None:
         failures = _module_failures()

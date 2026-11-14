@@ -1,0 +1,43 @@
+{
+  "source_commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+  "head_after": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+  "started_at": "2026-11-14T08:57:42.739002+00:00",
+  "finished_at": "2026-11-14T08:57:43.797065+00:00",
+  "command": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik\\run-selected.py",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "exit_code": 0
+  },
+  "observer_command": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik\\observe.py"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter"
+  },
+  "python": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "input_count": 14,
+  "positive_inputs_stable": true,
+  "physical_lookup_stable": true,
+  "immutable_lookup_stable": true,
+  "initial_status": " M docs/state-contracts-major/execution/coverage-ledger.json\n M docs/state-contracts-major/execution/progress.json\n?? .codearbiter/.artifacts/\n?? docs/state-contracts-major/execution/evidence/nt09-source-progress-3bd403/\n?? docs/state-contracts-major/execution/evidence/seq21-owned-settings-3bd4/\n?? docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/\n?? docs/state-contracts-major/execution/evidence/site-search-initialization-fix-3bd/\n?? docs/state-contracts-major/execution/evidence/site-search-initialization-red-3bd/\n",
+  "final_status": " M docs/state-contracts-major/execution/coverage-ledger.json\n M docs/state-contracts-major/execution/progress.json\n?? .codearbiter/.artifacts/\n?? docs/state-contracts-major/execution/evidence/nt09-source-progress-3bd403/\n?? docs/state-contracts-major/execution/evidence/seq21-owned-settings-3bd4/\n?? docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/\n?? docs/state-contracts-major/execution/evidence/site-search-initialization-fix-3bd/\n?? docs/state-contracts-major/execution/evidence/site-search-initialization-red-3bd/\n",
+  "index_before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "index_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "home_empty_after": true,
+  "fixture_temp_empty_after": true,
+  "secrets_environment": "minimal runtime allowlist; all HOME/TEMP aliases redirected before imports",
+  "scope": "Same10 existing real temporary-settings tests, executing main/load/save and mocked adapter identity only. No actual host install/provider/build.",
+  "original_packet": "ca-seq21-owned-settings-326a5zp2 preserved unchanged; this is a fresh positive adapter-input/runtime precondition observation. The requested absence premise was disproved in a separate preflight before any test child; tracked Claude _host.py is present."
+}

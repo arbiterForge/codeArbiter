@@ -24,7 +24,7 @@ const NativeWrites = false
 var Backend = "unsupported-" + runtime.GOOS
 
 func unsupported() error {
-	return fault.New("UNSUPPORTED_PLATFORM", "repository operations require the tested Linux openat/flock storage backend; native Windows/macOS promotion is pending")
+	return fault.New("UNSUPPORTED_PLATFORM", unsupportedPlatformMessage(runtime.GOOS))
 }
 func Open(root string) (*FS, error)                    { return nil, unsupported() }
 func (f *FS) Close() error                             { return nil }

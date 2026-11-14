@@ -1,0 +1,502 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original observed Windows focused14 run on566375bb plus original338ed partition44 unchanged-source support; no hosted/local relabel."
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/check_state_contracts_integration.py": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    ".github/scripts/test_state_contracts_integration.py": "e6fb0c62c04e130fff267a1afc6bada8f4f52612002fff24db6776aacf885a02",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15"
+  },
+  "execution_context": {
+    "primary_actual_source": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+    "source_before_after_equal": true,
+    "literal_working_Git_inputs_before_after": 11,
+    "runtime": {
+      "executable": "C:\\Python314\\python.exe",
+      "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "win32"
+    },
+    "disposable_HOME_before_imports": true,
+    "source_override_env": "None injected; minimal recorded child environment. Actual SOURCE resolves committed566375bb.",
+    "fixture_parameters_ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/source-join.json",
+    "supplementary_actual_source": "338ed6a17a783d233a24edd10cd565777655e934",
+    "original_failed35_excluded_from_TESTED_witness": true
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-selected-gate"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 15.79377220000606
+    },
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_hook_ci_partition"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 92.15812519995961,
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934",
+      "scope": "Supplementary unchanged owning partition44 checks only; not a rerun at subject."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/selected14-start.json",
+      "sha256": "eda7074e930db40a1f40c4ab7f5388dbad51e21b84ed468f91d88f2dd044b3b0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/selected14.json",
+      "sha256": "98e95607e2bb65bacc906e047967d2909cb7ba8c7b9584592de9677e55958033"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/selected14.stderr.log",
+      "sha256": "fbbbdc74433b5600c7e559b88da1a01bda84d38499393ec101cac2fb59968fea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/partition44.json",
+      "sha256": "781010e0831189cdbf7b23ab579e40cab8f1a8cf5a9207a03fadbaa1b19c5775"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/partition44.stderr.log",
+      "sha256": "ec38dea20002e9ed7b1296d58cd40af896e556fea76da3299fad16b9b7e17ce4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/run-start.json",
+      "sha256": "248c2bd6a2d2afc600da486556b22d3e0cdca996d40658b9084770756bd5f2b2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/raw/run-end.json",
+      "sha256": "ce18f761dc52717c7078d383fb8adad785d231f129c3afb75aa76013d1c4c35e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/source-join.json",
+      "sha256": "e0ebea5d9dffc81df1c28a3fdd04857eb88ec0b34ff24b5f05b9e2203d1b5239"
+    }
+  ],
+  "scope": "Exactly six already-TESTED P02 successor references. Primary14 successful named assertions prove partial-integrity/history/current-applicability/frozen-corpus/origin/gate behavior. Original44 PASS is unchanged-source supplementary workflow-partition support. The earlier failed35 run remains diagnostic only. No new transition ID, machine/task promotion, full35-green claim, Go/native/installed/provider/platform or hosted acceptance. Partition CLI main was not executed.",
+  "semantic_groups": [
+    {
+      "id": "P02:added-stale-history",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-stale-history"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-unknown-input",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-unknown-input"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-original-tamper",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-original-tamper"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-frozen-anchor",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-frozen-anchor"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-origin-mix",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-origin-mix"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-selected-gate",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-selected-gate"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    }
+  ],
+  "original_named_results": [
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate",
+      "result": "PASSED",
+      "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+    }
+  ],
+  "supplementary_named_results": [
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_budget_exception_cannot_change_host_partition_or_other_ceiling",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_changed_native_toolchain_pin_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_changed_native_toolchain_version_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_conditional_native_toolchain_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_current_job_environment_uses_only_legal_contexts",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_current_native_preparation_inputs_reach_hooks",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_current_workflow_qualifies_one_shared_native_reader_before_contracts",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_deleted_contract_command_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_duplicated_contract_command_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_extra_axis_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_fail_fast_cannot_be_enabled",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_guard_cannot_be_skipped",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_lost_gate_dependency_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_lost_gate_result_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_full_history_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_guard_keeps_bounded_contract_error",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_hermetic_suite_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_native_toolchain_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_partition_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_shared_native_preparation_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_missing_tags_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_repeated_plain_suite_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_replaced_contract_command_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_consumer_environment_is_required",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_output_cannot_move",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_be_conditional",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_precede_toolchain",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_repeat",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_reuse_parent_input",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_skip_tests",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_softened_check_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_timeout_ceiling_cannot_expand",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_unassigned_contract_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_valid_four_cell_contract",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_wrong_isolation_route_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.PartitionContractTests.test_wrong_windows_exclusion_fails",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_current_recovery_qualifies_once_before_all_five_commands",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_recovery_preserves_budget_matrix_permissions_and_pins",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_recovery_qualification_cannot_move_repeat_or_be_conditional",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_recovery_refuses_ambient_reuse_and_qualification_bypass",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_recovery_requires_legal_fixed_sibling_environment",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_recovery_requires_preparation_and_every_original_command",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+      "id": "test_hook_ci_partition.RecoveryContractTests.test_valid_recovery_three_host_contract",
+      "result": "PASSED",
+      "actual_source_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    }
+  ],
+  "historical_evidence_unchanged": true
+}

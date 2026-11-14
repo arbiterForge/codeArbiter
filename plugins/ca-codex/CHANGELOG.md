@@ -10,8 +10,24 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Changed
 
-- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+- Separate recorded work progress from derived dependency readiness and independently verified checks, preserving identities, user stops and later edits across supported schema upgrades.
+- Use shared current-mode, task-discovery, context-delivery and corrected-review helpers; reconcile interrupted workflow effects through their owning receipts.
+- Preserve primary farm failures and bound recovery reads before consuming content; keep local implementation, installed qualification and publication outcomes distinct.
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+
+## [0.26.9] - 2026-11-12
+
+### Fixed
+
+- Preserve Unicode line separators inside ADR lifecycle JSONL values during later writes and merge verification.
+
+## [0.26.8] - 2026-11-12
+
+### Fixed
+
+- Ship the portable ADR acceptance writer and append-only correction path, with shared verifier-compatible bindings.
+- Preserve correction replay and reject malformed uncommitted ledger suffixes.
 
 ## [0.26.7] - 2026-11-10
 

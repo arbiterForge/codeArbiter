@@ -836,6 +836,51 @@ class PromotionReceiptTests(unittest.TestCase):
 
 
 class DocumentationContractTests(unittest.TestCase):
+    def test_native_preparation_failure_reports_exit_without_child_output(self):
+        import project_knowledge as owner
+        private = "private-fixture-output-must-not-escape"
+        owner._installation.cache_clear()
+        try:
+            failure = subprocess.CalledProcessError(17, [private], output=private, stderr=private)
+            with mock.patch("test_artifact_authoring.build_installation", side_effect=failure):
+                with self.assertRaisesRegex(RuntimeError, "native-preparation;exit=17") as raised:
+                    owner._installation()
+            self.assertNotIn(private, str(raised.exception))
+        finally:
+            owner._installation.cache_clear()
+
+    def test_active_reader_refusal_reports_closed_code_without_legacy_fallback(self):
+        import project_knowledge as owner
+        from test_artifact_authoring import ArtifactError
+        docs = load_docs_module()
+        promotion = load_module()
+        private = "private-fixture-output-must-not-escape"
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "docs").mkdir()
+            (root / "docs/pi.md").write_text("Supported: Pi 0.80.5 / Pi 0.80.10", encoding="utf-8")
+            contract = docs.load_contract(self.contract(root))
+            aliases = {"docs/pi.md": ("tech-stack", "docs/pi.md")}
+            with mock.patch.object(owner, "active_document_aliases", return_value=aliases), \
+                    mock.patch.object(owner, "context_text", side_effect=ArtifactError("UNSAFE_ROOT", private)):
+                findings = docs.check_documentation(
+                    root, contract, promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("docs/pi.md"),))
+        self.assertEqual([row.code for row in findings], ["DOC-UNREADABLE"])
+        self.assertIn("native-read;code=UNSAFE_ROOT", findings[0].detail)
+        self.assertNotIn(private, findings[0].detail)
+
+    def test_reader_diagnostic_rejects_unknown_codes_and_invalid_exit_values(self):
+        import project_knowledge as owner
+        from test_artifact_authoring import ArtifactError
+        private = "private-fixture-output-must-not-escape"
+        for error in (ArtifactError(private, private), ArtifactError({"private": private}, private),
+                      owner.KnowledgePreparationError(private), owner.KnowledgePreparationError(10 ** 100)):
+            with self.subTest(error_type=type(error).__name__):
+                detail = owner.failure_detail(error)
+                self.assertNotIn(private, detail)
+                self.assertTrue(detail in ("native-read;cause=unavailable", "native-preparation;exit=unknown"))
+
     def contract(self, root: Path) -> Path:
         path = root / "docs-contract.json"
         path.write_text(json.dumps({

@@ -1,0 +1,66 @@
+{
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "actual_export_source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "current_Gov_preimage_join": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "files": {
+    ".github/scripts/test_artifact_installed_host.py": {
+      "before_sha256": "b6ce05dfa1a9ef09531952e70bf65dd8488318e07d2532fbabe6ad6404f39192",
+      "after_sha256": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem\\.github\\scripts\\test_artifact_installed_host.py"
+    },
+    "tools/build-host-packages.py": {
+      "before_sha256": "abd40c23530e34e08d56f6afb62fdaf4f5002aa430dd8288e70d767921844419",
+      "after_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem\\tools\\build-host-packages.py"
+    },
+    ".github/scripts/test_artifact_package.py": {
+      "before_sha256": "94764fd724e2106008e0fbed85636e8635bcfa8d04419dde47bf52b5c0ed73da",
+      "after_sha256": "c86bb0157df0c603065be23cfb5d6d9072da1ea369edaf04f7c823da2245fc57",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-getter-dg_l5aem\\.github\\scripts\\test_artifact_package.py"
+    }
+  },
+  "patch_sha256": "5be54e7a7a47787f3b3e50af1a73e562be002fea1a150fb7ba914bb637306140",
+  "incremental_patch_sha256": "189d33d123bf0ffc84c836b1fb7b3e08552095962e0c42dc51f71da119ff3349",
+  "predecessor": {
+    "freeze_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-diagnostics-v2-o52jgysl\\source-freeze.json",
+    "freeze_sha256": "4922191ce17f3e3675557078c1a51f51a3b1e0d6f27780be11a7dd8391ef07bb",
+    "review_file": "Temp/ca-cold-diagnostic-v2-independent-review.json",
+    "review_sha256": "4488304677ab33a1d5bb85dff231514681e264be006cd415c89a86c624d9deca",
+    "unchanged_other_hunks": "Reuse exact reviewed diagnostic taxonomy/guard AST parity/consumer; only central projection fallback and same3-property emission test changed. Packager unchanged."
+  },
+  "actual_RED": "getter-red.json/.stderr.log: new failure_record and code property subcases raise privateValueError out of run_cli; prior cold-context and decoder cases remain controls.",
+  "actual_GREEN": {
+    "result": "final14.json",
+    "passed": 14,
+    "new_methods": 10,
+    "original_methods": 4,
+    "seconds": 0.618971586227417,
+    "inputs_before_after_equal": true
+  },
+  "registration": {
+    "original46_preserved": true,
+    "actual_total56": 56,
+    "new_exact_names": [
+      "test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
+      "test_v2_builtin_subtypes_and_families_keep_no_messages",
+      "test_v2_custom_context_failure_keeps_closed_cli_output",
+      "test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields",
+      "test_v2_diagnostic_observer_failure_never_replaces_guard_failure",
+      "test_v2_keeps_exact_legacy_v1_decoder_and_nested_record",
+      "test_v2_nested_failure_survives_both_consumers_without_private_stderr",
+      "test_v2_real_audit_denial_reports_closed_outer_context",
+      "test_v2_real_guard_builtin_failure_has_safe_subtype_and_site",
+      "test_v2_real_nested_audit_retains_deepest_context"
+    ],
+    "root_owned_fourth_path": ".github/scripts/test_artifact_conformance.py",
+    "discovery_only_union_pass": true
+  },
+  "projection": "Public failure_record now centrally catches any Exception from projection and emits fixed10-field v2 unknown record without reading the broken exception. Failed exit1 and v1 nested decode semantics retained.",
+  "limits": [
+    "Underlying ARM cause/host unresolved; no actual ARM fix claim",
+    "Temp-only local Windows amd64 Python3.14.6; no native build/full46/full56/installed/provider/cohort replay",
+    "Direct native-free TestCase.run boundary as retained predecessor; no module native builder",
+    "No Gov/index/ledger/markers writes",
+    "Package whole-file change prospectively affects15 channel rows; explicit selected renewal plan is prepared but not executed"
+  ]
+}

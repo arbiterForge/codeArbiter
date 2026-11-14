@@ -12,6 +12,9 @@ import shutil
 import subprocess
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "core/pysrc"))
+from _artifactmanifestlib import CONTRACT as MANIFEST_CONTRACT, validate_release_manifest
+
 QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 QUALIFICATION_WORKFLOW = ".github/workflows/ci.yml"
 QUALIFICATION_JOB = "artifact-engine"
@@ -189,6 +192,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
     parser.add_argument("--skip-tests", action="store_true", help="development only; marks binary unqualified")
+    parser.add_argument("--test-observation", type=Path,
+                        help="create-only named outcomes from the existing native module test run")
     parser.add_argument("--qualify-existing", type=Path)
     parser.add_argument("--qualification-output", type=Path)
     parser.add_argument("--context-native-observation", type=Path)
@@ -196,7 +201,7 @@ def main():
                         help="CI only: qualify off-host from the native builder's same-run stamp")
     args = parser.parse_args()
     if args.qualify_existing is not None or args.qualification_output is not None:
-        if args.output is not None or args.skip_tests or args.qualify_existing is None or args.qualification_output is None:
+        if args.output is not None or args.skip_tests or args.test_observation is not None or args.qualify_existing is None or args.qualification_output is None:
             parser.error("qualification mode requires --qualify-existing and --qualification-output only")
         write_qualification(args.qualify_existing.resolve(strict=True),
                             args.qualification_output.absolute(),
@@ -210,6 +215,8 @@ def main():
         parser.error("--output is required when building a candidate")
     if args.context_native_observation is not None or args.native_binding is not None:
         parser.error("--context-native-observation and --native-binding require qualification mode")
+    if args.skip_tests and args.test_observation is not None:
+        parser.error("--test-observation requires the actual native tests")
     repo = Path(__file__).resolve().parents[1]
     module = repo / "core/artifacts"
     output = args.output.resolve()
@@ -226,8 +233,11 @@ def main():
     if not args.skip_tests:
         # An explicit bound replaces Go's implicit 10-minute per-package default.
         # Every listed test still runs once; isolated processes use the host's cores.
-        subprocess.run([sys.executable, str(repo / "tools/go_test_parallel.py"), "--module", str(module),
-                        "--timeout", "30m"], cwd=module, env=env, check=True)
+        test_command = [sys.executable, str(repo / "tools/go_test_parallel.py"), "--module", str(module),
+                        "--timeout", "30m"]
+        if args.test_observation is not None:
+            test_command.extend(("--observation", str(args.test_observation.absolute())))
+        subprocess.run(test_command, cwd=module, env=env, check=True)
         subprocess.run(["go", "vet", "./..."], cwd=module, env=env, check=True)
     name = f"ca-artifact-{goos}-{goarch}" + (".exe" if goos == "windows" else "")
     subprocess.run(["go", "build", "-trimpath", "-buildvcs=false", "-ldflags=-s -w", "-o", str(output/name), "./cmd/ca-artifact"], cwd=module, env=env, check=True)
@@ -235,7 +245,8 @@ def main():
     if goos != "windows":
         executable.chmod(0o755)
     digest = hashlib.sha256(executable.read_bytes()).hexdigest()
-    manifest = {"format":"codearbiter.artifact-release/0.1.0", "version":"0.1.0", "protocol":"codearbiter.artifact-api/0.1.0", "schema_version":"0.3.2", "binaries":{f"{goos}/{goarch}":{"file":name,"sha256":digest,"native_tested":not args.skip_tests}}}
+    manifest = {"format":MANIFEST_CONTRACT["format"], "version":"0.1.0", "protocol":MANIFEST_CONTRACT["protocol"], "schema_version":MANIFEST_CONTRACT["schema_version"], "binaries":{f"{goos}/{goarch}":{"file":name,"sha256":digest,"native_tested":not args.skip_tests}}}
+    validate_release_manifest(manifest)
     (output/"release.json").write_text(json.dumps(manifest,indent=2)+"\n")
     print(json.dumps({"binary":str(executable),"sha256":digest,"toolchain":subprocess.check_output(["go","version"],text=True).strip(),"platform":platform.platform(),"module_tests_passed":not args.skip_tests,"upstream_host_qualified":False},indent=2))
 

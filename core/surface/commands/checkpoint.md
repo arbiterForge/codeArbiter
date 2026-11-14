@@ -36,7 +36,17 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
 
 ## Hard gate
 
-Read-only except writing the checkpoint doc and `last-checkpoint` — MUST NOT modify code. MUST NOT
+As soon as the triaged checkpoint has a qualifying DEFERRABLE finding, use
+`{{PLUGIN_ROOT}}/includes/harvest.md` to register its bounded sanitized candidate
+with `source.workflow: checkpoint:deferrable`, exact extractor origin suffix,
+stable workflow/work run and current source fingerprint. Capture before terminal
+reporting can be interrupted. Report `durable:false` honestly; do not invent
+recovery or block independent work. Existing terminal harvest retains its scoped
+confirmation, selected-owner reconciliation, and per-item target readback.
+This bookkeeping is not authority to implement a checkpoint finding.
+
+Read-only except writing the checkpoint doc, `last-checkpoint`, and the bounded
+discovery bookkeeping above — MUST NOT modify code. MUST NOT
 consume raw reviewer output — only the `finding-triage` → `verdict-aggregator` verdict. Checkpoint
 persistence MUST remain the separate `checkpoint-aggregator` step and MUST NOT run for `{{CMD:review}}`
 or another generic parallel batch. MUST NOT resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does

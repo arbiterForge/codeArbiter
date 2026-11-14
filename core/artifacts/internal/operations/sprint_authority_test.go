@@ -296,7 +296,7 @@ func readStoreJSON(t *testing.T, h *harness, ref string) object {
 	}
 	return v
 }
-func TestSMARTSRecordsProfile020(t *testing.T) {
+func TestSMARTSRecordsProfile030(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
 	_, r := pairFixture(h, true)
@@ -308,7 +308,7 @@ func TestSMARTSRecordsProfile020(t *testing.T) {
 	receipt := readStoreJSON(t, h, model.S(got["receipt"]))
 	source := readStoreJSON(t, h, model.S(receipt["authority_source_ref"]))
 	observed := readStoreJSON(t, h, model.S(source["observation_ref"]))
-	if model.S(observed["producer_profile"]) != "smarts-plan-method/0.2.0" {
+	if model.S(observed["producer_profile"]) != "smarts-plan-method/0.3.0" {
 		t.Fatalf("smarts-apply recorded profile %q", observed["producer_profile"])
 	}
 	if model.S(source["authority_kind"]) != "smarts_workflow" {
@@ -472,6 +472,10 @@ func TestSMARTSCannotReapproveAnAmendedProtectedPlan(t *testing.T) {
 func TestSMARTSDoesNotClearBlockedMembersOrTheirReason(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
+	// Approve the actual progress epoch before introducing the independent
+	// stop. An older 0.3.2 grant is not current approval for a 0.3.4 document.
+	h.mut("task-block", "PLAN-EXAMPLE", object{"task": "T-002", "reason": "Prime the progress schema before initial approval."})
+	h.mut("task-reconcile", "PLAN-EXAMPLE", object{"task": "T-002", "state": "PENDING", "reason": "No worker started; prepare the initial approval fixture."})
 	_, r := pairFixture(h, true)
 	grant := model.S(h.run("sprint-approve", r)["grant_receipt"])
 	h.mut("task-block", "PLAN-EXAMPLE", object{"task": "T-002", "reason": "An external permission has not been granted."})

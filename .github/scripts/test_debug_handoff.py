@@ -723,6 +723,45 @@ class PrivateDebugEntryTest(unittest.TestCase):
         self.assertEqual(bool(value["errors"]), expected_exit != 0)
         return value
 
+    def _example(self, example_id):
+        data = json.loads((FIXTURES / "handoff-examples.json").read_text(encoding="utf-8"))
+        return base64.b64decode(next(row["payload_b64"] for row in data["examples"]
+                                     if row["id"] == example_id))
+
+    def test_corrected_resubmission_contract(self):
+        """HW-07 (W-F02, HOOK-B01): a corrected packet may be validated again
+        through the SAME installed validator; correction is not authority, a
+        relabel cannot cure a semantic-evidence failure, and an operational
+        retry keeps the exact payload identity."""
+        valid = json.loads(self.valid)
+        # Input defect -> named correction -> fresh validation succeeds, with
+        # the caller's intent (authority) unchanged.
+        malformed = dict(valid, approval=True)
+        rejected = self._result(self._run(json.dumps(malformed).encode("utf-8"), "validate"), 2)
+        self.assertEqual(rejected["errors"], [{"code": "UNKNOWN_FIELD", "path": "$"}])
+        corrected = {k: v for k, v in malformed.items() if k != "approval"}
+        self.assertEqual(self._result(self._run(json.dumps(corrected).encode("utf-8"),
+                                                "validate"), 0)["errors"], [])
+        self.assertEqual(corrected["request"], valid["request"])
+        # Semantic-evidence failure: changing only labels/prose does not cure it.
+        semantic = json.loads(self._example("invalid-planned-check-as-reproduction"))
+        first = self._result(self._run(json.dumps(semantic).encode("utf-8"), "validate"), 2)
+        relabeled = copy.deepcopy(semantic)
+        relabeled["case_id"] = "DBG-relabeled-case"
+        again = self._result(self._run(json.dumps(relabeled).encode("utf-8"), "validate"), 2)
+        self.assertEqual([e["code"] for e in again["errors"]],
+                         [e["code"] for e in first["errors"]])
+        # Operational failure (exit 3): the retry carries the identical bytes.
+        hook = self.base / "transient fault" / "sitecustomize.py"
+        hook.parent.mkdir()
+        hook.write_text("import sys\nclass Fault:\n def read(self, size=-1): raise OSError('x')\n"
+                        "class Input:\n buffer=Fault()\nsys.stdin=Input()\n", encoding="utf-8")
+        payload = self.valid
+        identity = hashlib.sha256(payload).hexdigest()
+        self._result(self._run(payload, "validate", env={"PYTHONPATH": str(hook.parent)}), 3)
+        self.assertEqual(hashlib.sha256(payload).hexdigest(), identity)
+        self._result(self._run(payload, "validate"), 0)
+
     def test_documented_minimal_example_validates_without_weakening_case_ids(self):
         example = "debug/references/minimal-unresolved.json"
         raw = (ROOT / "core/surface/skills" / example).read_bytes()

@@ -19,8 +19,8 @@ Definitions:
   - first-pass green      = status=="green" AND attempts==1
   - first-pass rate       = first-pass green / settled
   - escalation rate       = escalate / settled   (compare to FARM_ABORT_ESCALATION_RATE)
-  - A high escalation rate (or aborted=true) means re-dispatches land back on the Max
-    pool — the farm's "extra juice" erodes. That is the revert signal.
+  - Escalation or aborted=true alone does not establish a premium dispatch,
+    billing or abort cause. Those fields stay unknown unless the report records them.
 
 Usage:
   farm-first-pass.py [PATH]      Default: .farm/farm-report.json
@@ -55,6 +55,9 @@ def analyze(report):
 
     return {
         "aborted": bool(report.get("aborted")),
+        "abort_reason": report.get('abortReason') or report.get('abort_reason') or 'unknown',
+        "premium_dispatch": report.get('premiumDispatch', 'unknown'),
+        "premium_spend": report.get('premiumSpend', 'unknown'),
         "settled": settled,
         "blocked": len(blocked),
         "green": len(green),
@@ -93,8 +96,8 @@ def main(argv):
     if a["model"]:
         print(f"Model: {a['model']}    written: {a['ts']}")
     if a["aborted"]:
-        print("\n  ** ABORTED by circuit breaker — escalation exceeded threshold. **")
-        print("  ** Re-dispatches go to the premium Max pool: net-negative this run. **")
+        print(f"\n  ABORTED; observed reason: {a['abort_reason']}")
+    print(f"  premium dispatch: {a['premium_dispatch']}; premium spend: {a['premium_spend']}")
     print()
     print(f"  settled tasks      : {a['settled']}  (blocked: {a['blocked']})")
     print(f"  green              : {a['green']}  (first-pass: {a['first_pass_green']}, "
@@ -110,7 +113,7 @@ def main(argv):
               f"(off-pool; the point of the farm)")
 
     if a["escalated"]:
-        print("\n  Escalated tasks (each one's labor reverts to the premium path):")
+        print("\n  Escalated tasks (subsequent dispatch and spend require separate observations):")
         for r in a["_results"]:
             if r.get("status") == "escalate":
                 note = (r.get("note") or "").split("\n")[0]

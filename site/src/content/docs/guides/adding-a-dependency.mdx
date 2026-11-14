@@ -90,9 +90,11 @@ The read-only `dependency-reviewer` reads `.codearbiter/security-controls.md` an
 source, maintenance signal, known advisories and supply-chain concerns such as install scripts.
 The reviewer does not run install commands or edit the project.
 
-A denied or undetermined license and an unapproved source block adoption. Maintenance concerns
-and HIGH advisories are surfaced for evaluation; a known CRITICAL advisory blocks without the
-required documented justification. An unresolved supply-chain or provenance concern cannot be
+A denied or undetermined license and an unapproved source block adoption. A known CRITICAL or
+HIGH advisory blocks without the required documented justification, and so does a suspicious
+install script. Maintenance-only risk (unmaintained or abandoned, with no security finding) is
+MEDIUM and is surfaced for evaluation without blocking; maintenance mixed with a security problem
+keeps the security severity. An unresolved supply-chain or provenance concern cannot be
 silently treated as clearance. Inspect the actual findings, not just a final PASS label.
 
 ## The Repository's License Policy

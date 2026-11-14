@@ -224,6 +224,23 @@ _NATIVE_APPROVAL_NON_POLICY_ARTIFACTS = frozenset({
 })
 
 
+# HW-14 reviewed delegation implementation and recovery contract tests. Keep
+# this inventory exact: neighboring tools and handwritten policy are refused.
+_MAJOR_DELEGATION_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/delegated-executor.ts",
+    "tools/src/delegation-client.ts",
+    "tools/src/delegation-contract.ts",
+    "tools/src/delegation-journal.ts",
+    "tools/src/delegation-session.ts",
+    "tools/src/parent-delegation.ts",
+    "tools/test/delegated-executor.test.ts",
+    "tools/test/delegation-contract.test.ts",
+    "tools/test/delegation-journal.test.ts",
+    "tools/test/delegation-session.test.ts",
+    "tools/test/parent-delegation.test.ts",
+    "tools/test/workflow-recovery.test.ts",
+})
+
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -408,6 +425,54 @@ def _compose_entry_independently(text, source, surface, rule):
     return "---\n" + "\n".join(lines) + "\n---\n" + parts[1]
 
 
+def _resolve_facts_independently(text, surface):
+    """Resolve only declared owner facts without consulting the production renderer."""
+    def fact(match):
+        key = match[1]
+        if key == "tribunal-lens-count":
+            count = sum(path.is_file() for path in
+                        (surface / "skills/tribunal/references/lenses").glob("*.md"))
+            words = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".split()
+            return words[count] if count < len(words) else str(count)
+        if key.startswith("argument-hint:"):
+            name = key.removeprefix("argument-hint:")
+            if not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+                raise AssertionError("invalid independent argument owner")
+            owner = (surface / "commands" / (name + ".md")).read_text(encoding="utf-8")
+            entry = re.fullmatch(r"\{\{SKILL_ENTRY:([a-z][a-z0-9-]*)\}\}\n?", owner)
+            if entry:
+                owner = (surface / "skills" / entry[1] / "SKILL.md").read_text(encoding="utf-8")
+            if not owner.startswith("---\n") or "\n---\n" not in owner:
+                raise AssertionError("independent argument owner lacks frontmatter")
+            hints = re.findall(r"^argument-hint:[ \t]*(.+)$", owner.split("\n---\n", 1)[0], re.M)
+            if len(hints) != 1:
+                raise AssertionError("independent argument owner lacks one argument-hint")
+            value = json.loads(hints[0]) if hints[0].startswith('"') else hints[0]
+            if not isinstance(value, str):
+                raise AssertionError("independent argument-hint is not text")
+            return value.replace("|", "\\|")
+        if key == "compatibility-removal-rule":
+            policy = _command_registry_independently(surface)["compatibility"]["removalRequires"]
+            if policy != {
+                "minimumVersion": {"claude": "3.0.0", "codex": "1.0.0", "pi": "1.0.0"},
+                "decision": "separately-approved-named-removal",
+                "evidence": "fresh-exact-confirmed-non-draft-release",
+            }:
+                raise AssertionError("independent compatibility declaration changed")
+            floors = policy["minimumVersion"]
+            return (
+                "ca retains these routes through every 2.x release, with no removal before a separately "
+                f"approved {floors['claude']}. ca-codex and ca-pi retain them through every later 0.x release, "
+                f"with no removal before a separately approved {floors['codex']} and {floors['pi']} respectively. "
+                "Passing a version floor never authorizes removal: removal needs a new governed decision "
+                "naming the affected route and fresh compatibility evidence for the exact confirmed "
+                "non-draft release. This declaration does not approve a removal or infer publication "
+                "from a version, tag or draft."
+            )
+        raise AssertionError(f"unknown independent fact: {key}")
+    return re.sub(r"\{\{FACT:([^}]+)\}\}", fact, text)
+
+
 def _independent_expected_surfaces(descriptor, descriptors):
     """Map canonical sources to host output without importing the generator."""
     surface = REPO / "core" / "surface"
@@ -464,6 +529,7 @@ def _independent_expected_surfaces(descriptor, descriptors):
             return descriptor.command_form.format(name=name)
 
         text = _COMMAND.sub(rewrite_command, text)
+        text = _resolve_facts_independently(text, surface)
         unresolved = set(re.findall(r"\{\{[^}]+\}\}", text)) - {
             "{{PLUGIN_ROOT}}", "{{PROJECT_DIR}}",
         }
@@ -567,6 +633,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_FOOTER_PARITY_NON_POLICY_ARTIFACTS)
         | set(_SIDEBAR_PANEL_NON_POLICY_ARTIFACTS)
         | set(_NATIVE_APPROVAL_NON_POLICY_ARTIFACTS)
+        | set(_MAJOR_DELEGATION_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
@@ -833,6 +900,52 @@ class DescriptorContractTest(unittest.TestCase):
                     module.load_host_descriptors(repo)
 
 
+class OwnerFactOracleTest(unittest.TestCase):
+    def test_owner_argument_hint_follows_entry_and_escapes_table_pipes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            surface = Path(tmp)
+            (surface / "commands").mkdir()
+            (surface / "skills/release").mkdir(parents=True)
+            (surface / "commands/release.md").write_text("{{SKILL_ENTRY:release}}\n", encoding="utf-8")
+            owner = surface / "skills/release/SKILL.md"
+            owner.write_text('---\nargument-hint: "[\\\"title\\\"] | --dry-run"\n---\nBody\n', encoding="utf-8")
+            self.assertEqual(_resolve_facts_independently("{{FACT:argument-hint:release}}", surface),
+                             '["title"] \\| --dry-run')
+            owner.write_text("---\nargument-hint: changed | hint\n---\nBody\n", encoding="utf-8")
+            self.assertEqual(_resolve_facts_independently("{{FACT:argument-hint:release}}", surface),
+                             "changed \\| hint")
+            owner.write_text("---\ndescription: no hint\n---\nBody\n", encoding="utf-8")
+            with self.assertRaisesRegex(AssertionError, "one argument-hint"):
+                _resolve_facts_independently("{{FACT:argument-hint:release}}", surface)
+
+    def test_lens_fact_counts_actual_cards_and_unknown_facts_fail_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            surface = Path(tmp)
+            lenses = surface / "skills/tribunal/references/lenses"
+            lenses.mkdir(parents=True)
+            for name in ("a.md", "b.md", "ignored.txt"):
+                (lenses / name).write_text("card", encoding="utf-8")
+            self.assertEqual(_resolve_facts_independently("{{FACT:tribunal-lens-count}}", surface), "two")
+            (lenses / "c.md").write_text("card", encoding="utf-8")
+            self.assertEqual(_resolve_facts_independently("{{FACT:tribunal-lens-count}}", surface), "three")
+            with self.assertRaisesRegex(AssertionError, "unknown independent fact"):
+                _resolve_facts_independently("{{FACT:unreviewed}}", surface)
+
+    def test_removal_fact_closes_over_exact_declared_policy(self):
+        policy = _command_registry_independently(REPO / "core/surface")
+        with tempfile.TemporaryDirectory() as tmp:
+            surface = Path(tmp)
+            registry = surface / "command-routes.json"
+            registry.write_text(json.dumps(policy), encoding="utf-8")
+            text = _resolve_facts_independently("{{FACT:compatibility-removal-rule}}", surface)
+            self.assertIn("approved 3.0.0", text)
+            self.assertIn("fresh compatibility evidence", text)
+            policy["compatibility"]["removalRequires"]["minimumVersion"]["claude"] = "2.0.0"
+            registry.write_text(json.dumps(policy), encoding="utf-8")
+            with self.assertRaisesRegex(AssertionError, "compatibility declaration changed"):
+                _resolve_facts_independently("{{FACT:compatibility-removal-rule}}", surface)
+
+
 class QuotedOwnerOracleTest(unittest.TestCase):
     """Check the independent oracle without asking production how to quote values."""
 
@@ -1056,7 +1169,8 @@ class GenerationContractTest(unittest.TestCase):
         for rel in (_TASK_2_NON_POLICY_ARTIFACTS | _TASK_3_NON_POLICY_ARTIFACTS
                     | _TASK_4_NON_POLICY_ARTIFACTS | _TASK_5_NON_POLICY_ARTIFACTS
                     | _TASK_6_THROUGH_10_NON_POLICY_ARTIFACTS | _TASK_11_THROUGH_14_NON_POLICY_ARTIFACTS
-                    | _ISSUE_370_NON_POLICY_ARTIFACTS | _ISSUE_374_NON_POLICY_ARTIFACTS):
+                    | _ISSUE_370_NON_POLICY_ARTIFACTS | _ISSUE_374_NON_POLICY_ARTIFACTS
+                    | _MAJOR_DELEGATION_NON_POLICY_ARTIFACTS):
             with self.subTest(rel=rel):
                 self.assertIn(rel, exemptions)
         self.assertFalse(any(item.startswith("tools/") and item.endswith("/**") for item in exemptions))

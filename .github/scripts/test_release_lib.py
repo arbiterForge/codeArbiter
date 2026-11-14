@@ -4319,6 +4319,44 @@ class CoreMergeReadinessArmsTest(unittest.TestCase):
             core_releaselib.classify_merge_readiness([self._run()], self.SHA, self.CHECK),
             "green")
 
+    def test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity(self):
+        for identity in (None, "", True, 7, [], {}, "a" * 39, "a" * 41,
+                         "a" * 63, "a" * 65, "g" * 40):
+            with self.subTest(identity=identity):
+                run = self._run()
+                if identity is None:
+                    run.pop("head_sha")
+                else:
+                    run["head_sha"] = identity
+                self.assertEqual(
+                    core_releaselib.classify_merge_readiness([run], identity, self.CHECK),
+                    "sha_mismatch")
+
+    def test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run(self):
+        for name in (None, "", "   ", 7, False):
+            with self.subTest(name=name):
+                run = self._run()
+                if name is None:
+                    run.pop("name")
+                else:
+                    run["name"] = name
+                self.assertEqual(
+                    core_releaselib.classify_merge_readiness([run], self.SHA, name),
+                    "missing")
+
+    def test_missing_required_binding_fields_never_form_green_evidence(self):
+        self.assertEqual(
+            core_releaselib.classify_merge_readiness(
+                [{"status": "completed", "conclusion": "success"}], None, None),
+            "missing")
+
+    def test_complete_64_character_commit_identity_is_supported(self):
+        identity = "a" * 64
+        run = self._run(head_sha=identity)
+        self.assertEqual(
+            core_releaselib.classify_merge_readiness([run], identity, self.CHECK),
+            "green")
+
 
 class CoreSelectReleaseTargetArmsTest(unittest.TestCase):
     """H3: select_release_target's `arity` and `multiple` arms exercised

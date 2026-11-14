@@ -1,0 +1,9 @@
+test_component_suite_is_discovered_and_success_gates_pages_upload (site_ci_contract_owner.SiteBrowserPublicationWorkflowTest.test_component_suite_is_discovered_and_success_gates_pages_upload) ... ok
+test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads (site_ci_contract_owner.SiteBrowserPublicationWorkflowTest.test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads)
+Mutations must not turn evidence retention into publication authorization. ... ok
+test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition (site_ci_contract_owner.SiteBrowserPublicationWorkflowTest.test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.019s
+
+OK

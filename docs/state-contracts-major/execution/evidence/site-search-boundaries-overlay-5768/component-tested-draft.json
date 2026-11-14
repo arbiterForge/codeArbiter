@@ -1,0 +1,136 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": null,
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original Temp browser-component execution"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/src/components/Search.astro": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+    "site/playwright.components.config.ts": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/test/components/search-boundaries.spec.ts": "268ce616672f45114c3adeebc87ae9149bc51faf1aa70a7834af4009feb930bf"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\cli.js",
+        "test",
+        "test/components/search-boundaries.spec.ts",
+        "--config=playwright.components.config.ts",
+        "--reporter=json",
+        "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\playwright-output"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\site",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/start.json",
+      "sha256": "a6f52f50496517bf65176fe883beb42b47b3b48867b45183bcbc3cd9681ee915"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/result.json",
+      "sha256": "8caaa4752046eb9a6be8f57e6f5178d313a7e607ac71b6441f50c35665d72a19"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/original-report.json",
+      "sha256": "fa8cca120017d8133739714b6d84176e63c732ebafe5f77e5f5c0b0c9dc285fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/observe.py",
+      "sha256": "c781dfc7fa16608efc90e7bc9956da31ec414182e68701c0ff1f0a3e47b0dbeb"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/observed-browser-source.ts",
+      "sha256": "268ce616672f45114c3adeebc87ae9149bc51faf1aa70a7834af4009feb930bf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/typecheck.json",
+      "sha256": "a51b807a8ffe707f51a072ecd7eeb5b24236a84ce7b2510e3cd102ec54964e4d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-search-boundaries-overlay-5768/raw/check.cjs",
+      "sha256": "9f3e318c596b63ba3d8e86f3b6aa876a46ade8c1108baf480295470a1cd73f59"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S55:03",
+    "disposition:transitions:S55:04",
+    "disposition:transitions:S55:11"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S55:03",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "Actual HTTP503 import rejection shows error and retained query with no options; focus then render does not re-request the failed module before explicit retry.",
+      "limits": [
+        "Browser network fixture, not production Pagefind index."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:04",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "User Retry requests exact cache-busted module URL ?retry=1; same query resolves visible result and ArrowDown selection.",
+      "limits": [
+        "Only one failed import followed by one successful explicit retry."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:11",
+      "observed_named_cases": [
+        "pending query cannot reopen search after clear",
+        "pending query cannot reopen search after Escape",
+        "pending query cannot reopen search after outside",
+        "disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "assertion_scope": "Empty/Escape/outside/disconnect close the actual component, clear active option/expanded state, and late pending success cannot reopen or replace retained ready results. Connected closes permit fresh search. Disconnected Ctrl+K is not canceled; reconnect restores shortcut focus and fresh search.",
+      "source_clause_conformance": "Each corresponding close/disconnect branch clears debounce and increments latest before closing; disconnectedCallback removes document click/window shortcut handlers. Finite source inspected directly; no equality-only preservation claim.",
+      "limits": [
+        "No direct timer-cancellation instrumentation or listener-count assertion; pending-response/shortcut ownership effects observed.",
+        "No production layout/CSS or actual Pagefind index."
+      ]
+    }
+  ],
+  "execution_context": {
+    "actual_HEAD_before": "5768d4f24994ee628538b39ffb921691cd54264b",
+    "actual_HEAD_after": "5768d4f24994ee628538b39ffb921691cd54264b",
+    "actual_component_input_Git_epoch": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+    "actual_test_epoch": "Uncommitted Temp new test overlay268ce6; final declaration-only successor f5a1; exact join in typecheck.json.",
+    "runtime_files_before": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "runtime_files_after": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "named_pass": 5,
+    "seconds": 4.766723155975342
+  },
+  "limits": [
+    "DRAFT NOT ADMISSIBLE: future committed source identity unresolved; do not infer execution on future commit.",
+    "Final DOM reference has identical comment-stripped emitted JS; no browser rerun or relabel.",
+    "Actual Search script/markup with fake Pagefind and installed Chrome; no Astro production page/layout/index/provider/native/installed/TUI claim."
+  ]
+}

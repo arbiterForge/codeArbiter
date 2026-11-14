@@ -1,0 +1,14 @@
+{
+  ".github/scripts/major_readiness.py": {
+    "original_execution_sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    "GitLF_sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    "source_join": "Exact original Temp execution source bytes equal GitLF staged/physical bytes. Actual copied6a + two changed source-file epoch remains explicit; no claim a run occurred at the later commit.",
+    "literal_source_bytes_identical": true
+  },
+  ".github/scripts/test_state_contracts_integration.py": {
+    "original_execution_sha256": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250",
+    "GitLF_sha256": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250",
+    "source_join": "Exact original Temp execution source bytes equal GitLF staged/physical bytes. Actual copied6a + two changed source-file epoch remains explicit; no claim a run occurred at the later commit.",
+    "literal_source_bytes_identical": true
+  }
+}

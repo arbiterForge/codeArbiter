@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter.pi-ui-local-evidence-summary/1",
+  "state": "RETAINED_LOCAL_SOURCE_COMPONENT_EVIDENCE_NOT_FINAL_READINESS",
+  "actual_base_source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "footer": {
+    "old_actual_RED": "Foreign replacement regression fails actualundefined/expectedforeign; owned-disposal control passes. Validated handoff453819...",
+    "repair": "Current component/context/generation identity retires on host disposal without UIcall; stale/duplicate callbacks cannot retire newer owner.",
+    "actual_final_status_cases": 41,
+    "actual_case_failures": 0,
+    "owner_coverage": {
+      "lines": {
+        "total": 133,
+        "covered": 126,
+        "skipped": 0,
+        "pct": 94.73
+      },
+      "statements": {
+        "total": 161,
+        "covered": 147,
+        "skipped": 0,
+        "pct": 91.3
+      },
+      "functions": {
+        "total": 27,
+        "covered": 21,
+        "skipped": 0,
+        "pct": 77.77
+      },
+      "branches": {
+        "total": 101,
+        "covered": 92,
+        "skipped": 0,
+        "pct": 91.08
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "scope": "Actual PiFooterLifecycle through declared UI-port source model; installed Pi interface was read, not executed.",
+    "typecheck": "Original owning Temp tsc exit0, empty streams, 2.232s"
+  },
+  "doctor": {
+    "actual_named_cases": 6,
+    "unselected_cases_omitted": 22,
+    "negative_control": "Precedence mutant fails expectedUNHEALTHY/actualDEGRADED, restored before original6PASS.",
+    "scope": "Real diagnostic/formatter source with fake package/runtime paths and stored-wrapper callback substitutions; no installed doctor/selftest authority or consent."
+  },
+  "source_currentness": "Current Root applied hashes are observed separately from actual140-input run cones. No future sourcecommit/run relabel.",
+  "remaining": [
+    "Final5Pchangedowner draft staysTemp source_commit=null until actual sourcecommit/sourcejoin",
+    "Isolation3 TESTED rows need genuine4case #464 owner aftercommit",
+    "Final installed originalcohort and original rawEOF remain separate from these observations"
+  ],
+  "excluded": [
+    "Copied source/runtime directories",
+    "Raw terminal ANSI/stdout dumps",
+    "Unselectedcase objects",
+    "ActualTUI or physical userconsent claims",
+    "Gov/index/ledger/marker mutation"
+  ]
+}

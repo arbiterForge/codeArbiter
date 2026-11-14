@@ -8,8 +8,10 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 )
 
-// taskContext is a bounded, read-only orientation packet. It does not inspect
-// source files, run checks, mint delivery receipts, or grant authority.
+// taskContext is a bounded orientation packet. When recorded command checks
+// exist, assessTaskChecks reads bounded declared task/shared source inputs to
+// assess their applicability. It never executes checks, writes context tokens,
+// or grants authority; platform lock metadata effects remain platform-specific.
 func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, error) {
 	if d.Kind() != "plan" {
 		return nil, fault.New("WRONG_KIND", "task context requires a plan")
@@ -120,7 +122,7 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 			"criterion_refs": task.Value["criterion_refs"], "verification": task.Value["verification"],
 			"done_when": task.Value["done_when"], "source_refs": task.Value["source_refs"],
 		},
-		"state": status, "reason": state(d, id)["reason"], "criteria": criteria, "constraints": constraints,
+		"state": status, "reason": state(d, id)["reason"], "progress": model.TaskProgress(d, id), "criteria": criteria, "constraints": constraints,
 		"dependencies": dependencies, "waiting_on": waiting,
 		"prerequisites": prerequisites, "unscoped_prerequisites": unscoped,
 		"waiting_prerequisites": waitingOnFacts,
@@ -132,6 +134,8 @@ func (e *Engine) taskContext(d *model.Document, id string, budget int) (any, err
 	}
 	if !current {
 		out["next_action"] = "Source binding changed; inspect affected requirements and reconcile the plan without resetting unrelated work."
+	} else if status == "STALE" {
+		out["next_action"] = "Legacy dependency invalidation did not retain prior progress in this record. Inspect history and reconcile only what actual evidence establishes; do not guess completed work."
 	} else if status == "BLOCKED" {
 		out["next_action"] = "Inspect the recorded stop; do not clear it or redispatch until the actual condition or user decision is resolved."
 	} else if len(waiting) != 0 {

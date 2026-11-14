@@ -1,0 +1,178 @@
+{
+  "protocol": "codearbiter.debug-handoff/1.0.0",
+  "case_id": "DBG-pi-sidebar-off-pending-metrics",
+  "request": {
+    "intent": "diagnosis_only",
+    "request_ref": "/root bounded pending-user-off sidebar diagnosis+exacttargetRED",
+    "scope": "Confirm accepted off/native expectation and precise current public route in Temp; return validateddiagnosis, no productionfix.",
+    "restrictions": [
+      "No production/Gov/index/ledger/marker writes",
+      "No broadsuite/native/provider/installed replay",
+      "Preserve previous frozenpackets",
+      "Fix requires Root scopedactor delivery"
+    ]
+  },
+  "snapshots": [
+    {
+      "id": "S-01",
+      "repository": "arbiterForge/codeArbiter",
+      "worktree": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\candidate",
+      "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+      "dirty_state": "dirty",
+      "runtime_identity": "Windowsamd64 admittedNode24.22.1, lockedexistingVitest; SHA/argv/privateHOME incommand-result.json",
+      "fingerprint": null,
+      "fingerprint_recipe": null,
+      "limitations": "Literal current140input sourcecopy from immutableGit; only regressiontestoverlay differs. DeclaredfakeUI/metrics, no hostexecution."
+    }
+  ],
+  "symptom": {
+    "observed": "After registeredpublicoff completes while metrics pending, resolving metrics installs sidebar again. Actual target hasinstalledtrue insteadfalse.",
+    "expected": "Sessionoff overrides pendingauto/on install; resolving oldmetrics leavesuninstalled and originalnativecolumns/renderhooks.",
+    "expected_evidence_ids": [
+      "E-01",
+      "E-02"
+    ]
+  },
+  "reproduction": {
+    "status": "reproduced",
+    "evidence_ids": [
+      "E-04"
+    ],
+    "recipe": {
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\candidate\\plugins\\ca-pi\\tools",
+      "preconditions": "Current actualSidebarManager; sharedtrustedTUI context and existingpendingHarness with140columns/native render/deferredmetrics. MinimalOSenv/privateHOME beforeVitestimports.",
+      "steps": [
+        "Register manager/publiccommand once and begin autoInstall withoutresolvingmetrics.",
+        "Invoke public off handler in samecontext; assert uninstalled/nativecolumns/render.",
+        "Resolve originalmetrics, await originalpendinginstall.",
+        "Assert stilluninstalled/nativehooks; finally disposefixture evenonRED."
+      ],
+      "failure_signature": "expected true to be false for manager.health().installed afteroldmetricsresolve; existingpost-installoff positivePASS"
+    },
+    "limitations": "Actualcomponent/publichandler through declaredUIport, not actualprivatePi hook or renderedTUI."
+  },
+  "checks": [
+    {
+      "id": "C-01",
+      "status": "completed",
+      "operation": "Read current approvedsidebar specAC4/5, maintainedPI-L02, sharedinteractiveParentpredicate and actualmanager/compositor ownership route.",
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "authorization_basis": "Root boundeddiagnosis authority",
+      "expectation": "Establish off/nativecontract and actualcause withoutinventedAPI/ADR.",
+      "observed": "Explicit sessionoff is authoritative; awaitinginstall does notinvalidate onoff and canresume.",
+      "exit_code": 0,
+      "side_effects": "Read-onlysourceinspection.",
+      "evidence_ids": [
+        "E-01",
+        "E-02",
+        "E-03"
+      ]
+    },
+    {
+      "id": "C-02",
+      "status": "completed",
+      "operation": "One exacttarget+existingpositiveVitestselection, actualargs incommand-result.json.",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\candidate\\plugins\\ca-pi\\tools",
+      "authorization_basis": "Root explicitoneboundedtargetRED",
+      "expectation": "Newtarget nativeafteroff; positivepost-installoff preserved.",
+      "observed": "One targetFAIL installedtrue and onepositivePASS in0.581s.",
+      "exit_code": 1,
+      "side_effects": "OnlyownedinmemoryUIports/tempdummyhome; no realterminal/native/provider effect.",
+      "evidence_ids": [
+        "E-04"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-01",
+      "kind": "contract",
+      "locator": ".codearbiter/specs/pi-sidebar-panel.md:decidedparameters/AC4/AC5 at6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+      "observation": "Approved session-specific on/off override, dispose on off restores native hooks and command on/off works with bounded effects.",
+      "snapshot_id": "S-01",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Footer/sidebar oldwindow live qualification is not inherited; only current command behavior expectation."
+    },
+    {
+      "id": "E-02",
+      "kind": "contract",
+      "locator": "docs/state-contracts-major/contracts/tasks.json:PI-L02 at6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+      "observation": "Current maintained task requires generation invalidation of pending installs across disposal and preserves ownedhooks.",
+      "snapshot_id": "S-01",
+      "check_id": "C-01",
+      "coverage": "partial",
+      "observed_at": null,
+      "limitations": "Directoff expectation comes from approvedsidebarAC4/5, not invented from tasktitle."
+    },
+    {
+      "id": "E-03",
+      "kind": "source",
+      "locator": "plugins/ca-pi/tools/src/sidebar-manager.ts:96-120,133-178,199-217 at6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+      "observation": "autoInstall awaits install metrics; turnOff setsdisabled/offflags and disposes currentcompositor without advancing generation. Awaitcontinuation checks only generation/currentcompositor and installs afterward.",
+      "snapshot_id": "S-01",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "No post-await source fix or trust/revocation inference beyond explicitoff."
+    },
+    {
+      "id": "E-04",
+      "kind": "command_result",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\target-red-with-positive.json",
+      "observation": "Existing neverauto-afteroff positivepasses; deferredmetrics\u2192publicoff\u2192resolve newtargetfails actualinstalledtrue expectedfalse. Nativecolumns/render were asserted unchanged before resolving.",
+      "snapshot_id": "S-01",
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "observed_at": null,
+      "limitations": "Two selected cases only, other cases patternfiltered; fixture-owned cleanup in finally."
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H-01",
+      "status": "supported",
+      "mechanism": "turnOff doesnotadvance generation orinvalidate pendinginstall; aftermetrics returns, samegeneration+absentcompositor branch installs, disregarding earlieruserDisabled/off.",
+      "discriminator": "Keep metrics unresolved until after acknowledgedpublicoff, then resolve andread actualmanagerhealth/nativehooks.",
+      "supporting_evidence_ids": [
+        "E-03",
+        "E-04"
+      ],
+      "opposing_evidence_ids": [],
+      "limitations": "No broadertrust-withdrawal/lifecycle defect inferred; this is explicitoffrace only."
+    }
+  ],
+  "disposition": {
+    "kind": "confirmed_code_defect",
+    "cause_ids": [
+      "H-01"
+    ],
+    "evidence_ids": [
+      "E-01",
+      "E-03",
+      "E-04"
+    ],
+    "rationale": "Approved sessionoff/nativebehavior and actualregisteredcommandroute disagree during pendingmetrics; exactcurrentcomponenttargetRED reproduces with existingpositive passing.",
+    "blockers": []
+  },
+  "next_step": {
+    "target": "fix",
+    "owner": "Root selects scopedfix actor",
+    "action": "Receive fixcontext; invalidate pendingowned installs onoff without resetting explicitoff preference or width. Preserve laterexpliciton/currentgeneration and nativeownership safety. No fix written now.",
+    "completion_evidence": "NamedtargetGREEN, oldpositive/remainednative/pendingoldneworder controls pass onexactbytes and scopedsource/typecheck/bundleowners asrequired."
+  },
+  "regression": {
+    "basis": "reproduction",
+    "candidate_test_id": "sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve",
+    "evidence_ids": [
+      "E-01",
+      "E-03",
+      "E-04"
+    ],
+    "obligation": "Accepted off/native sessionoverride mustremain effective when prior asynchronousmetrics finishes.",
+    "oracle": "Afteroff andoldmetricsresolve, installedfalse,columns140 andoriginaldoRender; positivepost-installoff remainsPASS.",
+    "reuse_existing": false,
+    "snapshot_id": "S-01"
+  }
+}

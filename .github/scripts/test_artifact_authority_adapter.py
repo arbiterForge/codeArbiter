@@ -6173,5 +6173,305 @@ class CodexNativeProtocolCompletionTransportTest(CodexNativeV2CompletionTranspor
     RUNTIME = "0.162.0-alpha.17.2"
 
 
+@unittest.skipUnless(os.name == "nt", "Windows Job Object rundown contract")
+class WindowsJobRundownTest(unittest.TestCase):
+    @staticmethod
+    def _rundown_fixture(counts=(1, 0), query_ok=True):
+        import ctypes
+        from ctypes import wintypes
+        from types import SimpleNamespace
+        index = [0]
+        def query(_job, kind, output, size, _length):
+            if not query_ok:
+                return False
+            # Win32 JOBOBJECT_BASIC_ACCOUNTING_INFORMATION: ActiveProcesses
+            # is DWORD offset40 after four LARGE_INTEGER values and two DWORDs.
+            ctypes.cast(output, ctypes.POINTER(wintypes.DWORD))[10] = counts[min(index[0], len(counts)-1)]
+            index[0] += 1
+            return True
+        kernel = SimpleNamespace(TerminateJobObject=mock.Mock(return_value=True),
+            QueryInformationJobObject=mock.Mock(side_effect=query))
+        process = SimpleNamespace(wait=mock.Mock(return_value=0),
+            _handle=SimpleNamespace(Close=mock.Mock()))
+        observation = SimpleNamespace(wait_members=mock.Mock(side_effect=lambda _deadline: process._handle.Close()))
+        return kernel, process, observation
+
+    def test_rundown_queries_after_releasing_leader_and_waits_for_zero(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        kernel, process, observation = self._rundown_fixture()
+        events = []
+        process.wait.side_effect = lambda **_kwargs: events.append("wait")
+        process._handle.Close.side_effect = lambda: events.append("release")
+        query = kernel.QueryInformationJobObject.side_effect
+        def observed(*args):
+            self.assertEqual(events, ["wait", "release"])
+            return query(*args)
+        kernel.QueryInformationJobObject.side_effect = observed
+        with mock.patch.object(adapter.time, "sleep"):
+            adapter._drain_windows_job(kernel, 1, process, observation)
+        self.assertEqual(kernel.QueryInformationJobObject.call_count, 2)
+        kernel.TerminateJobObject.assert_called_once_with(1, 1)
+
+    def test_unavailable_job_rundown_query_refuses(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        kernel, process, observation = self._rundown_fixture(query_ok=False)
+        with self.assertRaisesRegex(RuntimeError, "rundown state is unavailable"):
+            adapter._drain_windows_job(kernel, 1, process, observation)
+        process._handle.Close.assert_called_once_with()
+
+    def test_job_rundown_timeout_is_bounded_and_refuses(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        kernel, process, observation = self._rundown_fixture(counts=(1,))
+        with mock.patch.object(adapter.time, "monotonic", side_effect=[0, 0, 0, 1]), \
+             mock.patch.object(adapter.time, "sleep"):
+            with self.assertRaisesRegex(RuntimeError, "job rundown timed out"):
+                adapter._drain_windows_job(kernel, 1, process, observation, timeout_seconds=0.1)
+        self.assertEqual(kernel.QueryInformationJobObject.call_count, 1)
+
+    def test_cleanup_refusal_preserves_original_output_overflow(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        with tempfile.TemporaryDirectory() as raw, \
+             mock.patch.object(adapter, "MAX_OUTPUT", 128), \
+             mock.patch.object(adapter, "_drain_windows_job", side_effect=OSError("private fixture detail")):
+            with self.assertRaisesRegex(RuntimeError, "^PROCESS_OUTPUT_TOO_LARGE:") as caught:
+                adapter._run_contained([sys.executable, "-c",
+                    "import os,time;os.write(1,b'x'*65536);time.sleep(30)"],
+                    cwd=str(Path(raw).resolve()), env=dict(os.environ), timeout_seconds=5)
+        self.assertIsNotNone(caught.exception.__cause__)
+        self.assertIn("rundown could not be confirmed", str(caught.exception.__cause__))
+        self.assertNotIn("private fixture detail", str(caught.exception.__cause__))
+
+    def test_fast_exit_output_error_survives_cleanup_unknown(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        real_popen = adapter.subprocess.Popen
+        child = []
+        def launch(*args, **kwargs):
+            process = real_popen(*args, **kwargs)
+            child.append(process)
+            return process
+        with tempfile.TemporaryDirectory() as raw, \
+             mock.patch.object(adapter, "MAX_OUTPUT", 128), \
+             mock.patch.object(adapter.subprocess, "Popen", side_effect=launch), \
+             mock.patch.object(adapter.time, "sleep", side_effect=lambda _seconds: child[0].wait(timeout=2)), \
+             mock.patch.object(adapter, "_drain_windows_job", side_effect=OSError("private fixture detail")):
+            with self.assertRaisesRegex(RuntimeError, "^PROCESS_OUTPUT_TOO_LARGE:") as caught:
+                adapter._run_contained([sys.executable, "-c", "import os;os.write(1,b'x'*65536)"],
+                    cwd=str(Path(raw).resolve()), env=dict(os.environ), timeout_seconds=5)
+        self.assertIsNotNone(caught.exception.__cause__)
+        self.assertIn("rundown could not be confirmed", str(caught.exception.__cause__))
+
+    def test_cleanup_refusal_preserves_original_timeout(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        with tempfile.TemporaryDirectory() as raw, \
+             mock.patch.object(adapter, "_drain_windows_job", side_effect=OSError("private fixture detail")):
+            with self.assertRaisesRegex(RuntimeError, "^VERIFICATION_PROCESS_FAILED: verification process timed out") as caught:
+                adapter._run_contained([sys.executable, "-c", "import time;time.sleep(30)"],
+                    cwd=str(Path(raw).resolve()), env=dict(os.environ), timeout_seconds=0.05)
+        self.assertIsNotNone(caught.exception.__cause__)
+        self.assertIn("rundown could not be confirmed", str(caught.exception.__cause__))
+        self.assertNotIn("private fixture detail", str(caught.exception.__cause__))
+
+    def test_ordinary_short_lived_child_is_not_a_blanket_refusal(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        with tempfile.TemporaryDirectory() as raw:
+            cwd = Path(raw).resolve() / "owned-cwd"
+            cwd.mkdir()
+            script = ("import subprocess,sys;subprocess.run([sys.executable,'-c','pass'],"
+                      "check=True);print('ordinary')")
+            completed = adapter._run_contained([sys.executable, "-c", script],
+                cwd=str(cwd), env=dict(os.environ), timeout_seconds=5)
+            self.assertEqual((completed.returncode, completed.stdout.strip()), (0, b"ordinary"))
+            cwd.rmdir()  # The first cleanup attempt must succeed.
+
+    def _observation_model(self, records=(), total=1):
+        import ctypes
+        from ctypes import wintypes
+        adapter = importlib.import_module("_artifactauthoritylib")
+        from types import SimpleNamespace
+        observation = adapter._WindowsJobObservation.__new__(adapter._WindowsJobObservation)
+        kernel, _process, _unused = self._rundown_fixture(counts=(0,))
+        query = kernel.QueryInformationJobObject.side_effect
+        def accounting(*args):
+            ok = query(*args)
+            ctypes.cast(args[2], ctypes.POINTER(wintypes.DWORD))[9] = total
+            return ok
+        kernel.QueryInformationJobObject.side_effect = accounting
+        observation.ctypes, observation.wintypes = ctypes, wintypes
+        observation.kernel32, observation.job = kernel, 1
+        observation.lock, observation.stop = threading.Lock(), threading.Event()
+        observation.records, observation.latest = list(records), {row["pid"]: row for row in records}
+        observation.failure, observation.process, observation.leader_seen = None, None, True
+        observation.key, observation.port = 1, 2
+        return observation
+
+    def test_dropped_creation_message_refuses_despite_zero_accounting(self):
+        adapter = importlib.import_module("_artifactauthoritylib")
+        observation = self._observation_model(total=1)
+        with mock.patch.object(adapter.time, "monotonic", side_effect=[0, 1]), \
+             mock.patch.object(adapter.time, "sleep"):
+            with self.assertRaisesRegex(RuntimeError, "member rundown timed out"):
+                observation.wait_members(0.1)
+
+    def test_gone_member_requires_paired_private_exit_history(self):
+        import time
+        adapter = importlib.import_module("_artifactauthoritylib")
+        record = {"pid": 7, "creation": None, "handle": None, "borrowed": False,
+                  "gone": True, "exited": False, "done": False}
+        observation = self._observation_model(records=[record], total=1)
+        with mock.patch.object(adapter.time, "monotonic", side_effect=[0, 1]), \
+             mock.patch.object(adapter.time, "sleep"):
+            with self.assertRaisesRegex(RuntimeError, "member rundown timed out"):
+                observation.wait_members(0.1)
+        self.assertFalse(record["done"])
+        record["exited"] = True
+        observation.wait_members(time.monotonic() + 1)
+        self.assertTrue(record["done"])
+
+    def test_invalid_completion_key_refuses(self):
+        import ctypes
+        observation = self._observation_model()
+        def packet(_port, message, key, value, _timeout):
+            ctypes.cast(message, ctypes.POINTER(observation.wintypes.DWORD))[0] = 6
+            ctypes.cast(key, ctypes.POINTER(ctypes.c_size_t))[0] = 99
+            ctypes.cast(value, ctypes.POINTER(ctypes.c_void_p))[0] = 7
+            return True
+        observation.kernel32.GetQueuedCompletionStatus = mock.Mock(side_effect=packet)
+        observation._collect()
+        with self.assertRaisesRegex(RuntimeError, "key or message bound differs"):
+            observation.check()
+
+    def test_nt_lookup_accepts_only_closed_invalid_cid_not_access_denial(self):
+        import ctypes
+        from ctypes import wintypes
+        from types import SimpleNamespace
+        observation = self._observation_model(total=1)
+        observation.leader_seen = False
+        class Attributes(ctypes.Structure):
+            _fields_ = [("Length", wintypes.ULONG), ("RootDirectory", wintypes.HANDLE),
+                ("ObjectName", ctypes.c_void_p), ("Attributes", wintypes.ULONG),
+                ("SecurityDescriptor", ctypes.c_void_p), ("SecurityQualityOfService", ctypes.c_void_p)]
+        class ClientId(ctypes.Structure):
+            _fields_ = [("UniqueProcess", wintypes.HANDLE), ("UniqueThread", wintypes.HANDLE)]
+        observation.Attributes, observation.ClientId = Attributes, ClientId
+        def inspect_lookup(_out, access, attributes, client):
+            attrs = ctypes.cast(attributes, ctypes.POINTER(Attributes)).contents
+            identity = ctypes.cast(client, ctypes.POINTER(ClientId)).contents
+            self.assertEqual(access, 0x00101000)
+            self.assertEqual((attrs.Length, attrs.RootDirectory, attrs.ObjectName, attrs.Attributes),
+                             (ctypes.sizeof(Attributes), None, None, 0))
+            self.assertEqual((identity.UniqueProcess, identity.UniqueThread), (7, None))
+            return 0xC0000022  # STATUS_ACCESS_DENIED is not disappearance.
+        observation.ntdll = SimpleNamespace(NtOpenProcess=mock.Mock(side_effect=inspect_lookup))
+        with self.assertRaisesRegex(RuntimeError, "identity is unavailable"):
+            observation._new_process(7)
+        self.assertEqual(observation.records, [])
+        observation.ntdll.NtOpenProcess.side_effect = lambda *args: 0xC000000B
+        observation._new_process(7)
+        self.assertEqual((observation.records[0]["gone"], observation.records[0]["done"]), (True, False))
+        observation.MAX_PROCESSES = 1
+        with self.assertRaisesRegex(RuntimeError, "ambiguous or over limit"):
+            observation._new_process(8)
+
+    def test_pid_lookup_bound_to_another_job_is_refused_without_pid_mutation(self):
+        import ctypes
+        from ctypes import wintypes
+        from types import SimpleNamespace
+        observation = self._observation_model()
+        observation.leader_seen = False
+        class Attributes(ctypes.Structure):
+            _fields_ = [("Length", wintypes.ULONG), ("RootDirectory", wintypes.HANDLE),
+                ("ObjectName", ctypes.c_void_p), ("Attributes", wintypes.ULONG),
+                ("SecurityDescriptor", ctypes.c_void_p), ("SecurityQualityOfService", ctypes.c_void_p)]
+        class ClientId(ctypes.Structure):
+            _fields_ = [("UniqueProcess", wintypes.HANDLE), ("UniqueThread", wintypes.HANDLE)]
+        observation.Attributes, observation.ClientId = Attributes, ClientId
+        def open_lookup(output, *_args):
+            ctypes.cast(output, ctypes.POINTER(wintypes.HANDLE))[0] = 123
+            return 0
+        observation.ntdll = SimpleNamespace(NtOpenProcess=mock.Mock(side_effect=open_lookup))
+        observation.kernel32.GetProcessId = mock.Mock(return_value=7)
+        def foreign_job(_handle, _job, output):
+            ctypes.cast(output, ctypes.POINTER(wintypes.BOOL))[0] = False
+            return True
+        observation.kernel32.IsProcessInJob = mock.Mock(side_effect=foreign_job)
+        observation.kernel32.CloseHandle = mock.Mock(return_value=True)
+        with self.assertRaisesRegex(RuntimeError, "identity differs"):
+            observation._new_process(7)
+        observation.kernel32.CloseHandle.assert_called_once_with(123)
+        observation.kernel32.TerminateJobObject.assert_not_called()
+        self.assertEqual(observation.records, [])
+
+    def test_redirected_descendant_is_gone_before_first_cwd_cleanup(self):
+        import ctypes
+        from ctypes import wintypes
+        adapter = importlib.import_module("_artifactauthoritylib")
+        real_load = ctypes.WinDLL
+        native = real_load("kernel32", use_last_error=True)
+        native.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+        native.CreateJobObjectW.restype = wintypes.HANDLE
+        native.GetCurrentProcess.restype = wintypes.HANDLE
+        native.DuplicateHandle.argtypes = [wintypes.HANDLE, wintypes.HANDLE,
+            wintypes.HANDLE, ctypes.POINTER(wintypes.HANDLE), wintypes.DWORD,
+            wintypes.BOOL, wintypes.DWORD]
+        native.DuplicateHandle.restype = wintypes.BOOL
+        native.TerminateJobObject.argtypes = [wintypes.HANDLE, wintypes.UINT]
+        native.TerminateJobObject.restype = wintypes.BOOL
+        native.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        native.OpenProcess.restype = wintypes.HANDLE
+        native.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        native.WaitForSingleObject.restype = wintypes.DWORD
+        native.CloseHandle.argtypes = [wintypes.HANDLE]
+        native.CloseHandle.restype = wintypes.BOOL
+        retained_jobs = []
+        class Kernel:
+            def __getattr__(self, name):
+                return getattr(native, name)
+        kernel = Kernel()
+        def create_job(*args):
+            job = native.CreateJobObjectW(*args)
+            duplicate = wintypes.HANDLE()
+            self.assertTrue(native.DuplicateHandle(native.GetCurrentProcess(), job,
+                native.GetCurrentProcess(), ctypes.byref(duplicate), 0, False, 2))
+            retained_jobs.append(duplicate)
+            return job
+        kernel.CreateJobObjectW = create_job
+        def load(name, *args, **kwargs):
+            return kernel if name == "kernel32" else real_load(name, *args, **kwargs)
+        process_handle = None
+        with tempfile.TemporaryDirectory() as raw:
+            cwd = Path(raw).resolve() / "owned-cwd"
+            cwd.mkdir()
+            try:
+                # Keep a diagnostic job view, not a process reference. Closing
+                # the producer handle alone must not masquerade as rundown.
+                script = ("import subprocess,sys; p=subprocess.Popen([sys.executable,"
+                          "'-c','import time;time.sleep(30)'],stdout=subprocess.DEVNULL,"
+                          "stderr=subprocess.DEVNULL); print(p.pid,flush=True)")
+                with mock.patch.object(ctypes, "WinDLL", side_effect=load):
+                    completed = adapter._run_contained([sys.executable, "-c", script],
+                        cwd=str(cwd), env=dict(os.environ), timeout_seconds=5)
+                self.assertEqual(completed.returncode, 0)
+                pid = int(completed.stdout.strip())
+                process_handle = native.OpenProcess(0x00101000, False, pid)
+                state = native.WaitForSingleObject(process_handle, 0) if process_handle else 0
+                first_error = None
+                try:
+                    cwd.rmdir()
+                except OSError as error:
+                    first_error = getattr(error, "winerror", None)
+                self.assertEqual((state, first_error), (0, None),
+                    "rundown must precede first cleanup; no deletion retry")
+            finally:
+                for job in retained_jobs:
+                    native.TerminateJobObject(job, 1)
+                if process_handle:
+                    self.assertEqual(native.WaitForSingleObject(process_handle, 10000), 0)
+                    native.CloseHandle(process_handle)
+                for job in retained_jobs:
+                    native.CloseHandle(job)
+                if cwd.exists():
+                    cwd.rmdir()  # Test cleanup only after observed process exit.
+
+
 if __name__ == "__main__":
     unittest.main()

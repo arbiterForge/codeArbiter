@@ -258,3 +258,17 @@ export interface Collision {
   reason: CollisionReason;
   owner?: string;
 }
+
+/** Bounded read-only page projection; counts never imply a complete backlog. */
+export interface PiWorkflowRecoverySnapshot {
+  status: "absent" | "complete" | "partial" | "unavailable";
+  revision: number | null;
+  pending: number;
+  claimed: number;
+  unavailable: number;
+  cursor: string | null;
+  bytesRead: number;
+  reason: string | null;
+  notice: string;
+  fingerprint: string;
+}

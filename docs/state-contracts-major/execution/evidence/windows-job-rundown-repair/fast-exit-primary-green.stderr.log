@@ -1,0 +1,6 @@
+test_fast_exit_output_error_survives_cleanup_unknown (test_artifact_authority_adapter.WindowsJobRundownTest.test_fast_exit_output_error_survives_cleanup_unknown) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.027s
+
+OK

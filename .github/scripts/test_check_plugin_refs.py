@@ -23,6 +23,8 @@ ROOT_LITERAL = "${CLAUDE_PLUGIN_ROOT}"
 ROOT_INSPECTION_NAME = "token"
 HISTORICAL_CHANGELOG = "site/scripts/execution-maps/atlas-data/packet-preparation-changelog.json"
 HISTORICAL_CHANGELOG_SHA256 = "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81"
+HISTORICAL_P02_STDERR = "docs/state-contracts-major/execution/evidence/ci-6083-followup/p02-original-failed35.stderr.log"
+HISTORICAL_P02_STDERR_SHA256 = "fc68997dbb38b9b76adde4b9bc4053d2d29e7faa7761446f4018024b1506c4e7"
 
 
 def write(root: Path, relative: str, text: str) -> None:
@@ -57,6 +59,41 @@ class ClaudeRootInventoryTest(unittest.TestCase):
             for relative, encoded in files.items():
                 self.assertEqual((root / relative).read_bytes(), encoded)
             return result
+
+    def historical_p02_stderr_bytes(self):
+        encoded = (Path(CHECKER.REPO) / HISTORICAL_P02_STDERR).read_bytes()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(), HISTORICAL_P02_STDERR_SHA256)
+        self.assertIn(ROOT_LITERAL.encode(), encoded)
+        return encoded
+
+    def test_exact_failed_p02_transcript_is_immutable_history(self):
+        encoded = self.historical_p02_stderr_bytes()
+        errors, inventory = self.byte_inventory({HISTORICAL_P02_STDERR: encoded})
+        self.assertEqual(errors, [])
+        self.assertGreater(len(inventory), 0)
+        self.assertEqual({row.path for row in inventory}, {HISTORICAL_P02_STDERR})
+        self.assertEqual({row.category for row in inventory}, {"immutable-history"})
+
+    def test_changed_failed_p02_transcript_refuses_even_without_root_literal(self):
+        encoded = self.historical_p02_stderr_bytes()
+        for changed in (encoded + b"\n", encoded.replace(ROOT_LITERAL.encode(), b"removed")):
+            with self.subTest(changed_sha256=hashlib.sha256(changed).hexdigest()):
+                errors, inventory = self.byte_inventory({HISTORICAL_P02_STDERR: changed})
+                self.assertEqual(len(errors), 1)
+                self.assertIn("historical fixture SHA-256 mismatch", errors[0])
+                self.assertEqual(inventory, [])
+
+    def test_exact_failed_p02_transcript_does_not_exempt_neighbour(self):
+        neighbour = HISTORICAL_P02_STDERR.replace(".stderr.log", "-copy.stderr.log")
+        errors, inventory = self.byte_inventory({
+            HISTORICAL_P02_STDERR: self.historical_p02_stderr_bytes(),
+            neighbour: self.historical_p02_stderr_bytes(),
+        })
+        self.assertEqual(len(errors), 1)
+        self.assertIn(neighbour, errors[0])
+        self.assertIn("unclassified portable/product use", errors[0])
+        self.assertEqual({row.path for row in inventory}, {HISTORICAL_P02_STDERR})
+        self.assertEqual({row.category for row in inventory}, {"immutable-history"})
 
     def test_exact_historical_changelog_fixture_is_immutable_history(self):
         encoded = self.historical_changelog_bytes()

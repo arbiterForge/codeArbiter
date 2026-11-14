@@ -40,6 +40,7 @@ import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 BACKUP_KEY = "_codearbiterStatuslineBackup"       # holds the prior statusLine value
 OWNER_KEY = "_codearbiterStatuslineOwner"         # exact command last written by us
 SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"  # holds prior spinnerVerbs
+SPINNER_OWNER_KEY = "_codearbiterSpinnerVerbsOwned"    # exact spinnerVerbs value we wrote (HW-05)
 _COMMAND_RE = re.compile(
     r'''^\s*(?P<interp>"[^"]*"|'[^']*'|\S+)\s+'''
     r'''(?P<script>"[^"]*"|'[^']*'|\S+)\s*$''')
@@ -231,7 +232,7 @@ def cmd_status(settings, exists, script_abs):
         print("spinnerVerbs: (none set)")
     else:
         count = len(sv.get("verbs", [])) if isinstance(sv, dict) else "?"
-        owned = SPINNER_BACKUP_KEY in settings
+        owned = _spinner_owned(settings)
         print(f"spinnerVerbs: {count} verb(s), {'codeArbiter' if owned else 'user-owned'}")
 
 
@@ -339,17 +340,36 @@ def cmd_refresh(settings, path, script_abs, interp):
         print(f"REFRESHED stale codeArbiter statusline path -> {settings['statusLine']['command']}")
 
 
+def _spinner_owned(settings):
+    """True iff the CURRENT spinnerVerbs is still the value codeArbiter wrote.
+
+    HW-05 (HOOK-F05): ownership used to be inferred from the mere presence of
+    the backup key, so a spinner the user set AFTER install was restored over
+    on uninstall. Ownership is now the exact installed value, stamped beside
+    the backup. A legacy backup with no stamp is owned only while the current
+    value is exactly the verbs this version installs — the conservative
+    reading: anything else may be the user's."""
+    if SPINNER_BACKUP_KEY not in settings:
+        return False
+    current = settings.get("spinnerVerbs")
+    if SPINNER_OWNER_KEY in settings:
+        return current is not None and current == settings[SPINNER_OWNER_KEY]
+    return current == ARBITER_SPINNER_VERBS
+
+
 def _install_spinner_verbs(settings, refresh):
     current_sv = settings.get("spinnerVerbs")
-    already_ours = SPINNER_BACKUP_KEY in settings
-    if already_ours:
-        # Refresh: update to latest verb list, preserve the backup.
+    if _spinner_owned(settings):
+        # Still ours: update to the latest verb list, keep the original backup.
         settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
+        settings[SPINNER_OWNER_KEY] = ARBITER_SPINNER_VERBS
         return
-    # First install: back up whatever is there (may be None), then set ours.
-    if not refresh or current_sv is not None:
-        settings[SPINNER_BACKUP_KEY] = current_sv
+    # Not (or no longer) ours: back up whatever is there NOW (may be None) —
+    # a value the user set after an earlier install is the one to restore —
+    # then set ours and stamp exactly what was written.
+    settings[SPINNER_BACKUP_KEY] = current_sv
     settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
+    settings[SPINNER_OWNER_KEY] = ARBITER_SPINNER_VERBS
 
 
 def cmd_uninstall(settings, path, script_abs):
@@ -365,6 +385,10 @@ def cmd_uninstall(settings, path, script_abs):
         print("codeArbiter statusline was replaced; preserved the current line.")
         return
     if not is_ours(current, settings) and BACKUP_KEY not in settings:
+        # Spinner ownership is independent of statusLine ownership (HW-05):
+        # an orphaned spinner backup is still settled by its own rule.
+        if _uninstall_spinner_verbs(settings) is not None:
+            save_settings(path, settings)
         print("codeArbiter statusline is not wired here; nothing to do.")
         return
     if BACKUP_KEY in settings:
@@ -385,13 +409,23 @@ def cmd_uninstall(settings, path, script_abs):
 
 
 def _uninstall_spinner_verbs(settings):
-    if SPINNER_BACKUP_KEY not in settings:
-        return
-    prior_sv = settings.pop(SPINNER_BACKUP_KEY)
+    """Restore the pre-install spinnerVerbs only while codeArbiter still owns
+    the current value; otherwise leave the user's value and drop only our
+    bookkeeping. Touches no other key. Returns a short report or None."""
+    if SPINNER_BACKUP_KEY not in settings and SPINNER_OWNER_KEY not in settings:
+        return None
+    owned = _spinner_owned(settings)
+    prior_sv = settings.pop(SPINNER_BACKUP_KEY, None)
+    settings.pop(SPINNER_OWNER_KEY, None)
+    if not owned:
+        print("spinner ownership ended: spinnerVerbs was changed after install; "
+              "preserved the current value.")
+        return "preserved"
     if prior_sv is None:
         settings.pop("spinnerVerbs", None)
     else:
         settings["spinnerVerbs"] = prior_sv
+    return "restored"
 
 
 def main(argv=None):

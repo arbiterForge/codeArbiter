@@ -217,6 +217,15 @@ regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']
 description = "Public hostapi.py SHA-256 recorded by the statusline documentation fixture (PR #847)"
 regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z']
 
+# Public declaration-file digest retained by the major program's original Pi
+# source observation, not a credential. Verified against pi-api.d.ts at
+# 55509ec54327c61b94f6648aa21ac41452e0d28f. The adjacent API filename triggers
+# generic-api-key. Earlier commits retain this value, so waive only the exact
+# whole digest; every path and every other value remains scanned.
+[[allowlists]]
+description = 'Public plugins/ca-pi/tools/src/pi-api.d.ts SHA-256 retained in docs/state-contracts-major/execution/lanes/pi.json'
+regexes = ['\A12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2\z']
+
 [[allowlists]]
 description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
 regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]
@@ -234,3 +243,19 @@ regexes = [
   '''\A\Q-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
       "-----END PRIVATE KEY-----\E\z'''
 ]
+
+# Exact public source SHA-256 values retained by the major qualification packet.
+# Each value matches its named Git blob at94b569fb51ab306ac187f60fe4e61cf0bef6992a.
+# API/auth/secret words in filenames caused generic-api-key false positives.
+# Preserve scans for every other value, path, commit and credential shape.
+[[allowlists]]
+description = "Public core/pysrc/hostapi.py SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4\z']
+
+[[allowlists]]
+description = "Public core/surface/agents/auth-crypto-reviewer.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\Ac8d4aae68642746dc19803bdd9bbe738c540dae33a72baeed39ee0b1ea3b1143\z']
+
+[[allowlists]]
+description = "Public core/surface/skills/tribunal/references/lenses/secrets-supply.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A0de0dd521693c80fba4ce695c290d08df1b73452632f19efb6f332a0f0518a0e\z']

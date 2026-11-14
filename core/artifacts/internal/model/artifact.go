@@ -17,6 +17,19 @@ const FormatVersion = "0.1.0"
 const SchemaVersion = "0.3.2"
 const WorkCoordinationVersion = "0.3.3"
 
+// RetirementVersion labels a non-work document whose tombstones record their
+// original record kind (NT-05). It is feature-gated like WorkCoordinationVersion:
+// a document moves to it only when it carries a typed tombstone, so unchanged
+// 0.3.x documents stay readable by older clients, and older clients refuse a
+// 0.3.4 document before they can rewrite it. The engine/release schema version
+// (SchemaVersion) is unchanged. The label stays open for the rest of the
+// state-contract program; later fields extend it rather than adding 0.3.5.
+const RetirementVersion = "0.3.4"
+
+// ProgressVersion shares the state-contract epoch: progress is recorded work,
+// while dependency readiness and evidence applicability are derived separately.
+const ProgressVersion = RetirementVersion
+
 type Document struct {
 	Data    map[string]any
 	Symbols *symbol.Index
@@ -57,8 +70,11 @@ func List(ss ...string) []any {
 func Check(v map[string]any) (*Document, error) {
 	version, kind := S(v["schema_version"]), S(v["kind"])
 	if S(v["format"]) != Format || S(v["format_version"]) != FormatVersion ||
-		(version != SchemaVersion && version != "0.3.0" && version != "0.3.1" && !(kind == "work" && version == WorkCoordinationVersion)) {
-		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0, 0.3.1 or 0.3.2 (or work 0.3.3)")
+		(version != SchemaVersion && version != "0.3.0" && version != "0.3.1" && !(kind == "work" && version == WorkCoordinationVersion) && !(kind != "work" && version == RetirementVersion)) {
+		return nil, fault.New("UNSUPPORTED_VERSION", "expected codearbiter.artifact 0.1.0 / schema 0.3.0, 0.3.1, 0.3.2 or 0.3.4 (or work 0.3.3)")
+	}
+	if version != RetirementVersion && HasTypedRetirement(v) {
+		return nil, fault.New("UNSUPPORTED_VERSION", "typed retirement records require schema 0.3.4")
 	}
 	if (version == "0.3.0" || version == "0.3.1") && HasAssistiveFields(v) {
 		return nil, fault.New("UNSUPPORTED_VERSION", "assistive prerequisite observations and DONE progress require schema 0.3.2")

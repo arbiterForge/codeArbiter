@@ -1,0 +1,148 @@
+{
+  "schema": "codearbiter.membership-applicability-author-freeze/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_base_git": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+  "base_file_sha256": {
+    ".github/scripts/_contextverificationlib.py": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4",
+    ".github/scripts/major_readiness.py": "3bc43e5765ae067368fe2d7ae258c4c7ab47bb0081081f0db9b0ed1d79745b84",
+    ".github/scripts/check_state_contracts_integration.py": "0913c941f25461ccb34f602e89e96bfedadb5eedca6adbaaca2f4a38100a1067",
+    ".github/scripts/test_state_contracts_integration.py": "8681aa43a81b9aca7a5a85f4e3d42d25d299da3d639fd50e9eb044bd6e9885c0"
+  },
+  "files": {
+    ".github/scripts/_contextverificationlib.py": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad",
+    ".github/scripts/major_readiness.py": "0d11ba7cda75b65d4a2ac5e6f7fd13b87be2686ac6f47193c9e33d08aa895450",
+    ".github/scripts/check_state_contracts_integration.py": "ffa580b6251bd51e8c1709b1e87b063bdd5d67c3f7665feec9dbfc133bdc18b7",
+    ".github/scripts/test_state_contracts_integration.py": "1b7b818f3e244220e306150eb617631b8d3e947e8e40cd26f7141408be533e68"
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\final.patch",
+    "sha256": "e39925ada9bfed05e2d1c5b2d8f78b7ad8ae94b6aac774492c5a307de204668c",
+    "git_apply_check": "PASS",
+    "whitespace_check": "PASS",
+    "ast_parse": "PASS"
+  },
+  "red": "Original add/remove, absence becomes present, forged original membership each failed target assertions; separate legacy/read-failure/original false-absence three target FAIL. Root followup hostapi-positive/module-present/missing lookup binding actual target FAIL before scoped rule. One initial fixture no-op commit error corrected before that case target RED; retained initial raw.",
+  "green": {
+    "integration": "30 methods PASS final unchanged four-file source",
+    "readiness": "37 methods PASS repaired Temp reader; unchanged test/corpus/action/ADR resource anchors point to Gov. First disposable missing ADR sibling setup errors retained, not product failures.",
+    "context_owner": "19 distinct methods PASS: original suite12 methods passed including tiny real offline Go fixture, seven methods had missing unchanged test_artifact_installed_host sibling setup errors; supplied exact original sibling and reran only those7, allPASS. Original errors retained. No native module build.",
+    "framing": "Original/new functions hash actual native module identically:1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3"
+  },
+  "raw_sha256": {
+    "additional-controls.stderr.log": "3b85eed2be3c3f8b842d014244fc5f3e2591a4b460991e28dd4209b96efa22a7",
+    "additional-controls.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "context-owner-setup-repaired.stderr.log": "4617a274a1f9872f495be40c863dba01aaf91a5b82e4ecec4986068ca63c657c",
+    "context-owner.stderr.log": "487d416c2598d1991d4ae09cf21371b2c825896580efc6f00c9c2929f3d017db",
+    "context-owner.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final-integration.stderr.log": "088d357513b5d113927fdd247104d0afe97bf34fa66fb5c91c7cdfd7cd6e73a4",
+    "final-integration.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final-readiness37.stderr.log": "a41d0406e51c989e2ff483c822bce30e5a02e2bc6b021a9748b87444ebc17ab2",
+    "final-readiness37.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "green-integration.log": "2151b5c2c8944513cfe53764aafaa409892c263ca1dadc9481bd915f5fd49548",
+    "host-owner-red.log": "401e0316aed0a33f8aa37560c24ff052cb4b9aaac2067d1769791155d27058df",
+    "readiness37.stderr.log": "f0b4247cdb3b5f6010f117a8d698a07f11d2b5deb3ae4ff2093bce57a8c2134d",
+    "readiness37.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "red-extra.log": "217affb7d79f12dda1901cd1d4bb8411255582c2cff09fe9b7fca35731ad58c9",
+    "red.log": "44dd769777a673b0564bacbb50b23c5a98f6385b0ea51c4e56cabf92d348e7de"
+  },
+  "raw_metadata": {
+    "context-owner-setup-repaired.json": {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_context_verification.ContextVerificationBridge.test_bridge_fixture_results_cannot_claim_live_authority",
+        "test_context_verification.ContextVerificationBridge.test_installed_bridge_enforces_empty_path_and_no_pythonpath",
+        "test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_invalid_release_manifest_contract",
+        "test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_oversized_release_before_launch",
+        "test_context_verification.ContextVerificationBridge.test_installed_bridge_rejects_platform_filename_mismatch",
+        "test_context_verification.ContextVerificationBridge.test_installed_bridge_requires_all_exact_candidate_inputs",
+        "test_context_verification.ContextVerificationBridge.test_windows_arm64_installed_inputs_bind_native_release"
+      ],
+      "exit": 0,
+      "seconds": 1.0254567000083625,
+      "setup_correction": "Exact unchanged sibling test_artifact_installed_host.py supplied to disposable source copy; no product/test assertions changed. Only seven affected setup-error methods rerun, first12 passing methods retained.",
+      "sibling_sha256": "b6ce05dfa1a9ef09531952e70bf65dd8488318e07d2532fbabe6ad6404f39192"
+    },
+    "context-owner.json": {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_context_verification"
+      ],
+      "exit": 1,
+      "seconds": 84.2944938999135,
+      "inputs": {
+        ".github/scripts/_contextverificationlib.py": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad",
+        ".github/scripts/major_readiness.py": "0d11ba7cda75b65d4a2ac5e6f7fd13b87be2686ac6f47193c9e33d08aa895450",
+        ".github/scripts/check_state_contracts_integration.py": "ffa580b6251bd51e8c1709b1e87b063bdd5d67c3f7665feec9dbfc133bdc18b7",
+        ".github/scripts/test_state_contracts_integration.py": "1b7b818f3e244220e306150eb617631b8d3e947e8e40cd26f7141408be533e68"
+      },
+      "stderr_sha256": "487d416c2598d1991d4ae09cf21371b2c825896580efc6f00c9c2929f3d017db"
+    },
+    "final-integration.json": {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_state_contracts_integration"
+      ],
+      "exit": 0,
+      "seconds": 84.26481419999618,
+      "inputs": {
+        ".github/scripts/_contextverificationlib.py": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad",
+        ".github/scripts/major_readiness.py": "0d11ba7cda75b65d4a2ac5e6f7fd13b87be2686ac6f47193c9e33d08aa895450",
+        ".github/scripts/check_state_contracts_integration.py": "ffa580b6251bd51e8c1709b1e87b063bdd5d67c3f7665feec9dbfc133bdc18b7",
+        ".github/scripts/test_state_contracts_integration.py": "1b7b818f3e244220e306150eb617631b8d3e947e8e40cd26f7141408be533e68"
+      },
+      "stderr_sha256": "088d357513b5d113927fdd247104d0afe97bf34fa66fb5c91c7cdfd7cd6e73a4"
+    },
+    "final-readiness37.json": {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-membership-fix-zipp3oqs\\run-readiness.py"
+      ],
+      "exit": 0,
+      "seconds": 84.28417679993436,
+      "inputs": {
+        ".github/scripts/_contextverificationlib.py": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad",
+        ".github/scripts/major_readiness.py": "0d11ba7cda75b65d4a2ac5e6f7fd13b87be2686ac6f47193c9e33d08aa895450",
+        ".github/scripts/check_state_contracts_integration.py": "ffa580b6251bd51e8c1709b1e87b063bdd5d67c3f7665feec9dbfc133bdc18b7",
+        ".github/scripts/test_state_contracts_integration.py": "1b7b818f3e244220e306150eb617631b8d3e947e8e40cd26f7141408be533e68"
+      },
+      "stderr_sha256": "a41d0406e51c989e2ff483c822bce30e5a02e2bc6b021a9748b87444ebc17ab2"
+    },
+    "framing-parity.json": {
+      "module": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts",
+      "old_sha256": "1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3",
+      "new_sha256": "1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3",
+      "result": "PASS",
+      "executed": "Only both original/new hash_go_module implementations over actual unchanged source bytes. No Go build/execution.",
+      "original_owner_sha256": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4",
+      "new_owner_sha256": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad"
+    }
+  },
+  "behavior": [
+    "Closed optional input_membership declarations authenticate existing Go module framing with explicit original path order against immutable Git tree bytes.",
+    "Closed absent_inputs declarations authenticate successful original tree absence only for explicitly owned _host.py sibling of a positive hostapi.py input.",
+    "Both current readers share one checker. Changed membership/absence is STALE; read/unsupported-object/bound failure is UNKNOWN and strict refusal.",
+    "Legacy runtime native input cones lacking membership and hostapi inputs lacking positive/explicit absent sibling remain authentic history but current UNKNOWN/strict refusal.",
+    "Source-conformance proof stays scoped to declared positive clauses; no inferred runtime outcome."
+  ],
+  "limits": [
+    "No native rebuild, provider/installed cohort/TUI journey or new runtime proof promotion.",
+    "Historical positive-only evidence and recorded statuses remain unchanged; no mass evidence migration.",
+    "Explicit membership declarations require a genuine original retained observation when migrated; matching source inventory alone does not fabricate runtime observation.",
+    "Only existing native core/artifacts legacy runtime cone is automatically required; other future compiler profiles need their explicit owning support.",
+    "Git inventory entry/byte limits refuse after command output read, using existing bounded process lifecycle; no new streaming subprocess protocol introduced."
+  ],
+  "mutations": "Temp only. Gov source/index/ledger/progress untouched; original four Gov file hashes verified unchanged."
+}

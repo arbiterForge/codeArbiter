@@ -1,0 +1,12 @@
+[
+  "TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+  "TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+  "TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+  "TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+  "TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+  "TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+  "TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+  "TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+  "TestUninstall.test_restores_exact_third_party_statusline_setting",
+  "TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed"
+]

@@ -1,0 +1,36 @@
+{
+  "reviewer": "/root",
+  "source_commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+  "native_module_sha256": "28dc44c2486928f9086f8ced09ea44a8aa2fc0391a46470d42b50a1a6c1645c3",
+  "source_trace_ids": [
+    "N01:07",
+    "N07:02",
+    "N20:04",
+    "N25:02",
+    "N25:03",
+    "N25:05",
+    "N37:02",
+    "N37:03",
+    "N37:04"
+  ],
+  "trace_inputs": {
+    "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+    "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+    "core/artifacts/internal/operations/mutations.go": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+    "core/artifacts/internal/render/render.go": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f",
+    "core/artifacts/internal/validate/validate.go": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+    "core/artifacts/internal/schema/common.schema.json": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee",
+    "core/artifacts/internal/read/read.go": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+    "core/artifacts/internal/store/infrastructure.go": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+    "core/artifacts/internal/operations/lifecycle.go": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+    "core/artifacts/internal/validate/knowledge.go": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+    "core/artifacts/internal/schema/decomposition.schema.json": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b",
+    "core/artifacts/cmd/ca-artifact/main.go": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+  },
+  "dependency_delta": {
+    "path": "core/artifacts/internal/schema/schema.go",
+    "review": "Ten-line schema-alternative traversal preserves real collection ownership with existing ref-cycle guard. It corrects valid nested retirement without weakening the reviewed lock/defer, ticket, question/promotion, transactional save, or CLI error/acknowledgement clauses. All12direct trace files remain byte-identical."
+  },
+  "result": "PRESERVED",
+  "scope": "Independent source conformance of nine specified clauses only; original missing exceptional runtime matrices remain pending. No task/host/provider/whole-program closure."
+}

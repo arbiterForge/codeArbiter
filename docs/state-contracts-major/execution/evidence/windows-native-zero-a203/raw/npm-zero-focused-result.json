@@ -1,0 +1,19 @@
+{
+  "kind": "go",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "argv": [
+    "go",
+    "test",
+    "-buildvcs=false",
+    "-json",
+    "./internal/evidence",
+    "./internal/observation",
+    "-run",
+    "^(TestCompletionAdmitsActualProducerLaunchBindingCounts|TestCompletionLaunchFileBoundMatchesContract|TestQualifiedRunnerContractRejectsBindingMutations|TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure|TestQualifiedRunnerContractSharesLaunchFileBound)$",
+    "-count=1"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts",
+  "exit_code": 0,
+  "seconds": 7.568761348724365,
+  "environment_keys": null
+}

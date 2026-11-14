@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "actual_current_module_files": 243,
+  "old_owner_fingerprint": "1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3",
+  "extracted_owner_fingerprint": "1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3",
+  "scope": "Read-only framing parity only; no build or new runtime proof",
+  "old_owner_sha256": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4",
+  "new_owner_sha256": "4008dcaa3af7f2e460d0870111f0050e0026caed4ef87a02e63c7e1e09c425ad"
+}

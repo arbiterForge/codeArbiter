@@ -292,7 +292,9 @@ class WorkflowContract(unittest.TestCase):
                 self.assertIn("expected_platform: " + platform, text, owner)
             self.assertIn("fail-fast: false", text)
         self.assertNotIn("--skip-tests", self.jobs["artifact-native-build"])
-        self.assertIn("python tools/build-artifacts.py --output", self.jobs["artifact-native-build"])
+        # Folded YAML commands preserve their shell arguments across newlines.
+        self.assertRegex(self.jobs["artifact-native-build"],
+                         r"python[ \t]+tools/build-artifacts\.py\s+--output(?:[ \t]|$)")
 
     def test_full_coverage_and_platform_specific_checks_stay_required(self):
         # The tested build owns the complete module population and vet; a

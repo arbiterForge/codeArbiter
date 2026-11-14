@@ -1,0 +1,9 @@
+Verified 4 captured guide examples against the working tree
+Generated 79 reference pages (20 agent, 33 command, 13 skill, 13 tribunal-lens) -> C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\site\src\content\docs\reference
+Generated hooks-gates reference (97 call sites, 22 tags, 2 skipped) -> C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\site\src\content\docs\reference\hooks-gates.md
+  skipped (non-literal tag): _bashguardlib.py:2687
+  skipped (non-literal tag): pre-edit.py:131
+Generated configuration reference -> C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\site\src\content\docs\reference\configuration.md
+Generated changelog -> C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\site\src\content\docs\changelog.md
+Generated Academy overview and 19 public lesson routes from preview-0.33 (54e8a42874664ee2f484dee433024f80b0aa128b), 19 guide and concept pages linked to their lessons
+Generated release applicability for 3 governance hosts at 6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a -> C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\site\src\generated\release-applicability.json

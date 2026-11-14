@@ -1,0 +1,334 @@
+{
+  "schema": "codearbiter-dependency-cone-review/1",
+  "kind": "source-conformance",
+  "original72": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/final-inputs-before.json",
+  "original72_sha256": "4f3febb2bd0abdac8376934b3d46c6d9142d0d9266708b7f6cdb6a17caa9cc20",
+  "cones": {
+    "schema": "codearbiter-owner-cone-review/1",
+    "sandbox17": {
+      "roots": [
+        "plugins/ca-sandbox/tools/deadline.test.ts",
+        "plugins/ca-sandbox/tools/exec.test.ts",
+        "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "plugins/ca-sandbox/tools/teardown.test.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "to": "plugins/ca-sandbox/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/exec.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/exec.test.ts",
+          "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/exec.test.ts",
+          "to": "plugins/ca-sandbox/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/run.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/run.ts",
+          "to": "plugins/ca-sandbox/tools/mounts.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/run.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/destroy.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/destroy.ts",
+          "to": "plugins/ca-sandbox/tools/registry.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/registry.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "to": "plugins/ca-sandbox/tools/mounts.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "to": "plugins/ca-sandbox/tools/network.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "to": "plugins/ca-sandbox/tools/run.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/create.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/run.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/mounts.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/build.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/build.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/dephash.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/registry.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/registry.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "to": "plugins/ca-sandbox/tools/build.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+          "to": "plugins/ca-sandbox/tools/build.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+          "to": "plugins/ca-sandbox/tools/create.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/teardown.test.ts",
+          "to": "plugins/ca-sandbox/tools/destroy.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/teardown.test.ts",
+          "to": "plugins/ca-sandbox/tools/cli.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/create.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/destroy.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/exec.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/cp.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cp.ts",
+          "to": "plugins/ca-sandbox/tools/mounts.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cp.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/registry.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/cli.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/teardown.test.ts",
+          "to": "plugins/ca-sandbox/tools/registry.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:events",
+        "node:fs",
+        "node:fs/promises",
+        "node:os",
+        "node:path",
+        "node:url",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+        "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+        "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+        "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+        "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+        "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+        "plugins/ca-sandbox/tools/deadline.test.ts": "04d5f58165ec7e3d2a0c3237951c5e9d6a777ad4a5f9571e2a4f11f4b39b288b",
+        "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+        "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+        "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+        "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+        "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+        "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+        "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+        "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+        "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+        "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+        "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+        "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+        "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+        "plugins/ca-sandbox/tools/teardown.test.ts": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+        "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+        "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+      },
+      "review": "Static/type/dynamic import declarations recursively checked. Selected cases use fixture argv, injected Docker runners or controlled child seams; no Farm runtime/source imports. Package/lock/config retained. Unselected Docker gate reproduction fixtures are not asserted by these selected rows. Frozen S51:05 additionally names claude-inside-cli.ts as normative owning source. Its original captured bytes and import closure are retained even though these assertions exercise the runtime function directly; no CLI execution is implied.",
+      "selected_test_roots": [
+        "plugins/ca-sandbox/tools/deadline.test.ts",
+        "plugins/ca-sandbox/tools/exec.test.ts",
+        "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "plugins/ca-sandbox/tools/teardown.test.ts"
+      ],
+      "normative_owner_roots": [
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+      ]
+    },
+    "builder3": {
+      "roots": [
+        "plugins/ca-sandbox/tools/builder-observation.test.ts"
+      ],
+      "edges": [
+        {
+          "from": "plugins/ca-sandbox/tools/builder-observation.test.ts",
+          "to": "plugins/ca-sandbox/tools/build.ts",
+          "kind": "static"
+        },
+        {
+          "from": "plugins/ca-sandbox/tools/build.ts",
+          "to": "plugins/ca-sandbox/tools/docker.ts",
+          "kind": "static"
+        }
+      ],
+      "external": [
+        "node:child_process",
+        "node:crypto",
+        "node:fs",
+        "node:fs/promises",
+        "node:os",
+        "node:path",
+        "vitest"
+      ],
+      "nonliteral": [],
+      "inputs": {
+        "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+        "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+        "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+        "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+        "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+        "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+        "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+      },
+      "review": "Static/type/dynamic import declarations recursively checked. Selected cases use fixture argv, injected Docker runners or controlled child seams; no Farm runtime/source imports. Package/lock/config retained. Unselected Docker gate reproduction fixtures are not asserted by these selected rows."
+    }
+  },
+  "current_source_relation": "All selected dependency bytes literally equal the original captured72 and ef40 source; only unrelated Farm files were removed. No test rerun or historical source rewrite.",
+  "inspection": "TypeScript AST recursively visits static/type/export/require/import module references; all relative imports resolve within Sandbox. Selected unit seams use no Farm source, process or generated bundle. Package/lock/config remain. Runtime fixture literals and selected call seams were inspected separately; no arbitrary cross-owner read is used by these selected assertions. Frozen S51:05 owning claude-inside-cli.ts is retained as a normative source input with its imports; not asserted to execute in the selected runtime test.",
+  "selected_populations": {
+    "sandbox17": 44,
+    "builder3": 12
+  },
+  "not_claimed": "No other assertion in the full raw suites, no real Docker/build/network/provider/nonroot/installed-host qualification, and no changed Farm input is admitted by these cones."
+}

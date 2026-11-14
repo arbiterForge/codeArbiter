@@ -199,3 +199,48 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     );
   });
 });
+
+describe("extractHookGates — bounded, masked, honest about dynamic text (HW-23)", () => {
+  function extractSource(source: string) {
+    const root = mkdtempSync(join(tmpdir(), "ca-hook-gates-"));
+    try {
+      writeFileSync(join(root, "probe.py"), source);
+      return extractHookGates(root);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+
+  it("excludes quoted, commented and docstring fake block calls", () => {
+    const { callSites } = extractSource([
+      '"""Example: block("H-90", "docstring example")"""',
+      '# block("H-91", "comment example")',
+      'EXAMPLE = \'block("H-92", "string example")\'',
+      'def real():',
+      '    block("H-93", "real message")',
+      "",
+    ].join("\n"));
+    expect(callSites.map((c) => c.tag)).toEqual(["H-93"]);
+  });
+
+  it("marks a dynamic recovery suffix instead of presenting a partial message as complete", () => {
+    const { callSites } = extractSource([
+      "def guard(recovery):",
+      '    block("H-94", "The staged candidate differs. " + recovery)',
+      '    block("H-95", "Fully static message.")',
+      "",
+    ].join("\n"));
+    const dynamic = callSites.find((c) => c.tag === "H-94")!;
+    expect(dynamic.message).toBe("The staged candidate differs. ");
+    expect(dynamic.dynamic).toEqual(["recovery"]);
+    expect(callSites.find((c) => c.tag === "H-95")!.dynamic).toEqual([]);
+  });
+
+  it("leaves an assignment beyond the 30-line window as an explicit skipped gap", () => {
+    const lines = ['tag = "H-96"', ...Array.from({ length: 31 }, (_, i) => `x${i} = ${i}`),
+      'block(tag, "far message")', ""];
+    const { callSites, skipped } = extractSource(lines.join("\n"));
+    expect(callSites.find((c) => c.tag === "H-96")).toBeUndefined();
+    expect(skipped).toHaveLength(1);
+  });
+});

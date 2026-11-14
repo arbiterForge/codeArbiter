@@ -11,6 +11,7 @@ import type {
   ExtensionContextPort,
   PiFooterActivationState,
   PiFooterMode,
+  PiWorkflowRecoverySnapshot,
   PiFooterStatusSnapshotPortResult,
   PiFooterUsageUpdateResult,
   PiUsageSnapshotPortResult,
@@ -72,6 +73,12 @@ export interface BridgeClientOptions {
   maxRequestBytes?: number;
   maxStreamBytes?: number;
   shouldAuditFailure?: (request: BridgeRequest) => boolean;
+}
+
+/** Owning selector shared by production and read-only observation checks. */
+export function shouldAuditBridgeFailure(request: BridgeRequest): boolean {
+  return request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot"
+    && request.event !== "workflow_recovery_snapshot";
 }
 
 function minimalEnvironment(
@@ -571,6 +578,59 @@ export async function readFooterStatusSnapshot(
   } catch {
     return undefined;
   }
+}
+
+const RECOVERY_KEYS = new Set(["status", "revision", "pending", "claimed", "unavailable", "cursor", "bytesRead", "reason", "notice", "fingerprint"]);
+const RECOVERY_REASONS = new Set(["io-temporary", "storage-unavailable", "capacity", "unsupported-version", "unknown-kind", "corrupt-record", "changed-binding", "source-stale", "owner-ambiguous", "authorization-denied", "explicit-stop", "material-unavailable", "uncertain-effect", "target-unavailable", "busy", "invalid", "inactive", "untrusted-helper", "scan-timeout"]);
+const boundedInteger = (value: unknown, maximum: number): value is number => typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= maximum;
+
+/** Decode only the owning read-only snapshot; never infer empty state from a bad reply. */
+export function workflowRecoveryResult(response: BridgeResponse): PiWorkflowRecoverySnapshot | undefined {
+  if (!validResponse(response) || response.outcome !== "notice" || response.auditCode !== "PI_WORKFLOW_RECOVERY"
+    || !exactKeys(response as unknown as Record<string, unknown>, new Set(["version", "outcome", "auditCode", "resultPatch"]))) return undefined;
+  const patch = record(response.resultPatch);
+  const value = patch === undefined ? undefined : record(patch.workflowRecovery);
+  if (patch === undefined || !exactKeys(patch, new Set(["workflowRecovery"])) || value === undefined || !exactKeys(value, RECOVERY_KEYS)
+    || !["absent", "complete", "partial", "unavailable"].includes(value.status as string)
+    || !(value.revision === null || boundedInteger(value.revision, 10_000_000_000))
+    || !boundedInteger(value.pending, 32) || !boundedInteger(value.claimed, 32) || !boundedInteger(value.unavailable, 32)
+    || value.pending + value.claimed + value.unavailable > 32 || !boundedInteger(value.bytesRead, 262_144)
+    || !(value.reason === null || (typeof value.reason === "string" && RECOVERY_REASONS.has(value.reason)))
+    || !(value.cursor === null || (typeof value.cursor === "string" && value.cursor.length <= 256 && /^[A-Za-z0-9_-]+={0,2}$/u.test(value.cursor)))
+    || (value.status === "partial" && value.cursor === null)
+    || (["absent", "complete"].includes(value.status as string) && value.cursor !== null)
+    || (value.status !== "unavailable" && value.reason !== null)
+    || typeof value.notice !== "string" || value.notice.length > 768 || CONTROL_RE.test(value.notice)
+    || (value.status === "absent" && (value.revision !== null || value.pending + value.claimed + value.unavailable !== 0 || value.notice !== ""))
+    || ((value.status === "partial" || value.status === "unavailable" || value.pending + value.claimed + value.unavailable > 0) && value.notice.trim() === "")
+    || typeof value.fingerprint !== "string" || !/^[a-f0-9]{64}$/u.test(value.fingerprint)) return undefined;
+  return Object.freeze({ ...value }) as unknown as PiWorkflowRecoverySnapshot;
+}
+
+/** One-second read-only observation using the existing authenticated bridge/abort cleanup. */
+export async function readWorkflowRecoverySnapshot(
+  bridge: BridgePort,
+  context: Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">,
+  activation: PiFooterActivationState,
+): Promise<PiWorkflowRecoverySnapshot | undefined> {
+  if (activation.enabled !== true || context.signal?.aborted) return undefined;
+  try { if (context.isProjectTrusted?.() !== true) return undefined; } catch { return undefined; }
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  context.signal?.addEventListener("abort", abort, { once: true });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<undefined>((resolveDeadline) => {
+    timer = setTimeout(() => { controller.abort(); resolveDeadline(undefined); }, 1_000);
+  });
+  try {
+    const rawSessionId = callMember(context.sessionManager, "getSessionId");
+    const sessionId = typeof rawSessionId === "string" && rawSessionId.length <= 1_024 ? rawSessionId : undefined;
+    const response = await Promise.race([bridge.call({ version: 1, event: "workflow_recovery_snapshot", cwd: context.cwd,
+      ...(sessionId === undefined ? {} : { sessionId }) }, controller.signal), deadline]);
+    if (response === undefined || controller.signal.aborted || context.isProjectTrusted?.() !== true) return undefined;
+    return workflowRecoveryResult(response);
+  } catch { return undefined; }
+  finally { if (timer !== undefined) clearTimeout(timer); context.signal?.removeEventListener("abort", abort); }
 }
 
 // Mirrors process-tree.ts's WINDOWS_HELPER_CLEANUP_MS: taskkill must never block the event loop.

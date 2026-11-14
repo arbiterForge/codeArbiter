@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter.bounded-reader-author-freeze/1",
+  "author": "/root/packaging_site_tools",
+  "base_source": "2990d2c88456ac0ae356be7663be0f6986ab1641",
+  "source_commit": null,
+  "source_sha256": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e"
+  },
+  "causes": [
+    "POSIX Popen.communicate uses descriptor reads after a TextIO.readline reader can prefetch completion; buffer bytes are then lost.",
+    "macOS killpg EPERM during cleanup of early-exited partial JSON escaped and replaced the original readiness error."
+  ],
+  "repair": [
+    "Shared start returns Popen-compatible managed process. Before any readiness read, ordinary communicate behavior remains unchanged. After bounded readline, the same two text-capture workers own stdout/stderr through EOF, timeout retry and communicate, preserving prefetched completion and partial diagnostics.",
+    "POSIX cleanup polls/reaps exited leader and handles denied group signals; reports exited only for observed absent group without sent signal, terminated after sent signal+observed absence, otherwise unconfirmed. No denial can claim quiescence.",
+    "Benchmark preserves primary readiness/completion failure and truthful containment, even if cleanup/drain errors; labels retained stdout/stderr tail as partial output."
+  ],
+  "checks": {
+    "hosted_RED": "Original macOS2990 job132199714322:16tests1failure1error1skip; exact completion empty and cleanupEPERM retained.",
+    "local_causal_RED": "Actual partialJSON/earlyexit child plus controlled exact POSIX killpgEPERM:1PASS1ERROR beforefix0.046s.",
+    "preliminary_fixture_error": "Initial portable syscall fixture needed SIGKILL constant onWindows and first errored on missingSIGKILL; corrected before counted causalRED. Rawretained, not productRED.",
+    "final_bounded": "23PASS10.180s; deadlines, treecontainment, partialdiagnostics, binary/text andstdin lifecycle.",
+    "production_boundary": "Existing actual production boundary100warm/all3recordshape1PASS on final source; rawlogretained.",
+    "ast": "PASS",
+    "diff_check": "PASS"
+  },
+  "evidence": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-hooks-macos-2990.log": {
+      "sha256": "4c377f685c47312bc4b93fd4225356c7f99352d29ff6108f7a47470bab5273db",
+      "bytes": 205014
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-singlewrite-red.log": {
+      "sha256": "3d9e316fb141a3cddf9c34fac3138df1499754edea12be96cba915607cdb071e",
+      "bytes": 3587
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-actual-signal-red.log": {
+      "sha256": "3a73921a74742a987ee53d028ea74158006b23fbbe99904af37e6877cde6c599",
+      "bytes": 3917
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-final-bounded.log": {
+      "sha256": "233373a9f0ca576dc5814102ac48b2ce9f7e3de6bf9d7ef2306ec3ce6c1de597",
+      "bytes": 545
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-final-production-boundary.log": {
+      "sha256": "1af0e9c6f366eba7bda039c643dde00aa2dd671096c947d31675be06a59f720c",
+      "bytes": 103
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-binary-red.log": {
+      "sha256": "73d97fbc69093b176d92d3e9127ee4a6ad9380e1771a843a37fb899a016e98f4",
+      "bytes": 1974
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-binary-final-green.log": {
+      "sha256": "801b0333ef10512e33e3c41f97b319ef713971acc9d3ea7c7754daa5e3fc4daf",
+      "bytes": 547
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-stdin-eof-red.log": {
+      "sha256": "77b525a0b6c2d2d4e3cdac85a27032158024d103eede6fbae1023d1c50cb7004",
+      "bytes": 2402
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-stdin-eof-actual-red.log": {
+      "sha256": "0735a516f26a06a9ca6b8aa68409be823c4cf19babb01872bba97d6441896f3d",
+      "bytes": 3022
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-stdin-payload-red.log": {
+      "sha256": "59a747b9dc68f401ed29b387fa69ae043d8c62592dffa14b857080e1204db746",
+      "bytes": 3895
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-stdin-final-green.log": {
+      "sha256": "e1ad713e507674175baefc00a6bd61c7a8dd99d8c96832c0384443ba51c5eb64",
+      "bytes": 552
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-reader-stdin-production-green.log": {
+      "sha256": "da030d71b469066dfa5eefe7434015c7285f1e6626e923d480408878421e50a0",
+      "bytes": 103
+    }
+  },
+  "limits": [
+    "Windowslocalexecution; originalactualmacOSRED retained, fixedmacOS/POSIX hostedrerun remains pending.",
+    "No nativeGo tests/build, site/browser rerun, provider invocation, productioncohort or performance-improvement claim.",
+    "Two legacy ResourceWarnings remain from no-readiness direct-cleanup fixtures; no claim zero warnings.",
+    "Only these3sourcefiles changed byauthor; no index/stage/commit/push.",
+    "Root already checked retained disposition inputdicts exclude these3scripts; do not relabel existing proof origin or repeat nativequalification."
+  ],
+  "supersedes_freeze_sha256": "3cd72199d5ae4becacc9d2f88ced85c29285f627e4a6da3b6fff6ef68666068d",
+  "review_correction": {
+    "finding": "Root independent review found default binary Popen EOF b-empty does not equal text sentinel; capture loop could append forever and string join failed.",
+    "correction": "Capture selects empty sentinel/join and closed return type from actual process.text_mode. Binary default preserves bytes and exits on b-empty; text ownership/deadlines unchanged.",
+    "RED": "Actual binary one-write readiness+completion and immediateEOF produced1ERROR(TypeErrorjoin)+1FAIL(closed reason absent)0.538s; broken child/test process exits, no runaway retained reader.",
+    "GREEN": "Same2binary tests plus original17text/containment cases19PASS9.358s.",
+    "production_boundary": "Prior actual production100warm event test1PASS0.256s retained at original source; not rerun or relabeled. Text branch is equivalent empty sentinel/join."
+  },
+  "stdin_review_correction": {
+    "finding": "Managed communicate did not close PIPEstdin for inputNone and initially introduced a nonNoneinput restriction; both differ from returned Popen contract.",
+    "fix": "Exactly one concurrent stdin writer owns original text/bytes payload and EOF, under same overall communication deadline with stdout/stderr capture. Timeout retryNone continues existingwriter; nonemptypayload retry rejected using normal Popen semantics; no duplicateinput.",
+    "actual_RED": "Text andbinary EOFchildren bothTimeout0.5s (1case2ERROR1.435s); smalltext/binary plusretry/unreadcases4ERROR0.901s from oldrestriction. EarlyWindowsbinaryfixture used printCRLF and was corrected to explicitLF before counted causalRED. EveryRED child terminated/drained in finally.",
+    "actual_GREEN": "All23owner testsPASS10.180s including real text/binaryEOF, payloads,512KiB hash/length retry-once, unreadstdin timeout+treecleanup/writerclose, all priorprefetch/binary/EPERM/containment negatives.",
+    "production_GREEN": "Actual bundled production TS benchmark100warm/all3publichostrecords passes again on finalsource; no provider/nativeGo."
+  }
+}

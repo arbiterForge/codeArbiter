@@ -559,7 +559,7 @@ func TestSMARTSProfileLegacyAccepted(t *testing.T) {
 		assertInvalidSmarts(t, ValidateSMARTSRecordFor(SMARTSProfileV2, smartsRecordOf(event)), "indifferent")
 	})
 	t.Run("unrecognized profile is rejected", func(t *testing.T) {
-		const profile = "smarts-plan-method/0.3.0"
+		const profile = "smarts-plan-method/0.9.0"
 		event, observed, context, ref, contextHash := smartsLink(t, profile, legacyDecision())
 		if fault.Code(ValidateLink(event, observed, context, ref, contextHash)) != "OBSERVATION_UNVERIFIED" {
 			t.Fatal("contract admitted an unrecognized SMARTS profile")

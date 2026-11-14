@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_state_contracts_integration"
+  ],
+  "exit_code": 0,
+  "seconds": 88.59324840002228,
+  "source_hashes": {
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/test_state_contracts_integration.py": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250"
+  },
+  "stderr_sha256": "b23bba8bb0b42a19b19eecb5959843c17ace38837b7fff0e1b36181b2e68c2f7"
+}

@@ -108,6 +108,10 @@ func TestWorkAdoptJournalsBoardCutoverAndReplays(t *testing.T) {
 	if err != nil || selected.(map[string]any)["title"] != "Build parser" {
 		t.Fatalf("adopted work is unreadable: %v", err)
 	}
+	// NT-07: adoption records local progress only; it never infers a check.
+	if selected.(map[string]any)["check_status"] != "unknown" {
+		t.Fatalf("adoption manufactured a check status: %v", selected)
+	}
 	replayed, err := Run(root, "work-adopt", request)
 	if err != nil || first.(map[string]any)["project_id"] != replayed.(map[string]any)["project_id"] {
 		t.Fatalf("cutover replay changed project identity: %v", err)

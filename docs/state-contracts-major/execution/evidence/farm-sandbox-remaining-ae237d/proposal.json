@@ -1,0 +1,3981 @@
+{
+  "state": "TEMP_ONLY_CAS_PROPOSAL_NOT_APPLIED",
+  "source_review_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "scope": "Only originally PLANNED baseline Farm/Sandbox transitions; no existing63Farm/17Sandbox/other recorded rows, findings, machines or task states are rewritten.",
+  "updates": [
+    {
+      "group": "transitions",
+      "id": "S22:01",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-input-config-tested.json",
+            "sha256": "3bd9048fc6b6f9ced33d9df72067fedcfe868df31a00bea1e95b4817ca8cacba"
+          }
+        ],
+        "candidate_contract_note": "Unbound JSON remains legacy input. Minimal schema controls and actual legacy CLI paths corroborate source classification; no typed/native admission is claimed."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:01",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-input-config-preserved.json",
+            "sha256": "1413cf4b8f49c3b708ac6d71836c39cfcaa5258942bfa949054ca8992be0bca0"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance: closed parsePlan/validate, env>plan>default resolution, secure URL admission and exclusive run-ID creation remain ordered before dispatch. Named schema/URL controls corroborate finite branches; no new every-config-combination execution."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:03",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+            "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+          }
+        ],
+        "candidate_contract_note": "DAG-ready and scope-independent tasks reserve lexical scopes under available capacity; shared worker limiting remains in the inspected scheduler/sample path."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:04",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+            "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+          }
+        ],
+        "candidate_contract_note": "An escalated predecessor blocks its dependent without claiming a worker call; independently eligible work is still admitted."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:06",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
+            "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a"
+          }
+        ],
+        "candidate_contract_note": "Breaker uses settled minimum and escalation fraction, stops admission, drains existing tasks and records unscheduled remainder. Drain is distinct from OS signal cancellation."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:09",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
+            "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b"
+          }
+        ],
+        "candidate_contract_note": "Actual two-task legacy CLI green execution publishes supported receipts and returns success; cleanup health is an independent success precondition."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:10",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
+            "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b"
+          }
+        ],
+        "candidate_contract_note": "Escalation/blocked or cleanup-degraded outcomes preserve partial results; existing runExitCode separates workload2 from publication3."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S23:08",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-preserved.json",
+            "sha256": "7502fa6a9526e78ce93644015602fe51bf4557cc40d7263d35e5ce811d556e38"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance of finally: attempt verified integration cleanup and durable report then Markdown; latest copies remain best effort. Handled publication faults are observed; external process-death/all-exception durability is explicitly not established."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:04",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Admitted worker files proceed through safe materialization and patch/evidence capture; real loopback/Git best-of-N/green fixtures and compliant-worker controls support finite paths, without OS adversarial race qualification."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:05",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Protected-test/path sweep precedes drift/gates/heuristic/mutation acceptance. Current source retains the complete order; selected software controls do not imply every optional mutation process outcome ran in this selected group."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:06",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Reported out-of-root or protected-test writes refuse the candidate; fatal containment paths do not authorize unsafe retry/reset."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:07",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "First dirty observation spends an available author retry and names forbidden paths in its next prompt."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:08",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "First drift without budget and repeated drift with budget both escalate with retained offending paths; the latch is independent of the numeric retry limit."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:10",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Ordinary retryable custom-worker failure retains configured retry/reset/setup-cache policy; a transport deferral does not enter that retry path. This is not crash-after-reset atomicity proof."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:11",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Long transport deferral does not start another authoring round immediately, for both single and multiple samples."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:13",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "A compliant qualified candidate advances to commit/integration; unsafe candidates and no-green sampling controls refuse."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S24:14",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Exhausted retries escalate with bounded prior-failure detail and retain diagnostic worktree/evidence."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S25:01",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
+            "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c"
+          }
+        ],
+        "candidate_contract_note": "Real and seam best-of-N run independent sample worktrees on the frozen base with shared worker limiting; single-sample path remains the task worktree."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S26:03",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-tested.json",
+            "sha256": "7935e7d157ff32e7c71431101141562a69c741f4fca8ff4443db81a4defc2c6e"
+          }
+        ],
+        "candidate_contract_note": "Known qualified task branches merge --no-ff through the single integration merge lock. Actual overlapping-scope CLI fixtures serialize integration."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S26:02",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-preserved.json",
+            "sha256": "b7fc180e53002ea220b1eac11643a901aa385e7224cb3b48860e299b628c2d90"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance: commit is issued once and failure returns existing escalation, preserving HEAD for inspection; no blind retry after uncertain commit observation. Negative failure case corroborates the note, not every crash boundary."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S26:04",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-preserved.json",
+            "sha256": "b7fc180e53002ea220b1eac11643a901aa385e7224cb3b48860e299b628c2d90"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance of success branch: a successful merge is accepted without a newly executed combined-tree gate. Per-task green is never relabeled as fresh combined-tree test coverage."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S29:02",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "fa266ce319a36311bcc27d639b4089c6030626b24757dc96361b66ca56003ffd",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
+            "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486"
+          }
+        ],
+        "candidate_contract_note": "Ordinary exits/signal-null exit normalization and separated stdout/stderr/out are actually observed. The helper has no fixed accumulated-output cap; no bounded-memory claim is added."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S29:03",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "fa266ce319a36311bcc27d639b4089c6030626b24757dc96361b66ca56003ffd",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
+            "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486"
+          }
+        ],
+        "candidate_contract_note": "Deadline waits for typed tree-kill verification; verified timeout124 and unverified125 remain distinct. Local real descendant probes and controlled kill failure corroborate this finite process contract."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S29:01",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "fa266ce319a36311bcc27d639b4089c6030626b24757dc96361b66ca56003ffd",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-preserved.json",
+            "sha256": "b224c65e6fc8cecd6464aa2fa288577130f69d14be96c2e830c2084663d77ba4"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance preserves detached POSIX process groups, captured streams and per-command default timeout policy. Local Windows execution does not qualify the POSIX group arm."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S29:06",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "fa266ce319a36311bcc27d639b4089c6030626b24757dc96361b66ca56003ffd",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "FARM-R02",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-preserved.json",
+            "sha256": "b224c65e6fc8cecd6464aa2fa288577130f69d14be96c2e830c2084663d77ba4"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance of platform arms retains taskkill/fallback/root checks and their limits; root-process death alone cannot establish every descendant is gone. No unexecuted POSIX arm is marked Windows-tested."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S30:03",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-stale-registration-tested.json",
+            "sha256": "6fe6f9f9ee1fa0b176e6fbcd15827d2c2950807e249c90f07ddc049745e2f1c8"
+          }
+        ],
+        "candidate_contract_note": "Known registered+missing owned worktree authorizes one prune and reobservation; injected unavailable readback then authorizes no additional destructive attempt. Neither readback failure nor lexical mismatch proves registry absence."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:01",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+            "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+          }
+        ],
+        "candidate_contract_note": "Actual source/bundle canary freezes a resolvable base before entitlement callbacks can move its named ref; unresolved base refuses before model requests."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:02",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+            "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+          }
+        ],
+        "candidate_contract_note": "401 exclusion, bounded probe timeout/error and non401/status0 survivor are distinguished. A survivor is only eligible for canary evaluation, never a paid-provider capability claim."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:03",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+            "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+          }
+        ],
+        "candidate_contract_note": "Real source/bundle loopback canaries use detached isolated task/sample worktrees and leave existing refs unchanged; this path does not commit/merge."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:04",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+            "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+          }
+        ],
+        "candidate_contract_note": "Known settled canary candidates clean their own worktree/branch/root namespace independently before recommendation; failure fixtures preserve existing integration refs."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:07",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
+            "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f"
+          }
+        ],
+        "candidate_contract_note": "Actual green, clean source/bundle canary writes its bounded recommendation/provenance while preserving existing refs."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:05",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-preserved.json",
+            "sha256": "987de104fa89933b85a371ee5fe6898181fa2dbb6ee88d1a1988beda42fd0cca"
+          }
+        ],
+        "candidate_contract_note": "Source and controlled ranking preserve green-first then attempts/time order; one candidate run is not a statistical success-rate estimate."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S32:06",
+      "expected": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+      "replacement": {
+        "owner": "farm",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "FARM-R01",
+          "FARM-R02",
+          "FARM-R03",
+          "HW-25",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-preserved.json",
+            "sha256": "987de104fa89933b85a371ee5fe6898181fa2dbb6ee88d1a1988beda42fd0cca"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance: no-green or degraded cleanup suppresses recommendation and exits2. The no-green path is observed; this group does not newly execute every canary cleanup-unknown fault."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S47:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "ad4e5a6a76591d503af2954fbdd4a77fc956767db1fe2a8b0afca7781966e7e9",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+            "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+          }
+        ],
+        "candidate_contract_note": "Controlled spawn-boundary calls preserve explicit environment, bounded captured output and configured/default deadline. No real Docker availability is inferred from the local16 report."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S47:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "ad4e5a6a76591d503af2954fbdd4a77fc956767db1fe2a8b0afca7781966e7e9",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+            "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+          }
+        ],
+        "candidate_contract_note": "Spawn errors, ordinary nonzero close and already-aborted signals retain ordinary failure and settle once; timer/listener cleanup is kept."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S47:07",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "ad4e5a6a76591d503af2954fbdd4a77fc956767db1fe2a8b0afca7781966e7e9",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+            "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2"
+          }
+        ],
+        "candidate_contract_note": "Abort/timeout/overflow first-reason latches remain authoritative across later close; retained output is not overwritten by a secondary terminal event."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+            "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8"
+          }
+        ],
+        "candidate_contract_note": "Source-conformance only: required Linux-Docker availability mode throws for unavailable/incompatible daemon, while developer nonrequired mode may skip. Actual required-host runtime belongs to the separately retained hosted producer."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:03",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:04",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:05",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:07",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:08",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S49:09",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "6cfb496111a06f200ebdd4a562e9e0efe81936b153347dd53450e7683913dd80",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:01",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json",
+            "sha256": "e21b85d3cc9c0914c8625ca7fe37ad612bd537b86133e3ff78090c568244cdb0"
+          }
+        ],
+        "candidate_contract_note": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S52:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "e28a55984940456c15a59efb35151172073d7d659421d1eef7ed5dd65718f6d9",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json",
+            "sha256": "3762d92c83ebe332f49697430dbb90f9199f7d5b6fb69fe77fcdd759825e1e07"
+          }
+        ],
+        "candidate_contract_note": "Explicit outward copy argv/destination and refusal of reverse bind/invalid sources are software-checked; host output may remain partial on interruption, with no transactional rollback claim."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+            "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+          }
+        ],
+        "candidate_contract_note": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:03",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+            "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+          }
+        ],
+        "candidate_contract_note": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:04",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+            "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+          }
+        ],
+        "candidate_contract_note": "Source-only resolved interrupted promise exits130 rather than the ordinary command code."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S54:05",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+            "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+          }
+        ],
+        "candidate_contract_note": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S51:01",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "c1fca22d9ac0ae6a4f4f5420d770a226b6523e051a94a2932db0b3882f22065e",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+            "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869"
+          }
+        ],
+        "candidate_contract_note": "Software construction accepts caller-scoped dummy token/home volume, excludes source co-mount/host auth bind, and keeps reusable token value out of argv. Approved-store choice remains caller guidance, not a mechanically attested origin."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "S51:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "c1fca22d9ac0ae6a4f4f5420d770a226b6523e051a94a2932db0b3882f22065e",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+            "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869"
+          }
+        ],
+        "candidate_contract_note": "Software policy/hardening and scoped Docker-client token environment enforce offline default or explicitly named experimental policy; no authenticated/live provider run is claimed."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:01",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:03",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:04",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:05",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:07",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:08",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:09",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:10",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:11",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:12",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:13",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:14",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:15",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:17",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:18",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:19",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:20",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:21",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:22",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:23",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:24",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+            "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:02",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:03",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:04",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:05",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:06",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:07",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:08",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:10",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:11",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:12",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:13",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:14",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+            "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+          }
+        ],
+        "candidate_contract_note": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification."
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW01:16",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "b38e4aff793f5ddfe742e9b19c7b5facdc5e6f987f74d3b37c097453380e3974",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "NOT_APPLICABLE",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+            "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f"
+          }
+        ],
+        "candidate_contract_note": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed.",
+        "contract": "frozen-task:SBX-D02"
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:01",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "NOT_APPLICABLE",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-01.json",
+            "sha256": "71925f1b0d2b47b4510b9263e1200fd9876c62c7a2666ecf76fde2dfd902d59a"
+          }
+        ],
+        "candidate_contract_note": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+        "contract": "frozen-task:SBX-D04"
+      }
+    },
+    {
+      "group": "transitions",
+      "id": "SW02:09",
+      "expected": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "expected_sha256": "29f844316e2cf2f5e14b7cbf84e9028d0f69bbee9c48d295f0204a55e4395a51",
+      "replacement": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "NOT_APPLICABLE",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-09.json",
+            "sha256": "d729d83af5cfb81299b1c3c1d34077442458f220aba43dcdb31bde01b103521f"
+          }
+        ],
+        "candidate_contract_note": "Mandatory consumer network401 prerequisite is replaced with optional separately authorized maintainer qualification; offline posture is not widened.",
+        "contract": "frozen-task:SBX-D04"
+      }
+    }
+  ],
+  "new_transition_rows": [],
+  "original_planned_population": 118,
+  "proposed_counts": {
+    "TESTED": 40,
+    "PRESERVED": 48,
+    "NOT_APPLICABLE": 3
+  },
+  "hosted_pending": [
+    {
+      "row": "S47:05",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 328,
+      "literal_observation": "2026-11-14T03:20:34.7357318Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m SBX-C02 real output overflow stops only its exact target and preserves another running box \u001b[33m 515\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "SBX-C02 real output overflow stops only its exact target and preserves another running box",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S48:01",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 319,
+      "literal_observation": "2026-11-14T03:19:52.9239873Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m create clones into a named volume + starts a container; destroy sweeps to zero \u001b[33m 6391\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "create clones into a named volume + starts a container; destroy sweeps to zero",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S48:02",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 319,
+      "literal_observation": "2026-11-14T03:19:52.9239873Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m create clones into a named volume + starts a container; destroy sweeps to zero \u001b[33m 6391\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "create clones into a named volume + starts a container; destroy sweeps to zero",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S48:03",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 367,
+      "literal_observation": "2026-11-14T03:24:58.2482212Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box \u001b[33m 7129\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S48:04",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 368,
+      "literal_observation": "2026-11-14T03:24:58.2482824Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m nixpacks: distinct staging names reuse the exact labeled image and preserve another box \u001b[33m 5416\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "nixpacks: distinct staging names reuse the exact labeled image and preserve another box",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S48:05",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 350,
+      "literal_observation": "2026-11-14T03:24:34.3669173Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m inspect shows no bind mount, no docker.sock, not privileged, cap-drop ALL, read-only, non-root \u001b[33m 1044\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "inspect shows no bind mount, no docker.sock, not privileged, cap-drop ALL, read-only, non-root",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S50:02",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 323,
+      "literal_observation": "2026-11-14T03:20:28.4594859Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m clone-then-cut: egress works at start, then post-cut egress FAILS \u001b[33m 5438\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "clone-then-cut: egress works at start, then post-cut egress FAILS",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S50:03",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 324,
+      "literal_observation": "2026-11-14T03:20:28.4626909Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m egress-allowlist (EXPERIMENTAL): admitted owned peers succeed and reachable unlisted peers are dropped \u001b[33m 23409\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "egress-allowlist (EXPERIMENTAL): admitted owned peers succeed and reachable unlisted peers are dropped",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S50:04",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 324,
+      "literal_observation": "2026-11-14T03:20:28.4626909Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m egress-allowlist (EXPERIMENTAL): admitted owned peers succeed and reachable unlisted peers are dropped \u001b[33m 23409\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "egress-allowlist (EXPERIMENTAL): admitted owned peers succeed and reachable unlisted peers are dropped",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    },
+    {
+      "row": "S50:06",
+      "producer_class": "hosted-job-log",
+      "run_id": 43550337422,
+      "job_id": 132311178278,
+      "source_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1103-6a636870-sandbox-driver-132311178278-original.log",
+      "log_sha256": "fb2028b2b74a231cdfec5f1082d7c5aa6771bd0dc77aa4610296d876e43c27b6",
+      "line": 323,
+      "literal_observation": "2026-11-14T03:20:28.4594859Z      \u001b[33m\u001b[2m✓\u001b[22m\u001b[39m clone-then-cut: egress works at start, then post-cut egress FAILS \u001b[33m 5438\u001b[2mms\u001b[22m\u001b[39m",
+      "short_selector": "clone-then-cut: egress works at start, then post-cut egress FAILS",
+      "status": "ACTUALLY_OBSERVED_PASS_PENDING_SUPPORTED_RETAINED_HOSTED_ORIGIN",
+      "limit": "No Sandbox artifact was emitted; current readiness hosted branch requires artifact and overall-success run. This failed overall run has a successful independent job. Do not relabel local-host or forge artifact metadata."
+    }
+  ],
+  "unresolved": {
+    "S21:01": {
+      "contract": {
+        "event": "farm invocation",
+        "guard": "current authority; canonical plan inside repo; adjacent Claude farm.js present and no more than 1s stale",
+        "to": "running",
+        "effects": "Resolve exact Node; filtered environment; recheck lease after async runtime resolution; spawn managed farm subprocess.",
+        "failure_retry": "Installed isolated Pi package without adjacent Claude source bundle is unsupported; no implicit inline promotion.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/farm.ts",
+            "symbol": "farm dispatch adapter",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/farm.ts",
+            "lines": "1-278"
+          }
+        ],
+        "from": "preflight",
+        "transition_id": "S21:01"
+      },
+      "reason": "Pi adapter farm runner owner; Farm941 does not execute this boundary."
+    },
+    "S21:02": {
+      "contract": {
+        "event": "normal close",
+        "guard": "bounded output ≤65KiB; verified cleanup",
+        "to": "completed or failed",
+        "effects": "Return original farm exit/result plus sanitized bounded output.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/farm.ts",
+            "symbol": "farm dispatch adapter",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/farm.ts",
+            "lines": "1-278"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S21:02"
+      },
+      "reason": "Pi adapter farm runner owner; Farm941 does not execute this boundary."
+    },
+    "S21:03": {
+      "contract": {
+        "event": "abort/deadline/overflow",
+        "guard": "terminal event",
+        "to": "cancelled or failed",
+        "effects": "Terminate managed tree and verify cleanup.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/farm.ts",
+            "symbol": "farm dispatch adapter",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/farm.ts",
+            "lines": "1-278"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S21:03"
+      },
+      "reason": "Pi adapter farm runner owner; Farm941 does not execute this boundary."
+    },
+    "S21:04": {
+      "contract": {
+        "event": "cleanup unverified",
+        "guard": "process containment unknown",
+        "to": "cleanup unknown or cancelled",
+        "effects": "Return failure details; cancellation result priority can mask cleanup-specific headline.",
+        "failure_retry": "Preserve cancellation and containment as separate result fields in future contracts.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/farm.ts",
+            "symbol": "farm dispatch adapter",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/farm.ts",
+            "lines": "1-278"
+          }
+        ],
+        "from": "settling",
+        "transition_id": "S21:04"
+      },
+      "reason": "Pi adapter farm runner owner; Farm941 does not execute this boundary."
+    },
+    "S22:02": {
+      "contract": {
+        "event": "classify artifact origin",
+        "guard": "HTML-backed or bound projection",
+        "to": "typed unverified",
+        "effects": "Require native verification before canary, worktrees, worker requests or dispatch effects.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "input plan",
+        "transition_id": "S22:02"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S22:03": {
+      "contract": {
+        "event": "load installed engine",
+        "guard": "real bounded installation and exact release manifest shape/protocol/schema; native_tested platform; hash/magic match",
+        "to": "installed payload checked",
+        "effects": "Read manifest and binary from plugin helpers/artifacts only; no PATH/download/build fallback.",
+        "failure_retry": "Current farm requires exact five-key manifest; qualified package adds context_qualification and is rejected before execution.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "typed unverified",
+        "transition_id": "S22:03"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S22:04": {
+      "contract": {
+        "event": "pin executable",
+        "guard": "matching canonical file/bytes",
+        "to": "engine pinned",
+        "effects": "Linux executes pinned fd; macOS uses private verified bytes; Windows read-sharing pin guard holds handle and READY handshake.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "installed payload checked",
+        "transition_id": "S22:04"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S22:05": {
+      "contract": {
+        "event": "canary verification",
+        "guard": "authoring binding exact",
+        "to": "authoring verified",
+        "effects": "Ask engine to verify authoring identity before economic model probes.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "engine pinned",
+        "transition_id": "S22:05"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S22:06": {
+      "contract": {
+        "event": "ordinary dispatch verification",
+        "guard": "enriched projection digest and provider seal exact",
+        "to": "dispatch sealed",
+        "effects": "Verify exact dispatch payload and bound provider; only then allow work scheduling.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "engine pinned",
+        "transition_id": "S22:06"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S22:07": {
+      "contract": {
+        "event": "shape/hash/path/protocol/binding/pin error",
+        "guard": "guard fails",
+        "to": "refused",
+        "effects": "Stop before farm side effects; close pin handles/private files.",
+        "failure_retry": "Do not reinterpret typed evidence as legacy JSON on failure.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "installedArtifactBinary, verifyArtifactPlan and pinned invocation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "195-650"
+          }
+        ],
+        "from": "any typed admission",
+        "transition_id": "S22:07"
+      },
+      "reason": "Native typed installed engine/platform admission; current local Farm941 does not establish the full real pin/bridge boundary."
+    },
+    "S23:07": {
+      "contract": {
+        "event": "external OS termination",
+        "guard": "no cooperative farm CLI signal handler",
+        "to": "process terminated / durable outcome uncertain",
+        "effects": "OS interruption may stop process before finally/receipt completes.",
+        "failure_retry": "report.aborted is only set by circuit breaker; do not infer a durable abort receipt from process death.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "main/run scheduler and report finalization",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "3000-3697"
+          }
+        ],
+        "from": "any scheduling",
+        "transition_id": "S23:07"
+      },
+      "reason": "External crash/outer unexpected exception remains unobserved."
+    },
+    "S23:12": {
+      "contract": {
+        "event": "unexpected exception",
+        "guard": "outside handled per-task failure",
+        "to": "failure exit 1",
+        "effects": "Finally attempts cleanup/report.",
+        "failure_retry": "Outer error may dominate report failure; preserve independent workload, cleanup and receipt axes.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "main/run scheduler and report finalization",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "3000-3697"
+          }
+        ],
+        "from": "run body",
+        "transition_id": "S23:12"
+      },
+      "reason": "External crash/outer unexpected exception remains unobserved."
+    },
+    "S48:08": {
+      "contract": {
+        "event": "caller abort",
+        "guard": "default clone/build lacks propagated AbortSignal",
+        "to": "same phase until helper ends",
+        "effects": "Cancellation reaches later Docker/runtime stages, but host clone/build may continue.",
+        "failure_retry": "Do not claim immediate whole-create cancellation from CLI abort alone.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "cloning/building",
+        "transition_id": "S48:08"
+      },
+      "reason": "Actual default cancellation/partial compensation, token firewall/caller cleanup or host boundary is not established by an injected/independent helper outcome."
+    },
+    "S50:05": {
+      "contract": {
+        "event": "resolution/firewall failure",
+        "guard": "before final default-drop may occur",
+        "to": "failed configuration",
+        "effects": "Return failure; caller must destroy or otherwise contain container.",
+        "failure_retry": "Helper existence does not mean ordinary CLI allowlist flag is wired to it; current run integration remains offline.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "allowlist configuring",
+        "transition_id": "S50:05"
+      },
+      "reason": "Actual default cancellation/partial compensation, token firewall/caller cleanup or host boundary is not established by an injected/independent helper outcome."
+    },
+    "S51:03": {
+      "contract": {
+        "event": "networked policy",
+        "guard": "requires root firewall setup",
+        "to": "firewall pending",
+        "effects": "Install allowlist rules inside container.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "container running",
+        "transition_id": "S51:03"
+      },
+      "reason": "Actual default cancellation/partial compensation, token firewall/caller cleanup or host boundary is not established by an injected/independent helper outcome."
+    },
+    "S51:04": {
+      "contract": {
+        "event": "firewall succeeds",
+        "guard": "all expected commands zero",
+        "to": "ready",
+        "effects": "Return usable container identity.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "firewall pending",
+        "transition_id": "S51:04"
+      },
+      "reason": "Actual default cancellation/partial compensation, token firewall/caller cleanup or host boundary is not established by an injected/independent helper outcome."
+    },
+    "S51:06": {
+      "contract": {
+        "event": "session finishes / caller destroy",
+        "guard": "caller-directed cleanup",
+        "to": "stopped or unknown",
+        "effects": "Stop/remove container; home-volume lifecycle belongs to caller, not implicit source checkout cleanup.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "ready",
+        "transition_id": "S51:06"
+      },
+      "reason": "Actual default cancellation/partial compensation, token firewall/caller cleanup or host boundary is not established by an injected/independent helper outcome."
+    }
+  },
+  "history": "All proposed rows are currently PLANNED with empty evidence. Existing history/owner/treatment/task links are retained byte-for-byte; no artificial predecessor pointer or status promotion is added."
+}

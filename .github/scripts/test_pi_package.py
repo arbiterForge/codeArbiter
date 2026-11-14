@@ -294,6 +294,66 @@ def retain_rpc_shutdown_failure(trace: Path) -> str | None:
         return None
 
 
+def rpc_diagnostic_runtime_identity(node: str, cli: Path) -> dict | None:
+    """Hash the admitted executable and direct RPC entries, without logging paths."""
+    try:
+        entry = cli.parent / "cli-runtime.js"
+        with entry.open("rb") as stream:
+            source = stream.read(16_385)
+        if len(source) > 16_384:
+            return None
+        imported = re.search(
+            rb'import\{configureHttpDispatcher,main\}from"(\./chunks/[A-Za-z0-9_-]+\.js)"',
+            source,
+        )
+        if imported is None:
+            return None
+        runtime = cli.parent / imported[1].decode("ascii")
+        paths = {"nodeSha256": Path(node), "cliSha256": cli,
+                 "entrySha256": entry, "rpcModuleSha256": runtime}
+        identities = {}
+        for name, path in paths.items():
+            digest = hashlib.sha256()
+            size = 0
+            with path.open("rb") as stream:
+                while block := stream.read(65_536):
+                    size += len(block)
+                    if size > 128 << 20:
+                        return None
+                    digest.update(block)
+            identities[name] = digest.hexdigest()
+        return identities
+    except (OSError, ValueError, UnicodeError):
+        return None
+
+
+def retain_rpc_observed_raw_diagnostics(trace: Path, identity: dict | None, *, succeeded: bool) -> str | None:
+    """Separate observed-route receipt; never changes the raw compatibility verdict."""
+    selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if not selected:
+        return None
+    fields = {"nodeSha256", "cliSha256", "entrySha256", "rpcModuleSha256"}
+    if not isinstance(identity, dict) or set(identity) != fields or any(
+        not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None
+        for value in identity.values()
+    ):
+        identity = None
+    try:
+        destination = Path(selected)
+        destination.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink() or not destination.is_dir():
+            return None
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-observed-", suffix=".json", dir=destination, delete=False) as stream:
+            json.dump({"schemaVersion": 1, "route": "passive-observed-raw-companion",
+                       "outcome": "observed-pass" if succeeded is True else "observed-failure",
+                       "runtimeIdentity": identity, "trace": safe_rpc_shutdown_report(trace)},
+                      stream, separators=(",", ":"))
+            stream.write("\n")
+            return Path(stream.name).name
+    except (OSError, ValueError):
+        return None
+
+
 def run_rpc_commands(
     cwd: Path,
     agent_dir: Path,
@@ -2793,6 +2853,51 @@ class PiPackageTests(unittest.TestCase):
                 else:
                     self.fail("post-exit-entry hang left a descendant alive")
 
+    def test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observed-record-") as directory:
+            root = Path(directory)
+            cli = root / "cli.js"
+            node = root / "node.exe"
+            entry = root / "cli-runtime.js"
+            runtime = root / "chunks" / "chunk-fixture.js"
+            runtime.parent.mkdir()
+            for path in (cli, node, runtime):
+                path.write_bytes(b"owned non-executable identity fixture")
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"./chunks/chunk-fixture.js";')
+            identity = rpc_diagnostic_runtime_identity(str(node), cli)
+            self.assertEqual(identity, {
+                name: hashlib.sha256(path.read_bytes()).hexdigest()
+                for name, path in {"nodeSha256": node, "cliSha256": cli,
+                                   "entrySha256": entry, "rpcModuleSha256": runtime}.items()
+            })
+            trace = root / "trace.json"
+            report = self._shutdown_report()
+            report["private"] = "PrivateFixtureValue"
+            report["phases"][0]["resources"] = ["PrivateFixtureValue"]
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}):
+                one = retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True)
+                two = retain_rpc_observed_raw_diagnostics(trace, {**identity, "private": "PrivateFixtureValue"}, succeeded=False)
+            self.assertNotEqual(one, two)
+            first = read_json(retained / one)
+            second = read_json(retained / two)
+            self.assertEqual(set(first), {"schemaVersion", "route", "outcome", "runtimeIdentity", "trace"})
+            self.assertEqual(first["route"], "passive-observed-raw-companion")
+            self.assertEqual(first["outcome"], "observed-pass")
+            self.assertEqual(first["runtimeIdentity"], identity)
+            self.assertEqual(first["trace"]["phases"][0]["resources"], ["Other"])
+            self.assertEqual(second["outcome"], "observed-failure")
+            self.assertIsNone(second["runtimeIdentity"])
+            self.assertNotIn("PrivateFixtureValue", (retained / one).read_text(encoding="utf-8"))
+            self.assertNotIn("PrivateFixtureValue", (retained / two).read_text(encoding="utf-8"))
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"../outside.js";')
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            entry.write_bytes(b"x" * 16_385)
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True))
+
     def test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-") as directory:
             root = Path(directory)
@@ -2811,6 +2916,41 @@ class PiPackageTests(unittest.TestCase):
             self.assertEqual(len(observed), 1)
             self.assertNotIn("--require", observed[0])
             self.assertFalse(any("ca-rpc-shutdown-observer" in argument for argument in observed[0]))
+
+    def test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases(self):
+        # Separate from the original raw argv/natural-exit qualification above.
+        # A pass here does not resolve or replace a failure in that original case.
+        node, cli = live_pi_cli()
+        identity = rpc_diagnostic_runtime_identity(node, cli)
+        self.assertIsNotNone(identity, "the diagnostic must identify the actual direct RPC runtime")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-observed-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            observed = []
+            succeeded = False
+            try:
+                records = run_rpc_commands(
+                    cwd, root / "agent", root / "home", _observe_shutdown=True,
+                    _on_process_started=lambda process, reader: observed.append(process.args),
+                )
+                self.assertTrue(records[0]["success"])
+                self.assertEqual(len(observed), 1)
+                expected = [node, "--require", str(root / "home/ca-rpc-shutdown-observer.cjs"),
+                            str(cli), "--mode", "rpc", "--offline", "--no-session", "--approve",
+                            "--no-prompt-templates", "--no-themes", "--no-context-files",
+                            "--extension", str(root / "home/ca-rpc-shutdown-observer.ts"),
+                            "--no-builtin-tools"]
+                self.assertEqual(observed[0], expected)
+                report = safe_rpc_shutdown_report(root / "home/ca-rpc-shutdown-trace.json")
+                self.assertEqual([row["phase"] for row in report["phases"]],
+                                 ["started", "stdin_end", "session_shutdown_observer", "process_exit"])
+                self.assertEqual(report["phases"][-1]["exitCode"], 0)
+                succeeded = True
+            finally:
+                retain_rpc_observed_raw_diagnostics(
+                    root / "home/ca-rpc-shutdown-trace.json", identity, succeeded=succeeded,
+                )
 
     def test_rpc_stderr_backpressure_does_not_block_shutdown(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
@@ -3758,28 +3898,46 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest_data = {"binaries": {
-                    platform: {"file": "artifact-bin", "sha256": binary_sha}
-                    for platform in platforms
-                }}
+                from _artifactmanifestlib import CONTRACT
+                manifest_data = {
+                    "format": CONTRACT["format"], "version": "0.1.0",
+                    "protocol": CONTRACT["protocol"],
+                    "schema_version": CONTRACT["schema_version"],
+                    "binaries": {
+                        platform: {
+                            "file": "ca-artifact-" + platform.replace("/", "-")
+                                    + (".exe" if platform.startswith("windows/") else ""),
+                            "sha256": binary_sha, "native_tested": True,
+                        }
+                        for platform in platforms
+                    },
+                }
                 if host == "pi":
                     manifest_data["context_qualification"] = {
-                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        platform: {
+                            "source_commit": "a" * 40, "workflow": CONTRACT["workflow"],
+                            "run_id": "123", "binary_sha256": binary_sha,
+                            "observation_sha256": "d" * 64, "module_sha256": "e" * 64,
+                            "native_cases": CONTRACT["native_cases"],
+                        }
                         for platform in platforms
                     }
                 manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
+                self.assertEqual(helper.parse_release_manifest(manifest), manifest_data)
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
+                archive_members = {prefix + "release.json": manifest}
+                archive_members.update({prefix + entry["file"]: binary
+                                        for entry in manifest_data["binaries"].values()})
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
-                    for name, data in ((prefix + "release.json", manifest),
-                                       (prefix + "artifact-bin", binary)):
+                    for name, data in archive_members.items():
                         info = tarfile.TarInfo(name); info.size = len(data)
                         archive.addfile(info, io.BytesIO(data))
                 package_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
                 cohort["packages"][host] = {
                     "file": archive_path.name, "sha256": package_sha,
-                    "members": {prefix + "release.json": {"sha256": manifest_sha},
-                                prefix + "artifact-bin": {"sha256": binary_sha}},
+                    "members": {name: {"sha256": hashlib.sha256(data).hexdigest()}
+                                for name, data in archive_members.items()},
                 }
                 for platform in platforms:
                     cell = cold_root / f"{host}-{platform.replace('/', '-')}"

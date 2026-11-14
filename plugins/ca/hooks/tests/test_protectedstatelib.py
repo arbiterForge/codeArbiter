@@ -7,6 +7,8 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import _bashguardlib  # noqa: E402
@@ -25,6 +27,40 @@ from _protectedstatelib import (  # noqa: E402
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
+
+
+def setUpModule():
+    # Direct guard calls still exercise the real audit sink, but must never
+    # write synthetic BLOCK events into the caller's checkout.
+    temporary = tempfile.TemporaryDirectory()
+    unittest.addModuleCleanup(temporary.cleanup)
+    os.makedirs(os.path.join(temporary.name, ".codearbiter"))
+    subprocess.run(["git", "init", "--quiet", temporary.name], check=True)
+    environment = mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": temporary.name})
+    environment.start()
+    unittest.addModuleCleanup(environment.stop)
+
+
+class TestCallerAuditIsolation(unittest.TestCase):
+    def test_in_process_guard_tests_preserve_the_callers_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "--quiet", str(root)], check=True)
+            state = root / ".codearbiter"
+            state.mkdir()
+            (state / "CONTEXT.md").write_text(
+                "---\narbiter: enabled\nstage: 2\n---\n", encoding="utf-8")
+            log = state / "gate-events.log"
+            original = b"caller audit history\n"
+            log.write_bytes(original)
+            result = subprocess.run(
+                [sys.executable, "-B", str(Path(__file__).resolve()),
+                 "TestRecoveryDescriptors.test_rewrite_truncate_and_utf16_shapes_remain_blocked"],
+                cwd=root, env={**os.environ, "CLAUDE_PROJECT_DIR": str(root), "PYTHONUTF8": "1"},
+                capture_output=True, text=True, encoding="utf-8", timeout=60)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(log.read_bytes(), original,
+                             "guard tests appended synthetic BLOCK events to caller audit")
 
 
 def _symlinks_supported():

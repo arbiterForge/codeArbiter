@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "started_at": "2026-11-14T08:57:42.739002+00:00",
+  "finished_at": "2026-11-14T08:57:42.998827+00:00",
+  "seconds": 0.2592088000383228,
+  "stdout_sha256": "3b2b966ba6f46cdedda5e1183e3e7d8344350951fcd70c58b504c8cee0b94f8e",
+  "stderr_sha256": "c3d6ba9861e0541978f60a0d90f8b5e55c99d1ad583c236d2ba618cf112b7e99"
+}

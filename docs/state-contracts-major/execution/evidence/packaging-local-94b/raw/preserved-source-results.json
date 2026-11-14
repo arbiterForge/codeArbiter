@@ -1,0 +1,38 @@
+{
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "checks": [
+    {
+      "path": "tools/codex-parity-fixture.py",
+      "sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+      "byte_equal_baseline": true,
+      "stdlib_imports": [
+        "os",
+        "subprocess",
+        "sys"
+      ]
+    },
+    {
+      "path": "tools/tribunal-eval.py",
+      "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+      "byte_equal_baseline": true,
+      "stdlib_imports": [
+        "argparse",
+        "collections",
+        "hashlib",
+        "json",
+        "math",
+        "pathlib",
+        "re",
+        "sys"
+      ]
+    },
+    {
+      "path": ".github/fixtures/tribunal/cases.json",
+      "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+      "byte_equal_baseline": true
+    }
+  ],
+  "result": "PRESERVED",
+  "scope": "Source contract only; no interpreter/Git/provider/model/host execution equivalence."
+}

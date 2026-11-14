@@ -15,6 +15,21 @@ const QualifiedCommandProfile = "declared-command/0.2.0"
 // native evidence publication. Older producer results retain their raw semantics.
 const CompletionCommandProfile = "declared-command/0.3.0"
 
+// Launch-file bounds are one contract for the qualified binding schema, role
+// validation and the completion consumer. The largest admitted layout is native
+// Windows npm: declared executable, node runtime, npm CLI, npm prefix helper and
+// root manifest (five singleton roles) plus at most 32 workspace manifests.
+const MaxWorkspaceManifests = 32
+const maxSingletonLaunchRoles = 5
+const MaxLaunchFiles = maxSingletonLaunchRoles + MaxWorkspaceManifests
+
+// ValidQualifiedBinding reports whether one qualified binding satisfies the
+// role/path semantics for its declared command definition. It never executes
+// or inspects the files it names.
+func ValidQualifiedBinding(binding, definition map[string]any) bool {
+	return validateQualifiedBinding(binding, definition)
+}
+
 func QualifiedCommandBindingsSchema() map[string]any {
 	return map[string]any{"type": "array", "items": commandBindingSchema(true), "minItems": int64(1), "maxItems": int64(256)}
 }
@@ -73,7 +88,7 @@ func validateQualifiedBinding(binding, definition map[string]any) bool {
 	}
 	if len(workspaceManifests) > 0 {
 		manifest := files["npm-manifest"]
-		if !isNPM || manifest == nil || collector == "exit-only/0.1.0" || len(workspaceManifests) > 32 {
+		if !isNPM || manifest == nil || collector == "exit-only/0.1.0" || len(workspaceManifests) > MaxWorkspaceManifests {
 			return false
 		}
 		root := filepath.Dir(model.S(manifest["path"]))

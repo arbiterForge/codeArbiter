@@ -1226,15 +1226,23 @@ def classify_merge_readiness(check_runs, head_sha, check_name):
     protected branch shows how a commit ENTERED that branch, not that
     post-merge evidence exists for the exact commit about to be tagged.
 
+    The required name must be nonblank text, and a candidate identity must be
+    a complete canonical 40- or 64-character hexadecimal commit identifier.
+    Missing fields cannot establish matching evidence by both being absent.
+
     Fail-closed throughout: unparseable input is `missing`, and several runs
     share one name only when a re-run is in flight - we cannot tell which
     verdict is authoritative, so EVERY matching run must be green."""
-    if not isinstance(check_runs, list):
+    if (not isinstance(check_runs, list) or not isinstance(check_name, str)
+            or not check_name.strip()):
         return "missing"
     matching = [run for run in check_runs
                 if isinstance(run, dict) and run.get("name") == check_name]
     if not matching:
         return "missing"
+    if (not isinstance(head_sha, str)
+            or re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", head_sha) is None):
+        return "sha_mismatch"
     if any(run.get("head_sha") != head_sha for run in matching):
         return "sha_mismatch"
     if any(run.get("status") != "completed" for run in matching):

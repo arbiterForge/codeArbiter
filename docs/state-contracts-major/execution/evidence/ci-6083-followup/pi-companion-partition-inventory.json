@@ -1,0 +1,115 @@
+{
+  "scope": "Mechanical real unittest discovery/partition inventory only; no tests executed or source changed.",
+  "source_hashes": {
+    ".github\\scripts\\test_pi_package.py": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    ".github\\scripts\\test_pi_platform_contract.py": "bb93e3d7d268b73cb86deefc66084dd1425ee5c9d987487b63ae2c8e78e967b8",
+    ".github\\workflows\\ci.yml": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358"
+  },
+  "original_count": 66,
+  "current_count": 68,
+  "every_original_exactly_once": true,
+  "current_population_exactly_partitioned": true,
+  "new_methods": [
+    "PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases",
+    "PiPackageTests.test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed"
+  ],
+  "both_new_in_rpc": true,
+  "partition_counts": {
+    "package": 19,
+    "rpc": 11,
+    "shutdown": 13,
+    "publish": 25
+  },
+  "original_partition_counts": {
+    "package": 19,
+    "rpc": 9,
+    "shutdown": 13,
+    "publish": 25
+  },
+  "required_fixture_rpc_command": [
+    "C:\\Python314\\python.exe",
+    ".github/scripts/test_pi_package.py",
+    "--platform-partition",
+    "rpc"
+  ],
+  "all_current_ids_by_partition": {
+    "package": [
+      "PiPackageTests.test_build_workspace_is_isolated_and_exactly_pinned",
+      "PiPackageTests.test_bundles_exist_at_only_declared_entrypoints",
+      "PiPackageTests.test_ci_has_pi_path_output_matrix_and_independent_version_guard",
+      "PiPackageTests.test_declared_release_resources_exclude_dependency_and_native_artifacts",
+      "PiPackageTests.test_distributable_scanner_rejects_nested_bypasses",
+      "PiPackageTests.test_durable_package_copy_never_follows_an_escaping_worktree_symlink",
+      "PiPackageTests.test_generated_root_manifest_is_forced_to_lf_on_every_checkout",
+      "PiPackageTests.test_generated_root_manifest_matches_renderer_bytes",
+      "PiPackageTests.test_host_package_write_is_idempotent_in_an_isolated_target",
+      "PiPackageTests.test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin",
+      "PiPackageTests.test_nested_manifest_is_the_single_version_source",
+      "PiPackageTests.test_parent_embeds_exact_generated_hardened_child_fingerprint",
+      "PiPackageTests.test_pi_runtime_is_not_present_beneath_plugin",
+      "PiPackageTests.test_pi_tools_node_modules_is_repository_ignored",
+      "PiPackageTests.test_release_guard_requires_strict_semver_advance_and_exact_metadata",
+      "PiPackageTests.test_root_manifest_is_publishable_dependency_free_pi_metadata",
+      "PiPackageTests.test_shared_python_contains_no_direct_bare_git_subprocess",
+      "PiPackageTests.test_task2_generated_and_built_text_is_strict_utf8_lf",
+      "PiPackageTests.test_windows_supervisor_is_one_utf8_release_artifact_and_stale_gated"
+    ],
+    "rpc": [
+      "PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",
+      "PiPackageTests.test_real_rpc_enabled_start_never_executes_project_git_and_installs_absolute_hook_identities",
+      "PiPackageTests.test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary",
+      "PiPackageTests.test_real_rpc_enforcement_registration_failure_stays_fail_closed",
+      "PiPackageTests.test_real_rpc_native_read_context_is_model_visible_once",
+      "PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases",
+      "PiPackageTests.test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments",
+      "PiPackageTests.test_rpc_decode_failure_terminates_process_tree_and_reader",
+      "PiPackageTests.test_rpc_embedded_observer_is_passive_and_keeps_stdout_clean",
+      "PiPackageTests.test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed",
+      "PiPackageTests.test_rpc_stderr_survives_malformed_utf8_and_pipe_saturation"
+    ],
+    "shutdown": [
+      "PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+      "PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_untrusted_fixture",
+      "PiPackageTests.test_rpc_post_exit_entry_hang_reaps_process_tree_and_readers",
+      "PiPackageTests.test_rpc_shutdown_budget_allows_cold_persistence_without_adding_another_thirty_seconds",
+      "PiPackageTests.test_rpc_shutdown_budget_bounds_raw_and_post_exit_entry_hangs",
+      "PiPackageTests.test_rpc_shutdown_budget_rejects_missing_late_and_unsuccessful_phase",
+      "PiPackageTests.test_rpc_shutdown_diagnostics_are_bounded_and_tolerate_missing_or_invalid_trace",
+      "PiPackageTests.test_rpc_shutdown_failure_artifact_projects_only_safe_fields_and_is_exclusive",
+      "PiPackageTests.test_rpc_shutdown_observer_does_not_force_exit_on_eof",
+      "PiPackageTests.test_rpc_shutdown_observer_never_turns_an_eof_hang_into_a_pass",
+      "PiPackageTests.test_rpc_shutdown_observer_records_eof_and_exit_without_stdout_changes",
+      "PiPackageTests.test_rpc_shutdown_phase_requires_exact_order_identity_and_success",
+      "PiPackageTests.test_rpc_stderr_backpressure_does_not_block_shutdown"
+    ],
+    "publish": [
+      "NpmPublishContractTest.test_attestation_bundle_binds_subject_and_github_source_identity",
+      "NpmPublishContractTest.test_attestation_evidence_comes_only_from_the_npm_verifier",
+      "NpmPublishContractTest.test_cold_receipt_schema_matches_real_producer_field_set",
+      "NpmPublishContractTest.test_context_qualified_pi_receipt_is_accepted_and_exact_matrix_rejects_schema_duplicate_and_member_digest_drift",
+      "NpmPublishContractTest.test_historical_attestation_commit_must_remain_on_protected_main",
+      "NpmPublishContractTest.test_lookup_can_mark_attestation_pending_while_readback_retries",
+      "NpmPublishContractTest.test_npm_pack_contents_match_pi_payload",
+      "NpmPublishContractTest.test_npm_secret_boundary_rejects_hostile_drift",
+      "NpmPublishContractTest.test_pack_report_rejects_output_injection_and_malformed_integrity",
+      "NpmPublishContractTest.test_package_identity_requires_both_manifests_and_public_repository",
+      "NpmPublishContractTest.test_prebuilt_pi_package_rejects_cohort_context_packer_and_byte_drift",
+      "NpmPublishContractTest.test_present_publication_orchestration_binds_verified_bundle",
+      "NpmPublishContractTest.test_project_registry_configuration_cannot_redirect_publication",
+      "NpmPublishContractTest.test_publish_inputs_reject_ref_injection_and_noncanonical_sha",
+      "NpmPublishContractTest.test_registry_authenticity_failure_has_safe_actionable_diagnostics",
+      "NpmPublishContractTest.test_registry_authenticity_rejects_unsigned_or_invalid_packages",
+      "NpmPublishContractTest.test_registry_lookup_and_readback_are_time_bounded",
+      "NpmPublishContractTest.test_registry_lookup_distinguishes_absence_from_failure_and_requires_proof",
+      "NpmPublishContractTest.test_registry_transport_failures_retry_but_evidence_mismatches_fail_fast",
+      "NpmPublishContractTest.test_release_and_git_identity_require_exact_annotated_tag",
+      "NpmPublishContractTest.test_release_source_binding_is_exact_and_refuses_continuation",
+      "NpmPublishContractTest.test_release_source_binding_rejects_cross_sha_before_publication",
+      "NpmPublishContractTest.test_remote_annotated_tag_identity_binds_direct_object_and_peeled_source",
+      "NpmPublishContractTest.test_security_policy_and_workflow_guard_the_npm_secret_boundary",
+      "NpmPublishContractTest.test_signature_diagnostics_bound_and_classify_malformed_evidence"
+    ]
+  },
+  "unchanged_required_CI": "Pinned supported Pi1.5.0 matrix invokes platform contract without --fixtures-only; fixture_commands(False) includes one rpc partition under unchanged180s command budget. Original raw method remains in RPC; shutdown tests remain shutdown.",
+  "qualification_limit": "Original6083 raw EOF failure remains UNRESOLVED; observed companion local4PASS is separate diagnostic route, hosted new capture pending."
+}

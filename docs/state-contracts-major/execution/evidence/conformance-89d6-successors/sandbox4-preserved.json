@@ -1,0 +1,218 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+  "inputs": {
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c"
+  },
+  "proposal_state": "PROPOSED_ROOT_CARRY_REVIEW_REQUIRED",
+  "tested_input_relation": "Current clause review plus literal scoped producer/owner dependency joins. Unchanged function/file hashes only corroborate the explicit per-row guard/effect review, not new runtime execution.",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "scope": "Four unchanged Docker-client/ordinary-offline source contracts only; five captured production/CLI-owner source files only; original13-file test cone remains explicitly historical because the test file has separate current author work.",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Actual bounded source-clause review by farm_sandbox_program with retained original and current-named corroboration; not an independent-review marker."
+  },
+  "disposition_ids": [
+    "disposition:transitions:S47:01",
+    "disposition:transitions:S47:03",
+    "disposition:transitions:S47:04",
+    "disposition:transitions:S50:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/raw/preserved-source-conformance.json",
+      "sha256": "8e1eb8e2052c75263040cbb9e0818fb7919e09eb66e62891fe455b2b123cfb50"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/raw/successor-scope-audit.json",
+      "sha256": "fad03e3faa54d631836a4ee48d84bcdd460028da8ada4707e64ac5d4f349d387"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/clause-review.json",
+      "sha256": "242c6be5e0bb4fe2974d908e5bc7025bb82d55ff7d7c1ac14f505f982b11c02e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/source-trace.json",
+      "sha256": "8fe7620054c407c8be3814aba57ab11dc9e1b432f6c4771db10a102c5e71b668"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json",
+      "sha256": "8d1122a7031ff03963a9d1e16878b6822fdf7cd6b53221178bb0fb0a883cc032"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "docker-client-observation-contract",
+      "claim": "Controlled child-process tests prove pre-abort spawn refusal, finite timeout124 and independent abort130 typed outcomes, including actual invocation of child kill. Output cap, exact once settlement and live container workload containment are not admitted by this narrow group.",
+      "transition_cells": [
+        "disposition:transitions:S47:01",
+        "disposition:transitions:S47:03",
+        "disposition:transitions:S47:04"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable aborts a call that would otherwise run to its deadline (AC-1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable kills the child rather than merely resolving around it (AC-1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-offline-argv",
+      "claim": "Ordinary NETWORKED_POLICIES remains empty; requested unsupported allowlist returns effective offline/availablefalse and actual argv --network none without privileged/NET_ADMIN. Argument construction is tested, not actual nonroot/network boundary enforcement.",
+      "transition_cells": [
+        "disposition:transitions:S50:01"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) detaches the container from all networking via --network none",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) requires no post-start cut (it was never connected)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 unknown policy throws on an unrecognized policy",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) is a detached run with the image and the sleep-infinity keep-alive command",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) mounts the source volume at /work/repo via type=volume (never a bind)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) sets workdir, non-root user, read-only root, and a tmpfs /tmp",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) drops all caps, blocks privilege escalation, and applies the resource caps",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) labels the container ca.sandbox=1 for the lifecycle registry",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) NEVER passes --privileged and NEVER mounts the docker socket",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) offline detaches the container from all networking",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) a typo of 'offline' still gets --network none (fail closed)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) an unrecognized policy fails closed to --network none",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) refuses an empty image or volume name",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/sandbox-observations.json"
+        }
+      ]
+    }
+  ],
+  "machine_compositions": {},
+  "nonclaims": [
+    "Specific source clauses only; no whole-file-changed input is relabelled as a current test run.",
+    "S25:07/S30:02/S30:04 are excluded and separately remapped, including safer behavior changes.",
+    "No provider/Docker/nonroot/installed-host or unexecuted platform outcome promotion."
+  ]
+}

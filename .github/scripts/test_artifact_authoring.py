@@ -12,6 +12,7 @@ import contextlib
 import io
 import json
 import os
+import platform
 from pathlib import Path
 import re
 import subprocess
@@ -278,7 +279,7 @@ class AuthoringRouteContractTest(unittest.TestCase):
 
 
 class InstalledFixtureCopyTest(unittest.TestCase):
-    def exercise(self, supplied):
+    def exercise(self, supplied, environment_changes=None, verify_build=None):
         with tempfile.TemporaryDirectory(prefix="ca-fixture-copy-") as temporary:
             source_repo = physical_test_directory(temporary)
             source_plugin = source_repo / "plugins/ca-codex"
@@ -292,10 +293,17 @@ class InstalledFixtureCopyTest(unittest.TestCase):
             (payload / "release.json").write_bytes(b"fresh test payload")
             environment = dict(os.environ)
             environment.pop("ARTIFACT_TEST_INSTALLATION", None)
+            for key, value in (environment_changes or {}).items():
+                if value is None:
+                    environment.pop(key, None)
+                else:
+                    environment[key] = value
             if supplied:
                 environment["ARTIFACT_TEST_INSTALLATION"] = str(payload)
             def build(command, **kwargs):
                 output = Path(command[command.index("--output") + 1])
+                if verify_build is not None:
+                    verify_build(output, kwargs, environment)
                 output.mkdir(parents=True, exist_ok=True)
                 (output / "release.json").write_bytes(b"fresh test payload")
             with mock.patch.object(sys.modules[__name__], "REPO", source_repo):
@@ -316,6 +324,31 @@ class InstalledFixtureCopyTest(unittest.TestCase):
 
     def test_fixture_copy_excludes_stale_payload_before_building_artifacts(self):
         self.exercise(supplied=False)
+
+    def test_isolated_windows_build_uses_only_a_fixture_owned_private_go_cache(self):
+        def verify(output, kwargs, environment):
+            child = kwargs.get("env", environment)
+            self.assertTrue(child.get("GOCACHE"), "isolated Windows native build needs an explicit private cache")
+            cache = Path(child["GOCACHE"])
+            self.assertTrue(cache.is_dir())
+            self.assertEqual(cache.parent, output.parents[2])
+            self.assertEqual({k: v for k, v in child.items() if k != "GOCACHE"}, environment)
+            self.assertNotIn("GOCACHE", os.environ, "private child cache must not mutate the caller environment")
+        with mock.patch.object(platform, "system", return_value="Windows"):
+            self.exercise(False, {"GOCACHE": None, "LOCALAPPDATA": None}, verify)
+
+    def test_native_build_preserves_explicit_cache_and_platform_defaults(self):
+        for system, changes in (
+            ("Windows", {"GOCACHE": "off", "LOCALAPPDATA": None}),
+            ("Windows", {"GOCACHE": None, "LOCALAPPDATA": "caller-selected-cache-root"}),
+            ("Linux", {"GOCACHE": None, "LOCALAPPDATA": None}),
+        ):
+            with self.subTest(system=system, changes=changes):
+                def verify(output, kwargs, environment):
+                    self.assertEqual(kwargs.get("env", environment), environment)
+                    self.assertFalse((output.parents[2] / "go-cache").exists())
+                with mock.patch.object(platform, "system", return_value=system):
+                    self.exercise(False, changes, verify)
 
 class HostWorkflowAdmissionTest(unittest.TestCase):
     """Explicit historical authority inventory, not native authoring admission."""
@@ -985,9 +1018,17 @@ def build_installation(
             raise AssertionError(f"ARTIFACT_TEST_INSTALLATION is not a directory: {source}")
         shutil.copytree(source, installation)
     else:
+        build_environment = dict(os.environ)
+        if platform.system() == "Windows" and not build_environment.get("GOCACHE") and not build_environment.get("LOCALAPPDATA"):
+            # Credential-blind recovery fixtures deliberately remove the
+            # operator profile. Go still requires a cache on Windows; keep it
+            # inside this already-owned physical fixture, for the child only.
+            cache = base / "go-cache"
+            cache.mkdir(mode=0o700)
+            build_environment["GOCACHE"] = str(cache)
         subprocess.run(
             [sys.executable, str(REPO / "tools" / "build-artifacts.py"), "--output", str(installation)],
-            cwd=REPO, text=True, capture_output=True, check=True,
+            cwd=REPO, env=build_environment, text=True, capture_output=True, check=True,
         )
     return temporary, installation
 
@@ -1283,6 +1324,33 @@ class ArtifactAuthoringTest(unittest.TestCase):
         self.root = physical_test_directory(self.temporary.name) / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
+
+    def test_installed_bridge_preserves_progress_and_separate_dependency_readiness(self) -> None:
+        self.harness.create_pair()
+        second = json.loads(json.dumps(plan_normative("SPEC-FLOW", "0" * 64)["tasks"][0]))
+        second.update(id="T-002", depends_on=["T-001"])
+        self.harness.mutate("apply", "PLAN-FLOW", changes=[
+            {"op": "record.add", "collection": "tasks", "record": second},
+            {"op": "record.update", "symbol": "CP-01", "fields": {"tasks": ["T-001", "T-002"]}},
+        ])
+        for task in ("T-001", "T-002"):
+            self.harness.mutate("task-start", "PLAN-FLOW", task=task)
+            self.harness.mutate("task-review", "PLAN-FLOW", task=task)
+        self.harness.mutate("task-block", "PLAN-FLOW", task="T-001", reason="Upstream stopped.")
+        identity = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        packet = self.harness.client.call("task-context", {
+            "artifact_id": "PLAN-FLOW", "task": "T-002", "model_sha256": identity["model_sha256"],
+        })
+        self.assertEqual(packet["state"], "REVIEW")
+        self.assertEqual(packet["waiting_on"], ["T-001"])
+        self.assertEqual(packet["progress"]["projection_version"], "recorded-progress/1")
+        self.assertEqual(packet["progress"]["basis"], "caller_reported")
+        self.assertIs(packet["progress"]["evidence_assessed"], False)
+        advice = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
+        dependent = next(row for row in advice["tasks"] if row["task"] == "T-002")
+        self.assertEqual(dependent["progress"], packet["progress"])
+        self.assertEqual(dependent["waiting_on"], ["T-001"])
+        self.assertIs(dependent["eligible"], False)
 
     def test_installed_bootstrap_example_reads_native_task_context(self) -> None:
         self.harness.create_pair()

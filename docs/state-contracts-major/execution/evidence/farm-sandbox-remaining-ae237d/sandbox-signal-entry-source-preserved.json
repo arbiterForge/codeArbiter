@@ -1,0 +1,102 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  "inputs": {
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S54:02",
+    "disposition:transitions:S54:03",
+    "disposition:transitions:S54:04",
+    "disposition:transitions:S54:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S54:02",
+      "frozen_contract_sha256": "8474f2267edba64ccec2750c56c2e7f8cc01c2339ef74b972deb350e0070c4cd",
+      "event": "first SIGINT",
+      "guard": "not already interrupted",
+      "current_contract_review": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/docker-gate.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S54:03",
+      "frozen_contract_sha256": "b8e45afd698b754bef1351e955acdef7ebfefe104d45c01af59f0bbbf47ea40d",
+      "event": "second SIGINT",
+      "guard": "already interrupted",
+      "current_contract_review": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/docker-gate.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S54:04",
+      "frozen_contract_sha256": "91925419205cd6727640c9f81b03acc0bc313ee7eb8ff8d532946df3f260869f",
+      "event": "promise resolves",
+      "guard": "interrupted flag true",
+      "current_contract_review": "Source-only resolved interrupted promise exits130 rather than the ordinary command code.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/docker-gate.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S54:05",
+      "frozen_contract_sha256": "25a4b5edbd17d515bdabeb457a75973ac1c4c7bcdea8d42d96735021605aafe3",
+      "event": "promise throws",
+      "guard": "exception path",
+      "current_contract_review": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/docker-gate.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ]
+}

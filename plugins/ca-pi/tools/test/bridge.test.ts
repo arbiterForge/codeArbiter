@@ -14,6 +14,8 @@ import {
   __setBridgeSpawnForTests,
   callPlanFileBridge,
   readFooterStatusSnapshot,
+  readWorkflowRecoverySnapshot,
+  shouldAuditBridgeFailure,
   resolveGitExecutable,
   resolvePythonCommand,
   updateFooterUsageSnapshot,
@@ -163,6 +165,16 @@ describe("plan-file bridge protocol", () => {
 });
 
 const roots: string[] = [];
+
+test("actual authenticated credential-blind BridgeClient transports owning workflow snapshot", async () => {
+  const cwd = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-workflow-bridge-")));
+  roots.push(cwd);
+  const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+  const bridge = new BridgeClient({ bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"), packageRoot,
+    pythonExecutable: pythonExecutable(), gitExecutable: gitExecutable(), toolClasses: {} });
+  expect(await readWorkflowRecoverySnapshot(bridge, { cwd, signal: undefined, isProjectTrusted: () => true }, { enabled: true }))
+    .toMatchObject({ status: "absent", pending: 0, claimed: 0, unavailable: 0, notice: "" });
+}, 15_000);
 
 function pythonExecutable(): string {
   for (const candidate of process.platform === "win32" ? ["python", "python3"] : ["python3", "python"]) {
@@ -1693,6 +1705,17 @@ describe("Pi footer bridge adapters", () => {
 
     expect(completed.status, completed.stderr).toBe(0);
     expect(JSON.parse(completed.stdout)).toEqual(["stagex", "prunex"]);
+  });
+
+  test("production recovery observer failure remains physically read-only while ordinary tool failure is audited", async () => {
+    const { bridge, packageRoot } = await clientFixture("raise RuntimeError('observation failure')\n", { shouldAuditFailure: shouldAuditBridgeFailure });
+    await mkdir(resolve(packageRoot, ".codearbiter"));
+    const auditPath = resolve(packageRoot, ".codearbiter", "gate-events.log");
+    await writeFile(auditPath, "existing\n", "utf8");
+    await bridge.call({ version: 1, event: "workflow_recovery_snapshot", cwd: packageRoot }, new AbortController().signal);
+    expect(await readFile(auditPath, "utf8")).toBe("existing\n");
+    await bridge.call({ version: 1, event: "tool_call", cwd: packageRoot, tool: "bash" }, new AbortController().signal);
+    expect(await readFile(auditPath, "utf8")).toContain("AUDIT: PI_BRIDGE_BLOCK");
   });
 
   test("does not grow the project audit log when configured display polling calls fail", async () => {

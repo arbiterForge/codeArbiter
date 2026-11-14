@@ -124,4 +124,4 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `/ca-conflict` | Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation. |
+| `/ca-conflict` | Pause affected work and its actual dependents when rules conflict. Present both sources and the dependency scope; the user resolves. Continue independent authorized work. |

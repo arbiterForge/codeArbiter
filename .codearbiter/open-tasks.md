@@ -5,6 +5,18 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [~] Complete the major state-contracts integration program  (from github:arbiterForge/codeArbiter:pull/1098)  (started 2026-11-14)
+  - Work origin: github:arbiterForge/codeArbiter:pull/1098
+  - Desc: Complete the accepted specification and qualification tracked by PR1098 and docs/state-contracts-major/contracts/tasks.json through major/state-contracts; preserve author worktrees and hold main and publication for Brennon testing.
+  - Work type: feature
+  - Work ID: WORK-2A68C3051D5A477EAC131493FF8A85AF
+  - Work operation ID: work-1ba8102df9235247240914316b17b6d708d2c85a
+- [x] Make consumer ADR acceptance writer match lifecycle verifier  (from https://github.com/SUaDtL/SIM/pull/23#adr-0002-lifecycle)  (done 2026-11-12)
+  - Work origin: https://github.com/SUaDtL/SIM/pull/23#adr-0002-lifecycle
+  - Desc: Consumer ADR acceptance can append malformed lifecycle evidence that the shipped verifier refuses. Provide a portable writer using the verifier contract and a general append-only correction path for already committed malformed bindings, with tests across all hosts.
+  - Work type: fix
+  - Work ID: WORK-BD973B0B3333CEA561388FC61B3BA779
+  - Work operation ID: work-a6b7f38943679f102b5c31d89abd057b16ba28ca
 - [x] Allow greenfield init with session runtime markers  (from work-op:greenfield-marker-init-20261110)  (done 2026-11-10)
   - Work origin: work-op:greenfield-marker-init-20261110
   - Desc: A fresh repository can contain only host-owned session-start marker files before codeArbiter initialization. Initialization must accept that exact safe runtime state, preserve marker bytes, and continue refusing unknown or unsafe pre-existing state.

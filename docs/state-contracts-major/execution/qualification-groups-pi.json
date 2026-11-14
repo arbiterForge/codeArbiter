@@ -1,0 +1,2680 @@
+{
+  "schema": "codearbiter.major-qualification-groups-draft/1",
+  "state": "DRAFT_RECONCILED_UNBOUND_NOT_EMITTABLE",
+  "owner": "pi",
+  "source_commit": null,
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "recorded_at": "2026-11-13T18:28:36.340997+00:00",
+  "scope": "Ten Pi tasks,20Pi machines/156baseline transitions,4assigned baseline findings and5relevant scenarios. Local semantic coverage only; required actual installed/visible-parent/final-candidate cells remain explicitly unavailable.",
+  "contract_input_sha256": {
+    "tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "scenarios.json": "5fe7863a28d28c7a2d3484cc23a85f74e47476a4743597ace1d24e27df541af3"
+  },
+  "counts": {
+    "draft_groups": 38,
+    "task_ids_referenced": 10,
+    "machines": 20,
+    "baseline_transition_rows_mapped": 156,
+    "whole_owner_preservation_rows": 85,
+    "findings": 4,
+    "scenarios_referenced": 5,
+    "distinct_proposed_exact_selectors": 235,
+    "qualified_or_emitted_rows": 0,
+    "additional_required_work_ids_referenced": 1
+  },
+  "task_inventory": [
+    {
+      "id": "PI-C01",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D01",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D02",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D03",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D04",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D05",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D06",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-D07",
+      "state": "PARTIAL_REQUIRED_INSTALLED_QUALIFICATION_UNAVAILABLE"
+    },
+    {
+      "id": "PI-L01",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    },
+    {
+      "id": "PI-L02",
+      "state": "LOCAL_IMPLEMENTATION_ASSERTIONS_MAPPED; EXACT_SOURCE_RUN_NOT_YET_BOUND"
+    }
+  ],
+  "groups": [
+    {
+      "id": "pi-preserved-s03",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S03"
+      ],
+      "transition_ids": [
+        "S03:01",
+        "S03:02",
+        "S03:03",
+        "S03:04",
+        "S03:05",
+        "S03:06",
+        "S03:07",
+        "S03:08",
+        "S03:09"
+      ],
+      "cells": [
+        "disposition:machines:S03",
+        "disposition:transitions:S03:01",
+        "disposition:transitions:S03:02",
+        "disposition:transitions:S03:03",
+        "disposition:transitions:S03:04",
+        "disposition:transitions:S03:05",
+        "disposition:transitions:S03:06",
+        "disposition:transitions:S03:07",
+        "disposition:transitions:S03:08",
+        "disposition:transitions:S03:09"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Plan source/ownership/revision body is byte-identical. Includes known S03:09 loss-of-restriction fallback as baseline behavior; no new approval or repair is inferred.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/native-plan.ts",
+        "plugins/ca-pi/tools/src/plan-mode.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/plan-mode.test.ts:plan session state and canonical ledger enters plan mode with stable bounded task IDs and one canonical plan/ledger path",
+        "vitest:plugins/ca-pi/tools/test/plan-mode.test.ts:plan session state and canonical ledger enforces forward task transitions without renumbering or inventing tasks",
+        "vitest:plugins/ca-pi/tools/test/plan-mode.test.ts:canonical plan-file bridge operations surfaces committed-but-changed and reconciles parseable observed plan bytes",
+        "vitest:plugins/ca-pi/tools/test/plan-mode.test.ts:canonical plan-file bridge operations fails closed on conflict, malformed hashes/content, missing reads, and unrelated state paths"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/native-plan.ts",
+        "plugins/ca-pi/tools/src/plan-mode.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s04",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S04"
+      ],
+      "transition_ids": [
+        "S04:01",
+        "S04:02",
+        "S04:03",
+        "S04:04",
+        "S04:05",
+        "S04:06",
+        "S04:07",
+        "S04:08"
+      ],
+      "cells": [
+        "disposition:machines:S04",
+        "disposition:transitions:S04:01",
+        "disposition:transitions:S04:02",
+        "disposition:transitions:S04:03",
+        "disposition:transitions:S04:04",
+        "disposition:transitions:S04:05",
+        "disposition:transitions:S04:06",
+        "disposition:transitions:S04:07",
+        "disposition:transitions:S04:08"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "State reservation, output/terminal retention and dispose bodies unchanged; manager-map deletion never claims process cleanup.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/background-jobs.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state counts queued and active work against four bounded session slots",
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state admits only conservative queued, active, and terminal transitions",
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state clears all session state on dispose without claiming a terminal cleanup"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/background-jobs.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s05",
+      "task_ids": [
+        "PI-D05"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S05"
+      ],
+      "transition_ids": [
+        "S05:01",
+        "S05:02",
+        "S05:03",
+        "S05:04",
+        "S05:05",
+        "S05:06",
+        "S05:07",
+        "S05:08",
+        "S05:09"
+      ],
+      "cells": [
+        "task:PI-D05",
+        "disposition:machines:S05",
+        "disposition:transitions:S05:01",
+        "disposition:transitions:S05:02",
+        "disposition:transitions:S05:03",
+        "disposition:transitions:S05:04",
+        "disposition:transitions:S05:05",
+        "disposition:transitions:S05:06",
+        "disposition:transitions:S05:07",
+        "disposition:transitions:S05:08",
+        "disposition:transitions:S05:09"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Runtime/controller bodies unchanged: readiness and stale publication guards preserve cleanup ownership and unhealthy latch. Windows proof does not establish real POSIX containment.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/background-jobs.ts",
+        "plugins/ca-pi/tools/src/native-background.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state launches only with a current governed lease and completes after verified cleanup",
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state a lifecycle stop during readiness prevents stdin and active publication",
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state unverified close during readiness latches unhealthy without stdin or active resurrection",
+        "vitest:plugins/ca-pi/tools/test/background-jobs.test.ts:session-local background job state never publishes a natural completion after its lifecycle lease becomes stale during cleanup"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/background-jobs.ts",
+        "plugins/ca-pi/tools/src/native-background.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s06",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S06"
+      ],
+      "transition_ids": [
+        "S06:01",
+        "S06:02",
+        "S06:03",
+        "S06:04",
+        "S06:05"
+      ],
+      "cells": [
+        "disposition:machines:S06",
+        "disposition:transitions:S06:01",
+        "disposition:transitions:S06:02",
+        "disposition:transitions:S06:03",
+        "disposition:transitions:S06:04",
+        "disposition:transitions:S06:05"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Projection-only source unchanged. Expiry/completion/dispose do not cancel effects or revoke grants.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/activity.ts",
+        "plugins/ca-pi/tools/src/sidebar-data.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry projects bounded active and recent dispatch and job activity",
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry evicts stale events, treats completion as a transition, and isolates disposed sessions",
+        "vitest:plugins/ca-pi/tools/test/activity.test.ts:Pi session activity registry sanitizes control text and never projects commands, environments, or output"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/activity.ts",
+        "plugins/ca-pi/tools/src/sidebar-data.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s10",
+      "task_ids": [
+        "PI-D03"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S10"
+      ],
+      "transition_ids": [
+        "S10:01",
+        "S10:02",
+        "S10:03",
+        "S10:04",
+        "S10:05",
+        "S10:06",
+        "S10:07"
+      ],
+      "cells": [
+        "task:PI-D03",
+        "disposition:machines:S10",
+        "disposition:transitions:S10:01",
+        "disposition:transitions:S10:02",
+        "disposition:transitions:S10:03",
+        "disposition:transitions:S10:04",
+        "disposition:transitions:S10:05",
+        "disposition:transitions:S10:06",
+        "disposition:transitions:S10:07"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Credential-blind env/projection/cleanup owner unchanged. Frozen S10:04 credential-bearing wording is superseded by existing ADR0019 broker semantics; only opaque per-child capability enters child files.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/child-env.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment carries the ephemeral broker token and no operator provider credential at all",
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment rebinds every operator storage path beneath the isolated child root",
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment plants operator literals and finds none of them anywhere in the child boundary",
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment scrubs the retained projected models.json handle when path removal fails"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/child-env.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s11",
+      "task_ids": [
+        "PI-D03"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S11"
+      ],
+      "transition_ids": [
+        "S11:01",
+        "S11:02",
+        "S11:03",
+        "S11:04",
+        "S11:05",
+        "S11:06",
+        "S11:07"
+      ],
+      "cells": [
+        "task:PI-D03",
+        "disposition:machines:S11",
+        "disposition:transitions:S11:01",
+        "disposition:transitions:S11:02",
+        "disposition:transitions:S11:03",
+        "disposition:transitions:S11:04",
+        "disposition:transitions:S11:05",
+        "disposition:transitions:S11:06",
+        "disposition:transitions:S11:07"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Exact upstream/token/route, overlap scanning, revocation and close owner unchanged. Deterministic local HTTP fixtures are not external-provider availability proof.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/inference-broker.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/inference-broker.test.ts:#455 loopback inference broker refuses every request before the upstream authority is bound",
+        "vitest:plugins/ca-pi/tools/test/inference-broker.test.ts:#455 loopback inference broker exchanges the child token for the operator credential and streams incrementally",
+        "vitest:plugins/ca-pi/tools/test/inference-broker.test.ts:#455 loopback inference broker rejects the owning child's token once that child has exited",
+        "vitest:plugins/ca-pi/tools/test/inference-broker.test.ts:#455 loopback inference broker catches operator material split across upstream chunk boundaries",
+        "vitest:plugins/ca-pi/tools/test/inference-broker.test.ts:#455 loopback inference broker closing the broker stops the listener so it cannot outlive the child"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/inference-broker.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s13",
+      "task_ids": [
+        "PI-D03",
+        "PI-D05"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S13"
+      ],
+      "transition_ids": [
+        "S13:01",
+        "S13:02",
+        "S13:03",
+        "S13:04",
+        "S13:05",
+        "S13:06",
+        "S13:07",
+        "S13:08",
+        "S13:09"
+      ],
+      "cells": [
+        "task:PI-D03",
+        "task:PI-D05",
+        "disposition:machines:S13",
+        "disposition:transitions:S13:01",
+        "disposition:transitions:S13:02",
+        "disposition:transitions:S13:03",
+        "disposition:transitions:S13:04",
+        "disposition:transitions:S13:05",
+        "disposition:transitions:S13:06",
+        "disposition:transitions:S13:07",
+        "disposition:transitions:S13:08",
+        "disposition:transitions:S13:09"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Managed process-tree and supervisor source unchanged. Actual Windows admission/bootstrap exercised by parent-delegation retained proof; real POSIX child test skipped locally and remains unavailable.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/process-tree.ts",
+        "plugins/ca-pi/tools/src/windows-supervisor.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/process-tree.test.ts:process-tree cleanup plans POSIX group SIGTERM, a bounded grace, SIGKILL, and verification",
+        "vitest:plugins/ca-pi/tools/test/process-tree.test.ts:process-tree cleanup plans Windows taskkill with exact argv, no shell, a hidden window, wait, and verification",
+        "vitest:plugins/ca-pi/tools/test/process-tree.test.ts:process-tree cleanup launches only the canonical inert supervisor before Job attachment with a minimal environment",
+        "vitest:plugins/ca-pi/tools/test/process-tree.test.ts:process-tree cleanup never waits past its absolute ceiling even while progress keeps arriving",
+        "vitest:plugins/ca-pi/tools/test/process-tree.test.ts:process-tree cleanup returns bounded refusal results for every cleanup trigger without throwing"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/process-tree.ts",
+        "plugins/ca-pi/tools/src/windows-supervisor.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s16",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S16"
+      ],
+      "transition_ids": [
+        "S16:01",
+        "S16:02",
+        "S16:03",
+        "S16:04",
+        "S16:05",
+        "S16:06"
+      ],
+      "cells": [
+        "disposition:machines:S16",
+        "disposition:transitions:S16:01",
+        "disposition:transitions:S16:02",
+        "disposition:transitions:S16:03",
+        "disposition:transitions:S16:04",
+        "disposition:transitions:S16:05",
+        "disposition:transitions:S16:06"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Single-link/inode/append/sync audit source unchanged. A false return cannot establish no bytes; approved-audit false blocks mutation in separately selected final-gate tests.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/audit-sink.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/audit-sink.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s17",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S17"
+      ],
+      "transition_ids": [
+        "S17:01",
+        "S17:02",
+        "S17:03",
+        "S17:04",
+        "S17:05",
+        "S17:06",
+        "S17:07"
+      ],
+      "cells": [
+        "disposition:machines:S17",
+        "disposition:transitions:S17:01",
+        "disposition:transitions:S17:02",
+        "disposition:transitions:S17:03",
+        "disposition:transitions:S17:04",
+        "disposition:transitions:S17:05",
+        "disposition:transitions:S17:06",
+        "disposition:transitions:S17:07"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Compaction/proposal owner unchanged: bounded no-tool summary, protected tail and host confirmation stay separate from delegation.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/compaction.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/compaction.test.ts:Task 8 Pi compaction returns a policy-selected native result through an exact no-tool summarizer",
+        "vitest:plugins/ca-pi/tools/test/compaction.test.ts:Task 8 Pi compaction fails closed on absent identity, invalid boundaries, runner degradation, or cancellation",
+        "vitest:plugins/ca-pi/tools/test/compaction.test.ts:Task 8 Pi compaction does not launch a summarizer when policy selects no candidates",
+        "vitest:plugins/ca-pi/tools/test/compaction.test.ts:Task 8 Pi compaction is idempotent for an already-confirmed identical plan and audits only after confirmation"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/compaction.ts"
+      ]
+    },
+    {
+      "id": "pi-preserved-s18",
+      "task_ids": [
+        "PI-L02"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S18"
+      ],
+      "transition_ids": [
+        "S18:01",
+        "S18:02",
+        "S18:03",
+        "S18:04",
+        "S18:05",
+        "S18:06",
+        "S18:07"
+      ],
+      "cells": [
+        "task:PI-L02",
+        "disposition:machines:S18",
+        "disposition:transitions:S18:01",
+        "disposition:transitions:S18:02",
+        "disposition:transitions:S18:03",
+        "disposition:transitions:S18:04",
+        "disposition:transitions:S18:05",
+        "disposition:transitions:S18:06",
+        "disposition:transitions:S18:07"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "All frozen footer owners unchanged. Current-context/lifecycle tests preserve serialized refresh, stale-result suppression and native UI restoration; fixture ports are not real terminal qualification.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/footer-state.ts",
+        "plugins/ca-pi/tools/src/footer.ts",
+        "plugins/ca-pi/tools/src/git-facts.ts",
+        "plugins/ca-pi/tools/src/status.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle restores Pi's native footer on session shutdown"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "Byte identity is code-body conformance, not a fresh execution of every edge or an unchanged external dependency claim."
+      ],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/footer-state.ts",
+        "plugins/ca-pi/tools/src/footer.ts",
+        "plugins/ca-pi/tools/src/git-facts.ts",
+        "plugins/ca-pi/tools/src/status.ts"
+      ]
+    },
+    {
+      "id": "pi-activation-trust-bootstrap",
+      "task_ids": [
+        "PI-D02",
+        "PI-D05",
+        "PI-L01"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S01"
+      ],
+      "transition_ids": [
+        "S01:01",
+        "S01:02",
+        "S01:03",
+        "S01:04",
+        "S01:06",
+        "S01:10"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "task:PI-D05",
+        "task:PI-L01",
+        "disposition:machines:S01",
+        "disposition:transitions:S01:01",
+        "disposition:transitions:S01:02",
+        "disposition:transitions:S01:03",
+        "disposition:transitions:S01:04",
+        "disposition:transitions:S01:06",
+        "disposition:transitions:S01:10"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Enabled/trust bootstrap, retry and invalidation assertions cover dormant native fallback and failed installation; current lease prevents stale activation.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/activation.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/session-identity.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation stays fully dormant without arbiter: enabled",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation refreshes normally when the same process changes from untrusted to trusted",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation prepares the bridge only after enabled activation reaches Pi trust context",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation hard-stops enabled activation on enforcement failure and retries successfully"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-persona-readiness",
+      "task_ids": [
+        "PI-L01"
+      ],
+      "finding_ids": [
+        "SF02"
+      ],
+      "scenario_ids": [
+        "SEQ-15"
+      ],
+      "machine_ids": [
+        "S01"
+      ],
+      "transition_ids": [
+        "S01:05",
+        "S01:07",
+        "S01:08"
+      ],
+      "cells": [
+        "task:PI-L01",
+        "disposition:findings:SF02",
+        "disposition:machines:S01",
+        "disposition:transitions:S01:05",
+        "disposition:transitions:S01:07",
+        "disposition:transitions:S01:08"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Changed ready vector is persona plus enforcement, independent from bridge health. Recovery is a current-lifecycle retry; bridge refresh alone never heals missing persona.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/activation.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/session-identity.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) shutdown during persona load publishes no governed status afterwards",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a retry racing a concurrent bridge refresh loads the persona once"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "scenario_binding": "References are semantic links only. Scenario job is separately owned; no source-only Pi group emits a full scenario qualification cell."
+    },
+    {
+      "id": "pi-lifecycle-ui",
+      "task_ids": [
+        "PI-D06",
+        "PI-L01"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S01"
+      ],
+      "transition_ids": [
+        "S01:09"
+      ],
+      "cells": [
+        "task:PI-D06",
+        "task:PI-L01",
+        "disposition:machines:S01",
+        "disposition:transitions:S01:09"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Current keyed status/settled lifecycle maintains persistent degradations; display terminality is not an effect/authority event.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/activation.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/session-identity.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle retains status through end, retry, and compaction and clears only when settled",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle session shutdown is the only non-settled lifecycle clear",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a late alias collision becomes the persistent baseline through agent_settled"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-final-gate-bootstrap",
+      "task_ids": [
+        "PI-D02"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S02"
+      ],
+      "transition_ids": [
+        "S02:01",
+        "S02:02",
+        "S02:03",
+        "S02:05",
+        "S02:14"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "disposition:machines:S02",
+        "disposition:transitions:S02:01",
+        "disposition:transitions:S02:02",
+        "disposition:transitions:S02:03",
+        "disposition:transitions:S02:05",
+        "disposition:transitions:S02:14"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Owned final gate remains blocked until ready, permits dormant native read fallback, rejects unknown sinks and invalidates partial installations.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement bootstrap guard leaves dormant repositories ungoverned",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement bootstrap guard blocks every potentially mutating tool until enforcement is ready",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement bootstrap readiness resets for retry and releases only after explicit completion",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement deactivation makes every partially installed final stage dormant without stale cwd or bridge activity",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement blocks an unknown active tool until the descriptor classifies it"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-final-gate-trust",
+      "task_ids": [
+        "PI-D02",
+        "PI-D05"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S02"
+      ],
+      "transition_ids": [
+        "S02:04"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "task:PI-D05",
+        "disposition:machines:S02",
+        "disposition:transitions:S02:04"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Trust false/unknown/throwing latches refusal and retires old authority; restoring true alone cannot make retained calls execute.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi live project trust withdrawal mutators fail closed when live project trust is absent, false, or throwing",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi live project trust withdrawal trust withdrawal during bridge evaluation blocks the pending mutation",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi live project trust withdrawal trust withdrawal during permission confirmation makes the approval stale",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi live project trust withdrawal withdrawal restores the bootstrap block for every potentially mutating tool"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-final-gate-permission",
+      "task_ids": [
+        "PI-D02",
+        "PI-D05"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S02"
+      ],
+      "transition_ids": [
+        "S02:06",
+        "S02:07",
+        "S02:08",
+        "S02:09",
+        "S02:10",
+        "S02:11",
+        "S02:12"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "task:PI-D05",
+        "disposition:findings:SF01",
+        "disposition:machines:S02",
+        "disposition:transitions:S02:06",
+        "disposition:transitions:S02:07",
+        "disposition:transitions:S02:08",
+        "disposition:transitions:S02:09",
+        "disposition:transitions:S02:10",
+        "disposition:transitions:S02:11",
+        "disposition:transitions:S02:12"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Actual production gate sequence freezes params, applies hard bridge/policy, concrete UI consent, required audit and post-await trust/mode/source revalidation. Supplied effect remains fixture-backed except separately declared actual Pi file factories.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi delegated final gate uses parent bridge and concrete confirmation before the supplied exact effect",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi delegated final gate bridge block never reaches parent confirmation or supplied effect",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision asks exactly once with bounded closed text and executes the frozen request after durable audit",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision cancellation, timeout-false, UI errors, and plan-mode mutation execute nothing",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision revalidates raw arguments, lifecycle, mode, owner, and registry after confirmation",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision revalidates native execute identity and registry again after the audit await",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision revalidates allow paths after best-effort audit and delegates only stale reads natively"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-final-result-stale",
+      "task_ids": [
+        "PI-D02",
+        "PI-D05"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S02"
+      ],
+      "transition_ids": [
+        "S02:13"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "task:PI-D05",
+        "disposition:machines:S02",
+        "disposition:transitions:S02:13"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Late old-result hooks cannot decorate or credit the new lifecycle; cleanup is not suppressed with UI.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/policy.ts",
+        "plugins/ca-pi/tools/src/tool-guard.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement suppresses a stale post-result notice across deactivate-reactivate and handles the new lifecycle",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:final-execution Pi tool enforcement suppresses stale rejected result effects after deactivate or reactivation"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-dispatch-shape-scheduler",
+      "task_ids": [
+        "PI-D02",
+        "PI-D03"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S07"
+      ],
+      "transition_ids": [
+        "S07:01",
+        "S07:02",
+        "S07:06",
+        "S07:08"
+      ],
+      "cells": [
+        "task:PI-D02",
+        "task:PI-D03",
+        "disposition:machines:S07",
+        "disposition:transitions:S07:01",
+        "disposition:transitions:S07:02",
+        "disposition:transitions:S07:06",
+        "disposition:transitions:S07:08"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Role/catalog/mode/depth/author ceiling, requested-order bounded scheduler and queued cancellation remain parent owned. Activity completion does not assert child execution.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/contracts.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/roles.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates every role before spawning any child",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract parallel scheduling is FIFO, bounded, and returns requested ordering",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract parent cancellation aborts active siblings and never starts queued work",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract production registration authorizes only enabled, currently trusted, lifecycle-ready sessions",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract installParent owns dispatch readiness and invalidates it on shutdown",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract publishes bounded role activity and contains reporting failures",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates unknown role before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates duplicate role before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates duplicate author before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates single role count before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates depth before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates zero concurrency before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates negative timeout before spawning",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract validates over-policy output limit before spawning"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-dispatch-terminal-handback",
+      "task_ids": [
+        "PI-D06"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S07"
+      ],
+      "transition_ids": [
+        "S07:03",
+        "S07:04",
+        "S07:05",
+        "S07:07"
+      ],
+      "cells": [
+        "task:PI-D06",
+        "disposition:findings:SF01",
+        "disposition:machines:S07",
+        "disposition:transitions:S07:03",
+        "disposition:transitions:S07:04",
+        "disposition:transitions:S07:05",
+        "disposition:transitions:S07:07"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Closed child judgments remain separate from technical terminal, parent effects and retained handback. Unknown cleanup/effects survive aggregate caps. Generic dispatch explicitly durable:false,parent-context-unavailable; no workflow provenance invented.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/contracts.ts",
+        "plugins/ca-pi/tools/src/dispatch.ts",
+        "plugins/ca-pi/tools/src/roles.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract chain forwards only the bounded parsed prior result",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract chain redacts secret-shaped content in a prior child's summary before it reaches the next child's prompt",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract aggregate report limit preserves parent-observed effect counters when visible material exceeds its bound",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract cleanup-degraded child report stays visible and bounded while judgment cannot promote the degraded run",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract generic dispatch retains visible material but cannot invent durable producer/work/origin capture",
+        "vitest:plugins/ca-pi/tools/test/dispatch.test.ts:Pi dispatch contract rejects per-child and deterministic aggregate output overflow"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-optional-private-capability",
+      "task_ids": [
+        "PI-D06",
+        "PI-C01"
+      ],
+      "finding_ids": [
+        "SF12"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S08"
+      ],
+      "transition_ids": [
+        "S08:01"
+      ],
+      "cells": [
+        "task:PI-D06",
+        "task:PI-C01",
+        "disposition:findings:SF12",
+        "disposition:machines:S08",
+        "disposition:transitions:S08:01"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Chosen optional capability is unavailable on supported Pi1.5; legacy1.0.2 is only runtime-gated. Source/runtime check does not establish installed host-observed prompt authority.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/approval-dialog.ts",
+        "plugins/ca-pi/tools/src/approval-entry.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-private-dialog-preserved",
+      "task_ids": [
+        "PI-C01"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S08"
+      ],
+      "transition_ids": [
+        "S08:02",
+        "S08:03",
+        "S08:04",
+        "S08:05",
+        "S08:06",
+        "S08:07"
+      ],
+      "cells": [
+        "task:PI-C01",
+        "disposition:machines:S08",
+        "disposition:transitions:S08:02",
+        "disposition:transitions:S08:03",
+        "disposition:transitions:S08:04",
+        "disposition:transitions:S08:05",
+        "disposition:transitions:S08:06",
+        "disposition:transitions:S08:07"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Whole approval-dialog.ts is byte-identical. Fixture UI validates exact phrase/current lease/consume once/unknown response/one-shot shape; no support for an ordinary child to self-arm and no actual legacy prompt qualification.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/approval-dialog.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog preserves the request without authority on cancel or denial (undefined)",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog preserves the request without authority on cancel or denial (deny)",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses a reply after invalidate",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses a reply after changeSession",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses a reply after revokeTrust"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/approval-dialog.ts"
+      ]
+    },
+    {
+      "id": "pi-runner-admission",
+      "task_ids": [
+        "PI-D03"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [
+        "S09:01",
+        "S09:02"
+      ],
+      "cells": [
+        "task:PI-D03",
+        "disposition:findings:SF01",
+        "disposition:machines:S09",
+        "disposition:transitions:S09:01",
+        "disposition:transitions:S09:02"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Preflight and managed readiness must precede private authorization/task bytes; exact runtime, role/resource identities and credentialblind environment are admitted.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch puts no task, prompt, or credential in exact discovery-disabled argv",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch rejects relative, missing, duplicate, and unsupported launch identities before spawn",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch refuses to launch when the operator's selected-provider config cannot be projected credential-blind",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails closed before capability or handshake bytes when containment readiness is unavailable",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch binds launch paths to current Node, supported Pi identity, and the generated ca-pi role catalog"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-runner-handshake",
+      "task_ids": [
+        "PI-D01",
+        "PI-D03"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [
+        "S09:03",
+        "S09:04",
+        "S09:05"
+      ],
+      "cells": [
+        "task:PI-D01",
+        "task:PI-D03",
+        "disposition:findings:SF01",
+        "disposition:machines:S09",
+        "disposition:transitions:S09:03",
+        "disposition:transitions:S09:04",
+        "disposition:transitions:S09:05"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Consumed fd3 capability/attestation/confirmation/task ack order stays one-shot and purpose-bound, with author-delegation v2 distinct from reviewer handshake.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch uses a bounded two-record stdin handshake with a random correlation unrelated to task content",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch spawns exact Node and withholds the task until a correlated handshake success",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch never writes task content after failed or uncorrelated handshake acknowledgement",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires one exact digest-only RPC confirm attestation before handshake acknowledgement",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter missing marker, malformed nonce, and replay never release enforcement",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter missing, malformed, or mismatched fd3 capability never releases enforcement"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-runner-completion",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [
+        "S09:06",
+        "S09:07",
+        "S09:08",
+        "S09:09"
+      ],
+      "cells": [
+        "disposition:machines:S09",
+        "disposition:transitions:S09:06",
+        "disposition:transitions:S09:07",
+        "disposition:transitions:S09:08",
+        "disposition:transitions:S09:09"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Current exact provider/model assistant stop plus settled/clean exit required; model judgment cannot credit absent or nonzero technical completion.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires correlated task acceptance and an ordered post-task lifecycle before completion",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires a successful final assistant bound to the requested provider and model",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch never fabricates completion when a valid lifecycle exits nonzero",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch decodes JSONL correctly when a multibyte output character is split across chunks"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-runner-fault-cleanup",
+      "task_ids": [
+        "PI-D04",
+        "PI-D05"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [
+        "SEQ-14"
+      ],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [
+        "S09:10"
+      ],
+      "cells": [
+        "task:PI-D04",
+        "task:PI-D05",
+        "disposition:findings:SF01",
+        "disposition:machines:S09",
+        "disposition:transitions:S09:10"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Faults and cleanup remain typed/degraded; actual fixture effect bytes and completed/unknown counts survive channel/environment cleanup failure.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch names the isolation stage in the degraded diagnostic without leaking any error detail",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch a delegation channel cleanup failure cannot strand the isolated environment",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns the fixed degraded result without spawning a pre-cancelled request",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch maps timeout and early close to verified cleanup and resolves despite kill refusal",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch routes stdin EPIPE and early close before or after handshake through fixed degraded",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch none cleanup outcome preserves actual delegated effects in the structured result",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch channel cleanup outcome preserves actual delegated effects in the structured result",
+        "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch environment cleanup outcome preserves actual delegated effects in the structured result"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "scenario_binding": "References are semantic links only. Scenario job is separately owned; no source-only Pi group emits a full scenario qualification cell."
+    },
+    {
+      "id": "pi-delegated-effects",
+      "task_ids": [
+        "PI-D01",
+        "PI-D03",
+        "PI-D04"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [
+        "SEQ-12"
+      ],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [
+        "S09:11"
+      ],
+      "cells": [
+        "task:PI-D01",
+        "task:PI-D03",
+        "task:PI-D04",
+        "disposition:findings:SF01",
+        "disposition:machines:S09",
+        "disposition:transitions:S09:11"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "New author proxy reaches final parent gate, exact admitted real file factories and managed shell. Callback consent/instrumented parent/local provider are explicit substitutions; visible real parent TUI and final candidate remain unavailable.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/delegated-executor.ts",
+        "plugins/ca-pi/tools/src/delegation-client.ts",
+        "plugins/ca-pi/tools/src/parent-delegation.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects real packaged child RPC loop performs parent-owned effects (local provider and permission callback substituted)",
+        "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects real admitted Pi file factories and managed shell produce exact effects (permission callback substituted)",
+        "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor performs approved file bytes once and observes exact replay without another effect",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor retains uncertain effect when outcome persistence fails",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor an unresolved file effect holds its target while a disjoint edit can proceed",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor a successful native return without approved write bytes cannot claim completion",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor a shell exit with unverified tree cleanup holds subsequent delegated effects"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [
+        "PARTIAL technical child flow, not complete installed-parent/TUI authorship qualification."
+      ],
+      "scenario_binding": "References are semantic links only. Scenario job is separately owned; no source-only Pi group emits a full scenario qualification cell."
+    },
+    {
+      "id": "pi-delegation-abuse-retirement",
+      "task_ids": [
+        "PI-D05"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [
+        "SEQ-13",
+        "SEQ-14"
+      ],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [],
+      "cells": [
+        "task:PI-D05",
+        "disposition:findings:SF01",
+        "disposition:machines:S09"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Caller/run/child/generation/sequence/digest/expiry/revoke/plan/target boundaries fail before effects. Post-managed-spawn or started-write retirement releases no command stdin, settles owned cleanup and retains historically admitted/unknown truthful codec axes.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/delegated-executor.ts",
+        "plugins/ca-pi/tools/src/delegation-session.ts",
+        "plugins/ca-pi/tools/src/parent-delegation.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor cancellation before execution cannot claim or perform an effect",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor cancellation during claim cannot execute after the await",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor a concurrent later target edit after claim is preserved without executing",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor the full channel preserves post-started cancelled observations",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor the full channel preserves post-started revoked observations",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor the full channel preserves post-started expired observations"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "scenario_binding": "References are semantic links only. Scenario job is separately owned; no source-only Pi group emits a full scenario qualification cell."
+    },
+    {
+      "id": "pi-delegation-durable-recovery",
+      "task_ids": [
+        "PI-D01",
+        "PI-D04"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S16"
+      ],
+      "transition_ids": [],
+      "cells": [
+        "task:PI-D01",
+        "task:PI-D04",
+        "disposition:findings:SF01",
+        "disposition:machines:S16"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "New Git-common journal is separate from native artifact storage. Exclusive bounded claim/outcome records retain uncertainty and target-specific hold; no automatic effect replay or restored authority.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/audit-sink.ts",
+        "plugins/ca-pi/tools/src/delegated-executor.ts",
+        "plugins/ca-pi/tools/src/delegation-journal.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal exactly one concurrent claimant wins; restart exposes uncertain outcome without execution",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal interrupted exclusive claim is retained as unknown and never claimable again",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal recovery inspection does not create state or restore authority",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unknown record version remains unreadable and retained",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal an actual default Git main and linked worktree positively share the common owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal an outcome whose identity differs from the claimed filename is not trusted",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal an overfull journal is unavailable rather than an apparently empty recovery scan",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor an unresolved file effect holds its target while a disjoint edit can proceed",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor different concurrent requests serialize their owned effects",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe missing commondir never becomes a fresh recovery owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe oversized commondir never becomes a fresh recovery owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe empty commondir never becomes a fresh recovery owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe directory commondir never becomes a fresh recovery owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe linked commondir never becomes a fresh recovery owner",
+        "vitest:plugins/ca-pi/tools/test/delegation-journal.test.ts:parent delegated operation journal unsafe hardlinked commondir never becomes a fresh recovery owner"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-runtime-supported-import",
+      "task_ids": [
+        "PI-C01"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S12"
+      ],
+      "transition_ids": [
+        "S12:01",
+        "S12:02",
+        "S12:03",
+        "S12:04",
+        "S12:05"
+      ],
+      "cells": [
+        "task:PI-C01",
+        "disposition:machines:S12",
+        "disposition:transitions:S12:01",
+        "disposition:transitions:S12:02",
+        "disposition:transitions:S12:03",
+        "disposition:transitions:S12:04",
+        "disposition:transitions:S12:05"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Exact supported Pi1.5 runtime/Node identity and pre/post import guards; counterfeit/unsupported runtime fails before host API. Fixture/runtime admission is not an installed-parent permission receipt.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/compatibility.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/runtime-resolver.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/runtime-resolver.test.ts:resolvePiRuntimeIdentity - happy path resolves a well-formed Pi package tree with the correct identity fields",
+        "vitest:plugins/ca-pi/tools/test/runtime-resolver.test.ts:resolvePiRuntimeIdentity - fail-closed branches (105-159) fails when version is missing or not a string",
+        "vitest:plugins/ca-pi/tools/test/runtime-resolver.test.ts:resolvePiRuntimeIdentity - fail-closed branches (105-159) fails when the resolved module export escapes the package root (containment)",
+        "vitest:plugins/ca-pi/tools/test/runtime-resolver.test.ts:resolvePiRuntimeIdentity - fail-closed branches (105-159) fails when the resolved package root is inside the ca-pi extension's own package root",
+        "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package exact supported Pi versions and prerequisites return fixed directions",
+        "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package shipped default rejects unsupported Pi before runtime module evaluation",
+        "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package installed Pi runtime is admitted by the production boundary",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation removes mutable runtime identity exports and touches no API on incompatibility"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-bridge-lifecycle",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S14"
+      ],
+      "transition_ids": [
+        "S14:01",
+        "S14:02",
+        "S14:03",
+        "S14:04",
+        "S14:05",
+        "S14:06",
+        "S14:07"
+      ],
+      "cells": [
+        "disposition:machines:S14",
+        "disposition:transitions:S14:01",
+        "disposition:transitions:S14:02",
+        "disposition:transitions:S14:03",
+        "disposition:transitions:S14:04",
+        "disposition:transitions:S14:05",
+        "disposition:transitions:S14:06",
+        "disposition:transitions:S14:07"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Canonical fixed helper/Python/Git, bounded exact bridge envelope and streams, preabort/cancel/deadline/kill backstop. Resolved bridge failure is not verified managed containment.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/bridge.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient runs Python from the trusted package and carries only absolute trusted executable identities",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient rejects a bridge script outside the installed package",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient blocks mutation before retaining an overflowing protocol stream",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient cancels a hung bridge tree and fails mutation closed",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient cancellation terminates the bridge tree and blocks mutation",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient force-settles a call whose child never emits close after a failed kill",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:BridgeClient a rejecting validatePaths produces no unhandledRejection and a later call() still fails with the validation error"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-usage-ack-cursor",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S15"
+      ],
+      "transition_ids": [
+        "S15:01",
+        "S15:02",
+        "S15:03",
+        "S15:04",
+        "S15:05",
+        "S15:06"
+      ],
+      "cells": [
+        "disposition:machines:S15",
+        "disposition:transitions:S15:01",
+        "disposition:transitions:S15:02",
+        "disposition:transitions:S15:03",
+        "disposition:transitions:S15:04",
+        "disposition:transitions:S15:05",
+        "disposition:transitions:S15:06"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Usage cursor advances only on exact scanEnd acknowledgment; retries same range, bounded256-entry work and session identity freshness prevent dropping or mixing facts. No new grant from delivery acknowledgment.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/bridge.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters sends project-independent bounded usage ranges and returns only the fixed validated snapshot",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters stops at the first non-ok usage range and replays that exact range from the returned cursor",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters bounds one refresh to one requested 256-entry range and reports remaining work",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters refuses to cross usage facts when the source-verified session file identity is not stable",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters rejects a forged per-call acknowledgment that does not equal scanEnd",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle retains the last valid usage snapshot while retrying the exact first unacknowledged range",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle limits startup accounting to one 256-entry bridge range",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-sidebar-normal",
+      "task_ids": [
+        "PI-L02"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S19"
+      ],
+      "transition_ids": [
+        "S19:01",
+        "S19:02",
+        "S19:03",
+        "S19:04",
+        "S19:05",
+        "S19:06"
+      ],
+      "cells": [
+        "task:PI-L02",
+        "disposition:machines:S19",
+        "disposition:transitions:S19:01",
+        "disposition:transitions:S19:02",
+        "disposition:transitions:S19:03",
+        "disposition:transitions:S19:04",
+        "disposition:transitions:S19:05",
+        "disposition:transitions:S19:06"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Changed manager preserves canonical registration/geometry/probe/native fallback; compositor remains byte-identical and restores only its own patches.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+        "plugins/ca-pi/tools/src/sidebar-manager.ts",
+        "plugins/ca-pi/tools/src/sidebar.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager registration (AC-5) registers /ca-sidebar once in an interactive parent and never twice",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager registration (AC-5) refuses every non-interactive context without registering or painting",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager auto-install (AC-5) auto-installs at or above the 120-column threshold",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager auto-install (AC-5) stays off below 120 columns and does not re-decide",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:/ca-sidebar command (AC-5) on installs, off disposes and restores, toggle flips",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:/ca-sidebar command (AC-5) a mid-construction install failure reports degraded for the doctor row",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager lifecycle (AC-4/AC-5) dispose restores native rendering and resets session state",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a geometry change while install is pending installs against the live terminal"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "unchanged_guard_owners": {
+        "S19:05": [
+          "plugins/ca-pi/tools/src/sidebar-compositor.ts"
+        ],
+        "S19:06": [
+          "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+          "plugins/ca-pi/tools/src/sidebar.ts"
+        ]
+      }
+    },
+    {
+      "id": "pi-sidebar-retirement",
+      "task_ids": [
+        "PI-L02"
+      ],
+      "finding_ids": [
+        "SF03"
+      ],
+      "scenario_ids": [
+        "SEQ-15"
+      ],
+      "machine_ids": [
+        "S19"
+      ],
+      "transition_ids": [
+        "S19:07",
+        "S19:08"
+      ],
+      "cells": [
+        "task:PI-L02",
+        "disposition:findings:SF03",
+        "disposition:machines:S19",
+        "disposition:transitions:S19:07",
+        "disposition:transitions:S19:08"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Corrected baseline stale install defect: disposal invalidates pending generation; old/new metrics order cannot resurrect disposed renderer or degrade new session.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+        "plugins/ca-pi/tools/src/sidebar-manager.ts",
+        "plugins/ca-pi/tools/src/sidebar.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) repeated dispose during a pending install stays native",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) two installs pending in one session patch the terminal once",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "scenario_binding": "References are semantic links only. Scenario job is separately owned; no source-only Pi group emits a full scenario qualification cell."
+    },
+    {
+      "id": "pi-commands-notices-preserved",
+      "task_ids": [],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S20"
+      ],
+      "transition_ids": [
+        "S20:01",
+        "S20:02",
+        "S20:03",
+        "S20:04",
+        "S20:05"
+      ],
+      "cells": [
+        "disposition:machines:S20",
+        "disposition:transitions:S20:01",
+        "disposition:transitions:S20:02",
+        "disposition:transitions:S20:03",
+        "disposition:transitions:S20:04",
+        "disposition:transitions:S20:05"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "EXACT_WHOLE_OWNER_SOURCE_PRESERVATION",
+      "scope": "Command ownership/skill text and notice owners byte-identical. Baseline S20:03 has no post-read lifecycle check; this preserved boundary is not silently described as fixed.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args",
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision",
+        "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices deduplicates exact identities but retains same-rule changes and distinct read contexts",
+        "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": [],
+      "whole_file_preservation_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ]
+    },
+    {
+      "id": "pi-doctor-production-projection",
+      "task_ids": [
+        "PI-D06"
+      ],
+      "finding_ids": [
+        "SF12"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S20"
+      ],
+      "transition_ids": [
+        "S20:06"
+      ],
+      "cells": [
+        "task:PI-D06",
+        "disposition:findings:SF12",
+        "disposition:machines:S20",
+        "disposition:transitions:S20:06"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Actual shipped parent default + admitted Pi module + actual registered ca-doctor handler and Git-common clear/pending/unsafe records;9fixturehostUI/state cases assert truthful delegation/profile/recovery/private rows and no qualification claim. No doctorReport callback substitution, no real visible TUI.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/doctor.test.ts:production doctor separates parent UI, retained recovery and optional legacy approval without qualification claims",
+        "vitest:plugins/ca-pi/tools/test/doctor.test.ts:Pi structured doctor reports exact active origins and limits the module-identity claim",
+        "vitest:plugins/ca-pi/tools/test/doctor.test.ts:Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-workflow-readonly-projection",
+      "task_ids": [
+        "PI-D04",
+        "PI-D06"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S01",
+        "S14"
+      ],
+      "transition_ids": [],
+      "cells": [
+        "task:PI-D04",
+        "task:PI-D06",
+        "disposition:machines:S01",
+        "disposition:machines:S14"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Pi-owned HW14 followup: typed32item/256KiB projection, one-second observation deadline, current trust/lease and delivered-sink fingerprint dedup independent from persona; no ledger marker or authority mutation.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/activation.ts",
+        "plugins/ca-pi/tools/src/bridge.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-pi/tools/src/session-identity.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation workflow recovery presentation is independent of persona, dedups each delivered sink and refreshes changed pages",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation workflow notice retries failed delivery and ignores retired or newly untrusted observations",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation unavailable workflow observation preserves a known pending page in the delivered prompt and independent work",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation disabled projects have zero workflow observers",
+        "vitest:plugins/ca-pi/tools/test/workflow-recovery.test.ts:closed snapshot keeps partial-page counts, opaque cursor and uncertainty",
+        "vitest:plugins/ca-pi/tools/test/workflow-recovery.test.ts:rejects foreign envelope/patch and child-authored context fields",
+        "vitest:plugins/ca-pi/tools/test/workflow-recovery.test.ts:trusted enabled reader uses only fixed event/cwd/session, rechecks trust after reply",
+        "vitest:plugins/ca-pi/tools/test/workflow-recovery.test.ts:one-second observation deadline aborts existing bridge cleanup without waiting for an unresponsive observer",
+        "vitest:plugins/ca-pi/tools/test/workflow-recovery.test.ts:actual owning Python read-only projection crosses the TypeScript codec without fabricating empty recovery",
+        "vitest:plugins/ca-pi/tools/test/bridge.test.ts:Pi footer bridge adapters production recovery observer failure remains physically read-only while ordinary tool failure is audited"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-delegation-closed-contract",
+      "task_ids": [
+        "PI-D01"
+      ],
+      "finding_ids": [
+        "SF01"
+      ],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S09"
+      ],
+      "transition_ids": [],
+      "cells": [
+        "task:PI-D01",
+        "disposition:findings:SF01",
+        "disposition:machines:S09"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Exact closed bounded v2bootstrap/grant/operation/record decoders, deterministic digest and five outcome axes; unknown fields/mixedversion/token/sequence/identity mismatch cannot mint authority. Model judgment stays separate from parent effect/containment/recovery.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/attestation.ts",
+        "plugins/ca-pi/tools/src/child-extension.ts",
+        "plugins/ca-pi/tools/src/delegation-contract.ts",
+        "plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) round-trips a reviewer (no delegation) and an author (with delegation) envelope",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:operation request (PI-D01) round-trips write, edit and bash and binds the digest to tool, params and profile",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:operation request (PI-D01) a digest that does not match the params is refused",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:operation response axes (PI-D01) all five axes round-trip without collapsing unknown into failure or no-effect",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:run grant and journal identity (PI-D01) a legitimate author grant validates; unsupported tools, overflow and duplicates refuse",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:run grant and journal identity (PI-D01) two grants with the same role and task text still get distinct operation identities",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:run grant and journal identity (PI-D01) journal records decode only as closed bounded versioned data",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) duplicate keys, whitespace and reordered keys are refused on every decoder",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) decoded params are deeply frozen",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) tokenMatches requires two 64-hex values and compares in constant time",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) the sequence checker admits strictly increasing values only",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) encodeBootstrapEnvelope refuses a port above 65535",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:reviewer LOW items (PI-D01 follow-up) journal records encode canonically and round-trip",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses old 32-byte bare nonce (mixed bundle)",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses unknown version",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses oversized",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses unexpected field",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses nonlocal endpoint",
+        "vitest:plugins/ca-pi/tools/test/delegation-contract.test.ts:bootstrap envelope v2 (PI-D01) refuses short token"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    },
+    {
+      "id": "pi-environment-boundary",
+      "task_ids": [
+        "PI-D03",
+        "DEF-PI-ENV-01"
+      ],
+      "finding_ids": [],
+      "scenario_ids": [],
+      "machine_ids": [
+        "S05",
+        "S10"
+      ],
+      "transition_ids": [
+        "S05:01",
+        "S10:01",
+        "S10:02",
+        "S10:03",
+        "S10:04"
+      ],
+      "cells": [
+        "task:PI-D03",
+        "task:DEF-PI-ENV-01",
+        "disposition:machines:S05",
+        "disposition:machines:S10",
+        "disposition:transitions:S05:01",
+        "disposition:transitions:S10:01",
+        "disposition:transitions:S10:02",
+        "disposition:transitions:S10:03",
+        "disposition:transitions:S10:04"
+      ],
+      "proposed_disposition": "CHANGED_OR_PRESERVED_ASSERTED_LOCAL",
+      "basis": "ASSERTED_CHANGED_OR_COMPOSED_BOUNDARY",
+      "scope": "Changed parent background/delegated command launch uses credential-blind explicit baseline; test plants secret-bearing parent values and checks bounded Windows/POSIX shell identity/environment. Existing child provider projection remains broker-token-only.",
+      "source_paths": [
+        "plugins/ca-pi/tools/src/child-env.ts",
+        "plugins/ca-pi/tools/src/delegated-executor.ts",
+        "plugins/ca-pi/tools/src/extension.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": "major qualification / pi",
+      "payload_name": "pi-tools",
+      "observation": "pi-tools-tests",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation bounds the OS environment and resolves the configured shell to an absolute identity",
+        "vitest:plugins/ca-pi/tools/test/delegated-executor.test.ts:parent delegated effect executor credential-blind environment retains only host baseline with Windows case folding",
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment carries the ephemeral broker token and no operator provider credential at all",
+        "vitest:plugins/ca-pi/tools/test/child-env.test.ts:Task 6 child environment plants operator literals and finds none of them anywhere in the child boundary"
+      ],
+      "selector_status": "EXACT_NAMES_FROM_ASSERTION_SOURCES; local owning outcomes retained, normalized exact-source/run observation not yet available",
+      "emission_status": "BLOCKED_UNTIL_SOURCE_RUN_AND_ACTUAL_PAYLOAD_BINDING",
+      "limits": []
+    }
+  ],
+  "source_identity": {
+    "plugins/ca-pi/tools/src/activation.ts": {
+      "baseline_sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+      "current_sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/activity.ts": {
+      "baseline_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "current_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/approval-dialog.ts": {
+      "baseline_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+      "current_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/approval-entry.ts": {
+      "baseline_sha256": "acd92aaff300198a34c6197027b8af3117d7841bd351104a67b3affad8cea8f8",
+      "current_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/attestation.ts": {
+      "baseline_sha256": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+      "current_sha256": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/audit-sink.ts": {
+      "baseline_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+      "current_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/background-jobs.ts": {
+      "baseline_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+      "current_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/bridge.ts": {
+      "baseline_sha256": "87d98382f90b223e1356cf0b2895929690655b113f6be18aac682bb411ba9a84",
+      "current_sha256": "de92057de189309c8485d85fdb74c6eb89c470ac766f4de998908a2eb2656e9c",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/child-env.ts": {
+      "baseline_sha256": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+      "current_sha256": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/child-extension.ts": {
+      "baseline_sha256": "02f10a1a5c57c214aee37b0a8dfaae5e7aa2c07e12584f83d24f529b65914cb8",
+      "current_sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/command-ownership.ts": {
+      "baseline_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "current_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/commands.ts": {
+      "baseline_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+      "current_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/compaction.ts": {
+      "baseline_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+      "current_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/compatibility.ts": {
+      "baseline_sha256": "fc9dfbdf64e3915552edd5bb2d08709b4ed8936f962d72b232755ebcafbd71aa",
+      "current_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/contracts.ts": {
+      "baseline_sha256": "46ff5c3869f48042389c14cf954ea38cfa8e8392252311af60a523b425582e77",
+      "current_sha256": "1e732c9a4cbd9fa0932a8ec833e369d22fde5802a15cffc3d37e8c39ce6349ec",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/dispatch.ts": {
+      "baseline_sha256": "8ae9ad95ee0a584e16098bd5ed7832aa32d4dae75ac787cb142bbf60300d20cf",
+      "current_sha256": "520ceb359b959f9a55dfff38aba369a18e49b5aeb2383f204dde9d1bae4314b0",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/doctor.ts": {
+      "baseline_sha256": "b73920fbcf026f5d376b7a9bb4892b7b61052d4b8fa03ba1cf4be47f665a1eb2",
+      "current_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/extension.ts": {
+      "baseline_sha256": "34810c6a83c6dba10ff5a58d63a38ae909d1f92f80ae2450c5772eea21271093",
+      "current_sha256": "bb49aca14cf09834e821f6cc4f0551c4b2db7e8e4285128f867327491c0103ae",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/footer-state.ts": {
+      "baseline_sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+      "current_sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/footer.ts": {
+      "baseline_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+      "current_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/git-facts.ts": {
+      "baseline_sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+      "current_sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/inference-broker.ts": {
+      "baseline_sha256": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+      "current_sha256": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/native-background.ts": {
+      "baseline_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+      "current_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/native-plan.ts": {
+      "baseline_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "current_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/notices.ts": {
+      "baseline_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+      "current_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/plan-mode.ts": {
+      "baseline_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "current_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/policy.ts": {
+      "baseline_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "current_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/process-tree.ts": {
+      "baseline_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+      "current_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/roles.ts": {
+      "baseline_sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+      "current_sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/runner.ts": {
+      "baseline_sha256": "b77b9c72bc850481fa352b58645d52f35a24fcbca64f18824b21dcd154ac574f",
+      "current_sha256": "42832ddd435d5864a784e17461fec337f1ac4534ae0b1303fa06a2b9fbd6c61a",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/runtime-resolver.ts": {
+      "baseline_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+      "current_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/session-identity.ts": {
+      "baseline_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "current_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/sidebar-compositor.ts": {
+      "baseline_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+      "current_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/sidebar-data.ts": {
+      "baseline_sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+      "current_sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+      "baseline_sha256": "7d2677843e661b8c24f11af652e3954f14036691ae1a1210570f85b456b5c72b",
+      "current_sha256": "9434a127d94ea06b6e9d46f844ca1ce02b36048ed3270e8ef8912d543337008f",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/sidebar.ts": {
+      "baseline_sha256": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+      "current_sha256": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/status.ts": {
+      "baseline_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+      "current_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/tool-guard.ts": {
+      "baseline_sha256": "48434edf40a82ae39a43f7955eb4e10be2101f5ca60080c46a7df015fa0f6207",
+      "current_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+      "whole_file_equal": false,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/src/windows-supervisor.ts": {
+      "baseline_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+      "current_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+      "whole_file_equal": true,
+      "basis": "current whole file compared to exact frozen Git blob; no source changes made by this mapping"
+    },
+    "plugins/ca-pi/tools/test/activation.test.ts": {
+      "current_sha256": "c4aca96b0c6e8d7905288997c219320497e01ac638729a78e9479245bd11c0db",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/activity.test.ts": {
+      "current_sha256": "b17944eff2918308ba1d920894826391cc2a9ad2f06748d0443b588741a85ae5",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/approval-dialog.test.ts": {
+      "current_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/audit-sink.test.ts": {
+      "current_sha256": "2cb576607d0af8b1489f7814e5171f11e714db13737e604bb5ccbb30ec96f808",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/background-jobs.test.ts": {
+      "current_sha256": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/bridge.test.ts": {
+      "current_sha256": "a1d55558ee62e93159f8855e9db0161f6a9250558ee2e28fd5ca591b5d9b6e0f",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/child-env.test.ts": {
+      "current_sha256": "a804d23de882627858aede6802b834fff5de06444c5c2f210471c8b98a9ac2ef",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/commands.test.ts": {
+      "current_sha256": "5a831ecae4a0613808d5fb5c95687ed5dd8a8a42fe61189dc85ea1c5686ecdf3",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/compaction.test.ts": {
+      "current_sha256": "d834a875f37ade4025c40f96386efc09f46adc7f2b05a3233594b0f216a7b776",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/delegated-executor.test.ts": {
+      "current_sha256": "9c3449e913347836cf75805a57ddccb1df4b7ba85f18b953651ce206b106207f",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/delegation-journal.test.ts": {
+      "current_sha256": "dc2722246d8866dbe36f0eb01d1c90086bc1608ca8411d18baabfba6694f6e1f",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/delegation-session.test.ts": {
+      "current_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/dispatch.test.ts": {
+      "current_sha256": "91ed4bc79dfe0a8027339628949032f55b171957d32a62ea2597c23cdd3c46d9",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/doctor.test.ts": {
+      "current_sha256": "7d73d9a7336710a12dcad6965756d87d93f7630b26d8171be43a386cc5a1e1f0",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/inference-broker.test.ts": {
+      "current_sha256": "69742040aa5e301797b3ad38d9dd80e9d05e9dff0bf2ec4d4ec8c6da45b4874f",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/notices.test.ts": {
+      "current_sha256": "c192dd669a18b1dbcbc5b09d3581112c21587cf102b87028b51917a0d81eccd9",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/package.test.ts": {
+      "current_sha256": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/parent-delegation.test.ts": {
+      "current_sha256": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/plan-mode.test.ts": {
+      "current_sha256": "25c15a8f9d3db0314230ce503aa929900f396ea77c5d64aaa03ce4debe62ed4d",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/process-tree.test.ts": {
+      "current_sha256": "4885395b9f888fc057ea8de748585845d782a4ae362872548785c7c0ae71f187",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+      "current_sha256": "ffcf239df4708351c3ed29d6dcf6d203ff4dbd32b72cbe02de008f7e6cd72f9d",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/runtime-resolver.test.ts": {
+      "current_sha256": "1140d710f1110605fad87a73bff67e977b7354f2eec2cb9c4c20293516f58c0d",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/sidebar-manager.test.ts": {
+      "current_sha256": "7fd059d6121f2695392a81606ab8d3c7e94126b3d43d9ae04440608ab51f8a99",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/status.test.ts": {
+      "current_sha256": "98be82bb6fdb0489cd5f7cf7fd3c3ad4e5ec377f52a097cb1359229d916d0ad6",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/tool-guard.test.ts": {
+      "current_sha256": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/test/workflow-recovery.test.ts": {
+      "current_sha256": "b1e7e76eb776e9586e5622e552e0c49d59089b0369ca48755680907b6d7509ca",
+      "basis": "exact proposed named assertion source, not a normalized source/run PASS receipt"
+    },
+    "plugins/ca-pi/tools/src/delegated-executor.ts": {
+      "current_sha256": "74b556c921450dc022399e0ed029646d8ab487c1736bd5af7fd640c5f9bc38b1",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/src/delegation-client.ts": {
+      "current_sha256": "718cc65ee5c0fd493c2cb5310630fd84a392c2c48c89f26c24d26ba7ea010d0e",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/src/parent-delegation.ts": {
+      "current_sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/src/delegation-session.ts": {
+      "current_sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/src/delegation-journal.ts": {
+      "current_sha256": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/src/delegation-contract.ts": {
+      "current_sha256": "2cafdd5191c2021a02e6d7594b407c83a542f1778c0b11acc8942e9a3fbf7d2e",
+      "basis": "Current owning new delegation source bound to semantic guards; not an executed or installed claim."
+    },
+    "plugins/ca-pi/tools/test/delegation-contract.test.ts": {
+      "current_sha256": "1ce5130d2b2532d9aae666823cd18a4ca623a8e7174c02429e27f3998214ee14",
+      "basis": "Proposed named assertion source; normalized source/run observation pending."
+    }
+  },
+  "baseline_row_changes": [
+    {
+      "transition_ids": [
+        "S01:05",
+        "S01:07"
+      ],
+      "delta": "Ready vector now explicitly requires persona; bridge success alone cannot heal failed persona."
+    },
+    {
+      "transition_ids": [
+        "S09:03",
+        "S09:11"
+      ],
+      "delta": "Version2 purpose-bound author proxy uses real parent operation gate; reviewer no mutation and ambient-marker refusal retained."
+    },
+    {
+      "transition_ids": [
+        "S10:04"
+      ],
+      "delta": "Frozen wording says credential-bearing file; source already uses ADR0019 credential-blind broker capability. No reusable provider credentials enter child files."
+    },
+    {
+      "transition_ids": [
+        "S19:07",
+        "S19:08"
+      ],
+      "delta": "Pending installs are cancelled by disposal/new generation; no resurrection after metrics resolves."
+    }
+  ],
+  "candidate_new_event_coverage": {
+    "formal_added_transition_ids": [],
+    "note": "Frozen baseline has no dedicated grant/journal/proxy schema rows. These event families are explicitly mapped above; root owns formal new_transition_rows IDs/ledger, no invented frozen IDs.",
+    "families": [
+      "Closed grant/request/response/fd3schema and five outcome axes",
+      "Exclusive claim/started/outcome persistence; uncertain effect/replay and target hold",
+      "Post-spawn/persistence grant retirement and whole-tree cleanup",
+      "Workflow snapshot presentation/read failure and generic child handback unavailability"
+    ]
+  },
+  "retained_local_evidence": [
+    {
+      "ref": "execution/lanes/pi.json#PI-WINDOWS-SUITE",
+      "meaning": "Original42file1029PASS/2SKIP and earlier failures retained; suite total is not copied as row proof."
+    },
+    {
+      "ref": "execution/lanes/pi.json#workflow_recovery_followup",
+      "meaning": "43file1067PASS/2SKIP checkpoint before final selector fix; exact affected6file239PASS afterward. Explicit fixture/TUI/Node limits retained."
+    },
+    {
+      "ref": "C:/Users/brenn/AppData/Local/Temp/ca-pi-d06-doctor-green.json",
+      "sha256": "4b53ea608c2aab98c077927785e378b841a9a410b8259031df2ab097e14ca843",
+      "meaning": "Actual named doctor27PASS including nine production-row fixture combinations; no product source/bundle edit."
+    }
+  ],
+  "gaps": [
+    {
+      "id": "PI-D07-VISIBLE-PARENT",
+      "cells": [
+        "task:PI-D07",
+        "scenario:SEQ-12",
+        "disposition:findings:SF01"
+      ],
+      "required_case": "Exact final candidate installed under supported Pi1.5 actual parent UI; visible concrete human confirmation for child write/edit/command, actual resulting bytes and managed cleanup.",
+      "current_limit": "Current actual child RPC loop uses instrumented parent, injected permission callback and deterministic local provider; cannot promote source proof to actual parent consent."
+    },
+    {
+      "id": "PI-D07-CROSS-PLATFORM",
+      "cells": [
+        "task:PI-D07",
+        "scenario:SEQ-14"
+      ],
+      "required_case": "Actual Linux/macOS/Windows admitted runtime process-tree, stop/parent-death/revocation and fd3/bundle closure cells; non-root POSIX unreadable commondir with readable control.",
+      "current_limit": "Local Windows Node24.22.1 proof only; POSIX process and permission cells skipped. Node24.18 assertion and hosted22.19 EOF30sfailure remain retained."
+    },
+    {
+      "id": "PI-EXACT-CANDIDATE-LIFECYCLE",
+      "cells": [
+        "task:PI-D07",
+        "scenario:SEQ-31",
+        "disposition:findings:SF12"
+      ],
+      "required_case": "Retained exact old→new Pi candidate cold-install/update/disable/uninstall/rollback settings/state preservation, package/artifact digest and supported runtime identity.",
+      "current_limit": "Optional approval unavailable matrix is source/runtime-gated evidence, not install/upgrade coverage. Native cohort and distribution owners must join actual Pi package proof."
+    },
+    {
+      "id": "PI-NAMED-OBSERVATION-BINDING",
+      "cells": [
+        "all draft source-test groups"
+      ],
+      "required_case": "After root source candidate commit, observe original owning named tests once using actual reporter, with clean same source/tree/run and authenticated consumed payload.",
+      "current_limit": "No normalized original source/run-bound observation yet. Proposed selectors are exact inspected names, not invented pass receipts. After candidate commit the original owning CI execution must bind these selections; do not rerun solely to manufacture local row receipts."
+    },
+    {
+      "id": "PI-NEW-TRANSITION-ACCOUNTING",
+      "cells": [
+        "new delegation/recovery events"
+      ],
+      "required_case": "Root append formal new event rows to maintained execution owner and bind mapped guards/effects/retry selectors.",
+      "current_limit": "Frozen156rows retained; no new frozen IDs minted here."
+    },
+    {
+      "id": "DEF-PI-RPC-SHUTDOWN-01",
+      "cells": [
+        "installed:pi:windows:1.5.0"
+      ],
+      "required_case": "Hosted failure phase trace from exact Node22.19/Pi1.5 raw EOF path; diagnose actual cause and obtain exact-head hosted proof.",
+      "current_limit": "Local exactNode22rawPASS25.227s/observedPASS10.386s not substitute; test-only passive diagnostic committed1102at9f3db64, CI pending."
+    }
+  ],
+  "scenario_scope": [
+    {
+      "id": "SEQ-12",
+      "state": "PARTIAL_LOCAL_REAL_CHILD_EFFECTS_WITH_EXPLICIT_SUBSTITUTIONS"
+    },
+    {
+      "id": "SEQ-13",
+      "state": "LOCAL_NAMED_GUARD_ASSERTIONS_MAPPED; source/run unbound"
+    },
+    {
+      "id": "SEQ-14",
+      "state": "LOCAL_RACE_AND_UNCERTAINTY_ASSERTIONS_MAPPED; actual platform/parent-death cells pending"
+    },
+    {
+      "id": "SEQ-15",
+      "state": "LOCAL_PERSONA_AND_SIDEBAR_ASSERTIONS_MAPPED; visible terminal not claimed"
+    },
+    {
+      "id": "SEQ-31",
+      "state": "PI_COHORT_INSTALL_UPDATE_DISABLE_UNINSTALL_UNAVAILABLE"
+    }
+  ],
+  "non_actions": [
+    "No tests rerun solely for this mapping; existing actual outcomes reused. PI-D06 new actual assertion gap was verified separately as requested.",
+    "No frozen contracts, main coverage ledger, root progress, versions/manifests/ADRs or publication changed.",
+    "No qualified/emitted cells, fabricated installed proof, source commit, staging or push by this lane.",
+    "No task:PI-D07 or full scenario:* qualification emission template is proposed while their installed/composed obligations remain incomplete."
+  ],
+  "additional_work": [
+    {
+      "id": "DEF-PI-ENV-01",
+      "state": "LOCAL_NEGATIVE_ASSERTIONS_MAPPED; hosted exact-source observation pending"
+    },
+    {
+      "id": "DEF-PI-RPC-SHUTDOWN-01",
+      "state": "RETAINED_HOSTED_FAILURE; DIAGNOSTIC_ONLY; cause remains unknown"
+    }
+  ],
+  "selector_shape_check": {
+    "owner": ".github/scripts/major_qualification_report.py validate_selections",
+    "result": "PASS after projecting exact8fields to canonical schema",
+    "meaning": "Shape and bounded unique selectors/cells only; source/run/job/payload admission and unmet installed cases remain blocked."
+  }
+}

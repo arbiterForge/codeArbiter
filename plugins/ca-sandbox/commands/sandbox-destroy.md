@@ -1,51 +1,14 @@
 ---
-description: Tear down a sandbox box — remove its container and named volume. --keep-volume leaves the volume; with no id, prune reclaims any leaked ca.sandbox=1-labeled object. Cached images are retained.
-argument-hint: "[<sandbox id>] [--keep-volume] [--prune]"
+description: Remove one named sandbox container and volume; --keep-volume preserves its source. Explicit --prune selects a separate broad snapshot. Cached images remain.
+argument-hint: "<sandbox id> [--keep-volume] | --prune"
 ---
 
-# /ca-sandbox:sandbox-destroy — tear the box down
+# /ca-sandbox:sandbox-destroy
 
-A sandbox is ephemeral by contract, and this is how it ends. Destroy removes the container and its
-named volume, leaving zero `ca.sandbox=1`-labeled objects behind — the cleanup that makes "explore, then
-burn" real. Cached images (`ca-sbx:<repo>-<dephash>`) are intentionally retained so the next `create`
-from the same repo is a cache hit.
+Use `${CLAUDE_PLUGIN_ROOT}/skills/sandbox-lifecycle/SKILL.md` Phase explicit teardown.
 
-`--keep-volume` leaves the volume in place for a deliberate re-run. `--prune` (or invoking with no id)
-reclaims any leaked labeled object — the safety net for a box whose driver died mid-run.
+Translate a named request to `node <plugin>/tools/sandbox.js destroy <id> [--keep-volume]`. Remove only the plugin-labeled objects of that exact id. Other sandboxes remain intact; shell detachment does not destroy anything. An omitted id is an error, not authority to prune.
 
-## Flow
+Only an explicit broad prune request maps to `node <plugin>/tools/sandbox.js prune`. Its targets are the initial discovery snapshot. Do not add newly created or unrelated instances to this sweep, and never follow named destroy with automatic prune.
 
-1. **Resolve the target** — the box id to destroy, or `--prune` / no-id to sweep all leaked
-   `ca.sandbox=1` objects.
-2. **Destroy** — call `destroySandbox` in `${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`: remove the
-   container, then its named volume (unless `--keep-volume`).
-3. **Prune leaks** — `prune` in `${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts` finds and removes any
-   remaining labeled container/volume via the `ca.sandbox=1` label alone.
-4. **Confirm** — report what was removed and what was retained (cached images, a kept volume). If any
-   removal failed, or a final label-scoped re-list still finds a targeted object, say so and NAME the
-   leftovers: the CLI exits non-zero and the JSON result carries `failures` / `remainingContainers` /
-   `remainingVolumes`.
-
-## Routes to
-
-`sandbox-lifecycle` (`${CLAUDE_PLUGIN_ROOT}/skills/sandbox-lifecycle/SKILL.md`) — Phase 5 (teardown),
-via `destroySandbox` and `prune` in `${CLAUDE_PLUGIN_ROOT}/tools/destroy.ts`.
-
-## When NOT to use
-
-- Still exploring the box → `/ca-sandbox:sandbox-shell`, `/ca-sandbox:sandbox-exec`.
-- Pulling a file out before teardown → `/ca-sandbox:sandbox-cp`.
-- Standing a new box up → `/ca-sandbox:sandbox`.
-
-## Hard gate
-
-- MUST leave zero `ca.sandbox=1`-labeled containers or volumes after a destroy (cached images excepted),
-  unless `--keep-volume` is set.
-- MUST be able to reclaim a leaked labeled object via the `ca.sandbox=1` label alone (`prune`); a leaked
-  box MUST NOT be unrecoverable.
-- MUST retain cached `ca-sbx:<repo>-<dephash>` images — teardown removes containers and volumes, not the
-  build cache.
-- MUST NOT touch any object not labeled `ca.sandbox=1`; destroy operates only on this plugin's objects.
-- MUST NOT report success when a removal, a discovery listing, or the post-teardown verification failed.
-  A failed teardown exits non-zero and names every object left behind — silently succeeding while an
-  untrusted container is still running is the one outcome this command may never produce.
+Return the driver's removed/kept/remaining/failure fields. Verify absence of targeted containers and volumes, and report discovery or verification failure as unavailable. Teardown failure exits nonzero and retains exact references for inspection. Cached `ca-sbx:v2-<sha256>` and historical cache images are intentionally retained.

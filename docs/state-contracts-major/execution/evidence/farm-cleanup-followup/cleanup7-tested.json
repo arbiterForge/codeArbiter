@@ -1,0 +1,151 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2c62fc67ba7105e26f86f3ee8a87ae968c505854",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual Windows regression5RED/2controls then7GREEN; owning931-pass coverage confirms same7 after build. Source was3688 plus declared author dirt, later committed exactly as2c62."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": "42db12b66d169916eb88f932bcfde2fea208c1ddd2f36116ad6bb632e4206be7",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.ts": "0c20d5f03483e24f50b27a660ced3e6da266fd6de71d20fe252c3555f5117670",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S30:05",
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01"
+  ],
+  "commands": [
+    {
+      "exit_code": 0,
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-observation-e5bfabb3/coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json",
+      "sha256": "5463d1ad6ee49fee0543e67d3260e17137364bdeceb7ea3a013d36a5427ba9b9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm-input-origin.json",
+      "sha256": "9d92244ab9a54281afcd00dcd356d0350ea47edc2ad13e7ad8f8cd6b848488aa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm-clause-bindings.json",
+      "sha256": "a39be94ea09bf2df89f7dddc13906f41207d82fed36b4a1026ed8e71a051f8ac"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/red-tests.json",
+      "sha256": "960615cb185e9e5d9b0e13cfe1c980a2e1121c08e4d4c3a84ab025f64a2d1cfd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/green-tests.json",
+      "sha256": "10fc3c95bd58c767ee5dd0029663b243fbb8a6ad0df09cdf15c23e6ef7642653"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "known-state-and-unknown-observation",
+      "transition_cells": [
+        "disposition:transitions:S30:05",
+        "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 625.4970999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 607.9437,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 683.9677999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 552.0210000000002,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 457.2940000000003,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 352.11630000000014,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 435.1129000000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/raw/selected-observations.json"
+        }
+      ],
+      "claim": "EACCES/EIO after actual Git removal or retained registry refuses after one attempt/no prune/no destructive retry; genuine ENOENT+unregistered succeeds; known-present retains three retries; dangling directory link refuses false absence.",
+      "limits": "Real local Git/FS with injected error observation; no hostile same-user atomic-exclusion proof, POSIX process containment or live provider qualification."
+    }
+  ],
+  "candidate_contract_note": "Intentional repair of old unknown-stat false absence; known leaks still retain bounded cleanup failure after attempts. Unknown is separately refused immediately.",
+  "qualification_origin_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm-input-origin.json",
+    "sha256": "9d92244ab9a54281afcd00dcd356d0350ea47edc2ad13e7ad8f8cd6b848488aa"
+  },
+  "introduced_definition_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/introduced-transitions.json",
+    "sha256": "92feeaa9151ab641e8124947b08eddbe6614bec7e5830ce136bc20c9428cac14"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\observe-current.py"
+  ],
+  "cwd": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter",
+  "exit_code": 0,
+  "environment": {
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home\\.cache",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "NUL"
+  }
+}

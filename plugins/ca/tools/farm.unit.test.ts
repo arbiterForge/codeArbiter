@@ -4318,7 +4318,7 @@ describe("attributed retry context", () => {
     };
     return { task, deps, wt, prompts, calls };
   }
-  for (const mode of ["partial-worker", "gate-failed", "gate-throw", "drift-throw", "select-partial"]) {
+  for (const mode of ["partial-worker", "gate-failed", "gate-throw", "select-partial"]) {
     it(`carries one candidate through ${mode} without replaying untouched source`, async () => {
       const f = await fixture(mode);
       const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);
@@ -4337,6 +4337,19 @@ describe("attributed retry context", () => {
       expect(await fsReadFile(path.join(f.wt, "src/untouched.ts"), "utf8")).toBe("UNTOUCHED BASELINE\n");
     });
   }
+  it("retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",async()=>{
+    const f=await fixture("drift-throw");
+    let resets=0;
+    const original=f.deps.resetWorktree;
+    f.deps.resetWorktree=async wt=>{resets++;await original(wt);};
+    const r=await runTask(f.task,"fixture","https://example.invalid","fixture",f.deps);
+    expect(r.status).toBe("escalate");expect(r.attempts).toBe(1);
+    expect(r.note).toMatch(/drift observation unavailable/);
+    expect(f.prompts).toHaveLength(2);expect(resets).toBe(0);
+    expect(r.promptTokens).toBe(14);expect(r.completionTokens).toBe(22);
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+    expect(await fsReadFile(path.join(f.wt,"test.txt"),"utf8")).toBe("IMMUTABLE TEST\n");
+  });
   it("filters the single-worker retry against the same reported write set", async () => {
     const f = await fixture("partial-worker", 1);
     const r = await runTask(f.task, "fixture", "https://example.invalid", "fixture", f.deps);

@@ -28,23 +28,22 @@
  * wall-clock timed out so a dead remote / giant repo cannot hang forever. On
  * any failure AFTER the volume is created, the partial objects are torn down —
  * containers FIRST, then the volume (matching destroySandbox's order, so an
- * in-use volume never fails to remove) — so a failed create never leaks a
- * labeled half-sandbox.
+ * in-use volume never fails to remove) — and verified independently. Unknown cleanup retains the exact references; a
+ * failed Docker observation never establishes absence.
  *
  * Process/shell handling routes through docker.ts (architecture-007): an
  * injectable docker runner, MSYS_NO_PATHCONV=1 on Windows + Git Bash (Spike
  * A/B), and a deterministic id derived from crypto random bytes (farm.ts
  * hashing style).
  */
-import { spawnSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { readdir } from "node:fs/promises";
-import { runContainer, type NetPolicy } from "./run.ts";
+import { runContainer, ordinaryNetworkCapability, type NetPolicy } from "./run.ts";
 import { buildMountArgs } from "./mounts.ts";
-import { buildOrReuseImage, type BuildResult } from "./build.ts";
+import { buildOrReuseImage, type BuildResult, type BuildDeps } from "./build.ts";
 import { computeDepHash, type ManifestFile } from "./dephash.ts";
-import { SANDBOX_LABEL, idLabel } from "./registry.ts";
-import { DOCKER_ENV, defaultDockerRun, type DockerRun } from "./docker.ts";
+import { SANDBOX_LABEL, idLabel, listContainersResult } from "./registry.ts";
+import { DOCKER_ENV, defaultDockerRun, makeDockerRun, type DockerRun } from "./docker.ts";
 
 /**
  * Image used for the throwaway clone step (small, git built in), PINNED to a
@@ -83,6 +82,48 @@ export const CP_TIMEOUT_MS = Number(process.env.CA_SANDBOX_CP_TIMEOUT_MS ?? 2 * 
 
 /** Result returned by the injectable repo cloner. */
 export type CloneResult = { code: number; stderr: string };
+export type Compensation = { verified: boolean; containers: string[]; volume: string; failures: string[] };
+export type BuildStagingCleanup = {
+  helper: string; staging: string; removeCode: number; observationCode: number; stagingRemoved: boolean;
+};
+/** Build failure and independent staging observations have separate identities. */
+export class BuildStagingFailure extends Error {
+  constructor(readonly primaryFailure: unknown, readonly cleanup: BuildStagingCleanup) {
+    const primary = primaryFailure === undefined ? "" :
+      `${primaryFailure instanceof Error ? primaryFailure.message : String(primaryFailure)}\n`;
+    super(`${primary}ca-sandbox: build staging cleanup unknown; helper=${cleanup.helper} (remove=${cleanup.removeCode}), staging=${cleanup.staging}`,
+          primaryFailure === undefined ? undefined : { cause: primaryFailure });
+    this.name = "BuildStagingFailure";
+  }
+}
+export class CreateFailure extends Error {
+  constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation, cause?: unknown) {
+    super(`${message}\nca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`,
+          cause === undefined ? undefined : { cause });
+    this.name = "CreateFailure";
+  }
+}
+/** Compensation owns a fresh observation budget even after ordinary cancellation. */
+export async function compensateCreate(id: string, volume: string, dockerRun: DockerRun): Promise<Compensation> {
+  const failures: string[] = [];
+  const scope = [SANDBOX_LABEL, idLabel(id)];
+  const before = await listContainersResult(scope, dockerRun);
+  if (before.code !== 0) failures.push(`container discovery unavailable (${before.code})`);
+  // Never parse partial failure stdout as an authorized target set.
+  const targets = before.code === 0 ? before.items : [];
+  for (const target of targets) {
+    const removed = await dockerRun(["rm", "-f", target]);
+    if (removed.code !== 0) failures.push(`container removal unverified: ${target} (${removed.code})`);
+  }
+  const removedVolume = await dockerRun(["volume", "rm", "-f", volume]);
+  if (removedVolume.code !== 0) failures.push(`volume removal unverified (${removedVolume.code})`);
+  const after = await listContainersResult(scope, dockerRun);
+  const volumes = await dockerRun(["volume", "ls", "-q", "--filter", `name=^${volume}$`]);
+  const volumePresent = volumes.stdout.split(/\r?\n/).some(v => v.trim() === volume);
+  const verified = before.code === 0 && after.code === 0 && !after.items.length && volumes.code === 0 && !volumePresent;
+  if (!verified) failures.push("resource absence not verified");
+  return { verified, containers: after.code === 0 ? after.items : targets, volume, failures };
+}
 
 export type CreateOptions = {
   /** Network policy for the SANDBOX container (run.ts). Defaults to "offline". */
@@ -105,12 +146,13 @@ export type CreateOptions = {
    * error messages) or a plain exit-code number (backward-compatible with existing
    * tests; treated as having no stderr).
    */
-  cloneRepo?: (url: string, volumeName: string, id: string) => Promise<CloneResult | number>;
+  cloneRepo?: (url: string, volumeName: string, id: string, signal?: AbortSignal) => Promise<CloneResult | number>;
   /**
    * Injectable image builder. Defaults to build.ts buildOrReuseImage over a
    * temp checkout. Tests inject a fake that returns a prebuilt tag.
    */
-  buildImage?: (volumeName: string, id: string) => Promise<BuildResult>;
+  buildDeps?: BuildDeps;
+  buildImage?: (volumeName: string, id: string, signal?: AbortSignal) => Promise<BuildResult>;
 };
 
 /** Error thrown when an untrusted repo url fails the clone-input trust check. */
@@ -161,12 +203,14 @@ export function validateRepoUrl(url: string): void {
 }
 
 export type CreateResult = {
+  network?: ReturnType<typeof ordinaryNetworkCapability>;
   /** The minted (or supplied) sandbox id. */
   id: string;
   /** The named volume holding the cloned source. */
   volumeName: string;
   /** The built/reused image tag. */
   image: string;
+  imageId?:string;
   /** The started container id. */
   containerId: string;
   /** Build notes (e.g. nixpacks-missing fallback). */
@@ -192,24 +236,10 @@ export function newSandboxId(): string {
  * that is exactly why the CALLER must label the container so `await prune()` can
  * reclaim it regardless.
  */
-function spawnAsync(cmd: string, args: string[], timeoutMs?: number): Promise<CloneResult> {
-  return new Promise((resolve) => {
-    const c = spawn(cmd, args, {
-      env: DOCKER_ENV,
-      stdio: ["ignore", "ignore", "pipe"],
-      ...(timeoutMs !== undefined ? { timeout: timeoutMs } : {}),
-    });
-    const stderrChunks: Buffer[] = [];
-    c.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
-    c.on("error", () => resolve({ code: 1, stderr: "" }));
-    c.on("close", (code) => {
-      const raw = Buffer.concat(stderrChunks).toString("utf8");
-      // Bounded slice — last 500 bytes avoids flooding the caller while keeping
-      // the most actionable tail of git's error output.
-      const stderr = raw.length > 500 ? raw.slice(-500) : raw;
-      resolve({ code: code ?? 1, stderr });
-    });
-  });
+async function spawnAsync(cmd: string, args: string[], timeoutMs?: number, signal?: AbortSignal): Promise<CloneResult> {
+  if (cmd !== "docker") throw new Error("ca-sandbox: unsupported clone process");
+  const result = await makeDockerRun({}, {timeoutMs})(args, { signal });
+  return { code: result.code, stderr: result.stderr.slice(-500) };
 }
 
 /**
@@ -225,8 +255,9 @@ export async function defaultCloneRepo(
   url: string,
   volumeName: string,
   id: string,
+  signal?: AbortSignal,
 ): Promise<CloneResult> {
-  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS);
+  return spawnAsync("docker", buildCloneArgs(url, volumeName, id), CLONE_TIMEOUT_MS, signal);
 }
 
 /**
@@ -302,7 +333,7 @@ export function buildCpHelperCreateArgs(volumeName: string, helperName: string, 
  * wall-clock timed out (CP_TIMEOUT_MS, reliability-015) so a stuck copy cannot
  * hang forever and, if it does, the label still makes it `await prune()`-reclaimable.
  */
-async function defaultBuildImage(volumeName: string, id: string): Promise<BuildResult> {
+async function defaultBuildImage(volumeName: string, id: string, signal?: AbortSignal, buildDeps?:BuildDeps): Promise<BuildResult> {
   const { mkdtemp, rm } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
   const path = await import("node:path");
@@ -310,40 +341,39 @@ async function defaultBuildImage(volumeName: string, id: string): Promise<BuildR
   // Materialize the volume contents to the host temp dir via a helper container:
   // mount the volume read-only and `docker cp` its /work/repo out.
   const helper = `ca-sbx-cp-${newSandboxId()}`;
-  const createResult = spawnSync("docker", buildCpHelperCreateArgs(volumeName, helper, id), {
-    env: DOCKER_ENV,
-    encoding: "utf8",
-    timeout: CP_TIMEOUT_MS,
-  });
-  if ((createResult.status ?? 1) !== 0) {
-    const hint = (createResult.stderr ?? "").trim();
-    await rm(dir, { recursive: true, force: true }).catch(() => {});
-    throw new Error(
-      `ca-sandbox: docker create failed for helper container (exit ${createResult.status ?? 1})${hint ? `\n${hint}` : ""}`,
-    );
-  }
+  let helperCreated=false;
+  let primaryFailure: unknown;
   try {
-    const cpResult = spawnSync("docker", ["cp", `${helper}:${APP_DIR}/.`, dir], {
-      env: DOCKER_ENV,
-      encoding: "utf8",
-      timeout: CP_TIMEOUT_MS,
-    });
-    if ((cpResult.status ?? 1) !== 0) {
-      const hint = (cpResult.stderr ?? "").trim();
-      throw new Error(
-        `ca-sandbox: docker cp failed — empty checkout, cannot compute dephash (exit ${cpResult.status ?? 1})${hint ? `\n${hint}` : ""}`,
-      );
-    }
+    const createResult = await makeDockerRun({}, {timeoutMs:CP_TIMEOUT_MS})(buildCpHelperCreateArgs(volumeName, helper, id), {signal});
+    if (createResult.code !== 0) throw new Error(`ca-sandbox: helper creation unavailable (exit ${createResult.code}); target=${helper}`);
+    helperCreated=true;
+    const cpResult = await makeDockerRun({}, {timeoutMs:CP_TIMEOUT_MS})(["cp", `${helper}:${APP_DIR}/.`, dir], {signal});
+    if (cpResult.code !== 0) throw new Error(`ca-sandbox: checkout materialization unavailable (exit ${cpResult.code}); target=${helper}`);
     const manifests = await readManifests(dir, path);
     const dephash = computeDepHash(manifests);
-    return await buildOrReuseImage(dir, dephash);
+    return await buildOrReuseImage(dir, dephash, buildDeps, undefined, signal);
+  } catch (error) {
+    primaryFailure = error;
+    throw error;
   } finally {
-    spawnSync("docker", ["rm", "-f", helper], { env: DOCKER_ENV });
-    await rm(dir, { recursive: true, force: true }).catch(() => {});
+    // Cleanup has independent authority; observe this exact named helper.
+    const removed = helperCreated ? await defaultDockerRun(["rm", "-f", helper]) : {code:1};
+    const observed = await defaultDockerRun(["ps", "-a", "-q", "--filter", `name=^/${helper}$`]);
+    let stagingRemoved = false;
+    try { await rm(dir, { recursive: true, force: true }); stagingRemoved = true; } catch { /* reported below */ }
+    if (observed.code !== 0 || observed.stdout.trim() || !stagingRemoved) {
+      throw new BuildStagingFailure(primaryFailure, {
+        helper, staging: dir, removeCode: removed.code,
+        observationCode: observed.code, stagingRemoved,
+      });
+    }
   }
 }
 
 const MANIFEST_NAMES = new Set([
+  "nixpacks.toml",
+  "nixpacks.json",
+  ".dockerignore",
   "package.json",
   "package-lock.json",
   "npm-shrinkwrap.json",
@@ -358,24 +388,33 @@ const MANIFEST_NAMES = new Set([
   "Cargo.lock",
 ]);
 
-async function readManifests(
+export async function readManifests(
   dir: string,
   path: typeof import("node:path"),
 ): Promise<ManifestFile[]> {
-  const { readFile } = await import("node:fs/promises");
-  let entries: string[] = [];
-  try {
-    entries = await readdir(dir);
-  } catch {
-    return [];
-  }
+  const { readFile, lstat } = await import("node:fs/promises");
+  const entries = await readdir(dir);
   const out: ManifestFile[] = [];
   for (const name of entries) {
     if (!MANIFEST_NAMES.has(name)) continue;
+    const inputPath=path.join(dir,name);
     try {
-      out.push({ path: name, bytes: await readFile(path.join(dir, name)) });
-    } catch {
-      /* unreadable — skip */
+      const entry=await lstat(inputPath);
+      if(!entry.isFile() || entry.isSymbolicLink()) {
+        throw new Error("unsafe declared input");
+      }
+      out.push({ path: name, bytes: await readFile(inputPath) });
+    } catch(error) {
+      // Only an actually absent input may be omitted. A dangling link is
+      // present, and EISDIR/EACCES/EPERM or a failed observation is unavailable.
+      if((error as NodeJS.ErrnoException).code==="ENOENT") {
+        try { await lstat(inputPath); }
+        catch(observed) {
+          if((observed as NodeJS.ErrnoException).code==="ENOENT") continue;
+        }
+      }
+      const code=(error as NodeJS.ErrnoException).code ?? "unsafe input";
+      throw new Error(`ca-sandbox: manifest observation unavailable: ${name} (${code}); cache/build admission refused`);
     }
   }
   return out;
@@ -400,7 +439,7 @@ export async function createSandbox(
 
   const dockerRun = opts.dockerRun ?? defaultDockerRun;
   const cloneRepo = opts.cloneRepo ?? defaultCloneRepo;
-  const buildImage = opts.buildImage ?? defaultBuildImage;
+  const buildImage = opts.buildImage ?? ((volume:string,id:string,signal?:AbortSignal)=>defaultBuildImage(volume,id,signal,opts.buildDeps));
   const netPolicy = opts.netPolicy ?? "offline";
   const id = opts.id ?? newSandboxId();
   const volumeName = `${VOLUME_PREFIX}-${id}`;
@@ -412,16 +451,14 @@ export async function createSandbox(
   const mk = await dockerRun(["volume", "create", ...volLabelArgs, volumeName],
                              { signal: opts.signal });
   if (mk.code !== 0) {
-    throw new Error(
-      `ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})\n${mk.stderr.slice(-1000)}`,
-    );
+    throw new CreateFailure(`ca-sandbox: failed to create volume ${volumeName} (exit ${mk.code})`,id,volumeName,
+      {verified:false,containers:[],volume:volumeName,failures:["volume creation effect unknown; inspect before cleanup or a new create"]});
   }
 
-  // From here on, tear down the volume (and anything else) on any failure so a
-  // failed create never leaves a labeled half-sandbox behind.
+  // From here on, tear down the volume (and anything else) on any failure and observes its outcome independently. Unknown cleanup remains visible.
   try {
     // 2. Clone INTO the volume via the throwaway alpine/git container (net up).
-    const cloneRaw = await cloneRepo(url, volumeName, id);
+    const cloneRaw = await cloneRepo(url, volumeName, id, opts.signal);
     // Accept either a plain exit code (backward-compatible) or a CloneResult with
     // captured stderr (preferred — surfaces actionable git diagnostics on failure).
     const cloneCode = typeof cloneRaw === "number" ? cloneRaw : cloneRaw.code;
@@ -433,11 +470,13 @@ export async function createSandbox(
       );
     }
 
+    opts.signal?.throwIfAborted();
     // 3. Build (or reuse) the image — dephash-cached, deps relocated to /deps.
-    const build = await buildImage(volumeName, id);
+    const build = await buildImage(volumeName, id, opts.signal);
 
+    opts.signal?.throwIfAborted();
     // 4. Run the isolated sandbox container, labeled with the id.
-    const containerId = await runContainer(build.tag, volumeName, netPolicy, {
+    const containerId = await runContainer(build.imageId ?? build.tag, volumeName, netPolicy, {
       extraLabels: [idLabel(id), ...(opts.extraLabels ?? [])],
       namePrefix: `ca-sbx-${id}`,
       signal: opts.signal,
@@ -449,32 +488,14 @@ export async function createSandbox(
     return {
       id,
       volumeName,
+      network:ordinaryNetworkCapability(netPolicy),
       image: build.tag,
+      imageId:build.imageId,
       containerId,
       notes: build.notes,
     };
   } catch (err) {
-    // Best-effort teardown of the labeled objects of THIS id (label-only).
-    // reliability-015: containers FIRST, then the volume — matching
-    // destroySandbox's order. A named volume still attached to a container
-    // (e.g. the clone container, now also labeled with this id) fails `volume
-    // rm` until that container is gone; removing the volume first (the old
-    // order) left it un-retried and orphaned in exactly that case.
-    // No signal on the teardown path: this runs BECAUSE the create failed or
-     // was cancelled, so handing it the aborted signal would cancel the cleanup
-     // and orphan exactly the objects it exists to reclaim (#479).
-    const leftover = await dockerRun([
-      "ps",
-      "-a",
-      "-q",
-      "--no-trunc",
-      "--filter",
-      `label=${idLabel(id)}`,
-    ]);
-    for (const c of leftover.stdout.split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean)) {
-      await dockerRun(["rm", "-f", c]);
-    }
-    await dockerRun(["volume", "rm", "-f", volumeName]);
-    throw err;
+    const cleanup = await compensateCreate(id, volumeName, dockerRun);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err);
   }
 }

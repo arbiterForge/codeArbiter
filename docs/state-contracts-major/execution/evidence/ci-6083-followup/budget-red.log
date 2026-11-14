@@ -1,0 +1,15 @@
+test_current_windows_contract_budget_has_only_the_observed_exception (test_hook_ci_partition.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception) ... FAIL
+
+======================================================================
+FAIL: test_current_windows_contract_budget_has_only_the_observed_exception (test_hook_ci_partition.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-windows-contract-budget-b1m40vsk\.github\scripts\test_hook_ci_partition.py", line 296, in test_current_windows_contract_budget_has_only_the_observed_exception
+    self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n",pre)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n" not found in '  hooks:\n    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"\n    # Windows runs independent command groups on fresh runners. Linux/macOS\n    # retain their original order. The hermetic isolation run is the hook\n    # suite\'s only execution; no other command is removed or repeated.\n    # MR-10: proves host-specific interpreter fallback on every OS - REAL (no\n    # double execution), STUB (preferred interpreter fails), PY2 (`python`\n    # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),\n    # and NONE (no Python; fail LOUD, never silently dormant). The Windows ca\n    # path also proves a successful python3/MSIX alias is never activated.\n    # See .github/scripts/test_hooks_cold_install.py.\n    # Shared infra (the ca plugin\'s hooks) - runs whenever CI runs; not gated\n    # per-plugin because the hook payload belongs to neither sandbox driver.\n    needs: changes\n    if: needs.changes.outputs.hooks == \'true\'\n    strategy:\n      fail-fast: false\n      matrix:\n        os: [ubuntu-latest, windows-latest, macos-latest]\n        partition: [all]\n        exclude:\n          - os: windows-latest\n            partition: all\n        include:\n          - os: windows-latest\n            partition: contracts\n          - os: windows-latest\n            partition: isolation\n    runs-on: ${{ matrix.os }}\n    # Bounded above the isolation slice\'s internal 15-minute child timeout so\n    # a wedged runner cannot turn one actionable failure into another 30-minute\n    # feedback loop.\n    # Each job qualifies one fresh native reader for process-local test harnesses.\n    # Tests and vet still run; only repeated identical qualifications disappear.\n    timeout-minutes: 20\n    env:\n      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../hooks-native\n'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.007s
+
+FAILED (failures=1)

@@ -1,0 +1,57 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_artifact_authority_adapter.WindowsJobRundownTest",
+    "test_artifact_authority_adapter.AuthorityAdapterTest.test_windows_job_object_runs_child_with_bounded_native_supervisor",
+    "test_artifact_authority_adapter.AuthorityAdapterTest.test_fast_exit_oversized_output_is_rejected_after_drain"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\immutable0830\\.github\\scripts",
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\diagnostic-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\diagnostic-home",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "runtime_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "source_base": "0830b95752a05343563be027e513a2845a6c57df",
+  "source_kind": "explicit Temp author overlay, not immutable source",
+  "started_at_unix": 1794636521.9234934,
+  "duration_seconds": 0.9296388626098633,
+  "exit_code": 0,
+  "inputs_before": {
+    ".github/scripts/test_artifact_authority_adapter.py": "defd1257be6b1a21044d243c5747ebd27cd8b6b1577f816f65646f1e72addb7f",
+    ".github/scripts/test_artifact_git_excludes.py": "14d0c5d2ef6ff3be640038dc7541fef82d5aded256cff0ab5e2b56914dc4012e",
+    ".github/scripts/test_artifact_npm_nested_launch.py": "2d6c3837948919d9096cb367623c7186596c076d9ebe5c6d198bf0192cc2f6c6",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+  },
+  "inputs_after": {
+    ".github/scripts/test_artifact_authority_adapter.py": "defd1257be6b1a21044d243c5747ebd27cd8b6b1577f816f65646f1e72addb7f",
+    ".github/scripts/test_artifact_git_excludes.py": "14d0c5d2ef6ff3be640038dc7541fef82d5aded256cff0ab5e2b56914dc4012e",
+    ".github/scripts/test_artifact_npm_nested_launch.py": "2d6c3837948919d9096cb367623c7186596c076d9ebe5c6d198bf0192cc2f6c6",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+  },
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b2616b68e89a9b037dd2b17751ec76bc0db8db0b3932e56818641cb357a1f24e"
+}

@@ -1,0 +1,18 @@
+{
+  "source": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "exit_code": 0,
+  "seconds": 2.2279158999444917,
+  "passed": 51,
+  "failed": 0,
+  "filtered_unselected": 37,
+  "inputs_count": 103,
+  "all103_physical_Git_before_after_equal": true,
+  "HEAD_and_index_stable": true,
+  "runtime_scope": "Committed-source Windowsamd64 Node24.22.1 component checks only, no installedPi/provider/cohort/TUI claim.",
+  "original_raw_sha256": "44fda9f3db9dae4b30b65a8bdcf5fa97706bc0fd8b75f187cbd6d7582cc5ec2b",
+  "inputs_after_original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-committed51-a0f4-6db6sc7k\\inputs-after.json",
+    "sha256": "48c85f53f4132a70cf5b40eeee6ff5b1a03455168eec8e696d345095f15e8d2d",
+    "byte_identical_to_retained_before": true
+  }
+}

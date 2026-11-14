@@ -45,6 +45,7 @@ CURRENT_GOLDEN = {
 SUITE_TIMEOUT_SECONDS = 1200.0
 EXPECTED_SUITES = {
     "test_artifact_bridge.py": {
+        "test_malformed_optional_context_qualification_is_not_ignored",
         "test_real_cli_draft_and_index", "test_tampered_view_is_not_readable",
         "test_unknown_request_fields", "test_changed_installed_binary",
         "test_symlink_binary_rejected", "test_linked_or_reparse_installation_directory_rejected",
@@ -90,6 +91,9 @@ EXPECTED_SUITES = {
         "test_outline_accepts_matching_continuation",
     },
     "test_artifact_authoring.py": {
+        "test_native_build_preserves_explicit_cache_and_platform_defaults",
+        "test_isolated_windows_build_uses_only_a_fixture_owned_private_go_cache",
+        "test_installed_bridge_preserves_progress_and_separate_dependency_readiness",
         "test_installed_intent_cli_accepts_native_empty_diagnostics",
         "test_installed_intent_cli_reports_incomplete_native_draft",
         "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
@@ -195,6 +199,7 @@ EXPECTED_SUITES = {
         "test_worktree_planning_preserves_the_selected_pairs_exact_format",
     },
     "test_artifact_farm.py": {
+        "test_real_dispatcher_accepts_supported_optional_manifest_declaration",
         "test_cleanup_success_needs_no_retry",
         "test_cleanup_retries_a_transient_sharing_violation",
         "test_cleanup_preserves_error_at_deadline",
@@ -210,6 +215,18 @@ EXPECTED_SUITES = {
         "test_dispatcher_does_not_downgrade_after_html_and_binding_deleted",
     },
     "test_artifact_package.py": {
+        "test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
+        "test_v2_builtin_subtypes_and_families_keep_no_messages",
+        "test_v2_custom_context_failure_keeps_closed_cli_output",
+        "test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields",
+        "test_v2_diagnostic_observer_failure_never_replaces_guard_failure",
+        "test_v2_keeps_exact_legacy_v1_decoder_and_nested_record",
+        "test_v2_nested_failure_survives_both_consumers_without_private_stderr",
+        "test_v2_real_audit_denial_reports_closed_outer_context",
+        "test_v2_real_guard_builtin_failure_has_safe_subtype_and_site",
+        "test_v2_real_nested_audit_retains_deepest_context",
+        "test_retained_recovery_requires_production_context_before_extraction",
+        "test_retained_recovery_uses_verified_cohort_before_real_extraction",
         "test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details",
         "test_cold_failure_diagnostic_survives_verifier_child_boundary",
         "test_cold_failure_producer_keeps_known_native_cause_without_message",
@@ -220,6 +237,7 @@ EXPECTED_SUITES = {
         "test_package_notices_require_complete_canonical_bytes",
         "test_installed_host_plan_commands_are_preflight_qualified",
         "test_installed_bridge_offline_guard_has_negative_controls",
+        "test_manifest_decoder_offline_guard_has_negative_controls",
         "test_installed_host_runtime_guard_and_failure_redaction",
         "test_installed_host_runtime_guard_accepts_only_exact_darwin_stage",
         "test_native_cold_install_operates_without_source_tree",

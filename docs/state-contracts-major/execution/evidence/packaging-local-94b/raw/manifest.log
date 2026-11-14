@@ -1,0 +1,13 @@
+ORIGINAL_TEST_START __main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation
+ORIGINAL_TEST_PASSED __main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation
+ORIGINAL_TEST_START __main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source
+ORIGINAL_TEST_PASSED __main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source
+ORIGINAL_TEST_START __main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing
+ORIGINAL_TEST_PASSED __main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing
+ORIGINAL_TEST_START __main__.ManifestContract.test_shared_declarations_and_negative_cases
+ORIGINAL_TEST_PASSED __main__.ManifestContract.test_shared_declarations_and_negative_cases
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.061s
+
+OK

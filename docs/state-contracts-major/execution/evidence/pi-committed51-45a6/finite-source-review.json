@@ -1,0 +1,12 @@
+{
+  "source_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+  "input_delta_since_a0": [
+    "plugins/ca-pi/extensions/codearbiter.js",
+    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+    "plugins/ca-pi/tools/test/sidebar-manager.test.ts"
+  ],
+  "semantic_scope": "Existing accepted five component/isolation clauses are unchanged. Sidebarmanager explicitoff now advances UI install generation; supported parent bundle carries that change. Existing status/doctor/security production+assertion bytes are unchanged froma0. Fresh exact51 execution reestablishes only their finite actual assertions at current complete103 cone.",
+  "old_runtime_epoch": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "old_proofs_and_raw_retained": true,
+  "new_sidebar_effect_tests": "Separate actual6d+Temp48 owner run retained by Root; no sidebar transition or wholemachine is promoted by this51 selection."
+}

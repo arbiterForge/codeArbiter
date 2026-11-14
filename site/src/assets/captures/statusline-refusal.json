@@ -47,7 +47,7 @@
     },
     {
       "path": "plugins/ca/hooks/_sensitivelib.py",
-      "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458"
+      "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506"
     },
     {
       "path": "plugins/ca/hooks/hostapi.py",
@@ -55,7 +55,7 @@
     },
     {
       "path": "plugins/ca/hooks/wire-statusline.py",
-      "sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92"
+      "sha256": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
     }
   ]
 }

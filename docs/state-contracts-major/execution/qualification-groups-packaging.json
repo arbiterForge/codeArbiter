@@ -1,0 +1,1005 @@
+{
+  "schema": "codearbiter.major-qualification-groups-draft/1",
+  "state": "DRAFT_RECONCILED_UNBOUND_NOT_EMITTABLE",
+  "owner": "packaging_site_tools",
+  "source_commit": null,
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "recorded_at": "2026-11-13T17:27:01.257648+00:00",
+  "scope": "Eight assigned tasks plus two narrowly inspected unchanged-source preservation groups. Semantic grouping complete as a draft; source/run binding and unsupported adapters remain explicit admission blockers.",
+  "inventory": {
+    "machines": 287,
+    "transitions": 1748,
+    "findings": 70
+  },
+  "contract_input_sha256": {
+    "machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237"
+  },
+  "counts": {
+    "draft_groups": 9,
+    "tasks": 8,
+    "machines_touched_in_draft": 20,
+    "transition_rows_mapped": 59,
+    "preservation_source_only_rows": 11,
+    "finding_rows_mapped": 11,
+    "transitions_not_mapped_in_this_draft": 1689,
+    "findings_not_mapped_in_this_draft": 59,
+    "qualified_or_emitted_rows": 0,
+    "proposed_strict_named_selectors": 51,
+    "retained_named_browser_successes": 18
+  },
+  "groups": [
+    {
+      "id": "packaging-owned-output-publication",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "finding_ids": [
+        "SF13"
+      ],
+      "machine_ids": [
+        "S64",
+        "S65",
+        "S67",
+        "S75",
+        "S76"
+      ],
+      "transition_ids": [
+        "S64:05",
+        "S65:05",
+        "S65:06",
+        "S65:08",
+        "S67:04",
+        "S67:06",
+        "S75:05",
+        "S75:08",
+        "S76:04",
+        "S76:06"
+      ],
+      "cells": [
+        "disposition:transitions:S64:05",
+        "disposition:transitions:S65:05",
+        "disposition:transitions:S65:06",
+        "disposition:transitions:S65:08",
+        "disposition:transitions:S67:04",
+        "disposition:transitions:S67:06",
+        "disposition:transitions:S75:05",
+        "disposition:transitions:S75:08",
+        "disposition:transitions:S76:04",
+        "disposition:transitions:S76:06"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Shared bounded publisher stages all bytes; source-conformance and scoped failure regressions establish rollback/unusable-marker guards. Does not claim every generator/schema/link/native-release edge.",
+      "source_paths": [
+        "tools/owned_output.py",
+        "tools/build-surface.py",
+        "tools/sync-core.py",
+        "site/scripts/owned-output.ts",
+        "site/scripts/generator/generate.ts",
+        "site/scripts/generate-academy.ts",
+        "site/scripts/pagefind-build.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_windows_junction_ancestor_and_owner_refuse_before_any_effect",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_contract_generator_rename_failure_preserves_importable_canonical_helper",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect"
+      ],
+      "emission_status": "BLOCKED_UNTIL_ORIGINAL_NAMED_RESULT_AND_SOURCE_RUN_INPUT_BINDING",
+      "selector_status": "PROPOSED_EXACT_IDS_FROM_NAMED_ASSERTION_SOURCES_NOT_OBSERVED_NORMALIZED_RESULTS",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-native-manifest-shape",
+      "task_ids": [
+        "DIST-M01",
+        "HW-25"
+      ],
+      "finding_ids": [
+        "SF04",
+        "HOOK-B05"
+      ],
+      "machine_ids": [
+        "S69",
+        "S70",
+        "S71",
+        "hooks:native-client"
+      ],
+      "transition_ids": [
+        "hooks:native-client:02",
+        "S69:03",
+        "S70:01",
+        "S71:07"
+      ],
+      "cells": [
+        "disposition:transitions:hooks:native-client:02",
+        "disposition:transitions:S69:03",
+        "disposition:transitions:S70:01",
+        "disposition:transitions:S71:07"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Shared5/6-field decoder admits optional structural declaration, rejects unknown malformed fields and preserves selected binary checks. Real installed farm reaches engine-boundary readback, then deliberate projection-digest rejection. Synthetic qualification metadata is not trusted qualification; retained cohort/6platform cells remain pending.",
+      "source_paths": [
+        "core/artifact-release-manifest.json",
+        "core/pysrc/_artifactmanifestlib.py",
+        "core/pysrc/_artifactlib.py",
+        "plugins/ca/tools/artifact-manifest.ts",
+        "plugins/ca/tools/farm.ts",
+        "tools/build-host-packages.py",
+        "tools/install-artifact-payload.py"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_shared_declarations_and_negative_cases",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+        "python:.github/scripts/test_artifact_bridge.py:__main__.BridgeTests.test_malformed_optional_context_qualification_is_not_ignored",
+        "python:.github/scripts/test_artifact_farm.py:__main__.ArtifactFarmTest.test_real_dispatcher_accepts_supported_optional_manifest_declaration"
+      ],
+      "emission_status": "BLOCKED_UNTIL_ORIGINAL_NAMED_RESULT_AND_SOURCE_RUN_INPUT_BINDING",
+      "selector_status": "PROPOSED_EXACT_IDS_FROM_NAMED_ASSERTION_SOURCES_NOT_OBSERVED_NORMALIZED_RESULTS",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-channel-unknown-outcome",
+      "task_ids": [
+        "DIST-M02"
+      ],
+      "finding_ids": [
+        "SF15"
+      ],
+      "machine_ids": [
+        "S73",
+        "S74"
+      ],
+      "transition_ids": [
+        "S73:05",
+        "S73:08",
+        "S73:09",
+        "S73:10",
+        "S74:03",
+        "S74:04",
+        "S74:08",
+        "S74:09"
+      ],
+      "cells": [
+        "disposition:transitions:S73:05",
+        "disposition:transitions:S73:08",
+        "disposition:transitions:S73:09",
+        "disposition:transitions:S73:10",
+        "disposition:transitions:S74:03",
+        "disposition:transitions:S74:04",
+        "disposition:transitions:S74:08",
+        "disposition:transitions:S74:09"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Preserve Claude tag-then-channel and Codex preexisting-tag-before-channel, refuse unknown current version, recover uncertain push only by exact fresh readback with no mutating retry. Disposable bare-remote evidence; no external publication.",
+      "source_paths": [
+        "tools/promote-claude-marketplace.py",
+        "tools/promote-codex-marketplace.py"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_refuses_to_roll_back",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_refuses_an_unpromoted_or_substituted_version",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_package_without_native_payload_is_refused",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeCatalogTests.test_archive_catalog_is_relative_for_either_main_catalog_form",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeCatalogTests.test_unexpected_ca_source_is_refused",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_git_mode_needs_no_npm_package"
+      ],
+      "emission_status": "BLOCKED_UNTIL_ORIGINAL_NAMED_RESULT_AND_SOURCE_RUN_INPUT_BINDING",
+      "selector_status": "PROPOSED_EXACT_IDS_FROM_NAMED_ASSERTION_SOURCES_NOT_OBSERVED_NORMALIZED_RESULTS",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-search-query-lifetime",
+      "task_ids": [
+        "SITE-U01"
+      ],
+      "finding_ids": [
+        "SF11"
+      ],
+      "machine_ids": [
+        "S55"
+      ],
+      "transition_ids": [
+        "S55:01",
+        "S55:02",
+        "S55:03",
+        "S55:04",
+        "S55:05",
+        "S55:06",
+        "S55:07",
+        "S55:08",
+        "S55:09",
+        "S55:10",
+        "S55:11"
+      ],
+      "cells": [
+        "disposition:transitions:S55:01",
+        "disposition:transitions:S55:02",
+        "disposition:transitions:S55:03",
+        "disposition:transitions:S55:04",
+        "disposition:transitions:S55:05",
+        "disposition:transitions:S55:06",
+        "disposition:transitions:S55:07",
+        "disposition:transitions:S55:08",
+        "disposition:transitions:S55:09",
+        "disposition:transitions:S55:10",
+        "disposition:transitions:S55:11"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Retained named built-product Chrome results establish loader/query/data failure and retry, expansion retry, stale result invalidation, keyboard and dismissal. Reporter has no Playwright adapter; original named stdout is local evidence, not synthesized normalized PASS IDs.",
+      "source_paths": [
+        "site/src/components/Search.astro",
+        "site/test/browser/search-bundle.spec.ts",
+        "site/test/browser/publication.spec.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [],
+      "emission_status": "BLOCKED_MISSING_PLAYWRIGHT_ADAPTER_AND_SOURCE_RUN_INPUT_BINDING",
+      "local_named_observations": [
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "AC-02: keyboard search restores its opener and global navigation reaches home",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 13,
+          "raw_line": "  ok  6 [chrome] \u203a test\\browser\\publication.spec.ts:225:1 \u203a AC-02: keyboard search restores its opener and global navigation reaches home (682ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "AC-02: dismissing during debounce cannot reopen stale search results",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 14,
+          "raw_line": "  ok  7 [chrome] \u203a test\\browser\\publication.spec.ts:244:1 \u203a AC-02: dismissing during debounce cannot reopen stale search results (841ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "AC-02: outside dismissal invalidates in-flight Pagefind work",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 15,
+          "raw_line": "  ok  8 [chrome] \u203a test\\browser\\publication.spec.ts:259:1 \u203a AC-02: outside dismissal invalidates in-flight Pagefind work (991ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "WEB-035: clearing during in-flight Pagefind work cannot reopen results",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 16,
+          "raw_line": "  ok  9 [chrome] \u203a test\\browser\\publication.spec.ts:283:1 \u203a WEB-035: clearing during in-flight Pagefind work cannot reopen results (955ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "WEB-035: Pagefind load failure is visible and retryable",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 17,
+          "raw_line": "  ok 10 [chrome] \u203a test\\browser\\publication.spec.ts:306:1 \u203a WEB-035: Pagefind load failure is visible and retryable (548ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "WEB-035: results beyond the first eight remain reachable",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 18,
+          "raw_line": "  ok 11 [chrome] \u203a test\\browser\\publication.spec.ts:339:1 \u203a WEB-035: results beyond the first eight remain reachable (508ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "AC-03: Pagefind keyboard results survive client navigation and reset cleanly",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 19,
+          "raw_line": "  ok 12 [chrome] \u203a test\\browser\\publication.spec.ts:368:1 \u203a AC-03: Pagefind keyboard results survive client navigation and reset cleanly (1.2s)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "the served search entry matches complete build bytes and exposes the real query API",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 33,
+          "raw_line": "  ok 18 [chrome] \u203a test\\browser\\search-bundle.spec.ts:75:1 \u203a the served search entry matches complete build bytes and exposes the real query API (763ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "current query failure retains the query and retries the built search UI",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+          "original_log_sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+          "line": 8,
+          "raw_line": "  ok 1 [chrome] \u203a test\\browser\\search-bundle.spec.ts:8:3 \u203a current query failure retains the query and retries the built search UI (719ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "current data failure retains the query and retries the built search UI",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+          "original_log_sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+          "line": 9,
+          "raw_line": "  ok 2 [chrome] \u203a test\\browser\\search-bundle.spec.ts:8:3 \u203a current data failure retains the query and retries the built search UI (598ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "failed result expansion keeps existing results and can retry",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+          "original_log_sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+          "line": 10,
+          "raw_line": "  ok 3 [chrome] \u203a test\\browser\\search-bundle.spec.ts:34:1 \u203a failed result expansion keeps existing results and can retry (644ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "an older rejected query cannot replace newer successful results",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+          "original_log_sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+          "line": 11,
+          "raw_line": "  ok 4 [chrome] \u203a test\\browser\\search-bundle.spec.ts:55:1 \u203a an older rejected query cannot replace newer successful results (1.5s)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/search-bundle.spec.ts",
+          "title": "the served search entry matches complete build bytes and exposes the real query API",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+          "original_log_sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+          "line": 12,
+          "raw_line": "  ok 5 [chrome] \u203a test\\browser\\search-bundle.spec.ts:75:1 \u203a the served search entry matches complete build bytes and exposes the real query API (601ms)"
+        }
+      ],
+      "selector_status": "ORIGINAL_PLAYWRIGHT_NAMES_RETAINED_NO_SUPPORTED_NORMALIZER",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-drawer-listener-lifetime",
+      "task_ids": [
+        "SITE-U02"
+      ],
+      "finding_ids": [
+        "SF16"
+      ],
+      "machine_ids": [
+        "S62"
+      ],
+      "transition_ids": [
+        "S62:01",
+        "S62:02",
+        "S62:04",
+        "S62:05"
+      ],
+      "cells": [
+        "disposition:transitions:S62:01",
+        "disposition:transitions:S62:02",
+        "disposition:transitions:S62:04",
+        "disposition:transitions:S62:05"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Actual same DOM element reconnect3cycles, opener/Escape focus restoration and mobile inert/scroll/reflow controls observed. S62:03 Tab trap is not asserted by retained selected tests and remains pending.",
+      "source_paths": [
+        "site/src/components/SplashDocsRail.astro",
+        "site/test/browser/concepts-execution.spec.ts",
+        "site/test/browser/publication.spec.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [],
+      "emission_status": "BLOCKED_MISSING_PLAYWRIGHT_ADAPTER_AND_SOURCE_RUN_INPUT_BINDING",
+      "local_named_observations": [
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/concepts-execution.spec.ts",
+          "title": "the same documentation drawer reconnects without duplicate local or Escape listeners",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 8,
+          "raw_line": "  ok  1 [chrome] \u203a test\\browser\\concepts-execution.spec.ts:43:1 \u203a the same documentation drawer reconnects without duplicate local or Escape listeners (788ms)"
+        },
+        {
+          "framework": "Playwright",
+          "file": "site/test/browser/publication.spec.ts",
+          "title": "WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+          "observed_status": "passed",
+          "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+          "original_log_sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+          "line": 20,
+          "raw_line": "  ok 13 [chrome] \u203a test\\browser\\publication.spec.ts:411:1 \u203a WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract (487ms)"
+        }
+      ],
+      "selector_status": "ORIGINAL_PLAYWRIGHT_NAMES_RETAINED_NO_SUPPORTED_NORMALIZER",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-publication-label-truth",
+      "task_ids": [
+        "R-08"
+      ],
+      "finding_ids": [
+        "SX-F01"
+      ],
+      "machine_ids": [
+        "SX03"
+      ],
+      "transition_ids": [
+        "SX03:02",
+        "SX03:05",
+        "SX03:06"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:02",
+        "disposition:transitions:SX03:05",
+        "disposition:transitions:SX03:06"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Offline tags stay publication-unknown, exact durable observation binds tag/version/commit; source applicability retained. Built visible labels/proof/JSON endpoint agree. Unit observed-release fixtures are synthetic declarations; no live remote publication observation claimed.",
+      "source_paths": [
+        "site/scripts/release-applicability.ts",
+        "site/src/release-applicability-presentation.ts",
+        "site/src/components/ReleaseApplicability.astro",
+        "site/src/components/HookProof.astro",
+        "site/test/release-applicability/rendered.ts"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+      ],
+      "emission_status": "BLOCKED_UNTIL_ORIGINAL_NAMED_RESULT_AND_SOURCE_RUN_INPUT_BINDING",
+      "selector_status": "PROPOSED_EXACT_IDS_FROM_NAMED_ASSERTION_SOURCES_NOT_OBSERVED_NORMALIZED_RESULTS",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-measurement-producer-truth",
+      "task_ids": [
+        "T-01"
+      ],
+      "finding_ids": [
+        "T-F01",
+        "T-F02",
+        "T-F03",
+        "T-F04"
+      ],
+      "machine_ids": [
+        "T04",
+        "T08",
+        "T10",
+        "T11"
+      ],
+      "transition_ids": [
+        "T04:06",
+        "T08:03",
+        "T08:05",
+        "T10:07",
+        "T10:08",
+        "T11:01",
+        "T11:03",
+        "T11:04"
+      ],
+      "cells": [
+        "disposition:transitions:T04:06",
+        "disposition:transitions:T08:03",
+        "disposition:transitions:T08:05",
+        "disposition:transitions:T10:07",
+        "disposition:transitions:T10:08",
+        "disposition:transitions:T11:01",
+        "disposition:transitions:T11:03",
+        "disposition:transitions:T11:04"
+      ],
+      "proposed_disposition": "CHANGED",
+      "basis": "CHANGE_LOCAL_EVIDENCE_DRAFT",
+      "scope": "Zero/unknown/mismatched populations and failed producers cannot PASS; dirty workflow cannot bind to clean commit; screenshot error cleanup tested. Real measured subset self-comparison is not performance improvement. Material SMARTS quality remains unassessed/no live provider invocation; screenshot positive PNG/export remains outside executed failure-boundary tests.",
+      "source_paths": [
+        "tools/statusline-bench.py",
+        "tools/live-smarts-exercise.py",
+        "tools/ci20_baseline.py",
+        "tools/ci20_inventory.py",
+        "tools/statusline-screenshot.py",
+        "tools/test_measurement_contracts.py",
+        "tools/test_ci20_baseline.py"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_farm_escalation_does_not_invent_premium_spend_or_abort_cause",
+        "python:tools/test_ci20_baseline.py:__main__.BaselineTest.test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read"
+      ],
+      "emission_status": "BLOCKED_UNTIL_ORIGINAL_NAMED_RESULT_AND_SOURCE_RUN_INPUT_BINDING",
+      "selector_status": "PROPOSED_EXACT_IDS_FROM_NAMED_ASSERTION_SOURCES_NOT_OBSERVED_NORMALIZED_RESULTS",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-preserved-parity-scaffolding",
+      "task_ids": [],
+      "finding_ids": [],
+      "machine_ids": [
+        "T05"
+      ],
+      "transition_ids": [
+        "T05:01",
+        "T05:03"
+      ],
+      "cells": [
+        "disposition:transitions:T05:01",
+        "disposition:transitions:T05:03"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "PRESERVATION_SOURCE_CONFORMANCE_ONLY",
+      "scope": "PRESERVED proposal is source-conformance only: entire unchanged stdlib constructor, embedded fixture byte literals and unchanged linked handoff guide. Excludes T05:02 Git runtime/commit outcome and all actual Codex/Claude enforcement/TUI behavior.",
+      "source_paths": [
+        "tools/codex-parity-fixture.py",
+        "docs/codex-parity-testing.md"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [],
+      "emission_status": "PENDING_PARENT_ADOPTION_WITH_PRESERVATION_LIMITS",
+      "dependency_review": {
+        "repo_dependency_closure": [
+          "tools/codex-parity-fixture.py",
+          "docs/codex-parity-testing.md"
+        ],
+        "external_dependencies": "Python standard library/runtime; unchanged-source contract only, interpreter baseline bytes were not retained. Git runtime excluded for parity scaffolder.",
+        "executed_now": false
+      },
+      "selector_status": "NOT_APPLICABLE_SOURCE_CONFORMANCE_PROPOSAL_NOT_TEST_RESULT",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    },
+    {
+      "id": "packaging-preserved-offline-tribunal",
+      "task_ids": [],
+      "finding_ids": [],
+      "machine_ids": [
+        "T12"
+      ],
+      "transition_ids": [
+        "T12:01",
+        "T12:02",
+        "T12:03",
+        "T12:04",
+        "T12:05",
+        "T12:06",
+        "T12:07",
+        "T12:08",
+        "T12:09"
+      ],
+      "cells": [
+        "disposition:transitions:T12:01",
+        "disposition:transitions:T12:02",
+        "disposition:transitions:T12:03",
+        "disposition:transitions:T12:04",
+        "disposition:transitions:T12:05",
+        "disposition:transitions:T12:06",
+        "disposition:transitions:T12:07",
+        "disposition:transitions:T12:08",
+        "disposition:transitions:T12:09"
+      ],
+      "proposed_disposition": "PRESERVED",
+      "basis": "PRESERVATION_SOURCE_CONFORMANCE_ONLY",
+      "scope": "PRESERVED proposal is same-input offline source contract only: unchanged stdlib-only closed parser/score/compare/output owner plus byte-identical self-contained default corpus with embedded inert source strings. No additional repository imports or referenced fixture-file reads; no provider/model/independent-judgement quality or actual new run claim.",
+      "source_paths": [
+        "tools/tribunal-eval.py",
+        ".github/fixtures/tribunal/cases.json"
+      ],
+      "source_commit": null,
+      "qualification_status": "DRAFT_NOT_QUALIFIED",
+      "selection_schema": "codearbiter.major-test-selections/1",
+      "job": null,
+      "payload_name": null,
+      "selectors": [],
+      "emission_status": "PENDING_PARENT_ADOPTION_WITH_PRESERVATION_LIMITS",
+      "dependency_review": {
+        "repo_dependency_closure": [
+          "tools/tribunal-eval.py",
+          ".github/fixtures/tribunal/cases.json"
+        ],
+        "external_dependencies": "Python standard library/runtime; unchanged-source contract only, interpreter baseline bytes were not retained. Git runtime excluded for parity scaffolder.",
+        "executed_now": false
+      },
+      "selector_status": "NOT_APPLICABLE_SOURCE_CONFORMANCE_PROPOSAL_NOT_TEST_RESULT",
+      "incomplete_scope_is_not_full_transition_qualification": true
+    }
+  ],
+  "source_bindings": {
+    ".github/fixtures/tribunal/cases.json": {
+      "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+      "baseline_exists": true,
+      "baseline_sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+      "byte_equal_baseline": true
+    },
+    "core/artifact-release-manifest.json": {
+      "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "baseline_exists": false,
+      "baseline_sha256": null,
+      "byte_equal_baseline": false
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_exists": true,
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal_baseline": false
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "baseline_exists": false,
+      "baseline_sha256": null,
+      "byte_equal_baseline": false
+    },
+    "docs/codex-parity-testing.md": {
+      "sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+      "baseline_exists": true,
+      "baseline_sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+      "byte_equal_baseline": true
+    },
+    "plugins/ca/tools/artifact-manifest.ts": {
+      "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "baseline_exists": false,
+      "baseline_sha256": null,
+      "byte_equal_baseline": false
+    },
+    "plugins/ca/tools/farm.ts": {
+      "sha256": "0ce099a0d277cf8a1cb00a782c089a54e02791f9b02186a689cc47b00d0ff223",
+      "baseline_exists": true,
+      "baseline_sha256": "adaeb19e7ec2abb01827050af4f9dc676ccf25ec6a59451ea25eaa395f164257",
+      "byte_equal_baseline": false
+    },
+    "site/scripts/generate-academy.ts": {
+      "sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "baseline_exists": true,
+      "baseline_sha256": "70c0a76c6d03409a94e9f4ee9942bf8afb9ad70fcd1d3b63ad9cf611e0d0f05c",
+      "byte_equal_baseline": false
+    },
+    "site/scripts/generator/generate.ts": {
+      "sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "baseline_exists": true,
+      "baseline_sha256": "ca250f2787f03705359ab07d35c7291e77e78c0d3c9b7c2c69ffa669e6f0d55a",
+      "byte_equal_baseline": false
+    },
+    "site/scripts/owned-output.ts": {
+      "sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "baseline_exists": false,
+      "baseline_sha256": null,
+      "byte_equal_baseline": false
+    },
+    "site/scripts/pagefind-build.ts": {
+      "sha256": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+      "baseline_exists": true,
+      "baseline_sha256": "1b44cb61b47c9c2b662ec9bdea130edd0a35f0b68823e7c07b6bf64e93e640bf",
+      "byte_equal_baseline": false
+    },
+    "site/scripts/release-applicability.ts": {
+      "sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+      "baseline_exists": true,
+      "baseline_sha256": "58756ea9f7e381a5ae556c37159e55626dd923a501bf8df30d623bbd52488bac",
+      "byte_equal_baseline": false
+    },
+    "site/src/components/HookProof.astro": {
+      "sha256": "daa63c0ba6f2f9855fc41502427a60845f3a487694b66faa675288d7b7c27249",
+      "baseline_exists": true,
+      "baseline_sha256": "31bffad8c095805b8a2b9558bc5be5d6c40291ae7fdb034e5cfb74a8190b873e",
+      "byte_equal_baseline": false
+    },
+    "site/src/components/ReleaseApplicability.astro": {
+      "sha256": "79bd685468bc5a5066c84b9b2fb750f515001a1ff644022dfe17297211532371",
+      "baseline_exists": true,
+      "baseline_sha256": "646290bf980479323af16bfef8725006bcbe647f1bfe152601386eb16054ee9a",
+      "byte_equal_baseline": false
+    },
+    "site/src/components/Search.astro": {
+      "sha256": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+      "baseline_exists": true,
+      "baseline_sha256": "630c03e683ca1d38449f7b70163d8835bd4e35ac928e71c4a6d3f169d34774aa",
+      "byte_equal_baseline": false
+    },
+    "site/src/components/SplashDocsRail.astro": {
+      "sha256": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+      "baseline_exists": true,
+      "baseline_sha256": "1f8be5f9f8900231d9013e4606285e4644fdbdbf9882a939a5871ab3673295ce",
+      "byte_equal_baseline": false
+    },
+    "site/src/release-applicability-presentation.ts": {
+      "sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+      "baseline_exists": true,
+      "baseline_sha256": "34394ebe3bb9baefebb9bccae6c5271b6ea75c18ccf488151460c8b48f5873ad",
+      "byte_equal_baseline": false
+    },
+    "site/test/browser/concepts-execution.spec.ts": {
+      "sha256": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+      "baseline_exists": true,
+      "baseline_sha256": "6f7b0e47d1d36ff3b53f2043bc5647b3895a7b67ad78ebc85fdb4a8d36e094cb",
+      "byte_equal_baseline": false
+    },
+    "site/test/browser/publication.spec.ts": {
+      "sha256": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "baseline_exists": true,
+      "baseline_sha256": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "byte_equal_baseline": true
+    },
+    "site/test/browser/search-bundle.spec.ts": {
+      "sha256": "e875cfc163071d5f51c14469163da538563d1f8a636e05c8a2da0066db9512a4",
+      "baseline_exists": true,
+      "baseline_sha256": "e5a6db564e0e692c85658c53a621ea99545a5f7cac20b104702e5c3d621b8d3f",
+      "byte_equal_baseline": false
+    },
+    "site/test/release-applicability/rendered.ts": {
+      "sha256": "e85b19d9c7269d4311f69334f0fe65f3d13ba135556b23bc4da9832dcca6f7b7",
+      "baseline_exists": true,
+      "baseline_sha256": "11d06b61e10b152eb6472ecf0dd208cbad16811875c87cfad547323fc9299bb5",
+      "byte_equal_baseline": false
+    },
+    "tools/build-host-packages.py": {
+      "sha256": "b82537486f17ff7c933d2c0215f4af503f6957463993de028a80e0e52bd7b693",
+      "baseline_exists": true,
+      "baseline_sha256": "be7f6fad13b5041bfc901e8c803d2426fc9bb2d8b313786cd622d8d961a386be",
+      "byte_equal_baseline": false
+    },
+    "tools/build-surface.py": {
+      "sha256": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+      "baseline_exists": true,
+      "baseline_sha256": "bc107e5586d46facb9e1d309dfdd138b0e910cc06dae0a5f87921c31b7b6f1e3",
+      "byte_equal_baseline": false
+    },
+    "tools/ci20_baseline.py": {
+      "sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+      "baseline_exists": true,
+      "baseline_sha256": "a8056b4ae9ccb4b75dee11b06583d971f1248b03c87313ccd592493b792d066f",
+      "byte_equal_baseline": false
+    },
+    "tools/ci20_inventory.py": {
+      "sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+      "baseline_exists": true,
+      "baseline_sha256": "874d37dd79d93874b3b2ab7eeeab0c0ec343591aa020fd9a37b19a950daca3ae",
+      "byte_equal_baseline": false
+    },
+    "tools/codex-parity-fixture.py": {
+      "sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+      "baseline_exists": true,
+      "baseline_sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+      "byte_equal_baseline": true
+    },
+    "tools/install-artifact-payload.py": {
+      "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "baseline_exists": true,
+      "baseline_sha256": "f57d485479eefee873437f3c9546f85a6a6bc08bf5c04f5c3600c6678d058ce5",
+      "byte_equal_baseline": false
+    },
+    "tools/live-smarts-exercise.py": {
+      "sha256": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+      "baseline_exists": true,
+      "baseline_sha256": "f13fe89e43a8500d1a1fc05728dfc07a6750a10b80a58602e8ee1ac40b3efe4d",
+      "byte_equal_baseline": false
+    },
+    "tools/owned_output.py": {
+      "sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "baseline_exists": false,
+      "baseline_sha256": null,
+      "byte_equal_baseline": false
+    },
+    "tools/promote-claude-marketplace.py": {
+      "sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "baseline_exists": true,
+      "baseline_sha256": "3c0fb4537105ec655f43d46501d0095e76a456c72779a87ba6d429fa6cd6c029",
+      "byte_equal_baseline": false
+    },
+    "tools/promote-codex-marketplace.py": {
+      "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "baseline_exists": true,
+      "baseline_sha256": "c3313a2d5b5b58f262f3b06993e504523e933a221c67cdae2d37d79617471cd3",
+      "byte_equal_baseline": false
+    },
+    "tools/statusline-bench.py": {
+      "sha256": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+      "baseline_exists": true,
+      "baseline_sha256": "8e32ceec296c5c37236f5ddddab77e0cd0f69389fd3894d6e4bbd2f5f9e1f1c6",
+      "byte_equal_baseline": false
+    },
+    "tools/statusline-screenshot.py": {
+      "sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+      "baseline_exists": true,
+      "baseline_sha256": "75a9a820cfac7f72e34f7c77aa0b073bc46f43a84b2602cdb4e0030d27d05ed7",
+      "byte_equal_baseline": false
+    },
+    "tools/sync-core.py": {
+      "sha256": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+      "baseline_exists": true,
+      "baseline_sha256": "fd9b2a2b653f48d379aca690a7fc74effd0954a9da5326cd2f1b1f6d3af41e00",
+      "byte_equal_baseline": false
+    },
+    "tools/test_ci20_baseline.py": {
+      "sha256": "4577deac26c8c03891ab678eec8da2534edb863ffc032965c92504806bc3d93b",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    "tools/test_measurement_contracts.py": {
+      "sha256": "b26e13d0e198dab139faeb845acecfedb8903fcb00d72ddce5e782d7d2464670",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    "tools/tribunal-eval.py": {
+      "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+      "baseline_exists": true,
+      "baseline_sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+      "byte_equal_baseline": true
+    },
+    ".github/scripts/test_generated_output.py": {
+      "sha256": "1b996037080693898e7eaaa823ff7153142e1b6137f892300fef52e65d15563b",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    ".github/scripts/test_artifact_manifest_contract.py": {
+      "sha256": "f1d2bba0af13981ef85fe3c53aaafbbb888f80b609eae589e81f9c5b94845ed5",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    ".github/scripts/test_artifact_bridge.py": {
+      "sha256": "3620b242d8bcb752d9b4aedfb177f278d211c3af460aa6d14dfd257c585a804f",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    ".github/scripts/test_artifact_farm.py": {
+      "sha256": "7ea8ae9ed09e1b85e0497298e19638fc8101608671faa832819cd53f750e2ba8",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    ".github/scripts/test_marketplace_git_channels.py": {
+      "sha256": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    },
+    "site/test/release-applicability/publication.test.ts": {
+      "sha256": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+      "role": "proposed named-selector assertion source; no inferred PASS"
+    }
+  },
+  "retained_evidence": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-site-qualification.json",
+      "sha256": "11182433eb3e39179608072691ec52db2186a742727b97735001bacfbfbadee2",
+      "bytes": 5638,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-browser.log",
+      "sha256": "17f4b37ca16d5e28660676ca4ee704360d6a7934f81491c5d4189f6b9a80ee37",
+      "bytes": 11667,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-search-browser.log",
+      "sha256": "0e9ed1d6b63dcff4b805dfe286d690ed27543eda8f80c4efdfd6ca0f73c945f9",
+      "bytes": 1127,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-production-site-build.log",
+      "sha256": "9540f962fb42949b1bc79af3329fb883472fb1fb90081d631fd9b83489a81668",
+      "bytes": 16129,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-statusline-measured-final-subset.json",
+      "sha256": "a7bfebff594a62205a265107f28cf22a1970c968c7af91cfc28bbc092f0bbe99",
+      "bytes": 3228,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-statusline-final-subset-compare.log",
+      "sha256": "550aec87b3b2dc219fd3d6528b6d93575ea3d079d12abb14b0da4fe83f317e03",
+      "bytes": 2839,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-independent-security-coverage-review.json",
+      "sha256": "0ce5b656cf8e91cc605b0a63e557f0c5cd301639f45d25e5cee751f121f1602a",
+      "bytes": 6827,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-author-freeze.json",
+      "sha256": "dbde8b03353dc4bc77d50b6a1ac7bd39b6694434dfc9c746feff5e4c4b7215aa",
+      "bytes": 6164,
+      "admission": "Retained original local evidence; not a normalized/source-run-bound qualification observation."
+    }
+  ],
+  "gaps": [
+    "Parent first source commit/source-run identity binding is intentionally absent; no qualified cells emitted.",
+    "Canonical reporter accepts exact original Python/Vitest/Go named outcomes; earlier packaging suite totals are not selector outcomes. Fill selectors from next original owning run observer without duplicate tests.",
+    "Reporter has no Playwright adapter: keep existing exact named browser stdout as local proof; do not invent normalized PASS IDs.",
+    "S62:03 Tab trap not separately asserted in retained production selection.",
+    "Retained installed cohort/6platform/native manifests and all Docker/TUI/provider/live-host cells remain pending their actual owners; no synthetic declaration promotes them.",
+    "T08 material qualitative comparison and provider run, T11 actual positive screenshot/export not executed by these failure tests.",
+    "T01 ci-impact owner unchanged but core/hosts.json and CI impact map changed; cannot preserve its complete behavior from same owner file.",
+    "T02 artifact-coverage owner unchanged but summarize invokes Go environment/package inventory against changed native module; no PRESERVED proposal from file equality alone.",
+    "T06 example generator and T09 retrieval benchmark owner unchanged but native engine/installed knowledge/test fixture dependencies changed; remain pending.",
+    "Remaining unlisted machine/transition/finding rows are outside this draft, not automatically unrun globally; merge other owners evidence explicitly."
+  ],
+  "non_actions": [
+    "No tests rerun for this draft.",
+    "No root progress or coverage-ledger changes.",
+    "No suite totals copied to transition rows."
+  ]
+}
