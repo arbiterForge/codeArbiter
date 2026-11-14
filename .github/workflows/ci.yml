@@ -276,6 +276,8 @@ jobs:
               - '.github/scripts/check_state_contracts_integration.py'
               - '.github/scripts/test_state_contracts_integration.py'
               - '.github/scripts/major_readiness.py'
+              - '.github/scripts/_immutable_git_blobs.py'
+              - '.github/scripts/test_immutable_git_blobs.py'
               - '.github/workflows/ci.yml'
             hooks:
               - 'tools/build-artifacts.py'

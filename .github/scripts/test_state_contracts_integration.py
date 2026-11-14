@@ -453,6 +453,7 @@ class IntegrationIntegrityTest(unittest.TestCase):
 class IntegrationWorkflowWiringTest(unittest.TestCase):
     COMMANDS = [
         "python docs/state-contracts-major/execution/tools/coverage_ledger.py check",
+        "python .github/scripts/test_immutable_git_blobs.py",
         "python .github/scripts/check_state_contracts_integration.py",
         "python .github/scripts/test_state_contracts_integration.py",
     ]
@@ -508,12 +509,19 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         program, hooks = patterns("program_integrity"), patterns("hooks")
         self.assertEqual(program, ["docs/state-contracts-major/**", ".github/scripts/check_state_contracts_integration.py",
                                    ".github/scripts/test_state_contracts_integration.py", ".github/scripts/major_readiness.py",
+                                   ".github/scripts/_immutable_git_blobs.py", ".github/scripts/test_immutable_git_blobs.py",
                                    ".github/workflows/ci.yml"])
         for path in ("docs/state-contracts-major/execution/coverage-ledger.json",
                      "docs/state-contracts-major/execution/progress.json"):
             with self.subTest(path=path):
                 self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in program))
                 self.assertFalse(any(fnmatch.fnmatchcase(path, pattern) for pattern in hooks))
+        # The reader is also imported by hook/report fixtures. Its source
+        # changes require both owners, unlike metadata-only ledger updates.
+        for path in (".github/scripts/_immutable_git_blobs.py", ".github/scripts/test_immutable_git_blobs.py"):
+            with self.subTest(reader_source=path):
+                self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in program))
+                self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in hooks))
         self.assertRegex(text, r"(?m)^      program_integrity: \$\{\{ steps\.filter\.outputs\.program_integrity == 'true' ")
 
     def test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only(self):

@@ -36,10 +36,11 @@ class AuthorityRetentionTest(unittest.TestCase):
         scripts = root / '.github/scripts'; scripts.mkdir(parents=True)
         scratch.mkdir()
         shutil.copyfile(SCRIPT, scripts / SCRIPT.name)
-        for name in ('major_qualification_report.py','major_readiness.py','ci20_native_binding.py','_boundedproc.py','_contextverificationlib.py'):
+        for name in ('major_qualification_report.py','major_readiness.py','_immutable_git_blobs.py','ci20_native_binding.py','_boundedproc.py','_contextverificationlib.py'):
             shutil.copyfile(DEPENDENCY_REPO / '.github/scripts' / name, scripts / name)
         shared = root / 'core/pysrc'; shared.mkdir(parents=True)
-        shutil.copyfile(DEPENDENCY_REPO / 'core/pysrc/_artifactmanifestlib.py', shared / '_artifactmanifestlib.py')
+        for name in ('_artifactmanifestlib.py', '_gitexec.py'):
+            shutil.copyfile(DEPENDENCY_REPO / 'core/pysrc' / name, shared / name)
         (scripts / 'test_artifact_authority_adapter.py').write_text(
             'import os\nfrom pathlib import Path\nimport unittest\n'
             'def effect(name):\n    (Path(os.environ["AUTHORITY_FIXTURE_EFFECTS"])/name).open("x").close()\n'
