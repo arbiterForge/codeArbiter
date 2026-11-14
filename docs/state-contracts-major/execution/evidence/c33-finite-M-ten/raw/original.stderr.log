@@ -1,0 +1,15 @@
+test_fresh_document_passes (test_check_skill_proof_fresh.CheckFailureModeTest.test_fresh_document_passes) ... ok
+test_the_cli_passing_path_returns_zero_against_a_current_proof (test_check_skill_proof_fresh.MainCLITest.test_the_cli_passing_path_returns_zero_against_a_current_proof) ... ok
+test_proof_current_false (test_check_skill_proof_fresh.CheckFailureModeTest.test_proof_current_false) ... ok
+test_recorded_path_is_not_a_rendered_payload (test_check_skill_proof_fresh.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload) ... ok
+test_hash_mismatch (test_check_skill_proof_fresh.CheckFailureModeTest.test_hash_mismatch) ... ok
+test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash (test_check_skill_proof_fresh.MainCLITest.test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash) ... ok
+test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong (test_check_skill_proof_fresh.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong) ... ok
+test_composed_commands_do_not_become_independent_owner_proof (test_check_skill_proof_fresh.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof) ... ok
+test_derives_exactly_the_three_full_prose_payloads_on_live_repo (test_check_skill_proof_fresh.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo) ... ok
+test_historical_hash_map_is_bound_to_its_own_exercise (test_check_skill_proof_fresh.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.303s
+
+OK

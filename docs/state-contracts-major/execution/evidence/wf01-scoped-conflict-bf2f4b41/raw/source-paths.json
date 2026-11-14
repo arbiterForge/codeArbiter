@@ -1,0 +1,22 @@
+[
+  ".codearbiter/decisions/0043-assistive-state-engine.md",
+  ".github/scripts/test_routing_and_cleanup_surface.py",
+  "core/surface/COMMANDS.md",
+  "core/surface/SPRINT.md",
+  "core/surface/commands/conflict.md",
+  "core/surface/includes/artifacts.md",
+  "core/surface/includes/routing-table.md",
+  "core/surface/includes/safety-core.md",
+  "core/surface/skills/context-check/SKILL.md",
+  "core/surface/skills/executing-plans/SKILL.md",
+  "core/surface/skills/subagent-driven-development/SKILL.md",
+  "plugins/ca-codex/SPRINT.md",
+  "plugins/ca-codex/routines/context-check/SKILL.md",
+  "plugins/ca-codex/skills/ca-conflict/SKILL.md",
+  "plugins/ca-pi/SPRINT.md",
+  "plugins/ca-pi/routines/context-check/SKILL.md",
+  "plugins/ca-pi/skills/ca-conflict/SKILL.md",
+  "plugins/ca/SPRINT.md",
+  "plugins/ca/commands/conflict.md",
+  "plugins/ca/skills/context-check/SKILL.md"
+]

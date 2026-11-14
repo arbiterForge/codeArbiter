@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wf01-scoped-conflict-axnk14l1"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "start": "2026-11-14T09:21:27.665495+00:00",
+  "finish": "2026-11-14T09:21:27.743758+00:00",
+  "seconds": 0.07765110000036657,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "73ecdda277cf8029bc7af81262f47b4c3602ac9641e8b45e63cb2e4a51f48c80"
+}

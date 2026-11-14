@@ -1,0 +1,8 @@
+test_conflict_keeps_sources_and_records_affected_dependencies (test_routing_and_cleanup_surface.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies) ... ok
+test_independent_work_continues_but_global_stops_remain (test_routing_and_cleanup_surface.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain) ... ok
+test_sprint_and_context_refresh_propagate_the_same_scope (test_routing_and_cleanup_surface.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+OK

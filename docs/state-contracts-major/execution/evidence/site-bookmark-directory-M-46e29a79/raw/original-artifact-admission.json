@@ -1,0 +1,22 @@
+{
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "repository": "arbiterForge/codeArbiter",
+  "docs_run_R": 43582198099,
+  "job_id": 132409108684,
+  "browser_artifact_id": 14107944699,
+  "archive_sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d",
+  "original_job_log_sha256": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+  "admitted_member_count": 170,
+  "selected_members": {
+    "academy-wayfinding-context.json": "8471a6998797bd093b3574643dc56f2a66ba09da5fd2d47cc82050b7c9c3b727",
+    "guide-discovery-geometry.json": "17d41ffe863678e49da064cdd11a27a37550eab9df842e95aa308a4c9b8f992b"
+  },
+  "reused_owner_source_sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+  "performed_checks": [
+    "validate_artifact(original metadata, original source/run, actual archive digest)",
+    "validate_upload(original job and artifact, Retain browser review evidence)",
+    "members(original archive): unchanged complete archive bound/path/type/duplicate guards before selected JSON reads",
+    "selected named PASS fields within original browser gate step window and literal owning source title"
+  ],
+  "execution": "Read-only original retained record/byte replay now, no new API/download/installed/browser/test execution. Root original API authentication remains separately evidenced."
+}

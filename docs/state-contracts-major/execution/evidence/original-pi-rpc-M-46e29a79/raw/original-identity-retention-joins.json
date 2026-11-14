@@ -1,0 +1,22 @@
+{
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_snapshot_originals": {
+    "supervisor-before.json": "f38fb0aed0de794f195623a7dc487a50624de1b6b5a749f42e62c55182d951b1",
+    "supervisor-after.json": "f38fb0aed0de794f195623a7dc487a50624de1b6b5a749f42e62c55182d951b1",
+    "worker-before.json": "f38fb0aed0de794f195623a7dc487a50624de1b6b5a749f42e62c55182d951b1",
+    "worker-after.json": "f38fb0aed0de794f195623a7dc487a50624de1b6b5a749f42e62c55182d951b1"
+  },
+  "source_snapshots_all_literal_identical": true,
+  "extracted_originals": {
+    "pi-extracted-members-before.json": "b203359792423932b95af2bcdabc3615be4d5a5fa629c14417193ed2493fe58a",
+    "pi-extracted-members-after.json": "b203359792423932b95af2bcdabc3615be4d5a5fa629c14417193ed2493fe58a"
+  },
+  "extracted_originals_all_literal_identical": true,
+  "original_acquisition_sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c",
+  "original_full_transcripts": {
+    "pi-rpc-bare-records.json": "f3d6e419f1f2adec8117931626da45bc1355dd8fccd4a933ad6870d3282762eb",
+    "pi-rpc-alias-records.json": "367cefb17b3d2eb7edfde2379dac50e0c3b32b6d873e8cc307652aeeefa815bc",
+    "pi-rpc-doctor-records.json": "fa95a9c5f5c58bdd3d1f4ef8901204a6b025d474ac68afbf4bd8a02355b6754e"
+  },
+  "meaning": "Each genuinely captured literal-identical set retained once; all original names/digests and actual epochs remain explicit."
+}

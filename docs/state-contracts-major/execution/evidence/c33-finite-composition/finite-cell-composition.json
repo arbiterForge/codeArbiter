@@ -1,0 +1,91 @@
+{
+  "state": "ROOT_ADMISSION_PENDING",
+  "cells": [
+    {
+      "cell": "disposition:transitions:C33:01",
+      "recommended_status": "TESTED",
+      "actual_cases": [
+        "CheckFailureModeTest.test_fresh_document_passes",
+        "MainCLITest.test_the_cli_passing_path_returns_zero_against_a_current_proof",
+        "CheckFailureModeTest.test_proof_current_false",
+        "CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "CheckFailureModeTest.test_hash_mismatch",
+        "CheckFailureModeTest.test_missing_artifact_file",
+        "CheckFailureModeTest.test_unparseable_json"
+      ],
+      "finite_assertions": "Fresh positive returns no errors/main0; withdrawn/current=false, noneligible path, stale hash, missing record and malformed JSON each refuse for the declared reason. Finite source clause binds this to exact exercised eligible file; not all possible malformed/error causes or real release execution."
+    },
+    {
+      "cell": "disposition:transitions:C33:02",
+      "recommended_status": "TESTED",
+      "actual_cases": [
+        "CheckFailureModeTest.test_hash_mismatch",
+        "CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+        "MainCLITest.test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash",
+        "CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload"
+      ],
+      "finite_assertions": "Perturbing recorded hash/path/current flag blocks and distinguishes withdrawal from stale hash. Source165, real proof record and Gov state unchanged; no automatic fresh exercise/record fabricated. Finite unchanged check/main owner only reads/returns/reports."
+    },
+    {
+      "cell": "disposition:transitions:C33:03",
+      "recommended_status": "TESTED",
+      "actual_cases": [
+        "PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+        "PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises",
+        "CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise"
+      ],
+      "finite_assertions": "Descriptor-derived exactly3 direct full-prose owners, composed command projections excluded, missing owner mapping refuses explicitly, historical hash metadata remains bound to its own exercise. Current source compares the one explicit exercise.path/hash, never post-remediation map as other-host exercise proof. This tests mechanical declared scope; it is not actual independent Codex/Pi agent exercise."
+    },
+    {
+      "cell": "disposition:machines:C33",
+      "recommended_status": "TESTED",
+      "transition_cells": [
+        "disposition:transitions:C33:01",
+        "disposition:transitions:C33:02",
+        "disposition:transitions:C33:03"
+      ],
+      "finite_assertions": "Composition covers exactly3 frozen baseline transitions of implemented C33 mechanical checker; no additional model/host/publication guarantee. Each transition explicitly joins relevant actual cases across the two unchanged-input execution epochs."
+    }
+  ],
+  "components": [
+    {
+      "label": "M-ten",
+      "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "ref": "docs/state-contracts-major/execution/evidence/c33-finite-M-ten/tested-component.json",
+      "sha256": "66ddf7b4919089360673385077a5735e7864cd357033b7bab60876e0b4506385",
+      "count": 10,
+      "cases": [
+        "CheckFailureModeTest.test_fresh_document_passes",
+        "MainCLITest.test_the_cli_passing_path_returns_zero_against_a_current_proof",
+        "CheckFailureModeTest.test_proof_current_false",
+        "CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "CheckFailureModeTest.test_hash_mismatch",
+        "MainCLITest.test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash",
+        "CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+        "PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+        "CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise"
+      ]
+    },
+    {
+      "label": "acf1-three",
+      "source_commit": "acf1aeeafc44696fbac966cba7eb999e14857514",
+      "ref": "docs/state-contracts-major/execution/evidence/c33-finite-acf1-three/tested-component.json",
+      "sha256": "d3acd50ff91a9764a51bad78fbb76592cb43e0ed737dce8ba0bf9d21ea5f093b",
+      "count": 3,
+      "cases": [
+        "CheckFailureModeTest.test_missing_artifact_file",
+        "CheckFailureModeTest.test_unparseable_json",
+        "PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises"
+      ]
+    }
+  ],
+  "no_epoch_relabel": true,
+  "no_single13_method_run_claim": true,
+  "limits": [
+    "No Q01/task/program completion or actual new agent judgment exercise.",
+    "Malformed JSON representative case observed; exhaustive encoding/top-level/schema/fault-space qualification is not claimed.",
+    "Helper condition-tag runtime cone is the complete165 frozen positive inputs and membership at these epochs; future changed/new source must be re-evaluated by owning currentness policy."
+  ]
+}

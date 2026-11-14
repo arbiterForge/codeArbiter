@@ -1,0 +1,126 @@
+{
+  "product_source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "product_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "docs_run_R": 43582198099,
+  "producer": "local Windows Chrome original-built Pages observation",
+  "browserVersion": "156.0.8078.80",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "cases": [
+    {
+      "name": "original built drawer restores seeded state after Escape",
+      "status": "PASSED",
+      "seconds": 0.571,
+      "observation": {
+        "seeded": {
+          "backgroundCount": 8
+        },
+        "opened": {
+          "overflow": "hidden",
+          "drawerInert": false,
+          "focusInsideDrawer": true,
+          "backgroundsLocked": true
+        },
+        "closed": {
+          "overflow": "clip",
+          "drawerInert": true,
+          "drawerAria": "true",
+          "layerHidden": true,
+          "expanded": "false",
+          "role": null,
+          "exactBackgrounds": true,
+          "openerFocused": true,
+          "focusInDetached": false
+        }
+      },
+      "blocked": []
+    },
+    {
+      "name": "original built backdrop restores seeded state",
+      "status": "PASSED",
+      "seconds": 0.381,
+      "observation": {
+        "seeded": {
+          "backgroundCount": 8
+        },
+        "closed": {
+          "overflow": "clip",
+          "drawerInert": true,
+          "drawerAria": "true",
+          "layerHidden": true,
+          "expanded": "false",
+          "role": null,
+          "exactBackgrounds": true,
+          "openerFocused": true,
+          "focusInDetached": false
+        }
+      },
+      "blocked": []
+    },
+    {
+      "name": "original built drawer traps forward and reverse boundary focus",
+      "status": "PASSED",
+      "seconds": 0.307,
+      "observation": {
+        "eligibleTargets": 192,
+        "forwardWrapped": true,
+        "reverseWrapped": true
+      },
+      "blocked": []
+    },
+    {
+      "name": "original built detached drawer releases Escape and initialized marker",
+      "status": "PASSED",
+      "seconds": 0.346,
+      "observation": {
+        "capture": {
+          "records": 1,
+          "initialized": "true",
+          "aborted": [
+            false
+          ]
+        },
+        "detached": {
+          "connected": false,
+          "hasMarker": false,
+          "aborted": true,
+          "callsBefore": 0,
+          "callsAfter": 0
+        },
+        "reconnected": true
+      },
+      "blocked": []
+    },
+    {
+      "name": "original Pages Pagefind entry bytes and real index support UI navigation",
+      "status": "PASSED",
+      "seconds": 0.851,
+      "observation": {
+        "entry_sha256": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009",
+        "entry_bytes": 45555,
+        "exports": [
+          "createInstance",
+          "debouncedSearch",
+          "destroy",
+          "filters",
+          "init",
+          "mergeIndex",
+          "options",
+          "preload",
+          "search"
+        ],
+        "realIndexExpectedPath": true,
+        "uiNavigated": true
+      },
+      "blocked": []
+    }
+  ],
+  "browser_cleanup": "closed",
+  "limits": [
+    "No synthetic HTML/Pagefind provider; original admitted static bytes only.",
+    "Seeded DOM state and bounded listener instrumentation are explicit acceptance setup.",
+    "No full WCAG/platform-union/native/TUI/provider/publication claim."
+  ]
+}

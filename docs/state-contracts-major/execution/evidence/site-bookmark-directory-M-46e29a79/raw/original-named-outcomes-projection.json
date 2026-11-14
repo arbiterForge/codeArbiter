@@ -1,0 +1,133 @@
+{
+  "schema": "codearbiter.original-list-reporter-projection/1",
+  "projection": "Exact selected original list-reporter named PASS fields, not a fabricated Playwright JSON report. No total-based inference.",
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "docs_run_R": 43582198099,
+  "job_id": 132409108684,
+  "step": {
+    "name": "Browser publication gate",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-14T09:48:29Z",
+    "completed_at": "2026-11-14T09:58:40Z"
+  },
+  "original_job_log_sha256": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+  "selected": [
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/academy-wayfinding.spec.ts",
+      "line": 10,
+      "column": 1,
+      "title": "a bookmark is opt-in, survives navigation, and never becomes completion",
+      "original_timestamp": "2026-11-14T09:48:40.0442198Z",
+      "original_duration_text": "5.5s",
+      "original_log_line": 1097,
+      "original_line_utf8_sha256": "84f9af7f66bc893203909c7fd2918b8253fed835fb0bbb3f19bb27d83cbe61af"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/academy-wayfinding.spec.ts",
+      "line": 35,
+      "column": 1,
+      "title": "stale source identity has no resume URL and clearing retains command preferences",
+      "original_timestamp": "2026-11-14T09:48:41.1497294Z",
+      "original_duration_text": "1.1s",
+      "original_log_line": 1098,
+      "original_line_utf8_sha256": "d55b564c10a7287e777d42d2962c6fb7901496fa42c60b445ac33b0a59c4a384"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/academy-wayfinding.spec.ts",
+      "line": 52,
+      "column": 1,
+      "title": "denied storage retains the full lesson and an actionable explanation",
+      "original_timestamp": "2026-11-14T09:48:41.9596734Z",
+      "original_duration_text": "789ms",
+      "original_log_line": 1099,
+      "original_line_utf8_sha256": "69b3908f92c8f8cbdb15ef11b41edd47e46c88a03e72e5654f76823fb638b536"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/academy-wayfinding.spec.ts",
+      "line": 117,
+      "column": 1,
+      "title": "saving and removing a place work by keyboard in forced colors",
+      "original_timestamp": "2026-11-14T09:48:55.6924466Z",
+      "original_duration_text": "847ms",
+      "original_log_line": 1106,
+      "original_line_utf8_sha256": "6d342269ebebaf669516d62b0ee9def380d2239e547ab45716349d9c30a6596c"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/academy-wayfinding.spec.ts",
+      "line": 131,
+      "column": 1,
+      "title": "capture Academy track and return surfaces for human review",
+      "original_timestamp": "2026-11-14T09:49:00.1431594Z",
+      "original_duration_text": "4.4s",
+      "original_log_line": 1107,
+      "original_line_utf8_sha256": "e6c5092b022b81f1f045d0b46f1c7757ee9183497f29cbdd7c5cc3ba80744361"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/guide-discovery.spec.ts",
+      "line": 36,
+      "column": 1,
+      "title": "directory contains every guide and filters by both task and literal words",
+      "original_timestamp": "2026-11-14T09:51:15.5799470Z",
+      "original_duration_text": "784ms",
+      "original_log_line": 1162,
+      "original_line_utf8_sha256": "1a906660828ed1c202232089401526dc823d476a99fcf87bedd146ad671fa1c3"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/guide-discovery.spec.ts",
+      "line": 57,
+      "column": 1,
+      "title": "filtering makes no request or storage write and does not submit a query URL",
+      "original_timestamp": "2026-11-14T09:51:16.1621675Z",
+      "original_duration_text": "561ms",
+      "original_log_line": 1163,
+      "original_line_utf8_sha256": "8fa5737772f1e14bd20f10b92d3db3999cbc6a4982c2cc2d07e22fd9af58f300"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/guide-discovery.spec.ts",
+      "line": 73,
+      "column": 1,
+      "title": "filter controls and the review guide reconnect after client navigation and back",
+      "original_timestamp": "2026-11-14T09:51:17.6622178Z",
+      "original_duration_text": "1.5s",
+      "original_log_line": 1164,
+      "original_line_utf8_sha256": "beeb901a47750a4dfc2b4fbeaa7d82c383620465190a38b7d8f6b12e460b3cfe"
+    },
+    {
+      "observed_status": "PASSED",
+      "project": "chrome",
+      "file": "site/test/browser/guide-discovery.spec.ts",
+      "line": 144,
+      "column": 1,
+      "title": "record actual guide discovery and review-to-delivery layouts",
+      "original_timestamp": "2026-11-14T09:51:32.2729831Z",
+      "original_duration_text": "5.3s",
+      "original_log_line": 1173,
+      "original_line_utf8_sha256": "1fb7fc60d292746010a5df2a476696e0a2d97018abf9c952eb58c4b90d6af682"
+    }
+  ],
+  "criteria_named_count": 7,
+  "capture_provenance_named_count": 2,
+  "commands": {
+    "original_logged_command": "npm run test:browser",
+    "expanded_package_command": "playwright test",
+    "workflow_working_directory": "site",
+    "step_conclusion": "success"
+  }
+}

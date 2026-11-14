@@ -1,0 +1,27 @@
+{
+  "format": "codearbiter.major-test-observation/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "clean": true,
+  "source_stable": true,
+  "ci_run_id": 0,
+  "proof_kind": "source-test",
+  "producer": "python-test-result-observer",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\.github\\scripts\\test_artifact_authority_adapter.py",
+    "ClaudeEndToEndTest.test_native_npm_verification_is_accepted_by_real_engine",
+    "ClaudeEndToEndTest.test_native_npm_workspace_verification_is_accepted_by_real_engine"
+  ],
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "python:.github/scripts/test_artifact_authority_adapter.py:__main__.ClaudeEndToEndTest.test_native_npm_verification_is_accepted_by_real_engine",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_artifact_authority_adapter.py:__main__.ClaudeEndToEndTest.test_native_npm_workspace_verification_is_accepted_by_real_engine",
+      "result": "passed"
+    }
+  ]
+}
