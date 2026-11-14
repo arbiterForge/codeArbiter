@@ -1,0 +1,916 @@
+{
+  "schema": "codearbiter.compact-source-clause-inspection/1",
+  "actor": "/root/packaging_site_tools",
+  "subject_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "inspected_against_current_commit": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "mode": "SOURCE_CLAUSE_ONLY_NO_EXECUTION",
+  "rows": [
+    {
+      "cell": "disposition:transitions:S57:01",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 19,
+          "end": 42,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 74,
+          "end": 99,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 142,
+          "end": 144,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "OS and host keys are independently constrained to fixed allowed Sets; storage acquisition/read failure or unsupported value yields null. Initial reflect/refresh applies those in-memory values. This is the conditional component source contract, not generated Academy/module availability.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "4ac4f745a2953a1629a0adb600b620c66b324dc11ef64238a6d703b5914fe2ae",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:02",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 44,
+          "end": 52,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 120,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Only supported OS/host choices update the matching in-memory field; persistence is attempted in try/catch, then aria reflection and variant refresh run. A zero-match filter returns every variant index. Unknown option returns without change.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "dda1862ea89f90aa6ddd805da33f31412dc3eca9a14f45cb56f6ce9bb0b23c8e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:03",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 113,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "preferences[kind] changes before setItem; the storage exception is swallowed and both reflect and refresh still run. No successful durability receipt or persisted-readback assertion is manufactured.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0406299c07da8c9c95ab4b4383deba37e3910089eb297e79f125aaa29e71fb1b",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:04",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 54,
+          "end": 66,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 121,
+          "end": 136,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "The copy listener resolves the declared target, passes exactly target.textContent to the async clipboard writer and returns when target absent. No shell/tool command is invoked.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "ef3566752045dceccb8d3c7f326c2e3922dcef6e04f33f729319171594eb2177",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:05",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 61,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 137,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Only awaited writer resolution returns copied, selecting the Copied status text; status element absence is tolerated. No actual system clipboard observation is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3ac3abec2c92aa8cbc0026646fa3e0eefb38dcee74aa9af35e782c1258ce069c",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:06",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 65,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 126,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Writer rejection enters fallback callback selecting target node contents via Range/Selection, then returns fallback and emits the manual Ctrl+C/Command+C guidance. A later ordinary click retries the same flow.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "d643863cfea7e20baa5f7df429061e25747e0428c901ee33234199ab689e1ef7",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:07",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 77,
+          "end": 80,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 115,
+          "end": 150,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "dataset.initialized true returns before listener binding; custom element definition is also guarded. Entire component script contains neither storage-event listener nor disconnectedCallback/abort, preserving that explicit baseline limit.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "56a7556c50618d741d82639a0e2b7fd4d92e9a65db0b17b0e6cd176efb70c1cf",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:02",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 62,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 72,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 17,
+          "end": 29,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        }
+      ],
+      "semantic_assessment": "Declared-case/all selections modify hidden, aria-pressed and status text; unknown declared-case IDs return and unknown button indexes do nothing. These reading controls call no repository/verifier/receipt or authority producer.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "2a19709e62073748338b62700412c9bc775e47e0029474e33e118ecc49f188b2",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:04",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 247,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ],
+      "semantic_assessment": "Show-all click opens the collected details and recomputes aria-expanded/label from every detail.open; individual toggle events call the same synchronizer. This changes disclosure presentation, not lesson completion.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "938303fbcd7819fa7814047cf93fbf64479e8e59a7e512ad2b3e4564c225a355",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:05",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 226,
+          "end": 251,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ],
+      "semantic_assessment": "The show-all element bound marker returns before registering handlers again; initial call and Astro page-load reuse that guard. Source body contains DOM disclosure/aria changes, with no artifact or lesson-verifier state writes.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0aa3c22cbdd44ecdb65dbd96fefd29da3be218693a4bfb1677a57c2c0bd14ad0",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:01",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 18,
+          "end": 25,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 51,
+          "end": 54,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Manual buttons clear pending focus and choose only all or a declared chapter; choose cancels the pending frame, changes chapter hidden flags, pressed state and status. It never calls history.pushState/replaceState.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "6340d7d4d027de83742eb0e6d273eb4d339db2641731d6d6de0aaac83de314da",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:02",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 2,
+          "end": 5,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 26,
+          "end": 38,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 55,
+          "end": 59,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 71,
+          "end": 74,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Only bounded # fragments that decode and resolve by literal DOM ID inside this map are admitted. Known target chapter and details ancestors are revealed on hashchange/popstate/Astro load and initial read; unknown/malformed/outside targets return.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "5e7c87f5688fda379ea231a027df1edd989c235277eb1d536ff666ef282fd630",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:04",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 60,
+          "end": 69,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Only ordinary unmodified primary internal link clicks without target/download enqueue the requested link hash; abort prevents the microtask action. Native history/default handling remains intact, so same-fragment reveal/focus can be requested without writing history in this owner.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3b3f40b86b9aa01234f9647765749c909e4a26642f1810864fad0e01a69750d4",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:02",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 45,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 59,
+          "end": 85,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Connected anchors resolve to existing headings; update reads current header height and absolute heading positions, selects the last heading crossing header+32 and updates aria-current only on the active link. Heading discovery is connection-time, not a mutation observer.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "405eb04b425536387582c779a0893689761bcd5a9e15ecb413ed9489b3c82f4c",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:03",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 88,
+          "end": 120,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Trailing unreachable headings use guarded positive spans to map remaining actual scroll into natural heading positions; an exact bottom safety condition selects n-1. This is arithmetic source conformance, not a measured browser geometry/scroll result.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "9c27d15e9e881eba0b67212c2cb5851e17e1153fe02b4de7270fbfa2e9e8b714",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:04",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 43,
+          "end": 57,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Disconnect removes the same owned scroll/resize callback references and cancels the pending animation frame. No observer is created here, so there is no separate observer lifetime being asserted.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "37123204e20327c84e4bb6685ce5a97e192c7c488395e1c767c79a4aa4e0de65",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:05",
+      "witnesses": [
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "start": 13,
+          "end": 19,
+          "file_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad"
+        }
+      ],
+      "semantic_assessment": "Inline code unconditionally sets documentElement.dataset.theme to dark and installs a no-op picker callback; localStorage dark persistence is best effort inside catch. It does not read or apply a light/system preference.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "ec7073230fdbd23bc3f9e2952a404c3cb7031422184b1fe3a1214bcbc3e56a00",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 7,
+          "end": 17,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        },
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 37,
+          "end": 40,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        },
+        {
+          "path": "site/src/components/StatuslineGallery.astro",
+          "start": 9,
+          "end": 12,
+          "file_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043"
+        }
+      ],
+      "semantic_assessment": "String.length above100000 rejects; plain segments reject unsupported control code units and become token.text with current color/bold state. The Gallery renders token.text as an Astro text expression, never set:html. No live terminal/account bytes were read.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "2b37a7fe5bb7b6ee225afae9feb4f6f5892e467b0286ff85540b58d92acffd83",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 18,
+          "end": 37,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        }
+      ],
+      "semantic_assessment": "Only enumerated SGR resets/bold/default colors and complete integer0..255 RGB triples affect style; dim/italic markers intentionally leave emitted text unchanged. Unsupported code/invalid RGB throws rather than interpreting arbitrary controls.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "17e4169f8cb437d544d33e9142a77ae98292a72013be34e163943c0a2268606e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 42,
+          "end": 53,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        }
+      ],
+      "semantic_assessment": "Loader requires exact ordered violet,blue,green,amber,mono names, recomputes Node SHA256 over each ANSI string and then invokes the bounded decoder. This conditional byte-integrity contract does not establish renderer freshness or live host/account state.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "af26af54c9e93db6dfc0b697b1f71a5aa3594c5769cb0d44d636d90d173ed595",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C19:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 21,
+          "end": 76,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 144,
+          "end": 165,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Governed SemVer tag/nonzero lowercase commit guards precede a bounded exact one/two-record tab parser: one direct ref required, optional peel only, duplicate/unexpected names reject and chosen commit must equal expected. Receipt run/workflow fields remain caller-supplied observations, not authenticated original publication.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a43fe985bd38202caeaf9debb749da4c8959f827520d8c07e46f3d621d1e0278",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C19:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 79,
+          "end": 110,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Lexical existing parent chain must be directories without reparse flags and final path absent. A complete temp file is flushed/fsynced and hardlinked without replacement, then temp cleanup attempted. Cooperative private-parent precondition and cleanup warning limit remain explicit; no hostile same-user race immunity is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "978bf56508efff250c03c66f1aa7e4e635e72854889bc6cdedc6982d7a4dba5f",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C19:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 79,
+          "end": 91,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 94,
+          "end": 110,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 167,
+          "end": 169,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Existing output is rejected before writing and a later destination collision makes exclusive os.link fail; no fallback overwrite exists. Retry needs a fresh owned destination or caller reconciliation.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "b9dc5f649ca23b0755d5b03b4fdb60ff913aa81e396462e3594f120b786b01ef",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 33,
+          "end": 88,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 98,
+          "end": 143,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 192,
+          "end": 212,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "Closed exact expected/receipt source identities are compared; inputs are bounded regular paths with link/reparse and duplicate/nonfinite JSON rejection. Both source ledgers are hash-joined and their original/legacy inventories validated disjoint before reconciliation. Provenance authentication is still an external caller prerequisite.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a8cfbef1f832e21836825c72872edfb485b4589c0e448f38b65e13b693871414",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 89,
+          "end": 95,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 214,
+          "end": 222,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "An already-recorded tag with equal object/type/commit returns None, rechecks both input byte preimages and exits without creating a candidate. Conflicting identity raises, never replacing history.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "9405a71aa9cae98868556b25a6d5c16ba0b76356d173fd33c2314f7179d0df5f",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 83,
+          "end": 95,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "After disjointness and legacy refusal, absent original tag is appended only to deepcopy(manifest); source dictionaries/files are not mutated by reconcile. No tag/ref/release operation is performed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "8a43097533b955a3577d9b35a6d353a145366ffaffe0e97705b61d4bf18c65df",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C20:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 146,
+          "end": 162,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        },
+        {
+          "path": ".github/scripts/reconcile_tag_receipt.py",
+          "start": 214,
+          "end": 226,
+          "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+        }
+      ],
+      "semantic_assessment": "Both original byte preimages are reread immediately before exclusive link publication of the bounded candidate. Drift/existing output aborts; source ledgers remain unchanged and candidate adoption is separate. Cooperative filesystem boundary is retained.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "745b763466180c38c9aa937eaa126780d75c09d947c6541ad7e192d30cb62870",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 28,
+          "end": 78,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "Exact exception schema/fields, GHSA+package grammar, nonblank reason/approver, supported severity, approval<=today and approval<=backstop<=approval+30days/today<=backstop guard every entry; duplicate GHSA/package pair rejects. This is policy-row validation, not authentication of approver identity.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a19e8093005641e3d9ab0eeeda50dd188ea89b8f48279d28124819e75af8ecd2",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 81,
+          "end": 107,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "JSON/root/error/vulnerability inventory and each via/advisory shape are checked; string via pointers add no independent finding; direct advisory URL tail, package and supported severity are collected. No network audit or transitive-pointer closure was executed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "1094076b1fe7d8525ae36b9317263f8f74ab64ba9ec8ae4a0aba2100107fd572",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 110,
+          "end": 126,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        },
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 129,
+          "end": 146,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "At-threshold direct finding blocks absent exact GHSA/package exception, or observed severity above accepted severity. CLI catches GateError and emits nonzero on malformed input/blockers; no unavailable registry report is relabelled clean.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "e9f741afad1f0b77a2926a410caf77297ed191dbfaba17086027987c662f6ba1",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 67,
+          "end": 78,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        },
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 124,
+          "end": 126,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "Valid but unused exception pairs only emit a removal note; load still rejects expired/future/overlong approval windows before evaluate. No runtime date/advisory inventory acceptance is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0a308226af6738edb5e8683f122c9b2cda94c80e9719f2fb6e86873c946f9001",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C14:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/payload_scope.py",
+          "start": 46,
+          "end": 71,
+          "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea"
+        },
+        {
+          "path": ".github/scripts/payload_scope.py",
+          "start": 74,
+          "end": 112,
+          "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea"
+        }
+      ],
+      "semantic_assessment": "CLI first limits plugin to declared inventory; git triple-dot diff excludes the whole tools build directory then separately checks explicit shipped bundles. Git exit other than0/1 raises instead of silently treating it unchanged. Source logic is preserved; no actual current version or diff result is asserted.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "c70904c55bdb3dd874e936b0b4ea27f23c93aaf905ea29e331f5b6942e8b97b4",
+      "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C05:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 55,
+          "end": 68,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        },
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 89,
+          "end": 103,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        }
+      ],
+      "semantic_assessment": "Direct child stdout/stderr share an owned temporary log; after process completion bytes decode with replacement and return with actual code. Thread-pool results are collected before grouped output. Neither output-byte bound nor environment isolation is added by this source contract.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3de7482c73a0d6dbeedac7524d10cf1dd333e32c6c1dc75f0bde7a4f4648336e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C05:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 55,
+          "end": 68,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        }
+      ],
+      "semantic_assessment": "TimeoutExpired kills only the direct Popen child, waits it and adds timeout diagnostic with code-1. No process-tree kill, descendant cleanup or bounded post-kill rundown is claimed; those explicit limits remain source-visible.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "e0f518bd0bd5dbde15e7c7ef8b440eb487647f6b2881f330c7aea3c5f8e7f3a6",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C10:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/check_sandbox_docker_layers.py",
+          "start": 89,
+          "end": 137,
+          "file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+        }
+      ],
+      "semantic_assessment": "Given valid unique declared layer names and successful enclosing npm step, verifier compares recorded and declared sets exactly, rejecting missing/foreign names. A sentinel records starts only; completion comes from the separate enclosing test success, not invented per-layer PASS.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "7050291bc7b342bfe9d04e85547bf458366a7c7a07c186bf4d5f020c284d4a73",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C10:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/check_sandbox_docker_layers.py",
+          "start": 99,
+          "end": 137,
+          "file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+        }
+      ],
+      "semantic_assessment": "No declarations, missing sentinel, empty records, missing expected or unknown recorded names return nonzero with explicit diagnosis. This does not infer runtime layer execution from source declarations.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "8f6d723f6df9851e8509677fe16da635127fc080b5967b5c5170e6dc4e6bc129",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:T07:02",
+      "witnesses": [
+        {
+          "path": "tools/generate-artifact-types.py",
+          "start": 38,
+          "end": 45,
+          "file_sha256": "23a274ff421b9fa58fb645370fa8f76636319ffb3e73f4409b293d105ee5e8e5"
+        }
+      ],
+      "semantic_assessment": "Check mode compares rendered target bytes then each of the seven source/embedded schema pairs; any mismatch raises stale diagnostic and check branch performs no writes. No gofmt execution or claim that current generated bytes already match is made.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "df1963532ef7fe0235a0f46f8fc38c77e8b8dbd9876a125f08996bee71190157",
+      "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:T07:03",
+      "witnesses": [
+        {
+          "path": "tools/generate-artifact-types.py",
+          "start": 46,
+          "end": 48,
+          "file_sha256": "23a274ff421b9fa58fb645370fa8f76636319ffb3e73f4409b293d105ee5e8e5"
+        }
+      ],
+      "semantic_assessment": "Generation branch writes target first and the seven embedded schema copies in sequence; there is no transaction/rollback. I/O failure can leave partial output; explicit later regenerate/check remains needed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "6bb8fb3e38985cbe19c3fa789db678aceef4c5fe0477a757d7d9a69d75197595",
+      "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "held_rows": [
+    {
+      "id": "S59:01",
+      "reason": "Frozen initialize says first eligible panel across all owners, but ContextExplorer explicitly selects validated data-initial (defaultoverlap), which can differ from first. Preserve known-case presentation separately; do not assert universal first selection."
+    },
+    {
+      "id": "S59:03",
+      "reason": "Frozen Arrow/Home/End clause requires aria-selected and tab stops. ExampleChoices intentionally retains native Tab/button group and aria-pressed; it changes focus/selection but never aria-selected/roving tabindex. No runtime bug or repaired contract is asserted."
+    },
+    {
+      "id": "S60:03",
+      "reason": "Frame checks abort/target connection and known navigation cancels prior frame; no explicit location/hash/revision equality. Invalid/unmapped newer navigation can leave previous frame queued. Stronger target-current guard is not established from this source."
+    },
+    {
+      "id": "S60:05",
+      "reason": "Disconnect aborts/cancels; known manual/target navigation cancels prior frame. Universal new-navigation invalidation is broader than current admitted-known-target handling; no source promotion for that stronger clause."
+    },
+    {
+      "id": "S63:01",
+      "reason": "Source registers scroll/resize only; there is no layout/resize/mutation observer. Generic layout-change tracking in frozen event is not established; concrete scroll arithmetic/cleanup are separate rows."
+    },
+    {
+      "id": "C05:01",
+      "reason": "parse rejects duplicate/missing suite paths and unset interpreter env, but it does not independently validate interpreter executable or positive finite timeout. Frozen valid timeout/interpreter guard is broader."
+    },
+    {
+      "id": "C05:04",
+      "reason": "problems accepts last positive Ran count plus any matching OK and code0; it does not reject all contradictory earlier/later output or require accepted final count consistency as frozen prose says."
+    },
+    {
+      "id": "C05:05",
+      "reason": "Aggregate join calls that same problems predicate. Full every-observation-verified clause inherits unresolved C05:04 stronger oracle, so do not qualify whole group join."
+    },
+    {
+      "id": "C10:01",
+      "reason": "Lexical scanner recognizes double-quoted valid dockerGate literals, deduplicates within file and rejects shared keys/nonempty absence in verify; it does not reject every malformed/unrecognized declaration when another valid declaration exists."
+    },
+    {
+      "id": "T07:01",
+      "reason": "gotype intentionally falls back to json.RawMessage for unrecognized forms; frozen unsupported-structure-reject wording is broader. Schema payloads also changed; no source-preserved renderer-output equivalence is claimed."
+    }
+  ],
+  "dependency_assessments": [
+    {
+      "boundary": "Site client clauses",
+      "assessment": "Direct client functions and DOM/clipboard/storage/RAF boundaries inspected. Direct imported decision/map models/render functions, static capture JSON, bookmark/style/ToC rendering owners are byte-identical to baseline. They provide presentation data, not permission or repository mutation. No browser, module load or layout execution is claimed."
+    },
+    {
+      "boundary": "Academy generated module",
+      "assessment": "site/src/generated/academy-content.ts is not a retained Git input. These preference/disclosure claims are conditional source-body contracts after valid declared rendered DOM/data exist; no generated module availability, full Academy render/build or imported dataset provenance is asserted. This is an explicit admission limitation, not an inferred absence fact."
+    },
+    {
+      "boundary": "Site toolchain",
+      "assessment": "site/package-lock.json unchanged; package.json adds only test:components compared to baseline. Production dependency declarations and build/generator commands are unchanged. This supports conditional source-body preservation, not browser/compiler execution."
+    },
+    {
+      "boundary": "Reconciliation imported guards",
+      "assessment": "check_tag_immutability changed only main/parser/verdict observation wrapper. Hand-read imported loaders/disjointness/dataclasses and compared nine actual definitions to baseline: Provenance,LegacyProvenance,InvalidInventory,is_governed,_exact_keys,_identity,load_original_manifest,load_legacy_manifest,validate_disjoint are AST-identical. Lazy _verdictlib main branch is not called by reconciliation."
+    },
+    {
+      "boundary": "Layer sentinel",
+      "assessment": "Current CI original source driver still executes npm test before sentinel assertion with ordinary success gating. New observers do not turn sentinel starts into completion. No actual test discovery/start/success is claimed by this source inspection."
+    },
+    {
+      "boundary": "Schema generator data",
+      "assessment": "Schemas/generated target evolved; only check-mode comparison/no-write and generation ordered-write/partial-failure contracts are preserved. No generated bytes, schema validation, Go-tool compatibility or execution parity claim."
+    },
+    {
+      "boundary": "Platform/private filesystem",
+      "assessment": "Python stdlib and browser platform operations are inspected as explicit source calls and error branches. No filesystem atomicity beyond documented cooperative private-parent preconditions, actual tag/network state, child rundown, installation or platform journey is qualified."
+    },
+    {
+      "boundary": "Clock follow-up",
+      "assessment": "All selected literal inputs at d594 equal immutable9ab bytes. major_readiness/check integration clock edits are outside these functional input cones; no source equality is being used as runtime PASS."
+    }
+  ],
+  "input_sha256": {
+    ".github/scripts/check_sandbox_docker_layers.py": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+    ".github/scripts/check_tag_immutability.py": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+    ".github/scripts/npm_audit_gate.py": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea",
+    ".github/scripts/payload_scope.py": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+    ".github/scripts/reconcile_tag_receipt.py": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+    ".github/scripts/run_concurrent_suites.py": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+    ".github/workflows/ci.yml": "82b86576a01295fd42544e564ecfa6ac8a4c997a8c1e36bb96a4f5c158f2cb7a",
+    "core/artifacts/internal/model/types_generated.go": "a98ab09d775c2d63903c305260e91bd61a15033e4c3eea8de1bb2f06ba1543e5",
+    "core/artifacts/internal/schema/common.schema.json": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee",
+    "core/artifacts/internal/schema/context.schema.json": "c3ef4b71c6cffbfcb29596129d2c6e3b048b8a94165a6ea1ef26f663e48d1d32",
+    "core/artifacts/internal/schema/decomposition.schema.json": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b",
+    "core/artifacts/internal/schema/knowledge.schema.json": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+    "core/artifacts/internal/schema/plan.schema.json": "1c866b7fa9a2b9434bf0c7d8f488348a5539120a1d5fd2d77c9a2235673a2226",
+    "core/artifacts/internal/schema/spec.schema.json": "3f7f3e4b6161cad885d4b5e5df0e7c1f51351ec272ece89d558bdf5cd13f6210",
+    "core/artifacts/internal/schema/work.schema.json": "8323b2aab06626629efa8cb406e655dec783e42a0d95feecaf674eaa757f517d",
+    "core/artifacts/schemas/common.schema.json": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee",
+    "core/artifacts/schemas/context.schema.json": "c3ef4b71c6cffbfcb29596129d2c6e3b048b8a94165a6ea1ef26f663e48d1d32",
+    "core/artifacts/schemas/decomposition.schema.json": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b",
+    "core/artifacts/schemas/knowledge.schema.json": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+    "core/artifacts/schemas/plan.schema.json": "1c866b7fa9a2b9434bf0c7d8f488348a5539120a1d5fd2d77c9a2235673a2226",
+    "core/artifacts/schemas/spec.schema.json": "3f7f3e4b6161cad885d4b5e5df0e7c1f51351ec272ece89d558bdf5cd13f6210",
+    "core/artifacts/schemas/work.schema.json": "8323b2aab06626629efa8cb406e655dec783e42a0d95feecaf674eaa757f517d",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/public/examples/statusline-themes.json": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/decision-evidence.ts": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+    "site/scripts/execution-maps/model.ts": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+    "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "site/scripts/statusline-capture.ts": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/components/AcademyCommandPreferences.astro": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+    "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+    "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+    "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+    "site/src/components/ExecutionMap.astro": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+    "site/src/components/StatuslineGallery.astro": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+    "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+    "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+    "site/src/data/context-examples.json": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/scripts/academy-command-preferences.ts": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+    "site/src/scripts/execution-map-navigation.ts": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+    "site/src/styles/academy-wayfinding.css": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+    "tools/generate-artifact-types.py": "23a274ff421b9fa58fb645370fa8f76636319ffb3e73f4409b293d105ee5e8e5"
+  },
+  "direct_whole_owner_baseline_equality_is_triage_only": true,
+  "no_actions": [
+    "No test/build/browser/Docker/install/API/native/provider execution",
+    "No Gov source/ledger/index/marker writes",
+    "No task/scenario/whole-machine/program promotion"
+  ],
+  "limits": "Conditional authored source clauses only. This is not a runtime acceptance report; unsupported frozen wording and missing generated/runtime oracles remain open."
+}

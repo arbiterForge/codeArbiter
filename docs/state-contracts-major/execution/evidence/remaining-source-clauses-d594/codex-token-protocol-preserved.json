@@ -1,0 +1,63 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    ".github/scripts/create_codex_distribution_token.py": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C23:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Composed shell-owned key handling plus fixed signing/HTTPS command construction only. No cryptographic result, OpenSSL/runtime identity, real token/API/TLS/filesystem permission result or publish authorization.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C23:02",
+      "witnesses": [
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 304,
+          "end": 331,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        },
+        {
+          "path": ".github/scripts/create_codex_distribution_token.py",
+          "start": 17,
+          "end": 19,
+          "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba"
+        },
+        {
+          "path": ".github/scripts/create_codex_distribution_token.py",
+          "start": 26,
+          "end": 73,
+          "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba"
+        }
+      ],
+      "semantic_assessment": "Owning release shell uses umask077, fixed private RunnerTemp key paths and EXIT cleanup trap before invoking mint. Mint rejects invalid dedicated IDs, signs fixed RS256 JWT via openssl SHA256, POSTs only fixed HTTPS GitHub installation endpoint with no redirects/30s timeout, requires nonempty token, masks then appends GITHUB_OUTPUT.",
+      "limits": "Source protocol only, no actual key/RSA/TLS/API/token/permission result. Key lifecycle is composed workflow ownership (not a script-local write/delete). Output failure after mint does not revoke already-issued token, preserving explicit limit.",
+      "frozen_row_sha256": "c63c01f1f417098c27a71a1048d9485ee30e5644e1438a535f6a9da25501e9f3",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Composed shell-owned key handling plus fixed signing/HTTPS command construction only. No cryptographic result, OpenSSL/runtime identity, real token/API/TLS/filesystem permission result or publish authorization.",
+  "excluded_cells": [
+    {
+      "id": "C23:03",
+      "reason": "Verifier requires two named expected policies, required-rule subset and sole publisher bypass, but permits unrelated observed rulesets and extra rules. Frozen rejection of every extra policy/rule is stronger than actual code."
+    }
+  ]
+}

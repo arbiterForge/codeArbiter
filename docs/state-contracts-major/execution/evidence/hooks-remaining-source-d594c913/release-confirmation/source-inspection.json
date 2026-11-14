@@ -1,0 +1,122 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "release-confirmation",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_releaselib.py": {
+      "source_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "baseline_sha256": "4039900b3b8713f8052d7bd1a3fa174e0b357292c700d6b4ab5edfc65d4840d6",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/releasehash.py": {
+      "source_sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+      "baseline_sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:release-confirmation:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "start": 83,
+          "end": 152,
+          "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+        },
+        {
+          "path": "core/pysrc/releasehash.py",
+          "start": 171,
+          "end": 199,
+          "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+        }
+      ],
+      "conformance": "Parser-selected ordered pre-tag/scalar command inputs use versioned length-prefixed SHA256; no-commands distinct, unreadable marker never-confirmed, equality confirmed otherwise changed; no age gate.",
+      "machine_id": "hooks:release-confirmation",
+      "baseline_clause_sha256": "65e23a1f9990c9fed4f0a7af46ed5e3c05d00015c99447685a0d7a814fc631d6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "symbol": "module",
+          "lines": "1-256"
+        }
+      ]
+    },
+    {
+      "id": "hooks:release-confirmation:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "start": 121,
+          "end": 168,
+          "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+        },
+        {
+          "path": "core/pysrc/releasehash.py",
+          "start": 225,
+          "end": 230,
+          "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+        }
+      ],
+      "conformance": "Target-specific sanitized stem plus raw-name digest marker receives current digest; direct helper writes do not observe human reading.",
+      "machine_id": "hooks:release-confirmation",
+      "baseline_clause_sha256": "b24d922464a60503bdbc973600ac87fbb67a7fd015fb3b0e3c8d8aff389ecea5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "symbol": "module",
+          "lines": "1-256"
+        }
+      ]
+    },
+    {
+      "id": "hooks:release-confirmation:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "start": 202,
+          "end": 252,
+          "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614"
+        }
+      ],
+      "conformance": "Usage64, unknown target65, parser error exit delegated; confirmed/no-commands0, changed1, never-confirmed2; marker writer is direct non-atomic open.",
+      "machine_id": "hooks:release-confirmation",
+      "baseline_clause_sha256": "79165fbacf679572b429e9dda3f5011f12868894db0c150bfed1a6d483bcbee7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/releasehash.py",
+          "symbol": "module",
+          "lines": "1-256"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:release-confirmation",
+      "constituents": [
+        "hooks:release-confirmation:01",
+        "hooks:release-confirmation:02",
+        "hooks:release-confirmation:03"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "debug-handoff",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_debughandofflib.py": {
+      "source_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+      "baseline_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/debug-handoff.py": {
+      "source_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+      "baseline_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:debug-handoff:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 36,
+          "end": 107,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 132,
+          "end": 203,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 231,
+          "end": 323,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 432,
+          "end": 513,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 62,
+          "end": 81,
+          "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9"
+        }
+      ],
+      "conformance": "Bounded UTF8<=65536/depth16/duplicate-free JSON rejects invalid numeric primitives and closed-shape/reference failures. CLI returns exit2 with bounded sanitized path/code diagnostics, never raw packet text.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:debug-handoff",
+      "baseline_clause_sha256": "369cd9ec8413ff2ffda8cd6feec8bdf25275c619361666cb25a6c3eb26b95f66",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "module",
+          "lines": "1-767"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "module",
+          "lines": "1-85"
+        }
+      ]
+    },
+    {
+      "id": "hooks:debug-handoff:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 562,
+          "end": 767,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 550,
+          "end": 559,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 62,
+          "end": 79,
+          "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9"
+        }
+      ],
+      "conformance": "Internal disposition/cause/support/reproduction/regression-reference and existing-failed-check relationships are checked. Valid result exits0; semantic errors exit2 with16 retained diagnostics and truncation flag. Request intent is input data, not repair authority.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:debug-handoff",
+      "baseline_clause_sha256": "5d6e2909a892ca0e9170493acedde12fa8e62a597ee56fb3f2f228084ecc2b19",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "module",
+          "lines": "1-767"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "module",
+          "lines": "1-85"
+        }
+      ]
+    },
+    {
+      "id": "hooks:debug-handoff:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 26,
+          "end": 58,
+          "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 62,
+          "end": 81,
+          "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9"
+        }
+      ],
+      "conformance": "Operational input/write/internal failures use exit3 when output can be emitted; invalid packet remains distinct exit2.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:debug-handoff",
+      "baseline_clause_sha256": "946205da1b589365ad4c4afc61a903b5300d496badbbf0782e173fe415a92805",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "module",
+          "lines": "1-767"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "module",
+          "lines": "1-85"
+        }
+      ]
+    },
+    {
+      "id": "hooks:debug-handoff:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 545,
+          "end": 559,
+          "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 62,
+          "end": 81,
+          "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9"
+        }
+      ],
+      "conformance": "Stateless pure validation recomputes from supplied packet, without rejection memory/source reads/check execution. It cannot prove causal truth/current authorization or enforce a prose one-shot rule.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:debug-handoff",
+      "baseline_clause_sha256": "9b70338af5d0954661db54e602931f55e8064009ff1b8869cf1b33ac16f02bd7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "module",
+          "lines": "1-767"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "module",
+          "lines": "1-85"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:debug-handoff",
+      "constituents": [
+        "hooks:debug-handoff:01",
+        "hooks:debug-handoff:02",
+        "hooks:debug-handoff:03",
+        "hooks:debug-handoff:04"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

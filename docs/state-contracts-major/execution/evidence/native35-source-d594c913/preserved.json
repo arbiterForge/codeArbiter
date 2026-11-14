@@ -1,0 +1,1320 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/native_program; current owner guard/effect/retry source inspection"
+  },
+  "inputs": {
+    "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+    "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+    "core/artifacts/internal/operations/capture_export.go": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+    "core/artifacts/internal/operations/context_authority.go": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+    "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+    "core/artifacts/internal/operations/evidence_context.go": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+    "core/artifacts/internal/operations/lifecycle.go": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+    "core/artifacts/internal/operations/migration.go": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+    "core/artifacts/internal/operations/mutations.go": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+    "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+    "core/artifacts/internal/operations/sprint.go": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+    "core/artifacts/internal/operations/work.go": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+    "core/artifacts/internal/operations/work_coordination.go": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+    "core/artifacts/internal/operations/work_effects.go": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+    "core/artifacts/internal/operations/work_project.go": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+    "core/artifacts/internal/operations/work_transition_map.go": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+    "core/artifacts/internal/read/read.go": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+    "core/artifacts/internal/render/render.go": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f",
+    "core/artifacts/internal/repository/catalog.go": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+    "core/artifacts/internal/schema/knowledge.schema.json": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+    "core/artifacts/internal/store/infrastructure.go": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+    "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+    "core/artifacts/internal/validate/knowledge.go": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+    "core/artifacts/internal/validate/validate.go": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+  },
+  "disposition_ids": [
+    "disposition:transitions:N04:04",
+    "disposition:transitions:N05:04",
+    "disposition:transitions:N15:01",
+    "disposition:transitions:N15:02",
+    "disposition:transitions:N15:03",
+    "disposition:transitions:N15:04",
+    "disposition:transitions:N20:01",
+    "disposition:transitions:N20:02",
+    "disposition:transitions:N25:01",
+    "disposition:transitions:N25:04",
+    "disposition:transitions:N26:01",
+    "disposition:transitions:N26:02",
+    "disposition:transitions:N26:03",
+    "disposition:transitions:N29:01",
+    "disposition:transitions:N29:02",
+    "disposition:transitions:N29:03",
+    "disposition:transitions:N29:04",
+    "disposition:transitions:N29:05",
+    "disposition:transitions:N29:06",
+    "disposition:transitions:N32:01",
+    "disposition:transitions:N32:02",
+    "disposition:transitions:N32:03",
+    "disposition:transitions:N32:04",
+    "disposition:transitions:N32:05",
+    "disposition:transitions:N33:01",
+    "disposition:transitions:N33:02",
+    "disposition:transitions:N33:03",
+    "disposition:transitions:N33:04",
+    "disposition:transitions:N33:05",
+    "disposition:transitions:N33:06",
+    "disposition:transitions:N33:07",
+    "disposition:transitions:N33:08",
+    "disposition:transitions:N33:09",
+    "disposition:transitions:N33:10",
+    "disposition:transitions:N33:11",
+    "disposition:machines:N15",
+    "disposition:machines:N26",
+    "disposition:machines:N32",
+    "disposition:machines:N33"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/raw/source-inspection.json",
+      "sha256": "8f3686436e3f2398719c650b88acdc1895a705e59624eb720bbadbe998a1b50c"
+    }
+  ],
+  "scope": "SOURCE PRESERVED: exactly35baseline transition source contracts plus4machines whose complete frozen edge sets are covered. No execution qualification.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:N04:04",
+      "row_id": "N04:04",
+      "machine_id": "N04",
+      "frozen_contract_sha256": "3693e03afb5a684022cf4991cb2c15e1d6f207414c0845862568ecb2fffb36e9",
+      "selection_contract_sha256": "3693e03afb5a684022cf4991cb2c15e1d6f207414c0845862568ecb2fffb36e9",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/repository/catalog.go",
+          "start": 55,
+          "end": 178,
+          "file_sha256": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+          "selected_span_sha256": "75654ffdbf9b994caf3b7608aea28e87399c1ff9d596f829b5ad87b0ecbd1523"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "start": 182,
+          "end": 267,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "selected_span_sha256": "f2bfeaf3648761922d9424cecacd360f932333031a5a35b5ccbe8f8cfd4ddc93"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 258,
+          "end": 334,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ce7e1294c6b175b453dce7c461bb090061b86d499a43933bf49819e7c0dfce23"
+        }
+      ],
+      "guard_assessment": "scanContracts skips an optional inactive codec, validates supported representation/path and strict directory entries, rejects duplicate IDs/kind mismatch and HTML+Markdown slug ambiguity.",
+      "effect_assessment": "Catalog construction returns only the inspected entries; spec/plan scan errors propagate. Selected work dispatch precedes catalog scan.",
+      "retry_assessment": "Malformed strict artifacts may veto catalog-based operations; selected direct reads/progress avoid that scan, while explicit attachment still validates a catalog binding.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N05:04",
+      "row_id": "N05:04",
+      "machine_id": "N05",
+      "frozen_contract_sha256": "aa5358c5264595b99e4927454930a7614f033ace0d16c978d5d212efd9104853",
+      "selection_contract_sha256": "aa5358c5264595b99e4927454930a7614f033ace0d16c978d5d212efd9104853",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "start": 336,
+          "end": 374,
+          "file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+          "selected_span_sha256": "284d0900d1a516028bd292b272eceffd96e91541a5f5e6db701ebf9480602dff"
+        },
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "start": 255,
+          "end": 298,
+          "file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+          "selected_span_sha256": "e3046bc027c6f602657a52b628f94d6ded20313915dd588778138bb7531154b4"
+        }
+      ],
+      "guard_assessment": "Approved requires approved governance, matching artifact/normative/hash and a Load-validated approval subject.",
+      "effect_assessment": "Status reports authority_verified and reason separately from stored governance; inspection does not rewrite progress.",
+      "retry_assessment": "Unavailable/stale approval candidates are skipped and absence yields AUTHORITY_UNVERIFIED; this is not automatic progress rollback.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N15:01",
+      "row_id": "N15:01",
+      "machine_id": "N15",
+      "frozen_contract_sha256": "e0af31fba4d6806abef9bc768c3d262c2c55faa75376fc5a26f9e6a488513e6c",
+      "selection_contract_sha256": "e0af31fba4d6806abef9bc768c3d262c2c55faa75376fc5a26f9e6a488513e6c",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/evidence_context.go",
+          "start": 16,
+          "end": 195,
+          "file_sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+          "selected_span_sha256": "3e1ab11358c3aa2c8d5dda55de2fb85e2453eb12aabfe6dc6f08c1b6c4b4d4ad"
+        },
+        {
+          "path": "core/artifacts/internal/operations/evidence_context.go",
+          "start": 197,
+          "end": 245,
+          "file_sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+          "selected_span_sha256": "5343f325e523aaeb650382f1b5b59b0a4c34cc7a9b96af77afff790e7f8ec291"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "start": 65,
+          "end": 135,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "selected_span_sha256": "de40ee0ec09c6f3f4f3b20beb49e82bb33316a9277aaff72f0a486ad53a1c0c3"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "start": 14,
+          "end": 45,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "selected_span_sha256": "1a9dc3ab9434efc45eba704e7fe2ce1fd1152a796ab46bf8cb483538d43b6ded"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "start": 148,
+          "end": 215,
+          "file_sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+          "selected_span_sha256": "5fd47d0fc049cd32b8624d44a252aa7dedac4bd6684f065a41684f0f3c524371"
+        }
+      ],
+      "guard_assessment": "Activity-specific subject/kind/readiness guards bind prompt digest, task/checkpoint or exact draft pair; review completion selection must match original inputs.",
+      "effect_assessment": "Content-addressed evidence-context bytes are created through PutDerived; pair projection is cloned and not committed as approval.",
+      "retry_assessment": "Wrong subject, stale completion context, failed guard or invalid context schema returns an error before a usable context reference.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N15:02",
+      "row_id": "N15:02",
+      "machine_id": "N15",
+      "frozen_contract_sha256": "0d3a3853bee823eec2698cbf6936047c898637073e3d7e3f01562c8d137b2eef",
+      "selection_contract_sha256": "0d3a3853bee823eec2698cbf6936047c898637073e3d7e3f01562c8d137b2eef",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/capture_export.go",
+          "start": 26,
+          "end": 142,
+          "file_sha256": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+          "selected_span_sha256": "76fb1d777862cc31ab1fafe4f01544b63f61ecaed78763b05a86a448bb8d167b"
+        },
+        {
+          "path": "core/artifacts/internal/operations/context_authority.go",
+          "start": 220,
+          "end": 257,
+          "file_sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+          "selected_span_sha256": "2862119f1e850755b41174da03182fe26b3d7bcb5b36d36286ae6ed37942b6d4"
+        },
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "start": 338,
+          "end": 449,
+          "file_sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+          "selected_span_sha256": "857a7e7a8c5b7e40bce1d763caca5d4f6e0270c0d0f096b4c6e07ed404c92c40"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "start": 148,
+          "end": 215,
+          "file_sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+          "selected_span_sha256": "5fd47d0fc049cd32b8624d44a252aa7dedac4bd6684f065a41684f0f3c524371"
+        }
+      ],
+      "guard_assessment": "Capture loads the policy source, requires current observed format and exact active subject/context, rejects paired/SMARTS bypass routes, and dispatches profile-specific link validation.",
+      "effect_assessment": "storeReceipt creates or compares event then receipt at content hashes; result explicitly says artifact_approval_changed=false.",
+      "retry_assessment": "Identical retained event bytes permit missing receipt completion; mismatches/I/O errors refuse, and legacy raw capture cannot mint authority.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N15:03",
+      "row_id": "N15:03",
+      "machine_id": "N15",
+      "frozen_contract_sha256": "3deafb880976b05c326242c90006f871ed47e48871bfda5aa610ea423c32338d",
+      "selection_contract_sha256": "3deafb880976b05c326242c90006f871ed47e48871bfda5aa610ea423c32338d",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "start": 136,
+          "end": 253,
+          "file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+          "selected_span_sha256": "49c30825024cbd13f15ea8826d0128e43bc44e1cbe3a05a9defc5332b97be2c4"
+        },
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "start": 338,
+          "end": 449,
+          "file_sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+          "selected_span_sha256": "857a7e7a8c5b7e40bce1d763caca5d4f6e0270c0d0f096b4c6e07ed404c92c40"
+        }
+      ],
+      "guard_assessment": "Inspect hash-checks receipt/event, current observation/context links and source equality; legacy receipt schema is selected only for inventory.",
+      "effect_assessment": "Returns a retained chain object without relabeling historical v0.1 receipts as current.",
+      "retry_assessment": "Missing or changed retained objects and schema/link disagreement reject; caller-supplied readers cannot install a trusted whole-chain cache.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N15:04",
+      "row_id": "N15:04",
+      "machine_id": "N15",
+      "frozen_contract_sha256": "49d63e9c417647715512213b739619938e89bac2754d93ee546289863673b5a6",
+      "selection_contract_sha256": "49d63e9c417647715512213b739619938e89bac2754d93ee546289863673b5a6",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "start": 255,
+          "end": 298,
+          "file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+          "selected_span_sha256": "e3046bc027c6f602657a52b628f94d6ded20313915dd588778138bb7531154b4"
+        },
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "start": 336,
+          "end": 374,
+          "file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+          "selected_span_sha256": "284d0900d1a516028bd292b272eceffd96e91541a5f5e6db701ebf9480602dff"
+        },
+        {
+          "path": "core/artifacts/internal/observation/contract.go",
+          "start": 338,
+          "end": 449,
+          "file_sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+          "selected_span_sha256": "857a7e7a8c5b7e40bce1d763caca5d4f6e0270c0d0f096b4c6e07ed404c92c40"
+        }
+      ],
+      "guard_assessment": "Load builds on Inspect and rejects legacy receipt/event/observation formats; SMARTS additionally needs its intact paired user grant and exact protected scope.",
+      "effect_assessment": "Current authority derives from verified chain and Subject identities rather than actor/source prose alone.",
+      "retry_assessment": "Stale subject or missing/corrupt grant stays rejected; cooperative attestation is not host permission or independent human authentication.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N20:01",
+      "row_id": "N20:01",
+      "machine_id": "N20",
+      "frozen_contract_sha256": "1a23bae24228cdf0655d8a3937aeb996f796fa9f424c54077a9099466dbcd2a9",
+      "selection_contract_sha256": "1a23bae24228cdf0655d8a3937aeb996f796fa9f424c54077a9099466dbcd2a9",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "start": 320,
+          "end": 381,
+          "file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+          "selected_span_sha256": "7bae8c3292b5bddd06ebee74a2030bbbb1acea5a22a5cedff8f867b526b5a671"
+        },
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "start": 27,
+          "end": 195,
+          "file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+          "selected_span_sha256": "c03a35072ceb5bc25206c8c1c1b0a3a487ec1d1872dd6bdec4b86b61ee1fa3a5"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "start": 148,
+          "end": 215,
+          "file_sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+          "selected_span_sha256": "5fd47d0fc049cd32b8624d44a252aa7dedac4bd6684f065a41684f0f3c524371"
+        }
+      ],
+      "guard_assessment": "Page enforces4096..65536 budget and exact selection/purpose/artifact/symbol/budget on continuation; items are whole records.",
+      "effect_assessment": "Returns complete records plus an immutable page token or completed context ticket, so contextual reads write infrastructure.",
+      "retry_assessment": "No fitting record yields RECORD_TOO_LARGE; malformed cursor/offset or token failure returns an error, without partial-record slicing.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N20:02",
+      "row_id": "N20:02",
+      "machine_id": "N20",
+      "frozen_contract_sha256": "17d2b4263e26362a21570c3661d61d7fa4fde919ded24ffadd8fb9b71e283356",
+      "selection_contract_sha256": "17d2b4263e26362a21570c3661d61d7fa4fde919ded24ffadd8fb9b71e283356",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "start": 320,
+          "end": 381,
+          "file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+          "selected_span_sha256": "7bae8c3292b5bddd06ebee74a2030bbbb1acea5a22a5cedff8f867b526b5a671"
+        },
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "start": 27,
+          "end": 195,
+          "file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+          "selected_span_sha256": "c03a35072ceb5bc25206c8c1c1b0a3a487ec1d1872dd6bdec4b86b61ee1fa3a5"
+        }
+      ],
+      "guard_assessment": "Context recomputes document/authority vector and record manifest before Page compares continuation hashes.",
+      "effect_assessment": "A changed contributing vector or manifest produces STALE_CURSOR rather than continuation under an old identity.",
+      "retry_assessment": "Caller must restart a coherent read; emitted tickets represent delivery only and grant no comprehension, permission or approval.",
+      "dependency_limits": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed."
+    },
+    {
+      "cell": "disposition:transitions:N25:01",
+      "row_id": "N25:01",
+      "machine_id": "N25",
+      "frozen_contract_sha256": "b0df0bcb01876b3f43b5b0860a8d407c607a6775244addd1a36cc1955778354e",
+      "selection_contract_sha256": "b0df0bcb01876b3f43b5b0860a8d407c607a6775244addd1a36cc1955778354e",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "start": 13,
+          "end": 77,
+          "file_sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+          "selected_span_sha256": "591931620ccce9e18fd5fe2f4f7c9be39f27150cf77c9892b2c41bc72c482d21"
+        },
+        {
+          "path": "core/artifacts/internal/validate/validate.go",
+          "start": 97,
+          "end": 121,
+          "file_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+          "selected_span_sha256": "4a409935d796bb5d26bc4ca7c0acce5a40ceef64e8d5d32d1c52573b98c84011"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "start": 279,
+          "end": 297,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "selected_span_sha256": "93618b6bc73d95e0635c372def6571707f6d8861b4d4f85697a12ac7e9d99fd6"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "start": 50,
+          "end": 62,
+          "file_sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f",
+          "selected_span_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "start": 396,
+          "end": 410,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "selected_span_sha256": "b1905540b4f4ec9b0eaf3454fc05b665436a59d40d78d16c78603806ebcf6171"
+        }
+      ],
+      "guard_assessment": "source-observed basis requires nonempty source_refs, and Structural resolves each source reference to an active sources record.",
+      "effect_assessment": "record.update changes the selected record fields then render.Prepare revalidates structure; provenance remains caller classification.",
+      "retry_assessment": "Absent/retired source references or invalid shapes fail validation, without promoting a claim into authenticated truth.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N25:04",
+      "row_id": "N25:04",
+      "machine_id": "N25",
+      "frozen_contract_sha256": "5e2d0bdbfc34f93cf2d1d868da91e71e50b660d42fa143a2f0444ee5022228e8",
+      "selection_contract_sha256": "5e2d0bdbfc34f93cf2d1d868da91e71e50b660d42fa143a2f0444ee5022228e8",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "start": 13,
+          "end": 77,
+          "file_sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+          "selected_span_sha256": "591931620ccce9e18fd5fe2f4f7c9be39f27150cf77c9892b2c41bc72c482d21"
+        },
+        {
+          "path": "core/artifacts/internal/schema/knowledge.schema.json",
+          "start": 207,
+          "end": 253,
+          "file_sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+          "selected_span_sha256": "d8db438e55d7a0bafafe21a78c72136f26984299f92ce2ca231476bfc797b128"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "start": 279,
+          "end": 297,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "selected_span_sha256": "93618b6bc73d95e0635c372def6571707f6d8861b4d4f85697a12ac7e9d99fd6"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "start": 50,
+          "end": 62,
+          "file_sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f",
+          "selected_span_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "start": 396,
+          "end": 410,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "selected_span_sha256": "b1905540b4f4ec9b0eaf3454fc05b665436a59d40d78d16c78603806ebcf6171"
+        }
+      ],
+      "guard_assessment": "Command details belong only to command records; cwd and closed argv/purpose/run_state schema remain required.",
+      "effect_assessment": "run_state permits unrun/reported-pass/reported-fail as stored knowledge fields; this update/render path executes no stored command or receipt producer.",
+      "retry_assessment": "Invalid command shapes reject; reported knowledge state remains separate from task checks and strict verification.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N26:01",
+      "row_id": "N26:01",
+      "machine_id": "N26",
+      "frozen_contract_sha256": "216e801052fb2747b38c75f9393625630ed637e64a67145dd7e51aba8d135748",
+      "selection_contract_sha256": "216e801052fb2747b38c75f9393625630ed637e64a67145dd7e51aba8d135748",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/migration.go",
+          "start": 26,
+          "end": 145,
+          "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+          "selected_span_sha256": "34da53f4e293728ce260a63f8f5deb2daa1e38adc1cc3de0f74022a5e1b9e4e2"
+        }
+      ],
+      "guard_assessment": "Both typed spec+plan and same slug are required; canonical bounded UTF8 sources need active mapping targets, complete disjoint line coverage and unused provenance IDs.",
+      "effect_assessment": "Preview returns source/target/normative/model hashes and semantic_mapping_verified=false with all targets drafts.",
+      "retry_assessment": "Missing/overlapping/out-of-range mappings, reserved IDs, bad pair binding or source reads reject; mapping meaning and old approval are not automatically endorsed.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N26:02",
+      "row_id": "N26:02",
+      "machine_id": "N26",
+      "frozen_contract_sha256": "73ec8f385f746e16cf98438c87934d07844f6f360bec86400478269b030a0daf",
+      "selection_contract_sha256": "73ec8f385f746e16cf98438c87934d07844f6f360bec86400478269b030a0daf",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/migration.go",
+          "start": 146,
+          "end": 184,
+          "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+          "selected_span_sha256": "70f5488da1cd560bda51e08a68165565935a5ec65fc38dde5b5eebe485e7c563"
+        },
+        {
+          "path": "core/artifacts/internal/operations/migration.go",
+          "start": 26,
+          "end": 145,
+          "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+          "selected_span_sha256": "34da53f4e293728ce260a63f8f5deb2daa1e38adc1cc3de0f74022a5e1b9e4e2"
+        },
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "start": 258,
+          "end": 409,
+          "file_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+          "selected_span_sha256": "25811cd096838ebb1dbfbf0681f46b000558412f2d7cf15357b73d24ff551a8c"
+        }
+      ],
+      "guard_assessment": "Apply reconstructs preview and requires identical preview_sha256 plus the closed review request before preparing edits.",
+      "effect_assessment": "One Commit writes both draft HTML targets and removes exact Markdown before-images, retaining mapping note and original bytes.",
+      "retry_assessment": "Changed source/mapping rejects STALE_PREVIEW; uncertain prepared transactions require recovery, and old approvals are not transferred.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N26:03",
+      "row_id": "N26:03",
+      "machine_id": "N26",
+      "frozen_contract_sha256": "ec9e0a68ab98500ffec672a16f87b01f4c76ed84f62e168e92bdbb8ad1aa8381",
+      "selection_contract_sha256": "ec9e0a68ab98500ffec672a16f87b01f4c76ed84f62e168e92bdbb8ad1aa8381",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "start": 565,
+          "end": 616,
+          "file_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+          "selected_span_sha256": "f0293c48e500955482ddbe1458e9198ea52bf50c3358a0f3a6e6ee7dc6bcb468"
+        },
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "start": 258,
+          "end": 409,
+          "file_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+          "selected_span_sha256": "25811cd096838ebb1dbfbf0681f46b000558412f2d7cf15357b73d24ff551a8c"
+        }
+      ],
+      "guard_assessment": "Rollback requires a committed cutover journal with paired canonical Markdown removal/HTML creation shapes, exact current after hashes and verified backups.",
+      "effect_assessment": "A new Commit restores original Markdown and deletes introduced HTML, preserving original cutover journal history.",
+      "retry_assessment": "Any intervening candidate bytes or corrupt backup refuses recovery; pending/uncertain cutover cannot be relabeled a completed rollback.",
+      "dependency_limits": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:01",
+      "row_id": "N29:01",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "f733182dfbd6dce9f8a3a2b5dd7da3659ec76084e89dc40b66ee489391ba26f7",
+      "selection_contract_sha256": "f733182dfbd6dce9f8a3a2b5dd7da3659ec76084e89dc40b66ee489391ba26f7",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 788,
+          "end": 792,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "33838235df57f4390886a59e25781b5ea00b24dacb77f6b542c60c6072708aa0"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 258,
+          "end": 334,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ce7e1294c6b175b453dce7c461bb090061b86d499a43933bf49819e7c0dfce23"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 150,
+          "end": 223,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2"
+        }
+      ],
+      "guard_assessment": "Selected native work identity/project and exact revision/model CAS precede a queued-only start.",
+      "effect_assessment": "Sets active and UTC start date; start mapping runs on the clone before the same local commit.",
+      "retry_assessment": "A nonqueued source state or stale identity rejects; this path does not send a provider mutation.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:02",
+      "row_id": "N29:02",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "5bc5538e89d99b52462410c4e3d7a4e7c81c755a58271d3dabd07531d0fd0135",
+      "selection_contract_sha256": "5bc5538e89d99b52462410c4e3d7a4e7c81c755a58271d3dabd07531d0fd0135",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 793,
+          "end": 797,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "997e8ca9f6aea69c1ea8dea804f2fefb49bfa7066f0fac8b895bc43d1ae3f936"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 150,
+          "end": 223,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2"
+        }
+      ],
+      "guard_assessment": "Complete accepts only queued or active selected work under exact CAS.",
+      "effect_assessment": "Sets complete/date and stages configured mapped desire atomically; it does not assign check_status or plan acceptance.",
+      "retry_assessment": "Other source states reject; recorded completion is not test, PR merge or release delivery evidence.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:03",
+      "row_id": "N29:03",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "992eafcc096e40eb2a7a1f941533860e55fa4fac7de961330c9c120d47e6ab80",
+      "selection_contract_sha256": "992eafcc096e40eb2a7a1f941533860e55fa4fac7de961330c9c120d47e6ab80",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 798,
+          "end": 805,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "d0c8873825791f5e25a5db15aeb3e927874604d64152688fa77b64d236432ea3"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 150,
+          "end": 223,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2"
+        }
+      ],
+      "guard_assessment": "Only completed work may reopen, with native owner and exact CAS.",
+      "effect_assessment": "Sets active, clears completed_at and fills missing started_at; mapped reopen uses the same clone transaction.",
+      "retry_assessment": "All other lifecycle states refuse; no external send is performed by reopening.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:04",
+      "row_id": "N29:04",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "6ecc4e0c09d7aa3f7ae1b12f92248f26fd25a01cb1b1682c3b50011e664a6cf0",
+      "selection_contract_sha256": "6ecc4e0c09d7aa3f7ae1b12f92248f26fd25a01cb1b1682c3b50011e664a6cf0",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 806,
+          "end": 810,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "66b7bbca2ef553d172c0f6cffc671366ae2c3f777857777ecdeefc917e405123"
+        }
+      ],
+      "guard_assessment": "Archive rejects already archived work and retains selected-work CAS.",
+      "effect_assessment": "Only local execution state becomes archived; mapping is called only for start/complete/reopen.",
+      "retry_assessment": "Start, complete and reopen exclude archived state; no unarchive transition or mapped archive send is created.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:05",
+      "row_id": "N29:05",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "650917cac8f0afa1fe699789f0c2ce895b3a73514320ef4a3cfa7534d26bb784",
+      "selection_contract_sha256": "650917cac8f0afa1fe699789f0c2ce895b3a73514320ef4a3cfa7534d26bb784",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 751,
+          "end": 791,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "e4806c2fff2bf9fd24555cfccddd6030b87423d4820f2f5f90789e8dd22661fb"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 258,
+          "end": 334,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ce7e1294c6b175b453dce7c461bb090061b86d499a43933bf49819e7c0dfce23"
+        }
+      ],
+      "guard_assessment": "Rename requires title; attach validates selected spec/plan correspondence; set-cycle requires explicit value/null and render validates final fields.",
+      "effect_assessment": "Descriptive/cycle references change while execution lifecycle/check fields remain untouched.",
+      "retry_assessment": "Missing attachments, broken catalog binding, invalid fields or stale selected-work CAS refuse.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N29:06",
+      "row_id": "N29:06",
+      "machine_id": "N29",
+      "frozen_contract_sha256": "d0ce39a40f160be86f49cbe6d4a999b42062e9df52956c2e270a2b8b8d5ec392",
+      "selection_contract_sha256": "d0ce39a40f160be86f49cbe6d4a999b42062e9df52956c2e270a2b8b8d5ec392",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 811,
+          "end": 828,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "b2cc972d5c50b1ea97372ecad176d709dc87ffb6f57763e205c2507d7fa29ecc"
+        }
+      ],
+      "guard_assessment": "Observe-delivery validates repository pattern, positive PR number, closed state enum and exact UTC timestamp; URL is derived from repository/number.",
+      "effect_assessment": "Stores delivery_observation independently without changing work state or check_status.",
+      "retry_assessment": "Malformed identity/time/state rejects, and even observed merged state cannot auto-complete work or pass checks.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N32:01",
+      "row_id": "N32:01",
+      "machine_id": "N32",
+      "frozen_contract_sha256": "826bd0adf0901324b59f5d476036880f1a077cf5b16f1e8122e8bea70c5ad846",
+      "selection_contract_sha256": "826bd0adf0901324b59f5d476036880f1a077cf5b16f1e8122e8bea70c5ad846",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 111,
+          "end": 142,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "095c15b3bd6da4d4703031d72bfd0bd68d4afe0cc401de43254d155a1fa6b730"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 143,
+          "end": 151,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "9b104b0f21368658ae931ef6ff2f7910dd75b11e821c86b5b3e9c675726f49e3"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 24,
+          "end": 55,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "e8904b9c5b2efd51496a58c680dc626eca788e9cbfb0290158b6bf5e08ccf6c9"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 255,
+          "end": 271,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7"
+        }
+      ],
+      "guard_assessment": "Current provider/project generation, verified synchronized issue and empty existing Project effect are required.",
+      "effect_assessment": "Stages local pending add_item with exact issue and binding generation; no network client is called.",
+      "retry_assessment": "Existing Project effect or unsynchronized/unbound issue refuses, preserving the prior intent/binding.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N32:02",
+      "row_id": "N32:02",
+      "machine_id": "N32",
+      "frozen_contract_sha256": "bae84ececb78e8f983d8a8d513f98ecdc4d83a35f6292baae7aa32694c5bed53",
+      "selection_contract_sha256": "bae84ececb78e8f983d8a8d513f98ecdc4d83a35f6292baae7aa32694c5bed53",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 111,
+          "end": 142,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "095c15b3bd6da4d4703031d72bfd0bd68d4afe0cc401de43254d155a1fa6b730"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 152,
+          "end": 175,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "2ad8a1656da7c8191d3a0de3c81a4e2d7fc03b5d89c07886f364fc2a74325c9e"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "start": 316,
+          "end": 354,
+          "file_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+          "selected_span_sha256": "082e5bf0afc23580fc53ed649e9d1b20fd47e6a3695428c675a4aae26e979a07"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 255,
+          "end": 271,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7"
+        }
+      ],
+      "guard_assessment": "Requires same verified item/issue/generation, valid field/desired option, eligible synchronized/conflict or unclaimed mapped pending state, and explicit expected option/null.",
+      "effect_assessment": "Stages set_single_select with frozen expected baseline; manual staging removes mapping ownership, records superseded intent and clears observed option.",
+      "retry_assessment": "Unknown attempted effect or invalid item/config/field fails before a new local commit.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N32:03",
+      "row_id": "N32:03",
+      "machine_id": "N32",
+      "frozen_contract_sha256": "f8723173689bc65eb835e150270faf57fa27cec0e2c08bf62aca0800093453b1",
+      "selection_contract_sha256": "f8723173689bc65eb835e150270faf57fa27cec0e2c08bf62aca0800093453b1",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 176,
+          "end": 208,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a30f6146d39abeda453df7a3224c83e4b42cf0ca8a78ce993bf94ddea64f41f6"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 16,
+          "end": 53,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "3b7d857961313232955374fc967c704ad4b2d54e2a7f97e30b31f6025d0e3f4a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "start": 316,
+          "end": 354,
+          "file_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+          "selected_span_sha256": "082e5bf0afc23580fc53ed649e9d1b20fd47e6a3695428c675a4aae26e979a07"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 255,
+          "end": 271,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7"
+        }
+      ],
+      "guard_assessment": "Pending/current generation and attempt ID are required; mapped claims check exact transition/intent and configured timing/merge fields.",
+      "effect_assessment": "Claim sets outcome_unknown and attempt identity durably, with mapped coordination waiting_reconciliation.",
+      "retry_assessment": "Duplicate unknown claim returns EFFECT_UNKNOWN; manual claims bypass mapped timing policy rather than adopting it implicitly.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N32:04",
+      "row_id": "N32:04",
+      "machine_id": "N32",
+      "frozen_contract_sha256": "3b6f33c82a1738a21c830073399c73a1a1c3cd0744096ed2bbca0754aa336716",
+      "selection_contract_sha256": "3b6f33c82a1738a21c830073399c73a1a1c3cd0744096ed2bbca0754aa336716",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 209,
+          "end": 232,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "1f0f05cf6c110eabeba1e73a8ef7d0228b36be36f3773a32cbfb76646f2819de"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 255,
+          "end": 271,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7"
+        }
+      ],
+      "guard_assessment": "Record must match pre-send outcome_unknown attempt, current issue/generation and valid item; set-field readback must equal selected item and desired option.",
+      "effect_assessment": "Stores synchronized item/field observation and updates only matching mapped coordination.",
+      "retry_assessment": "Wrong attempt, item or observed option rejects; requesting a mutation alone never constitutes readback success.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N32:05",
+      "row_id": "N32:05",
+      "machine_id": "N32",
+      "frozen_contract_sha256": "751bfbbf6386926b7e65436b1576cfa637c525910a2a30f6bda1b3a430715b4c",
+      "selection_contract_sha256": "751bfbbf6386926b7e65436b1576cfa637c525910a2a30f6bda1b3a430715b4c",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 233,
+          "end": 254,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "dfdc73ec5f149a5b2645608e715a3a1dc938111e962fa3492ecb3068eb342074"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 255,
+          "end": 271,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7"
+        }
+      ],
+      "guard_assessment": "Conflict is limited to pending/unknown set-field, with the exact attempt if sent and a value different from both expected and desired.",
+      "effect_assessment": "Stores conflict/observed option and moves matching mapped coordination to waiting_manual.",
+      "retry_assessment": "Equal expected/desired values or invalid send identity refuse; this handler launches no compensating overwrite.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:01",
+      "row_id": "N33:01",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "4b6e10f299b265d45a6d40c5bd38625276ee6688375a5fa1208c1d4ac5fcdcfb",
+      "selection_contract_sha256": "4b6e10f299b265d45a6d40c5bd38625276ee6688375a5fa1208c1d4ac5fcdcfb",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 150,
+          "end": 223,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_transition_map.go",
+          "start": 39,
+          "end": 80,
+          "file_sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+          "selected_span_sha256": "2c3175c4f7c4be8b8506bba0d1d27f67d100876b9602b902f7050cd77c2b0867"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work.go",
+          "start": 731,
+          "end": 850,
+          "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+          "selected_span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+        }
+      ],
+      "guard_assessment": "An enabled finite transition map freezes its own generation and issue/project generations for start/complete/reopen.",
+      "effect_assessment": "Deterministic transition ID includes project/work/operation/prior revision; desired targets, superseded ID and eligible effects are committed together.",
+      "retry_assessment": "Invalid optional map records unavailable states; unexpected read/I/O error aborts the local transition before Commit.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:02",
+      "row_id": "N33:02",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "46c0042b6e8e0102e69e1fd36a73720fdbba1d3d5bbb0d96d7bcf171b6368131",
+      "selection_contract_sha256": "46c0042b6e8e0102e69e1fd36a73720fdbba1d3d5bbb0d96d7bcf171b6368131",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 182,
+          "end": 197,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "250404113ac68911c58d79d87818d6bac96a660ce97128946e7df7a3ae2349d7"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 16,
+          "end": 53,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "3b7d857961313232955374fc967c704ad4b2d54e2a7f97e30b31f6025d0e3f4a"
+        }
+      ],
+      "guard_assessment": "Disabled mapping preserves saved desires and causes mapped claim checks to return EFFECT_PAUSED.",
+      "effect_assessment": "New local coordination records paused target states and superseded transition while existing effect records remain in place.",
+      "retry_assessment": "Pausing does not clear or cancel a previously claimed unknown effect and causes no automatic send.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:03",
+      "row_id": "N33:03",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "b74a36344c6054355829b8e8bdd37b68c35a3dd0e6ac55329482c5f7ea017e4f",
+      "selection_contract_sha256": "b74a36344c6054355829b8e8bdd37b68c35a3dd0e6ac55329482c5f7ea017e4f",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 227,
+          "end": 252,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "1db21e8c6ecb08a0a9951543458d47e64eb9c3c068ee8dbfbf1c4ea0664f3584"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 150,
+          "end": 223,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2"
+        }
+      ],
+      "guard_assessment": "Retirement requires unchanged mapping generation, exact prior transition+intent, pending state and nil attempt.",
+      "effect_assessment": "Only that unsent mapped intent returns to synchronized observed baseline, removing desired/mapping ownership fields.",
+      "retry_assessment": "Unknown, manual, foreign-transition or foreign-generation effects fail the guard and remain available for reconciliation.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:04",
+      "row_id": "N33:04",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "2ed70ef07fcda364da4c0b4c797aecb52a2de199709e076600b2d06d4ae30f67",
+      "selection_contract_sha256": "2ed70ef07fcda364da4c0b4c797aecb52a2de199709e076600b2d06d4ae30f67",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 264,
+          "end": 322,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "f89b97c09dc6b4391699fcc1d65366cd9ca60945faa44389aad6a1adb0d8f952"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_effects.go",
+          "start": 24,
+          "end": 51,
+          "file_sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+          "selected_span_sha256": "492665faea504a0dd0408dec2c4789b9e5f05ec12ea92b8df56c5f5cdd0f35f5"
+        }
+      ],
+      "guard_assessment": "stageMappedIssue rereads provider config and compares its generation to the frozen desire.",
+      "effect_assessment": "Unavailable/changed optional provider produces binding_changed, retaining desired outcome without remote retargeting.",
+      "retry_assessment": "Unexpected provider I/O errors propagate; no request is sent to a newly selected provider.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:05",
+      "row_id": "N33:05",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "1c28746c6a7c3db7bb3d8153c038c49582134b0ba2d3d404534d6bedcaf1e3e4",
+      "selection_contract_sha256": "1c28746c6a7c3db7bb3d8153c038c49582134b0ba2d3d404534d6bedcaf1e3e4",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 264,
+          "end": 322,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "f89b97c09dc6b4391699fcc1d65366cd9ca60945faa44389aad6a1adb0d8f952"
+        }
+      ],
+      "guard_assessment": "Missing verified issue binding yields waiting_binding and retains predecessor create intent when present.",
+      "effect_assessment": "Current unknown becomes waiting_reconciliation; manual pending/conflict becomes waiting_manual; stale mapped generation becomes binding_changed.",
+      "retry_assessment": "Each wait returns without replacing the uncertain/manual effect or inventing a bound issue.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:06",
+      "row_id": "N33:06",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "4976e305589cce2c3d5565fb75c7d57e7347c7be8666a3bdd2669301e345f396",
+      "selection_contract_sha256": "4976e305589cce2c3d5565fb75c7d57e7347c7be8666a3bdd2669301e345f396",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 264,
+          "end": 322,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "f89b97c09dc6b4391699fcc1d65366cd9ca60945faa44389aad6a1adb0d8f952"
+        }
+      ],
+      "guard_assessment": "A current synchronized bound issue with a known open/closed recorded state remains eligible even if desire equals the saved state.",
+      "effect_assessment": "Stages a new pending status_update with deterministic mapped intent and clears prior merge fields.",
+      "retry_assessment": "Saved equality is not treated as current provider success; adapter readback is still required after claim.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:07",
+      "row_id": "N33:07",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "9f79d55da76130d85d3fb1bcb6e9c7776af6877dcc2be0b5ce51ddf8dd9e18fb",
+      "selection_contract_sha256": "9f79d55da76130d85d3fb1bcb6e9c7776af6877dcc2be0b5ce51ddf8dd9e18fb",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 324,
+          "end": 388,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "dae616f90407ba7d77d8585a51175d7b2dc52be77ca51a956a032532582f0f7c"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 24,
+          "end": 55,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "e8904b9c5b2efd51496a58c680dc626eca788e9cbfb0290158b6bf5e08ccf6c9"
+        }
+      ],
+      "guard_assessment": "stageMappedProject validates current Project generation and same bound issue/item before staging.",
+      "effect_assessment": "Missing item/binding yields waiting_binding; config drift yields binding_changed, unknown waiting_reconciliation, manual/conflict waiting_manual.",
+      "retry_assessment": "Returns without changing provider target or overwriting held effects; no network mutation occurs.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:08",
+      "row_id": "N33:08",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "b4fb4457a3084a07a3f430d541de98a1fa6821504f4c00b68aa0507ed2cf6bf4",
+      "selection_contract_sha256": "b4fb4457a3084a07a3f430d541de98a1fa6821504f4c00b68aa0507ed2cf6bf4",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 324,
+          "end": 388,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "dae616f90407ba7d77d8585a51175d7b2dc52be77ca51a956a032532582f0f7c"
+        }
+      ],
+      "guard_assessment": "A synchronized add_item or mismatched/unknown field baseline cannot supply a known option.",
+      "effect_assessment": "Records awaiting_observation rather than manufacturing null as expected_remote_option_id.",
+      "retry_assessment": "Resume must supply the explicit first current item/option observation; unobserved baseline cannot stage.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:09",
+      "row_id": "N33:09",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "0a1b782b1f8f2417a00424a2a710305d5e2ba5119330803b015ca0f43340b62f",
+      "selection_contract_sha256": "0a1b782b1f8f2417a00424a2a710305d5e2ba5119330803b015ca0f43340b62f",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 324,
+          "end": 388,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "dae616f90407ba7d77d8585a51175d7b2dc52be77ca51a956a032532582f0f7c"
+        }
+      ],
+      "guard_assessment": "Known observed option is used, or an existing pending set-field retains its original explicit expected baseline.",
+      "effect_assessment": "Stages mapped set_single_select pending with expected option, deterministic intent and exact frozen field/desired value.",
+      "retry_assessment": "Absent baseline returns awaiting_observation; subsequent external races remain adapter readback/conflict work.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:10",
+      "row_id": "N33:10",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "2731c51440302da0c61a8e19e24ad0b6cadd2ba67403cac7600b7e5b023b83d2",
+      "selection_contract_sha256": "2731c51440302da0c61a8e19e24ad0b6cadd2ba67403cac7600b7e5b023b83d2",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 57,
+          "end": 146,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "973f718a7460d8c587d7f7b3eecc5e8f019571aefe553c8ec9876d25443b2d6a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "start": 316,
+          "end": 354,
+          "file_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+          "selected_span_sha256": "082e5bf0afc23580fc53ed649e9d1b20fd47e6a3695428c675a4aae26e979a07"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_transition_map.go",
+          "start": 39,
+          "end": 80,
+          "file_sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+          "selected_span_sha256": "2c3175c4f7c4be8b8506bba0d1d27f67d100876b9602b902f7050cd77c2b0867"
+        }
+      ],
+      "guard_assessment": "Resume requires exact selected-work CAS and current enabled saved map generation; supplied option is allowed only with the exact first bound item baseline.",
+      "effect_assessment": "Restages saved waiting desires without minting another semantic transition ID, then commits only changed execution.",
+      "retry_assessment": "No change returns COORDINATION_WAITING; arbitrary baseline or stale/disabled map refuses.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:transitions:N33:11",
+      "row_id": "N33:11",
+      "machine_id": "N33",
+      "frozen_contract_sha256": "8bdf196f879d94fb4a6d89b8d183d53bcc75526c85e42fa460682fe4b873858a",
+      "selection_contract_sha256": "8bdf196f879d94fb4a6d89b8d183d53bcc75526c85e42fa460682fe4b873858a",
+      "proposed_result": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/work_coordination.go",
+          "start": 16,
+          "end": 53,
+          "file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+          "selected_span_sha256": "3b7d857961313232955374fc967c704ad4b2d54e2a7f97e30b31f6025d0e3f4a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_effects.go",
+          "start": 207,
+          "end": 295,
+          "file_sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+          "selected_span_sha256": "35641eb894055065bcdd059be3f6d7a975226d3726cccf37aa155c502409cf8d"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 176,
+          "end": 208,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "a30f6146d39abeda453df7a3224c83e4b42cf0ca8a78ce993bf94ddea64f41f6"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 209,
+          "end": 232,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "1f0f05cf6c110eabeba1e73a8ef7d0228b36be36f3773a32cbfb76646f2819de"
+        },
+        {
+          "path": "core/artifacts/internal/operations/work_project.go",
+          "start": 233,
+          "end": 254,
+          "file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+          "selected_span_sha256": "dfdc73ec5f149a5b2645608e715a3a1dc938111e962fa3492ecb3068eb342074"
+        }
+      ],
+      "guard_assessment": "Claim checks saved transition/intent/desire identity; record/conflict requires exact send attempt and current binding.",
+      "effect_assessment": "Coordination follows matching effect to waiting_reconciliation, synchronized or waiting_manual.",
+      "retry_assessment": "Unknown effects remain unknown and cannot be automatically reclaimed or retried under a new assumption.",
+      "dependency_limits": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof."
+    },
+    {
+      "cell": "disposition:machines:N15",
+      "row_id": "N15",
+      "proposed_result": "PRESERVED",
+      "basis": "Every frozen baseline transition is individually assessed in this same proof; no prior proof or byte-equality-only inference used.",
+      "frozen_contract_sha256": "5bbd87a60e200f287431bb98ee8712e897e9421a82cfb9da1cf97920011bfc30",
+      "covered_transitions": [
+        "N15:01",
+        "N15:02",
+        "N15:03",
+        "N15:04"
+      ],
+      "dependency_limits": "Finite source conformance only. No native invocation, tests, platform/filesystem qualification, host/model/user approval, external provider send, task or whole-program result is established."
+    },
+    {
+      "cell": "disposition:machines:N26",
+      "row_id": "N26",
+      "proposed_result": "PRESERVED",
+      "basis": "Every frozen baseline transition is individually assessed in this same proof; no prior proof or byte-equality-only inference used.",
+      "frozen_contract_sha256": "917b49e3c4bf9816cd9ed38fb4561b47ce122d95c43a3ce9af8b96068b1b62a8",
+      "covered_transitions": [
+        "N26:01",
+        "N26:02",
+        "N26:03"
+      ],
+      "dependency_limits": "Finite source conformance only. No native invocation, tests, platform/filesystem qualification, host/model/user approval, external provider send, task or whole-program result is established."
+    },
+    {
+      "cell": "disposition:machines:N32",
+      "row_id": "N32",
+      "proposed_result": "PRESERVED",
+      "basis": "Every frozen baseline transition is individually assessed in this same proof; no prior proof or byte-equality-only inference used.",
+      "frozen_contract_sha256": "02ed58c4f714842df7631fccc088a826c779cdb47179ab48425cada1b8db159e",
+      "covered_transitions": [
+        "N32:01",
+        "N32:02",
+        "N32:03",
+        "N32:04",
+        "N32:05"
+      ],
+      "dependency_limits": "Finite source conformance only. No native invocation, tests, platform/filesystem qualification, host/model/user approval, external provider send, task or whole-program result is established."
+    },
+    {
+      "cell": "disposition:machines:N33",
+      "row_id": "N33",
+      "proposed_result": "PRESERVED",
+      "basis": "Every frozen baseline transition is individually assessed in this same proof; no prior proof or byte-equality-only inference used.",
+      "frozen_contract_sha256": "e78806e6c373c66e88991ba449893b4c80be3a115720f5915010e9a07752c9d4",
+      "covered_transitions": [
+        "N33:01",
+        "N33:02",
+        "N33:03",
+        "N33:04",
+        "N33:05",
+        "N33:06",
+        "N33:07",
+        "N33:08",
+        "N33:09",
+        "N33:10",
+        "N33:11"
+      ],
+      "dependency_limits": "Finite source conformance only. No native invocation, tests, platform/filesystem qualification, host/model/user approval, external provider send, task or whole-program result is established."
+    }
+  ],
+  "dependency_boundary": {
+    "general": "Finite source conformance only. No native invocation, tests, platform/filesystem qualification, host/model/user approval, external provider send, task or whole-program result is established.",
+    "evidence": "Producer-specific collector/host correctness and installed permissions remain separately qualified. Current generic schema/hash/link dispatch is inspected; accepted profile extensions are not a claim those producers executed.",
+    "work": "Local HTML/CAS/journal transitions only; remote observations are caller-supplied validated records. GitHub adapter authorization/network/readback execution is outside this source proof.",
+    "store": "Commit/derived-write source intent and error propagation are inspected; OS locking, fsync/rename failure timing and complete-store recovery execution are outside this proof."
+  }
+}

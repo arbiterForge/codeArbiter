@@ -1,0 +1,159 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "tribunal-usage",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "plugins/ca-codex/hooks/tribunal-usage.py": {
+      "source_sha256": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c",
+      "baseline_sha256": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "plugins/ca/hooks/tribunal-usage.py": {
+      "source_sha256": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d",
+      "baseline_sha256": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:tribunal-usage:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "start": 22,
+          "end": 243,
+          "sha256": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d"
+        }
+      ],
+      "conformance": "Bounded100000entries/32files/256MiB/1MiBline safe contained transcript scan; newest valid candidate sums matching assistant4field nonnegative usage; invalid candidate rejected, no request dedup.",
+      "machine_id": "hooks:tribunal-usage",
+      "baseline_clause_sha256": "fa74e00e4477490aff4304a9440c758172ac995dcea91c051e9d036890e6d25f",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-266"
+        },
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-389"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-usage:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "start": 18,
+          "end": 258,
+          "sha256": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c"
+        }
+      ],
+      "conformance": "Same bounded safe scan plus exact thread file/meta binding; latest valid6field cumulative total accepted; invalid earlier/later token events do not erase available valid total.",
+      "machine_id": "hooks:tribunal-usage",
+      "baseline_clause_sha256": "42ff76352ca659f4ec9803e9ee31c04c235fddb45b74a79fe24a2b91f303004d",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-266"
+        },
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-389"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-usage:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "start": 261,
+          "end": 314,
+          "sha256": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c"
+        }
+      ],
+      "conformance": "Observed source/status/numeric and total consistency checked; completed events sum without lens dedup; all/some/none maps complete/partial/unavailable, no eventsNull; explicit legacy no-status branch accepted.",
+      "machine_id": "hooks:tribunal-usage",
+      "baseline_clause_sha256": "2e3821a4dff79037d62ccbac328b89f39f6faa3b89ae0e0f89fbbb31f717b787",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-266"
+        },
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-389"
+        }
+      ]
+    },
+    {
+      "id": "hooks:tribunal-usage:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "start": 255,
+          "end": 262,
+          "sha256": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d"
+        },
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "start": 360,
+          "end": 385,
+          "sha256": "cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c"
+        }
+      ],
+      "conformance": "Operational CLI emits bounded honest unavailable reasons and returns0 on observation absence; no usage zero or price manufactured.",
+      "machine_id": "hooks:tribunal-usage",
+      "baseline_clause_sha256": "d7272dfe87ec308eb74b362b1b1bb2e795aa8bb650eb8d62803493fb9fca8f6b",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-266"
+        },
+        {
+          "path": "plugins/ca-codex/hooks/tribunal-usage.py",
+          "symbol": "module",
+          "lines": "1-389"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:tribunal-usage",
+      "constituents": [
+        "hooks:tribunal-usage:01",
+        "hooks:tribunal-usage:02",
+        "hooks:tribunal-usage:03",
+        "hooks:tribunal-usage:04"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

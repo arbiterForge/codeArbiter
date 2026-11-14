@@ -1,0 +1,133 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "display-git-probes",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_gitlib.py": {
+      "source_sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+      "baseline_sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_pathnorm.py": {
+      "source_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "baseline_sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:display-git-probes:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_gitlib.py",
+          "start": 31,
+          "end": 98,
+          "sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276"
+        }
+      ],
+      "conformance": "Validated safe ref strips known ref prefix; detached40/64hex displays7chars; malformed/unreadable HEAD returnsNone.",
+      "machine_id": "hooks:display-git-probes",
+      "baseline_clause_sha256": "e54f263890af0d577fb8c4816c8aaa5c39ee1e0c7fac137cf3449f95b7228e78",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_gitlib.py",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "core/pysrc/_pathnorm.py",
+          "symbol": "module",
+          "lines": "1-74"
+        }
+      ]
+    },
+    {
+      "id": "hooks:display-git-probes:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_gitlib.py",
+          "start": 101,
+          "end": 116,
+          "sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276"
+        }
+      ],
+      "conformance": "Read-only porcelain uses100ms deadline; only return0 nonempty yieldsTrue; spawn/timeout/nonzero areFalse, not evidence of cleanliness.",
+      "machine_id": "hooks:display-git-probes",
+      "baseline_clause_sha256": "c45191d92a8ad79fdbf2f5365e07096df05dffe55f150ac2d4b895dfe5922b51",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_gitlib.py",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "core/pysrc/_pathnorm.py",
+          "symbol": "module",
+          "lines": "1-74"
+        }
+      ]
+    },
+    {
+      "id": "hooks:display-git-probes:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_pathnorm.py",
+          "start": 24,
+          "end": 74,
+          "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+        }
+      ],
+      "conformance": "Pure separator and raw/resolved repo-relative path formatting, outside-root returns empty; formatting provides no authorization or workflow state.",
+      "machine_id": "hooks:display-git-probes",
+      "baseline_clause_sha256": "1f40b3b33886c8292b89e9279403ee880c5598206932f8011514e031dee4221e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_gitlib.py",
+          "symbol": "module",
+          "lines": "1-116"
+        },
+        {
+          "path": "core/pysrc/_pathnorm.py",
+          "symbol": "module",
+          "lines": "1-74"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:display-git-probes",
+      "constituents": [
+        "hooks:display-git-probes:01",
+        "hooks:display-git-probes:02",
+        "hooks:display-git-probes:03"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

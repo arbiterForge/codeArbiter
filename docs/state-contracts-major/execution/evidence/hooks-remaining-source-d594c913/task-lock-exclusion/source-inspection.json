@@ -1,0 +1,168 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "task-lock-exclusion",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_taskexcludelib.py": {
+      "source_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "baseline_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:task-lock-exclusion:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 74,
+          "end": 101,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        },
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 147,
+          "end": 152,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        }
+      ],
+      "conformance": "Optional no-Git-marker probe returnsNone; existing marker with unbound Git refuses; exact selected repository/common-info path required.",
+      "machine_id": "hooks:task-lock-exclusion",
+      "baseline_clause_sha256": "567826b7a2acebfd567ac24321e02e7bb1152f4e025abe7c73334d91f2756ba2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "module",
+          "lines": "1-223"
+        }
+      ]
+    },
+    {
+      "id": "hooks:task-lock-exclusion:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 25,
+          "end": 144,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        },
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 153,
+          "end": 182,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        }
+      ],
+      "conformance": "Safe directories and regular single-link <=2MiB exclude under exclusive exclude.lock; tracked sidecar/negation refuse; exact rule and newline preservation, effective existing rule returns already-present.",
+      "machine_id": "hooks:task-lock-exclusion",
+      "baseline_clause_sha256": "59978e93ebab0046c363ee0b461b57d9d20a6652ffac47cb6f53d8646a030c89",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "module",
+          "lines": "1-223"
+        }
+      ]
+    },
+    {
+      "id": "hooks:task-lock-exclusion:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 183,
+          "end": 203,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        }
+      ],
+      "conformance": "Fsync own lock then re-read byte/version snapshot, root binding and owned inode; unsafe/change refuses before atomic replace; actual check-ignore verifies effect.",
+      "machine_id": "hooks:task-lock-exclusion",
+      "baseline_clause_sha256": "f1ae32afa74c2cc287a1bb6ff1c3e2175b999fc93b2550a0518a46e11f5b0047",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "module",
+          "lines": "1-223"
+        }
+      ]
+    },
+    {
+      "id": "hooks:task-lock-exclusion:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 200,
+          "end": 204,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        }
+      ],
+      "conformance": "After replace, failed ignore result raises explicit local-rule-added-but-ineffective message; no false no-mutation result.",
+      "machine_id": "hooks:task-lock-exclusion",
+      "baseline_clause_sha256": "c040bf62262fd7b848fa064ab533a951b5be86626e6ef427882c9e1ccaa17f48",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "module",
+          "lines": "1-223"
+        }
+      ]
+    },
+    {
+      "id": "hooks:task-lock-exclusion:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 205,
+          "end": 223,
+          "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+        }
+      ],
+      "conformance": "Finally closes fd and removes exclude.lock only while device/inode ownership still matches; never board OS lock or foreign writer file.",
+      "machine_id": "hooks:task-lock-exclusion",
+      "baseline_clause_sha256": "3fa3f17cf5b1be339940399210aa37544c3120608b17c24be67fc333316570b6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "module",
+          "lines": "1-223"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:task-lock-exclusion",
+      "constituents": [
+        "hooks:task-lock-exclusion:01",
+        "hooks:task-lock-exclusion:02",
+        "hooks:task-lock-exclusion:03",
+        "hooks:task-lock-exclusion:04",
+        "hooks:task-lock-exclusion:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

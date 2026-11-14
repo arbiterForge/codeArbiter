@@ -1,0 +1,858 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "approval-routing",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_approvallib.py": {
+      "source_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "baseline_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "source_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "baseline_sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "source_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "baseline_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_contextselectlib.py": {
+      "source_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "baseline_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_prerequisitelib.py": {
+      "source_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "baseline_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_replylib.py": {
+      "source_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "baseline_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_sprintapprovallib.py": {
+      "source_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "baseline_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "plugins/ca-pi/hooks/pi-approval.py": {
+      "source_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "baseline_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:approval-single:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 44,
+          "end": 79,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        },
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 190,
+          "end": 276,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Exact supported identity and current ready response freeze exclusive pending data. Plans additionally inspect verification preflight before arming. Existing/malformed pending refuses; exact prompt/code registration follows without overwriting pending.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "2c807b9d4f44ddee76ff3876d886a7eda93799e18257a5c0da8631e40627b53e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-single:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 380,
+          "end": 427,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        },
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 477,
+          "end": 510,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Only exact grammar/artifact/token plus current pending hash/host context reaches capture; near-miss returns nonapproval/guidance. Similar language never creates approval.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "062c5e564e822f76050ad22659b86c265f43bbdb6710e2ad9072659630493bf3",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-single:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 424,
+          "end": 474,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        },
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 82,
+          "end": 168,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Armed plan preflight and exact frozen ready identity gate capture; actual host event goes to owning capture helper, then deterministic operation/revision approve call. Pending/route cleanup follows successful call. No separate pair-style durable submission exists, and earlier capture survives downstream failure.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "2d4d7e41ae36feff8fe3412c46223072a9e0a8c47531d646632bc75da9cc311a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-single:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 424,
+          "end": 428,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Current kind/revision/model/normative mismatch raises STALE_APPROVAL before capture/approve; changed content requires supported rearming/retirement.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "5dda42384c311589fc3eb086de98b608eed007e52a36480e2063f873358b5774",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-single:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 330,
+          "end": 345,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Matching valid v0.1 pending cancellation removes marker/route; v0.2 explicitly delegates to pair cleanup checks rather than discarding submitted observations.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "2b62ba967d2c5e475e0ef21f99ce3cf57187a038a49148f8c5c2fe8562b8c95f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-single:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "start": 348,
+          "end": 376,
+          "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+        }
+      ],
+      "conformance": "Only safely unanswered v0.2 retirement with valid bounded reason can use pair cancellation. Legacy single marker cannot prove uncaptured reply and is refused.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-single",
+      "baseline_clause_sha256": "653d01bd69d15c58f6ca0b63f3dea084a9369b966c82deaf69070355dcd492aa",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_approvallib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 41,
+          "end": 140,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Private repository lock, exact native pair context and structural validator plus plan verification precede exclusive pending write/shared prompt. Busy/existing pending refuses.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "b317a835d37180873d7461e7d88b7ae0f4af3db8910241cc3051767a16e4ddaa",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 172,
+          "end": 189,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        },
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 218,
+          "end": 253,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Matching exact prompt/token/frozen pair under serialized lock publishes content-addressed spec/plan observations and source events. Failure leaves pending, with no replacement user input invented.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "271af924f6390afaec9fec4285d3a7adc4d7a66f13d1d9249fc99c9b67000c47",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 147,
+          "end": 169,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        },
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 235,
+          "end": 253,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Base request is deterministically derived from frozen pair/key and exact sources. Exclusive fsynced durable submission precedes native sprint-approve; concurrent record is reloaded and validated.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "f81bf5a387d86750a9bb27c8680e8b1c8b539a25618b381b14baa7abd4230be5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 192,
+          "end": 214,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Native returned paired identity/authority-kind/receipt is required before cleanup; current pending must still equal frozen pending, then route/marker/submission removed. Transaction receipt binding itself remains owning native API contract, not runtime proof.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "54d6866d069e7aabb842ec0b2ff4f484bba1632eb763e823ada41837db9c4080",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 192,
+          "end": 201,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Only RECOVERY_REQUIRED invokes native complete recovery then replays exactly the recorded request; no new user reply is captured.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "38f6ef544c95f0ba3869025555b830ef747061b5003179bf0cd112fc7b0f9fa5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 257,
+          "end": 279,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Resume cleanup/reapproval occurs only on explicit REVISION_CONFLICT or OPERATION_ROLLED_BACK; other uncertainty remains. Current pending equality is rechecked and no replacement pair is approved.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "be8ca65c77aaaa42f6b12c9411d5d3415ca4cddc72606427ba5bc32b13704bb5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 152,
+          "end": 169,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        },
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 257,
+          "end": 266,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Resume requires existing validated same-pair durable submission with original source locators; mere armed state raises NO_OBSERVED_APPROVAL.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "a43a8320eefd6adfe176acf9fc24823b92322f41b7d4f478321b8ce7ceaa844e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:approval-pair:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "start": 283,
+          "end": 339,
+          "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8"
+        }
+      ],
+      "conformance": "Cancellation serializes and refuses either durable submission or matching already-published reply observation, including crash gap. Unrecognized/tampered/excess history refuses safe-discard proof.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:approval-pair",
+      "baseline_clause_sha256": "9215462a4f6cfdd1208d3ffdc45c1fdf5fd37ef7521f0a81e49e655cd779f64a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_sprintapprovallib.py",
+          "symbol": "module",
+          "lines": "1-358"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 26,
+          "end": 54,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 137,
+          "end": 235,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        }
+      ],
+      "conformance": "Unique four-character registry-backed reply code binds repository filesystem identity and exact canonical full prompt with24h expiry; unsafe private path/collision refuses.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "801c50562de85d1302df613d84f578b15a1ed2f0770fd1e641720bebe679f17c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 61,
+          "end": 107,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 444,
+          "end": 515,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 541,
+          "end": 573,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        }
+      ],
+      "conformance": "NFKC/control/dash/quote normalization admits exact grammar then registry-backed expansion; ordinary leading intent remains byte-for-byte and is not captured. No fuzzy authorization.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "aa4c8a841e8716f102f7c6cf8c1995e4fa39c2964d14dec9f49d5fc85e024b87",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 541,
+          "end": 573,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "start": 217,
+          "end": 248,
+          "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9"
+        }
+      ],
+      "conformance": "Ambiguous multi-repository or nonunique/expired coded lookup refuses; named identity/mode mismatch emits bounded correction rather than selecting another request.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "af766bbc68c0f54b8dd4b2133c44397e103a2f073a25baf6f2fba2963126d678",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 305,
+          "end": 394,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        }
+      ],
+      "conformance": "Exact registered question-envelope hash/labels and clean tool_input/session-call pair establish one-hour clean marker; unregistered/mutated/answered envelope has no trusted binding.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "2b4e744d34317aa3834ec9a18c7599361ad5dcf3dd68a3279d52998b1cdf88a7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 397,
+          "end": 422,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        }
+      ],
+      "conformance": "Matching call/session/envelope plus exact answer consumes clean marker once; different answer records nothing and leaves typed-reply path. Duplicate post lacks reusable clean binding.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "0d1308d1907dd6e6cb1aff477cd0f59ae8bdc1bf9ab579b85a2348aac406a23c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "start": 251,
+          "end": 259,
+          "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9"
+        },
+        {
+          "path": "core/pysrc/_replylib.py",
+          "start": 253,
+          "end": 293,
+          "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+        }
+      ],
+      "conformance": "Matching registry route/code retires; missing route is safe no-op while root/private-path checks still bind operation. Prerequisite retirement retains nonauthoritative tombstone to prevent misrouting.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "cac75d60588c8e49cebb94bdac9af7afccb2f559124dbd7dfff28028258f7355",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reply-routing:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "start": 36,
+          "end": 109,
+          "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9"
+        }
+      ],
+      "conformance": "Actual actor/spec-plan/task/path packet and route composition retain missing-ref/blocker/epoch checks. Composed input is information only and does not attest delivery or human approval.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:reply-routing",
+      "baseline_clause_sha256": "e591fe374adfa069efc0ce28928d943c5afec754a8aaff2864070bc215f856e4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_replylib.py",
+          "symbol": "module",
+          "lines": "1-573"
+        },
+        {
+          "path": "core/pysrc/_artifactpromptlib.py",
+          "symbol": "module",
+          "lines": "1-287"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-approval:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "start": 24,
+          "end": 50,
+          "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f"
+        }
+      ],
+      "conformance": "Only current exact ready v0.1 spec/plan pending is inspectable; digest and identity are returned. Unsupported/changed pending cannot become approval.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:pi-approval",
+      "baseline_clause_sha256": "0df0ebf1aaeebd1a473689362c9818076b897e198b704b19105b6355bfd62151",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "symbol": "module",
+          "lines": "1-94"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-approval:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "start": 51,
+          "end": 64,
+          "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f"
+        },
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "start": 69,
+          "end": 88,
+          "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f"
+        }
+      ],
+      "conformance": "Bounded UTF8 reply/sessionUUID/generationUUID/expected pending SHA feed shared PiNativeInput consumer, which compares exact pending hash. Duplicate/malformed/stale data refuses; bridge invents no authority.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:pi-approval",
+      "baseline_clause_sha256": "902ce2a6b1e8c1862c439bf0f5712e84307683bdaadd970fb1f76bd0a8d85513",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "symbol": "module",
+          "lines": "1-94"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-approval:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "start": 60,
+          "end": 94,
+          "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f"
+        }
+      ],
+      "conformance": "Bridge returns selected matched/approved/artifact fields in explicit allow envelope; caught failures become block JSON and process still exits0. Host must inspect outcome, and physical provenance remains sole-extension host responsibility.",
+      "dependency_boundary": "Source control-flow and existing native/host API interface only. Actual physical/user provenance, binary qualification, native transaction/capture and authority are not established. _artifactlib only adds fail-closed manifest admission; called client methods/authority publisher bodies unchanged.",
+      "machine_id": "hooks:pi-approval",
+      "baseline_clause_sha256": "3d61a8a50ec43425302fad346e3417d420259227122da83ad5f12451dda2d1d1",
+      "baseline_span_refs": [
+        {
+          "path": "plugins/ca-pi/hooks/pi-approval.py",
+          "symbol": "module",
+          "lines": "1-94"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:approval-pair",
+      "constituents": [
+        "hooks:approval-pair:01",
+        "hooks:approval-pair:02",
+        "hooks:approval-pair:03",
+        "hooks:approval-pair:04",
+        "hooks:approval-pair:05",
+        "hooks:approval-pair:06",
+        "hooks:approval-pair:07",
+        "hooks:approval-pair:08"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:approval-single",
+      "constituents": [
+        "hooks:approval-single:01",
+        "hooks:approval-single:02",
+        "hooks:approval-single:03",
+        "hooks:approval-single:04",
+        "hooks:approval-single:05",
+        "hooks:approval-single:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:pi-approval",
+      "constituents": [
+        "hooks:pi-approval:01",
+        "hooks:pi-approval:02",
+        "hooks:pi-approval:03"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:reply-routing",
+      "constituents": [
+        "hooks:reply-routing:01",
+        "hooks:reply-routing:02",
+        "hooks:reply-routing:03",
+        "hooks:reply-routing:04",
+        "hooks:reply-routing:05",
+        "hooks:reply-routing:06",
+        "hooks:reply-routing:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

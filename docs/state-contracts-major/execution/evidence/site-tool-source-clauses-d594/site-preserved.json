@@ -1,0 +1,563 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: explicit frozen guard/effect/retry source-clause inspection after9ab using immutable d594 Git; no execution"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/public/examples/statusline-themes.json": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/decision-evidence.ts": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+    "site/scripts/execution-maps/model.ts": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+    "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "site/scripts/statusline-capture.ts": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/components/AcademyCommandPreferences.astro": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+    "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+    "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+    "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+    "site/src/components/ExecutionMap.astro": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+    "site/src/components/StatuslineGallery.astro": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+    "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+    "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+    "site/src/data/context-examples.json": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/scripts/academy-command-preferences.ts": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+    "site/src/scripts/execution-map-navigation.ts": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+    "site/src/styles/academy-wayfinding.css": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S57:01",
+    "disposition:transitions:S57:02",
+    "disposition:transitions:S57:03",
+    "disposition:transitions:S57:04",
+    "disposition:transitions:S57:05",
+    "disposition:transitions:S57:06",
+    "disposition:transitions:S57:07",
+    "disposition:transitions:S59:02",
+    "disposition:transitions:S59:04",
+    "disposition:transitions:S59:05",
+    "disposition:transitions:S60:01",
+    "disposition:transitions:S60:02",
+    "disposition:transitions:S60:04",
+    "disposition:transitions:S63:02",
+    "disposition:transitions:S63:03",
+    "disposition:transitions:S63:04",
+    "disposition:transitions:S63:05",
+    "disposition:transitions:SX07:01",
+    "disposition:transitions:SX07:02",
+    "disposition:transitions:SX07:03"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Finite conditional source clauses only; no runtime/browser/build/installed/hosted/model/user-action or whole-task/program outcome.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S57:01",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 19,
+          "end": 42,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 74,
+          "end": 99,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 142,
+          "end": 144,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "OS and host keys are independently constrained to fixed allowed Sets; storage acquisition/read failure or unsupported value yields null. Initial reflect/refresh applies those in-memory values. This is the conditional component source contract, not generated Academy/module availability.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "4ac4f745a2953a1629a0adb600b620c66b324dc11ef64238a6d703b5914fe2ae",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:02",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 44,
+          "end": 52,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 120,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Only supported OS/host choices update the matching in-memory field; persistence is attempted in try/catch, then aria reflection and variant refresh run. A zero-match filter returns every variant index. Unknown option returns without change.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "dda1862ea89f90aa6ddd805da33f31412dc3eca9a14f45cb56f6ce9bb0b23c8e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:03",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 113,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "preferences[kind] changes before setItem; the storage exception is swallowed and both reflect and refresh still run. No successful durability receipt or persisted-readback assertion is manufactured.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0406299c07da8c9c95ab4b4383deba37e3910089eb297e79f125aaa29e71fb1b",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:04",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 54,
+          "end": 66,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 121,
+          "end": 136,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "The copy listener resolves the declared target, passes exactly target.textContent to the async clipboard writer and returns when target absent. No shell/tool command is invoked.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "ef3566752045dceccb8d3c7f326c2e3922dcef6e04f33f729319171594eb2177",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:05",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 61,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 137,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Only awaited writer resolution returns copied, selecting the Copied status text; status element absence is tolerated. No actual system clipboard observation is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3ac3abec2c92aa8cbc0026646fa3e0eefb38dcee74aa9af35e782c1258ce069c",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:06",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 65,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 126,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "Writer rejection enters fallback callback selecting target node contents via Range/Selection, then returns fallback and emits the manual Ctrl+C/Command+C guidance. A later ordinary click retries the same flow.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "d643863cfea7e20baa5f7df429061e25747e0428c901ee33234199ab689e1ef7",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S57:07",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 77,
+          "end": 80,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 115,
+          "end": 150,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "semantic_assessment": "dataset.initialized true returns before listener binding; custom element definition is also guarded. Entire component script contains neither storage-event listener nor disconnectedCallback/abort, preserving that explicit baseline limit.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "56a7556c50618d741d82639a0e2b7fd4d92e9a65db0b17b0e6cd176efb70c1cf",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:02",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 62,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 72,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 17,
+          "end": 29,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        }
+      ],
+      "semantic_assessment": "Declared-case/all selections modify hidden, aria-pressed and status text; unknown declared-case IDs return and unknown button indexes do nothing. These reading controls call no repository/verifier/receipt or authority producer.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "2a19709e62073748338b62700412c9bc775e47e0029474e33e118ecc49f188b2",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:04",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 247,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ],
+      "semantic_assessment": "Show-all click opens the collected details and recomputes aria-expanded/label from every detail.open; individual toggle events call the same synchronizer. This changes disclosure presentation, not lesson completion.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "938303fbcd7819fa7814047cf93fbf64479e8e59a7e512ad2b3e4564c225a355",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S59:05",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 226,
+          "end": 251,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ],
+      "semantic_assessment": "The show-all element bound marker returns before registering handlers again; initial call and Astro page-load reuse that guard. Source body contains DOM disclosure/aria changes, with no artifact or lesson-verifier state writes.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0aa3c22cbdd44ecdb65dbd96fefd29da3be218693a4bfb1677a57c2c0bd14ad0",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:01",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 18,
+          "end": 25,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 51,
+          "end": 54,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Manual buttons clear pending focus and choose only all or a declared chapter; choose cancels the pending frame, changes chapter hidden flags, pressed state and status. It never calls history.pushState/replaceState.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "6340d7d4d027de83742eb0e6d273eb4d339db2641731d6d6de0aaac83de314da",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:02",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 2,
+          "end": 5,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 26,
+          "end": 38,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 55,
+          "end": 59,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 71,
+          "end": 74,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Only bounded # fragments that decode and resolve by literal DOM ID inside this map are admitted. Known target chapter and details ancestors are revealed on hashchange/popstate/Astro load and initial read; unknown/malformed/outside targets return.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "5e7c87f5688fda379ea231a027df1edd989c235277eb1d536ff666ef282fd630",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S60:04",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 60,
+          "end": 69,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        }
+      ],
+      "semantic_assessment": "Only ordinary unmodified primary internal link clicks without target/download enqueue the requested link hash; abort prevents the microtask action. Native history/default handling remains intact, so same-fragment reveal/focus can be requested without writing history in this owner.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3b3f40b86b9aa01234f9647765749c909e4a26642f1810864fad0e01a69750d4",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:02",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 45,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 59,
+          "end": 85,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Connected anchors resolve to existing headings; update reads current header height and absolute heading positions, selects the last heading crossing header+32 and updates aria-current only on the active link. Heading discovery is connection-time, not a mutation observer.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "405eb04b425536387582c779a0893689761bcd5a9e15ecb413ed9489b3c82f4c",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:03",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 88,
+          "end": 120,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Trailing unreachable headings use guarded positive spans to map remaining actual scroll into natural heading positions; an exact bottom safety condition selects n-1. This is arithmetic source conformance, not a measured browser geometry/scroll result.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "9c27d15e9e881eba0b67212c2cb5851e17e1153fe02b4de7270fbfa2e9e8b714",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:04",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 43,
+          "end": 57,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ],
+      "semantic_assessment": "Disconnect removes the same owned scroll/resize callback references and cancels the pending animation frame. No observer is created here, so there is no separate observer lifetime being asserted.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "37123204e20327c84e4bb6685ce5a97e192c7c488395e1c767c79a4aa4e0de65",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:S63:05",
+      "witnesses": [
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "start": 13,
+          "end": 19,
+          "file_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad"
+        }
+      ],
+      "semantic_assessment": "Inline code unconditionally sets documentElement.dataset.theme to dark and installs a no-op picker callback; localStorage dark persistence is best effort inside catch. It does not read or apply a light/system preference.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "ec7073230fdbd23bc3f9e2952a404c3cb7031422184b1fe3a1214bcbc3e56a00",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 7,
+          "end": 17,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        },
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 37,
+          "end": 40,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        },
+        {
+          "path": "site/src/components/StatuslineGallery.astro",
+          "start": 9,
+          "end": 12,
+          "file_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043"
+        }
+      ],
+      "semantic_assessment": "String.length above100000 rejects; plain segments reject unsupported control code units and become token.text with current color/bold state. The Gallery renders token.text as an Astro text expression, never set:html. No live terminal/account bytes were read.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "2b37a7fe5bb7b6ee225afae9feb4f6f5892e467b0286ff85540b58d92acffd83",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 18,
+          "end": 37,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        }
+      ],
+      "semantic_assessment": "Only enumerated SGR resets/bold/default colors and complete integer0..255 RGB triples affect style; dim/italic markers intentionally leave emitted text unchanged. Unsupported code/invalid RGB throws rather than interpreting arbitrary controls.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "17e4169f8cb437d544d33e9142a77ae98292a72013be34e163943c0a2268606e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:SX07:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "start": 42,
+          "end": 53,
+          "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+        }
+      ],
+      "semantic_assessment": "Loader requires exact ordered violet,blue,green,amber,mono names, recomputes Node SHA256 over each ANSI string and then invokes the bounded decoder. This conditional byte-integrity contract does not establish renderer freshness or live host/account state.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "af26af54c9e93db6dfc0b697b1f71a5aa3594c5769cb0d44d636d90d173ed595",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "changed_shared_guard_assessment": [
+    {
+      "boundary": "Site client clauses",
+      "assessment": "Direct client functions and DOM/clipboard/storage/RAF boundaries inspected. Direct imported decision/map models/render functions, static capture JSON, bookmark/style/ToC rendering owners are byte-identical to baseline. They provide presentation data, not permission or repository mutation. No browser, module load or layout execution is claimed."
+    },
+    {
+      "boundary": "Academy generated module",
+      "assessment": "site/src/generated/academy-content.ts is not a retained Git input. These preference/disclosure claims are conditional source-body contracts after valid declared rendered DOM/data exist; no generated module availability, full Academy render/build or imported dataset provenance is asserted. This is an explicit admission limitation, not an inferred absence fact."
+    },
+    {
+      "boundary": "Site toolchain",
+      "assessment": "site/package-lock.json unchanged; package.json adds only test:components compared to baseline. Production dependency declarations and build/generator commands are unchanged. This supports conditional source-body preservation, not browser/compiler execution."
+    },
+    {
+      "boundary": "Reconciliation imported guards",
+      "assessment": "check_tag_immutability changed only main/parser/verdict observation wrapper. Hand-read imported loaders/disjointness/dataclasses and compared nine actual definitions to baseline: Provenance,LegacyProvenance,InvalidInventory,is_governed,_exact_keys,_identity,load_original_manifest,load_legacy_manifest,validate_disjoint are AST-identical. Lazy _verdictlib main branch is not called by reconciliation."
+    },
+    {
+      "boundary": "Layer sentinel",
+      "assessment": "Current CI original source driver still executes npm test before sentinel assertion with ordinary success gating. New observers do not turn sentinel starts into completion. No actual test discovery/start/success is claimed by this source inspection."
+    },
+    {
+      "boundary": "Schema generator data",
+      "assessment": "Schemas/generated target evolved; only check-mode comparison/no-write and generation ordered-write/partial-failure contracts are preserved. No generated bytes, schema validation, Go-tool compatibility or execution parity claim."
+    },
+    {
+      "boundary": "Platform/private filesystem",
+      "assessment": "Python stdlib and browser platform operations are inspected as explicit source calls and error branches. No filesystem atomicity beyond documented cooperative private-parent preconditions, actual tag/network state, child rundown, installation or platform journey is qualified."
+    },
+    {
+      "boundary": "Clock follow-up",
+      "assessment": "All selected literal inputs at d594 equal immutable9ab bytes. major_readiness/check integration clock edits are outside these functional input cones; no source equality is being used as runtime PASS."
+    }
+  ],
+  "dependency_boundary": "Direct authored code and specifically reviewed data/guard boundaries. Generated Academy module availability and external browser/stdlib/Go/filesystem execution are not qualified.",
+  "excluded_cells": [
+    {
+      "cell": "S59:01",
+      "reason": "Frozen initialize says first eligible panel across all owners, but ContextExplorer explicitly selects validated data-initial (defaultoverlap), which can differ from first. Preserve known-case presentation separately; do not assert universal first selection."
+    },
+    {
+      "cell": "S59:03",
+      "reason": "Frozen Arrow/Home/End clause requires aria-selected and tab stops. ExampleChoices intentionally retains native Tab/button group and aria-pressed; it changes focus/selection but never aria-selected/roving tabindex. No runtime bug or repaired contract is asserted."
+    },
+    {
+      "cell": "S60:03",
+      "reason": "Frame checks abort/target connection and known navigation cancels prior frame; no explicit location/hash/revision equality. Invalid/unmapped newer navigation can leave previous frame queued. Stronger target-current guard is not established from this source."
+    },
+    {
+      "cell": "S60:05",
+      "reason": "Disconnect aborts/cancels; known manual/target navigation cancels prior frame. Universal new-navigation invalidation is broader than current admitted-known-target handling; no source promotion for that stronger clause."
+    },
+    {
+      "cell": "S63:01",
+      "reason": "Source registers scroll/resize only; there is no layout/resize/mutation observer. Generic layout-change tracking in frozen event is not established; concrete scroll arithmetic/cleanup are separate rows."
+    },
+    {
+      "cell": "C05:01",
+      "reason": "parse rejects duplicate/missing suite paths and unset interpreter env, but it does not independently validate interpreter executable or positive finite timeout. Frozen valid timeout/interpreter guard is broader."
+    },
+    {
+      "cell": "C05:04",
+      "reason": "problems accepts last positive Ran count plus any matching OK and code0; it does not reject all contradictory earlier/later output or require accepted final count consistency as frozen prose says."
+    },
+    {
+      "cell": "C05:05",
+      "reason": "Aggregate join calls that same problems predicate. Full every-observation-verified clause inherits unresolved C05:04 stronger oracle, so do not qualify whole group join."
+    },
+    {
+      "cell": "C10:01",
+      "reason": "Lexical scanner recognizes double-quoted valid dockerGate literals, deduplicates within file and rejects shared keys/nonempty absence in verify; it does not reject every malformed/unrecognized declaration when another valid declaration exists."
+    },
+    {
+      "cell": "T07:01",
+      "reason": "gotype intentionally falls back to json.RawMessage for unrecognized forms; frozen unsupported-structure-reject wording is broader. Schema payloads also changed; no source-preserved renderer-output equivalence is claimed."
+    }
+  ]
+}

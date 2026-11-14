@@ -1,0 +1,343 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "reconciliation",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_approvallib.py": {
+      "source_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "baseline_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "source_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "baseline_sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "source_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "baseline_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_reconciliationlib.py": {
+      "source_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "baseline_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_replylib.py": {
+      "source_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "baseline_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/artifact-reconcile.py": {
+      "source_sha256": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+      "baseline_sha256": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:reconciliation:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 47,
+          "end": 115,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        },
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 342,
+          "end": 473,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Exact target/current identity/snapshot freezes exclusive pending under repository lock and registers prompt-byte binding. Legacy/current ambiguity and malformed pending refuse, not silently upgrade.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "552cd924d363faaf7eb66ad168d182ddb4883c9bada5c6bbfa04c3cdedbfeda5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 634,
+          "end": 684,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Current route/prompt SHA and exact artifact/snapshot/record must match before immutable host-reply capture. Unmatched prompt returns without changing pending.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "ab4e42fc2008e5ab808f5289ff07d2111ac9c77d0dfabc26b7584e61e3147427",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 118,
+          "end": 129,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        },
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 184,
+          "end": 238,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        },
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 682,
+          "end": 692,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Exact request derives from pending plus captured receipt; fsynced exclusive durable attempt precedes task/scope native call. Failed attempt publication prevents dispatch.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "8c6d161014cc821a3aff1d0dbb180f4f30d9f78d8351b82edf670ac2a9823cec",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 692,
+          "end": 697,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        },
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 587,
+          "end": 618,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Exact pending operation/request is dispatched and successful native completion precedes pending/route/attempt cleanup. Recovery additionally verifies committed transaction operation identity; uncertain native errors preserve retained state.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "c2f4674e56ddaa2426f7077cdd90594be831ecb219070aa9afd712cf1d69867e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 295,
+          "end": 339,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        },
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 587,
+          "end": 618,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Recovery reuses exact recorded attempt or uniquely reconstructable original observation/source/prompt/binding. Mixed/orphan/ambiguous evidence refuses; legacy pending is recovery-only, never fresh capture.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "2ef7174bd34446d3e9b90a936a365dc44c6e4121c662b28ad6bd054f92674286",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 483,
+          "end": 560,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Cancellation/supersession require no attempt or matching published reply, intact pending/route binding, and bounded reason for supersede. Captured/submitted intent cannot be discarded as unanswered.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "bb8aac6c4744de4a5be3ffbaa722930f961245abaa749a6da451220b0c01b7c9",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 563,
+          "end": 584,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Orphan cleanup requires no attempt/observed reply and missing/inactive route; active exact binding demands exact-prompt cancellation, unreadable binding refuses.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "dcfac3196cfcd43d1ccdaabd3e42799bec56c33e9ae5f4f921538c5444491750",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    },
+    {
+      "id": "hooks:reconciliation:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "start": 587,
+          "end": 618,
+          "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+        }
+      ],
+      "conformance": "Recovery cleanup follows matching committed transaction or a named proven-uncommitted ArtifactError. Other uncertainty rethrows so original request/evidence remains recoverable.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:reconciliation",
+      "baseline_clause_sha256": "a692d49034a3362e6a7ceb393d5f5dee944100ebe084d10ca514c86932d65627",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_reconciliationlib.py",
+          "symbol": "module",
+          "lines": "1-718"
+        },
+        {
+          "path": "core/pysrc/artifact-reconcile.py",
+          "symbol": "module",
+          "lines": "1-70"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:reconciliation",
+      "constituents": [
+        "hooks:reconciliation:01",
+        "hooks:reconciliation:02",
+        "hooks:reconciliation:03",
+        "hooks:reconciliation:04",
+        "hooks:reconciliation:05",
+        "hooks:reconciliation:06",
+        "hooks:reconciliation:07",
+        "hooks:reconciliation:08"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

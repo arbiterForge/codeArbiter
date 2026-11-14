@@ -1,0 +1,69 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+    "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:hook-admission:01",
+    "disposition:transitions:hooks:hook-admission:02",
+    "disposition:transitions:hooks:hook-admission:03",
+    "disposition:transitions:hooks:hook-admission:04",
+    "disposition:transitions:hooks:hook-admission:05",
+    "disposition:transitions:hooks:protected-state:01",
+    "disposition:transitions:hooks:protected-state:02",
+    "disposition:transitions:hooks:protected-state:03",
+    "disposition:transitions:hooks:protected-state:04",
+    "disposition:transitions:hooks:protected-state:05",
+    "disposition:transitions:hooks:protected-state:06",
+    "disposition:transitions:hooks:protected-state:07",
+    "disposition:transitions:hooks:shell-parser:01",
+    "disposition:transitions:hooks:shell-parser:02",
+    "disposition:transitions:hooks:shell-parser:03",
+    "disposition:transitions:hooks:shell-parser:04",
+    "disposition:transitions:hooks:shell-parser:05",
+    "disposition:transitions:hooks:push:01",
+    "disposition:transitions:hooks:push:02",
+    "disposition:transitions:hooks:push:03",
+    "disposition:transitions:hooks:push:05",
+    "disposition:machines:hooks:hook-admission",
+    "disposition:machines:hooks:protected-state",
+    "disposition:machines:hooks:shell-parser"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/source-inspection.json",
+      "sha256": "4653af7d5a90c9547b2e96c8c411bfdb66769e9228052577cb7fb7b63b9e9549"
+    }
+  ],
+  "scope": "hook-protection-shell-push: 21 whole transition clauses and 3 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

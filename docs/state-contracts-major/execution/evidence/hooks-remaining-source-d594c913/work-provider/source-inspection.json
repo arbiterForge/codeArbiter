@@ -1,0 +1,889 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "work-provider",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_workgithub.py": {
+      "source_sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+      "baseline_sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "S34:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 185,
+          "end": 250,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Origin/config/repository/generation and exact mapped desired state are re-read before effect; owning credential is validated. Fixed transport105–182 rejects unsupported endpoints; no arbitrary provider template.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "403d9768b26a2445f2c49a04738e4ed31b48dd0bb84166b86913e1256b184887",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 491,
+          "end": 501,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "A staged baseline mismatch calls work-effect-conflict then refuses before claim/send, preserving competing external state.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "ef735f1cb2b74970fe768b990973b2e985bf92528003fff2f62af5d72f372602",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 279,
+          "end": 467,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "after_merge verifies actual merged PR/default branch/work path/exact intent and local merge ancestry; prose/closed PR alone cannot satisfy it.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "22a09429159ef4f87c345649d42e8c1a1d46c1b857b90c378966834c360c5c19",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 502,
+          "end": 523,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Exact revision/model-bound work-effect-claim precedes sends; rechecks provider/origin/mapped intent after claim. Uncertain state remains delegated to owning native record.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "aef4b98943c4875786d2b49b4572d4f1c0bcbec7bbd2299c40ec4b2a98329580",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 524,
+          "end": 538,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Current claim sends one create carrying stable work marker, or only PATCHes when desired state differs; no generic resend route.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "32cee91907688b738a4f89f388d7c3e51db10e0da580448b7bca601c873dd682",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 539,
+          "end": 548,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Exact repository/issue URL/number/work marker and desired state are read back, then bound attempt ID and claimed revision are recorded.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "2c8bf8e2e621c32f7c2e54f1a0dfa81c4285ece2f51130774c5c0175e3bfa8f0",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S34:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 470,
+          "end": 548,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Pending-only sender refuses outcome_unknown and retains post-claim send/readback errors as OUTCOME_UNKNOWN. Recovery is separate target-specific observation; failed response is not automatic repeat authority.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "b8c2af881f245be44e1fa18e0dc212e4766d58222f766d60247233dce409354d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ]
+    },
+    {
+      "id": "S35:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 551,
+          "end": 566,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Only uncertain matching create can reconcile; supplied issue identity/unique marker checked by GET and record uses original attempt. No POST.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "fd2088b0c604e238767c87d490e183a55e0a5e6912c499c53aa055c62f5c90e6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ]
+    },
+    {
+      "id": "S35:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 569,
+          "end": 584,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Adoption permits only unsent create/no effect, validates existing issue and invokes native adoption with expected identities; no create request or inferred merge.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "d7bf8de2fe102c89ec3bf585cbe50f9e5e97681e4285c7b165d652ea843483b9",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ]
+    },
+    {
+      "id": "S35:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 587,
+          "end": 613,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Uncertain matching status update uses only GET; exact desired state records acknowledgment under saved attempt and expected revision.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "ab3b0723b259fc66d74dfcd7116fdf149c1eca21d015b76a0bc8ba5aada1087b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ]
+    },
+    {
+      "id": "S35:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 601,
+          "end": 603,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Remote mismatch with accept_remote false raises OUTCOME_UNKNOWN; intent is not treated delivered or automatically resent.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "e1f5b2644f77858a1599fd2462eb1cc726b03a7e0f1a06fb4746e56fd307c237",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ]
+    },
+    {
+      "id": "S35:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 601,
+          "end": 608,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Explicit accept_remote records verified competing state as native conflict with original attempt; it does not pretend desired state was delivered.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "ae7c7278dc5674bfe2b7fd1d67a1dbe88fa91a7baca2b5298cb2a5a0be088dde",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ]
+    },
+    {
+      "id": "S36:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 616,
+          "end": 714,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Selected issue/project repository, credential and generation must agree. Project membership scans at most30×100 nodes with exact identity and progressing cursor; incomplete scan cannot prove absence.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "c171ecc40f09e4e668b74a431775f9d6ce5f25ad69d251e0a354d4c05c834dbe",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 831,
+          "end": 852,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Bound pending project effect claims exact revision/attempt before mutation, then rechecks project generation/origin; state transition persistence is delegated, not runtime-certified.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "cffeffa79ce332cfa48394a8476dcc10c152e4eaae49de53c0709a437ac1b7bb",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 853,
+          "end": 865,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Only proven absence invokes fixed addProjectV2ItemById with exact project/issue IDs and validates returned/readback identity; declared idempotent service contract is an external assumption, not newly qualified.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "b5732bc550debae661db91925645d1001c9466f53b6984de96eae62450ce60f7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 843,
+          "end": 867,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Existing exact item skips add mutation and is recorded under claim; duplicate item identities raise conflict during scan.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "ed3967b0067519942a8898043334806f14b8db8cbfbc86ada2ab1d1f0426630e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 863,
+          "end": 870,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Readback must find returned item ID for selected issue/project; record binds attempt and claimed revision/model.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "a2ac5b7072f5d2264f1cf218a54768d4cbb4a3c6e9c0632a6a5899a3c072c29c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 873,
+          "end": 902,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Uncertain add first searches existing membership, replays only fixed declared-idempotent add if absent under current binding and then re-observes. It differs from non-idempotent issue-create policy.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "0c2754f82ca654b5b23aa8f7f35059954ba65a7d7a85347a48a01d15b5255e62",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S36:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 678,
+          "end": 714,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Malformed nodes/cursors, duplicate item identity, API failure or exhausted3000 bound raises; no incomplete search is interpreted as absent.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "441a0d1fe978594da0d18e6642e5b524aea9765171eb5c717eb4401ac5175465",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ]
+    },
+    {
+      "id": "S37:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 728,
+          "end": 828,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Native ready/synchronized/conflict or unsent-mapped state and exact field/option/item identities precede remote baseline read; stage request binds expected baseline and operation/revision.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "6495a52541431f44cb09c0b3a3ee651941db40c06d7c2c94a20fb765c9f4cf15",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 979,
+          "end": 1006,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Before writing, observed option must equal expected baseline or desired; mapped after_merge independently binds actual merge/default intent.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "61a66c2eb46b19acfa4abee04c1b01c25489e95975ff9be3a8e3b6601979bb51",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1004,
+          "end": 1006,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Competing option is recorded via conflict helper then refused before claim/mutation; external edit is not overwritten.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "4b9a5c8c9dace7a42939123aac9e9b0a6d9145aa88400c83548bb4508ea291d1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1007,
+          "end": 1036,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Revision-bound project claim precedes field update and generation/origin/mapped-intent rechecks; update occurs only if not already desired.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "f8f4590d62d3a6becc39fdf8b6d8e9b1217d43054436c6e4598456d7eafb9dfb",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1037,
+          "end": 1043,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Exact item/field readback must equal desired; only then record acknowledgment with original attempt and claimed revision.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "f86bd0cdc8a7077e41012a6715129628e95f48dd3754e916c5ebba5c0da89414",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1157,
+          "end": 1173,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Uncertain field request first observes exact current option; desired result bypasses update and records saved attempt.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "4218c7b12b435c7172ee91d29ec0f2e392b859124e2462b30fd975dbb2bb443f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1173,
+          "end": 1202,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Only unchanged baseline with current mapping/origin/generation and valid stored merge proof permits fixed idempotent field replay; re-observation must equal desired.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "b538fe784aaeee629a9d6b50ee3ac9bdde04ea6dab819ed09068546f8a9dc36a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1203,
+          "end": 1207,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Value neither baseline nor desired records competing edit and refuses overwrite; uncertainty remains for explicit restaging.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "ab3e4b2fb562979e105c2d338a8c11a57fd3f22c09504abb2402dbb62bd0a610",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S37:09",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 979,
+          "end": 1043,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Binding/identity/transport/readback errors cannot return a fabricated success. Post-claim errors become OUTCOME_UNKNOWN, preserving owning claim for reconciliation.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "c9a939b8a3fc8882054bbc04f2169352cd354cd46b9b3eabb746af8362565ddd",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ]
+    },
+    {
+      "id": "S38:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1075,
+          "end": 1124,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Current enabled map/generation is required; issue/project targets are evaluated separately using desired/status/effect ownership to select resume, observation or sender.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "998a016f87ac6c1e4c8ec351fbf159ebb63b8490cde9c5879fad920d73dd7ce1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    },
+    {
+      "id": "S38:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1093,
+          "end": 1117,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Waiting binding/reconciliation attempts resume; still-unavailable/mismatched/nonpending effect returns the actual status rather than inventing remote identity.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "9fff21de46ebef48f128470832c2f2a86ceb9d85946e3b63adb6313b8fb16fa7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    },
+    {
+      "id": "S38:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1046,
+          "end": 1072,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Resume uses saved transition/revision and target-specific observation policy; it does not perform a generic blind resend.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "0df1482b23b1d65ca16fa677306165fad6190a74517d5c885888e21212593820",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    },
+    {
+      "id": "S38:04",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 105,
+          "end": 134,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 831,
+          "end": 870,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        },
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1118,
+          "end": 1124,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Whole broad API/native/identity-error continuation is not supported as stated: loop catches only WorkSyncError/ArtifactError. A pre-claim transport URLError from _verified_issue_data/_project_issue can escape sender before its broad post-claim wrapper, aborting aggregate instead of continuing the independent target. Do not mark this row PRESERVED without narrowing the baseline error class or separately authorizing a fix.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "465ceaecc3a0fc3ec9402ab60f2bc17d19a9be6c34610f8f15a30f85015392f5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    },
+    {
+      "id": "S38:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1085,
+          "end": 1124,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "Aggregate ok requires every requested target synchronized, with omitted targets explicitly not_requested; partial actual statuses remain.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "a1d952cf39f1491ce4f7b07a52897d49596896bc4e9573cdc2436a25025117ad",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    },
+    {
+      "id": "S38:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1210,
+          "end": 1279,
+          "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+        }
+      ],
+      "conformance": "PR observation verifies GET PR/files/exact head work identity and invokes observe-delivery with expected local revision. It records open/closed/merged without marking local work done.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S38",
+      "baseline_clause_sha256": "343cea0911f6cc4244b640416053aa8e8f1c8adb8c847005f2e0904953d91dc4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+          "lines": "1046-1279"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "S34",
+      "constituents": [
+        "S34:01",
+        "S34:02",
+        "S34:03",
+        "S34:04",
+        "S34:05",
+        "S34:06",
+        "S34:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "S35",
+      "constituents": [
+        "S35:01",
+        "S35:02",
+        "S35:03",
+        "S35:04",
+        "S35:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "S36",
+      "constituents": [
+        "S36:01",
+        "S36:02",
+        "S36:03",
+        "S36:04",
+        "S36:05",
+        "S36:06",
+        "S36:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "S37",
+      "constituents": [
+        "S37:01",
+        "S37:02",
+        "S37:03",
+        "S37:04",
+        "S37:05",
+        "S37:06",
+        "S37:07",
+        "S37:08",
+        "S37:09"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

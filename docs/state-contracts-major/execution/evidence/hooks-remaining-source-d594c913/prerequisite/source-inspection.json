@@ -1,0 +1,265 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "prerequisite",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_artifactauthoritylib.py": {
+      "source_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "baseline_sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "source_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "baseline_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_prerequisitelib.py": {
+      "source_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "baseline_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_replylib.py": {
+      "source_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "baseline_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:prerequisite:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 298,
+          "end": 336,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        },
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 550,
+          "end": 630,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        },
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 156,
+          "end": 173,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Exact current approved plan/prerequisite and matching final identity freeze review packet/prompt with24h reply validity. Exclusive pending creation and per-transition lock refuse existing/busy/malformed state.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "676ef5a4c0e1da353e4240b69f4cacc29681ac617ae829fdabf343fe342b97e5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 648,
+          "end": 706,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Only unexpired ARMED exact prompt/nonce plus current frozen identity/approved record can confirm. The confirmed event is persisted before capture/native mutation; no manufactured reply.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "3c16eaa1e6e855d27e6f607ed0c6a5da1aa17701f6504c72f349e7d66ecb2c68",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 709,
+          "end": 814,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Confirmed origin/event is reused to owning immutable source capture, then exact mutation request is durably retained as CAPTURED. Confirmed replay does not reapply original reply TTL or ask another user question.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "519c91727747a8617579d7659f840c858ecce33d7663e6074f43c2fb2ed50b3a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 457,
+          "end": 547,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        },
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 795,
+          "end": 814,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Stored mutation must equal frozen expected revision/model/prerequisite/receipt request. Native call precedes matching pending/route removal; unknown call result preserves captured state for replay.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "635974957951db9d6b2bf8af95430f9e45282abe8034b07150e3e64f49f0360c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 817,
+          "end": 871,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Only matching ARMED request can cancel/retire unanswered route; CONFIRMED/CAPTURED refuse discard and require recovery.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "893105da5fa02ac842078e75517318bae6c823846846eb62cd57bf1099814233",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 875,
+          "end": 938,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Supersede requires actual plan identity change. CAPTURED tries original request first; only explicit REVISION_CONFLICT permits retirement, while success records replay and other uncertainty rethrows.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "60996f160cffcc25e4c2520e0b30f1f771d89adb544552aa2e35cef8a2f7146c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prerequisite:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 399,
+          "end": 547,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        },
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "start": 733,
+          "end": 814,
+          "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+        }
+      ],
+      "conformance": "Confirmed/captured event/source/request identities are strictly reconstructed on load. Reply expiry gates only initial ARMED confirmation and cannot erase retained observation; malformed later state refuses.",
+      "dependency_boundary": "Source-level transitions only. Called native/host authorities remain external owning interfaces; no physical consent/native durability/runtime acceptance. Critical ArtifactClient call/exchange bodies unchanged; binary manifest admission adds refusal only.",
+      "machine_id": "hooks:prerequisite",
+      "baseline_clause_sha256": "8b47bdae3e86cc29ad329d9f16784ddbfc72acc96d21e53322a7233794a68a53",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prerequisitelib.py",
+          "symbol": "module",
+          "lines": "1-1042"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:prerequisite",
+      "constituents": [
+        "hooks:prerequisite:01",
+        "hooks:prerequisite:02",
+        "hooks:prerequisite:03",
+        "hooks:prerequisite:04",
+        "hooks:prerequisite:05",
+        "hooks:prerequisite:06",
+        "hooks:prerequisite:07"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

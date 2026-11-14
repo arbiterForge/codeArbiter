@@ -1,0 +1,102 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: split-only successor reusing actual original d594 clause inspection; current physical bytes checked, no rerun"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Original finite conditional source clauses only, narrowed to actual tag-observation control cone; no execution or broader task/machine claim.",
+  "dependency_boundary": "Same original inspected direct code/guard/data scope; unrelated CI source removed because this cone does not read it. No runtime observation or imported authority is created by splitting.",
+  "inputs": {
+    ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C19:01",
+    "disposition:transitions:C19:02",
+    "disposition:transitions:C19:03"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C19:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 21,
+          "end": 76,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 144,
+          "end": 165,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Governed SemVer tag/nonzero lowercase commit guards precede a bounded exact one/two-record tab parser: one direct ref required, optional peel only, duplicate/unexpected names reject and chosen commit must equal expected. Receipt run/workflow fields remain caller-supplied observations, not authenticated original publication.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a43fe985bd38202caeaf9debb749da4c8959f827520d8c07e46f3d621d1e0278",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C19:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 79,
+          "end": 110,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Lexical existing parent chain must be directories without reparse flags and final path absent. A complete temp file is flushed/fsynced and hardlinked without replacement, then temp cleanup attempted. Cooperative private-parent precondition and cleanup warning limit remain explicit; no hostile same-user race immunity is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "978bf56508efff250c03c66f1aa7e4e635e72854889bc6cdedc6982d7a4dba5f",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C19:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 79,
+          "end": 91,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 94,
+          "end": 110,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "start": 167,
+          "end": 169,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "semantic_assessment": "Existing output is rejected before writing and a later destination collision makes exclusive os.link fail; no fallback overwrite exists. Retry needs a fresh owned destination or caller reconciliation.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "b9dc5f649ca23b0755d5b03b4fdb60ff913aa81e396462e3594f120b786b01ef",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "original_inspection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-tool-source-clauses-d594\\inspection.json",
+    "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  }
+}

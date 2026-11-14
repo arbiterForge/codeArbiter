@@ -1,0 +1,32 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:task-lock-exclusion:01",
+    "disposition:transitions:hooks:task-lock-exclusion:02",
+    "disposition:transitions:hooks:task-lock-exclusion:03",
+    "disposition:transitions:hooks:task-lock-exclusion:04",
+    "disposition:transitions:hooks:task-lock-exclusion:05",
+    "disposition:machines:hooks:task-lock-exclusion"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/task-lock-exclusion/source-inspection.json",
+      "sha256": "831403413b1f21a4254058cefeab258c5bd841034028267e7dcb96e56daf563a"
+    }
+  ],
+  "scope": "task-lock-exclusion: 5 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/task-lock-exclusion/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}
