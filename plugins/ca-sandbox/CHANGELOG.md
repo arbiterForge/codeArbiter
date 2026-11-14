@@ -23,6 +23,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Fixed
 
+- Honor cancellation observed after container start and run scoped compensation before returning a creation result.
 - Reject cancelled cached-image reuse after the awaited image identity check.
 - Seed copy qualification data on its owned volume and preserve primary failures if fixture cleanup also fails.
 - Compare complete container identities when checking cleanup ownership in shipped CLI qualification.

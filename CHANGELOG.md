@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Honor late Sandbox creation cancellation and rebuild the shipped CLI with its cancellation checks.
 - Collect matching observed Pi RPC evidence before raw failures stop the qualification runner; retain its existing test limits.
 - Clarify prompt-submit persona ownership and keep cancelled or interrupted CI watches from being treated as green.
 - Classify malformed provider JSON at the transport boundary without hiding programmer errors.

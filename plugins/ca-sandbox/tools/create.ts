@@ -485,6 +485,7 @@ export async function createSandbox(
         : undefined,
     });
 
+    opts.signal?.throwIfAborted();
     return {
       id,
       volumeName,

@@ -818,6 +818,7 @@ async function buildOrReuseImage(repoDir, dephash, deps = defaultBuildDeps(), re
   if (inspectCode === 0 && deps.imageIdentity) {
     const identity = await deps.imageIdentity(tag);
     if (identity && /^sha256:[a-f0-9]{64}$/.test(identity.id) && identity.cacheKey === cacheKey) {
+      signal?.throwIfAborted();
       return { tag, cacheKey, imageId: identity.id, reused: true, built: false, builder, notes };
     }
   }
@@ -1169,6 +1170,7 @@ ${cloneStderr.trim()}` : "";
       signal: opts.signal,
       dockerRun: opts.dockerRun ? (args, call) => opts.dockerRun(args, call) : void 0
     });
+    opts.signal?.throwIfAborted();
     return {
       id,
       volumeName,
