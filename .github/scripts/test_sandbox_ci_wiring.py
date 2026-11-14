@@ -126,6 +126,52 @@ class AdapterContracts(unittest.TestCase):
             with self.assertRaises(ValueError):a.admit(observed,req=req,job_id=23,authenticated_payloads=payloads,repo=Path(raw),producer_job={'id':23,'name':JOB,'run_id':17,'status':'in_progress','run_attempt':2},runtime_acquisition={})
 
 class SourceContracts(unittest.TestCase):
+    def assert_source_image_prerequisite(self, source, image):
+        import re
+        steps=re.split(r'(?m)^      - ',source)
+        pulls=[step for step in steps if re.search(
+            r'(?m)^        run: docker pull '+re.escape(image)+r'\s*$',step)]
+        self.assertEqual(len(pulls),1,'Required source job must pull the existing exact bundle image once')
+        pull=pulls[0]
+        self.assertNotRegex(pull,r'(?m)^        (?:if|continue-on-error):',
+                            'Required source image acquisition must fail closed')
+        self.assertLess(source.index('Docker preflight (REQUIRED prerequisite'),source.index(pull))
+        self.assertLess(source.index(pull),source.index('acquire_nixpacks.py'))
+        original='run: npm test -- --reporter=default --reporter=github-actions --reporter=json'
+        self.assertEqual(source.count(original),1)
+        self.assertLess(source.index(pull),source.index(original))
+        return '      - '+pull
+
+    def source_image_inputs(self):
+        import re
+        from test_ci_impact import workflow_jobs
+        from _sandbox_docker_profile import IMAGE
+        root=HERE.parents[1]
+        build=(root/'plugins/ca-sandbox/tools/build.ts').read_text(encoding='utf8')
+        pin=re.search(r'export const FALLBACK_BASE_IMAGE\s*=\s*"([^"]+)"',build)
+        self.assertIsNotNone(pin)
+        self.assertEqual(pin.group(1),IMAGE)
+        workflow=(root/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        return workflow_jobs(workflow)['ca-sandbox-tools'],IMAGE
+
+    def test_source_job_requires_existing_pinned_bundle_image_before_original_suite(self):
+        source,image=self.source_image_inputs()
+        self.assert_source_image_prerequisite(source,image)
+
+    def test_source_image_prerequisite_rejects_missing_wrong_late_or_optional_pull(self):
+        source,image=self.source_image_inputs()
+        pull=self.assert_source_image_prerequisite(source,image)
+        mutations={
+            'missing':source.replace(pull,'',1),
+            'wrong-pin':source.replace('docker pull '+image,'docker pull node:20-slim@sha256:'+'0'*64,1),
+            'late':source.replace(pull,'',1)+pull,
+            'optional':source.replace(pull,pull.replace('        run:',"        if: false\n        run:",1),1),
+            'ignored-failure':source.replace(pull,pull.replace('        run:',"        continue-on-error: true\n        run:",1),1),
+        }
+        for name,changed in mutations.items():
+            with self.subTest(mutation=name),self.assertRaises(AssertionError):
+                self.assert_source_image_prerequisite(changed,image)
+
     def test_required_source_lane_remains_and_new_job_is_trusted_readonly_single_run(self):
         from test_ci_impact import workflow_jobs,paths_filter,aggregate_required_results
         root=HERE.parents[1];text=(root/'.github/workflows/ci.yml').read_text(encoding='utf8');jobs=workflow_jobs(text)

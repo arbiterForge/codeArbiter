@@ -2339,6 +2339,10 @@ jobs:
             echo "::error::The ca-sandbox contract job requires a working Docker daemon. Without one the real isolation, mount, network, lifecycle and teardown suites cannot run, and this job would otherwise report green having exercised none of the container behaviour that contains an untrusted repository (issue #406)."
             exit 1
           fi
+      - name: Acquire the existing reviewed Sandbox image
+        # Source-mode bundled CLI cases inspect the same approved immutable
+        # fallback image as the dedicated installed job; never rely on cache.
+        run: docker pull node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
       - name: Acquire reviewed Linux Nixpacks for fixed-plan qualification
         working-directory: ${{ github.workspace }}
         run: >-
