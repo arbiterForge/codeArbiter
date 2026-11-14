@@ -83,6 +83,64 @@
         "installed:codex:0.145.0"
       ],
       "scope": "Original credential-free retained-package Codex CLI install/readback, full exact cache/resources and native capability exchange. No provider turn, hook firing or physical consent qualification."
+    },
+    {
+      "id": "pi-live-linux",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:linux:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "pi-live-windows",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:windows:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "pi-live-darwin",
+      "job": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "pi-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+      ],
+      "cells": [
+        "installed:pi:darwin:1.5.0"
+      ],
+      "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
+    },
+    {
+      "id": "sandbox-installed-docker",
+      "job": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "payload_name": "artifact-sandbox-plugin-{source_commit}-{run_attempt}",
+      "observation": "sandbox-live",
+      "proof_kind": "live-host",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] resolves exec through the shipped CLI",
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] copies out through the shipped CLI",
+        "vitest:plugins/ca-sandbox/tools/installed-bundle.test.ts:shipped sandbox bundle [docker] destroys its owned container and volume"
+      ],
+      "cells": [
+        "installed:sandbox:docker"
+      ],
+      "scope": "Three actual shipped CLI Docker cases using the complete authenticated original plain-plugin artifact. No create, provider, OAuth, marketplace/release or whole-Sandbox qualification."
     }
   ]
 }

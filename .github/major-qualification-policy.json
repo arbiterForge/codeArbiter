@@ -23,6 +23,10 @@
     "disposition:transitions:N09:04": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
     "installed:claude:workflow": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
     "installed:codex:0.143.0": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
-    "installed:codex:0.145.0": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>"
+    "installed:codex:0.145.0": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+    "installed:pi:linux:1.5.0": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+    "installed:pi:windows:1.5.0": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+    "installed:pi:darwin:1.5.0": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+    "installed:sandbox:docker": "[CHECK] | [SBX ] | Installed shipped bundle <docker>"
   }
 }

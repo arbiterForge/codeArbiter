@@ -218,6 +218,14 @@ jobs:
               - '.github/scripts/check_command_catalog.py'
               - '.github/scripts/test_command_catalog.py'
             ca-sandbox:
+              - '.github/scripts/_sandbox_docker_profile.py'
+              - '.github/scripts/observe_sandbox_installed_docker.py'
+              - '.github/scripts/test_observe_sandbox_installed_docker.py'
+              - '.github/scripts/coordinate_sandbox_installed.py'
+              - '.github/scripts/sandbox_live_report_profile.py'
+              - '.github/scripts/test_sandbox_ci_wiring.py'
+              - '.github/scripts/major_qualification_report.py'
+              - '.github/scripts/acquire_nixpacks.py'
               - 'plugins/ca-sandbox/**'
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
@@ -232,6 +240,12 @@ jobs:
               - '.github/scripts/test_codex_candidate_provenance.py'
               - '.github/workflows/ci.yml'
             ca-pi:
+              - '.github/scripts/_pi_rpc_profile.py'
+              - '.github/scripts/observe_pi_installed_rpc.py'
+              - '.github/scripts/test_observe_pi_installed_rpc.py'
+              - '.github/scripts/coordinate_pi_host.py'
+              - '.github/scripts/pi_live_report_profile.py'
+              - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/coverage_union.py'
               - '.github/scripts/test_coverage_union.py'
               - 'plugins/ca-pi/**'
@@ -453,6 +467,12 @@ jobs:
               - '**/*.json'
               - '.github/workflows/ci.yml'
             artifacts:
+              - '.github/scripts/_pi_rpc_profile.py'
+              - '.github/scripts/observe_pi_installed_rpc.py'
+              - '.github/scripts/test_observe_pi_installed_rpc.py'
+              - '.github/scripts/coordinate_pi_host.py'
+              - '.github/scripts/pi_live_report_profile.py'
+              - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/ci20_native_binding.py'
               - '.github/scripts/test_ci20_native_pipeline.py'
               - '.github/scripts/test_go_test_parallel.py'
@@ -2265,6 +2285,11 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
+      - name: Pure installed Sandbox observer contracts
+        working-directory: ${{ github.workspace }}
+        run: |
+          python3 -B .github/scripts/test_observe_sandbox_installed_docker.py
+          python3 -B .github/scripts/test_sandbox_ci_wiring.py
       - name: Install (locked)
         # --ignore-scripts: this graph's OUTPUT is a committed artifact, so an
         # install-time script from a compromised dev dependency would execute
@@ -2481,6 +2506,11 @@ jobs:
         run: npm run typecheck
       - name: Test the complete Pi adapter suite
         run: npm test
+      - name: Test closed installed Pi observer and trusted CI wiring
+        working-directory: .
+        run: |
+          python -B .github/scripts/test_observe_pi_installed_rpc.py
+          python -B .github/scripts/test_pi_ci_wiring.py
       - name: Test cross-host coverage identity and provenance
         working-directory: .
         run: python .github/scripts/test_coverage_union.py
@@ -3801,6 +3831,225 @@ jobs:
           # (the docker-gate discipline from #406).
           CA_REQUIRE_CODEX: "1"
         run: python3 .github/scripts/check_codex_host.py
+
+  pi-installed-package:
+    name: "[CHECK] | [PI  ] | Installed retained package <pi: ${{ matrix.system }} 1.5.0>"
+    # Installed evidence only; required source Pi jobs retain independent routing.
+    needs: [changes, artifact-package-assembly]
+    if: >-
+      needs.changes.outputs.artifacts == 'true' &&
+      needs.artifact-package-assembly.result == 'success' &&
+      github.repository == 'arbiterForge/codeArbiter' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: linux
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - system: windows
+            platform: windows/amd64
+            runner: windows-latest
+          - system: darwin
+            platform: darwin/arm64
+            runner: macos-26
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.19.0
+      - name: Select explicit committed program marker
+        id: program
+        shell: bash
+        run: |
+          if [ -f .github/integration-candidate.json ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download original promoted payloads for Pi
+        if: steps.program.outputs.enabled == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: artifact-host-payloads-${{ github.sha }}
+          path: ${{ runner.temp }}/pi-stage
+      - name: Download original release packages for Pi
+        if: steps.program.outputs.enabled == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: artifact-release-packages-${{ github.sha }}
+          path: ${{ runner.temp }}/pi-packages
+      - name: Observe the original retained Pi RPC installation
+        id: pi-qualification
+        if: steps.program.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pi_workspace_parent="$(python -c 'import os; from pathlib import Path; print(Path(os.environ["GITHUB_WORKSPACE"]).resolve().parent)')"
+          python -I -B .github/scripts/coordinate_pi_host.py \
+            --repo . --stage "${{ runner.temp }}/pi-stage" \
+            --package-root "${{ runner.temp }}/pi-packages" \
+            --expected-platform "${{ matrix.platform }}" \
+            --workspace "$pi_workspace_parent/pi-observer-${{ matrix.system }}-${{ github.run_attempt }}" \
+            --output-root "${{ runner.temp }}/pi-observation-${{ matrix.system }}"
+          python - "${{ runner.temp }}/pi-observation-${{ matrix.system }}/qualification.json" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              job_id = json.load(stream)["job_id"]
+          assert type(job_id) is int and job_id > 0
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write("artifact_name=major-qualification-" + str(job_id) + "\n")
+          PY
+      - name: Retain original Pi coordinator and execution records
+        if: ${{ !cancelled() && steps.program.outputs.enabled == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-pi-observation-${{ matrix.system }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/**/*.json
+          if-no-files-found: warn
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Upload major qualification report
+        if: steps.pi-qualification.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.pi-qualification.outputs.artifact_name }}
+          path: ${{ runner.temp }}/pi-observation-${{ matrix.system }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+
+  sandbox-installed-package:
+    name: "[CHECK] | [SBX ] | Installed shipped bundle <docker>"
+    # Separate finite installed evidence. The original source driver and its
+    # required aggregate remain; final readiness also requires this exact job.
+    needs: changes
+    if: >-
+      needs.changes.outputs.ca-sandbox == 'true' &&
+      github.repository == 'arbiterForge/codeArbiter' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    env:
+      CA_SANDBOX_REQUIRE_DOCKER: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 20
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.x"
+      - name: Select explicit committed program marker
+        id: program
+        shell: bash
+        run: |
+          if [ -f .github/integration-candidate.json ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Stage exact immutable Sandbox plugin
+        if: steps.program.outputs.enabled == 'true'
+        run: >-
+          python -I -B .github/scripts/coordinate_sandbox_installed.py stage
+          --repo . --payload-root "${{ runner.temp }}/sandbox-plugin"
+      - name: Upload exact Sandbox plugin payload
+        id: sandbox-payload
+        if: steps.program.outputs.enabled == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-sandbox-plugin-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sandbox-plugin/
+          if-no-files-found: error
+          include-hidden-files: true
+          overwrite: false
+          retention-days: 14
+      - name: Install locked Sandbox tool graph
+        if: steps.program.outputs.enabled == 'true'
+        working-directory: plugins/ca-sandbox/tools
+        run: npm ci --ignore-scripts
+      - name: Docker preflight for installed Sandbox
+        if: steps.program.outputs.enabled == 'true'
+        run: docker info --format '{{.OSType}}'
+      - name: Acquire the existing reviewed Sandbox image
+        if: steps.program.outputs.enabled == 'true'
+        run: docker pull node:20-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+      - name: Acquire reviewed Linux Nixpacks once
+        if: steps.program.outputs.enabled == 'true'
+        run: >-
+          python3 .github/scripts/acquire_nixpacks.py
+          --output "$RUNNER_TEMP/nixpacks-acquisition.json" --github-path
+      - name: Observe original installed Sandbox Docker run
+        id: sandbox-qualification
+        if: steps.program.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SANDBOX_ARTIFACT_ID: ${{ steps.sandbox-payload.outputs.artifact-id }}
+          SANDBOX_ARTIFACT_DIGEST: ${{ steps.sandbox-payload.outputs.artifact-digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B .github/scripts/coordinate_sandbox_installed.py observe \
+            --repo . --payload-root "${{ runner.temp }}/sandbox-plugin" \
+            --output-root "${{ runner.temp }}/sandbox-installed" \
+            --artifact-id "$SANDBOX_ARTIFACT_ID" --artifact-digest "$SANDBOX_ARTIFACT_DIGEST"
+          python - "${{ runner.temp }}/sandbox-installed/qualification.json" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              job_id = json.load(stream)["job_id"]
+          assert type(job_id) is int and job_id > 0
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write("artifact_name=major-qualification-" + str(job_id) + "\n")
+          PY
+      - name: Retain original Sandbox execution diagnostics
+        if: ${{ !cancelled() && steps.program.outputs.enabled == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-sandbox-observation-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/sandbox-installed/**/*.json
+            ${{ runner.temp }}/sandbox-installed/**/*.log
+            ${{ runner.temp }}/sandbox-installed/**/*.raw
+            ${{ runner.temp }}/nixpacks-acquisition.json
+          if-no-files-found: warn
+          overwrite: false
+          retention-days: 14
+      - name: Upload major qualification report
+        if: steps.sandbox-qualification.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.sandbox-qualification.outputs.artifact_name }}
+          path: ${{ runner.temp }}/sandbox-installed/qualification.json
+          if-no-files-found: error
+          overwrite: false
+          retention-days: 14
 
   codex-installed-package:
     name: "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>"
