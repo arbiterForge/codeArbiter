@@ -2736,7 +2736,9 @@ jobs:
     # feedback loop.
     # Each job qualifies one fresh native reader for process-local test harnesses.
     # Tests and vet still run; only repeated identical qualifications disappear.
-    timeout-minutes: 20
+    # Windows contracts passed in19m47s and then exhausted20m while all prior
+    # steps passed; allow bounded setup/runner variance only for that cell.
+    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}
     env:
       ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../hooks-native
     steps:
