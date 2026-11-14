@@ -565,9 +565,45 @@ def main(argv=None):
                 stage=args.stage, package_root=args.package_root, authenticated_payloads=payloads, output=args.output)
 
 
+def _diagnostic_code(error):
+    """Classify only known fixed causes; never render an underlying value."""
+    seen, upload = set(), False
+    for _ in range(16):
+        if error is None or id(error) in seen:
+            break
+        seen.add(id(error))
+        args = error.args
+        text = args[0] if len(args) == 1 and type(args[0]) is str else None
+        if text == "upload attribution unavailable or malformed":
+            upload = True
+        elif text in ("required exact upload step did not succeed",
+                      "artifact created outside claimed upload step",
+                      "upload attribution log exceeds bound",
+                      "claimed upload step did not run the pinned artifact uploader",
+                      "artifact ID/name/digest not finalized by claimed upload job"):
+            return "UPLOAD_ATTRIBUTION_REJECTED"
+        elif upload:
+            if text == "readiness observation failed: gh":
+                return "UPLOAD_LOG_COMMAND_FAILED"
+            if text in ("readiness observation timed out; containment=exited",
+                        "readiness observation timed out; containment=terminated",
+                        "readiness observation timed out; containment=unconfirmed"):
+                return "UPLOAD_LOG_TIMEOUT"
+            if (text == "invalid upload time identity"
+                    or (type(error) is ValueError and text is not None
+                        and text.startswith("Invalid isoformat string: "))
+                    or (type(error) is KeyError and text in
+                        ("id", "name", "digest", "started_at", "completed_at", "created_at"))):
+                return "UPLOAD_METADATA_INVALID"
+            if type(error) is UnicodeDecodeError:
+                return "UPLOAD_LOG_MALFORMED"
+        error = error.__cause__
+    return "UNKNOWN"
+
+
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
-        print("::error::Retained cold observer refused; diagnostic_sha256=" + digest(str(error).encode("utf-8", errors="replace")), file=sys.stderr)
+        print("::error::Retained cold observer refused; code=" + _diagnostic_code(error) + "; diagnostic_sha256=" + digest(str(error).encode("utf-8", errors="replace")), file=sys.stderr)
         raise SystemExit(1)

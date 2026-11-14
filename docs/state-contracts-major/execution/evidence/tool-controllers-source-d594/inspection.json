@@ -1,0 +1,343 @@
+{
+  "schema": "codearbiter.compact-source-clause-inspection/1",
+  "actor": "/root/packaging_site_tools",
+  "subject_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "current_git_checked": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "mode": "SOURCE_CLAUSE_ONLY_NO_EXECUTION",
+  "rows": [
+    {
+      "cell": "disposition:transitions:T01:01",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 162,
+          "end": 193,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Map parser requires schema1, known lane/scope, nonempty check text, unique IDs, broad-lane and nonempty valid unique edges. Canonical descriptor loader only accepts core/hosts.json and validates descriptor shape/host conditions; immutable mapping dataclasses are constructed. CLI catches the declared load errors and expands to broad validation rather than reducing scope.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:02",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 196,
+          "end": 389,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Every supplied relative POSIX changed path is normalized then matched against explicit glob or descriptor edge. First matching descriptor surface rule wins and exact exclusions suppress that host. Known check IDs are deduplicated; an unmapped affected host/path returns broad fallback, never a silent empty selection.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:03",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 70,
+          "end": 211,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Empty changes or any invalid/unmapped path uses ImpactResult.broad_lane with only broad-lane selected. _predicted_not_selected returns empty for fallback rather than implying irrelevant checks. Successful mapping branch is reached only after all paths classify.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:04",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 418,
+          "end": 454,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "The declared ImpactMapError/OSError/ValueError handlers construct a built-in CHECK/REPO Broad validation receipt including failure reason; the subsequent filesystem writes remain outside that catch and may fail. Receipt is advisory and no job outcome is inferred.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:05",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 418,
+          "end": 454,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Requested output uses UTF-8 overwrite and requested summary uses append before return0. No workflow mutation or job execution/if rewriting exists in this planner main; write failures propagate. This is shadow receipt generation, not validation actually running.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T09:01",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 129,
+          "end": 144,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Main requires nonempty ARTIFACT_TEST_INSTALLATION before invoking builder. The inspected build_installation supplied branch requires directory and copies supplied native payload; driver then loads fixture-installed knowledge helper. The unsupplied builder branch is unreachable under stable environment through this main check; no actual native installation admission/result is claimed.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:02",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 38,
+          "end": 99,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Chosen fixed small/large size creates owned TemporaryDirectory resolved to physical root; fixed Git init checks success, helper init/create-missing must return0. Synthetic records use fixed kinds, scoped/global path data and batches20, with matching five legacy Markdown files; context cleanup covers failures. Actual helper effect is conditional on its success, not asserted here.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:03",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 68,
+          "end": 126,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Fixed helper subprocess has 300-second timeout and nonzero abort. Driver reads all five legacy documents, invokes same scoped relevant target twice, decodes actual warm JSON fields and reports returned/unmatched/omitted/unreadable counts. Cold/warm equality is an observed-output comparison boolean, not an assumed equality. No measured result is fabricated.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:04",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 129,
+          "end": 144,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Only after requested size calls complete is the aggregate printed; finally cleans builder owner when provided. Main has no percentage acceptance threshold. Legacy byte/4 and new character/4 estimators remain explicitly estimates; no tokenizer accuracy or performance improvement is asserted.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:C12:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 25,
+          "end": 110,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "Exact lowercase40 commit must resolve to the same Git commit and exact tree. Fixed git archive selects only plugins/ca-codex into an owned temporary ZIP; wrapper loads its checker from fixed sibling trusted location, not candidate. Git/archive failure refuses, archive has byte limit, no candidate script import occurs.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/check_codex_static_package.py",
+          "start": 59,
+          "end": 296,
+          "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618"
+        }
+      ],
+      "semantic_assessment": "Bounded inert package reader rejects unsafe/colliding ZIP/file population and malformed duplicate/nonfinite JSON; frontmatter validates required identities/quoting. ca-codex name/SemVer, closed hook fields/grammar, approved complete canonical hook digest and present target files are checked. Resource closure rejects escaped/unresolved reads and deterministic sorted path/content manifests yield hashes. No current candidate PASS is claimed.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 93,
+          "end": 132,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "After bounded static contract returns, each supplied archive/package/resource expected digest must be lowercase64hex and exactly observed; mismatch raises. Success result includes exact source/tree and identities/version/counts. Temporary archive exits context before result, and no live hook execution evidence is claimed.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_candidate_provenance.py",
+          "start": 29,
+          "end": 151,
+          "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0"
+        }
+      ],
+      "semantic_assessment": "Legacy wrapper independently requires exact commit/tree, fixed plugin-only Git ZIP and digest expectations, loads trusted resource-checker candidate_static_contract and returns its selected-resource/read counts. It remains a distinct inert wrapper; it never loads executable code from candidate archive.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C12:05",
+      "witnesses": [
+        {
+          "path": ".github/scripts/verify_codex_static_candidate.py",
+          "start": 146,
+          "end": 167,
+          "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+        }
+      ],
+      "semantic_assessment": "Main catches OSError/ValueError/KeyError from identity/schema/digest checks, emits FAIL/errors in JSON mode plus stderr and returns1; success return0 follows completed verifier. No publication/API effect is present in this static CLI. Other unexpected failures are not relabeled PASS.",
+      "limits": "Source-only inert static-wrapper/package-validation contract. Candidate scripts are data, not executed. Trusted checker/resource loader, changed bounded directory/native exceptions and exact ZIP branch were read; no actual archive/native/CLI/runtime, hook discovery, package publication or authenticated producer acceptance."
+    },
+    {
+      "cell": "disposition:transitions:C28:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 51,
+          "end": 229,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Exact preview-MAJOR.MINOR or bounded100x10 listed stable preview selection is validated. Bounded2MiB/30-second same-URL public reads bind published non-prerelease immutable release, annotated tag/peeled commit and manifest fetched at that commit. Available/runnable/guided arrays must be equal ordered unique nonempty; lower/current-without-allow refuses. This is source consistency under trusted API responses, not an observation of remote release.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 289,
+          "end": 329,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Allow-current comparison invokes exact submodule HEAD and test pinned-commit equality before up_to_date output. Workflow conditions skip apply/install/generate/test/typecheck when true. Same version with different source refuses rather than mutating immutable identity.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 241,
+          "end": 286,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Apply requires a single consumer release matching expected_current and strict version advance; each contract release/fixture/commit replacement must have exactly one match. CLI verifies submodule exact candidate commit before updates. Two declared UTF-8 files are written sequentially; later I/O error can leave a partial disposable checkout and no branch/release is published.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:04",
+      "witnesses": [
+        {
+          "path": ".github/workflows/academy-promotion.yml",
+          "start": 57,
+          "end": 94,
+          "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b"
+        }
+      ],
+      "semantic_assessment": "Workflow source checks local annotated tag object and peeled commit then detached checkout; only a changed candidate installs locked site toolchain with ignore-scripts, generates inputs and invokes promotion consumer contract/typecheck. Any failed command fails its step; actual command execution/readback is outside source conformance.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:05",
+      "witnesses": [
+        {
+          "path": ".github/workflows/academy-promotion.yml",
+          "start": 103,
+          "end": 108,
+          "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b"
+        }
+      ],
+      "semantic_assessment": "Workflow final conditional is schedule plus up_to_date not true and explicitly exits1 as pending-owner attention. Manual validation path records required governed promotion action without auto-push/release. This branch is not treated as candidate validation failure or actual scheduled observation.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    }
+  ],
+  "holds": {},
+  "dependency_assessments": {
+    "impact-planner": "Changed shared host descriptor loader inspected for canonical loading, closed shapes and ordered rules. Source-conformance is conditional on supplied descriptors/tag scan; no complete load/execution success inferred.",
+    "knowledge-measurement": "Driver and build_installation supplied-payload branch inspected. Full installed/native knowledge implementation is an explicit precondition and not claimed as source/runtime acceptance.",
+    "codex-static": "Both trusted wrapper loaders and static/resource package paths inspected, including bounded ZIP/member/resource closure and changed receipt-proven native directory exceptions. No candidate is executed.",
+    "academy-promotion": "stdlib-only script and exact workflow branch/commands read. Remote metadata is a conditional input, not an authenticated runtime observation."
+  },
+  "input_joins": {
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "d594_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "d594_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "d594_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "tools/ci-impact.py": {
+      "d594_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "tools/host_descriptors.py": {
+      "d594_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "core/hosts.json": {
+      "d594_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/ci-impact-map.json": {
+      "d594_sha256": "ce540c486fc18c87f16ee9309ea4f33b10763cc83f1ae790343e860eb40f83b5",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "tools/measure-knowledge-retrieval.py": {
+      "d594_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/test_artifact_authoring.py": {
+      "d594_sha256": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/verify_codex_static_candidate.py": {
+      "d594_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/verify_codex_candidate_provenance.py": {
+      "d594_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/check_codex_static_package.py": {
+      "d594_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/check_codex_skill_resources.py": {
+      "d594_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/academy_promotion.py": {
+      "d594_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/workflows/academy-promotion.yml": {
+      "d594_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    }
+  },
+  "machines_promoted": [],
+  "tasks_promoted": []
+}

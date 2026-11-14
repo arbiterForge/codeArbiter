@@ -1120,6 +1120,12 @@ def sync_mapped(root, client, work_id, transport=None, token_lookup=None, pull_n
             outcomes[target] = {"status": "synchronized"}
         except (WorkSyncError, ArtifactError) as exc:
             outcomes[target] = {"status": "failed", "code": exc.code, "error": str(exc)}
+        except (error.URLError, TimeoutError):
+            # Pre-claim reads may fail without a provider effect. Keep that
+            # target pending and continue independently mapped targets; never
+            # copy a transport exception that may contain credentials or URLs.
+            outcomes[target] = {"status": "failed", "code": "GITHUB_UNAVAILABLE",
+                                "error": "GitHub read is unavailable; no successful target observation was recorded"}
     return {"ok": all(value["status"] in ("not_requested", "synchronized") for value in outcomes.values()),
             "work_id": work_id, "transition_id": coordination["transition_id"], "targets": outcomes}
 

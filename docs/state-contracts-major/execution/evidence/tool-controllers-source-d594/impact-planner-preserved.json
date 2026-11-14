@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/ci-impact-map.json": "ce540c486fc18c87f16ee9309ea4f33b10763cc83f1ae790343e860eb40f83b5",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/ci-impact.py": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T01:01",
+    "disposition:transitions:T01:02",
+    "disposition:transitions:T01:03",
+    "disposition:transitions:T01:04",
+    "disposition:transitions:T01:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/inspection.json",
+      "sha256": "0e80a53fd8c7ac14f17fe1b4ab3fa467597a83546beb2d99cdbe79fe13553a02"
+    }
+  ],
+  "scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:T01:01",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 162,
+          "end": 193,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Map parser requires schema1, known lane/scope, nonempty check text, unique IDs, broad-lane and nonempty valid unique edges. Canonical descriptor loader only accepts core/hosts.json and validates descriptor shape/host conditions; immutable mapping dataclasses are constructed. CLI catches the declared load errors and expands to broad validation rather than reducing scope.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:02",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 196,
+          "end": 389,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Every supplied relative POSIX changed path is normalized then matched against explicit glob or descriptor edge. First matching descriptor surface rule wins and exact exclusions suppress that host. Known check IDs are deduplicated; an unmapped affected host/path returns broad fallback, never a silent empty selection.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:03",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 70,
+          "end": 211,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Empty changes or any invalid/unmapped path uses ImpactResult.broad_lane with only broad-lane selected. _predicted_not_selected returns empty for fallback rather than implying irrelevant checks. Successful mapping branch is reached only after all paths classify.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:04",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 418,
+          "end": 454,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "The declared ImpactMapError/OSError/ValueError handlers construct a built-in CHECK/REPO Broad validation receipt including failure reason; the subsequent filesystem writes remain outside that catch and may fail. Receipt is advisory and no job outcome is inferred.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    },
+    {
+      "cell": "disposition:transitions:T01:05",
+      "witnesses": [
+        {
+          "path": "tools/ci-impact.py",
+          "start": 418,
+          "end": 454,
+          "file_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79"
+        }
+      ],
+      "semantic_assessment": "Requested output uses UTF-8 overwrite and requested summary uses append before return0. No workflow mutation or job execution/if rewriting exists in this planner main; write failures propagate. This is shadow receipt generation, not validation actually running.",
+      "limits": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+    }
+  ],
+  "excluded_cells": []
+}

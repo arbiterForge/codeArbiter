@@ -1436,6 +1436,78 @@ class GithubWorkTest(unittest.TestCase):
         self.assertEqual(current["coordination"]["transition_id"],
                          completed["coordination"]["transition_id"])
 
+    def _mapped_targets_ready_for_transport_failure(self):
+        transport = FakeProjectGithub()
+        self._project_ready(transport)
+        attached = _workgithub.sync_project(self.root, self.client, self.work_id, transport,
+                                             lambda _: "fixture-token")
+        issue = self.client.call("work-provider-get", {})
+        project = self.client.call("work-project-get", {})
+        self.client.call("work-transition-map-configure", {
+            "operation_id": "mapped-preclaim-map-001", "enabled": True,
+            "issue_generation": issue["binding_generation"],
+            "project_generation": project["binding_generation"],
+            "project_field_id": transport.field_id,
+            "actions": {action: {"issue_state": "closed", "project_option_id": "b1234567"}
+                        for action in ("start", "complete", "reopen")}})
+        completed = self.client.call("work-update", {
+            "operation_id": "mapped-preclaim-complete-001", "work_id": self.work_id,
+            "action": "complete", "expected": {"revision": attached["revision"],
+                                               "model_sha256": attached["model_sha256"]}})
+        return transport, completed["provider_effect"]
+
+    def _check_mapped_preclaim_transport_failure(self, failure):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        original_request = transport.request
+        failed = False
+
+        def fail_first_issue_read(method, path, body, token):
+            nonlocal failed
+            if not failed and method == "GET" and path.endswith("/issues/7"):
+                failed = True
+                raise failure
+            return original_request(method, path, body, token)
+
+        with mock.patch.object(transport, "request", side_effect=fail_first_issue_read):
+            first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertTrue(failed)
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"], {
+            "status": "failed", "code": "GITHUB_UNAVAILABLE",
+            "error": "GitHub read is unavailable; no successful target observation was recorded"})
+        self.assertNotIn("fixture-private-network-detail", str(first))
+        self.assertEqual(first["targets"]["project"]["status"], "synchronized")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["provider_effect"], pending)
+        self.assertEqual(current["provider_effect"]["status"], "pending")
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(transport.field_updates, 1)
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertTrue(again["ok"])
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target(self):
+        self._check_mapped_preclaim_transport_failure(
+            _workgithub.error.URLError("fixture-private-network-detail"))
+
+    def test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target(self):
+        self._check_mapped_preclaim_transport_failure(
+            TimeoutError("fixture-private-network-detail"))
+
+    def test_mapped_preclaim_programmer_error_is_not_swallowed(self):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        with mock.patch.object(transport, "request", side_effect=TypeError("fixture-programmer-error")):
+            with self.assertRaisesRegex(TypeError, "fixture-programmer-error"):
+                _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["provider_effect"], pending)
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(transport.field_updates, 0)
+
     def test_project_lost_add_response_reconciles_without_duplicate_issue_or_item(self):
         transport = FakeProjectGithub(fail_add_after_apply=True)
         self._project_ready(transport)

@@ -26,6 +26,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
 - Serialize Farm worktree administration across concurrent processes sharing a Git common directory. Bound contention, retain unknown lock owners and preserve primary failures when lock release cannot be verified.
 
 ## [3.8.9] - 2026-11-12

@@ -1,0 +1,60 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/concept-directory.ts": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+    "site/scripts/decision-evidence.ts": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+    "site/scripts/diagram-audit.ts": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+    "site/scripts/execution-maps/locations.ts": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+    "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "site/scripts/generate-diagrams.ts": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+    "site/scripts/guide-directory.ts": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+    "site/scripts/journey-navigation.ts": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+    "site/scripts/link-audit.ts": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+    "site/scripts/link-audit/lib.ts": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+    "site/scripts/reference-sidebar.ts": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+    "site/scripts/rehype-base-links.ts": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+    "site/scripts/rehype-table-shell.ts": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+    "site/scripts/topic-map.ts": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SX06:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "sha256": "390f41e66bc4f7a178450a604bf9306160a53c0434371cd4bb0ccf588a27de1e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/citation-binding-inspection.json",
+      "sha256": "f3a0fc0f5ad6e35a071176916105ef015a518e14c23d00d3198ef47007d9f494"
+    }
+  ],
+  "scope": "Source-only regex declared visual-grammar/conservative metric audit. Not actual browser/font shaping geometry, semantic workflow truth, required nonempty SVG inventory or rendered-artifact acceptance. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SX06:05",
+      "witnesses": [
+        {
+          "path": "site/scripts/diagram-audit.ts",
+          "start": 28,
+          "end": 146,
+          "file_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63"
+        }
+      ],
+      "semantic_assessment": "Audit requires marker/nonempty title/desc, forbids filters, checks declared font stacks/minimum font sizes/approved colors and data-max-width with conservative character/font/weight/spacing width estimator. Violations aggregate; CLI sets exit1 when present. It does not claim browser-measured glyph widths or nonempty asset population.",
+      "limits": "Source-only regex declared visual-grammar/conservative metric audit. Not actual browser/font shaping geometry, semantic workflow truth, required nonempty SVG inventory or rendered-artifact acceptance."
+    }
+  ],
+  "excluded_cells": []
+}

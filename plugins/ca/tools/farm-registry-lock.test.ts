@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { spawn, execFileSync, type ChildProcess } from "node:child_process";
-import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, readFile, rename, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -16,7 +16,7 @@ const children: ChildProcess[] = [];
 const childCode = `
 import { pathToFileURL } from 'node:url';
 import { existsSync } from 'node:fs';
-import { writeFile, unlink } from 'node:fs/promises';
+import { writeFile, readFile, rename, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 const [modulePath,role,marker,lock] = process.argv.slice(1);
 process.argv[1]='farm-registry-owned-driver';
@@ -30,7 +30,13 @@ try {
       await new Promise(resolve=>process.stdin.once('data',resolve));
       await unlink(marker);
     } else if(role==='second') console.log(existsSync(marker)?'overlap':'entered');
-    else if(role==='replace') {await unlink(lock);await writeFile(lock,'foreign-owned-fixture');}
+    else if(role==='replace'||role==='missing') {
+      const original=await readFile(lock,'utf8');
+      await rename(lock,marker+'.retained-owned');
+      if(role==='replace') await writeFile(lock,'foreign-owned-fixture',{flag:'wx'});
+      if(await readFile(marker+'.retained-owned','utf8')!==original) throw new Error('fixture lost original owned bytes');
+      console.log(role==='replace'?'replacement-established':'missing-established');
+    }
     else if(role==='throw') throw new Error('controlled-primary');
     else console.log('executed');
   },options);
@@ -39,7 +45,7 @@ try {
 if(role==='throw') await withWorktreeLock(async()=>console.log('again'),options);
 `;
 
-async function fixture() {
+async function fixture(withLinked = true) {
   const root = await mkdtemp(join(tmpdir(), "farm-registry-owned-")); roots.push(root);
   const repo = join(root,"repo"), home=join(root,"home"), scratch=join(root,"temp");
   await Promise.all([mkdir(repo),mkdir(home),mkdir(scratch)]);
@@ -48,10 +54,13 @@ async function fixture() {
     if (["PATH","SYSTEMROOT","WINDIR","COMSPEC","PATHEXT","SYSTEMDRIVE"].includes(key.toUpperCase())) env[key]=value;
   Object.assign(env,{HOME:home,USERPROFILE:home,TEMP:scratch,TMP:scratch,GIT_CONFIG_NOSYSTEM:"1",GIT_CONFIG_GLOBAL:process.platform==="win32"?"NUL":"/dev/null"});
   const git=(...args:string[])=>execFileSync("git",args,{cwd:repo,env,encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim();
-  git("init","-q","-b","main");git("config","core.autocrlf","false");
-  git("config","user.name","Fixture");git("config","user.email","fixture@example.invalid");
-  await writeFile(join(repo,"base.txt"),"base\n");git("add",".");git("-c","core.hooksPath=", "commit","-qm","fixture");
-  const linked=join(root,"linked");git("worktree","add","--detach",linked,"HEAD");
+  git("init","-q","-b","main");
+  const linked=join(root,"linked");
+  if(withLinked) {
+    git("config","core.autocrlf","false");git("config","user.name","Fixture");git("config","user.email","fixture@example.invalid");
+    await writeFile(join(repo,"base.txt"),"base\n");git("add",".");git("-c","core.hooksPath=", "commit","-qm","fixture");
+    git("worktree","add","--detach",linked,"HEAD");
+  }
   return {root,repo,linked,env,marker:join(root,"held"),lock:join(repo,".git",LOCK)};
 }
 
@@ -80,7 +89,7 @@ afterEach(async()=>{
 
 describe("cross-process Farm worktree administration",()=>{
   it("source: unknown common directory, foreign ownership and failed release refuse conservatively",async()=>{
-    const f=await fixture(), original=process.cwd();
+    const f=await fixture(false), original=process.cwd();
     try {
       process.chdir(f.root);let called=false;
       await expect(withWorktreeLock(async()=>{called=true;})).rejects.toThrow(/common directory unavailable/);
@@ -91,18 +100,29 @@ describe("cross-process Farm worktree administration",()=>{
       const cleanup=await removeWorktreeVerified(fakeGit,join(f.root,"unused"),{attempts:1,delayMs:0});
       expect(cleanup.ok).toBe(false);expect(cleanup.attempts).toBe(0);
       expect(cleanup.detail).toMatch(/administration unavailable/);expect(called).toBe(false);
-      process.chdir(f.repo);
-      await writeFile(f.lock,"foreign-owned-fixture");
+      const foreign=await fixture(false);process.chdir(foreign.repo);
+      await writeFile(foreign.lock,"foreign-owned-fixture");
       await expect(withWorktreeLock(async()=>{called=true;},{timeoutMs:0})).rejects.toThrow(/retained lock/);
-      expect(called).toBe(false);expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");
-      await rm(f.lock);
+      expect(called).toBe(false);expect(await readFile(foreign.lock,"utf8")).toBe("foreign-owned-fixture");
+      const invalid=await fixture(false);process.chdir(invalid.repo);
       await expect(withWorktreeLock(async()=>{}, {timeoutMs:NaN})).rejects.toThrow(/invalid worktree lock deadline/);
-      await expect(withWorktreeLock(async()=>{await rm(f.lock);await writeFile(f.lock,"foreign-owned-fixture");})).rejects.toThrow(/release unverified/);
-      expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");await rm(f.lock);
+      const replaced=await fixture(false);process.chdir(replaced.repo);let established=false;
+      const retained=join(replaced.root,"retained-owned");let originalBytes:Buffer|undefined;
       await expect(withWorktreeLock(async()=>{
-        await rm(f.lock);await writeFile(f.lock,"foreign-owned-fixture");throw new Error("controlled-primary");
+        originalBytes=await readFile(replaced.lock);await rename(replaced.lock,retained);
+        await writeFile(replaced.lock,"foreign-owned-fixture",{flag:"wx"});established=true;
+      })).rejects.toThrow(/release unverified/);
+      expect(established).toBe(true);expect(await readFile(retained)).toEqual(originalBytes);
+      expect(await readFile(replaced.lock,"utf8")).toBe("foreign-owned-fixture");
+      const primary=await fixture(false);process.chdir(primary.repo);let primaryEstablished=false;
+      const primaryRetained=join(primary.root,"retained-owned");let primaryBytes:Buffer|undefined;
+      await expect(withWorktreeLock(async()=>{
+        primaryBytes=await readFile(primary.lock);await rename(primary.lock,primaryRetained);
+        await writeFile(primary.lock,"foreign-owned-fixture",{flag:"wx"});primaryEstablished=true;throw new Error("controlled-primary");
       })).rejects.toThrow("controlled-primary");
-      expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");await rm(f.lock);
+      expect(primaryEstablished).toBe(true);expect(await readFile(primaryRetained)).toEqual(primaryBytes);
+      expect(await readFile(primary.lock,"utf8")).toBe("foreign-owned-fixture");
+      const released=await fixture(false);process.chdir(released.repo);
       await expect(withWorktreeLock(async()=>"released")).resolves.toBe("released");
     } finally { process.chdir(original); _resetAllowedWorktreeRoot(); }
   });
@@ -132,11 +152,20 @@ describe("cross-process Farm worktree administration",()=>{
     it(`${kind}: replacement ownership is retained and primary errors release the owned lock`,async()=>{
       const f=await fixture();
       const replaced=launch(kind,"replace",f.repo,f.env,f.marker,f.lock);
+      expect(await replaced.wait(["replacement-established","refused","settled"])).toBe("replacement-established");
       expect(await replaced.wait(["refused","settled"])).toBe("refused");
       expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");
+      expect(await readFile(f.marker+".retained-owned","utf8")).not.toBe("foreign-owned-fixture");
       expect(await replaced.exit).toBe(0);
-      await rm(f.lock); // only this fixture's explicit foreign sentinel
-      const thrown=launch(kind,"throw",f.repo,f.env,f.marker,f.lock);
+      const missing=await fixture();
+      const renamed=launch(kind,"missing",missing.repo,missing.env,missing.marker,missing.lock);
+      expect(await renamed.wait(["missing-established","refused","settled"])).toBe("missing-established");
+      expect(await renamed.wait(["refused","settled"])).toBe("refused");
+      await expect(readFile(missing.lock)).rejects.toMatchObject({code:"ENOENT"});
+      expect(await readFile(missing.marker+".retained-owned","utf8")).not.toBe("foreign-owned-fixture");
+      expect(await renamed.exit).toBe(0);
+      const fresh=await fixture();
+      const thrown=launch(kind,"throw",fresh.repo,fresh.env,fresh.marker,fresh.lock);
       await thrown.wait(["primary-preserved"]);await thrown.wait(["again"]);
       expect(await thrown.exit).toBe(0);
     },15000);

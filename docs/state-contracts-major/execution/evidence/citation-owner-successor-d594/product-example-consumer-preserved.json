@@ -1,0 +1,52 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/capture-context-examples.py": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+    "site/scripts/capture-statusline-themes.py": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+    "site/scripts/capture/label.ts": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+    "site/scripts/capture/render.ts": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+    "site/scripts/capture/targets.ts": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+    "site/scripts/generate-product-example.py": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+    "site/scripts/product-example.ts": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SX02:07"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/capture-source-d594/inspection.json",
+      "sha256": "5e37324188d6806b25d927e1305c3c1253cda486a9d51b2ef4fba83c611ce0f6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/citation-binding-inspection.json",
+      "sha256": "f3a0fc0f5ad6e35a071176916105ef015a518e14c23d00d3198ef47007d9f494"
+    }
+  ],
+  "scope": "Source-only fixed data fixture consistency reader. No HTML execution, general sanitizer/native validator or authenticated execution claim. No hostile-concurrent ancestor containment or actual build result. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SX02:07",
+      "witnesses": [
+        {
+          "path": "site/scripts/product-example.ts",
+          "start": 42,
+          "end": 98,
+          "file_sha256": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22"
+        }
+      ],
+      "semantic_assessment": "Exact fixed nine-file inventory, regular leaves/SHA, unapproved identity/digest grammar required. Inert exact script tag, draft/no approvals, draft_preview spec binding, PENDING tasks, criteria/task closure/planned evidence, native result model hashes, approval false, DRAFT_BINDING and fixed red/green checks precede projection. No HTML executes; unkeyed consistency does not authenticate execution.",
+      "limits": "Source-only fixed data fixture consistency reader. No HTML execution, general sanitizer/native validator or authenticated execution claim. No hostile-concurrent ancestor containment or actual build result."
+    }
+  ],
+  "excluded_cells": []
+}

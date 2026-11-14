@@ -1,0 +1,560 @@
+{
+  "schema": "codearbiter.finding-clause-assessment/1",
+  "finding_id": "N-F05",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "candidate_checked_at": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
+  "frozen_finding_sha256": "d0e146289a891b8efb0bad44bf522cb061c0580c3ca4bf710facb8502c0dc7ff",
+  "frozen_task_sha256": "c2d63fed73b48dc3a55a36f86ef10ebff111cfae3d3552864789556d6ba1d2ad",
+  "clause_mapping": [
+    {
+      "clause": "Exact/contextual/default reads with present/absent metadata across native OS and architecture.",
+      "source": "core/artifacts/internal/operations/read_mode_effects_test.go:TestReadModeMetadataEffects",
+      "oracle": "Non-skipping parent directly checks all6 mode/metadata cells and3 real shared/exclusive lock probes; compares complete logical names/bytes, validates contextual token purpose/subject/digest, requires Windows exact-absent NO_LOCAL_STORE, and cannot hide optional child skips.",
+      "execution": "Actual named parent PASS in each of six original M94 builder reports."
+    },
+    {
+      "clause": "Windows initialized read-only existing metadata remains observational.",
+      "source": "core/artifacts/internal/operations/read_only_windows_test.go:TestReadOnlyInitializedStoreObservations",
+      "oracle": "Real ReadOnlyFixture ACL denies O_RDWR and create while allowing read; actual identity/snapshot/outline/exact/read-batch/verification results equal writable baseline and complete tree unchanged. No optional skip in fixture helper.",
+      "execution": "Actual named parent PASS in both Windows architectures, with fresh missing-store and shared/exclusive exclusion controls."
+    },
+    {
+      "clause": "Task-context assesses declared task/shared/config/member scope while unrelated files do not broaden invalidation.",
+      "source": "core/artifacts/internal/operations/input_scope_test.go:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork and TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+      "oracle": "reportedChecks actually calls task-context; unrelated source stays scoped_unchanged, changed shared source becomes scoped_changed, declared membership/config additions invalidate, latest fail and implementation progress remain truthful, scope/evidence remain incomplete/unverified.",
+      "execution": "Both named parents PASS on all six platforms."
+    },
+    {
+      "clause": "Exact/batch reads never manufacture current worktree qualification and context reads stay bounded/inert.",
+      "source": "core/artifacts/internal/operations/task_check_test.go and task_context_test.go",
+      "oracle": "Exact/batch preserve original failed report without definition_current; context handles changed specification without rebasing or review cascade, ignores33MiB unrelated snapshot input, refuses oversized packet until sufficient budget, discloses unscoped prerequisites and does not execute command-source strings.",
+      "execution": "Actual named parents PASS on all six platforms."
+    },
+    {
+      "clause": "Owner documentation states actual metadata/token/applicability effects without changing locking to satisfy prose.",
+      "source": "core/artifacts/internal/operations/engine.go comments/openStore/sharedObservation; task_context.go/task_check.go/input_scope.go; read/read.go issue",
+      "oracle": "Source inspection joins exact native-module blobs to M94/current. Context token writes are separate from exact reads; Darwin may create lock metadata, Windows observation uses existing metadata, Linux locks existing repository directory. Task-context states bounded advisory source applicability and exposes omitted_context/checks_are_verified:false.",
+      "execution": "Read matrix, read-only Windows and bounded scope tests observe these same concrete traits."
+    }
+  ],
+  "platforms": [
+    {
+      "platform": "linux/amd64",
+      "run_id": 43599120794,
+      "job_id": 132463972506,
+      "artifact_id": 14116013510,
+      "archive_sha256": "aa45ed746caa286340e9dfe8052823b38feeceac0f14d4e278996a2cfbbbb0d2",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "a1a27f15eb8060d372811d39622f32234b110c0bdd942123dbfd496278fe471b"
+      },
+      "native_binding": {
+        "binary_sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+        "manifest_sha256": "f3ec6c5ddda59a536466f6f29e15b58fccaabdabdb7848fe82dfee669c17be1d",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "linux/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "PASS"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    },
+    {
+      "platform": "linux/arm64",
+      "run_id": 43599120794,
+      "job_id": 132463972557,
+      "artifact_id": 14116655258,
+      "archive_sha256": "ed4c7b58187193a917d8b0eeef0fdd44f9f26ab19be1fd4554c14a68d6c5ba4f",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "036ca98a85b54a03e7343ed0fad3c8d93aa1a198bc27455980f05775c01b3457"
+      },
+      "native_binding": {
+        "binary_sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "1675694ef690db0f18fbe7046a886170904bede1d9db6ec96ae27945c1705c64",
+        "manifest_sha256": "5396976cf555c33d4e18100ea8c714b852800be1d0230423a163efe3be311f38",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "linux/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "PASS"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    },
+    {
+      "platform": "darwin/amd64",
+      "run_id": 43599120794,
+      "job_id": 132463972516,
+      "artifact_id": 14116259119,
+      "archive_sha256": "e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "a22e856dc21a81684f24da50e4e905c4cde02624a0f2811c04f7cd88d1104313"
+      },
+      "native_binding": {
+        "binary_sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "285418143831d996755c236ca0938ad317b22edeeb1d61bfa082f50550399fe3",
+        "manifest_sha256": "b209be590ba80ee2cb730734e4fcd3a7fa0a6b64f44f95831756ffb6aac787fd",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "darwin/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-amd64-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "REFUSED",
+        "reason": "upload attribution unavailable or malformed"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    },
+    {
+      "platform": "darwin/arm64",
+      "run_id": 43599120794,
+      "job_id": 132463972660,
+      "artifact_id": 14115739497,
+      "archive_sha256": "40781aee10f14c34f06ff7c574053473a0080df987736960a36acf2da19c1e2b",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "6a7f9de266974941b4ac2b265f8cc7104f460b3f6a1af96ef46034766fa98a94"
+      },
+      "native_binding": {
+        "binary_sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "132b69336a1f809932a8a20b0201dbbb980e86e3a323ae32e893639d83d71598",
+        "manifest_sha256": "dfd53095377896a6756869d3fdbf9c572b0177b1f6cc147268f7579bd694c813",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "darwin/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-arm64-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "PASS"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    },
+    {
+      "platform": "windows/amd64",
+      "run_id": 43599120794,
+      "job_id": 132463972537,
+      "artifact_id": 14116138817,
+      "archive_sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "7ef609b6db102ac1e8e3c79312b94c651c37a0b037fce30099e76c09a259c558"
+      },
+      "native_binding": {
+        "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+        "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "windows/amd64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadOnlyInitializedStoreObservations",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockPreservesExclusion",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "PASS"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    },
+    {
+      "platform": "windows/arm64",
+      "run_id": 43599120794,
+      "job_id": 132463972608,
+      "artifact_id": 14116009344,
+      "archive_sha256": "0931c0e3efe3cb914a4c818398798f2e5a280019fdd34e0ac39e0c875f0846a3",
+      "original_member": {
+        "path": "native-tests.json",
+        "sha256": "d26643d2fe655937cd186170922ee5ff168f36e91a46b36ddfffd72bb17873a5"
+      },
+      "original_source_observation_member": {
+        "path": "native-observation.json",
+        "sha256": "62c59d185ffb1a6c23fdf2c6a9b7aa43ad22415c5116cc0ba1c82683b9f020bb"
+      },
+      "native_binding": {
+        "binary_sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1",
+        "format": "codearbiter.ci-native-candidate/1",
+        "go_sha256": "854e5383bc5d7fa3f3a58268a3c1ca45d9ddc1ec3f34b53f4234fd6b59e79a46",
+        "manifest_sha256": "99076d0ccb9724e105cf11e3b835dcad5d91e6a699c79ae89d58a2ed6535a677",
+        "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+        "platform": "windows/arm64",
+        "producer_job": "artifact-native-build",
+        "run_attempt": "1",
+        "run_id": "43599120794",
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "toolchain": "go1.27.1",
+        "workflow": ".github/workflows/ci.yml"
+      },
+      "retained_native_tests": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/windows-arm64-native-tests.json",
+      "actual_named_observations": [
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadOnlyInitializedStoreObservations",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+          "result": "pass"
+        },
+        {
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockPreservesExclusion",
+          "result": "pass"
+        }
+      ],
+      "uploader_attribution_at_original_intake": {
+        "status": "PASS"
+      },
+      "nonclaim": "Original observation only. No new test process, native invocation, archive acquisition or provider action."
+    }
+  ],
+  "source_binding": {
+    "inputs": 249,
+    "module_members": 245,
+    "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+    "all_original_current_and_physical_bytes_match": true
+  },
+  "limits": [
+    "Only N-F05 TESTED is proposed, no task/machine/whole-program promotion.",
+    "No actual checks claimed for caller-reported inert fixture command strings.",
+    "No installed/archive CLI cohort, model, physical consent, provider or publication claim.",
+    "Filesystem matrix compares logical names/bytes, excluding unspecified access times.",
+    "Original Darwin API-clock refusal remains historical; Root later verified original log/API attribution with current clock-correct owner. This packet does not rewrite that old refusal or claim a rerun."
+  ]
+}

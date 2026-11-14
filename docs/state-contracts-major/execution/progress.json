@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "59fdd8a068dc3cc095a7961d3fcfa7c6ffe9efca plus433 finite source-clause dispositions",
+  "head": "dc1bbbf7 plus scoped framework followups and67 additional evidence dispositions",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T15:56:05.932424+00:00",
+  "recorded_at": "2026-11-14T16:32:37.449405+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3566,6 +3566,18 @@
       "kind": "CHILD1107_ACTUAL_CI_REPAIRS",
       "source": "59fdd8a068dc3cc095a7961d3fcfa7c6ffe9efca",
       "detail": "59fdd8a0 fixes source Codex fixture bytecode drift, docs version matrix ownership and Sandbox candidate intent; generator and candidate readiness have real hosted success. Actual Sandbox missing pinned image and Farm cross-process Git-admin race under focused repair. No blind full-suite reruns;1098 remains draft/held from main. Separate H-18 read-only compound command false-positive diagnosed for framework repair."
+    },
+    {
+      "recorded_at": "2026-11-14T16:32:37.449405+00:00",
+      "kind": "FINITE_SOURCE_AND_NATIVE_FINDING_ACCEPTANCE",
+      "source": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
+      "detail": "Admit66 further source-only clauses from completed155-row site/tooling inspection;32 precise discrepancy/dependency holds stay explicit. Admit whole nativefinding N-F05 TESTED from original successful M94 six-platform artifacts, including real read-only Windows fixtures and bounded read/scoped-currentness observations; all249sourceinputs match. No new native execution, task/machine promotion or whole-program completion."
+    },
+    {
+      "recorded_at": "2026-11-14T16:32:37.449405+00:00",
+      "kind": "FRAMEWORK_READER_AND_MAPPED_TARGET_REPAIRS",
+      "source": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
+      "detail": "Expected provider read errors now return sanitized per-target failure, preserve pending intent and let independent targets continue without resending completed targets. Canonical guard and allthreehostcopies scope simple read-only statements correctly; complex syntax/redirection remains conservative. Original regression REDs, affected GREENs and focused independent reviews retained. A redirect bypass in an unintegrated prototype was caught and fixed; only cleared successor admitted. Actual dc1Windows coverage has3newfixturefailures/956pass/3skip; portable retained-owner fixture repair and new hosted observation pending."
     }
   ],
   "scoped_blockers": [
@@ -3578,6 +3590,11 @@
       "id": "PI-HTTP-ENDPOINT-POLICY",
       "scope": "Selected Pi upstream transport contract and S10/S11",
       "detail": "Awaiting explicit user choice between currentCON004 HTTPS rule and acceptedADR0018/0019 HTTP compatibility. No side selected or source changed; independent work remains authorized."
+    },
+    {
+      "id": "COLD-OBSERVER-M863-REFUSAL",
+      "scope": "Retained cold-package observer normal-CI qualification",
+      "detail": "M863 trusted normal run43606646328 cold observers refused upload attribution with generic hash on allsixplatforms. Archived finalmetadata/logs pass old/current predicates; actual historical cause remains unknown. No blind retry or clock-closure claim; closed safe diagnostic categories being added before next actual normal run. Existing ordinary cold commands and original raw failure remain separate."
     }
   ],
   "unknown_outcomes": [],
@@ -3587,7 +3604,7 @@
     "Continue row-specific acceptance and missing behavior. Source preservation does not establish runtime/model compliance or whole-task qualification.",
     "Retain the unresolved Pi endpoint decision and unavailable parent-UI/physical-consent acceptance; never merge1098 to main or publish without the user testing hold being lifted."
   ],
-  "delivery_state": "HOST_OBSERVER_CHILD_CI_REPAIR_IN_PROGRESS",
+  "delivery_state": "CHILD1107_WINDOWS_FIXTURE_AND_FRAMEWORK_FOLLOWUP_PENDING_CI",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [

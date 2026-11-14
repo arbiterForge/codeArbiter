@@ -16,6 +16,11 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
+### Fixed
+
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
+
 ## [0.26.9] - 2026-11-12
 
 ### Fixed
