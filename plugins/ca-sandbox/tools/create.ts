@@ -97,8 +97,10 @@ export class BuildStagingFailure extends Error {
   }
 }
 export class CreateFailure extends Error {
-  constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation, cause?: unknown) {
-    super(`${message}\nca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`,
+  // A successful run observation is recovery context, never cleanup authority.
+  constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation, cause?: unknown, readonly createdContainerId?: string) {
+    super(`${message}\nca-sandbox: cleanup ${cleanup.verified ? "verified absent" : "unknown"}; sandbox=${id}, volume=${volumeName}; containers=${cleanup.containers.join(",") || "unobserved"}`
+          + (createdContainerId ? `; created-container=${createdContainerId}` : ""),
           cause === undefined ? undefined : { cause });
     this.name = "CreateFailure";
   }
@@ -456,6 +458,7 @@ export async function createSandbox(
   }
 
   // From here on, tear down the volume (and anything else) on any failure and observes its outcome independently. Unknown cleanup remains visible.
+  let createdContainerId: string | undefined;
   try {
     // 2. Clone INTO the volume via the throwaway alpine/git container (net up).
     const cloneRaw = await cloneRepo(url, volumeName, id, opts.signal);
@@ -485,6 +488,7 @@ export async function createSandbox(
         : undefined,
     });
 
+    createdContainerId = containerId;
     opts.signal?.throwIfAborted();
     return {
       id,
@@ -497,6 +501,6 @@ export async function createSandbox(
     };
   } catch (err) {
     const cleanup = await compensateCreate(id, volumeName, dockerRun);
-    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err);
+    throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err, createdContainerId);
   }
 }

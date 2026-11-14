@@ -242,6 +242,48 @@ describe("final create cancellation", () => {
     expect(f.calls.filter(c => c.args[0] === "ps" || c.args.includes("rm")).every(c => c.signal === undefined)).toBe(true);
   });
 
+  it("createSandbox final cancellation retains known container identity when discovery is unavailable", async () => {
+    const controller = new AbortController();
+    const reason = new Error("cancelled after observed container start");
+    const id = "known-container-recovery";
+    const volume = "ca-sbx-vol-" + id;
+    const containerId = "c".repeat(64);
+    const foreignId = "d".repeat(64);
+    const calls: { args: string[]; signal?: AbortSignal }[] = [];
+    const pending = createSandbox("https://example.invalid/repo.git", {
+      id, signal: controller.signal, cloneRepo: async () => 0,
+      buildImage: async () => ({ tag: "ca-sbx:v2-known-container", reused: true,
+        built: false, builder: "nixpacks" as const, notes: [] }),
+      dockerRun: async (args, call) => {
+        calls.push({ args: [...args], signal: call?.signal });
+        if (args[0] === "volume" && args[1] === "create")
+          return { code: 0, stdout: volume, stderr: "" };
+        if (args[0] === "run") {
+          controller.abort(reason);
+          return { code: 0, stdout: containerId + "\n", stderr: "" };
+        }
+        if (args[0] === "ps")
+          return { code: 1, stdout: foreignId + "\n", stderr: "discovery unavailable" };
+        return { code: 1, stdout: "", stderr: "cleanup unavailable" };
+      },
+    });
+    await expect(pending).rejects.toMatchObject({ name: "CreateFailure", cause: reason,
+      id, volumeName: volume, createdContainerId: containerId,
+      cleanup: { verified: false, containers: [], volume } });
+    const failure = await pending.catch(error => error);
+    expect(failure.message).toContain("created-container=" + containerId);
+    expect(failure.message).not.toContain(foreignId);
+    expect(calls.filter(c => c.args[0] === "rm")).toEqual([]);
+    const cleanup = calls.filter(c => c.args[0] === "ps" || (c.args[0] === "volume" && c.args[1] !== "create"));
+    expect(cleanup.every(c => c.signal === undefined)).toBe(true);
+    expect(cleanup.map(c => c.args)).toEqual([
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(id)],
+      ["volume", "rm", "-f", volume],
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(id)],
+      ["volume", "ls", "-q", "--filter", "name=^" + volume + "$"],
+    ]);
+  });
+
   it("createSandbox successful un-aborted run preserves image identity without compensation", async () => {
     const f = fixture(false);
     await expect(f.pending).resolves.toMatchObject({ id: f.id, volumeName: f.volume,

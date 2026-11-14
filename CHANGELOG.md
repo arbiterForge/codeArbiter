@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Keep observed Sandbox container IDs available for recovery when cancellation cleanup discovery fails.
 - Qualify native installations from their matching cold-package executions and refuse source-only test substitutes.
 - Honor late Sandbox creation cancellation and rebuild the shipped CLI with its cancellation checks.
 - Collect matching observed Pi RPC evidence before raw failures stop the qualification runner; retain its existing test limits.
