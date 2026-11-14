@@ -324,8 +324,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
             if cell.startswith("installed:"):
                 require(group["proof_kind"] in ("native-module", "retained-archive-cli", "live-host"),
                         "source tests cannot qualify installed hosts")
-                require(group["proof_kind"] != "native-module" or cell.startswith("installed:native:"),
-                        "native module tests cannot qualify an upstream host")
+                require(group["proof_kind"] != "native-module",
+                        "native module tests cannot qualify an upstream host or installed native package")
             producers = {"source-test": ("python-test-result-observer", "vitest-json-observer"),
                          "native-module": ("go-named-ci20-join",)}
             if group["proof_kind"] in ("retained-archive-cli", "live-host"):

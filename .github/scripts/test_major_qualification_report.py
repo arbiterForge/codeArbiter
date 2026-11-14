@@ -130,6 +130,14 @@ class ReportTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "installed hosts"):
             self.build()
 
+    def test_source_native_module_cannot_qualify_installed_native_cell(self):
+        cell = "installed:native:windows:amd64"
+        self.req["cells"] = [cell]
+        self.req["cell_jobs"] = {cell: "owning native job"}
+        self.map["groups"][0]["cells"] = [cell]
+        with self.assertRaisesRegex(ValueError, "installed"):
+            self.build()
+
     def test_changing_a_proof_kind_string_does_not_create_an_installed_observer(self):
         self.req["cells"] = ["installed:claude:workflow"]
         self.req["cell_jobs"] = {self.req["cells"][0]: "owning native job"}

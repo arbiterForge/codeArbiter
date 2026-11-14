@@ -30,9 +30,10 @@
         "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
       ],
       "cells": [
-        "installed:claude:workflow"
+        "installed:claude:workflow",
+        "installed:native:linux:amd64"
       ],
-      "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim."
+      "scope": "Original extracted installed helper workflow and three context fixture cases on Linux amd64. No public parent, TUI, provider or physical consent claim. Also qualifies the native package extracted and executed on Linux amd64, with its exact platform/binary/archive joins."
     },
     {
       "id": "codex-live-0.143.0",
@@ -141,6 +142,91 @@
         "installed:sandbox:docker"
       ],
       "scope": "Three actual shipped CLI Docker cases using the complete authenticated original plain-plugin artifact. No create, provider, OAuth, marketplace/release or whole-Sandbox qualification."
+    },
+    {
+      "id": "native-cold-linux-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:linux/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:linux:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on linux/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-windows-amd64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:windows/amd64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:windows:amd64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on windows/amd64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-windows-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:windows/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:windows:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on windows/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-darwin-amd64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:darwin/amd64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:darwin:amd64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/amd64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-cold-darwin-arm64",
+      "job": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "payload_name": "artifact-release-packages-{source_commit}",
+      "observation": "cold",
+      "proof_kind": "retained-archive-cli",
+      "selectors": [
+        "cli:tools/build-host-packages.py:cold:claude:darwin/arm64",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_installed_context_kind",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_missing_candidate_identity",
+        "receipt:.github/scripts/test_context_installed.py:test_t044_rejects_nonisolated_environment"
+      ],
+      "cells": [
+        "installed:native:darwin:arm64"
+      ],
+      "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
     }
   ]
 }

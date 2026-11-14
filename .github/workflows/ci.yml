@@ -1658,7 +1658,7 @@ jobs:
           overwrite: false
       - name: Emit installed Claude qualification report
         id: cold-qualification
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' && steps.cold_claude_observed.outcome == 'success' && hashFiles('.github/integration-candidate.json') != ''
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && steps.cold_claude_observed.outcome == 'success' && hashFiles('.github/integration-candidate.json') != ''
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1666,7 +1666,7 @@ jobs:
           set -euo pipefail
           python -B .github/scripts/major_qualification_report.py emit \
             --repo . \
-            --job-name "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>" \
+            --job-name "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>" \
             --observation "cold=${{ runner.temp }}/cold-claude/observation.json" \
             --payload-root "artifact-host-payloads-${{ github.sha }}=${{ runner.temp }}/artifact-host-payloads" \
             --payload-root "artifact-release-packages-${{ github.sha }}=${{ runner.temp }}/artifact-release-packages" \

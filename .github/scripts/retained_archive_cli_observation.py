@@ -203,7 +203,7 @@ def _admit(observation, *, req, job_id, authenticated_payloads, repo=ROOT):
     validate_invocation(observation["argv"], binding)
     return {"tests": tests, "payload_artifact_ids": sorted(v["artifact_id"] for v in admitted_payloads),
             "payloads": admitted_payloads, "primary_payload_name": consumed["release-packages"]["artifact_name"],
-            "installed_cells": ["installed:claude:workflow"] if host == "claude" else []}
+            "installed_cells": ["installed:claude:workflow", "installed:native:" + platform.replace("/", ":")] if host == "claude" else []}
 
 
 def admit(observation, **kwargs):
