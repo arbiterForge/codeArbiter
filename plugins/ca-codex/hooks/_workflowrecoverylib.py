@@ -589,16 +589,16 @@ _CONTRACT_JSON = r'''{
   },
   {
    "disposition": "declined",
-   "effects": "one idempotent decline event and terminal receipt; no board or question write",
+   "effects": "composite journey: WR-06 first persists the immutable decline-audit intent; exact audit readback settles through WR-09 or recovered WR-11 with disposition declined; one idempotent decline event and terminal receipt, no board or question write",
    "event": "decline",
    "from": "pending",
    "guard": "interactive preview explicitly declined; the decline audit event committed durably",
    "id": "WR-08",
-   "on_reject": "an uncertain audit commit keeps a recoverable attempt in pending",
+   "on_reject": "an uncertain audit commit keeps the recoverable attempt claimed; WR-10/WR-11 reconciliation must determine the effect before retry, never demote an unknown effect to pending",
    "to": "settled"
   },
   {
-   "disposition": "promoted|reused",
+   "disposition": "promoted|reused|declined",
    "effects": "persist target id and receipt digest; infer no parent completion, review pass, merge or cleanup",
    "event": "target-readback-proves-effect",
    "from": "claimed",
@@ -617,7 +617,7 @@ _CONTRACT_JSON = r'''{
    "to": "claimed"
   },
   {
-   "disposition": "promoted|reused",
+   "disposition": "promoted|reused|declined",
    "effects": "record the recovered receipt; no duplicate write; independently edited target content is not overwritten",
    "event": "reconcile-proves-effect",
    "from": "claimed",
@@ -710,7 +710,7 @@ _CONTRACT_JSON = r'''{
    "to": "settled"
   },
   {
-   "effects": "register a NEW linked obligation; the old history stays immutable and is never reopened",
+   "effects": "register a NEW linked obligation using a new workflow_run_id, a distinct origin naming the settled predecessor, and candidate.provenance retaining that relation; the old history stays immutable and is never reopened",
    "event": "new-follow-up",
    "from": "settled",
    "guard": "new authorized follow-up after changed facts",
@@ -1561,6 +1561,15 @@ def _binding_reason(store, record):
     return None
 
 
+def _reason_guidance(items):
+    """Only the finite trusted contract supplies advice, never record prose."""
+    routes = CONTRACT["reason_recovery"]
+    reasons = {item.get("reason") for item in items
+               if isinstance(item, dict) and item.get("state") == "unavailable"
+               and isinstance(item.get("reason"), str) and item["reason"] in routes}
+    return [reason + ": " + routes[reason] for reason in sorted(reasons)]
+
+
 def scan(root, cursor=None):
     """One physical index page, not a whole-history list or repair operation."""
     store = None
@@ -1619,7 +1628,8 @@ def scan(root, cursor=None):
                     break
                 record = store.record(item["obligation_id"])
                 if (record is None or _sha(canonical_bytes(record)) != item["record_sha256"]
-                        or any(record[k] != item[k] for k in ("obligation_id", "state", "record_revision"))):
+                        or any(record[k] != item[k] for k in ("obligation_id", "state", "record_revision"))
+                        or record.get("reason") != item.get("reason")):
                     raise RecoveryError("corrupt-record")
                 items.append(item)
                 offset += 1
@@ -1630,9 +1640,13 @@ def scan(root, cursor=None):
         more = page_number < pages
         next_cursor = base64.urlsafe_b64encode(canonical_bytes({"repository_id": store.repository_id,
                          "revision": header["revision"], "page": page_number, "offset": offset})).decode("ascii") if more else None
+        resume = "workflow-recovery.py resume --obligation-id <id> --expected-revision <revision>"
+        guidance = _reason_guidance(items)
+        if guidance:
+            resume += "\n" + "\n".join(guidance)
         return {"status": "partial" if more else "complete", "items": items,
                 "cursor": next_cursor, "revision": header["revision"], "bytes_read": store.bytes_read,
-                "resume": "workflow-recovery.py resume --obligation-id <id> --expected-revision <revision>"}
+                "resume": resume}
     except RecoveryError as exc:
         if exc.reason == "inactive":
             return {"status": "absent", "items": [], "cursor": None, "bytes_read": 0}
@@ -2115,6 +2129,14 @@ def snapshot(root, *, result=None):
         if status == "partial":
             text += "Inventory is partial; unscanned obligations are unknown. "
         text += "Inspect with the installed workflow-recovery.py scan, then resume selected items under current authority. Independent authorized work continues."
+    guidance = _reason_guidance([{"state": "unavailable", "reason": reason}]
+                                if status == "unavailable" else items)
+    for line in guidance:
+        remaining = "See workflow-recovery.py scan for further reason-specific recovery guidance."
+        if len(text) + len(line) + len(remaining) + 1 > 768:
+            text += remaining
+            break
+        text += line + " "
     projection = {"status": status, "revision": revision, "pending": pending, "claimed": claimed,
                   "unavailable": unavailable, "cursor": cursor,
                   "bytesRead": read, "reason": reason, "notice": text}

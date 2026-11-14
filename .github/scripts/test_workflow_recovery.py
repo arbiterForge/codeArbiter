@@ -165,8 +165,15 @@ class RecoveryRuntimeTest(unittest.TestCase):
                         raise OSError("fixture response loss")
                 self.assertFalse(self.call(action, {"obligation_id": oid, "expected_revision": 1}, fault=loss)["durable"])
                 record = self.call("get", {"obligation_id": oid})["record"]
+                self.assertEqual(record["state"], "claimed")
+                self.assertEqual(record["last_transition"], "WR-06")
                 result = self.call(action, {"obligation_id": oid, "expected_revision": record["record_revision"]})
                 self.assertEqual(result["status"], "settled", result)
+                self.assertEqual(result["record"]["last_transition"], "WR-11")
+                disposition = result["record"]["outcome"]["disposition"]
+                self.assertIn(disposition, recovery.transition("WR-11")["disposition"].split("|"))
+                if action == "decline":
+                    self.assertEqual(disposition, "declined")
         questions = (self.root / ".codearbiter/open-questions.md").read_text()
         audit = (self.root / ".codearbiter/triage.log").read_text()
         self.assertEqual(questions.count("(from spec:recovery#triage-0)"), 1)
@@ -431,6 +438,71 @@ class RecoveryRuntimeTest(unittest.TestCase):
         self.assertEqual(board, (self.root / ".codearbiter/open-tasks.md").read_bytes())
         prior = json.loads((self.store / "history" / oid / "000000000002.json").read_text())
         self.assertEqual(prior, held)
+
+    def test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery(self):
+        for number, reason in enumerate(recovery.CONTRACT["reason_recovery"]):
+            offer = self.request(number)
+            offer["candidate"]["title"] = "PrivateFixtureValue never becomes recovery guidance"
+            self.held(self.registered(offer), reason)
+        before = self.snapshot()
+        scanned = self.call("scan")
+        self.assertEqual(scanned["status"], "complete", scanned)
+        for reason, guidance in recovery.CONTRACT["reason_recovery"].items():
+            self.assertIn(reason + ": " + guidance, scanned["resume"])
+        self.assertLessEqual(len(scanned["resume"]), 4096)
+        notice = recovery.snapshot(self.root, result=scanned)["notice"]
+        first_reason, first_guidance = next(iter(recovery.CONTRACT["reason_recovery"].items()))
+        self.assertIn(first_reason + ": " + first_guidance, notice)
+        self.assertLessEqual(len(notice), 768)
+        self.assertIn("scan", notice)
+        self.assertNotIn("PrivateFixtureValue", notice)
+        self.assertNotIn("PrivateFixtureValue", scanned["resume"])
+        self.assertEqual(before, self.snapshot())
+        self.assertEqual((self.root / ".codearbiter/open-tasks.md").read_text(), "# Tasks\n\n## Backlog\n")
+
+    def test_unavailable_summary_cannot_substitute_a_different_recovery_reason(self):
+        oid = self.registered()
+        self.held(oid, "explicit-stop")
+        page_path = self.store / "pages/000000000000.json"
+        page = json.loads(page_path.read_text())
+        page["items"][0]["reason"] = "material-unavailable"
+        page_path.write_text(json.dumps(page))
+        before = self.snapshot()
+        scanned = self.call("scan")
+        self.assertEqual(scanned["status"], "unavailable", scanned)
+        self.assertEqual(scanned["reason"], "corrupt-record")
+        self.assertEqual(before, self.snapshot())
+
+    def test_linked_followup_uses_existing_fields_without_reopening_settled_history(self):
+        oid = self.registered()
+        settled = self.call("resume", {"obligation_id": oid, "expected_revision": 1})
+        self.assertEqual(settled["status"], "settled", settled)
+        old = {path: raw for path, raw in self.snapshot().items()
+               if path == "records/" + oid + ".json" or path.startswith("history/" + oid + "/")}
+        board = (self.root / ".codearbiter/open-tasks.md").read_bytes()
+        self.source.write_text("Changed facts justify an explicit new follow-up\n")
+        offer = self.request(1)
+        offer["workflow_run_id"] = "test-run-follow-up"
+        offer["origin"] = "recovery:" + oid + "#follow-up-1"
+        offer["candidate"]["provenance"] = "follow-up-of:" + oid + "; source:finding.md"
+        registered = self.call("register", {"candidates": [offer]})
+        self.assertTrue(registered["durable"], registered)
+        new_id = registered["items"][0]["obligation_id"]
+        self.assertNotEqual(new_id, oid)
+        linked = self.call("get", {"obligation_id": new_id})["record"]
+        self.assertEqual(linked["state"], "pending")
+        self.assertEqual(linked["origin"], offer["origin"])
+        self.assertEqual(linked["candidate"]["provenance"], offer["candidate"]["provenance"])
+        self.assertNotIn("effect", linked)
+        self.assertEqual(self.call("get", {"obligation_id": oid})["record"], settled["record"])
+        after = self.snapshot()
+        self.assertEqual(old, {path: after[path] for path in old})
+        replay = self.call("register", {"candidates": [offer]})
+        self.assertTrue(replay["durable"], replay)
+        self.assertTrue(replay["items"][0]["reused"])
+        self.assertEqual(replay["items"][0]["obligation_id"], new_id)
+        self.assertEqual(after, self.snapshot())
+        self.assertEqual(board, (self.root / ".codearbiter/open-tasks.md").read_bytes())
 
     def test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial(self):
         oid = self.registered()
