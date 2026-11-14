@@ -1,0 +1,1114 @@
+{
+  "schema": "codearbiter.native-clause-inspection/1",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "candidate_checked_at": "6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0",
+  "actor": "/root/findings_acceptance",
+  "method": "Read complete selected guard/effect/retry owners and exact assertions; verified249original/current/physical input digests and original named observations. No suite-count extrapolation, new execution/API/build or filesystem mutation outside Temp.",
+  "module_members": 245,
+  "inputs_verified": 249,
+  "rows": [
+    {
+      "id": "N08:03",
+      "status_proposed": "TESTED",
+      "frozen_contract_sha256": "0bcdf61b97ca6de7ea4bee22b0acb9a89a611762b272692e41bd149fde8fb0c4",
+      "full_guard_effect_retry": {
+        "from_state": "current",
+        "from": "current",
+        "event": "source normative change",
+        "guard": "later read or strict consume",
+        "to": "binding stale",
+        "effects": "Advisory consumers report binding_current=false; strict Ready/authority consumers reject.",
+        "failure_retry": "Task-start and ordinary reporting do not silently rebind or auto-clear stop.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "bind",
+            "lines": [
+              88
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+          }
+        ],
+        "transition_id": "N08:03"
+      },
+      "assessment": "Original all-six-platform named assistive/context tests observe stale binding_current=false without changing recorded source or blocking ordinary start, and preserve blocked stops/history. Original two-Linux named strict tests reject changed source or draft binding in explicit verification/SMARTS consumers. validate.Ready/Binding and guards own the strict rejection; ordinary task progress never silently rebinds. Execution scopes are reported separately.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "guards",
+          "start": 14,
+          "end": 41,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "start": 88,
+          "end": 153,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3"
+        },
+        {
+          "path": "core/artifacts/internal/operations/task_context.go",
+          "symbol": "taskContext",
+          "start": 15,
+          "end": 178,
+          "file_sha256": "fdb69363794e066bb18174346f0ed7cbe9c09cd85b99c6bf23480d6ea281fb3c",
+          "span_sha256": "ba0076109439ce0bc7bf7aa1b227a1c784b4bbc9b5483033ea44a4fca14d798c"
+        },
+        {
+          "path": "core/artifacts/internal/operations/assistive.go",
+          "symbol": "recordWork",
+          "start": 153,
+          "end": 197,
+          "file_sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+          "span_sha256": "57a26dac0e4df444b2f08d736ca708dc39d4dfd4baf0902470d36a75557aadb3"
+        }
+      ],
+      "actual_original_named_results": [
+        {
+          "platform": "darwin/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-amd64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "darwin/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-amd64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "darwin/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-amd64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "darwin/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-arm64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "darwin/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-arm64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "darwin/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/darwin-arm64-native-tests.json",
+          "sha256": "649f1af44bdde3606f61828fed10bdc895cd2636d968499b985b9abd58044437"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "windows/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        {
+          "platform": "windows/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        {
+          "platform": "windows/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        {
+          "platform": "windows/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/windows-arm64-native-tests.json",
+          "sha256": "d26643d2fe655937cd186170922ee5ff168f36e91a46b36ddfffd72bb17873a5"
+        },
+        {
+          "platform": "windows/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/windows-arm64-native-tests.json",
+          "sha256": "d26643d2fe655937cd186170922ee5ff168f36e91a46b36ddfffd72bb17873a5"
+        },
+        {
+          "platform": "windows/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/windows-arm64-native-tests.json",
+          "sha256": "d26643d2fe655937cd186170922ee5ff168f36e91a46b36ddfffd72bb17873a5"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSChangedSpecRevokesGrant",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDraftSourceRefreshPreservesHistoricalEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSChangedSpecRevokesGrant",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDraftSourceRefreshPreservesHistoricalEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        }
+      ],
+      "source_only_limit": null
+    },
+    {
+      "id": "N18:01",
+      "status_proposed": "TESTED",
+      "frozen_contract_sha256": "e9c4a6e36d3eca70c5a24b72c3891432f9142e3403631397e5b01865a0483d4c",
+      "full_guard_effect_retry": {
+        "from_state": "initial draft pair",
+        "from": "initial draft pair",
+        "event": "sprint-approval-context",
+        "guard": "both draft/no approvals; all tasks PENDING with no evidence/baselines; same slug",
+        "to": "pair contexts retained",
+        "effects": "Create paired subject contexts tied to one prompt, optional delegated-method scope.",
+        "failure_retry": "Noninitial or already worked pair ->INITIAL_APPROVAL_ONLY.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "sprintContext",
+            "lines": [
+              120
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/sprint.go"
+          }
+        ],
+        "transition_id": "N18:01"
+      },
+      "assessment": "Actual two-Linux initial pair fixture asks the public sprint-approval-context API, consumes separately retained spec/plan contexts in one same prompt, and rejects already-approved or worked pairs. Source initialDraftPair checks kind/same slug, draft with zero approvals, draft binding, PENDING tasks without evidence/completion, and no scope/prerequisite baseline; initialPair validates Ready and projects only the plan binding. No actual user reply/host permission is claimed.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "initialDraftPair",
+          "start": 26,
+          "end": 64,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "e0ebd4b0652c0532a7c8d034c9d081f17fa8d798ea7c74e20b7744ebc5b524fd"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "initialPair",
+          "start": 65,
+          "end": 103,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "64543bd44e687796b9be5d0f2ea405c019045d5cdf8dad502d67b1cd60411b6f"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "sprintContext",
+          "start": 120,
+          "end": 134,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "cbd73aa25ee588fdb1a4e3e248deae83c9934ab8e0b60c0ced8a686098185a7f"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "storeContext",
+          "start": 109,
+          "end": 119,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "305bcfac30a253be2ed8ff2c4aa1233643078b8ad6f6e5a86dcb83ab57556f37"
+        }
+      ],
+      "actual_original_named_results": [
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairAtomicApprovalAndReplay",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCannotRecycleInitialDelegation",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestApprovalDescriptorsCoverActualEffects",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairAtomicApprovalAndReplay",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCannotRecycleInitialDelegation",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestApprovalDescriptorsCoverActualEffects",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        }
+      ],
+      "source_only_limit": null
+    },
+    {
+      "id": "N18:02",
+      "status_proposed": "TESTED",
+      "frozen_contract_sha256": "5e58b2fef1f13e57e93785df3833fd013a4e84eac2f6aa6a69df9decf62e7c9b",
+      "full_guard_effect_retry": {
+        "from_state": "pair contexts retained",
+        "from": "pair contexts retained",
+        "event": "sprint-approve",
+        "guard": "both observed sources exact same user reply/pair; exact spec+plan CAS",
+        "to": "both approved",
+        "effects": "Mint/load exact pair receipts, atomic two-artifact commit; plan approved_source binding.",
+        "failure_retry": "No partial pair approval via generic approve; journal recovery handles interrupted replacement.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "sprintApprove",
+            "lines": [
+              171
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/sprint.go"
+          }
+        ],
+        "transition_id": "N18:02"
+      },
+      "assessment": "Actual two-Linux original cases approve both artifacts atomically, retain approved_source plan binding, replay without mutation, refuse stale spec or plan and wrong source without partial approval, and refuse generic paired receipt capture/single-artifact use. Injected first-canonical-replacement failure blocks all partial authority with RECOVERY_REQUIRED; complete/rollback recovery is checked. Source also matches both loaded observations to the same reply/result/pair and exact dual CAS before one two-edit Commit.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "sprintApprove",
+          "start": 171,
+          "end": 246,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "1d52f57d7572ba566c466bcdca39c794f08ee89a2cf4296c77d4a453c54bbf72"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "loadPairEvent",
+          "start": 135,
+          "end": 159,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "59196595cc65e04106e54cb2ff4a0cb22ef0310c0979592f798bf308c43b6bc2"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "withApproval",
+          "start": 160,
+          "end": 170,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "aeea74c227d9f672676827016e8bc0e0326b9b6c4e6cf7c779140b535a4f6ee5"
+        }
+      ],
+      "actual_original_named_results": [
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairAtomicApprovalAndReplay",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairStaleMemberCannotPartiallyApprove",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairWrongSourceLeavesBothDraft",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCannotUseGenericCapture",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairReceiptCannotApproveSingleArtifact",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCrashRecoveryBlocksPartialAuthority",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairAtomicApprovalAndReplay",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairStaleMemberCannotPartiallyApprove",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairWrongSourceLeavesBothDraft",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCannotUseGenericCapture",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairReceiptCannotApproveSingleArtifact",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSprintPairCrashRecoveryBlocksPartialAuthority",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        }
+      ],
+      "source_only_limit": null
+    },
+    {
+      "id": "N19:01",
+      "status_proposed": "TESTED",
+      "frozen_contract_sha256": "21ae6a4b152a437cbf6f4e6914517247b65f90b9c49c740df37d46e34a12415b",
+      "full_guard_effect_retry": {
+        "from_state": "approved delegated initial grant",
+        "from": "approved delegated initial grant",
+        "event": "smarts-apply",
+        "guard": "current exact grant/source; selected option changes only authorized task method; protected outcome scope unchanged",
+        "to": "reapproved method",
+        "effects": "Create workflow evidence and new approval; update method; expand reset closure to checkpoint siblings and transitive dependencies.",
+        "failure_retry": "No actual method difference refuses; out-of-scope change refuses.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "smartsApply",
+            "lines": [
+              309
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/sprint.go"
+          }
+        ],
+        "transition_id": "N19:01"
+      },
+      "assessment": "Actual two-Linux named cases require explicit current user pair delegation, reject invented/stale/amended protected scope, validate bounded options and unchanged-decision refusal. Successful actual smarts-apply changes only authorized method steps, records workflow observation/current profile and new approval without acceptance, expands reset through checkpoint siblings and dependencies, and retains historical evidence/blocked reasons. All-six epoch-case data is used here only on the explicitly listed two-Linux platforms; no user/model execution or approval grant is inferred.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "smartsApply",
+          "start": 309,
+          "end": 421,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "3dfec670004d231bce6308cb2da9dba2d9ad7533c652f54b59089aa7940fcde8"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "resetMethodDependents",
+          "start": 258,
+          "end": 308,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "7f59d81346f79766b467b76022f28f1d53fa894ea5141d0dec4610c352d28bb9"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "withApproval",
+          "start": 160,
+          "end": 170,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "aeea74c227d9f672676827016e8bc0e0326b9b6c4e6cf7c779140b535a4f6ee5"
+        }
+      ],
+      "actual_original_named_results": [
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSExplicitGrantPreservesScopeAndOriginalProofObligations",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSWithoutExplicitDelegationRefused",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSCannotInventInitialApproval",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRejectsMalformedOrScopeExpandingChoices",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSChangedSpecRevokesGrant",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSCannotReapproveAnAmendedProtectedPlan",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSUnchangedMethodIsNotAnotherAttempt",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSInvalidatesAcceptedScopesAndRetainsHistoricalEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSDoesNotClearBlockedMembersOrTheirReason",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRecordsProfile030",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRefusesDecisionCriticalUnknownSelection",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/amd64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSIndependentStopRequiresCurrentApprovalEpoch",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-amd64-native-tests.json",
+          "sha256": "91fb4b735cb2e37efa3acfecdd6e64ede21a175827414ec5223684898b614766"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSExplicitGrantPreservesScopeAndOriginalProofObligations",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSWithoutExplicitDelegationRefused",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSCannotInventInitialApproval",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRejectsMalformedOrScopeExpandingChoices",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSChangedSpecRevokesGrant",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSCannotReapproveAnAmendedProtectedPlan",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSUnchangedMethodIsNotAnotherAttempt",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSInvalidatesAcceptedScopesAndRetainsHistoricalEvidence",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSDoesNotClearBlockedMembersOrTheirReason",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRecordsProfile030",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSRefusesDecisionCriticalUnknownSelection",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        },
+        {
+          "platform": "linux/arm64",
+          "selector": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSIndependentStopRequiresCurrentApprovalEpoch",
+          "result": "pass",
+          "original_raw": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/raw/linux-arm64-native-tests.json",
+          "sha256": "bd31f2dac3e3de8948ec8bbf45ff6b34b549247d85e98515004365078ad7e5b2"
+        }
+      ],
+      "source_only_limit": null
+    },
+    {
+      "id": "N05:01",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "67cfced28be74465c75aaad482fb8ddda4d3534f73dd8e843dc9402f9b5edefa",
+      "full_guard_effect_retry": {
+        "from_state": "draft or approved",
+        "from": "draft or approved",
+        "event": "approve",
+        "guard": "Ready + current exact approval receipt; plan bound approved_source to approved spec; allowed authority profile",
+        "to": "approved",
+        "effects": "Append approval, increment revision, render and journal artifact.",
+        "failure_retry": "Generic approve refuses sprint_pair/SMARTS profiles; invalid/stale receipt never changes state.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "approve",
+            "lines": [
+              42
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+          }
+        ],
+        "transition_id": "N05:01"
+      },
+      "assessment": "approve checks actual Ready state, approved source/spec for plans, immutable loaded receipt subject and profile; rejects pair and SMARTS receipts, clones and appends approval, increments revision and saves through journal. No source path mints an event from caller labels. Partial original generic/pair tests do not establish every failure branch.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "approve",
+          "start": 42,
+          "end": 87,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "cc7fb824b7ed4e355b25af4f4b7613a82df6d69beb6bd1b0a438455152b8e23e"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N05:02",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "55ddb1ac9ca3485ac3ea3b72fe9f9297edf17c9e685dff92e20cb8a38f074bfa",
+      "full_guard_effect_retry": {
+        "from_state": "approved",
+        "from": "approved",
+        "event": "normative apply",
+        "guard": "valid closed changes alter normative hash",
+        "to": "draft",
+        "effects": "Keep historical approvals; revision advances; surviving execution progress preserved.",
+        "failure_retry": "CAS and structural errors refuse whole batch.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "Changes",
+            "lines": [
+              208
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+          }
+        ],
+        "transition_id": "N05:02"
+      },
+      "assessment": "Changes clones before applying the closed batch; symbol and structural/render errors return before engine.save. syncExecution retains surviving task state/evidence, approvals survive cloning; changed normative hash sets governance draft, revision advances. Request CAS and final save wrap the complete batch; no partial changed document is committed.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "start": 208,
+          "end": 410,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "span_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "syncExecution",
+          "start": 90,
+          "end": 130,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "span_sha256": "e837b93c3a01cd01629fe17afa9a758f5eafaa41d51b7030e54c0857c97bc24b"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "start": 414,
+          "end": 427,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "eca83fe41db723dbfb0c2cac59425c4c579f69fab2b1e1e790a528ba8db2b029"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "save",
+          "start": 482,
+          "end": 500,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N05:03",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "789b9a5e2cbfe7ac9d1ccdac1ea5b6d5365ee58896a7e8521ed27a6409595059",
+      "full_guard_effect_retry": {
+        "from_state": "any",
+        "from": "any",
+        "event": "rebrand / presentation change",
+        "guard": "valid bounded logo/name",
+        "to": "same governance",
+        "effects": "Increment model revision/hash only; normative identity unchanged.",
+        "failure_retry": "No approval or receipt fabricated.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N05:03"
+      },
+      "assessment": "rebrand clones the document, changes only presentation name/logo, validates bounded filesystem logo bytes/MIME via render.Logo, advances model revision, prepares and journals. Normative/governance/evidence state are untouched; no approval/authority evidence receipt is minted. Ordinary transaction history is separate. Original positive rebrand test is partial, so full row remains source-only.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "start": 428,
+          "end": 455,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "775c37eeac363cdca90be5513c9208b17b1b9b70ae938910af52f2ed3956186c"
+        },
+        {
+          "path": "core/artifacts/internal/render/brand.go",
+          "symbol": "Logo",
+          "start": 31,
+          "end": 53,
+          "file_sha256": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2",
+          "span_sha256": "f632e2069789e7415e7defbf278cd0907aa17d7416c403adf257546df2f6b11e"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "save",
+          "start": 482,
+          "end": 500,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N06:01",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "2d1827a1d0483e26dd6bb6a3e49865e652a129891f41f0ce04da711dfe5e7ed2",
+      "full_guard_effect_retry": {
+        "from_state": "never allocated",
+        "from": "never allocated",
+        "event": "record.add",
+        "guard": "valid collection; ID never active/retired/allocated in same batch",
+        "to": "active",
+        "effects": "Add stable record; sync execution for new tasks/prerequisites; increment revision.",
+        "failure_retry": "ID reuse rejected; whole batch atomic.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "Changes",
+            "lines": [
+              208
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+          }
+        ],
+        "transition_id": "N06:01"
+      },
+      "assessment": "record.add accepts only mutable collections (or criterion nested scenarios), reserves every prior/retired/newly observed identity, allocates a typed unused ID when absent, rejects reintroduction or kind change across the batch. Final symbol build and render validate before save; syncExecution adds only new task/prerequisite defaults, preserves survivors and increments revision. ID reuse and structural errors refuse the whole cloned batch.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "start": 208,
+          "end": 410,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "span_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "syncExecution",
+          "start": 90,
+          "end": 130,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "span_sha256": "e837b93c3a01cd01629fe17afa9a758f5eafaa41d51b7030e54c0857c97bc24b"
+        },
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "nextRecordID",
+          "start": 131,
+          "end": 138,
+          "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+          "span_sha256": "c6c3fa21763ba893810cabc51286ec303553012bcf4f246e906d341ea0f51c4f"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "save",
+          "start": 482,
+          "end": 500,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N08:01",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "8cc56302561ad9395c5ca83925487c3d5880c10718067c5964d1327ed83bc227",
+      "full_guard_effect_retry": {
+        "from_state": "any valid binding",
+        "from": "any valid binding",
+        "event": "plan-bind draft_preview",
+        "guard": "same-slug Ready pair; exact spec_expected CAS when explicit draft mode",
+        "to": "draft_preview current",
+        "effects": "Bind current spec digest; preserve execution/history; plan governance remains/resets draft, revision advances.",
+        "failure_retry": "Concurrent source change or invalid pair refuses; no source approval invented.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "bind",
+            "lines": [
+              88
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+          }
+        ],
+        "transition_id": "N08:01"
+      },
+      "assessment": "Explicit draft_preview bind checks exact spec revision+model CAS, canonical same-slug identity and Ready spec/next plan. It clones current plan, updates current source digest, retains execution and historical approvals, sets governance draft and advances revision, then saves. Original history/progress positives exist; source guard/retry coverage is not inflated into complete executed branch coverage.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "start": 88,
+          "end": 153,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "save",
+          "start": 482,
+          "end": 500,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N08:02",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "32228d7930ca0b5d931dbab73bdae5f1eed6b036786d99bed5ec7d998719b22b",
+      "full_guard_effect_retry": {
+        "from_state": "any valid binding",
+        "from": "any valid binding",
+        "event": "plan-bind default",
+        "guard": "valid current spec; actual authority assessed",
+        "to": "approved_source current or draft_preview current",
+        "effects": "Choose approved_source only when genuine source approval valid; preserve work state.",
+        "failure_retry": "No approval receipt required just to rebind ordinary plan.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "bind",
+            "lines": [
+              88
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+          }
+        ],
+        "transition_id": "N08:02"
+      },
+      "assessment": "Default bind requires actual structural spec validity, starts with draft_preview, switches to approved_source only when authority.Approved succeeds, and never demands a new receipt merely to bind. Clone preserves work/history; binding is validated and governance is draft, with revision/save after validation. No failed authority lookup is reinterpreted as approved.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "start": 88,
+          "end": 153,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N10:05",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "90fb1af92dd6f08f5b73eb525dd0303ea5b4f08f72599b172aa46b3aecdd91e3",
+      "full_guard_effect_retry": {
+        "from_state": "any plan task states",
+        "from": "any plan task states",
+        "event": "verification-status",
+        "guard": "strict guards+prereqs+snapshot",
+        "to": "unchanged",
+        "effects": "Project all_accepted_and_current only when every task ACCEPTED, fresh, no conflicting checks or unassessed trimmed history.",
+        "failure_retry": "May fail due to approval, stale source, infrastructure or missing evidence; never treats DONE/REVIEW as verification.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "verificationStatus",
+            "lines": [
+              207
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+          }
+        ],
+        "transition_id": "N10:05"
+      },
+      "assessment": "verificationStatus requires plan kind, strict guards/prerequisite receipt assessment and current snapshot before projecting each task. All-accepted requires ACCEPTED plus AcceptedFresh and both no conflicting reports and no unassessed trimmed history. Every error propagates, and no progress/receipt is written. Current original lifecycle/conflict positives do not become an assertion that the full trimmed-history caller composition was executed.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "verificationStatus",
+          "start": 207,
+          "end": 237,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "5c6e3bab793fb969184488c4075e68432dc754f0ac7ab35b3d6eeadb1307c0f4"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "prerequisites",
+          "start": 157,
+          "end": 182,
+          "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+          "span_sha256": "ff91e16750886b2c3161befe2919914fcb6cf86754d7028f03f564d1b57ef45f"
+        },
+        {
+          "path": "core/artifacts/internal/operations/task_check.go",
+          "symbol": "checkConflictsAssessed",
+          "start": 189,
+          "end": 265,
+          "file_sha256": "8403342ab4529d290d5ddf3069a0936d9b9c3f04cca6b0afe0a19e2a93c75ba6",
+          "span_sha256": "582711de4ae288a80c6f389c7488487c6212affa33c68da49968b2d6f74d07c4"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    },
+    {
+      "id": "N19:02",
+      "status_proposed": "PRESERVED",
+      "frozen_contract_sha256": "fc806c9c40b8e4d08cd6f00e7f7ef5d1b8245d8d1ccc30a85ee464304a90d611",
+      "full_guard_effect_retry": {
+        "from_state": "affected task closure",
+        "from": "affected task closure",
+        "event": "resetMethodDependents",
+        "guard": "no affected IN_PROGRESS task",
+        "to": "PENDING except BLOCKED preserved",
+        "effects": "Clear affected scope baselines; preserve blocked stops and evidence refs.",
+        "failure_retry": "ACTIVE_WORK rejects whole method mutation if any affected work active.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "resetMethodDependents",
+            "lines": [
+              258
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/sprint.go"
+          }
+        ],
+        "transition_id": "N19:02"
+      },
+      "assessment": "resetMethodDependents expands the affected set through task/checkpoint/dependency fixed point, checks every affected state for IN_PROGRESS before mutation and returns ACTIVE_WORK. Then BLOCKED records remain byte-equivalent, other states become PENDING with invalidation reason, historical evidence refs stay and affected scope baselines are removed. Changes already cloned the document and smartsApply does not write new authority or commit before reset succeeds. Existing positive reset/blocked tests do not supply the missing direct ACTIVE_WORK oracle.",
+      "source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "resetMethodDependents",
+          "start": 258,
+          "end": 308,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "7f59d81346f79766b467b76022f28f1d53fa894ea5141d0dec4610c352d28bb9"
+        },
+        {
+          "path": "core/artifacts/internal/operations/sprint.go",
+          "symbol": "smartsApply",
+          "start": 309,
+          "end": 421,
+          "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+          "span_sha256": "3dfec670004d231bce6308cb2da9dba2d9ad7533c652f54b59089aa7940fcde8"
+        }
+      ],
+      "actual_original_named_results": [],
+      "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+    }
+  ],
+  "limits": [
+    "Only12native transitions, no task/machine/scenario/program promotion.",
+    "Linux-only test files are explicitly limited to both actual Linux architectures; absence on Windows/Darwin is not a skipped pass.",
+    "Synthetic host observation fixtures test native software composition, never actual user approval, upstream host/model behavior or physical consent.",
+    "N17/mixed eight scope0/30/31/32 and hidden-event gaps remain untouched.",
+    "Original archive metadata/clock refusal remains historical; current owner already reauthenticates original six-artifact attribution without a new runtime."
+  ]
+}

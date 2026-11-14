@@ -9478,8 +9478,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "approve checks actual Ready state, approved source/spec for plans, immutable loaded receipt subject and profile; rejects pair and SMARTS receipts, clones and appends approval, increments revision and saves through journal. No source path mints an event from caller labels. Partial original generic/pair tests do not establish every failure branch."
   },
   "N05:02": {
    "owner": "native",
@@ -9489,8 +9497,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "Changes clones before applying the closed batch; symbol and structural/render errors return before engine.save. syncExecution retains surviving task state/evidence, approvals survive cloning; changed normative hash sets governance draft, revision advances. Request CAS and final save wrap the complete batch; no partial changed document is committed."
   },
   "N05:03": {
    "owner": "native",
@@ -9500,8 +9516,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "rebrand clones the document, changes only presentation name/logo, validates bounded filesystem logo bytes/MIME via render.Logo, advances model revision, prepares and journals. Normative/governance/evidence state are untouched; no approval/authority evidence receipt is minted. Ordinary transaction history is separate. Original positive rebrand test is partial, so full row remains source-only."
   },
   "N05:04": {
    "owner": "native",
@@ -9529,8 +9553,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "record.add accepts only mutable collections (or criterion nested scenarios), reserves every prior/retired/newly observed identity, allocates a typed unused ID when absent, rejects reintroduction or kind change across the batch. Final symbol build and render validate before save; syncExecution adds only new task/prerequisite defaults, preserves survivors and increments revision. ID reuse and structural errors refuse the whole cloned batch."
   },
   "N06:02": {
    "owner": "native",
@@ -9757,8 +9789,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "Explicit draft_preview bind checks exact spec revision+model CAS, canonical same-slug identity and Ready spec/next plan. It clones current plan, updates current source digest, retains execution and historical approvals, sets governance draft and advances revision, then saves. Original history/progress positives exist; source guard/retry coverage is not inflated into complete executed branch coverage."
   },
   "N08:02": {
    "owner": "native",
@@ -9768,8 +9808,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "Default bind requires actual structural spec validity, starts with draft_preview, switches to approved_source only when authority.Approved succeeds, and never demands a new receipt merely to bind. Clone preserves work/history; binding is validated and governance is draft, with revision/save after validation. No failed authority lookup is reinterpreted as approved."
   },
   "N08:03": {
    "owner": "native",
@@ -9779,8 +9827,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json",
+     "sha256": "6d5aa7c0cb33b71141288cb5502bf51b382a9dff7e211e6a804cdc353a039fdb"
+    }
+   ],
+   "candidate_contract_note": "Original all-six-platform named assistive/context tests observe stale binding_current=false without changing recorded source or blocking ordinary start, and preserve blocked stops/history. Original two-Linux named strict tests reject changed source or draft binding in explicit verification/SMARTS consumers. validate.Ready/Binding and guards own the strict rejection; ordinary task progress never silently rebinds. Execution scopes are reported separately."
   },
   "N09:01": {
    "owner": "native",
@@ -10114,8 +10170,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "verificationStatus requires plan kind, strict guards/prerequisite receipt assessment and current snapshot before projecting each task. All-accepted requires ACCEPTED plus AcceptedFresh and both no conflicting reports and no unassessed trimmed history. Every error propagates, and no progress/receipt is written. Current original lifecycle/conflict positives do not become an assertion that the full trimmed-history caller composition was executed."
   },
   "N11:01": {
    "owner": "native",
@@ -11584,8 +11648,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
+     "sha256": "0ab5c22c3095e45b543187a3ab5da0a9b6e2514c508e07c414cfbeeea69b0b4e"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux initial pair fixture asks the public sprint-approval-context API, consumes separately retained spec/plan contexts in one same prompt, and rejects already-approved or worked pairs. Source initialDraftPair checks kind/same slug, draft with zero approvals, draft binding, PENDING tasks without evidence/completion, and no scope/prerequisite baseline; initialPair validates Ready and projects only the plan binding. No actual user reply/host permission is claimed."
   },
   "N18:02": {
    "owner": "native",
@@ -11593,8 +11665,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
+     "sha256": "0ab5c22c3095e45b543187a3ab5da0a9b6e2514c508e07c414cfbeeea69b0b4e"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux original cases approve both artifacts atomically, retain approved_source plan binding, replay without mutation, refuse stale spec or plan and wrong source without partial approval, and refuse generic paired receipt capture/single-artifact use. Injected first-canonical-replacement failure blocks all partial authority with RECOVERY_REQUIRED; complete/rollback recovery is checked. Source also matches both loaded observations to the same reply/result/pair and exact dual CAS before one two-edit Commit."
   },
   "N19:01": {
    "owner": "native",
@@ -11602,8 +11682,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/smarts-tested.json",
+     "sha256": "f576ed24208aa31d2c42d651c34ce5fcccf0dd9f8b83b3b82a613145c1571bd9"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux named cases require explicit current user pair delegation, reject invented/stale/amended protected scope, validate bounded options and unchanged-decision refusal. Successful actual smarts-apply changes only authorized method steps, records workflow observation/current profile and new approval without acceptance, expands reset through checkpoint siblings and dependencies, and retains historical evidence/blocked reasons. All-six epoch-case data is used here only on the explicitly listed two-Linux platforms; no user/model execution or approval grant is inferred."
   },
   "N19:02": {
    "owner": "native",
@@ -11611,8 +11699,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+    }
+   ],
+   "candidate_contract_note": "resetMethodDependents expands the affected set through task/checkpoint/dependency fixed point, checks every affected state for IN_PROGRESS before mutation and returns ACTIVE_WORK. Then BLOCKED records remain byte-equivalent, other states become PENDING with invalidation reason, historical evidence refs stay and affected scope baselines are removed. Changes already cloned the document and smartsApply does not write new authority or commit before reset succeeds. Existing positive reset/blocked tests do not supply the missing direct ACTIVE_WORK oracle."
   },
   "N20:01": {
    "owner": "native",

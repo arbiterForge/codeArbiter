@@ -597,7 +597,7 @@
         "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files."
       ],
       "tested": [
-        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32→4/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
+        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32\u21924/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
       ],
       "remaining": [
         "CurrentPOSIX0/30/31/32 producer/platform and historicalprofile matrix are owned by affected hosted/native qualification. Refreshed full native input binding requires newtestsource currentbuild; native owner running it. Do not mark all HOOK-F04 platform qualification complete from this Windows pass."
@@ -1635,7 +1635,7 @@
       "owner": "sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9REDÃ¢â€ â€™GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
       "current_detail": "Profile2 adds bounded Go/nonworkspaceRust alongside explicitNode/Python with pinned runtime stages and material-input cache binding. AlloriginalfourDockerfixtures retained;123localPASS7DockerSKIP, realhostedpending."
     },
     {
@@ -1765,7 +1765,7 @@
       "owner": "hooks-workflows",
       "status": "DONE",
       "source": "1e06da1b6483591350b090c8eed4a6f37f277d55",
-      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
+      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED\u2192GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
       "current_detail": "Actual exact6083 hosted Windows isolation job132323671933 succeeded, including unchanged ordinary3s admission criterion. This closes only the scanner work-allocation defect; whole run failed independently."
     },
     {
@@ -3502,7 +3502,7 @@
       "recorded_at": "2026-11-14T07:31:05.349374+00:00",
       "kind": "COLD_CLOSED_DIAGNOSTIC_EXTENSION",
       "source_epoch": "ce3 source export + explicit Temp-author diagnostic overlay; current a0 owning preimages match",
-      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED→14focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
+      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED\u219214focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
       "source_freeze_sha256": "3fd16b4172357349752fec4ddaf3b683eafe90a704764367d3604b77ae5b532c",
       "proof_impact": "Fifteen current channel TESTED rows bind changed tools/build-host-packages.py. Their old execution epochs remain retained; current applicability must be inspected after commit and renewed only from actual owning execution."
     },
@@ -3669,6 +3669,20 @@
       "limits": [
         "One Darwin builder upload attribution is still refused pending the independently reviewed service-clock reader correction.",
         "No installed/native whole-task/scenario/program/publication completion."
+      ]
+    },
+    {
+      "id": "native-M94-remaining-finite-clauses",
+      "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+      "candidate_checked_at": "8623cd46a79429be66fd1abf0fd2d614dcd22f0e",
+      "facts": [
+        "Four finite native clauses TESTED from original M94 named observations, eight further clauses source PRESERVED with complete guard/effect/retry inspection.",
+        "All249 original/current/physical inputs match; the native module has245 members. No new native execution.",
+        "N08:03 advisory facts cover allsix platforms; strict refusals and N18/N19 fixture observations cover bothLinux architectures only."
+      ],
+      "limits": [
+        "No actual user/model/host permission or installed qualification implied by native API fixtures.",
+        "No machine/task/scenario/program/publication promotion; ten other nativePLANNED/mixed hiddenevent gaps remain."
       ]
     }
   ],
