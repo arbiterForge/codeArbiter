@@ -1,13 +1,13 @@
 # Current delivery checkpoint (2026-11-14)
 
-Child PR #1107 targets `major/state-contracts`. Current code is `d98e12f51d409cfd3cdb8c06b82e02eee0e3da61`; the original governance checkout now resolves Git through `D:/projects/codeArbiter/.git`. PR #1098 remains draft and held from main for Brennon testing. No publication authority.
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. Its exact head22a passed 92 checks including required merge-readiness; six checks skipped. Both merge parents and identical source tree were verified. The named remote branch deletion was authorized and confirmed. PR #1098 remains draft and held from main for Brennon testing; publication is not authorized.
 
-- Actual fixes cover Farm shared-registry locking, mapped-target failures, conservative read guards, authenticated installed-report routes, and Sandbox cancellation/known-container recovery. Latest Claude cancellation regression: four RED to 43 affected tests GREEN, strict TypeScript, rebuilt companion. Docker/runtime acceptance remains separate.
-- The previous #1107 head7eba finished 90 successful checks, six skips and two failures: the stale Impact predicate expectation and its dependent aggregate. All three Pi adapter jobs passed. Correction2263 passed five affected tests; historical Windows shutdown failures remain unexplained.
-- Current staged integrity passes: all 105 frozen intake files, 1,239 advanced records, 1,108 applicable, 130 stale and one unknown. This batch renews 74 guard/mapped source records and preserves nine more Sandbox clauses plus three machines. Original evidence/history remains intact; these counts do not qualify tasks, installed hosts, models or scenarios.
-- S38:04 has authentic controlled runtime observations but incomplete explicit native membership/host-lookup closure. Retain UNKNOWN. Pi endpoint policy remains awaiting the existing user decision.
-- Next: push this coherent correction batch, require exact-head hosted merge-readiness, then inspect actual installed observations from the trusted normal integration push. Continue receipt-bearing reconcile characterization and real parent-consent/lifecycle qualification. Never substitute fixture or source passes for those outcomes.
-- Preserve primary/author/acceptance checkouts, append-only audit records and recovery metadata. Local branch deletion after merge is authorized; remote child deletion still needs named approval. Never reopen the original handoff ZIP.
+- Trusted normal integration push43649759117 is running. Actual installed-package reports and retained artifacts still need observation.
+- Follow-on code source0c882f43 adds receipt-reconciliation characterization and corrects two Sandbox catalog claims. Fresh native11subcases pass with complete245-member before/after closure. These synthetic native fixtures do not establish human/installed approval.
+- Full integrity passes all105 frozen files and1,270 advanced records:965applicable,304stale,oneunknown. The new test source changes native module fingerprints; old records remain authentic history pending their owning current evidence.
+- This batch admits32 bounded updates. It corrects the prior inaccurate SW01 catalog narrative while retaining history, preserves complete finite source clauses, and records N10's actual executed command. The initial malformed proof proposal was refused and retained; only truthful command metadata was added, with no gate weakening or test rerun.
+- S38:04 remains UNKNOWN until an authenticated tested native installation supports the actual missing closure observation. Do not use a skipped-tests installation or invent past membership/absence facts.
+- Continue remaining acceptance, real parent-consent/lifecycle and physical/model journeys. The existing Pi endpoint policy decision stays pending. Preserve primary/author/acceptance worktrees, audit records and recovery metadata; never reopen the original handoff ZIP.
 
 ## Preserved checkpoint history
 

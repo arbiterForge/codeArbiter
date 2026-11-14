@@ -1,0 +1,227 @@
+{
+  "schema": "codearbiter.packaging-source-joins/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "observed_workspace_head": "0c882f43fdb2893a420fb721539005c89b1e6975",
+  "observed_at": "2026-11-14T22:44:28.565116+00:00",
+  "method": "Explicit immutable Git show and literal physical bytes. No application imports or tests/runtime. Positive source exposure only, not native-module membership/installed absence attestation. Baseline inventory is successful complete Git ls-tree, not inference from failed object reads.",
+  "inputs": {
+    ".agents/plugins/marketplace.json": {
+      "source_sha256": "4c8db8d2444bdb886cc8d4db8bbaa6ed56f8e3edf93b623ed0ffef4dfc9ff1d4",
+      "physical_sha256": "4c8db8d2444bdb886cc8d4db8bbaa6ed56f8e3edf93b623ed0ffef4dfc9ff1d4",
+      "literal_equal": true,
+      "git_blob": "d5f51faa56ba9ca56b17372d2469305ea7d30b81",
+      "baseline_sha256": "4c8db8d2444bdb886cc8d4db8bbaa6ed56f8e3edf93b623ed0ffef4dfc9ff1d4",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    ".claude-plugin/marketplace.json": {
+      "source_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "physical_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "literal_equal": true,
+      "git_blob": "6c624166c4104e9ff3d9996749f099d31bdc31b5",
+      "baseline_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "source_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "physical_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "literal_equal": true,
+      "git_blob": "1e99a2395fab11115d95108b6766d88fdf30eed8",
+      "baseline_sha256": "77a3aee73f8e6ae333158133d2045c6bd653c40d08914d8ed5578001f3bb4dc5",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    ".github/scripts/_releaselib.py": {
+      "source_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "physical_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "literal_equal": true,
+      "git_blob": "51f5852cb658c5e602e52e080d1af73cba7b3fee",
+      "baseline_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "source_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "physical_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "literal_equal": true,
+      "git_blob": "0507a59e8087f92265191d3d33f783d41ea8325d",
+      "baseline_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    ".github/scripts/test_context_native.py": {
+      "source_sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      "physical_sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      "literal_equal": true,
+      "git_blob": "cc09db27f39ff6cef14d119c0e8bc974ef5bc27d",
+      "baseline_sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    "core/artifact-release-manifest.json": {
+      "source_sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "physical_sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "literal_equal": true,
+      "git_blob": "ca170c2b363301e75c28b39976c92218e5ac624c",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "core/hosts.json": {
+      "source_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "physical_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "literal_equal": true,
+      "git_blob": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+      "baseline_sha256": "7ee1de9bf256d5d46a2cf1580a542f39b95af70205ad1b90c5c964dcd2ff4f88",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "source_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "physical_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "literal_equal": true,
+      "git_blob": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "physical_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "literal_equal": true,
+      "git_blob": "492afd199f317dac3624164bc65dae9da6ca8fae",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    "core/pysrc/_releaselib.py": {
+      "source_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "physical_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "literal_equal": true,
+      "git_blob": "7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8",
+      "baseline_sha256": "4039900b3b8713f8052d7bd1a3fa174e0b357292c700d6b4ab5edfc65d4840d6",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "source_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "physical_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "literal_equal": true,
+      "git_blob": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "source_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "physical_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "literal_equal": true,
+      "git_blob": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "source_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "physical_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "literal_equal": true,
+      "git_blob": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "source_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "physical_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "literal_equal": true,
+      "git_blob": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "tools/build-artifacts.py": {
+      "source_sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+      "physical_sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+      "literal_equal": true,
+      "git_blob": "a78fc5e2a8f52ee46a280c2c1625fd81ed7137bd",
+      "baseline_sha256": "867415fbb0a557340f41016fa314a11e636271a987f3e1e51c94de4475e89e58",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "tools/build-host-packages.py": {
+      "source_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "physical_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "literal_equal": true,
+      "git_blob": "2e00bf31140b6e6354e09f6bc23fff94a539c8e6",
+      "baseline_sha256": "be7f6fad13b5041bfc901e8c803d2426fc9bb2d8b313786cd622d8d961a386be",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "tools/go-test-timings.json": {
+      "source_sha256": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+      "physical_sha256": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+      "literal_equal": true,
+      "git_blob": "9401ea19fa30d310bf7fabd98d04accd20938edb",
+      "baseline_sha256": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    "tools/go_test_parallel.py": {
+      "source_sha256": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40",
+      "physical_sha256": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40",
+      "literal_equal": true,
+      "git_blob": "e22ae8b3deeda542fe294b68a09ce8f7e120aa49",
+      "baseline_sha256": "bccdf915cf6f128456f257c2da77f012f328c6563b6f3c6d3f3ba87bc7fb70c7",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "tools/host_descriptors.py": {
+      "source_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "physical_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "literal_equal": true,
+      "git_blob": "6d0d178b20a13168acdeb37674c39f3bb7eed3b4",
+      "baseline_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "baseline_equal": true,
+      "baseline_inventory": "present"
+    },
+    "tools/install-artifact-payload.py": {
+      "source_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "physical_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "literal_equal": true,
+      "git_blob": "1106ddeb50450ccb38ce93a94afb3b1aecf18deb",
+      "baseline_sha256": "f57d485479eefee873437f3c9546f85a6a6bc08bf5c04f5c3600c6678d058ce5",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "tools/owned_output.py": {
+      "source_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "physical_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "literal_equal": true,
+      "git_blob": "cf29aa1e6eef8cba4069b3824c1750fe80b3c158",
+      "baseline_sha256": null,
+      "baseline_equal": false,
+      "baseline_inventory": "not listed in successful complete immutable baseline tree inventory"
+    },
+    "tools/promote-claude-marketplace.py": {
+      "source_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "physical_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "literal_equal": true,
+      "git_blob": "a8f0c8954bfa2ada682047719555d03eb8dd87ff",
+      "baseline_sha256": "3c0fb4537105ec655f43d46501d0095e76a456c72779a87ba6d429fa6cd6c029",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    },
+    "tools/promote-codex-marketplace.py": {
+      "source_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "physical_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "literal_equal": true,
+      "git_blob": "5bde8961681bb81697208114d1ce47fae54bceab",
+      "baseline_sha256": "c3313a2d5b5b58f262f3b06993e504523e933a221c67cdae2d37d79617471cd3",
+      "baseline_equal": false,
+      "baseline_inventory": "present"
+    }
+  },
+  "canonical_manifest_equals_generated_embedded_contract": true
+}

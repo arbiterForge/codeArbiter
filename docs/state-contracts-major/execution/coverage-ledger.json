@@ -4433,8 +4433,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+     "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738"
+    }
+   ],
+   "candidate_contract_note": "Finitecomplete sourceguard/effect/retry conformance and meaningfulunchanged/admitted namedcomponentfacts. Instruction/OSsignal/realDocker/runtime/installed/task/model boundaries remainexplicit; no transitionhistorypromotion."
   },
   "S50": {
    "owner": "sandbox",
@@ -4482,8 +4490,16 @@
     "SBX-C02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+     "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738"
+    }
+   ],
+   "candidate_contract_note": "Finitecomplete sourceguard/effect/retry conformance and meaningfulunchanged/admitted namedcomponentfacts. Instruction/OSsignal/realDocker/runtime/installed/task/model boundaries remainexplicit; no transitionhistorypromotion."
   },
   "S53": {
    "owner": "sandbox",
@@ -4533,8 +4549,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+     "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738"
+    }
+   ],
+   "candidate_contract_note": "Finitecomplete sourceguard/effect/retry conformance and meaningfulunchanged/admitted namedcomponentfacts. Instruction/OSsignal/realDocker/runtime/installed/task/model boundaries remainexplicit; no transitionhistorypromotion."
   },
   "S55": {
    "owner": "site",
@@ -4695,8 +4719,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S69": {
    "owner": "packaging",
@@ -4717,8 +4749,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S71": {
    "owner": "packaging",
@@ -4761,8 +4801,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S75": {
    "owner": "packaging",
@@ -5489,8 +5537,16 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/preserved.json",
+     "sha256": "d5134d4a50a835eb2fe8efd9bab7ed2f2e55fa8bbd9f47d83f6a70c85510f6fa"
+    }
+   ],
+   "candidate_contract_note": "Actual0c882f43 catalogsourcecorrects detach/scopedteardown andseparateClaudeentrypoint; earlierae237catalog-correctionnarrative was inaccurate andisretainedinhistory. Complete24finiteinstruction/sourceclausesaccounted; no runtime/installed/task/modelqualification."
   },
   "SW02": {
    "owner": "sandbox",
@@ -5499,8 +5555,16 @@
     "SBX-D04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+     "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738"
+    }
+   ],
+   "candidate_contract_note": "Finitecomplete sourceguard/effect/retry conformance and meaningfulunchanged/admitted namedcomponentfacts. Instruction/OSsignal/realDocker/runtime/installed/task/model boundaries remainexplicit; no transitionhistorypromotion."
   },
   "pi-qualification:runtime-discovery": {
    "owner": "hooks-workflows",
@@ -10273,8 +10337,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/native-reconcile-closure-9a26600f/command-successor-tested.json",
+     "sha256": "4ae8e6d2396a7db0793c4f635b642cc2b0ca2beccfbbfcf50cbe90811bdde74e"
+    }
+   ],
+   "candidate_contract_note": "Actual Windows/amd64 finite receipt-bearing reconciliation: all three output targets, exact receipt append/replay/CAS and current/stale binding/freshness refusals. Accepted ADR0046 D-PROGRESS=B intentionally preserves dependent progress/check history instead of old destructive invalidation. Complete245-member native source closure observed before/after the fresh9a command. Synthetic fixture authority only; no live host, installed/platform matrix, task/scenario or program completion."
   },
   "N10:03": {
    "owner": "native",
@@ -32695,8 +32767,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:02": {
    "owner": "packaging",
@@ -32704,8 +32784,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:03": {
    "owner": "packaging",
@@ -32713,8 +32801,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:04": {
    "owner": "packaging",
@@ -32722,8 +32818,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:05": {
    "owner": "packaging",
@@ -32731,8 +32835,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:06": {
    "owner": "packaging",
@@ -32740,8 +32852,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S68:07": {
    "owner": "packaging",
@@ -32749,8 +32869,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+     "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S69:01": {
    "owner": "packaging",
@@ -32831,8 +32959,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:02": {
    "owner": "packaging",
@@ -32841,8 +32977,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:03": {
    "owner": "packaging",
@@ -32851,8 +32995,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:04": {
    "owner": "packaging",
@@ -32861,8 +33013,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:05": {
    "owner": "packaging",
@@ -32871,8 +33031,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:06": {
    "owner": "packaging",
@@ -32881,8 +33049,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:07": {
    "owner": "packaging",
@@ -32891,8 +33067,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S70:08": {
    "owner": "packaging",
@@ -32901,8 +33085,16 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/developer-installer/preserved.json",
+     "sha256": "a668d5db570471e0d56172fd897e5b51e286d75ee77217a01fff257449c2a0f0"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S71:01": {
    "owner": "packaging",
@@ -33313,8 +33505,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:01": {
    "owner": "packaging",
@@ -33323,8 +33523,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:02": {
    "owner": "packaging",
@@ -33333,8 +33541,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:03": {
    "owner": "packaging",
@@ -33377,8 +33593,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:06": {
    "owner": "packaging",
@@ -33387,8 +33611,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:07": {
    "owner": "packaging",
@@ -33397,8 +33629,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S74:08": {
    "owner": "packaging",
@@ -33441,8 +33681,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+     "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96"
+    }
+   ],
+   "candidate_contract_note": "Complete finite source guard/effect/retry conformance only; no runtime/artifact/installed/publication/task promotion; old history and unselected higher-status evidence unchanged."
   },
   "S75:01": {
    "owner": "packaging",
@@ -38571,12 +38819,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
-     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+     "commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/preserved.json",
+     "sha256": "d5134d4a50a835eb2fe8efd9bab7ed2f2e55fa8bbd9f47d83f6a70c85510f6fa"
     }
    ],
-   "candidate_contract_note": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred."
+   "candidate_contract_note": "Actual0c882f43 catalogsourcecorrects detach/scopedteardown andseparateClaudeentrypoint; earlierae237catalog-correctionnarrative was inaccurate andisretainedinhistory. Complete24finiteinstruction/sourceclausesaccounted; no runtime/installed/task/modelqualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+     "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c",
+     "ref_commit": "0c882f43fdb2893a420fb721539005c89b1e6975"
+    }
+   ]
   },
   "SW01:02": {
    "owner": "sandbox",

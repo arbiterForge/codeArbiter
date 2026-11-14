@@ -1,0 +1,1007 @@
+{
+  "schema": "codearbiter.SW01-complete24-source-conformance/1",
+  "source_commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+  "rows": [
+    {
+      "id": "SW01:01",
+      "literal_frozen_clause": {
+        "from": "routed",
+        "from_state": "routed",
+        "event": "load command and lifecycle owner",
+        "guard": "one of five namespaced sandbox commands invoked",
+        "to": "preflight",
+        "effects": "Load invoked command body and sandbox-lifecycle instructions; catalog prescribes lazy routing rather than bulk context loading.",
+        "failure_retry": "Missing owner/prerequisite sources instruct STOP; no fallback workflow is defined.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/INDEX.md",
+            "symbol": "command-to-skill routing",
+            "lines": [
+              1,
+              10
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/INDEX.md"
+          }
+        ],
+        "transition_id": "SW01:01"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Currentcatalogsource correctedatactual0c882f43; lazyrouting/lifetime/separateClaudeentrypoint nownamesactualowners.",
+      "current_guard": "Invoked currentnamespacedcommand loads lazycatalog and actualroutineowner; correctedcatalogroute/lifetime consistentwithexistingCLI/lifecycle",
+      "current_effect": "Cataloglazyroutepreserved; exacttwo falseclaims replacedwithactualdetach/scopedteardown andseparateClaudeCLI references.",
+      "current_failure_retry": "Missingpackagedowner/prerequisite remainsSTOP; correctedcatalog no longer suggestsunsupportedflag or automaticexitdestruction. No newconsumerphaseapprovalreceipt.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/INDEX.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:02",
+      "literal_frozen_clause": {
+        "from": "preflight",
+        "from_state": "preflight",
+        "event": "inspect required driver sources",
+        "guard": "mount/run/network source files accessible at plugin root",
+        "to": "preflight grounded",
+        "effects": "Read actual mount, isolation and network seams before choosing operations.",
+        "failure_retry": "If files cannot be read, STOP and surface gap; source comments alone do not prove live container state.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Pre-flight",
+            "lines": [
+              12,
+              20
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:02"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed.",
+      "current_guard": "Packagedcurrentprerequisites replaceconsumer-maintainer-sourcecheckoutrequirement underacceptedD04",
+      "current_effect": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed.",
+      "current_failure_retry": "If files cannot be read, STOP and surface gap; source comments alone do not prove live container state.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:03",
+      "literal_frozen_clause": {
+        "from": "preflight",
+        "from_state": "preflight",
+        "event": "Docker admission",
+        "guard": "docker info returns nonzero",
+        "to": "preflight blocked",
+        "effects": "Report Docker unavailable and do not clone/build.",
+        "failure_retry": "Repair availability and retry admission; no guessed capability.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1",
+            "lines": [
+              20,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:03"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry.",
+      "current_guard": "docker info returns nonzero",
+      "current_effect": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry.",
+      "current_failure_retry": "Repair availability and retry admission; no guessed capability.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:04",
+      "literal_frozen_clause": {
+        "from": "preflight",
+        "from_state": "preflight",
+        "event": "nixpacks prerequisite evaluation",
+        "guard": "nixpacks absent",
+        "to": "preflight blocked",
+        "effects": "Command and skill prescribe STOP plus install hint.",
+        "failure_retry": "Conflicts with documented and implemented Node/Python fallback; SW-F01.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 2 prerequisite",
+            "lines": [
+              33,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:04"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied.",
+      "current_guard": "InstalledNixpacks unavailable butprojectwithinNode/Pythonfallbackprofile; no runtimeacquisition",
+      "current_effect": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied.",
+      "current_failure_retry": "Conflicts with documented and implemented Node/Python fallback; SW-F01.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:05",
+      "literal_frozen_clause": {
+        "from": "preflight",
+        "from_state": "preflight",
+        "event": "missing source",
+        "guard": "create request has no URL/local path",
+        "to": "awaiting source",
+        "effects": "Ask for the source; do not choose a repository on user’s behalf.",
+        "failure_retry": "Continue only with named source.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox.md",
+            "symbol": "Pre-flight flow",
+            "lines": [
+              21,
+              24
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+          }
+        ],
+        "transition_id": "SW01:05"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue.",
+      "current_guard": "create request has no URL/local path",
+      "current_effect": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue.",
+      "current_failure_retry": "Continue only with named source.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:06",
+      "literal_frozen_clause": {
+        "from": "preflight",
+        "from_state": "preflight",
+        "event": "select ordinary policy",
+        "guard": "named source and reachable Docker; no user policy selected",
+        "to": "policy chosen: offline",
+        "effects": "Prescribe offline default; clone-then-cut or allowlist require named selection.",
+        "failure_retry": "Do not infer broader egress. Ordinary driver currently stays offline even for declared richer policy; SW-F05.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1 policy",
+            "lines": [
+              24,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:06"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely.",
+      "current_guard": "Requestedordinarypolicynames remain distinctfromeffectiveoffline; clone/buildnetworkaccessseparate",
+      "current_effect": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely.",
+      "current_failure_retry": "Do not infer broader egress. Ordinary driver currently stays offline even for declared richer policy; SW-F05.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:07",
+      "literal_frozen_clause": {
+        "from": "policy selection",
+        "from_state": "policy selection",
+        "event": "select allowlist",
+        "guard": "explicit selection and user acknowledges experimental status",
+        "to": "policy chosen: experimental allowlist",
+        "effects": "Label experimental each time and retain explicit acknowledgement requirement from skill.",
+        "failure_retry": "Without acknowledgement phase remains BLOCK. This is model-guided permission instruction, not proof runtime implements ordinary allowlist.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1 acknowledgement",
+            "lines": [
+              26,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:07"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support.",
+      "current_guard": "Ordinaryallowlist unavailable; experimentalhelperexistence/acknowledgement cannotmanufactureordinarysupport",
+      "current_effect": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support.",
+      "current_failure_retry": "Without acknowledgement phase remains BLOCK. This is model-guided permission instruction, not proof runtime implements ordinary allowlist.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:08",
+      "literal_frozen_clause": {
+        "from": "policy chosen",
+        "from_state": "policy chosen",
+        "event": "--with-claude requested",
+        "guard": "explicit option; never ordinary default",
+        "to": "Claude-inside workflow handoff",
+        "effects": "Route to separate sandbox-claude-inside owner and its token/source separation rules.",
+        "failure_retry": "Do not combine token and untrusted-source volume or start credential path implicitly.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "credential route",
+            "lines": [
+              27,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:08"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch.",
+      "current_guard": "ExplicitClaudeintent routesseparateroutine/CLI; ordinarycreatehasnosuchflag andtoken/sourcevolumes stayseparate",
+      "current_effect": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch.",
+      "current_failure_retry": "Do not combine token and untrusted-source volume or start credential path implicitly.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:09",
+      "literal_frozen_clause": {
+        "from": "policy chosen",
+        "from_state": "policy chosen",
+        "event": "clone/build instruction",
+        "guard": "phase 1 gates passed; no credential path bypass",
+        "to": "clone/build requested",
+        "effects": "Invoke createSandbox/build owner; require source volume at /work/repo and dependencies at /deps.",
+        "failure_retry": "No hand-rolled docker run or source-over-dependency mount; failed build blocks next phase.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 2 clone/build",
+            "lines": [
+              33,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:09"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass.",
+      "current_guard": "phase 1 gates passed; no credential path bypass",
+      "current_effect": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass.",
+      "current_failure_retry": "No hand-rolled docker run or source-over-dependency mount; failed build blocks next phase.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:10",
+      "literal_frozen_clause": {
+        "from": "clone/build requested",
+        "from_state": "clone/build requested",
+        "event": "unchanged dependency hash",
+        "guard": "skill presumes stable repo/hash tag and existing image",
+        "to": "cache reuse prescribed",
+        "effects": "Prescribe no rebuild and identical tag.",
+        "failure_retry": "Existing S49/SF08 shows create uses random temporary basename in tag; this is a documented promise, not current achieved cross-create reuse.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "cache expectation",
+            "lines": [
+              37,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:10"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient.",
+      "current_guard": "V2profile/builder/version/platform/materialkey +provenance+immutableID, signalstillvalid; hash/tagexistencealoneinsufficient",
+      "current_effect": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient.",
+      "current_failure_retry": "Existing S49/SF08 shows create uses random temporary basename in tag; this is a documented promise, not current achieved cross-create reuse.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:11",
+      "literal_frozen_clause": {
+        "from": "image available",
+        "from_state": "image available",
+        "event": "start isolated run",
+        "guard": "driver runContainer and mount builder used; declared isolation set retained",
+        "to": "isolation awaiting inspection",
+        "effects": "Prescribe no bind/socket/privileged mode, non-root/read-only root/no-new-privileges/resource limits and labeled resources.",
+        "failure_retry": "Missing required isolation rejects run; this prose does not specify compensation after a failed inspect.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 3",
+            "lines": [
+              43,
+              53
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:11"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect.",
+      "current_guard": "driver runContainer and mount builder used; declared isolation set retained",
+      "current_effect": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect.",
+      "current_failure_retry": "Missing required isolation rejects run; this prose does not specify compensation after a failed inspect.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:12",
+      "literal_frozen_clause": {
+        "from": "isolation awaiting inspection",
+        "from_state": "isolation awaiting inspection",
+        "event": "docker inspect",
+        "guard": "no bind mount/socket and Privileged is false",
+        "to": "box reported",
+        "effects": "Report sandbox ID and interaction commands.",
+        "failure_retry": "Any forbidden property is a non-overridable rejection described as a driver bug.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox.md",
+            "symbol": "inspect and report",
+            "lines": [
+              28,
+              33
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+          }
+        ],
+        "transition_id": "SW01:12"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented.",
+      "current_guard": "Actualdriverreturnsidentities/effectivepolicy; structuralguards distinctfrommodel-guidedphaseobservations",
+      "current_effect": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented.",
+      "current_failure_retry": "Any forbidden property is a non-overridable rejection described as a driver bug.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:13",
+      "literal_frozen_clause": {
+        "from": "box reported",
+        "from_state": "box reported",
+        "event": "shell/exec/copy target resolution",
+        "guard": "running ca.sandbox=1 container matching supplied ID exists",
+        "to": "interaction admitted",
+        "effects": "Select existing box; add no mount/socket/privilege.",
+        "failure_retry": "Absent or stopped box => STOP; no implicit creation.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "resolve existing box",
+            "lines": [
+              15,
+              22
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        ],
+        "transition_id": "SW01:13"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege.",
+      "current_guard": "running ca.sandbox=1 container matching supplied ID exists",
+      "current_effect": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege.",
+      "current_failure_retry": "Absent or stopped box => STOP; no implicit creation.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:14",
+      "literal_frozen_clause": {
+        "from": "interaction admitted",
+        "from_state": "interaction admitted",
+        "event": "shell",
+        "guard": "non-root interactive shell at /work/repo",
+        "to": "interactive session",
+        "effects": "Attach shell without root elevation, writable-root remount or new resources.",
+        "failure_retry": "Interactive terminal limitations/failure are not further specified by prose.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "shell hard gates",
+            "lines": [
+              36,
+              43
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        ],
+        "transition_id": "SW01:14"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification.",
+      "current_guard": "non-root interactive shell at /work/repo",
+      "current_effect": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification.",
+      "current_failure_retry": "Interactive terminal limitations/failure are not further specified by prose.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:15",
+      "literal_frozen_clause": {
+        "from": "interactive session",
+        "from_state": "interactive session",
+        "event": "shell exit under command body",
+        "guard": "normal shell session closes",
+        "to": "box remains running",
+        "effects": "Return to host; sandbox-shell explicitly says box lives until sandbox-destroy.",
+        "failure_retry": "Contradicts lifecycle’s session-close teardown trigger; do not silently choose either disposition.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "shell exit",
+            "lines": [
+              19,
+              22
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        ],
+        "transition_id": "SW01:15"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy.",
+      "current_guard": "normal shell session closes",
+      "current_effect": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy.",
+      "current_failure_retry": "Contradicts lifecycle’s session-close teardown trigger; do not silently choose either disposition.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:16",
+      "literal_frozen_clause": {
+        "from": "interactive session",
+        "from_state": "interactive session",
+        "event": "session close under lifecycle owner",
+        "guard": "close of interactive session treated as exit",
+        "to": "teardown requested",
+        "effects": "Lifecycle prescribes destroying container and default source volume on close.",
+        "failure_retry": "Contradicts command body’s persistent box; SW-F02 requires one owner-defined lifetime.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 5 trigger",
+            "lines": [
+              65,
+              74
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:16"
+      },
+      "existing_status_retained": "NOT_APPLICABLE",
+      "accepted_current_contract": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed.",
+      "current_guard": "RETIRED automaticteardownonshellclose; acceptedD02 detachesuntilexplicitdestroy",
+      "current_effect": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed.",
+      "current_failure_retry": "Retirementofcontradictoryautomaticteardown acceptedD02; no implicitcleanupauthorityonTTYexit.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+          "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:17",
+      "literal_frozen_clause": {
+        "from": "interaction admitted",
+        "from_state": "interaction admitted",
+        "event": "exec request",
+        "guard": "argv after --; existing running labeled box",
+        "to": "command result reported",
+        "effects": "Invoke execInSandbox and report real exitCode, separated stdout/stderr and truncated flag.",
+        "failure_retry": "Nonzero may not be collapsed into success. Runtime interruption/overflow containment is separately S52/SF09.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-exec.md",
+            "symbol": "exec flow and output gate",
+            "lines": [
+              16,
+              43
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-exec.md"
+          }
+        ],
+        "transition_id": "SW01:17"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown.",
+      "current_guard": "argv after --; existing running labeled box",
+      "current_effect": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown.",
+      "current_failure_retry": "Nonzero may not be collapsed into success. Runtime interruption/overflow containment is separately S52/SF09.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-exec.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:18",
+      "literal_frozen_clause": {
+        "from": "interaction admitted",
+        "from_state": "interaction admitted",
+        "event": "copy-out request",
+        "guard": "container source and explicit host destination",
+        "to": "copy result reported",
+        "effects": "Invoke cpOut/docker cp outward and report destination.",
+        "failure_retry": "Host-inbound copy/mount or writable host path for container is prohibited by instruction; no claim of transactional copy rollback.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-cp.md",
+            "symbol": "copy flow and gate",
+            "lines": [
+              16,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-cp.md"
+          }
+        ],
+        "transition_id": "SW01:18"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden.",
+      "current_guard": "container source and explicit host destination",
+      "current_effect": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden.",
+      "current_failure_retry": "Host-inbound copy/mount or writable host path for container is prohibited by instruction; no claim of transactional copy rollback.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-cp.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:19",
+      "literal_frozen_clause": {
+        "from": "interaction",
+        "from_state": "interaction",
+        "event": "request elevation, host bind/socket or token/source co-mount",
+        "guard": "request would violate structural boundary",
+        "to": "rejected interaction",
+        "effects": "Prescribe refusal rather than changing isolation or routing around mount builder.",
+        "failure_retry": "Use allowed operation/source-only or token-only workflow; no override path provided.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "hard rules",
+            "lines": [
+              76,
+              87
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:19"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls.",
+      "current_guard": "request would violate structural boundary",
+      "current_effect": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls.",
+      "current_failure_retry": "Use allowed operation/source-only or token-only workflow; no override path provided.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:20",
+      "literal_frozen_clause": {
+        "from": "box reported/interaction",
+        "from_state": "box reported/interaction",
+        "event": "destroy specific ID",
+        "guard": "explicit single-box request",
+        "to": "teardown requested",
+        "effects": "Route to destroySandbox for selected container and its named volume.",
+        "failure_retry": "Command also lists an unqualified prune step/global-empty invariant; runtime S53 distinguishes targets from unrelated objects. SW-F03.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "destroy flow",
+            "lines": [
+              15,
+              29
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        ],
+        "transition_id": "SW01:20"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune.",
+      "current_guard": "Explicitnameddestroy targets exactinstance; neverautomaticprune",
+      "current_effect": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune.",
+      "current_failure_retry": "Unknown/discovery/removal/verifyfailures retain selectedidentities; no widenedcleanup or unrequestedprune.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:21",
+      "literal_frozen_clause": {
+        "from": "labeled residues or boxes",
+        "from_state": "labeled residues or boxes",
+        "event": "explicit --prune or no-ID invocation",
+        "guard": "sweep operation selected",
+        "to": "global labeled sweep requested",
+        "effects": "Find and reclaim ca.sandbox=1 resources by label, never other objects.",
+        "failure_retry": "Do not infer this broad sweep from a different operation’s failure or a request naming only one box.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "prune selection",
+            "lines": [
+              12,
+              18
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        ],
+        "transition_id": "SW01:21"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted.",
+      "current_guard": "Separatelyexplicitbroadprune freezesinitialtargetsnapshot; no-IDdestroyerror",
+      "current_effect": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted.",
+      "current_failure_retry": "Failure/retry reobserves frozeninitialtargets; newlycreated/unrelatedinstancesnotadopted.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:22",
+      "literal_frozen_clause": {
+        "from": "teardown requested",
+        "from_state": "teardown requested",
+        "event": "--keep-volume",
+        "guard": "explicit retention requested",
+        "to": "volume retained",
+        "effects": "Remove container while retaining selected volume and cached images.",
+        "failure_retry": "Retained selected volume is intentional; persistence choice does not authorize other leftover resources.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "retention",
+            "lines": [
+              19,
+              27
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        ],
+        "transition_id": "SW01:22"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate.",
+      "current_guard": "explicit retention requested",
+      "current_effect": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate.",
+      "current_failure_retry": "Retained selected volume is intentional; persistence choice does not authorize other leftover resources.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:23",
+      "literal_frozen_clause": {
+        "from": "teardown requested",
+        "from_state": "teardown requested",
+        "event": "removal/discovery/final verification failure",
+        "guard": "driver failure/remaining targeted object returned",
+        "to": "failed cleanup",
+        "effects": "Name leftovers, surface failure and nonzero outcome; do not stop remaining independent removal attempts.",
+        "failure_retry": "Retry/re-observe existing target identities; runtime S53 owns bounded details and verified absence.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "cleanup result contract",
+            "lines": [
+              23,
+              51
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        ],
+        "transition_id": "SW01:23"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources.",
+      "current_guard": "driver failure/remaining targeted object returned",
+      "current_effect": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources.",
+      "current_failure_retry": "Retry/re-observe existing target identities; runtime S53 owns bounded details and verified absence.",
+      "source_owners": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    },
+    {
+      "id": "SW01:24",
+      "literal_frozen_clause": {
+        "from": "teardown requested",
+        "from_state": "teardown requested",
+        "event": "observed absence and no removal errors",
+        "guard": "scope empty excluding explicit kept volumes/images",
+        "to": "cleanup observed",
+        "effects": "Report resources removed and intentional retained resources.",
+        "failure_retry": "Documentation’s global-zero wording must be narrowed to selected scope for single-ID destroy; no automatic unrelated-box cleanup.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "teardown completion claim",
+            "lines": [
+              69,
+              74
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        ],
+        "transition_id": "SW01:24"
+      },
+      "existing_status_retained": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation.",
+      "current_guard": "Confirmedselected-scopeabsence excludingdeliberatelykeptvolume/cacheimages/unrelatedactiveboxes",
+      "current_effect": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation.",
+      "current_failure_retry": "Unknown/failedtargetobservation blocksverifiedabsence; reportretained/remainingresources accurately.",
+      "source_owners": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "active_original_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+          "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+        }
+      ],
+      "classification": "Completefinitecurrent instruction/sourceconformance, notobservedagent/model/runtimephaseexecution"
+    }
+  ],
+  "all24clauses_accounted": true,
+  "machine_conclusion": "PRESERVEDasfinite sourceinstructioncontract. ExplicitacceptedD01fallback/D02detach+scopedteardown/D03effectiveoffline/D04packaged-prereq+separateClaude boundaries; retired16 retainedN/A. Exactcatalog01 correctionclosespriorreal sourcecontradiction.",
+  "complete_boundary_accounting": [
+    "preflightsource/Docker/capability/user-selectedpolicy andseparatecredentialroute",
+    "managedsource/buildoutoftreedeps/cacheidentity/runtimehardening andexactdriveridentityreporting",
+    "existingtargetshell/exec/outwardcopy and no bind/socket/elevation/co-mount",
+    "persistentdetach; explicitnamedteardown/separateinitialsnapshotprune; keepvolume; independentremaining/failure/absence reporting"
+  ],
+  "genuine_component_facts": "Alreadyadmitted source/componentproofs citedwithout rerun or promotion. Currentproofisreasonedcomplete sourceconformance, notnewTESTED or wholemodelconsent.",
+  "input_join": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/input-join.json",
+    "sha256": "761fb471ea66bccee98250af734989db0c98258f522fa843eaafaf45b76b4085"
+  },
+  "correction": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/explicit-correction.json",
+    "sha256": "9c1d0e39572c7f76ca284a0143af76bc21019a434923ec623d275989eadf2d5e"
+  }
+}

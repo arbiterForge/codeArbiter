@@ -1,0 +1,221 @@
+{
+  "schema": "codearbiter.finite-packaging-source-inspection/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "producer": "/root/packaging_site_tools",
+  "scope": "Finite complete conditional source guard/effect/retry conformance, after owning/caller/helper inspection; equality only exposes bytes, not the semantic argument. No application code/test executed.",
+  "records": [
+    {
+      "transition_id": "S68:01",
+      "ledger_update": true,
+      "frozen_row_sha256": "918214db647cbf87aaa7754c5363aaef641091241640d54989a40426a4368728",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            220,
+            243
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "unbuilt",
+        "event": "build",
+        "guard": "supported native OS/architecture; offline local Go settings",
+        "to": "native tests running",
+        "effects": "Run Go tests (30m configured gate) and vet; then reproducible-flag Go build.",
+        "failure_retry": ""
+      },
+      "assessment": "Supported OS and actual host target precede ordinary native testing; local/offline Go environment, complete module runner with30m then vet; check=True stops build on failure. Reproducible trimpath/buildvcs/ldflags preserved. Conditional recipe only, not an observed build.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:02",
+      "ledger_update": true,
+      "frozen_row_sha256": "e2fa35e7248c9d79c6108201fcd3374e3f8c315ec8daa7717f04b49b62f87b74",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            203,
+            219
+          ],
+          [
+            224,
+            251
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "unbuilt",
+        "event": "build --skip-tests",
+        "guard": "development cross/native build",
+        "to": "unqualified candidate",
+        "effects": "Build binary and write release manifest with native_tested=false; cannot promote as qualified payload.",
+        "failure_retry": ""
+      },
+      "assessment": "Skip-tests excludes qualification and test-observation modes; development cross-build emits native_tested=false, which protected qualification refuses. No receipt or promotion implied.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:03",
+      "ledger_update": true,
+      "frozen_row_sha256": "4da8e9b075af3c2928ec68a01e3287192cc52fa7e3f46ed2d6373342afe5a2ad",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            224,
+            251
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "native tests running",
+        "event": "tests/vet/build succeed",
+        "guard": "actual host target matches selected Go target",
+        "to": "native-tested candidate",
+        "effects": "Write binary and five-key release manifest with digest/native_tested=true.",
+        "failure_retry": "This candidate flag alone is not protected CI qualification or upstream-host proof."
+      },
+      "assessment": "Checked native tests/vet/build precede hashing built bytes and canonical five-key manifest with native_tested; POSIX executable mode and upstream_host_qualified=false retained. Contract schema0.3.2 is distinct from document epochs.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:04",
+      "ledger_update": true,
+      "frozen_row_sha256": "497a889e2802da4da29311099752e349da978a9c1d4afc54c8a6c3827ab7d96c",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            102,
+            169
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "candidate",
+        "event": "qualify-existing",
+        "guard": "GITHUB_ACTIONS, protected job/workflow/run/SHA, checked-out HEAD exact, platform matches",
+        "to": "qualification eligible",
+        "effects": "Read candidate identity and binary digest; bind native host Go or explicit same-run off-host stamp.",
+        "failure_retry": ""
+      },
+      "assessment": "Actions/job/workflow/run/full source/platform guard, exact HEAD, candidate identity, one platform/native_tested and binary digest; off-host branch requires context plus recorded same-run native stamp. Binding owner rechecks source/module/tool/platform/candidate. Environment fields are not arbitrary artifact authenticity.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:05",
+      "ledger_update": true,
+      "frozen_row_sha256": "7e73259c8e3f2b9802c99e38f32b13d1622e12b02b249078b8657649a36b278d",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            31,
+            99
+          ],
+          [
+            164,
+            186
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "qualification eligible",
+        "event": "optional context observation",
+        "guard": "exact six finite case identities, module/tool hashes, exit zero and expected subtests/source digests",
+        "to": "qualification eligible",
+        "effects": "Attach validated context_native observation; no raw claim-only case acceptance.",
+        "failure_retry": ""
+      },
+      "assessment": "Optional observation exact six unique finite cases/source+subtest table/module+Go identity/exit0/digest shapes; malformed/missing/duplicate/drift refuses before receipt create. Hash algorithm/selector owner inspected, no Go outcomes executed.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:06",
+      "ledger_update": true,
+      "frozen_row_sha256": "aa698be3384eb57e704ebc0956633f1250be8ce17e6eda0413facf1cf09e5af4",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            170,
+            189
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "qualification eligible",
+        "event": "write receipt",
+        "guard": "new destination in existing directory",
+        "to": "qualified receipt",
+        "effects": "Exclusive-create independent qualification receipt; include source/workflow/run/platform/digest/test identities.",
+        "failure_retry": ""
+      },
+      "assessment": "Existing destination/symlink/missing parent refuse before exclusive x create; receipt binds source/workflow/run/job/platform/digest/native_tests and optional validated context. No overwrite.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S68:07",
+      "ledger_update": true,
+      "frozen_row_sha256": "14958a85d96986dbfd9a512f1b6fc97b3422bb25a321d0e2fdeab616951bfd40",
+      "source": {
+        "path": "tools/build-artifacts.py",
+        "sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+        "spans": [
+          [
+            116,
+            189
+          ],
+          [
+            203,
+            250
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "any phase",
+        "event": "test/tool/source/context/platform/output guard fails",
+        "guard": "precondition violated",
+        "to": "refused",
+        "effects": "Stop; candidate directory may contain prior or partial outputs but no valid new qualification receipt is claimed.",
+        "failure_retry": ""
+      },
+      "assessment": "Guard/parser failures and checked subprocess errors escape without valid success or mutation retry. Existing/partial candidate and partial failed receipt write may remain; no atomic multi-file success/automatic deletion claimed.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    }
+  ],
+  "machine_coverage": {
+    "S68": {
+      "all_frozen_edges": [
+        "S68:01",
+        "S68:02",
+        "S68:03",
+        "S68:04",
+        "S68:05",
+        "S68:06",
+        "S68:07"
+      ],
+      "covered_by_this_source_inspection": [
+        "S68:01",
+        "S68:02",
+        "S68:03",
+        "S68:04",
+        "S68:05",
+        "S68:06",
+        "S68:07"
+      ],
+      "scope": "Whole finite source contract only. Existing higher-status edge records unchanged/not re-executed."
+    }
+  },
+  "dependency_review": "Manifest required/optional fields and six platforms agree literally with embedded canonical contract. Module/source/tool hash owner and finite selectors inspected; Go runner enumerates module tests and refuses missing/repeated/failed outcomes. Actual module members/tool/output are conditional inputs, not executed here.",
+  "historical_delta_review": "fd7 diff: additive create-only optional test-observation and canonical manifest owner/validator; protected qualification unchanged. No removed test/vet/host/hash guard."
+}

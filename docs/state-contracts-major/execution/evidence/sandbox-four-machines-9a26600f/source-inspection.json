@@ -1,0 +1,1521 @@
+{
+  "schema": "codearbiter.sandbox-four-finite-machines/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "rows": [
+    {
+      "id": "S49:01",
+      "literal_frozen_clause": {
+        "event": "compute dependency hash",
+        "guard": "declared lock/config inputs readable",
+        "to": "hash computed",
+        "effects": "Hash supported dependency files; optional tool-version input exists in helper.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "checkout ready",
+        "transition_id": "S49:01"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit.",
+      "current_guard": "declared lock/config inputs readable",
+      "current_effect": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:02",
+      "literal_frozen_clause": {
+        "event": "choose image tag",
+        "guard": "current host checkout path",
+        "to": "cache lookup",
+        "effects": "Tag incorporates checkout basename plus dependency hash.",
+        "failure_retry": "Create supplies random temp basename, so equal dependencies across creates receive different tags; nixpacksVersion is not passed into current hash call.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "hash computed",
+        "transition_id": "S49:02"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched.",
+      "current_guard": "validated manifest discriminator, effective builder/version/profile/platform/material inputs constructV2key, independentcheckoutbasename",
+      "current_effect": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched.",
+      "current_failure_retry": "Oldtags untouched; malformedobservations cannot authorizeV2reuse. Preliminary48bit dependencydiscriminator and cooperative builder identity remainlimits.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:03",
+      "literal_frozen_clause": {
+        "event": "docker image inspect exits 0",
+        "guard": "tag exists",
+        "to": "cache hit",
+        "effects": "Reuse image without rebuild.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "cache lookup",
+        "transition_id": "S49:03"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs.",
+      "current_guard": "inspect0 plus valid immutableimageID and matchingcacheKey, signal stillnotaborted afterawait",
+      "current_effect": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs.",
+      "current_failure_retry": "Cancellation invalidates ordinarysuccess; no build on validuncancelledhit. Mismatchedprovenance/imageID isnotvalidhit.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:04",
+      "literal_frozen_clause": {
+        "event": "inspect nonzero",
+        "guard": "missing image OR Docker read failure",
+        "to": "cache miss",
+        "effects": "Proceed to rebuild.",
+        "failure_retry": "Daemon/unavailable observation is collapsed into cache miss rather than distinct unknown.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "cache lookup",
+        "transition_id": "S49:04"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning.",
+      "current_guard": "cacheobservation doesnotprove matchingidentity; freshcapability identity remainsstable beforebuild",
+      "current_effect": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning.",
+      "current_failure_retry": "Unavailable/invalidobservation cannotclaimhit; freshadmission mayrefuse changedbuilder beforeeffect; noatomicexecutablepin claim.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:05",
+      "literal_frozen_clause": {
+        "event": "Nixpacks available",
+        "guard": "host/WSL platform routing eligible",
+        "to": "Nixpacks attempt",
+        "effects": "Generate build plan with Nixpacks.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "cache miss",
+        "transition_id": "S49:05"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition.",
+      "current_guard": "alreadyinstalled usablehost/WSL Nixpacks and explicitlysupported boundedproviderprofile",
+      "current_effect": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:06",
+      "literal_frozen_clause": {
+        "event": "unsupported/unavailable/failure",
+        "guard": "fallback supported",
+        "to": "fallback plan",
+        "effects": "Use built-in Node/Python dependency plan according to discovered project shape; otherwise fail explicitly.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "Nixpacks attempt",
+        "transition_id": "S49:06"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback.",
+      "current_guard": "fallback supported",
+      "current_effect": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:07",
+      "literal_frozen_clause": {
+        "event": "docker build",
+        "guard": "generated Dockerfile/context ready",
+        "to": "building",
+        "effects": "Write build context and dependency files; run build under helper-specific command behavior.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "plan ready",
+        "transition_id": "S49:07"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build.",
+      "current_guard": "generated Dockerfile/context ready",
+      "current_effect": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:08",
+      "literal_frozen_clause": {
+        "event": "build success",
+        "guard": "image emitted",
+        "to": "built",
+        "effects": "Return exact tag; remove helper-generated files/temp context.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "building",
+        "transition_id": "S49:08"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success.",
+      "current_guard": "image emitted",
+      "current_effect": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S49:09",
+      "literal_frozen_clause": {
+        "event": "finally",
+        "guard": "temporary helper exists",
+        "to": "cleanup pending",
+        "effects": "Spawn synchronous Docker removal/host cleanup.",
+        "failure_retry": "Some spawnSync cleanup has no explicit timeout/AbortSignal; cleanup can outlive cancellation or hang.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/dephash.ts",
+            "symbol": "computeDepHash",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts",
+            "lines": "1-82"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/build.ts",
+            "symbol": "imageTag/buildImage and fallback",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+            "lines": "1-616"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          }
+        ],
+        "from": "any build",
+        "transition_id": "S49:09"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions.",
+      "current_guard": "ownedhelper/stagingexists; independentbounded compensation authority",
+      "current_effect": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions.",
+      "current_failure_retry": "Primaryfailure and helper/stagingcleanup failure remainseparate; exactIDs/directories retained; no fakeabsence/no broadcleanup.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:01",
+      "literal_frozen_clause": {
+        "event": "exec",
+        "guard": "target selected and args valid",
+        "to": "executing",
+        "effects": "Run command with bounded output and caller signal; host client controls observation, container owns workload.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "selected",
+        "transition_id": "S52:01"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_guard": "target selected and args valid",
+      "current_effect": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:02",
+      "literal_frozen_clause": {
+        "event": "ordinary exit zero/nonzero",
+        "guard": "no timedOut/aborted flag",
+        "to": "completed or command failed",
+        "effects": "Return exit/output and leave container running.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "executing",
+        "transition_id": "S52:02"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_guard": "no timedOut/aborted flag",
+      "current_effect": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:03",
+      "literal_frozen_clause": {
+        "event": "timeout or abort",
+        "guard": "result timedOut/aborted",
+        "to": "interrupted then stopping",
+        "effects": "Issue docker stop --time 0 via cleanup call without aborted caller signal.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "executing",
+        "transition_id": "S52:03"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_guard": "result timedOut/aborted",
+      "current_effect": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:04",
+      "literal_frozen_clause": {
+        "event": "stop result",
+        "guard": "zero or failure",
+        "to": "stopped or stop failed",
+        "effects": "Return original command outcome plus explicit stop outcome; do not replace original reason.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "stopping",
+        "transition_id": "S52:04"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_guard": "zero or failure",
+      "current_effect": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:05",
+      "literal_frozen_clause": {
+        "event": "Docker client output overflow",
+        "guard": "docker helper returns ordinary exit 1",
+        "to": "command failed",
+        "effects": "Current path returns without docker stop.",
+        "failure_retry": "Confirmed fake-Docker probe: overflow called exec only, not stop; container workload may continue unseen.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "executing",
+        "transition_id": "S52:05"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_guard": "typed raw overflow observation, distinctfrom ordinaryexit1/displaytruncation",
+      "current_effect": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+      "current_failure_retry": "AcceptedSBX-C02 replacement now requests exactstop+independentinspect; containmentunknown ifnotproved, originalreason retained.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S52:06",
+      "literal_frozen_clause": {
+        "event": "copy",
+        "guard": "safe explicit source/destination",
+        "to": "completed or copy partial",
+        "effects": "Invoke docker cp; host output may be partially created if interrupted/error.",
+        "failure_retry": "No transactional host-file rollback or partial-copy recovery metadata is provided.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/exec.ts",
+            "symbol": "execInSandbox",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts",
+            "lines": "1-208"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cp.ts",
+            "symbol": "copy files",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+            "lines": "1-110"
+          }
+        ],
+        "from": "selected",
+        "transition_id": "S52:06"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Explicit outward copy argv/destination and refusal of reverse bind/invalid sources are software-checked; host output may remain partial on interruption, with no transactional rollback claim.",
+      "current_guard": "safe explicit source/destination",
+      "current_effect": "Explicit outward copy argv/destination and refusal of reverse bind/invalid sources are software-checked; host output may remain partial on interruption, with no transactional rollback claim.",
+      "current_failure_retry": "No transactional host-file rollback or partial-copy recovery metadata is provided.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json",
+          "sha256": "3762d92c83ebe332f49697430dbb90f9199f7d5b6fb69fe77fcdd759825e1e07"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:01",
+      "literal_frozen_clause": {
+        "event": "valid create/shell/exec/cp/destroy/prune",
+        "guard": "command-specific options valid",
+        "to": "running",
+        "effects": "Dispatch one selected operation and install interrupt handler.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "parsing",
+        "transition_id": "S54:01"
+      },
+      "accepted_row_status_unchanged": "TESTED",
+      "accepted_current_contract": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group.",
+      "current_guard": "command-specific options valid",
+      "current_effect": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "test",
+          "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json",
+          "sha256": "e21b85d3cc9c0914c8625ca7fe37ad612bd537b86133e3ff78090c568244cdb0"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:02",
+      "literal_frozen_clause": {
+        "event": "first SIGINT",
+        "guard": "not already interrupted",
+        "to": "interrupt requested",
+        "effects": "Abort shared controller; request cooperative cleanup.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S54:02"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup.",
+      "current_guard": "not already interrupted",
+      "current_effect": "Source-only direct-entry first SIGINT aborts the shared controller and requests cooperative cleanup.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:03",
+      "literal_frozen_clause": {
+        "event": "second SIGINT",
+        "guard": "already interrupted",
+        "to": "forced exit 130",
+        "effects": "Exit immediately; cleanup may not finish.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "interrupt requested",
+        "transition_id": "S54:03"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete.",
+      "current_guard": "already interrupted",
+      "current_effect": "Source-only direct-entry second SIGINT exits130 immediately; cleanup may remain incomplete.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:04",
+      "literal_frozen_clause": {
+        "event": "promise resolves",
+        "guard": "interrupted flag true",
+        "to": "resolved exit 130",
+        "effects": "Override normal command exit to cancellation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "running or interrupted",
+        "transition_id": "S54:04"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Source-only resolved interrupted promise exits130 rather than the ordinary command code.",
+      "current_guard": "interrupted flag true",
+      "current_effect": "Source-only resolved interrupted promise exits130 rather than the ordinary command code.",
+      "current_failure_retry": "No addedautomaticretry or broaderauthority; failure/unknown retained accordingowning source andadmittedrowcontract.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:05",
+      "literal_frozen_clause": {
+        "event": "promise throws",
+        "guard": "exception path",
+        "to": "failed exit 1",
+        "effects": "Catch currently maps exception to 1 even after abort.",
+        "failure_retry": "Keep interrupt intent and operation failure separate when normalizing result semantics.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "running or interrupted",
+        "transition_id": "S54:05"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized.",
+      "current_guard": "exception path",
+      "current_effect": "Source-only rejected promise still maps to exit1 even after abort; this baseline limitation is not silently normalized.",
+      "current_failure_retry": "Knownpreservedbaseline: rejected entrypromise exits1 evenafterabort. Sourceconformance doesnotclaim normalizedcancellationoutcome or signalruntimequalification.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "S54:06",
+      "literal_frozen_clause": {
+        "event": "Docker admission",
+        "guard": "required CI flag + usable Linux Docker",
+        "to": "test admitted or hard failure",
+        "effects": "Required test mode throws on unavailable/incompatible Docker; local nonrequired mode may skip.",
+        "failure_retry": "This is a test execution gate, not production sandbox enablement.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "CLI dispatcher and interrupt handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "separate CLI",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+            "symbol": "test dependency admission",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+            "lines": "1-163"
+          }
+        ],
+        "from": "test gate only",
+        "transition_id": "S54:06"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Source-conformance only: required Linux-Docker availability mode throws for unavailable/incompatible daemon, while developer nonrequired mode may skip. Actual required-host runtime belongs to the separately retained hosted producer.",
+      "current_guard": "required CI flag + usable Linux Docker",
+      "current_effect": "Source-conformance only: required Linux-Docker availability mode throws for unavailable/incompatible daemon, while developer nonrequired mode may skip. Actual required-host runtime belongs to the separately retained hosted producer.",
+      "current_failure_retry": "This is a test execution gate, not production sandbox enablement.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+          "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:01",
+      "literal_frozen_clause": {
+        "from": "routed",
+        "from_state": "routed",
+        "event": "preflight references",
+        "guard": "consumer PROJECT_DIR has both named sandbox spike files and ADR 0007",
+        "to": "preflight evidence read",
+        "effects": "Read those exact project-relative files before proceeding.",
+        "failure_retry": "Missing required file instructs STOP. Skill supplies no packaged-reference fallback; SW-F07.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "required project-relative sources",
+            "lines": [
+              16,
+              28
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:01"
+      },
+      "accepted_row_status_unchanged": "NOT_APPLICABLE",
+      "accepted_current_contract": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+      "current_guard": "RETIRED acceptedSBX-D04 consumer-maintainer-path prerequisite; packagedcurrentinstructions govern",
+      "current_effect": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+      "current_failure_retry": "No manufacturedconsumerADR/maintainercheckout or newmandatoryprerequisite.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-01.json",
+          "sha256": "71925f1b0d2b47b4510b9263e1200fd9876c62c7a2666ecf76fde2dfd902d59a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:02",
+      "literal_frozen_clause": {
+        "from": "routed",
+        "from_state": "routed",
+        "event": "invoke separate driver",
+        "guard": "operator follows prescribed skill route",
+        "to": "workflow gate pending",
+        "effects": "Use separate claude-inside.js entrypoint rather than sandbox subcommand.",
+        "failure_retry": "Binary separation is routing/discoverability, not mechanical verification that five prose phases occurred; SW-F08.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "separate binary claim",
+            "lines": [
+              30,
+              45
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:02"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval.",
+      "current_guard": "operator follows prescribed skill route",
+      "current_effect": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval.",
+      "current_failure_retry": "Binary separation is routing/discoverability, not mechanical verification that five prose phases occurred; SW-F08.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:03",
+      "literal_frozen_clause": {
+        "from": "preflight evidence read",
+        "from_state": "preflight evidence read",
+        "event": "choose posture",
+        "guard": "named offline or anthropic-only policy and explicit token-only boundary",
+        "to": "posture chosen",
+        "effects": "Default offline; label Anthropic-only experimental; state that this box carries token and no untrusted source.",
+        "failure_retry": "Wide-open/third policy rejected; token+source request stops and must be split into distinct boxes.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 1",
+            "lines": [
+              51,
+              67
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:03"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume.",
+      "current_guard": "named offline or anthropic-only policy and explicit token-only boundary",
+      "current_effect": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume.",
+      "current_failure_retry": "Wide-open/third policy rejected; token+source request stops and must be split into distinct boxes.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:04",
+      "literal_frozen_clause": {
+        "from": "posture chosen",
+        "from_state": "posture chosen",
+        "event": "build or reuse image",
+        "guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+        "to": "image qualified by instruction",
+        "effects": "Prescribe image construction and version/base inspection through driver builder.",
+        "failure_retry": "Floating CLI/base fails model-guided gate; arbitrary --image acceptance is not evidence of completed qualification.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 2",
+            "lines": [
+              69,
+              90
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:04"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction.",
+      "current_guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+      "current_effect": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction.",
+      "current_failure_retry": "Floating CLI/base fails model-guided gate; arbitrary --image acceptance is not evidence of completed qualification.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:05",
+      "literal_frozen_clause": {
+        "from": "image definition changes",
+        "from_state": "image definition changes",
+        "event": "change base digest",
+        "guard": "reviewed dependency change selected",
+        "to": "requalification requested",
+        "effects": "Prescribe digest resolution and credential-boundary/isolation-suite rerun.",
+        "failure_retry": "Previous Spike/ADR is historical evidence; does not automatically qualify changed image.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "base update",
+            "lines": [
+              85,
+              90
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:05"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof.",
+      "current_guard": "reviewed dependency change selected",
+      "current_effect": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof.",
+      "current_failure_retry": "Previous Spike/ADR is historical evidence; does not automatically qualify changed image.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:06",
+      "literal_frozen_clause": {
+        "from": "image qualified by instruction",
+        "from_state": "image qualified by instruction",
+        "event": "source credential",
+        "guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+        "to": "token source checked",
+        "effects": "Pass CLAUDE_CODE_OAUTH_TOKEN by environment only.",
+        "failure_retry": "Do not invent missing token or store approval; --token/source-volume flags are separately rejected by actual CLI.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 3",
+            "lines": [
+              92,
+              109
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:06"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance.",
+      "current_guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+      "current_effect": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance.",
+      "current_failure_retry": "Do not invent missing token or store approval; --token/source-volume flags are separately rejected by actual CLI.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:07",
+      "literal_frozen_clause": {
+        "from": "token source checked",
+        "from_state": "token source checked",
+        "event": "choose home persistence",
+        "guard": "HOME backed by named volume, not host bind",
+        "to": "home volume selected",
+        "effects": "Prescribe writable in-container home and retention across restart when same volume reused.",
+        "failure_retry": "Persistence description does not establish an observed authenticated session; no live host was exercised in this audit.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "home persistence",
+            "lines": [
+              103,
+              109
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:07"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability.",
+      "current_guard": "HOME backed by named volume, not host bind",
+      "current_effect": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability.",
+      "current_failure_retry": "Persistence description does not establish an observed authenticated session; no live host was exercised in this audit.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:08",
+      "literal_frozen_clause": {
+        "from": "posture/image/token checks satisfied",
+        "from_state": "posture/image/token checks satisfied",
+        "event": "launch",
+        "guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+        "to": "launch requested",
+        "effects": "Invoke buildClaudeRunArgs/runClaudeInside with token-only home volume; offline or experimental firewall policy.",
+        "failure_retry": "Co-mount rejection is structural; additional phase evidence remains model-guided.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 4",
+            "lines": [
+              111,
+              125
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:08"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance.",
+      "current_guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+      "current_effect": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance.",
+      "current_failure_retry": "Co-mount rejection is structural; additional phase evidence remains model-guided.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:09",
+      "literal_frozen_clause": {
+        "from": "launch requested",
+        "from_state": "launch requested",
+        "event": "dummy-token qualification",
+        "guard": "instruction requires a real Invalid bearer token 401 before real credential use",
+        "to": "live auth proof requested",
+        "effects": "Prescribe observing auth-boundary failure with dummy credentials.",
+        "failure_retry": "Offline default cannot itself make a network request; the text does not specify how offline launch and prior/networked qualification evidence are separated. Do not silently weaken isolation to satisfy proof.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "auth proof gate",
+            "lines": [
+              127,
+              130
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:09"
+      },
+      "accepted_row_status_unchanged": "NOT_APPLICABLE",
+      "accepted_current_contract": "Mandatory consumer network401 prerequisite is replaced with optional separately authorized maintainer qualification; offline posture is not widened.",
+      "current_guard": "RETIRED mandatorynetwork401 consumer prerequisite; optional separatelyauthorizedmaintainerqualification",
+      "current_effect": "Mandatory consumer network401 prerequisite is replaced with optional separately authorized maintainer qualification; offline posture is not widened.",
+      "current_failure_retry": "Offlineposture never widened toobtainauthproof; no actual401 requiredfor sourceacceptance.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-09.json",
+          "sha256": "d729d83af5cfb81299b1c3c1d34077442458f220aba43dcdb31bde01b103521f"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:10",
+      "literal_frozen_clause": {
+        "from": "live proof/invariants accepted by operator",
+        "from_state": "live proof/invariants accepted by operator",
+        "event": "proceed with use",
+        "guard": "all model-guided gates judged satisfied",
+        "to": "ready",
+        "effects": "Report usable token-only box according to driver outcome.",
+        "failure_retry": "Actual separate CLI validates arguments/token presence and calls runtime; it does not receive a five-phase completion record.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "runClaudeInsideCli",
+            "lines": [
+              139,
+              181
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+          }
+        ],
+        "transition_id": "SW02:10"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record.",
+      "current_guard": "actualCLIargument/token/policy/runtimeoutcome; no consumedfive-phase recordclaim",
+      "current_effect": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record.",
+      "current_failure_retry": "Actual separate CLI validates arguments/token presence and calls runtime; it does not receive a five-phase completion record.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:11",
+      "literal_frozen_clause": {
+        "from": "ready",
+        "from_state": "ready",
+        "event": "teardown",
+        "guard": "operation/session ends",
+        "to": "teardown requested",
+        "effects": "Prescribe remove container and default removal of credential home volume.",
+        "failure_retry": "Runtime S51 cleanup/unknown rules must be observed; a failed remove cannot be described as destroyed.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 5",
+            "lines": [
+              132,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:11"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence.",
+      "current_guard": "operation/session ends",
+      "current_effect": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence.",
+      "current_failure_retry": "Runtime S51 cleanup/unknown rules must be observed; a failed remove cannot be described as destroyed.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:12",
+      "literal_frozen_clause": {
+        "from": "teardown requested",
+        "from_state": "teardown requested",
+        "event": "explicit recorded --keep-volume choice",
+        "guard": "retention deliberately selected and recorded",
+        "to": "credential volume retained",
+        "effects": "Keep named home volume; remove container; identify retained credential-bearing resource.",
+        "failure_retry": "Prose does not define the durable record format; do not fabricate one or treat default retention as authorized.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "explicit credential retention",
+            "lines": [
+              136,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:12"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof.",
+      "current_guard": "retention deliberately selected and recorded",
+      "current_effect": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof.",
+      "current_failure_retry": "Prose does not define the durable record format; do not fabricate one or treat default retention as authorized.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:13",
+      "literal_frozen_clause": {
+        "from": "teardown requested",
+        "from_state": "teardown requested",
+        "event": "default cleanup completes",
+        "guard": "container/credential volume absent in selected scope",
+        "to": "credential volume removed",
+        "effects": "Report verified absence and retained cached images only.",
+        "failure_retry": "Unknown/failing observation blocks success. Global-label wording should not authorize removal of other unrelated active boxes.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "cleanup confirmation",
+            "lines": [
+              139,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:13"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune.",
+      "current_guard": "container/credential volume absent in selected scope",
+      "current_effect": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune.",
+      "current_failure_retry": "Unknown/failing observation blocks success. Global-label wording should not authorize removal of other unrelated active boxes.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    },
+    {
+      "id": "SW02:14",
+      "literal_frozen_clause": {
+        "from": "retained credential volume",
+        "from_state": "retained credential volume",
+        "event": "new token-only container on same volume",
+        "guard": "explicit subsequent run passes posture/image/token gates again",
+        "to": "persistence reused",
+        "effects": "Instruction expects retained home state/session to be available after restart.",
+        "failure_retry": "Existing volume does not waive token/source separation or current policy admission.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "restart semantics",
+            "lines": [
+              103,
+              105
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        ],
+        "transition_id": "SW02:14"
+      },
+      "accepted_row_status_unchanged": "PRESERVED",
+      "accepted_current_contract": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification.",
+      "current_guard": "explicit subsequent run passes posture/image/token gates again",
+      "current_effect": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification.",
+      "current_failure_retry": "Existing volume does not waive token/source separation or current policy admission.",
+      "active_row_evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        }
+      ],
+      "classification": "finite sourceconformance; existingcomponentfacts/histories unchanged",
+      "runtime_limit": "ActualDocker/TTY/defaultbuildprovider/host/phase/modelconsent remainsseparate; no new execution."
+    }
+  ],
+  "machine_accounting": {
+    "S49": "All9hash/cache/builder/generation/build/cleanup guard-effect-retry paths accounted. Solelatercacheabortguard has actual2currentcontrols. DefaultBuildImage wholehelperunchanged; no realDocker allphaseinterruptqualification inferred.",
+    "S52": "All6execordinary/loss/stopobservation/copyeffects accounted. Typedoverflowacceptedreplacement; copycanleavepartialhostfile, norollbackpromised.",
+    "S54": "All6grammar/signalentry/exitmapping/requiredDockergate sourcepaths accounted. Knowncatch1afterabort baseline retained. No OSsignal replay or requiredDaemonruntimeclaim.",
+    "SW02": "All14instructionclauses accounted, accepted01/09retirements explicit. Remainingposture/image/token/home/launch/teardown/reuse rules remaincaller/modelguidance exceptactualstructuraldriverguards. No physical/modelapproval proof invented."
+  },
+  "input_join": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/input-join.json",
+    "sha256": "431631a3abc2c08e03a0d437672161f01a8ac85fb55bcdcddf0184596b77ebe8"
+  },
+  "observations": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/original-observations.json",
+    "sha256": "97359032ecb8880b7e8bec376571934089f1f2b35379325f9d3e75139d4efae6"
+  },
+  "holds_not_in_this_proof": {
+    "SW01": "CurrentINDEX still falselypromises exitteardown and ordinary--with-clauderoute; acceptedD02/D04 owners contradict. Rootauthorizedseparateca-chore correction; no wholeSW01 promotion here."
+  },
+  "PROGRAM_basis": "5analyticalcounts/13preservehealthyboundaries/46meaningfulrowconformance, not everyinterleaving/installed/runtime/publication acceptance."
+}
