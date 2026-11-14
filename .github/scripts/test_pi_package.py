@@ -112,7 +112,7 @@ def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
          "const { writeFileSync } = require('node:fs');\n")
         + f"const tracePath = {json.dumps(str(trace))};\n"
         "const started = performance.now();\n"
-        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: []};\n"
+        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: [], reallyExitCallEntered: false};\n"
         "function observe(phase, exitCode) {\n"
         "  if (report.phases.length >= 8) return;\n"
         "  report.phases.push({phase, elapsedMs: Math.round(performance.now() - started),\n"
@@ -122,6 +122,18 @@ def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
         "  try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
         "  catch { /* Diagnostics must not change the host's shutdown outcome. */ }\n"
         "}\n"
+        "// Entry into this wrapper is not proof of native shutdown or OS exit.\n"
+        "try {\n"
+        "  const originalReallyExit = process.reallyExit;\n"
+        "  if (typeof originalReallyExit === 'function') {\n"
+        "    process.reallyExit = function(...args) {\n"
+        "      report.reallyExitCallEntered = true;\n"
+        "      try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
+        "      catch { /* This diagnostic write may itself be the last observed cut. */ }\n"
+        "      return Reflect.apply(originalReallyExit, this, args);\n"
+        "    };\n"
+        "  }\n"
+        "} catch { /* Optional observation must not change process behavior. */ }\n"
         "globalThis.__caPiRpcShutdownObserve = observe;\n"
         "process.stdin.prependOnceListener('end', () => observe('stdin_end'));\n"
         "process.once('exit', code => observe('process_exit', code));\n"
@@ -271,7 +283,12 @@ def safe_rpc_shutdown_report(trace: Path) -> dict | None:
                     return None
                 item["exitCode"] = row["exitCode"]
             rows.append(item)
-        return {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+        projected = {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+        if "reallyExitCallEntered" in report:
+            if type(report["reallyExitCallEntered"]) is not bool:
+                return None
+            projected["reallyExitCallEntered"] = report["reallyExitCallEntered"]
+        return projected
     except (OSError, ValueError, UnicodeError, RecursionError):
         return None
 
@@ -2743,6 +2760,131 @@ class PiPackageTests(unittest.TestCase):
         self._observe_original_rpc_fixture_shutdown(
             self.test_real_rpc_native_read_context_is_model_visible_once,
         )
+
+    def _rpc_really_exit_boundary_fixture(self, kind):
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "Node is required for the shutdown diagnostic fixtures")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-") as directory:
+            root = Path(directory)
+            preload, _, trace = write_rpc_shutdown_observer(root)
+            bootstrap = root / "bootstrap.cjs"
+            setup = (
+                "// Synthetic callee block, not a claim about actual native shutdown.\n"
+                "process.reallyExit = function() { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0); };\n"
+                if kind == "callee" else ""
+            )
+            bootstrap.write_text(setup + "require(" + json.dumps(str(preload)) + ");\n",
+                                 encoding="utf-8", newline="\n")
+            script = r"""
+const assert = require('node:assert/strict');
+if (KIND === 'normal') {
+  // Test the exact generated wrapper against a returning/throwing callee in a
+  // separate VM, including a failed diagnostic writer. The real process below
+  // still exits through its genuine original native callee.
+  const source = require('node:fs').readFileSync(PRELOAD, 'utf8');
+  const receiver = {}, first = {}, second = {}, returned = {}, thrown = {};
+  let calls = 0;
+  const fake = {
+    pid: 7, version: process.version, platform: process.platform,
+    stdin: {readableEnded: false, prependOnceListener() {}},
+    once() {}, getActiveResourcesInfo() { return []; },
+    reallyExit: function(...args) {
+      calls++;
+      assert.equal(this, receiver);
+      if (args[0] === thrown) throw thrown;
+      assert.deepEqual(args, [first, second]);
+      return returned;
+    },
+  };
+  require('node:vm').runInNewContext(source, {
+    process: fake, performance: {now() { return 0; }},
+    require(name) {
+      assert.equal(name, 'node:fs');
+      return {writeFileSync() { throw new Error('controlled diagnostic write refusal'); }};
+    },
+  });
+  assert.equal(fake.reallyExit.call(receiver, first, second), returned);
+  let caught;
+  try { fake.reallyExit.call(receiver, thrown); } catch (error) { caught = error; }
+  assert.equal(caught, thrown);
+  assert.equal(calls, 2);
+}
+if (KIND === 'listener') {
+  process.on('exit', () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0));
+}
+process.stdin.on('end', () => {
+  globalThis.__caPiRpcShutdownObserve('session_shutdown_observer');
+  process.exit(0);
+});
+process.stdin.resume();
+process.stdout.write('ready\n');
+""".replace("KIND", json.dumps(kind)).replace("PRELOAD", json.dumps(str(preload)))
+            command = [node, "--require", str(bootstrap), "-e", script]
+            environment = {"HOME": str(root), "USERPROFILE": str(root),
+                           "TEMP": str(root), "TMP": str(root), "PATH": ""}
+            for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT"):
+                if os.environ.get(key):
+                    environment[key] = os.environ[key]
+            process = subprocess.Popen(
+                command, cwd=root, env=environment, stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                encoding="utf-8", errors="strict", start_new_session=os.name != "nt",
+                creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
+            )
+            stdout = stderr = None
+            try:
+                if kind == "normal":
+                    stdout, stderr = process.communicate(input="", timeout=5)
+                    self.assertEqual(process.returncode, 0)
+                else:
+                    process.stdin.close()
+                    process.stdin = None
+                    deadline = time.monotonic() + 5
+                    while time.monotonic() < deadline:
+                        report = safe_rpc_shutdown_report(trace)
+                        if report and len(report["phases"]) == 4:
+                            if kind != "callee" or report.get("reallyExitCallEntered") is True:
+                                break
+                        if process.poll() is not None:
+                            break
+                        time.sleep(0.01)
+                    self.assertIsNone(process.poll(), "negative fixture must remain alive before cleanup")
+                report = safe_rpc_shutdown_report(trace)
+                self.assertIsNotNone(report)
+                self.assertEqual(report["pid"], process.pid)
+                self.assertTrue(rpc_shutdown_phase_complete(trace, process.pid))
+                self.assertIs(report["reallyExitCallEntered"], kind != "listener")
+            finally:
+                if process.poll() is None:
+                    # These two synthetic hangs fail the exit contract. Reaping
+                    # this owned fixture is cleanup, never evidence of host success.
+                    terminate_process_tree(process)
+                if stdout is None:
+                    stdout, stderr = process.communicate(timeout=5)
+            self.assertEqual(stdout, "ready\n")
+            self.assertEqual(stderr, "")
+            return report
+
+    def test_rpc_shutdown_reallyexit_normal_is_transparent_and_closed(self):
+        report = self._rpc_really_exit_boundary_fixture("normal")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-projection-") as directory:
+            trace = Path(directory) / "trace.json"
+            legacy = {key: value for key, value in report.items() if key != "reallyExitCallEntered"}
+            trace.write_text(json.dumps(legacy), encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), legacy)
+            for bad in (1, "PrivateFixtureValue", {"payload": "PrivateFixtureValue"}, None):
+                trace.write_text(json.dumps({**report, "reallyExitCallEntered": bad}),
+                                 encoding="utf-8", newline="\n")
+                self.assertIsNone(safe_rpc_shutdown_report(trace))
+            trace.write_text(json.dumps({**report, "private": "PrivateFixtureValue"}),
+                             encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), report)
+
+    def test_rpc_shutdown_reallyexit_later_js_listener_stays_before_call(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("listener")["reallyExitCallEntered"], False)
+
+    def test_rpc_shutdown_reallyexit_synthetic_callee_stays_after_call_entry(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("callee")["reallyExitCallEntered"], True)
 
     def test_rpc_protocol_failure_report_preserves_order_and_unknown_completion(self):
         pending = RpcProtocolDiagnostic()
