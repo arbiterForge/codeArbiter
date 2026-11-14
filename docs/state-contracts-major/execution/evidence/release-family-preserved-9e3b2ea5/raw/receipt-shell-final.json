@@ -1,0 +1,15 @@
+{
+  "mode": "final",
+  "source_sha256": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae",
+  "original_action_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  "exercised_action_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  "tests_run": 50,
+  "failures": [],
+  "errors": [],
+  "skips": 0,
+  "successful": true,
+  "elapsed_seconds": 11.150039099971764,
+  "trace_count": 28,
+  "trace_sha256": "07b2d5a733480d4d0bb8e2b2e02a32f1575794a1933b32144d07521690ea3c12",
+  "stderr_sha256": "2f9ab16b7e3b4b20cb5d82b551fba965177f49fe8e809fd445dafb5f31765b34"
+}

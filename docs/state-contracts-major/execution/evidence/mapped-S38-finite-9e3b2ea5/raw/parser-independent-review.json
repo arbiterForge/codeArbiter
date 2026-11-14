@@ -1,0 +1,50 @@
+{
+  "schema": "codearbiter.independent-focused-review/1",
+  "date": "2026-11-14",
+  "reviewer": "/root/ci_repair_review",
+  "subject": "Expected remote JSON parser error normalization at bounded transport leaf",
+  "source_epoch": "6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0",
+  "candidate_paths": {
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    ".github/scripts/test_work_github.py": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752",
+    "plugins/ca/hooks/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "plugins/ca-codex/hooks/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "plugins/ca-pi/hooks/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+  },
+  "author_delivery_sha256": "db188e7a498d099f78dc5c179431ad936ecb7e41087fc1f1a0e838d318b24ca4",
+  "patch_sha256": "09438f264a3132acdc203b62f9a868dadc0bafa5058a9836ed995def5899b1b1",
+  "security_assessment": [
+    "Shared parserleaf catches only ValueError (including JSONDecodeError/UnicodeDecodeError/intlimit ValueError) and RecursionError. It emits fixed WorkSyncError INVALID_REMOTE_RESPONSE with fixedmessage and suppresses rawcause traceback via fromNone; TypeError/programmerexceptions propagate.",
+    "AST reconstruction independently proves the onlyproductionchanges are new_remote_json plus2existing json.loads callsites switched to it. Entire remainingmodule AST matches currentsource, including1MiB readbounds, endpoint allowlists, token/redirect/TLS/bodyshape guards and nativeclaim/send/unknownstate logic. Threegeneratedhostcopies equalcanonical79a1ce36 bytes.",
+    "Preclaim expectedparseerror now follows existing pertarget WorkSyncError boundary, preserves pendingintent and independentProjectprogress. Postclaim parseerror remains existing OUTCOME_UNKNOWN with nosuccessful-targetresend. No broad ValueError target/nativecatch or admission/release authority added."
+  ],
+  "coverage": {
+    "profile": "Python no-tooling exemption",
+    "policy_ref": "CTX-TECH-STACK#FACT-005",
+    "quote": "There is **no coverage tooling for the Python hooks or build tools** (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`). Those surfaces use direct unittest and behavioral checks, not TypeScript instrumentation.",
+    "numeric_metrics": "Unmeasured",
+    "actualRED": "8preciseescapingexceptions across actualREST+GraphQL syntax/UTF8/intlimit and injectedparserRecursionError seams,0setupfailures",
+    "actualGREEN": {
+      "methods": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 59.046184799983166
+    },
+    "meaningful_controls": [
+      "ActualbadJSONbytes syntax/UTF8/intlimit normalized to exactsafeerror in both realtransportpaths with fakeopener",
+      "Explicitinjected RecursionError compatibility check, not mislabeled realvalid-deepJSON rejection or newdepthlimit",
+      "TypeError from nonbytes openercontractviolation stillpropagates; validJSON andexisting shapeerrors preserved",
+      "Actualmappedpreclaim nativefixture: exactpendingunchanged, independentProjectsuccess, explicitlaterissuePATCHonce/noProjectresend",
+      "Actualmappedpostclaim fakeeffect-applied responseparsefailure:OUTCOME_UNKNOWN, repeatedsyncnoresend/duplicateProject"
+    ],
+    "prior_result_reuse": "7previouscontrolledtests sourceAST unchanged and priorresultSHAverified; no whole-newfile rerun or nativequalification implied",
+    "sourcebinding": "All5candidate/currentpreimage/evidence/rawlog/context hashes verified. Generatedcopies exact. Reviewer didnot execute tests/nativebuild/network/API/provider commands."
+  },
+  "fresh_context": "review-context.json installedselect/prepare ready0blockers andactualdeliverytextconsumed; complete32policy reusedunchanged currentHTMLsha8630d1ca verified",
+  "findings": [],
+  "blocking_findings": 0,
+  "verdict": "PASS",
+  "readiness": "Frozen5path review only. Later strictEXPECTED_SUITES/combinedcandidate/hostedchecks require separateexactbinding; no relaxed suiteequality/timeout/skip approved.",
+  "preservation": "No reviewer Gov/source/index/cache/marker writes; newTempoutputs only."
+}

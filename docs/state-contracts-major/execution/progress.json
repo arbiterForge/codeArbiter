@@ -3153,6 +3153,209 @@
       "effects": "Return existing bounded/redacted integrationFailure before git add/commit/merge. No cleanup, reset or second author is authorized by this observation.",
       "failure_retry": "No automatic retry or resource removal. Fresh clean observation retains prior ordinary stage path; unavailable observation retains existing refusal. This is cooperative observation, not an atomic filesystem pin.",
       "note": "Frozen S24 initial/repeated drift and S26 rollback rows do not describe this newly introduced post-quality admission refusal. Analytical transition only; no new wire event/API."
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:01",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "Validated physical Git common directory; local queue reaches this caller",
+        "event": "Exclusive claim succeeds immediately or after another cooperative owner releases",
+        "guard": "O_EXCL create succeeds; file metadata and owner nonce are written before callback",
+        "to": "Owned administration admitted",
+        "effects": "Invoke one callback while the exclusive sidecar identifies this process claim. Linked checkouts resolving to the same physical common directory cannot overlap this cooperative boundary.",
+        "failure_retry": "EEXIST waits only within this invocation deadline. No callback runs while a foreign claim remains. External Git processes are outside this cooperative protocol."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1840-1870"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:02",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "Shared common-directory sidecar already exists",
+        "event": "Exclusive create returns EEXIST through the finite deadline",
+        "guard": "Existing owner has not released before deadline",
+        "to": "Administration refused; existing owner retained",
+        "effects": "Reject without invoking the administration callback or changing/removing the existing lock bytes. Do not infer stale ownership from PID or age.",
+        "failure_retry": "Only EEXIST receives bounded waiting; no owner stealing or automatic destructive recovery. A later explicit attempt may observe a genuinely released name."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1852-1862"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:03",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "No owned common-directory claim",
+        "event": "Git common-directory observation is unavailable or supplied deadline is invalid",
+        "guard": "Actual non-repository Git observation fails, or timeout is not finite/nonnegative",
+        "to": "Administration unavailable before callback",
+        "effects": "Reject admission before performing the Git administration callback. prepareWorktree reports administration unavailable; removeWorktreeVerified reports ok:false with attempts0 for unavailable administration.",
+        "failure_retry": "No recovery, prune or branch deletion is authorized. Other path/IO acquisition failures also propagate in source; every OS error variant is not separately exercised here."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1841-1849;1913-1922"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:04",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "Owned callback has settled",
+        "event": "Release checks find the same regular file, inode/device, single link and exact owner bytes",
+        "guard": "All ownership checks and unlink/close succeed",
+        "to": "Claim released; callback outcome retained",
+        "effects": "Unlink only the verified owned sidecar, close its handle, return the original callback result or propagate the original callback error. The local queue remains usable after rejection.",
+        "failure_retry": "Subsequent queued or independent callers may acquire a fresh claim; no completed callback effect is replayed by release."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1864-1900"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:05",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "Callback succeeded but claim release is pending",
+        "event": "Release observes missing pathname or a distinct replacement owner",
+        "guard": "Original handle cannot establish current pathname ownership",
+        "to": "Release unverified; success refused",
+        "effects": "Do not unlink a foreign replacement. Close this handle and throw the fixed release-unverified error, retaining uncertain ownership for inspection.",
+        "failure_retry": "No automatic owner removal, callback replay or cleanup success follows. Tests cover actual missing-name and replacement cases, not every possible malicious same-user path race."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1874-1891"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "FARM-COMMON-REGISTRY-LOCK:06",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "Callback failed and release is pending",
+        "event": "Release ownership cannot be verified after a distinct replacement",
+        "guard": "A primary callback exception already exists",
+        "to": "Primary failure preserved; release remains unverified",
+        "effects": "Propagate the original controlled primary exception and emit only the fixed release-unverified diagnostic. Do not delete foreign bytes or replace the primary failure with a cleanup error.",
+        "failure_retry": "Retained owner requires inspection. This is not authority to replay the failed callback or discard an unknown owner."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "withCommonWorktreeLock/withWorktreeLock",
+          "lines": "1871-1892"
+        }
+      ],
+      "rationale": "The baseline S30:01 assumes a lock was acquired. No baseline or existing48 addition describes the physical Git common-directory claim lifecycle across independent Farm processes.",
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca/tools/farm.ts#withCommonWorktreeLock/withWorktreeLock"
+      ],
+      "component_scope": "Cooperative Farm administration of a shared physical Git registry; local Windows source and generated-bundle fixtures.",
+      "treatment": "INTRODUCED_COMMON_REGISTRY_LOCK"
+    },
+    {
+      "transition_id": "SBX-CACHE-CANCELLATION:01",
+      "owner": "sandbox",
+      "machine_id": "S49",
+      "task_ids": [
+        "SBX-C01"
+      ],
+      "contract": {
+        "from": "Cache lookup awaiting exact image identity",
+        "event": "Identity observation resolves to a valid exact cache hit after cancellation",
+        "guard": "Signal is aborted before the cache-hit return",
+        "to": "Aborted; stale reuse result refused",
+        "effects": "Throw the original AbortSignal reason before returning reused:true. Do not start a build, image generation or replacement effect.",
+        "failure_retry": "Cancellation revokes ordinary execution authority. A later explicitly authorized attempt must observe current cache identity again; this guard does not delete the cached image."
+      },
+      "source": [
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "symbol": "buildOrReuseImage",
+          "lines": "808-848"
+        }
+      ],
+      "source_refs": [
+        "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef:plugins/ca-sandbox/tools/build.ts#buildOrReuseImage"
+      ],
+      "rationale": "S49:03 admits cache reuse; existing SBX-BUILD-OBSERVATION01/02 recheck only cache-miss build admission. The new late-abort guard is a separate cache-hit boundary.",
+      "component_scope": "Actual owning Vitest test of production function with controlled asynchronous identity observation; no Docker workload.",
+      "treatment": "INTRODUCED_CACHE_HIT_CANCELLATION_REFUSAL"
     }
   ],
   "evidence_records": [
@@ -3710,6 +3913,21 @@
       "limits": [
         "ADR lifecycle remains Accepted/Planned: no implementation or verification events minted from source review.",
         "Ten sealed obligations and broader task qualification remain distinct; PiHTTP decision unaffected."
+      ]
+    },
+    {
+      "id": "current-mapped-farm-release-and-new-behavior-accounting",
+      "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+      "facts": [
+        "Mapped S38 target-local failure nowTESTED from real native conflict/remote identity observations; allsix finite source clauses and whole machine source conformance accounted, with oldfacts/history retained.",
+        "Renew98Farm source/bundle records with classifications unchanged57PRESERVED/41TESTED; eight mixed records excluded. Original commands/raw facts retained; no newexecution.",
+        "Preserve11healthy release-family full clauses with explicit changed-guard accounting and24/50/19 source-bound corroborating outcomes; actual Q03 effects remain subsequent.",
+        "Append only7material new representative boundaries:6commonregistry-lock states and1latecache-abort, supported by actual local controls. Existing48additions and105frozen intake unchanged."
+      ],
+      "limits": [
+        "No task/scenario/global-platform/installed/user/model/publication promotion.",
+        "Historic15Farm capture ca35 and current portable7d6f are distinct; fixture setupfailure is not productRED.",
+        "WindowsPi EOF cause remainsUNKNOWN; separate test-only diagnostics preserve raw tests/deadlines."
       ]
     }
   ],

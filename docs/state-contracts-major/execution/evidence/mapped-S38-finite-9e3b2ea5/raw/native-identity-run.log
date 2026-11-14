@@ -1,0 +1,8 @@
+test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target (test_work_github.GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target) ... ok
+test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target (test_work_github.GithubWorkTest.test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target) ... ok
+test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target (test_work_github.GithubWorkTest.test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 84.990s
+
+OK

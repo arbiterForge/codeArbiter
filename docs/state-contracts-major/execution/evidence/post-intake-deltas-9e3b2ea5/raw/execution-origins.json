@@ -1,0 +1,146 @@
+[
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\lock-red.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-lock-red.json",
+    "sha256": "258c9abd4ab4c6b4b0fe5a5bdce77a3fcaecc29abd36e1ba21ea1cc6e147e915",
+    "bytes": 3382
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\genuine-red.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-genuine-red.json",
+    "sha256": "ab5bbae612c1e2f3d4fae2c00bdbf36202ef5d108a1b9989169cf2843e21463a",
+    "bytes": 3302
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\source-freeze.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-source-freeze.json",
+    "sha256": "bc4289c12ba72ec36bb8283ac771d5dbc87f7df834c8fbc27442bfa80e52723d",
+    "bytes": 2994
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-focused.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-focused.json",
+    "sha256": "f867bd96436838858d16612036e0430a3c0a75371f5cb3ed8e5bfb64f1351824",
+    "bytes": 785441
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-focused.exit.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-focused.exit.json",
+    "sha256": "e1ad757a133014800895af627606d14f59cd1958b87194e1d4e3a69317f38b20",
+    "bytes": 1339
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-inputs-before.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-inputs-before.json",
+    "sha256": "bcd63c683b82d8ff12d013609353e6854ffb083c6531db732dc62d45587f91a5",
+    "bytes": 3471
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-inputs-after.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-inputs-after.json",
+    "sha256": "bcd63c683b82d8ff12d013609353e6854ffb083c6531db732dc62d45587f91a5",
+    "bytes": 3471
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\seven.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-seven.json",
+    "sha256": "2433cb2ac18ae50ff19aeb0b6d7e61cd2a6761eb860474869101146e464deea7",
+    "bytes": 605377
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\inputs-before.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-inputs-before.json",
+    "sha256": "6038bc1c9dceabc5a79a4d73470308c9420029b54a0d1b3f6f22d1e14bea2f64",
+    "bytes": 3505
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\inputs-after.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-inputs-after.json",
+    "sha256": "6038bc1c9dceabc5a79a4d73470308c9420029b54a0d1b3f6f22d1e14bea2f64",
+    "bytes": 3505
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\seven-current-controls.exit.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/farm-final-seven-current-controls.exit.json",
+    "sha256": "be124208c822e6d759d4d3688d47f54559b34a2eedcee555072d115682d3509d",
+    "bytes": 1081
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\source-freeze.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-source-freeze.json",
+    "sha256": "952f3ca4fe8851151d65feb023fa601fd6482da2e3d328de9e0b846552f5ab96",
+    "bytes": 2272
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-seven.json",
+    "sha256": "a0c684fe73d06613277de7b161d83d59de90ad54781f1159839956fe484c8f7a",
+    "bytes": 3376
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.exit.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-seven.exit.json",
+    "sha256": "161d7c0ad16616dafde91cf88d342ae34c0c6b5beb14394bc1e72a20bdcc4c05",
+    "bytes": 855
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.stdout.log",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-seven.stdout.log",
+    "sha256": "eaaf516462768059bec20625a1e7235a41cbe4a147eee39d41e3e02b964fec33",
+    "bytes": 110
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.stderr.log",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-seven.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\inputs-before.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-inputs-before.json",
+    "sha256": "6624f850f62ed87ac2c278f768eec3617693ae14cc58176992a0e0c845ad1377",
+    "bytes": 3471
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\inputs-after.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-inputs-after.json",
+    "sha256": "6624f850f62ed87ac2c278f768eec3617693ae14cc58176992a0e0c845ad1377",
+    "bytes": 3471
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\negative-two.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-negative-two.json",
+    "sha256": "0f2a6eb6cc42bc200e12eba3589277954e4b42d3660184545666ec7288d8ec97",
+    "bytes": 4199
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\negative-two.exit.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/portable-negative-two.exit.json",
+    "sha256": "4808f6b502380bfb96a37c0f73178deb495a70dcfeb44870db21189109232b15",
+    "bytes": 1747
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-result.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-result.json",
+    "sha256": "6f482e8e83fbb8b6d24afc4cb263594156c5adee210fa889cce3b93ed9fdac0c",
+    "bytes": 314792
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\actual-vitest-exit.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-exit.json",
+    "sha256": "dbef206991ff4fde1a31f991058d45d9b1e38c2fbd2b6edd6e9b25a3b93b58e5",
+    "bytes": 5959
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\delivery-vitest-successor.json",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-delivery-vitest-successor.json",
+    "sha256": "2088cd0c55cfed91eb7712f8f24d860d471346d008965023ba0cb9499d95c550",
+    "bytes": 7845
+  },
+  {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-cancel-e6d80c088b\\vitest-verify.config.mjs",
+    "retained_path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-vitest-verify.config.mjs",
+    "sha256": "97e3476639d5a5d3583c50255c7eb8e4220e6f3132162848f27b90651fe4766e",
+    "bytes": 641
+  }
+]

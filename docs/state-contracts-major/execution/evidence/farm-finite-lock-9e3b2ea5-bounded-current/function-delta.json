@@ -1,0 +1,2141 @@
+{
+  "schema": "codearbiter.farm-function-delta/1",
+  "old_source": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "source": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "typescript_version": "5.9.3",
+  "files": {
+    "plugins/ca/tools/farm.ts": {
+      "before_sha256": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "after_sha256": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+      "unchanged": {
+        "Task": {
+          "before": "3f2f596d70f69a28e6341d202821097a5de460c841e2e36482fb370a6f1877bc",
+          "after": "3f2f596d70f69a28e6341d202821097a5de460c841e2e36482fb370a6f1877bc",
+          "before_line": 67,
+          "after_line": 67
+        },
+        "Plan": {
+          "before": "df5b17fdbd280f24f518b69f407780344b31d32e4598ae5fc8c021894843ed9a",
+          "after": "df5b17fdbd280f24f518b69f407780344b31d32e4598ae5fc8c021894843ed9a",
+          "before_line": 110,
+          "after_line": 110
+        },
+        "DEFAULT_API_BASE_URL": {
+          "before": "e7f2c6d181c8a7035a46b97921a9fa75393c92fc54a790e487399b8201a46e6e",
+          "after": "e7f2c6d181c8a7035a46b97921a9fa75393c92fc54a790e487399b8201a46e6e",
+          "before_line": 128,
+          "after_line": 128
+        },
+        "effectContext": {
+          "before": "a7ccefb9ef5bc7d846f73878cc2053fff922a3310d4383c39fa173ff4845249f",
+          "after": "a7ccefb9ef5bc7d846f73878cc2053fff922a3310d4383c39fa173ff4845249f",
+          "before_line": 130,
+          "after_line": 130
+        },
+        "taskEffects": {
+          "before": "fb222afc99c2ca4aa1f6da86f91970978914f9507b5536b319d082748c5c6cf5",
+          "after": "fb222afc99c2ca4aa1f6da86f91970978914f9507b5536b319d082748c5c6cf5",
+          "before_line": 131,
+          "after_line": 131
+        },
+        "ENV": {
+          "before": "c8dcc931ef27d6231e6a6d83a3bac9f007517138c4e819be1f41116cf349064e",
+          "after": "c8dcc931ef27d6231e6a6d83a3bac9f007517138c4e819be1f41116cf349064e",
+          "before_line": 132,
+          "after_line": 132
+        },
+        "GitRunner": {
+          "before": "5ff97792ea25822d0c556376af2c3260ddafc4e70c5d2fd9486343f5669aa56d",
+          "after": "5ff97792ea25822d0c556376af2c3260ddafc4e70c5d2fd9486343f5669aa56d",
+          "before_line": 193,
+          "after_line": 193
+        },
+        "git": {
+          "before": "90902b77120d40c0eae22b952a4083603fd87b649e484c6fddb5692d8e1a9b4e",
+          "after": "90902b77120d40c0eae22b952a4083603fd87b649e484c6fddb5692d8e1a9b4e",
+          "before_line": 194,
+          "after_line": 194
+        },
+        "sleep": {
+          "before": "eb9fa53ca057beca166812defae66454af56cbe6b534d2a7bff22328d7bee714",
+          "after": "eb9fa53ca057beca166812defae66454af56cbe6b534d2a7bff22328d7bee714",
+          "before_line": 195,
+          "after_line": 195
+        },
+        "ARTIFACT_PROTOCOL": {
+          "before": "07ab979794d654de2456848c3b162ce5847a832e997cf588d9b5ec47fcf3fdc1",
+          "after": "07ab979794d654de2456848c3b162ce5847a832e997cf588d9b5ec47fcf3fdc1",
+          "before_line": 205,
+          "after_line": 205
+        },
+        "ARTIFACT_SCHEMA_VERSION": {
+          "before": "2e6d11a6dd9116db3005af41f32ebcb348624aa8523e8bbf1e227c00d2202542",
+          "after": "2e6d11a6dd9116db3005af41f32ebcb348624aa8523e8bbf1e227c00d2202542",
+          "before_line": 206,
+          "after_line": 206
+        },
+        "ARTIFACT_RELEASE_FORMAT": {
+          "before": "de889475531d1641ccdecaa93a7f442c9ba923656f3df8eed7a3c50ee2e26e93",
+          "after": "de889475531d1641ccdecaa93a7f442c9ba923656f3df8eed7a3c50ee2e26e93",
+          "before_line": 207,
+          "after_line": 207
+        },
+        "ARTIFACT_MAX_RESPONSE": {
+          "before": "dee5d8f80cfab58cff2c521f3be4179b4562213e889b57de19cac15b31ac8770",
+          "after": "dee5d8f80cfab58cff2c521f3be4179b4562213e889b57de19cac15b31ac8770",
+          "before_line": 208,
+          "after_line": 208
+        },
+        "FarmVerifyPhase": {
+          "before": "ef9082913d72f3409a9044279aa026cbd1e79adf8602249c558e84f2349eb077",
+          "after": "ef9082913d72f3409a9044279aa026cbd1e79adf8602249c558e84f2349eb077",
+          "before_line": 210,
+          "after_line": 210
+        },
+        "artifactPlatform": {
+          "before": "8c4b28429f28cc09cfe14a743ac6ca382ddad66ae8c5a094edd2faf6e3d653be",
+          "after": "8c4b28429f28cc09cfe14a743ac6ca382ddad66ae8c5a094edd2faf6e3d653be",
+          "before_line": 212,
+          "after_line": 212
+        },
+        "exactKeys": {
+          "before": "c19d084b902be054633bc8d42bdf887600c9748ae51aec2a9494b95f9e4f30de",
+          "after": "c19d084b902be054633bc8d42bdf887600c9748ae51aec2a9494b95f9e4f30de",
+          "before_line": 227,
+          "after_line": 227
+        },
+        "InstalledArtifactBinary": {
+          "before": "d867b8611b7fbd94a36798e487be1c06b5d0c40f04359332e2d213ae94cb74fb",
+          "after": "d867b8611b7fbd94a36798e487be1c06b5d0c40f04359332e2d213ae94cb74fb",
+          "before_line": 230,
+          "after_line": 230
+        },
+        "sameArtifactPath": {
+          "before": "f4a7319c334616fbb221159fe17bad5bd5ee76a3ee4bf76a7494f2fab4dc1af2",
+          "after": "f4a7319c334616fbb221159fe17bad5bd5ee76a3ee4bf76a7494f2fab4dc1af2",
+          "before_line": 232,
+          "after_line": 232
+        },
+        "trustedInstallationDirectory": {
+          "before": "e5469742225eb6a17e9c8c5038d4a8c2befe69d637ee7ac78bb179e347a6701a",
+          "after": "e5469742225eb6a17e9c8c5038d4a8c2befe69d637ee7ac78bb179e347a6701a",
+          "before_line": 237,
+          "after_line": 237
+        },
+        "pinnedRegular": {
+          "before": "ceeecca0ba601cec3d443c944189c5af7e1415a85cec2d01c155355d558abd8c",
+          "after": "ceeecca0ba601cec3d443c944189c5af7e1415a85cec2d01c155355d558abd8c",
+          "before_line": 254,
+          "after_line": 254
+        },
+        "installedArtifactBinary": {
+          "before": "69f9c7f764c5c8bacfb4adf318d80bb6e9eca25c2ef7d5e6e1278701ef8b9e23",
+          "after": "69f9c7f764c5c8bacfb4adf318d80bb6e9eca25c2ef7d5e6e1278701ef8b9e23",
+          "before_line": 269,
+          "after_line": 269
+        },
+        "WINDOWS_PIN_GUARD": {
+          "before": "9c989177e6c5d6526534eae363f8dd8240c69a63b5deff08cb0d61d117b0cc52",
+          "after": "9c989177e6c5d6526534eae363f8dd8240c69a63b5deff08cb0d61d117b0cc52",
+          "before_line": 315,
+          "after_line": 315
+        },
+        "WINDOWS_PIN_READY_TIMEOUT_MS": {
+          "before": "3bd066cd2ebbde2d3b2839056bf52425e132dc148e062ae86a23ad94e97b4815",
+          "after": "3bd066cd2ebbde2d3b2839056bf52425e132dc148e062ae86a23ad94e97b4815",
+          "before_line": 331,
+          "after_line": 331
+        },
+        "WINDOWS_PIN_CLOSE_TIMEOUT_MS": {
+          "before": "48ff3330b0e165634ccd0dc296c4d47d7433af14cada5e5b73639c253811b503",
+          "after": "48ff3330b0e165634ccd0dc296c4d47d7433af14cada5e5b73639c253811b503",
+          "before_line": 332,
+          "after_line": 332
+        },
+        "waitForChildClose": {
+          "before": "726274fcc5fa25f7633d4b4fba42376aed656595d6e74f5553113dea7366d811",
+          "after": "726274fcc5fa25f7633d4b4fba42376aed656595d6e74f5553113dea7366d811",
+          "before_line": 334,
+          "after_line": 334
+        },
+        "releaseWindowsPinGuard": {
+          "before": "b08690432713701116eb2b07989ff211f6441a25ae0da8aaa878fc83d8d0dbb4",
+          "after": "b08690432713701116eb2b07989ff211f6441a25ae0da8aaa878fc83d8d0dbb4",
+          "before_line": 353,
+          "after_line": 353
+        },
+        "windowsPinGuard": {
+          "before": "9628ed472551d1279d81f5df18d5ad3b138d120f38197e8c0e1bc84a4ae5fd6a",
+          "after": "9628ed472551d1279d81f5df18d5ad3b138d120f38197e8c0e1bc84a4ae5fd6a",
+          "before_line": 365,
+          "after_line": 365
+        },
+        "runPinnedArtifact": {
+          "before": "c3944ca1e705c7c04caa03ee9d02c4891ec08168968b40e123beed65846f0762",
+          "after": "c3944ca1e705c7c04caa03ee9d02c4891ec08168968b40e123beed65846f0762",
+          "before_line": 397,
+          "after_line": 397
+        },
+        "artifactResult": {
+          "before": "4c1882320bdeefbacd2d7f26fab06658e892dc715c3a08b4691a482c7cec38fe",
+          "after": "4c1882320bdeefbacd2d7f26fab06658e892dc715c3a08b4691a482c7cec38fe",
+          "before_line": 452,
+          "after_line": 452
+        },
+        "verifyFarmArtifactBoundary": {
+          "before": "fa32ed7e0d180a4147a8ec3dc886273e2172646f5115eb4ba95e3bbe9179ce85",
+          "after": "fa32ed7e0d180a4147a8ec3dc886273e2172646f5115eb4ba95e3bbe9179ce85",
+          "before_line": 474,
+          "after_line": 474
+        },
+        "Limiter": {
+          "before": "f36026a84d2e4bfb75edb3ff75b8ab955fbc4942817aa9b1799b10fb5fef052a",
+          "after": "f36026a84d2e4bfb75edb3ff75b8ab955fbc4942817aa9b1799b10fb5fef052a",
+          "before_line": 530,
+          "after_line": 530
+        },
+        "createLimiter": {
+          "before": "cb8e0adda7865a5b734823db96e881bb2ad9b1d7f656337a183ff134ff90413e",
+          "after": "cb8e0adda7865a5b734823db96e881bb2ad9b1d7f656337a183ff134ff90413e",
+          "before_line": 531,
+          "after_line": 531
+        },
+        "workerLimit": {
+          "before": "176bfdcb03f4c1f8f72e858d38d555dc27eafc3bc086a698b6b0eaf623e90410",
+          "after": "176bfdcb03f4c1f8f72e858d38d555dc27eafc3bc086a698b6b0eaf623e90410",
+          "before_line": 563,
+          "after_line": 563
+        },
+        "NOSIGN": {
+          "before": "4051b7037ba991f00d0da8ef492a62ad0ebafa5149ef4d0a2aedccc4299f1e80",
+          "after": "4051b7037ba991f00d0da8ef492a62ad0ebafa5149ef4d0a2aedccc4299f1e80",
+          "before_line": 568,
+          "after_line": 568
+        },
+        "isInside": {
+          "before": "ddd6721ebc5b0c983b7d2a46e2fc20677f6ed86b634825ac2e414036b1e1ce03",
+          "after": "ddd6721ebc5b0c983b7d2a46e2fc20677f6ed86b634825ac2e414036b1e1ce03",
+          "before_line": 573,
+          "after_line": 573
+        },
+        "repoTopLevel": {
+          "before": "74d879b185deb4b9b68cc00a18ca8470f41b646ccd4d9d519d836bc28c8f46e0",
+          "after": "74d879b185deb4b9b68cc00a18ca8470f41b646ccd4d9d519d836bc28c8f46e0",
+          "before_line": 586,
+          "after_line": 586
+        },
+        "canonicalize": {
+          "before": "a374a4d21266286dbf0687045b628d69e21a87a582e22e65ba73f968c3a8c8df",
+          "after": "a374a4d21266286dbf0687045b628d69e21a87a582e22e65ba73f968c3a8c8df",
+          "before_line": 621,
+          "after_line": 621
+        },
+        "validateWorktreeRoot": {
+          "before": "b7d63ba6a27acf9b0d8364ebccd30098ad0bebd75aef936d6b7ff155414f1f55",
+          "after": "b7d63ba6a27acf9b0d8364ebccd30098ad0bebd75aef936d6b7ff155414f1f55",
+          "before_line": 653,
+          "after_line": 653
+        },
+        "_allowedWorktreeRoot": {
+          "before": "16ccc2a1878f3a22260a0d22a570aad9f86721ea6ed1a2bd109997e6892c881d",
+          "after": "16ccc2a1878f3a22260a0d22a570aad9f86721ea6ed1a2bd109997e6892c881d",
+          "before_line": 665,
+          "after_line": 665
+        },
+        "allowedWorktreeRoot": {
+          "before": "ad4b48fee1a2992dcd6b360c927ef5ea85bcde87c09d943b37ca001524daccbb",
+          "after": "ad4b48fee1a2992dcd6b360c927ef5ea85bcde87c09d943b37ca001524daccbb",
+          "before_line": 666,
+          "after_line": 666
+        },
+        "_resetAllowedWorktreeRoot": {
+          "before": "6badd22ff9afc8980d65b0ea897c3e41ff5d36fb37f5e0be7f7d6d503eca1799",
+          "after": "6badd22ff9afc8980d65b0ea897c3e41ff5d36fb37f5e0be7f7d6d503eca1799",
+          "before_line": 679,
+          "after_line": 679
+        },
+        "assertContainedWorktree": {
+          "before": "315a930232b9835f97209d16e987fba6398593fd9f42b628a5c576e8a38a0ca1",
+          "after": "315a930232b9835f97209d16e987fba6398593fd9f42b628a5c576e8a38a0ca1",
+          "before_line": 685,
+          "after_line": 685
+        },
+        "GateResult": {
+          "before": "6de329ccbc638342deee7fe0055db58039ccc05166fea5989373b367789852c9",
+          "after": "6de329ccbc638342deee7fe0055db58039ccc05166fea5989373b367789852c9",
+          "before_line": 701,
+          "after_line": 701
+        },
+        "runGate": {
+          "before": "41825bfb704c6848e9361791006d2638c911444accca9dacdb918165cb767623",
+          "after": "41825bfb704c6848e9361791006d2638c911444accca9dacdb918165cb767623",
+          "before_line": 703,
+          "after_line": 703
+        },
+        "InjectedFile": {
+          "before": "9f666d43fc2f46ce46fd44ca6a743aa4a1e024b41d446f1840a9dea0969874f4",
+          "after": "9f666d43fc2f46ce46fd44ca6a743aa4a1e024b41d446f1840a9dea0969874f4",
+          "before_line": 744,
+          "after_line": 744
+        },
+        "renderInjectedFile": {
+          "before": "f4e084c05b56d0ce5e5ebc7869ca87d883f918c9124e26c9c24e8013e0cf3078",
+          "after": "f4e084c05b56d0ce5e5ebc7869ca87d883f918c9124e26c9c24e8013e0cf3078",
+          "before_line": 754,
+          "after_line": 754
+        },
+        "TRUNCATION_MARKER": {
+          "before": "160d7a46638cdddb1f8fd63b8294637bbf3cba1640ae848cb5bc7caf3e70e11a",
+          "after": "160d7a46638cdddb1f8fd63b8294637bbf3cba1640ae848cb5bc7caf3e70e11a",
+          "before_line": 761,
+          "after_line": 761
+        },
+        "CURRENT_CONTEXT": {
+          "before": "a9cbc878a5332db5ff3aacdd57023285348d569ee0f7b15fbab050f57fa03812",
+          "after": "a9cbc878a5332db5ff3aacdd57023285348d569ee0f7b15fbab050f57fa03812",
+          "before_line": 762,
+          "after_line": 762
+        },
+        "PRIOR_CONTEXT": {
+          "before": "481dde3de47de1a0671c8c622dad11f156ef505853c03c7ccf56dc9669bdf4b6",
+          "after": "481dde3de47de1a0671c8c622dad11f156ef505853c03c7ccf56dc9669bdf4b6",
+          "before_line": 763,
+          "after_line": 763
+        },
+        "utf8Prefix": {
+          "before": "65cebbff32e5d89085e78991f459c4e211df5b63b94c3e480a67d0526579531c",
+          "after": "65cebbff32e5d89085e78991f459c4e211df5b63b94c3e480a67d0526579531c",
+          "before_line": 766,
+          "after_line": 766
+        },
+        "capInjected": {
+          "before": "22dfe7f4ed62948788c3fd65480dc739dc781347876dc700670d2119c6c192ff",
+          "after": "22dfe7f4ed62948788c3fd65480dc739dc781347876dc700670d2119c6c192ff",
+          "before_line": 774,
+          "after_line": 774
+        },
+        "buildEnrichment": {
+          "before": "155ac1a6fb5c6fcc0947acc496a2c49795d582281584822f6b70e67789e5bd42",
+          "after": "155ac1a6fb5c6fcc0947acc496a2c49795d582281584822f6b70e67789e5bd42",
+          "before_line": 808,
+          "after_line": 808
+        },
+        "captureInScope": {
+          "before": "1860627f464182950112364deb80effa13af9815c0e66baf8910676ffd326a99",
+          "after": "1860627f464182950112364deb80effa13af9815c0e66baf8910676ffd326a99",
+          "before_line": 869,
+          "after_line": 869
+        },
+        "buildPrompt": {
+          "before": "71813496a839d4630e1b78c2038b19301f9e58132981885b7affc5ac1c3ce9e6",
+          "after": "71813496a839d4630e1b78c2038b19301f9e58132981885b7affc5ac1c3ce9e6",
+          "before_line": 893,
+          "after_line": 893
+        },
+        "extractFileBlocks": {
+          "before": "fc23490fca32ca43cabdf37940123bbd3e52f609fdad2ba5528f86ab3fc9d9be",
+          "after": "fc23490fca32ca43cabdf37940123bbd3e52f609fdad2ba5528f86ab3fc9d9be",
+          "before_line": 941,
+          "after_line": 941
+        },
+        "WorkerResult": {
+          "before": "9cab3e1787bb7ab247cbb19d78044643ae3ff9c16b19f2c3a0bd8b14c847669c",
+          "after": "9cab3e1787bb7ab247cbb19d78044643ae3ff9c16b19f2c3a0bd8b14c847669c",
+          "before_line": 982,
+          "after_line": 982
+        },
+        "diagnosticApiOrigin": {
+          "before": "c136540ce1f717138d2e8d361ba5ae8689b8e8d4eeb84f7318805939cfdc2fda",
+          "after": "c136540ce1f717138d2e8d361ba5ae8689b8e8d4eeb84f7318805939cfdc2fda",
+          "before_line": 1001,
+          "after_line": 1001
+        },
+        "ChatUsage": {
+          "before": "6133db2450966653005aa51ff66c5f1dd44412bc1db7f2da22ff819efd380029",
+          "after": "6133db2450966653005aa51ff66c5f1dd44412bc1db7f2da22ff819efd380029",
+          "before_line": 1015,
+          "after_line": 1015
+        },
+        "ChatCompletionResult": {
+          "before": "abe0a7f686b5f843f9c234354ae964fb98a97b112fb26f3f67452084d3507197",
+          "after": "abe0a7f686b5f843f9c234354ae964fb98a97b112fb26f3f67452084d3507197",
+          "before_line": 1016,
+          "after_line": 1016
+        },
+        "reportedUsage": {
+          "before": "b2bde993cf64c1b0fe374797c09c80a0b58b6e934255086f641709eec4613a82",
+          "after": "b2bde993cf64c1b0fe374797c09c80a0b58b6e934255086f641709eec4613a82",
+          "before_line": 1020,
+          "after_line": 1020
+        },
+        "parseChatCompletion": {
+          "before": "2aa1fbde59aa8efe3994f27624db343c6b2948ba9ec1af5294b30f7fd92ddd0b",
+          "after": "2aa1fbde59aa8efe3994f27624db343c6b2948ba9ec1af5294b30f7fd92ddd0b",
+          "before_line": 1031,
+          "after_line": 1031
+        },
+        "Sampling": {
+          "before": "5137e8a3817b391f9c6688f7adda82cfe8b2e0b3786678a9310139fa076cd06e",
+          "after": "5137e8a3817b391f9c6688f7adda82cfe8b2e0b3786678a9310139fa076cd06e",
+          "before_line": 1081,
+          "after_line": 1081
+        },
+        "readSampling": {
+          "before": "52fef94914e22b4eb8f96e22b47a5f9c3d0ca555b40ce13f0eef21ca88eab7cc",
+          "after": "52fef94914e22b4eb8f96e22b47a5f9c3d0ca555b40ce13f0eef21ca88eab7cc",
+          "before_line": 1083,
+          "after_line": 1083
+        },
+        "buildChatBody": {
+          "before": "a564c2969f6daf7aa92591a6eb96435f2487aa131edad194da1796e06d4cf431",
+          "after": "a564c2969f6daf7aa92591a6eb96435f2487aa131edad194da1796e06d4cf431",
+          "before_line": 1090,
+          "after_line": 1090
+        },
+        "MAX_API_TIMER_MS": {
+          "before": "4786035b291935d5bbc536348a86338ea5ae452016e0f0120ee9b5301e1ee8ab",
+          "after": "4786035b291935d5bbc536348a86338ea5ae452016e0f0120ee9b5301e1ee8ab",
+          "before_line": 1105,
+          "after_line": 1105
+        },
+        "HTTP_MONTHS": {
+          "before": "f24bee78724a0aec3823a56968b261a9197481d27586879374a4b2ea3b75cdae",
+          "after": "f24bee78724a0aec3823a56968b261a9197481d27586879374a4b2ea3b75cdae",
+          "before_line": 1106,
+          "after_line": 1106
+        },
+        "HTTP_DAYS": {
+          "before": "7e330bb4ff1c4b7fdb0c63a0d82460e11c60ca6e022969066e1c24c84306f4a2",
+          "after": "7e330bb4ff1c4b7fdb0c63a0d82460e11c60ca6e022969066e1c24c84306f4a2",
+          "before_line": 1107,
+          "after_line": 1107
+        },
+        "httpDateMillis": {
+          "before": "59fe4e5ba1422c562467a01f7fd957753606632db4a22aabcae7951865cc7f23",
+          "after": "59fe4e5ba1422c562467a01f7fd957753606632db4a22aabcae7951865cc7f23",
+          "before_line": 1109,
+          "after_line": 1109
+        },
+        "apiRetryDelay": {
+          "before": "48635bc73d8266a74bb5f165575c75fbb7400ad46b399b794e0a27a0fbc773a7",
+          "after": "48635bc73d8266a74bb5f165575c75fbb7400ad46b399b794e0a27a0fbc773a7",
+          "before_line": 1141,
+          "after_line": 1141
+        },
+        "callApi": {
+          "before": "6704c23b7edc72b768b6dfdca5337beb3e524378b732fd6613a1cffde90ec259",
+          "after": "6704c23b7edc72b768b6dfdca5337beb3e524378b732fd6613a1cffde90ec259",
+          "before_line": 1158,
+          "after_line": 1158
+        },
+        "runWorker": {
+          "before": "159b941b614acaf0b85e61edb0d4e0f07877b00a9f90883492c5bca9bc83985f",
+          "after": "159b941b614acaf0b85e61edb0d4e0f07877b00a9f90883492c5bca9bc83985f",
+          "before_line": 1230,
+          "after_line": 1230
+        },
+        "WorkerContext": {
+          "before": "3f23c7a0ff63d56492e17a4e811fb27f17595b164032499ff7d89e5457c6e5c2",
+          "after": "3f23c7a0ff63d56492e17a4e811fb27f17595b164032499ff7d89e5457c6e5c2",
+          "before_line": 1298,
+          "after_line": 1298
+        },
+        "Worker": {
+          "before": "76e189b602a9f3d5400d83fd141ad6a82bbae748cff519db90cccb8160127d0a",
+          "after": "76e189b602a9f3d5400d83fd141ad6a82bbae748cff519db90cccb8160127d0a",
+          "before_line": 1311,
+          "after_line": 1311
+        },
+        "httpWorker": {
+          "before": "b33295749e614455e5e9d70db2fb7b7b72cdcc1b9ae4d8a3f51014998dd4c197",
+          "after": "b33295749e614455e5e9d70db2fb7b7b72cdcc1b9ae4d8a3f51014998dd4c197",
+          "before_line": 1316,
+          "after_line": 1316
+        },
+        "DriftUnavailable": {
+          "before": "78244c60f345f48e6049005f98f3d0527d5df53bc2527dc661dd0458dad6e2a5",
+          "after": "78244c60f345f48e6049005f98f3d0527d5df53bc2527dc661dd0458dad6e2a5",
+          "before_line": 1329,
+          "after_line": 1329
+        },
+        "checkDrift": {
+          "before": "4cf3d27cfd87311f3d40e2b14b4fc0bebf9be0fe00243d8fb50043a65434b230",
+          "after": "4cf3d27cfd87311f3d40e2b14b4fc0bebf9be0fe00243d8fb50043a65434b230",
+          "before_line": 1335,
+          "after_line": 1335
+        },
+        "postApplySweep": {
+          "before": "52408be07305400ca555fbcc414f8087c67f1f9c218b1ee3804db7df9ae6da18",
+          "after": "52408be07305400ca555fbcc414f8087c67f1f9c218b1ee3804db7df9ae6da18",
+          "before_line": 1378,
+          "after_line": 1378
+        },
+        "fileHash": {
+          "before": "0f54ccd29d86c966682dddebc77a4848b65b597498195059a9aa9a8fe0cb3945",
+          "after": "0f54ccd29d86c966682dddebc77a4848b65b597498195059a9aa9a8fe0cb3945",
+          "before_line": 1406,
+          "after_line": 1406
+        },
+        "resetWorktree": {
+          "before": "46f5090b1827cf84ab29d3522a484a11730120e0f9e7367fb36a400555bc0d60",
+          "after": "46f5090b1827cf84ab29d3522a484a11730120e0f9e7367fb36a400555bc0d60",
+          "before_line": 1420,
+          "after_line": 1420
+        },
+        "SetupState": {
+          "before": "f41d235175b35ecc694ce4effd7c32a76997c97f06b76c35b503e45ce1594397",
+          "after": "f41d235175b35ecc694ce4effd7c32a76997c97f06b76c35b503e45ce1594397",
+          "before_line": 1446,
+          "after_line": 1446
+        },
+        "gateFailureFields": {
+          "before": "dc56c0aace75124b00ce6731623b83e542188f8922feeced11f3c4ad86119403",
+          "after": "dc56c0aace75124b00ce6731623b83e542188f8922feeced11f3c4ad86119403",
+          "before_line": 1447,
+          "after_line": 1447
+        },
+        "setupFingerprint": {
+          "before": "2f52942711e94ec053a594dbbb4ebb877aca3812c6865e417ae158e59a2c0001",
+          "after": "2f52942711e94ec053a594dbbb4ebb877aca3812c6865e417ae158e59a2c0001",
+          "before_line": 1454,
+          "after_line": 1454
+        },
+        "runSetupPhases": {
+          "before": "fab39a77f3126ffe12b73976b347c155dc156e4b2dc34cfc3a38f38a0301e76c",
+          "after": "fab39a77f3126ffe12b73976b347c155dc156e4b2dc34cfc3a38f38a0301e76c",
+          "before_line": 1462,
+          "after_line": 1462
+        },
+        "Result": {
+          "before": "05e8db4fd494ba5214cbb317b5e96d3a74ccd1d2384f7e31ccda10a5603c3be3",
+          "after": "05e8db4fd494ba5214cbb317b5e96d3a74ccd1d2384f7e31ccda10a5603c3be3",
+          "before_line": 1495,
+          "after_line": 1495
+        },
+        "mintRunId": {
+          "before": "8b380d4b4b9cc23660c0034cdabbd79df3fc1e5975a472588826419ff9b7682c",
+          "after": "8b380d4b4b9cc23660c0034cdabbd79df3fc1e5975a472588826419ff9b7682c",
+          "before_line": 1539,
+          "after_line": 1539
+        },
+        "msgOf": {
+          "before": "f803dce4e6d5fdc52143ef272b0c8260b03c34227d014960ed28171201e1355a",
+          "after": "f803dce4e6d5fdc52143ef272b0c8260b03c34227d014960ed28171201e1355a",
+          "before_line": 1543,
+          "after_line": 1543
+        },
+        "SAFE_RUN_ID": {
+          "before": "bc8e790c2dde361413458a3420bfaa9ec4ab12e7265bcdfeccaa25e58effd5b0",
+          "after": "bc8e790c2dde361413458a3420bfaa9ec4ab12e7265bcdfeccaa25e58effd5b0",
+          "before_line": 1551,
+          "after_line": 1551
+        },
+        "RESERVED_RUN_ID_STEM": {
+          "before": "a936edc07998fbb2501c7d9d371c74a07728c33fb8639403337ffbb978a43238",
+          "after": "a936edc07998fbb2501c7d9d371c74a07728c33fb8639403337ffbb978a43238",
+          "before_line": 1569,
+          "after_line": 1569
+        },
+        "assertSafeRunId": {
+          "before": "f2d8bbda8df4018cac4cebac9d205f9740a2308cb65b7d29a4afbd44288bfe45",
+          "after": "f2d8bbda8df4018cac4cebac9d205f9740a2308cb65b7d29a4afbd44288bfe45",
+          "before_line": 1570,
+          "after_line": 1570
+        },
+        "runArtifactDir": {
+          "before": "73fe7483ae506a43807a00b5bd7a1d709d38217b1039203ce6cafe3b5d8d3ce9",
+          "after": "73fe7483ae506a43807a00b5bd7a1d709d38217b1039203ce6cafe3b5d8d3ce9",
+          "before_line": 1591,
+          "after_line": 1591
+        },
+        "renameWithRetry": {
+          "before": "6d54f807df76a99c6861b345ddfcf011031225a5ad1b293e572560a660491696",
+          "after": "6d54f807df76a99c6861b345ddfcf011031225a5ad1b293e572560a660491696",
+          "before_line": 1599,
+          "after_line": 1599
+        },
+        "AtomicWriteDeps": {
+          "before": "e1359884410f1d4c1a6ac860f731afe8fc2afe6c85a15ae28279b69db09af5bb",
+          "after": "e1359884410f1d4c1a6ac860f731afe8fc2afe6c85a15ae28279b69db09af5bb",
+          "before_line": 1635,
+          "after_line": 1635
+        },
+        "atomicWriteFile": {
+          "before": "92ddae6ecaf8173b0d3addcc574ce2fecc31b5ae1de6edfda47d1d1705b545a4",
+          "after": "92ddae6ecaf8173b0d3addcc574ce2fecc31b5ae1de6edfda47d1d1705b545a4",
+          "before_line": 1637,
+          "after_line": 1637
+        },
+        "RunArtifactHealth": {
+          "before": "6efba3e84f253bd72efd7dd86013840b91a2f40f2b0b523f09e53f124d26f11a",
+          "after": "6efba3e84f253bd72efd7dd86013840b91a2f40f2b0b523f09e53f124d26f11a",
+          "before_line": 1696,
+          "after_line": 1696
+        },
+        "newRunArtifactHealth": {
+          "before": "733d11f849c0dae9273871d3b8b641d1a21f14b3b5874b3dcb9a250a15c8934d",
+          "after": "733d11f849c0dae9273871d3b8b641d1a21f14b3b5874b3dcb9a250a15c8934d",
+          "before_line": 1718,
+          "after_line": 1718
+        },
+        "projectPlanMetaForReport": {
+          "before": "14ac22102407855d29bcba65046b3d99c6069833016597df4cb50edaeb37105b",
+          "after": "14ac22102407855d29bcba65046b3d99c6069833016597df4cb50edaeb37105b",
+          "before_line": 1757,
+          "after_line": 1757
+        },
+        "MAX_RECORDED_ARTIFACT_ERRORS": {
+          "before": "5b402a11482f72ed401e3d6a847bbf5610ae0df7d3541069f4eb47af04173609",
+          "after": "5b402a11482f72ed401e3d6a847bbf5610ae0df7d3541069f4eb47af04173609",
+          "before_line": 1765,
+          "after_line": 1765
+        },
+        "noteArtifactError": {
+          "before": "54654f2061a3b9a96463f8961c178d54a8ec9f0e7bda4ac62c75b8e54bfea9c2",
+          "after": "54654f2061a3b9a96463f8961c178d54a8ec9f0e7bda4ac62c75b8e54bfea9c2",
+          "before_line": 1773,
+          "after_line": 1773
+        },
+        "noteUnavailableDiff": {
+          "before": "f1ce8313e3a55b0f9524694ccd649fa2463cca4b557c9f071e0e97a8fa923fd7",
+          "after": "f1ce8313e3a55b0f9524694ccd649fa2463cca4b557c9f071e0e97a8fa923fd7",
+          "before_line": 1783,
+          "after_line": 1783
+        },
+        "mergeChain": {
+          "before": "db68c1cc1f7f070696174c1270961c654ee7bc5a0b285bda8c5e1323f93c0fbd",
+          "after": "db68c1cc1f7f070696174c1270961c654ee7bc5a0b285bda8c5e1323f93c0fbd",
+          "before_line": 1802,
+          "after_line": 1802
+        },
+        "integrationWorktree": {
+          "before": "2a83a83c0befc59e74dd5dce3093f2bdf0fbba093982d039e226a3e3ecca07cb",
+          "after": "2a83a83c0befc59e74dd5dce3093f2bdf0fbba093982d039e226a3e3ecca07cb",
+          "before_line": 1803,
+          "after_line": 1803
+        },
+        "withMergeLock": {
+          "before": "99b50ea236286834226d804c25485824a47e1fc3a88a3e8a066684e76d2b8754",
+          "after": "99b50ea236286834226d804c25485824a47e1fc3a88a3e8a066684e76d2b8754",
+          "before_line": 1805,
+          "after_line": 1805
+        },
+        "worktreeChain": {
+          "before": "6e8bb8050005dd81f49eca5c132c11087cce61550364bf23f3675f9d2f4dce28",
+          "after": "6e8bb8050005dd81f49eca5c132c11087cce61550364bf23f3675f9d2f4dce28",
+          "before_line": 1833,
+          "after_line": 1833
+        },
+        "CleanupOutcome": {
+          "before": "e5edf37f176894ef70ad39bcd5f1658909cb22ca5b6fc210fd0f2fe497b3ff4c",
+          "after": "e5edf37f176894ef70ad39bcd5f1658909cb22ca5b6fc210fd0f2fe497b3ff4c",
+          "before_line": 1884,
+          "after_line": 1946
+        },
+        "CLEANUP_ATTEMPTS": {
+          "before": "25b8eb08aa2068c2e5cd0b86c618185b7247dc8be040c1a6d23ab8f408d1f4ff",
+          "after": "25b8eb08aa2068c2e5cd0b86c618185b7247dc8be040c1a6d23ab8f408d1f4ff",
+          "before_line": 1889,
+          "after_line": 1951
+        },
+        "CLEANUP_DELAY_MS": {
+          "before": "72c7d70d38bb20aa9da8ed1cd9b7b6c5fb15d95f9ea99d6df3c9cbac0f2efbdf",
+          "after": "72c7d70d38bb20aa9da8ed1cd9b7b6c5fb15d95f9ea99d6df3c9cbac0f2efbdf",
+          "before_line": 1890,
+          "after_line": 1952
+        },
+        "samePath": {
+          "before": "2fcc9da9de1f903019eb0dedba7cc4914caa5b117d7119e76e8f7429e5bcdc74",
+          "after": "2fcc9da9de1f903019eb0dedba7cc4914caa5b117d7119e76e8f7429e5bcdc74",
+          "before_line": 1896,
+          "after_line": 1958
+        },
+        "stillRegistered": {
+          "before": "9f55fd15fba81f6041a2358c01681e59041e63bb11748fd025d9df1802004f0b",
+          "after": "9f55fd15fba81f6041a2358c01681e59041e63bb11748fd025d9df1802004f0b",
+          "before_line": 1917,
+          "after_line": 1979
+        },
+        "WorktreePathObservation": {
+          "before": "60f0a75009fa395d3c0ebfb132160c63da7b9e58d3ca0cb5e55ff2412bd2f026",
+          "after": "60f0a75009fa395d3c0ebfb132160c63da7b9e58d3ca0cb5e55ff2412bd2f026",
+          "before_line": 1930,
+          "after_line": 1992
+        },
+        "observeWorktreePath": {
+          "before": "035b517662b6b029acede5364e4e67cf66adeaebf0f272c0066c2fc72ab1108d",
+          "after": "035b517662b6b029acede5364e4e67cf66adeaebf0f272c0066c2fc72ab1108d",
+          "before_line": 1935,
+          "after_line": 1997
+        },
+        "deleteBranchVerified": {
+          "before": "c2c77af9163e6495760e923c4f177f1d0488288092984178027c33f832ba3f44",
+          "after": "c2c77af9163e6495760e923c4f177f1d0488288092984178027c33f832ba3f44",
+          "before_line": 2024,
+          "after_line": 2091
+        },
+        "runExitCode": {
+          "before": "27a7d349b972a2c023576a6faefd19d3b01648706a192c43b88e2597037e50be",
+          "after": "27a7d349b972a2c023576a6faefd19d3b01648706a192c43b88e2597037e50be",
+          "before_line": 2058,
+          "after_line": 2125
+        },
+        "cleanupFailures": {
+          "before": "302483c99abc4dd36aa541799d1c8ded24f50501f230cd8bc97e8b09464f2d41",
+          "after": "302483c99abc4dd36aa541799d1c8ded24f50501f230cd8bc97e8b09464f2d41",
+          "before_line": 2070,
+          "after_line": 2137
+        },
+        "cleanupReportLines": {
+          "before": "915d54968b7a67f0e2ab1b686380c0861b9c7392df94664b1cf17af05a3caa0f",
+          "after": "915d54968b7a67f0e2ab1b686380c0861b9c7392df94664b1cf17af05a3caa0f",
+          "before_line": 2088,
+          "after_line": 2155
+        },
+        "mutationSurvivalNote": {
+          "before": "12cc1bbcc9f29c3d6702fa3d8c72f072cc6d1bb8e3ce0ffdb72905c6d92a2a79",
+          "after": "12cc1bbcc9f29c3d6702fa3d8c72f072cc6d1bb8e3ce0ffdb72905c6d92a2a79",
+          "before_line": 2120,
+          "after_line": 2187
+        },
+        "RunTaskDeps": {
+          "before": "bec10f71970d930874c6f1764443c172180337d11d9d9ff18c24b015ebdfe7d9",
+          "after": "bec10f71970d930874c6f1764443c172180337d11d9d9ff18c24b015ebdfe7d9",
+          "before_line": 2132,
+          "after_line": 2199
+        },
+        "defaultRunTaskDeps": {
+          "before": "4cd95143e5fbee498b23b9801455f980cd5305c92bb804182644ac9aaf7cae3d",
+          "after": "4cd95143e5fbee498b23b9801455f980cd5305c92bb804182644ac9aaf7cae3d",
+          "before_line": 2145,
+          "after_line": 2212
+        },
+        "effectiveSampling": {
+          "before": "3bd80bc2a45184ba04ac41f344396ac415864e883752ed3f2b7f388fa819ed4f",
+          "after": "3bd80bc2a45184ba04ac41f344396ac415864e883752ed3f2b7f388fa819ed4f",
+          "before_line": 2161,
+          "after_line": 2228
+        },
+        "writeFilesInto": {
+          "before": "c8ae48014f01cc8d3789b725c499c311e3457c5736a919b825db9bb25d229e2c",
+          "after": "c8ae48014f01cc8d3789b725c499c311e3457c5736a919b825db9bb25d229e2c",
+          "before_line": 2183,
+          "after_line": 2250
+        },
+        "OutputAssessment": {
+          "before": "241e3c2d919963c9521c88c5d1cb30886b70f3f21d37a3b5379b5a68b4b147e6",
+          "after": "241e3c2d919963c9521c88c5d1cb30886b70f3f21d37a3b5379b5a68b4b147e6",
+          "before_line": 2199,
+          "after_line": 2266
+        },
+        "SampleOutcome": {
+          "before": "f33567f2109b6fe2a90c9195c559499b16c22805c52d7b136ae2b8b15c0ec928",
+          "after": "f33567f2109b6fe2a90c9195c559499b16c22805c52d7b136ae2b8b15c0ec928",
+          "before_line": 2206,
+          "after_line": 2273
+        },
+        "bestOfN": {
+          "before": "aa6a702871ee88054501bf732982a8961b3bc4d4c41f61182d12b46f37688708",
+          "after": "aa6a702871ee88054501bf732982a8961b3bc4d4c41f61182d12b46f37688708",
+          "before_line": 2222,
+          "after_line": 2289
+        },
+        "EvaluationContext": {
+          "before": "9bda16583b2e684f1685b71d4ddd6b007cbbe965493e23dc368e061878c2552b",
+          "after": "9bda16583b2e684f1685b71d4ddd6b007cbbe965493e23dc368e061878c2552b",
+          "before_line": 2372,
+          "after_line": 2439
+        },
+        "runTask": {
+          "before": "462ddd6e8e1f00f8c18420961ca5be4e8025782d0c2aa1bfcbc8da0d16fe3ca0",
+          "after": "462ddd6e8e1f00f8c18420961ca5be4e8025782d0c2aa1bfcbc8da0d16fe3ca0",
+          "before_line": 2388,
+          "after_line": 2455
+        },
+        "SAFE_TASK_ID": {
+          "before": "d4c2bf83cc06e641533f9818e35ec7490fe1b3a6a7dd85e690f4ddae0fcd7f83",
+          "after": "d4c2bf83cc06e641533f9818e35ec7490fe1b3a6a7dd85e690f4ddae0fcd7f83",
+          "before_line": 2833,
+          "after_line": 2900
+        },
+        "LOOPBACK_HOSTS": {
+          "before": "9db28ca519cff88a09d650ade7fdc74cb130dfcaa8d193d17683dda7a632efdb",
+          "after": "9db28ca519cff88a09d650ade7fdc74cb130dfcaa8d193d17683dda7a632efdb",
+          "before_line": 2847,
+          "after_line": 2914
+        },
+        "assertSecureBaseUrl": {
+          "before": "4a1c1c96471981ab6d85aecda92b656eb753710d7466c253abdfe0289cb0aa67",
+          "after": "4a1c1c96471981ab6d85aecda92b656eb753710d7466c253abdfe0289cb0aa67",
+          "before_line": 2849,
+          "after_line": 2916
+        },
+        "PlanFieldType": {
+          "before": "838b1160a0a3f968021fb7a4acf99c2792280898008b9f7df163d242d250101e",
+          "after": "838b1160a0a3f968021fb7a4acf99c2792280898008b9f7df163d242d250101e",
+          "before_line": 2890,
+          "after_line": 2957
+        },
+        "PlanObjectSpec": {
+          "before": "2fa058df4e51059459ce43d28b8b91d22c90d5296317c08c0e3d40e6034fc92d",
+          "after": "2fa058df4e51059459ce43d28b8b91d22c90d5296317c08c0e3d40e6034fc92d",
+          "before_line": 2891,
+          "after_line": 2958
+        },
+        "PLAN_SHAPE": {
+          "before": "1249d2cbd2f2cc595a8f643e8894aa15c4ebdc54fb9f86dfb5aa75233ee24144",
+          "after": "1249d2cbd2f2cc595a8f643e8894aa15c4ebdc54fb9f86dfb5aa75233ee24144",
+          "before_line": 2893,
+          "after_line": 2960
+        },
+        "PlanSpecName": {
+          "before": "01823b42a8a5eb6e309eee97ea5bb8470024469b8e391cd88b6a246c14e0af56",
+          "after": "01823b42a8a5eb6e309eee97ea5bb8470024469b8e391cd88b6a246c14e0af56",
+          "before_line": 2931,
+          "after_line": 2998
+        },
+        "PLAN_NON_EMPTY": {
+          "before": "eeabc141d8b2b95d283295fb0ee131c80fb0b103f0e40ff6feaa85441a1851f8",
+          "after": "eeabc141d8b2b95d283295fb0ee131c80fb0b103f0e40ff6feaa85441a1851f8",
+          "before_line": 2934,
+          "after_line": 3001
+        },
+        "PLAN_INT_MIN": {
+          "before": "d927a71ba8acac2195535e21013a96fcfd27b0ae433099029af9528d7fbd8b9c",
+          "after": "d927a71ba8acac2195535e21013a96fcfd27b0ae433099029af9528d7fbd8b9c",
+          "before_line": 2936,
+          "after_line": 3003
+        },
+        "PLAN_LABEL_MAX": {
+          "before": "7d3a057852f9a1724c40bc9e3c44a2469f0bc73f0c3bbd658ec2a89ce11e995f",
+          "after": "7d3a057852f9a1724c40bc9e3c44a2469f0bc73f0c3bbd658ec2a89ce11e995f",
+          "before_line": 2938,
+          "after_line": 3005
+        },
+        "clipLabel": {
+          "before": "e1e14358423a232bca736d0f26efbb9ad84b99d77ae3182982608f1d5fe68e87",
+          "after": "e1e14358423a232bca736d0f26efbb9ad84b99d77ae3182982608f1d5fe68e87",
+          "before_line": 2939,
+          "after_line": 3006
+        },
+        "jsonTypeName": {
+          "before": "bc6fe3c1a3040f09f3dde4e32b4b0a78df7e3185d17bf4aea1ccabde0aa8fd95",
+          "after": "bc6fe3c1a3040f09f3dde4e32b4b0a78df7e3185d17bf4aea1ccabde0aa8fd95",
+          "before_line": 2940,
+          "after_line": 3007
+        },
+        "isJsonObject": {
+          "before": "2c168479e519be9e2ddf7e82c3b359b4a352d96b317c3093cc502ef44e96fd5a",
+          "after": "2c168479e519be9e2ddf7e82c3b359b4a352d96b317c3093cc502ef44e96fd5a",
+          "before_line": 2941,
+          "after_line": 3008
+        },
+        "checkPlanField": {
+          "before": "f5b3e5aef4873080982407b504f86c08ef746d7017eed2ae48e2a9cd65e50ca6",
+          "after": "f5b3e5aef4873080982407b504f86c08ef746d7017eed2ae48e2a9cd65e50ca6",
+          "before_line": 2944,
+          "after_line": 3011
+        },
+        "checkPlanObject": {
+          "before": "533da5700e09fe65e209973f863ba9b38a0ca8762cecf46496710f17ebd8476a",
+          "after": "533da5700e09fe65e209973f863ba9b38a0ca8762cecf46496710f17ebd8476a",
+          "before_line": 2978,
+          "after_line": 3045
+        },
+        "parsePlan": {
+          "before": "2464e260adcee28b89ab2f7cf41958620019a195ea2dd6b9b603ab1186cc81db",
+          "after": "2464e260adcee28b89ab2f7cf41958620019a195ea2dd6b9b603ab1186cc81db",
+          "before_line": 3000,
+          "after_line": 3067
+        },
+        "validate": {
+          "before": "bd43d1ef96efcc4b05a7a5c3fcbad5e013b5cabb2147f9344648b177a5619dc7",
+          "after": "bd43d1ef96efcc4b05a7a5c3fcbad5e013b5cabb2147f9344648b177a5619dc7",
+          "before_line": 3005,
+          "after_line": 3072
+        },
+        "resolveConfig": {
+          "before": "c40aa08b4b4f332991144229265da2c11b60af2beb2b9ab6a9262376ee05b52c",
+          "after": "c40aa08b4b4f332991144229265da2c11b60af2beb2b9ab6a9262376ee05b52c",
+          "before_line": 3098,
+          "after_line": 3165
+        },
+        "EntitlementSkip": {
+          "before": "b76d0de37fbbaad786ce29ae8aa9b15c525e6cd8d1f97ea86854609db7e19537",
+          "after": "b76d0de37fbbaad786ce29ae8aa9b15c525e6cd8d1f97ea86854609db7e19537",
+          "before_line": 3132,
+          "after_line": 3199
+        },
+        "EntitlementScreen": {
+          "before": "3ea33245721f845c7e3fc9a05d2f96cb0431167fc2a635879d038ffb7c1b35fa",
+          "after": "3ea33245721f845c7e3fc9a05d2f96cb0431167fc2a635879d038ffb7c1b35fa",
+          "before_line": 3133,
+          "after_line": 3200
+        },
+        "EntitlementProbe": {
+          "before": "6f4f95f7ba396a95fe2c67a6cd53382ceb661487a47bc5a724b088b87ab96a18",
+          "after": "6f4f95f7ba396a95fe2c67a6cd53382ceb661487a47bc5a724b088b87ab96a18",
+          "before_line": 3134,
+          "after_line": 3201
+        },
+        "screenEntitlements": {
+          "before": "032c1fdf4ebbbed0562d7146cccf76e9f409367c4bad36e66d6d3e6788899576",
+          "after": "032c1fdf4ebbbed0562d7146cccf76e9f409367c4bad36e66d6d3e6788899576",
+          "before_line": 3136,
+          "after_line": 3203
+        },
+        "makeEntitlementProbe": {
+          "before": "a2caabc3f9a33c655d2ba9d6f79c088b9e72541f65ef4e882dc598299aa4b594",
+          "after": "a2caabc3f9a33c655d2ba9d6f79c088b9e72541f65ef4e882dc598299aa4b594",
+          "before_line": 3181,
+          "after_line": 3248
+        },
+        "runCanary": {
+          "before": "dca8f8eacf09efb8f0480896c4053b3abd6da9c42c2b576b16deffeed258ca3b",
+          "after": "dca8f8eacf09efb8f0480896c4053b3abd6da9c42c2b576b16deffeed258ca3b",
+          "before_line": 3208,
+          "after_line": 3275
+        },
+        "selectReadyTasks": {
+          "before": "55bfbde1277dba1050db5aa96c2f90d7500e98e5f5d8f983306eab33ae75017e",
+          "after": "55bfbde1277dba1050db5aa96c2f90d7500e98e5f5d8f983306eab33ae75017e",
+          "before_line": 3302,
+          "after_line": 3369
+        },
+        "writeReport": {
+          "before": "3693b2df15e2bd0f3af2fd20387a968e759d09e32430da37225e2f95a7ce6097",
+          "after": "3693b2df15e2bd0f3af2fd20387a968e759d09e32430da37225e2f95a7ce6097",
+          "before_line": 3684,
+          "after_line": 3752
+        },
+        "_thisFile": {
+          "before": "3163592c63f1edc005ce8d5424b34fa642046d54c413ebcd8b738f8b4ddb5652",
+          "after": "3163592c63f1edc005ce8d5424b34fa642046d54c413ebcd8b738f8b4ddb5652",
+          "before_line": 3846,
+          "after_line": 3914
+        },
+        "_entryFile": {
+          "before": "5dd2483d402e8221c7a2da11f4b3d9398f19683d760ac2131afc27c4fdf4ae0f",
+          "after": "5dd2483d402e8221c7a2da11f4b3d9398f19683d760ac2131afc27c4fdf4ae0f",
+          "before_line": 3847,
+          "after_line": 3915
+        }
+      },
+      "changed": {
+        "withWorktreeLock": {
+          "before": "409875f13379d466c209ea85347eaf5dbe23b0d23047edc931aaec3acd769413",
+          "after": "efe40b4cefb5f69d2208d57d4d7ad9571568c41d8a6dcb656eb3bc59029c4575",
+          "before_line": 1835,
+          "after_line": 1896
+        },
+        "prepareWorktree": {
+          "before": "43b24ee781119d9b7e8b4625582be837bca1719bed2193fbf1c5b0020304d662",
+          "after": "c169e9ae038cb58fba68ed85a03b2394729ec78d23e9140425305fe2271f512c",
+          "before_line": 1845,
+          "after_line": 1907
+        },
+        "removeWorktreeVerified": {
+          "before": "69362a0e878bfccd66227ec0042f2df3a99c825a604fac85d97c2e70dfdf5daa",
+          "after": "81a3c1200a7ca96f8656f3386c6fd8d2da334cf4a2c96463fa35baa6f4f301e6",
+          "before_line": 1953,
+          "after_line": 2015
+        },
+        "prepareEvaluationWorktree": {
+          "before": "ab45645ea288205e61ea284d8d1cb69b3d071ed4794a360faca326cded20f85f",
+          "after": "42a62e2d25f1034896e04c35c47277819fc2aa14d505e722c513c6b478103eeb",
+          "before_line": 2374,
+          "after_line": 2441
+        },
+        "main": {
+          "before": "80d68b9080c8b0560e799b72094800c5188d76508f34c082031bdda3f5987a29",
+          "after": "c4d2680171e78f75b894094f367e6d1ea92c7f5b664bad74590805b1d4dcda90",
+          "before_line": 3327,
+          "after_line": 3394
+        }
+      },
+      "added": [
+        "WorktreeLockOptions",
+        "withCommonWorktreeLock"
+      ],
+      "guarded_callbacks": {
+        "prepareWorktree": {
+          "before": [
+            "9d2149ec862e71846ba527357979cd83f399d5d3cd76070eccfb878075a4c709"
+          ],
+          "after": [
+            "9d2149ec862e71846ba527357979cd83f399d5d3cd76070eccfb878075a4c709"
+          ]
+        },
+        "removeWorktreeVerified": {
+          "before": [
+            "3fbc87dcdf08c6ba606eae5600ba6890eda9b02e71580b47ec09ffe665184a02"
+          ],
+          "after": [
+            "3fbc87dcdf08c6ba606eae5600ba6890eda9b02e71580b47ec09ffe665184a02"
+          ]
+        },
+        "prepareEvaluationWorktree": {
+          "before": [
+            "f218cc4f6f00c14e5ef5d01a3ad69c57b473fd5baa5a82a1bc0e41621d134266"
+          ],
+          "after": [
+            "f218cc4f6f00c14e5ef5d01a3ad69c57b473fd5baa5a82a1bc0e41621d134266"
+          ]
+        }
+      }
+    },
+    "plugins/ca/tools/farm.js": {
+      "before_sha256": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "after_sha256": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24",
+      "unchanged": {
+        "hash": {
+          "before": "1e39d1bba215cae14ba63e8a9cf33b6251103cb71e9346b9146f19c1fa973fef",
+          "after": "1e39d1bba215cae14ba63e8a9cf33b6251103cb71e9346b9146f19c1fa973fef",
+          "before_line": 8,
+          "after_line": 8
+        },
+        "safe": {
+          "before": "96346b3fd2053646d9cdfaa9348af8d51a10234ae455bc786b9d3c99bf0e9e65",
+          "after": "96346b3fd2053646d9cdfaa9348af8d51a10234ae455bc786b9d3c99bf0e9e65",
+          "before_line": 9,
+          "after_line": 9
+        },
+        "refIdentity": {
+          "before": "d72a8eb7fcf33ec85c9d4f19b5be8a8bb224add5a776000ff4e72f01fce795dc",
+          "after": "d72a8eb7fcf33ec85c9d4f19b5be8a8bb224add5a776000ff4e72f01fce795dc",
+          "before_line": 10,
+          "after_line": 10
+        },
+        "repositoryIdentity": {
+          "before": "cc1737015aa63da54c64cd80cdd025d9ae0346e9cb91ea3342e3e430886eab47",
+          "after": "cc1737015aa63da54c64cd80cdd025d9ae0346e9cb91ea3342e3e430886eab47",
+          "before_line": 16,
+          "after_line": 16
+        },
+        "createRunDirectory": {
+          "before": "a7d8c12d9619c5e2f00498ec44f53568ce4df72d54be7262e7de4ed9c8e8e3f0",
+          "after": "a7d8c12d9619c5e2f00498ec44f53568ce4df72d54be7262e7de4ed9c8e8e3f0",
+          "before_line": 21,
+          "after_line": 21
+        },
+        "durableWrite": {
+          "before": "f5ec9a77658670e421fe00e63468b72f2d99e9c5cc83c75b30da85261e122fe7",
+          "after": "f5ec9a77658670e421fe00e63468b72f2d99e9c5cc83c75b30da85261e122fe7",
+          "before_line": 33,
+          "after_line": 33
+        },
+        "writeEffect": {
+          "before": "633bb6b258851c2a26e25b3f2515e2f7024f453d0c8832f9eb9962c099340d07",
+          "after": "633bb6b258851c2a26e25b3f2515e2f7024f453d0c8832f9eb9962c099340d07",
+          "before_line": 44,
+          "after_line": 44
+        },
+        "validIdentity": {
+          "before": "de599fa60d581021c2b238e8a3a4e89ae60f2d5a8ad49fc9ae82df990877034a",
+          "after": "de599fa60d581021c2b238e8a3a4e89ae60f2d5a8ad49fc9ae82df990877034a",
+          "before_line": 51,
+          "after_line": 51
+        },
+        "same": {
+          "before": "74d00530b2d9b913e5685f16c08047be62f071851c0127cc779b86de1f82d67a",
+          "after": "74d00530b2d9b913e5685f16c08047be62f071851c0127cc779b86de1f82d67a",
+          "before_line": 54,
+          "after_line": 54
+        },
+        "readEffect": {
+          "before": "3bfe9451fbb8ef6d390e9e2e0d3096676a6ddf9deb59416153cb39b2ef58bd44",
+          "after": "3bfe9451fbb8ef6d390e9e2e0d3096676a6ddf9deb59416153cb39b2ef58bd44",
+          "before_line": 57,
+          "after_line": 57
+        },
+        "recoverReceipt": {
+          "before": "968ee3538e6fd700b33bb630e38a23c7690c71ee458effbaa4278e5a5a7079ee",
+          "after": "968ee3538e6fd700b33bb630e38a23c7690c71ee458effbaa4278e5a5a7079ee",
+          "before_line": 83,
+          "after_line": 83
+        },
+        "artifact_release_manifest_default": {
+          "before": "60bd63e15e69db62ecd59084da1eaf3d196badf68006fe981f0081a298a07c5b",
+          "after": "60bd63e15e69db62ecd59084da1eaf3d196badf68006fe981f0081a298a07c5b",
+          "before_line": 130,
+          "after_line": 130
+        },
+        "object": {
+          "before": "84d37791df8616b7cb073ed3b0e463f0b21127b7329c40e0e2fc0d10cda41576",
+          "after": "84d37791df8616b7cb073ed3b0e463f0b21127b7329c40e0e2fc0d10cda41576",
+          "before_line": 145,
+          "after_line": 145
+        },
+        "keys": {
+          "before": "c53587494998832606f1cba56c2faf8a621ef2edfdbb6be361bfebf3db35da78",
+          "after": "c53587494998832606f1cba56c2faf8a621ef2edfdbb6be361bfebf3db35da78",
+          "before_line": 148,
+          "after_line": 148
+        },
+        "digest": {
+          "before": "beea30b98d081cc305319df20c1e52320e7be82dc13f52d31b5182b5de5719c6",
+          "after": "beea30b98d081cc305319df20c1e52320e7be82dc13f52d31b5182b5de5719c6",
+          "before_line": 151,
+          "after_line": 151
+        },
+        "validateArtifactReleaseManifest": {
+          "before": "f517da9b218466e77be24219a7ee6eef47fe6e77b4a431e47ae63aa43b85b6c7",
+          "after": "f517da9b218466e77be24219a7ee6eef47fe6e77b4a431e47ae63aa43b85b6c7",
+          "before_line": 152,
+          "after_line": 152
+        },
+        "parseArtifactReleaseManifest": {
+          "before": "f86b12e448ce5bd14fab38b336b7bd117b85acf4c1b468b5a54a45d5bdc22c3e",
+          "after": "f86b12e448ce5bd14fab38b336b7bd117b85acf4c1b468b5a54a45d5bdc22c3e",
+          "before_line": 174,
+          "after_line": 174
+        },
+        "EXIT_TIMEOUT": {
+          "before": "b8b62d7478b945b1a815ab3939ba36dcd35c01ace9926a424213c202315e4dea",
+          "after": "b8b62d7478b945b1a815ab3939ba36dcd35c01ace9926a424213c202315e4dea",
+          "before_line": 207,
+          "after_line": 207
+        },
+        "EXIT_TIMEOUT_UNCLEAN": {
+          "before": "2c1920342371c69ca406d5b5a5ecd4f9bcf22246ed6897c4aa202064f9744b90",
+          "after": "2c1920342371c69ca406d5b5a5ecd4f9bcf22246ed6897c4aa202064f9744b90",
+          "before_line": 208,
+          "after_line": 208
+        },
+        "SHELL_OPTS": {
+          "before": "60d8f8c36671cb317a47b0fa5419ab265125ea6e0f13cbffc21fc3429d45ab8d",
+          "after": "60d8f8c36671cb317a47b0fa5419ab265125ea6e0f13cbffc21fc3429d45ab8d",
+          "before_line": 210,
+          "after_line": 210
+        },
+        "numEnv": {
+          "before": "e29e866c088770f8b8a03bab41b8d790a11e3a27f8696a371c92666498c6a86c",
+          "after": "e29e866c088770f8b8a03bab41b8d790a11e3a27f8696a371c92666498c6a86c",
+          "before_line": 211,
+          "after_line": 211
+        },
+        "GATE_TIMEOUT_MS": {
+          "before": "73f2530d8e2d496d7d9498d360d7a4df3c47dc0f12e93c3664218c506d11023c",
+          "after": "73f2530d8e2d496d7d9498d360d7a4df3c47dc0f12e93c3664218c506d11023c",
+          "before_line": 229,
+          "after_line": 229
+        },
+        "KILL_VERIFY_DEFAULT_MS": {
+          "before": "a37eca78525067af5c20af61fe1442060873790c174ee6715b36ad429ca7c0b6",
+          "after": "a37eca78525067af5c20af61fe1442060873790c174ee6715b36ad429ca7c0b6",
+          "before_line": 230,
+          "after_line": 230
+        },
+        "taskkillPath": {
+          "before": "b2deea23bcba71d5ba151d81e1ef9bd1ac7c7721d4866cba74cfee9a493400cc",
+          "after": "b2deea23bcba71d5ba151d81e1ef9bd1ac7c7721d4866cba74cfee9a493400cc",
+          "before_line": 231,
+          "after_line": 231
+        },
+        "pidPresent": {
+          "before": "9e8a1b3ef0eba5b8c3c3351ef0b4837ef61173ab68e29ca4d0ef9c26ae46bf65",
+          "after": "9e8a1b3ef0eba5b8c3c3351ef0b4837ef61173ab68e29ca4d0ef9c26ae46bf65",
+          "before_line": 235,
+          "after_line": 235
+        },
+        "waitUntilGone": {
+          "before": "94df19d5a35c403255a598b43c42e2b3bf1db7d5da94af7a69d8425c752589a8",
+          "after": "94df19d5a35c403255a598b43c42e2b3bf1db7d5da94af7a69d8425c752589a8",
+          "before_line": 243,
+          "after_line": 243
+        },
+        "awaitTaskkill": {
+          "before": "aeb0d7de42f422ed5aa7bd730e191ce2e148107bb338a1a3ef13595df2a249e4",
+          "after": "aeb0d7de42f422ed5aa7bd730e191ce2e148107bb338a1a3ef13595df2a249e4",
+          "before_line": 250,
+          "after_line": 250
+        },
+        "treeKill": {
+          "before": "c4b2c7b2145adb2e4aa57840069c82cefcc5a34b648d0afce28c9a7a73307237",
+          "after": "c4b2c7b2145adb2e4aa57840069c82cefcc5a34b648d0afce28c9a7a73307237",
+          "before_line": 281,
+          "after_line": 281
+        },
+        "scrubbedEnv": {
+          "before": "a09a682353c24a206bee3814bd643ebb7d43993e58066dff7280c0bc18370259",
+          "after": "a09a682353c24a206bee3814bd643ebb7d43993e58066dff7280c0bc18370259",
+          "before_line": 314,
+          "after_line": 314
+        },
+        "run": {
+          "before": "ff198427e93387823a18224fe9ec98624cf5c9fbb158cf843bffcde63c2fc8db",
+          "after": "ff198427e93387823a18224fe9ec98624cf5c9fbb158cf843bffcde63c2fc8db",
+          "before_line": 320,
+          "after_line": 320
+        },
+        "readWorktreeFile": {
+          "before": "a4bcd4cd16a331f9f631d320daa4c13811d493c2ee61b7803296563c78d2a216",
+          "after": "a4bcd4cd16a331f9f631d320daa4c13811d493c2ee61b7803296563c78d2a216",
+          "before_line": 376,
+          "after_line": 376
+        },
+        "SECRET_LINE": {
+          "before": "8631e4a2c62b470629f3408b40497b8b5eef3642ca2bb62a81020206893414e2",
+          "after": "8631e4a2c62b470629f3408b40497b8b5eef3642ca2bb62a81020206893414e2",
+          "before_line": 385,
+          "after_line": 385
+        },
+        "PEM_BEGIN": {
+          "before": "5bbff05754aa9be9eeb02d02c57205ebd24c8615fb861723717ae2757ab1f3d0",
+          "after": "5bbff05754aa9be9eeb02d02c57205ebd24c8615fb861723717ae2757ab1f3d0",
+          "before_line": 412,
+          "after_line": 412
+        },
+        "PEM_END": {
+          "before": "7c58849971af5b8d5e57c2adb3f3df436bb7e9e37f16e4d3c1db8fb78d19fade",
+          "after": "7c58849971af5b8d5e57c2adb3f3df436bb7e9e37f16e4d3c1db8fb78d19fade",
+          "before_line": 413,
+          "after_line": 413
+        },
+        "REDACTION_MARKER": {
+          "before": "39c5857d5ca779b8fabd93b90471267282680fc18c7b7cf9dbfa4e597d3e668e",
+          "after": "39c5857d5ca779b8fabd93b90471267282680fc18c7b7cf9dbfa4e597d3e668e",
+          "before_line": 414,
+          "after_line": 414
+        },
+        "SECRET_FILENAME_DENYLIST": {
+          "before": "9c91574a1645031b121661369b351d97f82e703089ac564131484b0db1a93985",
+          "after": "9c91574a1645031b121661369b351d97f82e703089ac564131484b0db1a93985",
+          "before_line": 415,
+          "after_line": 415
+        },
+        "isSecretBearingFilename": {
+          "before": "f438a69a9cfa826882662a4357c7469d90f26bd98f4a45fe67ce8c2cbdd7260b",
+          "after": "f438a69a9cfa826882662a4357c7469d90f26bd98f4a45fe67ce8c2cbdd7260b",
+          "before_line": 435,
+          "after_line": 435
+        },
+        "redactSecrets": {
+          "before": "2683943026d157510944506a3c7cf8ffb71ac2d8db75cf3879a8737db25b0c9a",
+          "after": "2683943026d157510944506a3c7cf8ffb71ac2d8db75cf3879a8737db25b0c9a",
+          "before_line": 439,
+          "after_line": 439
+        },
+        "UNSAFE_MESSAGE": {
+          "before": "a50d810286277d628d5d19c6b308949e9b1bf7bdee6bfc5282a69c4ed6ebc20a",
+          "after": "a50d810286277d628d5d19c6b308949e9b1bf7bdee6bfc5282a69c4ed6ebc20a",
+          "before_line": 463,
+          "after_line": 463
+        },
+        "UnsafeWorktreePathError": {
+          "before": "c57d6b8d0e63fa9259895c7ad110743722018be58d99f14e1be810422fccddd9",
+          "after": "c57d6b8d0e63fa9259895c7ad110743722018be58d99f14e1be810422fccddd9",
+          "before_line": 464,
+          "after_line": 464
+        },
+        "isUnsafeWorktreePathError": {
+          "before": "4cee9be93e75e09d5544743b5d2fe6fb53f4dc501e7bf157873b1879c8ea6e8e",
+          "after": "4cee9be93e75e09d5544743b5d2fe6fb53f4dc501e7bf157873b1879c8ea6e8e",
+          "before_line": 470,
+          "after_line": 470
+        },
+        "unsafe": {
+          "before": "5c18867047de163d945c8f176ca56e087ca164a5d8ce34d3a1cff0fa86d55742",
+          "after": "5c18867047de163d945c8f176ca56e087ca164a5d8ce34d3a1cff0fa86d55742",
+          "before_line": 473,
+          "after_line": 473
+        },
+        "isMissing": {
+          "before": "780e1d3a0ea88965dc3345a0ee0d06cdb41c8393f26e98d3711d31158d2ffe4d",
+          "after": "780e1d3a0ea88965dc3345a0ee0d06cdb41c8393f26e98d3711d31158d2ffe4d",
+          "before_line": 476,
+          "after_line": 476
+        },
+        "contained": {
+          "before": "834dacf18110f1e1457eba17ca940674ec3c51b2f4580d86f0e0567ed8f70def",
+          "after": "834dacf18110f1e1457eba17ca940674ec3c51b2f4580d86f0e0567ed8f70def",
+          "before_line": 479,
+          "after_line": 479
+        },
+        "canonicalizeAncestors": {
+          "before": "45ff5c4bb4f3952c43ae2887c173104c8847bc3a4c82fee26d80478af2748925",
+          "after": "45ff5c4bb4f3952c43ae2887c173104c8847bc3a4c82fee26d80478af2748925",
+          "before_line": 483,
+          "after_line": 483
+        },
+        "sameFile": {
+          "before": "ad42a9670d1e3413630ea9e6410a6259de03d2eaad3c37a37aa8bb02cd8f7ae2",
+          "after": "ad42a9670d1e3413630ea9e6410a6259de03d2eaad3c37a37aa8bb02cd8f7ae2",
+          "before_line": 501,
+          "after_line": 501
+        },
+        "safeRegularFile": {
+          "before": "9acc353a78c92a907967f490c539888033005a523aafdef36e2a518aca371732",
+          "after": "9acc353a78c92a907967f490c539888033005a523aafdef36e2a518aca371732",
+          "before_line": 504,
+          "after_line": 504
+        },
+        "writeWorktreeFile": {
+          "before": "227cd97a6c2df51eb4a381f898cbcf2d2889814d1bdaba69e98f01ee884d4043",
+          "after": "227cd97a6c2df51eb4a381f898cbcf2d2889814d1bdaba69e98f01ee884d4043",
+          "before_line": 507,
+          "after_line": 507
+        },
+        "MUT": {
+          "before": "4f0cb73a908302d0b0c6ae01f0866b89dddfca7001deb2ccacaed536034ececf",
+          "after": "4f0cb73a908302d0b0c6ae01f0866b89dddfca7001deb2ccacaed536034ececf",
+          "before_line": 588,
+          "after_line": 588
+        },
+        "commentStyle": {
+          "before": "d3bb727f213f3d29db35e55ed619a215edc29f290a10010463318c14594e23a2",
+          "after": "d3bb727f213f3d29db35e55ed619a215edc29f290a10010463318c14594e23a2",
+          "before_line": 600,
+          "after_line": 600
+        },
+        "literalAtoms": {
+          "before": "0fa3e591ec64d89ee5a04bda2ea8007c50a3fb10585ed302a5d0d3dfe8418270",
+          "after": "0fa3e591ec64d89ee5a04bda2ea8007c50a3fb10585ed302a5d0d3dfe8418270",
+          "before_line": 604,
+          "after_line": 604
+        },
+        "extractLiterals": {
+          "before": "b82d5a5512ceebd2f5f9468be99bc811156d1807631b34da93779a207953bdf0",
+          "after": "b82d5a5512ceebd2f5f9468be99bc811156d1807631b34da93779a207953bdf0",
+          "before_line": 682,
+          "after_line": 682
+        },
+        "codeLineCount": {
+          "before": "fb4753869326c4092972a2e314fddb72dd4fb36aee693258aa95e8f3a1c5984f",
+          "after": "fb4753869326c4092972a2e314fddb72dd4fb36aee693258aa95e8f3a1c5984f",
+          "before_line": 685,
+          "after_line": 685
+        },
+        "antiGamingCheck": {
+          "before": "6bf96bdf43fdd3185f2fa8b969233e2c11b730c308982060141a5d9e0ff7d11f",
+          "after": "6bf96bdf43fdd3185f2fa8b969233e2c11b730c308982060141a5d9e0ff7d11f",
+          "before_line": 688,
+          "after_line": 688
+        },
+        "shuffle": {
+          "before": "03db46d7bea263bf2a11d89fd1e02cc1cedac5c593e0260471f64eae66941bab",
+          "after": "03db46d7bea263bf2a11d89fd1e02cc1cedac5c593e0260471f64eae66941bab",
+          "before_line": 712,
+          "after_line": 712
+        },
+        "generateMutants": {
+          "before": "a13c66f7810b65d9458c4c62d76794fb5adde6ca850a77dc5dfaef8c3e34d9c6",
+          "after": "a13c66f7810b65d9458c4c62d76794fb5adde6ca850a77dc5dfaef8c3e34d9c6",
+          "before_line": 719,
+          "after_line": 719
+        },
+        "parseMutationHookOutput": {
+          "before": "9c63d2f9e614510a95a2eaef84dcbb797025148c356bb35d8dbfb35cfbe7b4d3",
+          "after": "9c63d2f9e614510a95a2eaef84dcbb797025148c356bb35d8dbfb35cfbe7b4d3",
+          "before_line": 762,
+          "after_line": 762
+        },
+        "interpretMutationHookResult": {
+          "before": "261086261221deb800eea60172293b1520f9a80428937d99bae706112bb9aaee",
+          "after": "261086261221deb800eea60172293b1520f9a80428937d99bae706112bb9aaee",
+          "before_line": 786,
+          "after_line": 786
+        },
+        "DEFAULT_API_BASE_URL": {
+          "before": "e7f2c6d181c8a7035a46b97921a9fa75393c92fc54a790e487399b8201a46e6e",
+          "after": "e7f2c6d181c8a7035a46b97921a9fa75393c92fc54a790e487399b8201a46e6e",
+          "before_line": 930,
+          "after_line": 930
+        },
+        "effectContext": {
+          "before": "590007f91f0181c25de0553b103c45463d6b7e973ea729b6a5147d5645289c8d",
+          "after": "590007f91f0181c25de0553b103c45463d6b7e973ea729b6a5147d5645289c8d",
+          "before_line": 931,
+          "after_line": 931
+        },
+        "taskEffects": {
+          "before": "333078bcae0b4046c62253b1bbd2c4ea933e974583d13053b0c5e2b53e6e2589",
+          "after": "333078bcae0b4046c62253b1bbd2c4ea933e974583d13053b0c5e2b53e6e2589",
+          "before_line": 932,
+          "after_line": 932
+        },
+        "ENV": {
+          "before": "d361ebdd5991b8fc59cc4c49972b6ceb48d9cc994ac73818aac58a2e1a0aa2bc",
+          "after": "d361ebdd5991b8fc59cc4c49972b6ceb48d9cc994ac73818aac58a2e1a0aa2bc",
+          "before_line": 933,
+          "after_line": 933
+        },
+        "git": {
+          "before": "354470d67b5e013761a475f650415a28e0829a94d25d09524c80f9a1d0c7cdaf",
+          "after": "354470d67b5e013761a475f650415a28e0829a94d25d09524c80f9a1d0c7cdaf",
+          "before_line": 983,
+          "after_line": 983
+        },
+        "sleep": {
+          "before": "77109b3eee1d0e1c2569ac950d601484193f90b8997e1cf7b1d653cb3be72c58",
+          "after": "77109b3eee1d0e1c2569ac950d601484193f90b8997e1cf7b1d653cb3be72c58",
+          "before_line": 984,
+          "after_line": 984
+        },
+        "ARTIFACT_PROTOCOL": {
+          "before": "07ab979794d654de2456848c3b162ce5847a832e997cf588d9b5ec47fcf3fdc1",
+          "after": "07ab979794d654de2456848c3b162ce5847a832e997cf588d9b5ec47fcf3fdc1",
+          "before_line": 985,
+          "after_line": 985
+        },
+        "ARTIFACT_SCHEMA_VERSION": {
+          "before": "2e6d11a6dd9116db3005af41f32ebcb348624aa8523e8bbf1e227c00d2202542",
+          "after": "2e6d11a6dd9116db3005af41f32ebcb348624aa8523e8bbf1e227c00d2202542",
+          "before_line": 986,
+          "after_line": 986
+        },
+        "ARTIFACT_RELEASE_FORMAT": {
+          "before": "de889475531d1641ccdecaa93a7f442c9ba923656f3df8eed7a3c50ee2e26e93",
+          "after": "de889475531d1641ccdecaa93a7f442c9ba923656f3df8eed7a3c50ee2e26e93",
+          "before_line": 987,
+          "after_line": 987
+        },
+        "ARTIFACT_MAX_RESPONSE": {
+          "before": "dee5d8f80cfab58cff2c521f3be4179b4562213e889b57de19cac15b31ac8770",
+          "after": "dee5d8f80cfab58cff2c521f3be4179b4562213e889b57de19cac15b31ac8770",
+          "before_line": 988,
+          "after_line": 988
+        },
+        "artifactPlatform": {
+          "before": "d7c37ea7f8ec2a79187a431e57c0499d8df7191d84866f2943a052c402954312",
+          "after": "d7c37ea7f8ec2a79187a431e57c0499d8df7191d84866f2943a052c402954312",
+          "before_line": 989,
+          "after_line": 989
+        },
+        "exactKeys": {
+          "before": "ccb22202db32c0a638676f51dec86e9207ef3579a7db4d8e1d8bf67f94f18618",
+          "after": "ccb22202db32c0a638676f51dec86e9207ef3579a7db4d8e1d8bf67f94f18618",
+          "before_line": 999,
+          "after_line": 999
+        },
+        "sameArtifactPath": {
+          "before": "ce9d8e68e51a491aa30f20c434fab16b25ca5eb3d6c8979da59661e3b1046b18",
+          "after": "ce9d8e68e51a491aa30f20c434fab16b25ca5eb3d6c8979da59661e3b1046b18",
+          "before_line": 1000,
+          "after_line": 1000
+        },
+        "trustedInstallationDirectory": {
+          "before": "2a4b4eb836fa9b06fa256e423735362f4688b901b28024c9e1344546730abfe1",
+          "after": "2a4b4eb836fa9b06fa256e423735362f4688b901b28024c9e1344546730abfe1",
+          "before_line": 1001,
+          "after_line": 1001
+        },
+        "pinnedRegular": {
+          "before": "e38aab26ab598a97fe5c22a31a3255c12a1b431409d1cfef714d9ab43730e559",
+          "after": "e38aab26ab598a97fe5c22a31a3255c12a1b431409d1cfef714d9ab43730e559",
+          "before_line": 1017,
+          "after_line": 1017
+        },
+        "installedArtifactBinary": {
+          "before": "47c4b8df01ceee7243ca8a560f5ad2dfb72e6e56e40b2ab2b95210084968794f",
+          "after": "47c4b8df01ceee7243ca8a560f5ad2dfb72e6e56e40b2ab2b95210084968794f",
+          "before_line": 1031,
+          "after_line": 1031
+        },
+        "WINDOWS_PIN_GUARD": {
+          "before": "9c989177e6c5d6526534eae363f8dd8240c69a63b5deff08cb0d61d117b0cc52",
+          "after": "9c989177e6c5d6526534eae363f8dd8240c69a63b5deff08cb0d61d117b0cc52",
+          "before_line": 1074,
+          "after_line": 1074
+        },
+        "WINDOWS_PIN_READY_TIMEOUT_MS": {
+          "before": "15dc35df02752bd085de08acf2c99dd518c2f9630a55075d6fd9388088997527",
+          "after": "15dc35df02752bd085de08acf2c99dd518c2f9630a55075d6fd9388088997527",
+          "before_line": 1089,
+          "after_line": 1089
+        },
+        "WINDOWS_PIN_CLOSE_TIMEOUT_MS": {
+          "before": "0e99157402985b309a79b487bd4394564353c5409cd25710840ce31ceb20808f",
+          "after": "0e99157402985b309a79b487bd4394564353c5409cd25710840ce31ceb20808f",
+          "before_line": 1090,
+          "after_line": 1090
+        },
+        "waitForChildClose": {
+          "before": "12b5e7719a8cd411162cdad6406ee955e5a6064c1c48585300711844c280a1fc",
+          "after": "12b5e7719a8cd411162cdad6406ee955e5a6064c1c48585300711844c280a1fc",
+          "before_line": 1091,
+          "after_line": 1091
+        },
+        "releaseWindowsPinGuard": {
+          "before": "ed81dad0f2f85562c4992358b4692aafde956c6f8407ecd530ecb9b50d88702a",
+          "after": "ed81dad0f2f85562c4992358b4692aafde956c6f8407ecd530ecb9b50d88702a",
+          "before_line": 1115,
+          "after_line": 1115
+        },
+        "windowsPinGuard": {
+          "before": "c22f5d0a095240ca9211d89a401ac65f74c5c8e821cc6c8fe0312e26f492d013",
+          "after": "c22f5d0a095240ca9211d89a401ac65f74c5c8e821cc6c8fe0312e26f492d013",
+          "before_line": 1126,
+          "after_line": 1126
+        },
+        "runPinnedArtifact": {
+          "before": "66398b34ab76eb0b432de58ea20db63a60152822a18037d428b509fedb66743b",
+          "after": "66398b34ab76eb0b432de58ea20db63a60152822a18037d428b509fedb66743b",
+          "before_line": 1165,
+          "after_line": 1165
+        },
+        "artifactResult": {
+          "before": "fcb96ef5b4708bb1fd2332feb826f2064f0db2fb2a5ddfc76ff0e67b88c68b2e",
+          "after": "fcb96ef5b4708bb1fd2332feb826f2064f0db2fb2a5ddfc76ff0e67b88c68b2e",
+          "before_line": 1226,
+          "after_line": 1226
+        },
+        "verifyFarmArtifactBoundary": {
+          "before": "6962f9e2b3b8d378a39cd4a8302a54c65050cd1712f38a7cf888fb2f9a584c92",
+          "after": "6962f9e2b3b8d378a39cd4a8302a54c65050cd1712f38a7cf888fb2f9a584c92",
+          "before_line": 1249,
+          "after_line": 1249
+        },
+        "createLimiter": {
+          "before": "5d5c0ca7a91672393ffd8ebfcace42c44adbb86789006497790d76143a426c3e",
+          "after": "5d5c0ca7a91672393ffd8ebfcace42c44adbb86789006497790d76143a426c3e",
+          "before_line": 1290,
+          "after_line": 1290
+        },
+        "workerLimit": {
+          "before": "176bfdcb03f4c1f8f72e858d38d555dc27eafc3bc086a698b6b0eaf623e90410",
+          "after": "176bfdcb03f4c1f8f72e858d38d555dc27eafc3bc086a698b6b0eaf623e90410",
+          "before_line": 1320,
+          "after_line": 1320
+        },
+        "NOSIGN": {
+          "before": "4051b7037ba991f00d0da8ef492a62ad0ebafa5149ef4d0a2aedccc4299f1e80",
+          "after": "4051b7037ba991f00d0da8ef492a62ad0ebafa5149ef4d0a2aedccc4299f1e80",
+          "before_line": 1321,
+          "after_line": 1321
+        },
+        "isInside": {
+          "before": "a4997085dd0d73cfecbce1f423bf449cc0ac409a99393d28c0d4fae087150c74",
+          "after": "a4997085dd0d73cfecbce1f423bf449cc0ac409a99393d28c0d4fae087150c74",
+          "before_line": 1322,
+          "after_line": 1322
+        },
+        "repoTopLevel": {
+          "before": "544fc97933f2f537434e0de517edcccfc60c35bbfb23f31b5e8a7d440a9eff6f",
+          "after": "544fc97933f2f537434e0de517edcccfc60c35bbfb23f31b5e8a7d440a9eff6f",
+          "before_line": 1326,
+          "after_line": 1326
+        },
+        "canonicalize": {
+          "before": "f67d64c648c868875d2fb8beeebe5c92355a47fd3645fccfeb4ce46256f04e98",
+          "after": "f67d64c648c868875d2fb8beeebe5c92355a47fd3645fccfeb4ce46256f04e98",
+          "before_line": 1338,
+          "after_line": 1338
+        },
+        "validateWorktreeRoot": {
+          "before": "03ef2ea9e34d8f59d3841d830ed86dee813ad58c101f7fe016b6f0577787b730",
+          "after": "03ef2ea9e34d8f59d3841d830ed86dee813ad58c101f7fe016b6f0577787b730",
+          "before_line": 1359,
+          "after_line": 1359
+        },
+        "_allowedWorktreeRoot": {
+          "before": "f0ca8ddf6147172c1935725348c1607a36f7e37613c617c5aa3c948b904638a9",
+          "after": "f0ca8ddf6147172c1935725348c1607a36f7e37613c617c5aa3c948b904638a9",
+          "before_line": 1367,
+          "after_line": 1367
+        },
+        "allowedWorktreeRoot": {
+          "before": "1e436f02f71c586504426b2b4668a7ad05d99c01b7a8f86d79849e41275df140",
+          "after": "1e436f02f71c586504426b2b4668a7ad05d99c01b7a8f86d79849e41275df140",
+          "before_line": 1368,
+          "after_line": 1368
+        },
+        "_resetAllowedWorktreeRoot": {
+          "before": "1224d7ecec9547e15c17504fe05119ffdd5400d8fd47369663f022061e49acb2",
+          "after": "1224d7ecec9547e15c17504fe05119ffdd5400d8fd47369663f022061e49acb2",
+          "before_line": 1377,
+          "after_line": 1377
+        },
+        "assertContainedWorktree": {
+          "before": "e2d896db0d6f531b3ade6e65868c5b0d8c6827c7be8bdc9bbeb2b07d6adbd978",
+          "after": "e2d896db0d6f531b3ade6e65868c5b0d8c6827c7be8bdc9bbeb2b07d6adbd978",
+          "before_line": 1380,
+          "after_line": 1380
+        },
+        "runGate": {
+          "before": "9850ca1f3fa4487f224327e8b493e015be1d14bb836aff8c73c4c4a7a01de15b",
+          "after": "9850ca1f3fa4487f224327e8b493e015be1d14bb836aff8c73c4c4a7a01de15b",
+          "before_line": 1389,
+          "after_line": 1389
+        },
+        "renderInjectedFile": {
+          "before": "5c191839879f048cd8666a9c259f9e2ee9b262e6909c38c62fac8c5bab538f34",
+          "after": "5c191839879f048cd8666a9c259f9e2ee9b262e6909c38c62fac8c5bab538f34",
+          "before_line": 1405,
+          "after_line": 1405
+        },
+        "TRUNCATION_MARKER": {
+          "before": "8bc8e0d25e371eea0ae5d76a1c8f9102f8e4add1b4904cb457c9e50bf771d8ae",
+          "after": "8bc8e0d25e371eea0ae5d76a1c8f9102f8e4add1b4904cb457c9e50bf771d8ae",
+          "before_line": 1410,
+          "after_line": 1410
+        },
+        "CURRENT_CONTEXT": {
+          "before": "a9cbc878a5332db5ff3aacdd57023285348d569ee0f7b15fbab050f57fa03812",
+          "after": "a9cbc878a5332db5ff3aacdd57023285348d569ee0f7b15fbab050f57fa03812",
+          "before_line": 1411,
+          "after_line": 1411
+        },
+        "PRIOR_CONTEXT": {
+          "before": "481dde3de47de1a0671c8c622dad11f156ef505853c03c7ccf56dc9669bdf4b6",
+          "after": "481dde3de47de1a0671c8c622dad11f156ef505853c03c7ccf56dc9669bdf4b6",
+          "before_line": 1412,
+          "after_line": 1412
+        },
+        "utf8Prefix": {
+          "before": "aea20fc305952a0546190870a4e6e9efb137d4bdb1cc1dbd6754aa2ff3034218",
+          "after": "aea20fc305952a0546190870a4e6e9efb137d4bdb1cc1dbd6754aa2ff3034218",
+          "before_line": 1413,
+          "after_line": 1413
+        },
+        "capInjected": {
+          "before": "4da039255a1f268aa7ac20c8eea0f444d26a4f1fcf94120f78804e4ed2eab8b3",
+          "after": "4da039255a1f268aa7ac20c8eea0f444d26a4f1fcf94120f78804e4ed2eab8b3",
+          "before_line": 1419,
+          "after_line": 1419
+        },
+        "buildEnrichment": {
+          "before": "4945a5bc9858c9ce22db2a3e059069482a091337f33e500134ccf54a7b0531c8",
+          "after": "4945a5bc9858c9ce22db2a3e059069482a091337f33e500134ccf54a7b0531c8",
+          "before_line": 1456,
+          "after_line": 1456
+        },
+        "captureInScope": {
+          "before": "200e5c35d42f756cb072ed13a77bb2690dfa952750df5de7acd797494355fdf6",
+          "after": "200e5c35d42f756cb072ed13a77bb2690dfa952750df5de7acd797494355fdf6",
+          "before_line": 1485,
+          "after_line": 1485
+        },
+        "buildPrompt": {
+          "before": "40855bf0ecddb858035ec9b0c1e498a56df4707006cea8c5b52274f1855d6858",
+          "after": "40855bf0ecddb858035ec9b0c1e498a56df4707006cea8c5b52274f1855d6858",
+          "before_line": 1498,
+          "after_line": 1498
+        },
+        "extractFileBlocks": {
+          "before": "8e25a80cd338b5382bd14ea1ccf1a0201301e7d0de64f673817be04cf1ad8bee",
+          "after": "8e25a80cd338b5382bd14ea1ccf1a0201301e7d0de64f673817be04cf1ad8bee",
+          "before_line": 1537,
+          "after_line": 1537
+        },
+        "diagnosticApiOrigin": {
+          "before": "e71e81ec2a32d292bfb756751124015705c77e932b5260725f06d136b554b1c9",
+          "after": "e71e81ec2a32d292bfb756751124015705c77e932b5260725f06d136b554b1c9",
+          "before_line": 1571,
+          "after_line": 1571
+        },
+        "reportedUsage": {
+          "before": "a2050c23634fc2159f966d67b446f87390d45ba4d749f9d50eb0faeeee2f3fe5",
+          "after": "a2050c23634fc2159f966d67b446f87390d45ba4d749f9d50eb0faeeee2f3fe5",
+          "before_line": 1578,
+          "after_line": 1578
+        },
+        "parseChatCompletion": {
+          "before": "326fd87e9950f8fe5f8186b79c1cc993666fd2a7e460989e30e7a33913cb26dd",
+          "after": "326fd87e9950f8fe5f8186b79c1cc993666fd2a7e460989e30e7a33913cb26dd",
+          "before_line": 1588,
+          "after_line": 1588
+        },
+        "readSampling": {
+          "before": "25aa08646fcc3e457b94820077816c8f2dbff1cba110313a77efe376d5e80fdc",
+          "after": "25aa08646fcc3e457b94820077816c8f2dbff1cba110313a77efe376d5e80fdc",
+          "before_line": 1627,
+          "after_line": 1627
+        },
+        "buildChatBody": {
+          "before": "8356b7eaf8f7d9d064137bad4c0f708123115e6cd9f4c71ac74cd990ec2d5e9a",
+          "after": "8356b7eaf8f7d9d064137bad4c0f708123115e6cd9f4c71ac74cd990ec2d5e9a",
+          "before_line": 1633,
+          "after_line": 1633
+        },
+        "MAX_API_TIMER_MS": {
+          "before": "4786035b291935d5bbc536348a86338ea5ae452016e0f0120ee9b5301e1ee8ab",
+          "after": "4786035b291935d5bbc536348a86338ea5ae452016e0f0120ee9b5301e1ee8ab",
+          "before_line": 1638,
+          "after_line": 1638
+        },
+        "HTTP_MONTHS": {
+          "before": "f24bee78724a0aec3823a56968b261a9197481d27586879374a4b2ea3b75cdae",
+          "after": "f24bee78724a0aec3823a56968b261a9197481d27586879374a4b2ea3b75cdae",
+          "before_line": 1639,
+          "after_line": 1639
+        },
+        "HTTP_DAYS": {
+          "before": "7e330bb4ff1c4b7fdb0c63a0d82460e11c60ca6e022969066e1c24c84306f4a2",
+          "after": "7e330bb4ff1c4b7fdb0c63a0d82460e11c60ca6e022969066e1c24c84306f4a2",
+          "before_line": 1640,
+          "after_line": 1640
+        },
+        "httpDateMillis": {
+          "before": "3889994951c1dfdb24a4c082558889c797c49e2f9bfc0cdc2d96ffcd5d1dbc2f",
+          "after": "3889994951c1dfdb24a4c082558889c797c49e2f9bfc0cdc2d96ffcd5d1dbc2f",
+          "before_line": 1641,
+          "after_line": 1641
+        },
+        "apiRetryDelay": {
+          "before": "49d04bb944651167597c9ee905be9e1f44cc012153b2604dcab6a498d0f9f37f",
+          "after": "49d04bb944651167597c9ee905be9e1f44cc012153b2604dcab6a498d0f9f37f",
+          "before_line": 1668,
+          "after_line": 1668
+        },
+        "callApi": {
+          "before": "3626204eab30a366c9ff6437ca3cfba9300e8d7b0d9f298835304d875b306332",
+          "after": "3626204eab30a366c9ff6437ca3cfba9300e8d7b0d9f298835304d875b306332",
+          "before_line": 1684,
+          "after_line": 1684
+        },
+        "runWorker": {
+          "before": "2a2bd86446b1c32752219c8a51839272239cb3ca243e9222419d1b38e5bb2862",
+          "after": "2a2bd86446b1c32752219c8a51839272239cb3ca243e9222419d1b38e5bb2862",
+          "before_line": 1742,
+          "after_line": 1742
+        },
+        "httpWorker": {
+          "before": "933a6a36ec0fe62366bb62d458b174afae08e0a12edb76f5dd3ae6be5cf6b366",
+          "after": "933a6a36ec0fe62366bb62d458b174afae08e0a12edb76f5dd3ae6be5cf6b366",
+          "before_line": 1785,
+          "after_line": 1785
+        },
+        "DriftUnavailable": {
+          "before": "5eeee066538c82c40e529d4086c5676e885ab9bfe11b4130a7001811e600e67c",
+          "after": "5eeee066538c82c40e529d4086c5676e885ab9bfe11b4130a7001811e600e67c",
+          "before_line": 1788,
+          "after_line": 1788
+        },
+        "checkDrift": {
+          "before": "fc55406f2792249c94af931b158b2e6ddb7e1a48c73075786d965cc1d84c1902",
+          "after": "fc55406f2792249c94af931b158b2e6ddb7e1a48c73075786d965cc1d84c1902",
+          "before_line": 1798,
+          "after_line": 1798
+        },
+        "postApplySweep": {
+          "before": "2a8201ce325acb96790d7995984299c0ae3065295a962d903752fbf518cf38cb",
+          "after": "2a8201ce325acb96790d7995984299c0ae3065295a962d903752fbf518cf38cb",
+          "before_line": 1812,
+          "after_line": 1812
+        },
+        "fileHash": {
+          "before": "fba1e9dbccaa15995c233b4e7238db7ecacc4aa57108a8434ce4670f3f1655b8",
+          "after": "fba1e9dbccaa15995c233b4e7238db7ecacc4aa57108a8434ce4670f3f1655b8",
+          "before_line": 1825,
+          "after_line": 1825
+        },
+        "resetWorktree": {
+          "before": "3d9868ab94796526c5af3b99e9447e00b56f6bfcc4646ace910ea904da3a17dd",
+          "after": "3d9868ab94796526c5af3b99e9447e00b56f6bfcc4646ace910ea904da3a17dd",
+          "before_line": 1833,
+          "after_line": 1833
+        },
+        "gateFailureFields": {
+          "before": "c4c4fdd47f9b0fbde5b8e8622c6d545f5ce69f977e98ee5a4e62d1422b626a6c",
+          "after": "c4c4fdd47f9b0fbde5b8e8622c6d545f5ce69f977e98ee5a4e62d1422b626a6c",
+          "before_line": 1840,
+          "after_line": 1840
+        },
+        "setupFingerprint": {
+          "before": "2adc6374c8a07ff0c9a0b329b71b572b2c2fc0976a3e8d5d72af137551b40c77",
+          "after": "2adc6374c8a07ff0c9a0b329b71b572b2c2fc0976a3e8d5d72af137551b40c77",
+          "before_line": 1852,
+          "after_line": 1852
+        },
+        "runSetupPhases": {
+          "before": "f8504d310bbfc977a2be1141f94ff023e31ccca7d8f9203d2e927ef81c951b47",
+          "after": "f8504d310bbfc977a2be1141f94ff023e31ccca7d8f9203d2e927ef81c951b47",
+          "before_line": 1858,
+          "after_line": 1858
+        },
+        "mintRunId": {
+          "before": "58a6796abd99606a457a23d47dd4c71d6684f3ffaca109f3ace111d1e4260589",
+          "after": "58a6796abd99606a457a23d47dd4c71d6684f3ffaca109f3ace111d1e4260589",
+          "before_line": 1882,
+          "after_line": 1882
+        },
+        "msgOf": {
+          "before": "ef08f450c3633fad13a9867ea6af9e816fd3d2e82d58d8c70931d4e1dd4f6010",
+          "after": "ef08f450c3633fad13a9867ea6af9e816fd3d2e82d58d8c70931d4e1dd4f6010",
+          "before_line": 1885,
+          "after_line": 1885
+        },
+        "SAFE_RUN_ID": {
+          "before": "bc8e790c2dde361413458a3420bfaa9ec4ab12e7265bcdfeccaa25e58effd5b0",
+          "after": "bc8e790c2dde361413458a3420bfaa9ec4ab12e7265bcdfeccaa25e58effd5b0",
+          "before_line": 1886,
+          "after_line": 1886
+        },
+        "RESERVED_RUN_ID_STEM": {
+          "before": "a936edc07998fbb2501c7d9d371c74a07728c33fb8639403337ffbb978a43238",
+          "after": "a936edc07998fbb2501c7d9d371c74a07728c33fb8639403337ffbb978a43238",
+          "before_line": 1887,
+          "after_line": 1887
+        },
+        "assertSafeRunId": {
+          "before": "8b1bb32f76dc5e68fe815962f8cf6f2a34d5f032e00286ccbf9035d7c21cd530",
+          "after": "8b1bb32f76dc5e68fe815962f8cf6f2a34d5f032e00286ccbf9035d7c21cd530",
+          "before_line": 1888,
+          "after_line": 1888
+        },
+        "runArtifactDir": {
+          "before": "71101253bbff5d4fbfe332fc7f50642d0c83cfd83d4837c7b6ba7d234d08e0e7",
+          "after": "71101253bbff5d4fbfe332fc7f50642d0c83cfd83d4837c7b6ba7d234d08e0e7",
+          "before_line": 1899,
+          "after_line": 1899
+        },
+        "renameWithRetry": {
+          "before": "4661c0321f0fd8562839824ec0f5cc6e49daa7801fe15b12a7d4a3e538b757c2",
+          "after": "4661c0321f0fd8562839824ec0f5cc6e49daa7801fe15b12a7d4a3e538b757c2",
+          "before_line": 1902,
+          "after_line": 1902
+        },
+        "atomicWriteFile": {
+          "before": "8187982a77afbf88a2e939fd1f0cfd15268c9901ff24c6e47909b4822316ca50",
+          "after": "8187982a77afbf88a2e939fd1f0cfd15268c9901ff24c6e47909b4822316ca50",
+          "before_line": 1914,
+          "after_line": 1914
+        },
+        "newRunArtifactHealth": {
+          "before": "69ea89c4bb34e05e9c5bc4025bc1be9175418f0fcbd020eb6f2bd7e10cf8e7ea",
+          "after": "69ea89c4bb34e05e9c5bc4025bc1be9175418f0fcbd020eb6f2bd7e10cf8e7ea",
+          "before_line": 1941,
+          "after_line": 1941
+        },
+        "projectPlanMetaForReport": {
+          "before": "11ac031670bc02aa6e24fbb28755f1c266920f2b3c06ac197e175731773462d3",
+          "after": "11ac031670bc02aa6e24fbb28755f1c266920f2b3c06ac197e175731773462d3",
+          "before_line": 1950,
+          "after_line": 1950
+        },
+        "MAX_RECORDED_ARTIFACT_ERRORS": {
+          "before": "5b402a11482f72ed401e3d6a847bbf5610ae0df7d3541069f4eb47af04173609",
+          "after": "5b402a11482f72ed401e3d6a847bbf5610ae0df7d3541069f4eb47af04173609",
+          "before_line": 1954,
+          "after_line": 1954
+        },
+        "noteArtifactError": {
+          "before": "4d6a6624e3d2b6c30f89d37bab3740bfd5d62520782177f9a206f2bad34b74c4",
+          "after": "4d6a6624e3d2b6c30f89d37bab3740bfd5d62520782177f9a206f2bad34b74c4",
+          "before_line": 1955,
+          "after_line": 1955
+        },
+        "noteUnavailableDiff": {
+          "before": "c12f5dc4ce18e4060947320a9a905a9c6587046091c40141c57b5127ca1a8d83",
+          "after": "c12f5dc4ce18e4060947320a9a905a9c6587046091c40141c57b5127ca1a8d83",
+          "before_line": 1960,
+          "after_line": 1960
+        },
+        "mergeChain": {
+          "before": "ceef6d7fe51c275e19452698c45320a202177d2ec5081eaff55195c08f7f178c",
+          "after": "ceef6d7fe51c275e19452698c45320a202177d2ec5081eaff55195c08f7f178c",
+          "before_line": 1970,
+          "after_line": 1970
+        },
+        "integrationWorktree": {
+          "before": "52a5bbc47a602b4f174c7e89ca580dbf2fa35926f1951ca292c20bb20db90ade",
+          "after": "52a5bbc47a602b4f174c7e89ca580dbf2fa35926f1951ca292c20bb20db90ade",
+          "before_line": 1971,
+          "after_line": 1971
+        },
+        "withMergeLock": {
+          "before": "c5a3c5500430359ee8acb0de6e8b2c9ba3db68dbde2f012a8bf2311524fd2db6",
+          "after": "c5a3c5500430359ee8acb0de6e8b2c9ba3db68dbde2f012a8bf2311524fd2db6",
+          "before_line": 1972,
+          "after_line": 1972
+        },
+        "worktreeChain": {
+          "before": "b4cea5c51465ecaca50551871e9f114ec3494808e9f721c444ea4cddbb1ce913",
+          "after": "b4cea5c51465ecaca50551871e9f114ec3494808e9f721c444ea4cddbb1ce913",
+          "before_line": 1978,
+          "after_line": 1978
+        },
+        "CLEANUP_ATTEMPTS": {
+          "before": "25b8eb08aa2068c2e5cd0b86c618185b7247dc8be040c1a6d23ab8f408d1f4ff",
+          "after": "25b8eb08aa2068c2e5cd0b86c618185b7247dc8be040c1a6d23ab8f408d1f4ff",
+          "before_line": 1997,
+          "after_line": 2059
+        },
+        "CLEANUP_DELAY_MS": {
+          "before": "72c7d70d38bb20aa9da8ed1cd9b7b6c5fb15d95f9ea99d6df3c9cbac0f2efbdf",
+          "after": "72c7d70d38bb20aa9da8ed1cd9b7b6c5fb15d95f9ea99d6df3c9cbac0f2efbdf",
+          "before_line": 1998,
+          "after_line": 2060
+        },
+        "samePath": {
+          "before": "6a4c82881018a8288ab2bcef66c24a4da86158d2e6dde26dfaad32cbbd7011f2",
+          "after": "6a4c82881018a8288ab2bcef66c24a4da86158d2e6dde26dfaad32cbbd7011f2",
+          "before_line": 1999,
+          "after_line": 2061
+        },
+        "stillRegistered": {
+          "before": "b2088ef1ac331b6c06be166b842a5466a3011413585e03fee9d6f03762f033a3",
+          "after": "b2088ef1ac331b6c06be166b842a5466a3011413585e03fee9d6f03762f033a3",
+          "before_line": 2012,
+          "after_line": 2074
+        },
+        "observeWorktreePath": {
+          "before": "cd49bd02a9be1dd2fa196b4d7a00d559b922fe151487a8c0e448f5a15e5691b7",
+          "after": "cd49bd02a9be1dd2fa196b4d7a00d559b922fe151487a8c0e448f5a15e5691b7",
+          "before_line": 2021,
+          "after_line": 2083
+        },
+        "deleteBranchVerified": {
+          "before": "8890baa57dfca914b7f2032326777b2eeef4f45a1fd3927d715a0d243d37d82b",
+          "after": "8890baa57dfca914b7f2032326777b2eeef4f45a1fd3927d715a0d243d37d82b",
+          "before_line": 2082,
+          "after_line": 2155
+        },
+        "runExitCode": {
+          "before": "baddbfc2ff660bf148b794815088c63f463b50531b96eaf99599249d1df675bf",
+          "after": "baddbfc2ff660bf148b794815088c63f463b50531b96eaf99599249d1df675bf",
+          "before_line": 2105,
+          "after_line": 2178
+        },
+        "cleanupFailures": {
+          "before": "a498d7edd5e447365a7f8ed7a0cfdd3ff107dc29c460e971cefec6841cf10025",
+          "after": "a498d7edd5e447365a7f8ed7a0cfdd3ff107dc29c460e971cefec6841cf10025",
+          "before_line": 2108,
+          "after_line": 2181
+        },
+        "cleanupReportLines": {
+          "before": "165640b66a76a44a4c883dd00a932dbfd3f65291541eaf4696f4bd3862f17b2f",
+          "after": "165640b66a76a44a4c883dd00a932dbfd3f65291541eaf4696f4bd3862f17b2f",
+          "before_line": 2116,
+          "after_line": 2189
+        },
+        "mutationSurvivalNote": {
+          "before": "a52e31da0970d85808a7c0d72cb241b6901334caa5ee14bb4509e6d9667070bc",
+          "after": "a52e31da0970d85808a7c0d72cb241b6901334caa5ee14bb4509e6d9667070bc",
+          "before_line": 2126,
+          "after_line": 2199
+        },
+        "defaultRunTaskDeps": {
+          "before": "fe69aababfa210b620af009e8dd80d1f1a7e028c68c11797fc88a3311d5911d7",
+          "after": "fe69aababfa210b620af009e8dd80d1f1a7e028c68c11797fc88a3311d5911d7",
+          "before_line": 2132,
+          "after_line": 2205
+        },
+        "effectiveSampling": {
+          "before": "a02b1c5a466ea54ec704d90f22d71b583f240cb22054132c52c33bb00cd1aa1a",
+          "after": "a02b1c5a466ea54ec704d90f22d71b583f240cb22054132c52c33bb00cd1aa1a",
+          "before_line": 2144,
+          "after_line": 2217
+        },
+        "writeFilesInto": {
+          "before": "af38e18c81cc1a655fa70dc67e9c7f7d70120ae66326cd759aef6ee17b551916",
+          "after": "af38e18c81cc1a655fa70dc67e9c7f7d70120ae66326cd759aef6ee17b551916",
+          "before_line": 2156,
+          "after_line": 2229
+        },
+        "bestOfN": {
+          "before": "873c80ff7e77de1d5cbcca74660c3b1a73b2fe5cfc1fd7784e4ee30d5f7eabdd",
+          "after": "873c80ff7e77de1d5cbcca74660c3b1a73b2fe5cfc1fd7784e4ee30d5f7eabdd",
+          "before_line": 2163,
+          "after_line": 2236
+        },
+        "runTask": {
+          "before": "c48a563a68cc2ddd95ff68da2baad4b034ceea4acd9b47e58634e3c83e184853",
+          "after": "c48a563a68cc2ddd95ff68da2baad4b034ceea4acd9b47e58634e3c83e184853",
+          "before_line": 2301,
+          "after_line": 2378
+        },
+        "SAFE_TASK_ID": {
+          "before": "d4c2bf83cc06e641533f9818e35ec7490fe1b3a6a7dd85e690f4ddae0fcd7f83",
+          "after": "d4c2bf83cc06e641533f9818e35ec7490fe1b3a6a7dd85e690f4ddae0fcd7f83",
+          "before_line": 2744,
+          "after_line": 2821
+        },
+        "LOOPBACK_HOSTS": {
+          "before": "9db28ca519cff88a09d650ade7fdc74cb130dfcaa8d193d17683dda7a632efdb",
+          "after": "9db28ca519cff88a09d650ade7fdc74cb130dfcaa8d193d17683dda7a632efdb",
+          "before_line": 2745,
+          "after_line": 2822
+        },
+        "assertSecureBaseUrl": {
+          "before": "5268e210a248694fed5c90142fb6974f5e3888c7e8cff8e27b69a75b809fcab5",
+          "after": "5268e210a248694fed5c90142fb6974f5e3888c7e8cff8e27b69a75b809fcab5",
+          "before_line": 2746,
+          "after_line": 2823
+        },
+        "PLAN_SHAPE": {
+          "before": "0d453433b13262f05c7b083937a0786c68db6d9fa55627e9cc6f5d8173118fdc",
+          "after": "0d453433b13262f05c7b083937a0786c68db6d9fa55627e9cc6f5d8173118fdc",
+          "before_line": 2760,
+          "after_line": 2837
+        },
+        "PLAN_NON_EMPTY": {
+          "before": "730b5e33aa7d7153a492d5f8d626fe39cb395b9f87d08051c225cb18b2fb08b0",
+          "after": "730b5e33aa7d7153a492d5f8d626fe39cb395b9f87d08051c225cb18b2fb08b0",
+          "before_line": 2797,
+          "after_line": 2874
+        },
+        "PLAN_INT_MIN": {
+          "before": "08546d8cc4a190f0049fdd3a3018e6fa7099e7057625851c4f82119c5a31991b",
+          "after": "08546d8cc4a190f0049fdd3a3018e6fa7099e7057625851c4f82119c5a31991b",
+          "before_line": 2798,
+          "after_line": 2875
+        },
+        "PLAN_LABEL_MAX": {
+          "before": "7d3a057852f9a1724c40bc9e3c44a2469f0bc73f0c3bbd658ec2a89ce11e995f",
+          "after": "7d3a057852f9a1724c40bc9e3c44a2469f0bc73f0c3bbd658ec2a89ce11e995f",
+          "before_line": 2799,
+          "after_line": 2876
+        },
+        "clipLabel": {
+          "before": "22c4b9f1749ab6edf70561d7decf19a35b1e4b369c36bd70106e4e4c555199c7",
+          "after": "22c4b9f1749ab6edf70561d7decf19a35b1e4b369c36bd70106e4e4c555199c7",
+          "before_line": 2800,
+          "after_line": 2877
+        },
+        "jsonTypeName": {
+          "before": "4dcf8811408bd0b8298c45be0e698915ad4b9a343f11f43820cc507be8b0398d",
+          "after": "4dcf8811408bd0b8298c45be0e698915ad4b9a343f11f43820cc507be8b0398d",
+          "before_line": 2801,
+          "after_line": 2878
+        },
+        "isJsonObject": {
+          "before": "d37b85a86f17b07efe99da2bb6efae12a22b57691358705b47bd923a4e16f599",
+          "after": "d37b85a86f17b07efe99da2bb6efae12a22b57691358705b47bd923a4e16f599",
+          "before_line": 2802,
+          "after_line": 2879
+        },
+        "checkPlanField": {
+          "before": "3e17adbc0f59eeb68d4c8dad97ebb4824d9322ed498028ecd9e0f10a0cfbefe9",
+          "after": "3e17adbc0f59eeb68d4c8dad97ebb4824d9322ed498028ecd9e0f10a0cfbefe9",
+          "before_line": 2803,
+          "after_line": 2880
+        },
+        "checkPlanObject": {
+          "before": "642426cb8a30334ef15cb2ce3f3673ade1ea36c4a83eb96fc63c238c83a1b034",
+          "after": "642426cb8a30334ef15cb2ce3f3673ade1ea36c4a83eb96fc63c238c83a1b034",
+          "before_line": 2835,
+          "after_line": 2912
+        },
+        "parsePlan": {
+          "before": "d7a0c203817dfd6f0fb403b4df8e4edc72766ff9cf0be2b6ff7630ac838ad17d",
+          "after": "d7a0c203817dfd6f0fb403b4df8e4edc72766ff9cf0be2b6ff7630ac838ad17d",
+          "before_line": 2849,
+          "after_line": 2926
+        },
+        "validate": {
+          "before": "b79f5307fd29a7e1c04c6ba58885b7591c9278c6c21da095ce34baa0629b24e4",
+          "after": "b79f5307fd29a7e1c04c6ba58885b7591c9278c6c21da095ce34baa0629b24e4",
+          "before_line": 2853,
+          "after_line": 2930
+        },
+        "resolveConfig": {
+          "before": "fa1de75789ed89b08fe4d5893f77588fe1d03768213859290b4273686616c98c",
+          "after": "fa1de75789ed89b08fe4d5893f77588fe1d03768213859290b4273686616c98c",
+          "before_line": 2917,
+          "after_line": 2994
+        },
+        "screenEntitlements": {
+          "before": "0664f258d186977ea45afa380e88ffae2a4feb9a65e0c041d6bbec635081f982",
+          "after": "0664f258d186977ea45afa380e88ffae2a4feb9a65e0c041d6bbec635081f982",
+          "before_line": 2934,
+          "after_line": 3011
+        },
+        "makeEntitlementProbe": {
+          "before": "1d4229df9d44313f2aba46b9cd9b3cd4bfd844ee52205c659cae1fc48ced7515",
+          "after": "1d4229df9d44313f2aba46b9cd9b3cd4bfd844ee52205c659cae1fc48ced7515",
+          "before_line": 2962,
+          "after_line": 3039
+        },
+        "runCanary": {
+          "before": "4cba4dcecf91127f7f69c5b239902a667b203b295dd37535fef93d75db4b880d",
+          "after": "4cba4dcecf91127f7f69c5b239902a667b203b295dd37535fef93d75db4b880d",
+          "before_line": 2983,
+          "after_line": 3060
+        },
+        "selectReadyTasks": {
+          "before": "4bd8ea5798d56d2a18b7b8691cc7590716ac60babb2a4e4415e4476ac136d05a",
+          "after": "4bd8ea5798d56d2a18b7b8691cc7590716ac60babb2a4e4415e4476ac136d05a",
+          "before_line": 3069,
+          "after_line": 3146
+        },
+        "writeReport": {
+          "before": "b1ba54e6261e024dc6ec6b0d44a7726870c0d849d514e2a2f90dc31c0eb7d2d2",
+          "after": "b1ba54e6261e024dc6ec6b0d44a7726870c0d849d514e2a2f90dc31c0eb7d2d2",
+          "before_line": 3329,
+          "after_line": 3408
+        },
+        "_thisFile": {
+          "before": "3163592c63f1edc005ce8d5424b34fa642046d54c413ebcd8b738f8b4ddb5652",
+          "after": "3163592c63f1edc005ce8d5424b34fa642046d54c413ebcd8b738f8b4ddb5652",
+          "before_line": 3442,
+          "after_line": 3521
+        },
+        "_entryFile": {
+          "before": "aa066d8761efe51af23e44867c63dd929ac3b9dc7658f93df8ef42533f8f478d",
+          "after": "aa066d8761efe51af23e44867c63dd929ac3b9dc7658f93df8ef42533f8f478d",
+          "before_line": 3443,
+          "after_line": 3522
+        }
+      },
+      "changed": {
+        "mutationCheck": {
+          "before": "e3c816ab0aa8ee5accd69ee0a70e3fdf93c234fc0570fb1cb27768988f7d6b71",
+          "after": "6993b05db311b086ac67cd9befce99545c894130e9fbc1cb8f3fe3f3e8127b8b",
+          "before_line": 797,
+          "after_line": 797
+        },
+        "withWorktreeLock": {
+          "before": "6712a53e32b5e8c2cc789fc015b65ace758909692436b1cce75941ae055dfb6a",
+          "after": "5ed63daa6d35a4e634a75ef75d127c00b07fdcd720162a09c4aba9dae9c93225",
+          "before_line": 1979,
+          "after_line": 2036
+        },
+        "prepareWorktree": {
+          "before": "dab9678f8f2660706a1b3b49991c756ddaf963d2d12e12a781c9503664a92815",
+          "after": "305f106c2070779ed7eada88b614adb96d3b930182e1def5311e1f7c2d4eb49b",
+          "before_line": 1985,
+          "after_line": 2043
+        },
+        "removeWorktreeVerified": {
+          "before": "36267b21bdd6f890e9e80a8c232c9ea388352f8fcb82e4d9f5f88bb3fc000a71",
+          "after": "7dc787272658987a2d27aa657ab43cc11ec89badc2c3d470fe14822c0b45033f",
+          "before_line": 2031,
+          "after_line": 2093
+        },
+        "prepareEvaluationWorktree": {
+          "before": "61328dccaeaaaf960f7badcd4bfc91631a7ebf9029cb45f45f1da8b22211ffc1",
+          "after": "758f7cb2504cd7bc0aa6c067002d4421e06fbf0b3dd112976de88e4c98c7e7b7",
+          "before_line": 2290,
+          "after_line": 2363
+        },
+        "main": {
+          "before": "16172a74b2edca46d8309124bd0f415867f90458c34749a45e3d744c7caf3ad4",
+          "after": "c62191a7946b0661c028f0208eb2e4370e265ecfd6ef395ea06c42c6c0d8c9e2",
+          "before_line": 3082,
+          "after_line": 3159
+        }
+      },
+      "added": [
+        "withCommonWorktreeLock"
+      ],
+      "guarded_callbacks": {
+        "prepareWorktree": {
+          "before": [
+            "9d2149ec862e71846ba527357979cd83f399d5d3cd76070eccfb878075a4c709"
+          ],
+          "after": [
+            "9d2149ec862e71846ba527357979cd83f399d5d3cd76070eccfb878075a4c709"
+          ]
+        },
+        "removeWorktreeVerified": {
+          "before": [
+            "4485e10a8eb7db643c3d4aaabbb5a8b9c9a349a00a08244213f84fa229a115ae"
+          ],
+          "after": [
+            "4485e10a8eb7db643c3d4aaabbb5a8b9c9a349a00a08244213f84fa229a115ae"
+          ]
+        },
+        "prepareEvaluationWorktree": {
+          "before": [
+            "f218cc4f6f00c14e5ef5d01a3ad69c57b473fd5baa5a82a1bc0e41621d134266"
+          ],
+          "after": [
+            "f218cc4f6f00c14e5ef5d01a3ad69c57b473fd5baa5a82a1bc0e41621d134266"
+          ]
+        }
+      }
+    }
+  }
+}

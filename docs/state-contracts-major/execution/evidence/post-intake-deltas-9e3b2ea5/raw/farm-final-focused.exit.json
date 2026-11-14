@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "farm-registry-lock.test.ts",
+    "farm.test.ts",
+    "farm.unit.test.ts",
+    "-t",
+    "#397:|#515 worktree registry serialization|cross-process Farm worktree administration",
+    "--maxWorkers=1",
+    "--coverage",
+    "--coverage.reporter=json",
+    "--coverage.reporter=text-summary",
+    "--coverage.reportsDirectory=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-coverage",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-focused.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools",
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "seconds": 12.583219299907796,
+  "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "node_version": "v24.22.1",
+  "stdout_sha256": "6021dffd3719137523362416d04b894e69c72095d166384f6e0ab2ce63fb8820",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
