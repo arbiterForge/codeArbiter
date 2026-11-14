@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "packaging_site_tools / actual local Windows amd64 / Python3.14 and Node24.22.1"
+  },
+  "disposition_ids": [
+    "disposition:machines:T12"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/preserved-source-check.py",
+      "sha256": "a0f8d7e2ddf503a07709a78e5bc67b90b2bb41f91811cdbf10e2c0258dd4028e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/preserved-source-results.json",
+      "sha256": "362be9a9610a5063e0a78b877e5f903f46f1a61228896234486c222f696b4095"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/preserved-source-contract-input-stability.json",
+      "sha256": "9b361146431dcf3a98232ff33977d4d5f4d1551142892d9d0b5a61f0f95cb1b7"
+    }
+  ],
+  "inputs": {
+    ".github/fixtures/tribunal/cases.json": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "tools/tribunal-eval.py": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-admissible-94b-3ov15tt3\\docs\\state-contracts-major\\execution\\evidence\\packaging-local-94b\\raw\\preserved-source-check.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Entire unchanged stdlib-only offline Tribunal source-contract machine/defaultcorpus preserved; all9baseline transition source contracts alreadyPRESERVED. Complete literal defaultcorpus and source verified, no imported repo implementation/host/normative-policy dependencies. External capturedreview/adjudication inputs remain caller data. No interpreter/Git execution equivalence, modelquality, provider call or publication acceptance.",
+  "runtime": {
+    "python_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "node_version": "v24.22.1"
+  },
+  "limits": [
+    "Original local evidence; no hosted PR evidence relabeled.",
+    "Retained proof/raw paths become Git-authenticatable only after parent commits these exact metadata bytes.",
+    "No current production archive/installed/cohort/browser/live provider qualification."
+  ],
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "derived_from": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+      "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+      "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+    }
+  ]
+}

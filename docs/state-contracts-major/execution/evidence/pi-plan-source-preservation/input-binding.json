@@ -1,0 +1,97 @@
+{
+  "source_commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "checked_candidate_head": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "inputs": [
+    {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "source_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "current_head_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+      "whole_baseline_equal": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "source_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "current_head_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+      "whole_baseline_equal": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "source_sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+      "current_head_sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "87d98382f90b223e1356cf0b2895929690655b113f6be18aac682bb411ba9a84",
+      "whole_baseline_equal": false
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "source_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "current_head_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "whole_baseline_equal": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "source_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "current_head_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+      "whole_baseline_equal": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "source_sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "current_head_sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "46ff5c3869f48042389c14cf954ea38cfa8e8392252311af60a523b425582e77",
+      "whole_baseline_equal": false
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "source_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "current_head_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "whole_baseline_equal": true
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "source_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "current_head_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "34810c6a83c6dba10ff5a58d63a38ae909d1f92f80ae2450c5772eea21271093",
+      "whole_baseline_equal": false
+    },
+    {
+      "path": "plugins/ca-pi/hooks/pi-bridge.py",
+      "source_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+      "current_head_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "19e2512a091bfca5c51e4e1701c091f6b6033052394adb11d98697e2d0705197",
+      "whole_baseline_equal": false
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_planfilelib.py",
+      "source_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+      "current_head_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+      "working_logical_text_equal": true,
+      "baseline_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+      "whole_baseline_equal": true
+    }
+  ],
+  "required_frozen_owners_included": true,
+  "whole_owners_equal_not_used_as_sole_proof": true,
+  "bridge_plan_span_equal": true,
+  "limits": [
+    "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+    "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+    "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+    "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+    "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate."
+  ]
+}

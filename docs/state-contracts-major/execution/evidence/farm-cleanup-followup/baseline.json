@@ -1,0 +1,28 @@
+{
+  "scope": "FARM-R01 S30:05; no ledger/progress/index writes",
+  "head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "obligations": [
+    "EACCES/EIO is unknown, never absence; stop without prune or another removal",
+    "ENOENT plus absent Git registration permits success",
+    "known existing or dangling-link path prevents success; existing bounded known-present retries retained"
+  ],
+  "status": [
+    "?? .codearbiter/.artifacts/",
+    "?? plugins/ca/tools/farm-cleanup-observation.test.ts"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "inputs": [
+    {
+      "path": "plugins/ca/tools/farm.ts",
+      "sha256": "0ce099a0d277cf8a1cb00a782c089a54e02791f9b02186a689cc47b00d0ff223"
+    },
+    {
+      "path": "plugins/ca/tools/farm.js",
+      "sha256": "d5cbf42a8f523e2f1d036ed966ebb29ceee2fa35bbe53d51520fee8d52b8d5d8"
+    },
+    {
+      "path": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+      "sha256": "42db12b66d169916eb88f932bcfde2fea208c1ddd2f36116ad6bb632e4206be7"
+    }
+  ]
+}
