@@ -402,6 +402,11 @@ class CompletedPopulationTest(unittest.TestCase):
                 ids.append('disposition:' + group + ':' + identity)
                 paths.update(owner.evidence_paths(row))
                 ledger[group][identity]['owner'] = row.get('owner') or owners[row['task_ids'][0]]
+        for row in self.progress.get('new_transition_rows', []):
+            identity = row['transition_id']
+            ids.append('disposition:added_transitions:' + identity)
+            paths.update(owner.evidence_paths(row))
+            ledger['added_transitions'][identity]['owner'] = row.get('owner') or owners[row['task_ids'][0]]
         raw = b'Fixture: original local review transcript and source observations.'
         proof = {'schema': 'codearbiter-disposition-evidence/1', 'source_commit': self.source,
                  'kind': 'review', 'result': 'PRESERVED', 'disposition_ids': ids,
@@ -422,7 +427,8 @@ class CompletedPopulationTest(unittest.TestCase):
         result = self.requirements()
         self.assertEqual(result['unresolved_decision_count'], 0)
         self.assertNotIn('Q-03', result['task_ids'])
-        self.assertEqual(sum(c.startswith('disposition:') for c in result['cells']), 70 + 287 + 1748)
+        self.assertEqual(sum(c.startswith('disposition:') for c in result['cells']),
+                         70 + 287 + 1748 + len(self.progress.get('new_transition_rows', [])))
         self.assertEqual(result['cell_jobs']['disposition:transitions:C11:01'],
                          'major qualification / release-and-integration')
         self.assertEqual(result['open_questions_sha256'], owner.digest(self.overrides['.codearbiter/open-questions.md']))
