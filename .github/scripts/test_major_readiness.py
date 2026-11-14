@@ -534,5 +534,211 @@ class QuestionEntryTest(unittest.TestCase):
                 owner.open_decisions(raw)
 
 
+class PagesBuildAdmissionTest(unittest.TestCase):
+    """Static Pages provenance is distinct from native/release readiness."""
+
+    def setUp(self):
+        import tarfile
+        self.tarfile = tarfile
+        companion = Path(__file__).with_name('pages_readiness.py')
+        self.assertTrue(companion.is_file(), 'missing purpose-specific Pages admission companion')
+        spec = importlib.util.spec_from_file_location('pages_readiness', companion)
+        self.pages = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.pages)
+        self.source = 'a' * 40
+        self.run = {'id': 7, 'head_sha': self.source, 'head_branch': 'major/state-contracts',
+            'event': 'push', 'status': 'completed', 'conclusion': 'success', 'run_attempt': 1,
+            'path': '.github/workflows/docs.yml',
+            'repository': {'id': 9, 'full_name': owner.REPOSITORY},
+            'head_repository': {'id': 9, 'full_name': owner.REPOSITORY}}
+        self.job = {'id': 20, 'run_id': 7, 'run_attempt': 1,
+            'name': 'Site | [Build] - Astro Pages', 'status': 'completed', 'conclusion': 'success',
+            'steps': [{'name': 'Upload Pages artifact', 'status': 'completed', 'conclusion': 'success',
+                'started_at': '2026-11-14T15:00:00Z', 'completed_at': '2026-11-14T15:00:03Z'}]}
+        self.tar = self.make_tar([('.', 'dir', b''), ('./pagefind', 'dir', b''),
+            ('./index.html', 'file', b'<h1>Original Pages</h1>'),
+            ('./pagefind/pagefind.js', 'file', b'export async function search() {}')])
+        self.archive = self.make_zip([('artifact.tar', self.tar)])
+        self.artifact = {'id': 30, 'name': 'github-pages', 'size_in_bytes': len(self.archive),
+            'expired': False, 'digest': 'sha256:' + owner.digest(self.archive),
+            'created_at': '2026-11-14T15:00:01Z',
+            'workflow_run': {'id': 7, 'head_sha': self.source, 'head_branch': 'major/state-contracts',
+                             'repository_id': 9, 'head_repository_id': 9}}
+        self.logs = self.make_log(self.artifact['digest'])
+
+    def make_log(self, digest):
+        return ('2026-11-14T15:00:00Z ##[group]Run '+self.pages.PAGES_ACTION+'\n'
+            '2026-11-14T15:00:00Z ##[group]Run '+self.pages.NESTED_UPLOAD_ACTION+'\n'
+            '2026-11-14T15:00:01Z SHA256 digest of uploaded artifact is '+digest.removeprefix('sha256:')+'\n'
+            '2026-11-14T15:00:02Z Artifact github-pages successfully finalized. Artifact ID 30\n').encode()
+
+    def make_tar(self, entries):
+        output = io.BytesIO()
+        with self.tarfile.open(fileobj=output, mode='w', format=self.tarfile.USTAR_FORMAT) as archive:
+            for name, kind, data in entries:
+                info = self.tarfile.TarInfo(name)
+                info.type = {'file': self.tarfile.REGTYPE, 'dir': self.tarfile.DIRTYPE,
+                    'symlink': self.tarfile.SYMTYPE, 'hardlink': self.tarfile.LNKTYPE,
+                    'device': self.tarfile.CHRTYPE, 'fifo': self.tarfile.FIFOTYPE,
+                    'sparse': self.tarfile.GNUTYPE_SPARSE}[kind]
+                info.linkname = 'index.html' if kind in ('symlink', 'hardlink') else ''
+                info.size = len(data) if kind == 'file' else 0
+                archive.addfile(info, io.BytesIO(data) if kind == 'file' else None)
+        return output.getvalue()
+
+    def make_zip(self, entries):
+        output = io.BytesIO()
+        with warnings.catch_warnings(), zipfile.ZipFile(output, 'w') as archive:
+            warnings.simplefilter('ignore', UserWarning)
+            for name, data in entries:
+                archive.writestr(name, data)
+        return output.getvalue()
+
+    def admit(self, **changes):
+        args = {'source': self.source, 'run_id': 7, 'branch': 'major/state-contracts',
+            'job_id': 20, 'artifact_id': 30, 'run': self.run, 'job': self.job,
+            'artifact': self.artifact, 'archive': self.archive, 'job_log': self.logs}
+        args.update(changes)
+        # Admission itself must never acquire credentials, call GitHub or spawn children.
+        with mock.patch.object(owner, 'api', side_effect=AssertionError('unexpected acquisition')):
+            return self.pages.admit_pages_build(**args)
+
+    def admit_archive(self, archive):
+        artifact = dict(self.artifact, digest='sha256:'+owner.digest(archive), size_in_bytes=len(archive))
+        return self.admit(archive=archive, artifact=artifact, job_log=self.make_log(artifact['digest']))
+
+    def test_original_pages_shape_returns_exact_static_bytes_and_provenance(self):
+        result = self.admit()
+        self.assertEqual(result['files'], {'index.html': b'<h1>Original Pages</h1>',
+            'pagefind/pagefind.js': b'export async function search() {}'})
+        proof = result['provenance']
+        self.assertEqual(proof['source_commit'], self.source)
+        self.assertEqual((proof['run_id'], proof['job_id'], proof['artifact_id']), (7, 20, 30))
+        self.assertEqual(proof['archive_sha256'], owner.digest(self.archive))
+        self.assertEqual(proof['tar_sha256'], owner.digest(self.tar))
+        self.assertEqual(proof['job_log_sha256'], owner.digest(self.logs))
+        self.assertNotIn('PREPUBLICATION_READY', json.dumps(proof))
+        self.assertEqual(self.admit(job_log=b'\xef\xbb\xbf'+self.logs)['files'], result['files'])
+        main_run=copy.deepcopy(self.run);main_run['head_branch']='main'
+        main_artifact=copy.deepcopy(self.artifact);main_artifact['workflow_run']['head_branch']='main'
+        self.assertEqual(self.admit(branch='main',run=main_run,artifact=main_artifact)['files'],result['files'])
+
+    def test_trusted_source_run_workflow_branch_job_and_attempt_are_exact(self):
+        vectors = [('source', '0'*40), ('source', self.source[:39]), ('source', self.source.upper()),
+            ('run_id', True), ('job_id', True), ('artifact_id', True), ('branch', 'feature/topic')]
+        for field, value in vectors:
+            with self.subTest(field=field, value=value), self.assertRaises(owner.ReadinessError):
+                self.admit(**{field: value})
+        for field, value in [('id',8), ('head_sha','b'*40), ('event','pull_request'),
+            ('head_branch','main'), ('path','.github/workflows/ci.yml'), ('conclusion','failure'),
+            ('status','in_progress'), ('run_attempt',2), ('repository',{'id':10,'full_name':'fork/codeArbiter'}),
+            ('head_repository',{'id':10,'full_name':owner.REPOSITORY})]:
+            with self.subTest(run=field), self.assertRaises(owner.ReadinessError):
+                self.admit(run=dict(self.run, **{field:value}))
+        for field, value in [('id',21), ('run_id',8), ('run_attempt',2), ('name','Unrelated build'),
+                             ('status','in_progress'), ('conclusion','failure'), ('steps',[])]:
+            with self.subTest(job=field), self.assertRaises(owner.ReadinessError):
+                self.admit(job=dict(self.job, **{field:value}))
+
+    def test_both_immutable_upload_pins_and_original_id_digest_window_are_required(self):
+        for before, after in [(self.pages.PAGES_ACTION,'actions/upload-pages-artifact@v5'),
+            (self.pages.NESTED_UPLOAD_ACTION,owner.UPLOAD_ACTION),
+            ('Artifact ID 30','Artifact ID 31'),
+            (self.artifact['digest'][7:],'b'*64),
+            ('2026-11-14T15:00:02Z','2026-11-14T16:00:02Z')]:
+            with self.subTest(before=before), self.assertRaises(owner.ReadinessError):
+                self.admit(job_log=self.logs.replace(before.encode(),after.encode()))
+        for log in (self.logs+self.logs, b'PrivateFixtureValue\xff', self.logs.replace(b'Z ',b' ')):
+            with self.subTest(log=owner.digest(log)), self.assertRaises(owner.ReadinessError) as caught:
+                self.admit(job_log=log)
+            self.assertNotIn('PrivateFixtureValue', str(caught.exception))
+        for step in (dict(self.job['steps'][0],conclusion='skipped'),
+                     dict(self.job['steps'][0],started_at='2026-11-14T15:00:00')):
+            with self.assertRaises(owner.ReadinessError):
+                self.admit(job=dict(self.job,steps=[step]))
+        with self.assertRaises(owner.ReadinessError):
+            self.admit(job=dict(self.job,steps=self.job['steps']*2))
+
+    def test_foreign_expired_missing_or_changed_artifact_bytes_refuse(self):
+        for field,value in [('id',31),('name','site-browser-evidence'),('expired',True),
+            ('size_in_bytes',0),('digest','sha256:'+'b'*64),('created_at','2026-11-14T16:00:00Z'),
+            ('workflow_run',None),('workflow_run',dict(self.artifact['workflow_run'],repository_id=10)),
+            ('workflow_run',dict(self.artifact['workflow_run'],head_sha='b'*40)),
+            ('workflow_run',dict(self.artifact['workflow_run'],head_branch='main'))]:
+            with self.subTest(field=field), self.assertRaises(owner.ReadinessError):
+                self.admit(artifact=dict(self.artifact,**{field:value}))
+        with self.assertRaises(owner.ReadinessError):
+            self.admit(archive=self.archive+b'changed')
+        typed_run=copy.deepcopy(self.run)
+        typed_run['repository']['id']=typed_run['head_repository']['id']=1
+        typed_artifact=copy.deepcopy(self.artifact)
+        typed_artifact['workflow_run']['repository_id']=True
+        typed_artifact['workflow_run']['head_repository_id']=1
+        with self.assertRaises(owner.ReadinessError):
+            self.admit(run=typed_run,artifact=typed_artifact)
+
+    def test_only_one_plain_artifact_tar_zip_member_is_supported(self):
+        for entries in ([('other.tar',self.tar)], [('artifact.tar',self.tar),('extra',b'x')],
+                        [('artifact.tar',self.tar),('artifact.tar',self.tar)],
+                        [('../artifact.tar',self.tar)]):
+            with self.subTest(names=[n for n,_ in entries]), self.assertRaises(owner.ReadinessError):
+                self.admit_archive(self.make_zip(entries))
+        output=io.BytesIO()
+        with zipfile.ZipFile(output,'w') as archive:
+            info=zipfile.ZipInfo('artifact.tar');info.create_system=3;info.external_attr=0o120777<<16
+            archive.writestr(info,b'target')
+        with self.assertRaises(owner.ReadinessError):self.admit_archive(output.getvalue())
+        with self.assertRaises(owner.ReadinessError):self.admit_archive(b'not a ZIP')
+        encrypted=bytearray(self.archive)
+        for position in (encrypted.index(b'PK\x03\x04')+6, encrypted.index(b'PK\x01\x02')+8):
+            flags=int.from_bytes(encrypted[position:position+2],'little')|1
+            encrypted[position:position+2]=flags.to_bytes(2,'little')
+        with self.assertRaises(owner.ReadinessError):self.admit_archive(bytes(encrypted))
+        output=io.BytesIO()
+        with zipfile.ZipFile(output,'w') as archive:
+            info=zipfile.ZipInfo('artifact.tar');info.create_system=3;info.external_attr=0o020600<<16
+            archive.writestr(info,self.tar)
+        with self.assertRaises(owner.ReadinessError):self.admit_archive(output.getvalue())
+
+    def test_tar_traversal_aliases_links_devices_and_parent_conflicts_refuse(self):
+        names=['../escape','/absolute','./../escape','././alias','C:/outside','a\\b','a//b',
+               'CON.txt','NUL .txt','CONIN$','CONOUT$.txt','bad?name',' leading','trailing.','trailing ',
+               '/'.join(['a']*33),'\u00e9.html','control\x01name']
+        for name in names:
+            with self.subTest(name=repr(name)), self.assertRaises(owner.ReadinessError):
+                self.admit_archive(self.make_zip([('artifact.tar',self.make_tar([(name,'file',b'x')]))]))
+        for kind in ('symlink','hardlink','device','fifo','sparse'):
+            with self.subTest(kind=kind), self.assertRaises(owner.ReadinessError):
+                self.admit_archive(self.make_zip([('artifact.tar',self.make_tar([('unsafe',kind,b'')]))]))
+        for entries in ([('index.html','file',b'x'),('./index.html','file',b'y')],
+            [('A/a','file',b'x'),('a/b','file',b'y')],
+            [('root','file',b'x'),('root/child','file',b'y')],
+            [('root/child','file',b'y'),('root','file',b'x')]):
+            with self.subTest(entries=entries), self.assertRaises(owner.ReadinessError):
+                self.admit_archive(self.make_zip([('artifact.tar',self.make_tar(entries))]))
+        with self.assertRaises(owner.ReadinessError):
+            self.admit_archive(self.make_zip([('artifact.tar',b'not a tar')]))
+        with self.assertRaises(owner.ReadinessError):
+            self.admit_archive(self.make_zip([('artifact.tar',self.tar+b'PrivateFixtureValue')]))
+        output=io.BytesIO()
+        with self.tarfile.open(fileobj=output,mode='w',format=self.tarfile.PAX_FORMAT) as archive:
+            info=self.tarfile.TarInfo('index.html');info.pax_headers={'comment':'unsupported'}
+            archive.addfile(info,io.BytesIO(b''))
+        with self.assertRaises(owner.ReadinessError):
+            self.admit_archive(self.make_zip([('artifact.tar',output.getvalue())]))
+
+    def test_archive_tar_member_count_file_and_total_bounds_refuse(self):
+        for constant, limit in [('MAX_ZIP_BYTES',32),('MAX_TAR_BYTES',32),('MAX_MEMBERS',2),('MAX_FILE_BYTES',8),('MAX_TOTAL_BYTES',8)]:
+            with self.subTest(bound=constant), mock.patch.object(self.pages,constant,limit), self.assertRaises(owner.ReadinessError):
+                self.admit()
+        with mock.patch.object(self.pages,'MAX_LOG_BYTES',8), self.assertRaises(owner.ReadinessError):
+            self.admit()
+
+    def test_existing_direct_uploader_policy_is_not_relaxed_for_pages(self):
+        self.assertEqual(owner.UPLOAD_ACTION,'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9')
+        with mock.patch.object(owner,'api',return_value=self.logs), self.assertRaises(owner.ReadinessError):
+            owner.validate_upload(self.job,self.artifact,'Upload Pages artifact')
+
+
 if __name__ == "__main__":
     unittest.main()
