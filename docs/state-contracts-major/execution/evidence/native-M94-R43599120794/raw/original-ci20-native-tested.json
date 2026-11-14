@@ -1,0 +1,14 @@
+{
+  "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+  "format": "codearbiter.ci-native-candidate/1",
+  "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+  "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+  "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+  "platform": "windows/amd64",
+  "producer_job": "artifact-native-build",
+  "run_attempt": "1",
+  "run_id": "43599120794",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "toolchain": "go1.27.1",
+  "workflow": ".github/workflows/ci.yml"
+}

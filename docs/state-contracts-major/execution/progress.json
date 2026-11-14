@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "acf1aeeafc44696fbac966cba7eb999e14857514 plus reviewed original-M acceptance overlay; source observer implementations remain in progress",
+  "head": "bbf5aa51d6749c0808f7a00ba1f381947561bc35 plus finite source-preservation ledger",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T11:39:25.048730+00:00",
+  "recorded_at": "2026-11-14T15:00:12.871270+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3570,12 +3570,12 @@
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the coherent footer/acceptance/closed-diagnostic/evidence batch once and watch exact-head CI; original WindowsARM cause remains unknown. Merge1103 by true merge only after its required aggregate passes, retaining1098/main/publication hold.",
-    "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
-    "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
-    "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
+    "Deliver the committed Codex/Pi/Sandbox observer pipelines through one child PR and observe exact-head CI, then actual trusted normal installed jobs.",
+    "Admit the original M94 native finite successor observations; retain the artifact service timestamp refusal until the owning upload reader is corrected and reviewed.",
+    "Continue row-specific acceptance and missing behavior. Source preservation does not establish runtime/model compliance or whole-task qualification.",
+    "Retain the unresolved Pi endpoint decision and unavailable parent-UI/physical-consent acceptance; never merge1098 to main or publish without the user testing hold being lifted."
   ],
-  "delivery_state": "PR1103_NEXT_DIAGNOSTIC_SOURCE_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
+  "delivery_state": "HOST_OBSERVER_SOURCE_COMMITTED_PENDING_CHILD_CI",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3590,12 +3590,14 @@
     }
   ],
   "delivery_pr": {
-    "number": 1103,
-    "url": "https://github.com/arbiterForge/codeArbiter/pull/1103",
+    "number": 1106,
+    "url": "https://github.com/arbiterForge/codeArbiter/pull/1106",
     "base": "major/state-contracts",
-    "observed_head": "6a636870bc23f5079700faf58a234d19f6823eca",
-    "next": "Push coherent repairs once and observe exact-head replacement CI. Merge1103 only with its required aggregate green, using true merge and approved named auto-deletion. Keep1098 draft/unmerged to main; no release authority.",
-    "local_source_head": "1e06da1b6483591350b090c8eed4a6f37f277d55"
+    "observed_head": "790229af36adcca44e7ce0038b25a0a3258b361c",
+    "local_source_head": "bbf5aa51d6749c0808f7a00ba1f381947561bc35",
+    "merge_commit": "863db5ff50e5bc2629983104b937bab3ce565e47",
+    "state": "MERGED",
+    "next": "Publish the coherent host-observer child; PR1098 remains draft and held from main."
   },
   "integrator_observations": [
     {
@@ -3617,6 +3619,36 @@
         "M244-member native module is historical at F245; original observations are not relabeled current.",
         "Finite dispositions do not complete tasks, installed host policy cells or whole publication reports.",
         "Doctor remains DEGRADED; real parentUI/physical consent and Pi endpoint policy remain open."
+      ]
+    },
+    {
+      "id": "host-observers-and-finite-source-preservation",
+      "source_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35",
+      "facts": [
+        "1106 merged as863db5ff after92 passing checks; one failed macOS Intel recovery job rerun passed, original failure retained.",
+        "Normal integration M94 push43599120794 succeeded.",
+        "Codex producer14/wiring13; Pi producer14/wiring17; Sandbox producer20/wiring11; workflow67 and composed original report20 controls passed at their recorded source scopes.",
+        "Independent five CodeQL test-fixture false-positive dispositions recorded; parent CodeQL is green.",
+        "70 transitions and16 machines admitted as finite source PRESERVED on unchanged79 committed inputs."
+      ],
+      "limits": [
+        "No actual newly wired installed host job execution claimed.",
+        "No task/scenario/physical consent/program/publication completion."
+      ]
+    },
+    {
+      "id": "native-M94-R43599120794-finite-renewal",
+      "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+      "normal_push_run": 43599120794,
+      "run_attempt": 1,
+      "facts": [
+        "Original Windows native480 selected/observed;477 passed and3 platform skips. All168 cited pure parents passed once.",
+        "Renew120 finite Go TESTED rows against the actual245-member module; oldM46 proofs remain in evidence_history.",
+        "Separate12 Go parent facts and2 actual Windows authority consumers retained for eight mixed rows; their old current-status claims are not silently refreshed."
+      ],
+      "limits": [
+        "One Darwin builder upload attribution is still refused pending the independently reviewed service-clock reader correction.",
+        "No installed/native whole-task/scenario/program/publication completion."
       ]
     }
   ],
