@@ -1,0 +1,908 @@
+{
+  "physical": {
+    "path": "plugins/ca/hooks/_host.py",
+    "path_style": "windows",
+    "present": true,
+    "casefold_profile": "ASCII ordinal-ignore-case equivalent; every inspected entry ASCII, no ambiguous matching segment",
+    "inventories": [
+      {
+        "relative_parent": ".",
+        "successful_directory_enumeration": true,
+        "names": [
+          ".agents",
+          ".claude-plugin",
+          ".codearbiter",
+          ".coderabbit.yaml",
+          ".git",
+          ".gitattributes",
+          ".github",
+          ".gitignore",
+          ".gitleaks.toml",
+          ".gitmodules",
+          "CHANGELOG.md",
+          "CLA.md",
+          "CODE_OF_CONDUCT.md",
+          "CONTRIBUTING.md",
+          "LICENSE",
+          "PRIVACY.md",
+          "README.md",
+          "SECURITY.md",
+          "THIRD_PARTY_NOTICES.md",
+          "academy-source",
+          "context-audit",
+          "core",
+          "docs",
+          "package.json",
+          "plugins",
+          "site",
+          "tests",
+          "tools"
+        ],
+        "directory_identity": [
+          7847029335260095372,
+          103019841476668345
+        ],
+        "directory_attributes": 16,
+        "lookup_segment": "plugins",
+        "case_insensitive_matches": [
+          "plugins"
+        ]
+      },
+      {
+        "relative_parent": "plugins",
+        "successful_directory_enumeration": true,
+        "names": [
+          "ca",
+          "ca-codex",
+          "ca-pi",
+          "ca-sandbox"
+        ],
+        "directory_identity": [
+          7847029335260095372,
+          3377699721113086
+        ],
+        "directory_attributes": 16,
+        "lookup_segment": "ca",
+        "case_insensitive_matches": [
+          "ca"
+        ]
+      },
+      {
+        "relative_parent": "plugins/ca",
+        "successful_directory_enumeration": true,
+        "names": [
+          ".claude-plugin",
+          "COMMANDS.md",
+          "LICENSE",
+          "README.md",
+          "SPRINT.md",
+          "THIRD_PARTY_NOTICES.md",
+          "agents",
+          "arbiter.md",
+          "commands",
+          "generated",
+          "hooks",
+          "includes",
+          "skills",
+          "tools"
+        ],
+        "directory_identity": [
+          7847029335260095372,
+          5910974511512424
+        ],
+        "directory_attributes": 16,
+        "lookup_segment": "hooks",
+        "case_insensitive_matches": [
+          "hooks"
+        ]
+      },
+      {
+        "relative_parent": "plugins/ca/hooks",
+        "successful_directory_enumeration": true,
+        "names": [
+          "__pycache__",
+          "_activationlib.py",
+          "_adrlifecycle.py",
+          "_adrlifecyclegit.py",
+          "_adrlifecyclewrite.py",
+          "_appendonlyconflictlib.py",
+          "_approvallib.py",
+          "_arbiterstatelib.py",
+          "_artifactauthoritylib.py",
+          "_artifactlib.py",
+          "_artifactmanifestlib.py",
+          "_artifactpromptlib.py",
+          "_babysitlib.py",
+          "_bashguardlib.py",
+          "_boxlib.py",
+          "_cleanuplib.py",
+          "_colorlib.py",
+          "_contextmergelib.py",
+          "_contextreportlib.py",
+          "_contextselectlib.py",
+          "_contextsnapshotlib.py",
+          "_contextwriterlib.py",
+          "_debughandofflib.py",
+          "_durabilitylib.py",
+          "_entrylib.py",
+          "_fmtlib.py",
+          "_gitexec.py",
+          "_githooks.py",
+          "_gitlib.py",
+          "_hooklib.py",
+          "_host.py",
+          "_intentlib.py",
+          "_knowledgelib.py",
+          "_ledgerlib.py",
+          "_modelib.py",
+          "_overrideappendlib.py",
+          "_pathnorm.py",
+          "_planfilelib.py",
+          "_prerequisitelib.py",
+          "_protectedlib.py",
+          "_protectedstatelib.py",
+          "_provenancelib.py",
+          "_prunelib.py",
+          "_prunepolicy.py",
+          "_readinjectlib.py",
+          "_reconciliationlib.py",
+          "_releaselib.py",
+          "_replylib.py",
+          "_scopelib.py",
+          "_segmentslib.py",
+          "_sensitivelib.py",
+          "_sessionlib.py",
+          "_sloplib.py",
+          "_sprintapprovallib.py",
+          "_standuplib.py",
+          "_subagentslib.py",
+          "_taskboardlib.py",
+          "_taskexcludelib.py",
+          "_tribunalinventorylib.py",
+          "_tribunalrunlib.py",
+          "_updatelib.py",
+          "_usagelib.py",
+          "_workadopt.py",
+          "_workflowrecoverylib.py",
+          "_workgithub.py",
+          "_worklib.py",
+          "adr-acceptance.py",
+          "adr-merge-method.py",
+          "append-override.py",
+          "artifact-authority-hook.py",
+          "artifact-authority.py",
+          "artifact-reconcile.py",
+          "babysit.py",
+          "boardsync.py",
+          "debug-handoff.py",
+          "doctor.py",
+          "git-enforce.py",
+          "hooks.json",
+          "hostapi.py",
+          "init-codearbiter.py",
+          "knowledge.py",
+          "migration-pass.py",
+          "post-write-edit.py",
+          "pre-bash.py",
+          "pre-edit.py",
+          "pre-read.py",
+          "pre-write.py",
+          "prompt-submit.py",
+          "prune-transcript.py",
+          "releasehash.py",
+          "resolve-append-only-conflict.py",
+          "resolve-context-conflict.py",
+          "secret-detection-corpus.json",
+          "security-pass.py",
+          "session-start.py",
+          "statusline.py",
+          "taskwrite.py",
+          "tests",
+          "tribunal-usage.py",
+          "tribunal.py",
+          "update-refresh.py",
+          "wire-statusline.py",
+          "work.py",
+          "workflow-recovery.py"
+        ],
+        "directory_identity": [
+          7847029335260095372,
+          11540474045726293
+        ],
+        "directory_attributes": 16,
+        "lookup_segment": "_host.py",
+        "case_insensitive_matches": [
+          "_host.py"
+        ]
+      }
+    ]
+  },
+  "immutable": {
+    "path": "plugins/ca/hooks/_host.py",
+    "path_style": "windows",
+    "present": true,
+    "successful_immutable_tree_walk": true,
+    "inventories": [
+      {
+        "argv": [
+          "C:/Program Files/Git/cmd/git.exe",
+          "--no-lazy-fetch",
+          "ls-tree",
+          "-z",
+          "-l",
+          "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb^{tree}"
+        ],
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "7102d3dd13e81751e3b27b2d0c69d71bfcb19cb4fa965be34eb63ec26c57f805",
+        "entries": [
+          {
+            "name": ".agents",
+            "header": "040000 tree f52c6d9c5bbb75102ede34d4725b0b24d96bd6b0       -"
+          },
+          {
+            "name": ".claude-plugin",
+            "header": "040000 tree 1b951253b9bac94b25886704617a353dc32d6cab       -"
+          },
+          {
+            "name": ".codearbiter",
+            "header": "040000 tree aa81ea7a5e20491d47f276b67c3b52010c79abc3       -"
+          },
+          {
+            "name": ".coderabbit.yaml",
+            "header": "100644 blob c96eb04ab2198a787d75190d1994b0dfb3738073    5783"
+          },
+          {
+            "name": ".gitattributes",
+            "header": "100644 blob 23b9beb5c947127bd0aea3a0adac750a3fcdd83c    7459"
+          },
+          {
+            "name": ".github",
+            "header": "040000 tree 38a3d8a36eb6ca117ae1c897e4c1f9fb3dd532ff       -"
+          },
+          {
+            "name": ".gitignore",
+            "header": "100644 blob c3c19e899b7df09f73054ff1d157171ece3f2428    4998"
+          },
+          {
+            "name": ".gitleaks.toml",
+            "header": "100644 blob f1cf4cc5a364856a4ad1be475bfaabcb639d4638   14241"
+          },
+          {
+            "name": ".gitmodules",
+            "header": "100644 blob 984e7051db098986d992f311371064c9351f0a5f     111"
+          },
+          {
+            "name": "CHANGELOG.md",
+            "header": "100644 blob e3f46c1281c3e35576f6043144a2005c2aa652a4  213340"
+          },
+          {
+            "name": "CLA.md",
+            "header": "100644 blob 2d0b14aa7371a4366f37c5c9876b9d7c995cbc6d    1237"
+          },
+          {
+            "name": "CODE_OF_CONDUCT.md",
+            "header": "100644 blob e22dcc34793d94fffa7d0660ab0042f1da6ce8f2    2690"
+          },
+          {
+            "name": "CONTRIBUTING.md",
+            "header": "100644 blob 180dfee17e1da7a2aa00a5525295ef5ce4bd5921    7344"
+          },
+          {
+            "name": "LICENSE",
+            "header": "100644 blob be3f7b28e564e7dd05eaf59d64adba1a4065ac0e   34523"
+          },
+          {
+            "name": "PRIVACY.md",
+            "header": "100644 blob eddb84738ade23fbc63ebaf565c12e6172ceeb88    9093"
+          },
+          {
+            "name": "README.md",
+            "header": "100644 blob 31bb46dc4c235027abf1c351b7d5da817bbf91f0   26680"
+          },
+          {
+            "name": "SECURITY.md",
+            "header": "100644 blob 445f07800076f1a771cb15e6f965b7b7f43e783d    4414"
+          },
+          {
+            "name": "THIRD_PARTY_NOTICES.md",
+            "header": "100644 blob 346e0c63677aac60426a20efd3984907dc3bcaf5    1903"
+          },
+          {
+            "name": "academy-source",
+            "header": "160000 commit 54e8a42874664ee2f484dee433024f80b0aa128b       -"
+          },
+          {
+            "name": "context-audit",
+            "header": "040000 tree 2069170847b2fbc7a01c6901fb0fb72a789b86cb       -"
+          },
+          {
+            "name": "core",
+            "header": "040000 tree 80d3047e8f5b206149ae946ff4ce0c338865a68e       -"
+          },
+          {
+            "name": "docs",
+            "header": "040000 tree 01a82b65b5b24f51fb28fda5568668af1dc0526a       -"
+          },
+          {
+            "name": "package.json",
+            "header": "100644 blob 96bbd20a8447a0d7327a059aee5b265e546aa104     807"
+          },
+          {
+            "name": "plugins",
+            "header": "040000 tree 62019019d28e2945b1bfb0897988b792cd16dc67       -"
+          },
+          {
+            "name": "site",
+            "header": "040000 tree 7d030917c2fb59ef34a00706ebe7844f656fc6f2       -"
+          },
+          {
+            "name": "tests",
+            "header": "040000 tree 6aeab58483cc2e947b82bebb4aaaf42b498068fc       -"
+          },
+          {
+            "name": "tools",
+            "header": "040000 tree 22fb82d5ff9b5ad1107f230b3566d6bcf5409b4d       -"
+          }
+        ],
+        "lookup_segment": "plugins",
+        "case_insensitive_matches": [
+          {
+            "name": "plugins",
+            "header": "040000 tree 62019019d28e2945b1bfb0897988b792cd16dc67       -"
+          }
+        ]
+      },
+      {
+        "argv": [
+          "C:/Program Files/Git/cmd/git.exe",
+          "--no-lazy-fetch",
+          "ls-tree",
+          "-z",
+          "-l",
+          "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb:plugins"
+        ],
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "a2e5712240f344ae9a25f09989608db8bbf9057dbba32cab5eaf40092df32eb6",
+        "entries": [
+          {
+            "name": "ca-codex",
+            "header": "040000 tree f46d560c73c72a7be16f0767392dff64cce6b096       -"
+          },
+          {
+            "name": "ca-pi",
+            "header": "040000 tree 7b97ae02ca83f7c90b3b9dbe8d6f3a30cf8b60af       -"
+          },
+          {
+            "name": "ca-sandbox",
+            "header": "040000 tree 57d0c76139e3e0113c71481efde0e593ead43958       -"
+          },
+          {
+            "name": "ca",
+            "header": "040000 tree dd3fa0548daac22c1404a4684993b6c3b4da6f2f       -"
+          }
+        ],
+        "lookup_segment": "ca",
+        "case_insensitive_matches": [
+          {
+            "name": "ca",
+            "header": "040000 tree dd3fa0548daac22c1404a4684993b6c3b4da6f2f       -"
+          }
+        ]
+      },
+      {
+        "argv": [
+          "C:/Program Files/Git/cmd/git.exe",
+          "--no-lazy-fetch",
+          "ls-tree",
+          "-z",
+          "-l",
+          "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb:plugins/ca"
+        ],
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "b42b77675af1cf3b7949a693da2aae960a848623e5fdc45a9ce06ac787000795",
+        "entries": [
+          {
+            "name": ".claude-plugin",
+            "header": "040000 tree 7ccbdd89fff2078ea8f83430d315674bc855c039       -"
+          },
+          {
+            "name": "COMMANDS.md",
+            "header": "100644 blob af34147919ad2e9cb30d15c459c5cba4da058b26    6989"
+          },
+          {
+            "name": "LICENSE",
+            "header": "100644 blob be3f7b28e564e7dd05eaf59d64adba1a4065ac0e   34523"
+          },
+          {
+            "name": "README.md",
+            "header": "100644 blob 3418b1f397c84a848f94aa9a52ed1a48191e10f7    4023"
+          },
+          {
+            "name": "SPRINT.md",
+            "header": "100644 blob 03f40fe2a074464c4950e1a5e909fc7456694b35   13042"
+          },
+          {
+            "name": "THIRD_PARTY_NOTICES.md",
+            "header": "100644 blob 346e0c63677aac60426a20efd3984907dc3bcaf5    1903"
+          },
+          {
+            "name": "agents",
+            "header": "040000 tree 7da1493e11cf17322636421c907cae1d3d71aea7       -"
+          },
+          {
+            "name": "arbiter.md",
+            "header": "100644 blob 0835856043a94dbe057f54c9a4033692f3519e3c    6694"
+          },
+          {
+            "name": "commands",
+            "header": "040000 tree fdcfdf3e66f855234fc5245e675050faed6707f3       -"
+          },
+          {
+            "name": "generated",
+            "header": "040000 tree 6b43f73005098222d0c6193fa62b583bce50aee1       -"
+          },
+          {
+            "name": "hooks",
+            "header": "040000 tree 3ff0f526bd601667482c14f9247a9386bfcb1c99       -"
+          },
+          {
+            "name": "includes",
+            "header": "040000 tree 02949b8788bc86bd75cdb9b0d5bcecb6aca84d08       -"
+          },
+          {
+            "name": "skills",
+            "header": "040000 tree 8129b3722deaf1067c0fe9f7731d3c2a183d9d4f       -"
+          },
+          {
+            "name": "tools",
+            "header": "040000 tree 60bf4bd59613e36537722ed0e4f504b6c2c04150       -"
+          }
+        ],
+        "lookup_segment": "hooks",
+        "case_insensitive_matches": [
+          {
+            "name": "hooks",
+            "header": "040000 tree 3ff0f526bd601667482c14f9247a9386bfcb1c99       -"
+          }
+        ]
+      },
+      {
+        "argv": [
+          "C:/Program Files/Git/cmd/git.exe",
+          "--no-lazy-fetch",
+          "ls-tree",
+          "-z",
+          "-l",
+          "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb:plugins/ca/hooks"
+        ],
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "4e2c75c4323d7efabe003c94a930aa7d43297f76456f410629d5410d497ff3d4",
+        "entries": [
+          {
+            "name": "_activationlib.py",
+            "header": "100644 blob 3e3875a454941317efb1f172d2861e407b1c6b4c   13390"
+          },
+          {
+            "name": "_adrlifecycle.py",
+            "header": "100644 blob ba8cc2bdd08911b501d4e3e97c5ac52788b53bfd   31496"
+          },
+          {
+            "name": "_adrlifecyclegit.py",
+            "header": "100644 blob c762d9a12103e25d747904b923e2357e19b74004    9331"
+          },
+          {
+            "name": "_adrlifecyclewrite.py",
+            "header": "100644 blob 46e59f0be15c25e39efa4d58380daab615483c76   11339"
+          },
+          {
+            "name": "_appendonlyconflictlib.py",
+            "header": "100644 blob e7b541afea6765c9fed282eb68610e2367b3d77e   19780"
+          },
+          {
+            "name": "_approvallib.py",
+            "header": "100644 blob f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13   25093"
+          },
+          {
+            "name": "_arbiterstatelib.py",
+            "header": "100644 blob be9ed277e3cc84936dd1cc2fbe41e5142c48d06e   14372"
+          },
+          {
+            "name": "_artifactauthoritylib.py",
+            "header": "100644 blob fb3089e12ddb95242a511cb7754f1e744f7bf53d  251805"
+          },
+          {
+            "name": "_artifactlib.py",
+            "header": "100644 blob 4ebc16010335c0288a65ff8721068717d4212d78   64937"
+          },
+          {
+            "name": "_artifactmanifestlib.py",
+            "header": "100644 blob 1e84d812031a969be1decaa73ee8ea0bf8c613cb    4249"
+          },
+          {
+            "name": "_artifactpromptlib.py",
+            "header": "100644 blob e9f2faeef57008fc202ef05f1693f9afdaaed099   12221"
+          },
+          {
+            "name": "_babysitlib.py",
+            "header": "100644 blob bbdbe552f371e1268f4a208d3d11ddf0c0cfdf07    3172"
+          },
+          {
+            "name": "_bashguardlib.py",
+            "header": "100644 blob 0f899bc13543ac3832e8bc8e488e6a96391a8e24  155665"
+          },
+          {
+            "name": "_boxlib.py",
+            "header": "100644 blob 65d29531fcdfa1ac364acdebc3e45438b1064519    4881"
+          },
+          {
+            "name": "_cleanuplib.py",
+            "header": "100644 blob 4d92635ec4245ad0b9c77bf275f704b909fee9ca   75586"
+          },
+          {
+            "name": "_colorlib.py",
+            "header": "100644 blob 13b37ec8329c2f8bd01bc662d95df2fa3b1ff925   11895"
+          },
+          {
+            "name": "_contextmergelib.py",
+            "header": "100644 blob b4fd6fe36b38e9821b3c65888392b9df67a88f11   23111"
+          },
+          {
+            "name": "_contextreportlib.py",
+            "header": "100644 blob 000a03764987f7bb45db3093b1ae9c0da713650a   46687"
+          },
+          {
+            "name": "_contextselectlib.py",
+            "header": "100644 blob 4bc5bc87f540dd12ece5d0914e78bbfe26e5c532   22879"
+          },
+          {
+            "name": "_contextsnapshotlib.py",
+            "header": "100644 blob cc89a71aa784b109fbdfe123a787b30dab957134   47301"
+          },
+          {
+            "name": "_contextwriterlib.py",
+            "header": "100644 blob 0d66d9ba1b72fdbef2045bc00b8a1945a8059af3    6174"
+          },
+          {
+            "name": "_debughandofflib.py",
+            "header": "100644 blob ea1b8f3f36456e7364923dd1d4373a953831c736   30345"
+          },
+          {
+            "name": "_durabilitylib.py",
+            "header": "100644 blob eb0c3815bee5a039b3643ba059a1ccb44ff986a6    8561"
+          },
+          {
+            "name": "_entrylib.py",
+            "header": "100644 blob 14f5b7f68a60430df9c87a0395be1ca47d9aa70c    2418"
+          },
+          {
+            "name": "_fmtlib.py",
+            "header": "100644 blob 76ab33d684c69833756b05c6eea3f0612acbf344    5520"
+          },
+          {
+            "name": "_gitexec.py",
+            "header": "100644 blob 492afd199f317dac3624164bc65dae9da6ca8fae   23619"
+          },
+          {
+            "name": "_githooks.py",
+            "header": "100644 blob c30c2fbebdc49d481126adc2fd3994eb416c9ecf   64758"
+          },
+          {
+            "name": "_gitlib.py",
+            "header": "100644 blob c870e393c0416b23b1f997232dd5f36d3f5705fe    4641"
+          },
+          {
+            "name": "_hooklib.py",
+            "header": "100755 blob ef7b48317f0875ac0dc0189326206f5fef8e3050   49147"
+          },
+          {
+            "name": "_host.py",
+            "header": "100644 blob 8503a10cec96334795cc7b4e40812d11c12e5e57    1689"
+          },
+          {
+            "name": "_intentlib.py",
+            "header": "100644 blob 5b88d6e66c7f41f251a822d5238a62e2ce991427   12928"
+          },
+          {
+            "name": "_knowledgelib.py",
+            "header": "100644 blob 5248c4c87fdf47d9587a82abab876b60a10f011c    3073"
+          },
+          {
+            "name": "_ledgerlib.py",
+            "header": "100644 blob 48a66da46a8b33e9b56df5934a97be931a33adf1   65565"
+          },
+          {
+            "name": "_modelib.py",
+            "header": "100644 blob 9593bb119d8a85eea0291ad45d1edaf9dc7e405f   44894"
+          },
+          {
+            "name": "_overrideappendlib.py",
+            "header": "100644 blob dc3e310b65cf5c0438f7d5441b60d4684a17df3c    6815"
+          },
+          {
+            "name": "_pathnorm.py",
+            "header": "100644 blob a4ca0fcc856c80c175b221465b577ccf70591784    3712"
+          },
+          {
+            "name": "_planfilelib.py",
+            "header": "100644 blob e3825a54039985bd4b6f13a4b280445f5a9b3cfd   28296"
+          },
+          {
+            "name": "_prerequisitelib.py",
+            "header": "100644 blob 124e82479efdf836aebfcd00746d94a84fbd8a48   40617"
+          },
+          {
+            "name": "_protectedlib.py",
+            "header": "100644 blob 9daeaf94103e8fb6d935eccbd55347d45818da6c   18440"
+          },
+          {
+            "name": "_protectedstatelib.py",
+            "header": "100644 blob 1d90335465271ba4920fb119bb564a94ca56e8f1   35433"
+          },
+          {
+            "name": "_provenancelib.py",
+            "header": "100644 blob 790ec8470991180dacace9455d22da59fb16faec   76910"
+          },
+          {
+            "name": "_prunelib.py",
+            "header": "100644 blob ed0626c34ca98efecb4049f9321deb8bb263ace3   58271"
+          },
+          {
+            "name": "_prunepolicy.py",
+            "header": "100644 blob 0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6   10440"
+          },
+          {
+            "name": "_readinjectlib.py",
+            "header": "100644 blob eb9ac0c2ed4516450ec8607327790e3edaab8252   62081"
+          },
+          {
+            "name": "_reconciliationlib.py",
+            "header": "100644 blob 394a2212fac91ea597a9989414cae10ee004e915   36207"
+          },
+          {
+            "name": "_releaselib.py",
+            "header": "100644 blob 7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8  211540"
+          },
+          {
+            "name": "_replylib.py",
+            "header": "100644 blob 01091fb370347018a2b38a2e2e1176d9ba266f51   25320"
+          },
+          {
+            "name": "_scopelib.py",
+            "header": "100644 blob 53994a0d077cba7ec461a3b103766c5f077704d1   10966"
+          },
+          {
+            "name": "_segmentslib.py",
+            "header": "100644 blob 1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf   14615"
+          },
+          {
+            "name": "_sensitivelib.py",
+            "header": "100644 blob e9671658cc8f2ce1ccb27277848de601641b6f90   35303"
+          },
+          {
+            "name": "_sessionlib.py",
+            "header": "100644 blob 2f66a623db10c277af9a33f9edeb8c99b5dc16cc    3122"
+          },
+          {
+            "name": "_sloplib.py",
+            "header": "100644 blob fe429cca7fca219da512faad06dd0bfc15846a52   11969"
+          },
+          {
+            "name": "_sprintapprovallib.py",
+            "header": "100644 blob 7219fd881b203b917d2bec192c3c274d08c83fda   21346"
+          },
+          {
+            "name": "_standuplib.py",
+            "header": "100644 blob 0906f3eb5087ba0d15182581cbe3d24c319b1ef7    9547"
+          },
+          {
+            "name": "_subagentslib.py",
+            "header": "100644 blob eef3178da2580558be6e6bf84cba276b4f355cdc    7795"
+          },
+          {
+            "name": "_taskboardlib.py",
+            "header": "100644 blob 85511a724f3de7a8cf84c069814d0605e72f3395   69125"
+          },
+          {
+            "name": "_taskexcludelib.py",
+            "header": "100644 blob df2300611bfc7ca9aa945900d53c7b6c5032eda9   10102"
+          },
+          {
+            "name": "_tribunalinventorylib.py",
+            "header": "100644 blob 8103dfb8e48ae62c3b36fb5557c71075bd409577   33101"
+          },
+          {
+            "name": "_tribunalrunlib.py",
+            "header": "100644 blob c2db7a2b082e005e0be9dd637a853c6ee096a01f   40445"
+          },
+          {
+            "name": "_updatelib.py",
+            "header": "100644 blob 7de5c411dd17a443d57ad7df13d8c6e6309e601b   21120"
+          },
+          {
+            "name": "_usagelib.py",
+            "header": "100644 blob 62ed503ae24522500162a7a307b024b9d958ff26   18663"
+          },
+          {
+            "name": "_workadopt.py",
+            "header": "100644 blob 8c1d380094a66b4de42d5d96ffc6f75eb90a0334    9946"
+          },
+          {
+            "name": "_workflowrecoverylib.py",
+            "header": "100644 blob 1926007b7b414790f1d986ea94c58a332dac1040  104156"
+          },
+          {
+            "name": "_workgithub.py",
+            "header": "100644 blob e05526d2d00d05f3d9bd54aafe2c91786fd1a987   82821"
+          },
+          {
+            "name": "_worklib.py",
+            "header": "100644 blob 7f118b7ae057b89017e1c1ec7c779c7687740330   18760"
+          },
+          {
+            "name": "adr-acceptance.py",
+            "header": "100644 blob e2754ecae806b0c45653cd506a3423a00c936c8b     192"
+          },
+          {
+            "name": "adr-merge-method.py",
+            "header": "100644 blob 183d7739639adfcaff2267c183445c1d311e8503    1140"
+          },
+          {
+            "name": "append-override.py",
+            "header": "100644 blob 0add80319167c6760f43cfc3a7b494f0b0155287     188"
+          },
+          {
+            "name": "artifact-authority-hook.py",
+            "header": "100644 blob a8087a07c199db1a36ee8f59b23c866958abb6a2    6076"
+          },
+          {
+            "name": "artifact-authority.py",
+            "header": "100644 blob 9ecd8bb20f843b9b97069f0289f898747eade725    6960"
+          },
+          {
+            "name": "artifact-reconcile.py",
+            "header": "100644 blob d80602a85ea9e79a64523bfbc8014bd2ca97f538    3990"
+          },
+          {
+            "name": "babysit.py",
+            "header": "100644 blob bd3b7612bbf233112cae9a23c3d551a24494830d    1957"
+          },
+          {
+            "name": "boardsync.py",
+            "header": "100644 blob 06290bcb50929cf147c08b47cad276c5f73fe55c    6077"
+          },
+          {
+            "name": "debug-handoff.py",
+            "header": "100644 blob 14d301010a576f009f052dc2fbc3328e88484598    2897"
+          },
+          {
+            "name": "doctor.py",
+            "header": "100644 blob d3b81bdcc21fb02977936ac51151db9086ad3397   28315"
+          },
+          {
+            "name": "git-enforce.py",
+            "header": "100644 blob bf26b26b73f5db048b3e21126a131938c962c06e   19608"
+          },
+          {
+            "name": "hooks.json",
+            "header": "100644 blob 0018b9a607c6e077deeb75aed48b5349826c7c14    5730"
+          },
+          {
+            "name": "hostapi.py",
+            "header": "100644 blob 1a7db1792ef432615a47a7cf4aed7714b16045dc   38083"
+          },
+          {
+            "name": "init-codearbiter.py",
+            "header": "100755 blob f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4   27811"
+          },
+          {
+            "name": "knowledge.py",
+            "header": "100644 blob 91bd9d4bb5077b5980d0e2559b5fe793718feb65   24672"
+          },
+          {
+            "name": "migration-pass.py",
+            "header": "100644 blob aca17a32b2f311164db80e44dda76bb8b736d869    6375"
+          },
+          {
+            "name": "post-write-edit.py",
+            "header": "100755 blob 797cbe9b01a976fc8740534bc837be49ea128f06   11232"
+          },
+          {
+            "name": "pre-bash.py",
+            "header": "100755 blob 85d6f488dea32761a9a6c1bbb929ff5eb67d8e9f    4251"
+          },
+          {
+            "name": "pre-edit.py",
+            "header": "100755 blob 7e74f13f6fdb6257d86ca63924bd8e7362d75aae   17466"
+          },
+          {
+            "name": "pre-read.py",
+            "header": "100644 blob 08f4467a9895d81eff1a71b9a1c57b5682a311f8    3640"
+          },
+          {
+            "name": "pre-write.py",
+            "header": "100755 blob 858679550a2ec79003a02e5e208665049ccb3de2   13386"
+          },
+          {
+            "name": "prompt-submit.py",
+            "header": "100644 blob 5a92b48650a9b5beb056e0d01cc6af997ff98acd   29719"
+          },
+          {
+            "name": "prune-transcript.py",
+            "header": "100644 blob f6a8bfb89b12d225a323c327d8792442ea28af8f   10814"
+          },
+          {
+            "name": "releasehash.py",
+            "header": "100644 blob 0cf9ac47e7e3e18b60646807e24915beeddf5c03   11348"
+          },
+          {
+            "name": "resolve-append-only-conflict.py",
+            "header": "100644 blob 8dbb1604c21d0f09f3c9b4c615b419e1d2c17962     200"
+          },
+          {
+            "name": "resolve-context-conflict.py",
+            "header": "100644 blob 4e9a9555ba0f708557d76a231cbf88ce4a36ce41     196"
+          },
+          {
+            "name": "secret-detection-corpus.json",
+            "header": "100644 blob c4eb2c7e02b8acd46ec444805a24fe27d3548ee1    2206"
+          },
+          {
+            "name": "security-pass.py",
+            "header": "100644 blob 6cd472e73368b9e0609b18ebc3f805f231570b59    9466"
+          },
+          {
+            "name": "session-start.py",
+            "header": "100755 blob 9f14a960219746ec7632c2afbecf0238e215cc51   71640"
+          },
+          {
+            "name": "statusline.py",
+            "header": "100755 blob 41692a6903478ab6ca253865efb86e387b089692   33706"
+          },
+          {
+            "name": "taskwrite.py",
+            "header": "100644 blob 2243e3bfed634f496c70f815c54d5208ed321032   22686"
+          },
+          {
+            "name": "tests",
+            "header": "040000 tree b46d9e69de535d73e8f551c1060b4cccd0233cc1       -"
+          },
+          {
+            "name": "tribunal-usage.py",
+            "header": "100644 blob 3a85de4c4c0550cfe21717de0c0d7da137996871    9474"
+          },
+          {
+            "name": "tribunal.py",
+            "header": "100644 blob c3f6ca2ab5ec9a6717878de32fa277d354ca6f84    6336"
+          },
+          {
+            "name": "update-refresh.py",
+            "header": "100644 blob 0dda6d1b20d8e4328fc19108968095e646ab65e2    2072"
+          },
+          {
+            "name": "wire-statusline.py",
+            "header": "100755 blob e50c0f12cb7960dd6a960c30669ebbf2ef672b51   20976"
+          },
+          {
+            "name": "work.py",
+            "header": "100644 blob fce39a305e86c19675af0e1f664b886949a86c53   30378"
+          },
+          {
+            "name": "workflow-recovery.py",
+            "header": "100644 blob 41f0ade6ae5ade17915dda699ef6432fe9079739    5038"
+          }
+        ],
+        "lookup_segment": "_host.py",
+        "case_insensitive_matches": [
+          {
+            "name": "_host.py",
+            "header": "100644 blob 8503a10cec96334795cc7b4e40812d11c12e5e57    1689"
+          }
+        ]
+      }
+    ]
+  }
+}

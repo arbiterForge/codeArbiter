@@ -1,0 +1,186 @@
+{
+  "protocol": "codearbiter.debug-handoff/1.0.0",
+  "case_id": "DBG-s55-pending-initialization",
+  "request": {
+    "intent": "repair_requested",
+    "request_ref": "Root S55 bounded characterization and subsequent confirmed ca-fix dispatch under WORK-2A68C3051D5A477EAC131493FF8A85AF",
+    "scope": "Confirm and hand off the current Search loader initialization race. Temp-only test/diagnostic artifacts; production fix waits for Root actual fix actor packet.",
+    "restrictions": [
+      "No Gov/source/index writes or provider/native/build effects.",
+      "Preserve module retry, current-generation paint, close/disconnect and options rejection handling.",
+      "No main1098 merge/publication or accepted ADR changes."
+    ]
+  },
+  "snapshots": [
+    {
+      "id": "S-01",
+      "repository": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "worktree": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd",
+      "commit": "3bd40349f4a403a38ac01979369875faad258548",
+      "dirty_state": "dirty",
+      "fingerprint": null,
+      "fingerprint_recipe": null,
+      "runtime_identity": "Windows/amd64, admitted Node24.22.1 and Chrome; exact8 runtime file digests and package manifests retained in start.json/result.json.",
+      "limitations": "Temp overlay adds one uncommitted test to exact committed component inputs. No aggregate fingerprint; literal8 source/runtime before-after maps retained. This is component-only execution."
+    }
+  ],
+  "symptom": {
+    "observed": "While focus-triggered Pagefind.options() remains pending, first and newest form submissions both call search with initialized:false.",
+    "expected": "Concurrent loading callers must await one complete module initialization; only after options resolves may the cached module enable search, with latest generation owning result paint.",
+    "expected_evidence_ids": [
+      "E-01",
+      "E-02"
+    ]
+  },
+  "reproduction": {
+    "status": "reproduced",
+    "recipe": {
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site",
+      "preconditions": "Existing locked Playwright/TypeScript, safe Node and installed Chrome; created private HOME/AppData/XDG; exact committed Search with a new Temp-only test; fake Pagefind.options is explicitly held.",
+      "steps": [
+        "Run the exact new five-case component selection in start.json.",
+        "Focus actual combobox and await optionsStarted.",
+        "Submit first and newest through actual form while options remains unresolved.",
+        "Drain browser microtasks with requestAnimationFrame and inspect controlled Pagefind query-call observation."
+      ],
+      "failure_signature": "Expected no search calls; received first and newest with initialized:false."
+    },
+    "evidence_ids": [
+      "E-03"
+    ],
+    "limitations": "One deterministic held-promise reproduction; not actual Pagefind index/network latency, production page or cross-platform acceptance."
+  },
+  "hypotheses": [
+    {
+      "id": "H-01",
+      "mechanism": "loadPagefind assigns pagefind immediately when import resolves, before awaiting options. A concurrent caller sees the truthy cached module, returns early and invokes search before initialization settles.",
+      "discriminator": "Hold options unresolved after module import, then submit through the actual form; any recorded search before release proves the readiness bypass.",
+      "status": "supported",
+      "supporting_evidence_ids": [
+        "E-02",
+        "E-03"
+      ],
+      "opposing_evidence_ids": [],
+      "limitations": "Only the component API ordering is established; no claim about actual Pagefind internal worker ordering or production user error frequency."
+    }
+  ],
+  "checks": [
+    {
+      "id": "C-01",
+      "operation": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js --silent run test:components -- test/components/search-interactions.spec.ts --reporter=json --output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\playwright-output",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site",
+      "status": "completed",
+      "expectation": "All5 new source-backed cases pass; no query reaches search while shared initialization is pending.",
+      "observed": "One exact initialization assertion failed, showing two premature queries;4 other focused cases passed.",
+      "exit_code": 1,
+      "side_effects": "Owned Temp source copies, browser profiles and test output; intercepted component.test routes only. Gov HEAD/index and8 input/runtime maps unchanged.",
+      "authorization_basis": "Root authorized bounded test-only S55 acceptance using existing dependencies and scratch scope.",
+      "evidence_ids": [
+        "E-03",
+        "E-04"
+      ]
+    },
+    {
+      "id": "C-02",
+      "operation": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\bin\\tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --lib ES2022 --types node --strict --esModuleInterop --skipLibCheck --forceConsistentCasingInFileNames --resolveJsonModule test/components/search-interactions.spec.ts",
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site",
+      "status": "completed",
+      "expectation": "New TypeScript browser test compiles with site compiler settings.",
+      "observed": "Targeted typecheck exited0.",
+      "exit_code": 0,
+      "side_effects": "No emit; logs in owned Temp only.",
+      "authorization_basis": "Root requested targeted typecheck for new component test.",
+      "evidence_ids": [
+        "E-05"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-01",
+      "kind": "contract",
+      "snapshot_id": "S-01",
+      "locator": "3bd40349f4a403a38ac01979369875faad258548:docs/state-contracts-major/contracts/transition-coverage.json#S55:01,S55:02",
+      "observation": "S55:01 requires lazy loading and pending-promise reuse; S55:02 caches the module and enables query after module loading.",
+      "observed_at": "2026-11-14T08:38:04.142Z",
+      "check_id": null,
+      "coverage": "complete_for_claim",
+      "limitations": "Frozen analytical clauses, not a production-runtime observation."
+    },
+    {
+      "id": "E-02",
+      "kind": "source",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\src\\components\\Search.astro:loadPagefind; SHA256 42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+      "observation": "The truthy pagefind early return precedes import/options. The import assigns pagefind before await pagefind.options; render calls search after its own loadPagefind return.",
+      "observed_at": "2026-11-14T08:38:04.142Z",
+      "check_id": null,
+      "coverage": "complete_for_claim",
+      "limitations": "Unchanged source causal trace, not proof of external Pagefind behavior."
+    },
+    {
+      "id": "E-03",
+      "kind": "command_result",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\original-report.json; SHA256 ed15469c1df591c6d5420857c343a5159a3ff8c0c37df2e94e9469c7b781cec9",
+      "observation": "Exact named initialization test fails at queries==[]; received first/newest initialized:false. Four other cases pass:140ms normalized first8, pending expansion disabled, navigation/empty, stale successful completions.",
+      "observed_at": "2026-11-14T08:38:04.142Z",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "limitations": "Command exit1. Positive cases are diagnostic controls, not separately admissible TESTED evidence."
+    },
+    {
+      "id": "E-04",
+      "kind": "observation",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\start.json and C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\result.json",
+      "observation": "Actual HEAD3bd and indexempty unchanged; exact7 committed source inputs plus one test overlay, and8 runtime digests match before/after.",
+      "observed_at": "2026-11-14T08:38:04.142Z",
+      "check_id": "C-01",
+      "coverage": "complete_for_claim",
+      "limitations": "No whole-runtime-DLL/OS or installed package identity claim."
+    },
+    {
+      "id": "E-05",
+      "kind": "command_result",
+      "snapshot_id": "S-01",
+      "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\typecheck.json",
+      "observation": "New-file TypeScript check passed with the declared site compiler settings and DOM type reference.",
+      "observed_at": "2026-11-14T08:38:04.142Z",
+      "check_id": "C-02",
+      "coverage": "complete_for_claim",
+      "limitations": "Targeted file check, not full-site typecheck."
+    }
+  ],
+  "disposition": {
+    "kind": "confirmed_code_defect",
+    "rationale": "The actual controlled-browser failure and exact source order show cached-module truthiness bypasses pending options initialization. The failure occurs before result-generation paint and is distinct from four passing interaction controls.",
+    "evidence_ids": [
+      "E-01",
+      "E-02",
+      "E-03",
+      "E-04"
+    ],
+    "cause_ids": [
+      "H-01"
+    ],
+    "blockers": []
+  },
+  "regression": {
+    "obligation": "Reuse the unchanged concurrent focus/submitted query regression, requiring no queries until one options initialization resolves, latest query paint afterward, and cached reuse without a second options call. Preserve four positive controls.",
+    "basis": "reproduction",
+    "snapshot_id": "S-01",
+    "evidence_ids": [
+      "E-03"
+    ],
+    "oracle": "Before releaseOptions, queries is[] and optionsCalls1; after release newest results paint, cached query works, optionsCalls remains1.",
+    "reuse_existing": true,
+    "candidate_test_id": "site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization"
+  },
+  "next_step": {
+    "target": "fix",
+    "owner": "/root/packaging_site_tools under Root production-fix dispatch",
+    "action": "After actual fix context delivery, keep one shared initialization promise and expose cache/query readiness only after awaited options success; preserve retry and error semantics.",
+    "completion_evidence": "Same named targetRED becomes GREEN plus scoped controls; exact source freeze and actual runtime hashes. No broad suite or production-page claim."
+  }
+}

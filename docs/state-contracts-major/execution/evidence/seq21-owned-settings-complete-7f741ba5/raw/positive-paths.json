@@ -1,0 +1,16 @@
+[
+  "core/pysrc/_durabilitylib.py",
+  "core/pysrc/wire-statusline.py",
+  "plugins/ca/hooks/_activationlib.py",
+  "plugins/ca/hooks/_durabilitylib.py",
+  "plugins/ca/hooks/_gitexec.py",
+  "plugins/ca/hooks/_hooklib.py",
+  "plugins/ca/hooks/_host.py",
+  "plugins/ca/hooks/_pathnorm.py",
+  "plugins/ca/hooks/_protectedlib.py",
+  "plugins/ca/hooks/_scopelib.py",
+  "plugins/ca/hooks/_sensitivelib.py",
+  "plugins/ca/hooks/hostapi.py",
+  "plugins/ca/hooks/tests/test_wire_statusline.py",
+  "plugins/ca/hooks/wire-statusline.py"
+]

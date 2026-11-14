@@ -1,0 +1,19 @@
+{
+  "result": "PASSED",
+  "scope": "Actual owner one prospective N-F03 row only, NOT semantic admission nor full ledger mutation.",
+  "owning_paths": [
+    ".codearbiter/decisions/0043-assistive-state-engine.md",
+    "core/artifacts/internal/operations/assistive.go",
+    "core/artifacts/internal/operations/lifecycle.go"
+  ],
+  "authenticated": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/nt09-source-progress-3bd403/nf03-source-tested-candidate.json",
+      "sha256": "536be9d0d9da03b9355b66436a6ebeca0ce34377f20942c73d6e263aa0a62fc6",
+      "source_commit": "3bd40349f4a403a38ac01979369875faad258548",
+      "producer_class": "local-host"
+    }
+  ],
+  "changed_inputs": [],
+  "unavailable_inputs": []
+}

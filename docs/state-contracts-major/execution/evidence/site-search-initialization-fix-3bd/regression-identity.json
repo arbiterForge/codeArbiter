@@ -1,0 +1,33 @@
+{
+  "original_five_test_calls": [
+    {
+      "name": "concurrent focus and submitted queries await one module initialization",
+      "exact_call_expression_unchanged": true,
+      "sha256": "963c787c7a4d68ee6033c6bbdc60ee55f4782f9f2c0090649711870f70512e2c"
+    },
+    {
+      "name": "normalized queries debounce for140ms and fetch only the first8 results",
+      "exact_call_expression_unchanged": true,
+      "sha256": "178ca38af7b9c2193b9bb0baf035e1e68c25682fc331b98499912eb46329dc27"
+    },
+    {
+      "name": "pending expansion disables repeat activation until all data settles",
+      "exact_call_expression_unchanged": true,
+      "sha256": "30bb47bbbaf3ff4fd13fd2e35e551dfaadad2175f58fb77c10965dce4280132f"
+    },
+    {
+      "name": "empty results, arrow wrapping, submit and activation preserve combobox navigation",
+      "exact_call_expression_unchanged": true,
+      "sha256": "2bb1fca36fac5d10569304e0f1134bfb305c27fa55e0b596398f2ba02fa0b5b0"
+    },
+    {
+      "name": "late successful queries cannot replace newer results or empty state",
+      "exact_call_expression_unchanged": true,
+      "sha256": "28029a6be3177f6eb1b00d68f935cefd4cd283d51e6c6d8d3b06b4bf34e4feb4"
+    }
+  ],
+  "added_case": [
+    "options rejection remains handled and explicit retry initializes a fresh module"
+  ],
+  "scope": "Original5 test call expressions are byte-identical. Fixture helper adds reject mode and preserves counters across cache-busted import; no original assertion modified."
+}
