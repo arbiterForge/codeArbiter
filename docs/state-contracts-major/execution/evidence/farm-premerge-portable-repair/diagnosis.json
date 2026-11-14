@@ -1,0 +1,40 @@
+{
+  "kind": "confirmed harness assumption defect; no product defect",
+  "source_commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "symptom": "Hosted LinuxGit2.56.1 premerge source+bundle fail ENOENT MERGE_HEAD after real producer death;949othersPASS1skip; Windows8 priorPASS retained.",
+  "expected": "Receipt-only recovery preserves actual staged partial merge resource state; MERGE_HEAD presence is not itself universal after parent pipe closure.",
+  "original_hosted_red": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6d4c858f-farm-original.log",
+    "sha256": "fd1f3de899a993b0adf2eb94a5601aaf3b2946283ead6221914f4bf5b8ae25ff",
+    "run_id": 43572058255,
+    "job_id": 132378425857,
+    "event_class": "original CI diagnostic, not eligible successful integration proof"
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "claim": "Observed hook parent is not actual Git; premature completion read",
+      "discriminator": "Controlled real native GitPopen PID vs hook.ppid",
+      "outcome": "Not supported in WSL replay: exact PIDs match in both cases; no blanket hostedPIDtrace claim."
+    },
+    {
+      "id": "H2",
+      "claim": "Parent death closes Git output pipes, causing POSIXSIGPIPE before merge metadata is published",
+      "discriminator": "Same native Git staged merge+controlledpremerge hook refusal with readers open vs closed",
+      "outcome": "Supported actual WSL: open\u2192exit1/MERGE_HEADpresent; closed\u2192signal13/MERGE_HEADabsent, both HEADbase/indexstaged/worktreepayload retained."
+    }
+  ],
+  "WSL_observation": {
+    "raw": "git-lifecycle-discriminator.json",
+    "sha256": "986b7870f86a8424b9bc7fbdedd6d4ab637e7304b51d4fac15dc27f6cfdcf06c",
+    "observer": "diagnose.py",
+    "observer_sha256": "f28ea8951fc7a771dea97e903de73b84ac4e3f06013f9936485bc0e65438f3c0",
+    "runtime": "ExistingUbuntuWSL nativeGit2.53.0/Python3.14.4; nativeNode unavailable; Dockerdaemon unavailable; no installs."
+  },
+  "repair_obligation": "Test-only state observation: accept only successful read or explicit ENOENTabsence; other errors refuse. Validate candidate when metadata present and preserve exact observedmetadata state/index/worktree/stagedcandidate/refs/registry/original receipts across recoverers. Keep unknownstatus/noauthor/noreset; no version/OSconditional expectation.",
+  "limits": [
+    "WSLpureGit discriminator is not full Linux Farm targetGREEN or exactGit2.56 replay; original hostedfailure plus causal boundary evidence support harnessrepair.",
+    "No production bug, runtime policy change, arbitrary sleep/retry, source/index/Gov mutation or broad suite rerun."
+  ],
+  "status": "Diagnosis complete; Root scoped fix packet pending before further author test work."
+}

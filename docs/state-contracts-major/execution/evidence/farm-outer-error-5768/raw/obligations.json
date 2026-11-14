@@ -1,0 +1,11 @@
+{
+  "route": "test_change under maintained FARM-R01/S23:12",
+  "mini_spec": [
+    "Actual ordinary branch-creation error exits1, preserves distinct operator commit/registry without authors or resets",
+    "finally publishes interrupted report JSON+Markdown with blocked task, empty results and aborted=false",
+    "receipt-only followup observes no recorded task effects and preserves all original bytes/refs; no author rerun"
+  ],
+  "approach": "Characterize existing correct behavior, not product bug; existing9 bodies/helper unchanged. New2 source/bundle +one normal bundle control, meaningful missing-final-report negative control, typecheck only.",
+  "SMARTS": "No material solution choice: reuse existing realGit/loopback fixture for actual outer Git error",
+  "limits": "One finite outer error, no all-exception/crash/doublefailure closure or new code/endpoint/provider flow. Root owns durable work/progress; no Gov writes."
+}

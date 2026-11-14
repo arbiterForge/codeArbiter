@@ -625,8 +625,15 @@
    "task_ids": [
     "SITE-U01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+    }
+   ]
   },
   "SF12": {
    "owner": null,
@@ -678,8 +685,15 @@
    "task_ids": [
     "SITE-U02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+    }
+   ]
   },
   "C-F01": {
    "owner": null,
@@ -17867,9 +17881,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/footer-doctor2-tested.json",
+     "sha256": "466dad243175a578e02e0dcc0389cb95fd13d1b93d11aa2dbcdafa42f4fcaaf7"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/footer-doctor2-tested.json",
-     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc"
+     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc",
+     "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
     }
    ]
   },
@@ -18042,9 +18065,18 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/footer-doctor2-tested.json",
+     "sha256": "466dad243175a578e02e0dcc0389cb95fd13d1b93d11aa2dbcdafa42f4fcaaf7"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/footer-doctor2-tested.json",
-     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc"
+     "sha256": "4bfc13203de98f682ab4020b45ce361974f100781a6f83dd46feee128f97d8dc",
+     "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
     }
    ]
   },
@@ -18525,8 +18557,16 @@
     "HW-25",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "5768d4f24994ee628538b39ffb921691cd54264b",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/tested.json",
+     "sha256": "13bc223ae6b2c6809582c3212a2a71c7a6b9af5a210751e33928dc7012b10dee"
+    }
+   ],
+   "candidate_contract_note": "One actual ordinary outside-per-task integration-branch creation error characterized: failure exit1 and finally report/receipt-only preservation; no all-exception or simultaneous report-failure closure."
   },
   "S24:01": {
    "owner": "farm",
@@ -23793,8 +23833,15 @@
     "SITE-U01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+    }
+   ]
   },
   "S55:08": {
    "owner": "site",
@@ -23813,8 +23860,15 @@
     "SITE-U01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+    }
+   ]
   },
   "S55:10": {
    "owner": "site",
@@ -24252,8 +24306,15 @@
     "SITE-U02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+     "ref": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/component-tested.json",
+     "sha256": "bb2ac6471818f975cc50802baaa0e20bbf47f44ae0222b6d614b1418bf1e1868"
+    }
+   ]
   },
   "S63:01": {
    "owner": "site",
@@ -30159,12 +30220,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
-     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
+     "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+     "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
     }
    ],
-   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+     "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+    }
+   ]
   },
   "pi-qualification:disposable-home:02": {
    "owner": "hooks-workflows",
@@ -30178,12 +30248,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
-     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
+     "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+     "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
     }
    ],
-   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+     "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+    }
+   ]
   },
   "pi-qualification:disposable-home:03": {
    "owner": "hooks-workflows",
@@ -30197,12 +30276,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
-     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4"
+     "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+     "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
     }
    ],
-   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it."
+   "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+     "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+     "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+    }
+   ]
   },
   "pi-qualification:disposable-home:04": {
    "owner": "hooks-workflows",

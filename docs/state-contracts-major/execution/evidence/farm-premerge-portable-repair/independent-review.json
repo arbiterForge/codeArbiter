@@ -1,0 +1,76 @@
+{
+  "verdict": "PASS_WITH_LIMITS",
+  "reviewer": "/root/packaging_site_tools",
+  "roles": [
+    "Auth/Crypto",
+    "Secrets",
+    "Security",
+    "Coverage"
+  ],
+  "subject": {
+    "path": "plugins/ca/tools/farm-interruption.test.ts",
+    "test_sha256": "3d7da328c90cadb512f6711a438b761cf00ad9541a438052dd009eeb5572826f",
+    "patch_sha256": "3829acf6e2bb832e73dcfe92aaeb0a58415970ad3e5585bae21acb56347f6982",
+    "freeze_sha256": "5eb331827b8b4ef189dd691730228cefb7153b9be4f4e1737bdb0896f0857371",
+    "source_base": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+    "kind": "Temp-only test portability repair, no production change"
+  },
+  "policy": {
+    "html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "full32_record_export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "reuse": "Complete policy/operative stub and reviewer charters already read; actual current HTML hash rechecked unchanged.",
+    "controls": [
+      "CON-002",
+      "CON-003",
+      "CON-004",
+      "CON-009",
+      "CON-011",
+      "CON-015",
+      "CON-016"
+    ]
+  },
+  "prior_review_reused": {
+    "path": "Temp/ca-farm-premerge-interruption-independent-review.json",
+    "sha256": "a2f7b742517165c13d2ce94d957c2ef0597c46c5e54d832c05c9fa02c2ec1189",
+    "exact_preimage_test_sha256": "b624d890cdf8064a5dfb520a33443f9fe63df4776d746e27177fda1ec1137f36",
+    "scope": "Unchanged real producer/hook/private-environment/loopback/receipt-only fixture body, exact original preimage verified against6d4 Git. Full new one-file diff inspected."
+  },
+  "analysis": [
+    "observeMetadata returns tagged absence only for ENOENT; present raw bytes are retained as hex. All other errors propagate. New real owned-filesystem control checks missing/file/directory cases, not a catch-all success path.",
+    "Both before/after marker observations validate exact candidate commit whenever marker exists. Absence is explicitly observed, never fabricated from arbitrary read failure or treated as completed merge.",
+    "Actual staged index is required to differ only at src/task.ts and to match the exact candidate tree through git diff --cached --exit-code before and after producer death. Any nonzero Git read/difference throws; literal implementation text and complete index bytes remain asserted.",
+    "After separately observed owned hook/Git settlement, two concurrent receipt-only recoverers still preserve exact observed marker-present/absent state, full index, implementation, refs, registry and original journal/run hashes. Both remain unknown merge/status/cleanup and author not-invoked; original author count1, two independent receipts and absent normal report remain intact. No reset/abort/author action added.",
+    "No new execution privilege/credential transport/endpoint/dependency/crypto operation. Exact Git argv uses actual recorded candidate and option delimiter. Shared fixed minimal environment/owned temp cleanup retained unchanged. No OS branch, test skip, added sleep/retry, timeout increase or production edit."
+  ],
+  "causal_evidence": {
+    "original_hosted_red": {
+      "path": "Temp/ca-6d4c858f-farm-original.log",
+      "sha256": "fd1f3de899a993b0adf2eb94a5601aaf3b2946283ead6221914f4bf5b8ae25ff",
+      "observed": "Actual Linux source+bundle ENOENT on unconditional post-refusal MERGE_HEAD read; existing staged state assertions had passed."
+    },
+    "WSL_discriminator": {
+      "sha256": "986b7870f86a8424b9bc7fbdedd6d4ab637e7304b51d4fac15dc27f6cfdcf06c",
+      "observer_sha256": "f28ea8951fc7a771dea97e903de73b84ac4e3f06013f9936485bc0e65438f3c0",
+      "observed": "Actual native WSL Git2.53/Python3.14.4: open parent readers -> Git1/marker present; closed readers -> SIGPIPE-13/marker absent. Both keep base HEAD/staged task/payload; hook ppid exactly equals Git pid.",
+      "limits": "Distinct low-level Git runtime, not replacement hosted full Linux Farm result."
+    }
+  },
+  "verification": {
+    "manifest_files": 12,
+    "manifest_drift": 0,
+    "original_production29_Git_join_drift": 0,
+    "current_candidate30_drift": 0,
+    "recorded_before_after_command_maps_equal": true,
+    "focused_windows": "9 exact named PASS0skip0fail in11.5156s",
+    "typecheck": "exit0 in1.1552s",
+    "reviewer_reruns": 0,
+    "numeric_coverage": "Not rerun/relabelled; original source941 coverage stays historical, no new metric/host union claim"
+  },
+  "findings": [],
+  "limits": [
+    "Replacement full Linux Farm run is pending; local Windows9 and WSL low-level discriminator are separate observed epochs.",
+    "No all-crash/power-loss/concurrent external writer/provider/native/installed/Docker qualification.",
+    "Source review bound to exact proposed test bytes, not a staged marker/candidate verdict; Root owns final gates.",
+    "Reviewer made no source/index/ledger/marker edits and ran no tests/fleet."
+  ]
+}

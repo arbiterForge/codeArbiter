@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "a0f4bc274c78613b739757743616bd23b1fe63ef plus the source-bound diagnostic/evidence batch recorded here",
+  "head": "5768d4f24994ee628538b39ffb921691cd54264b plus bounded evidence carry",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T07:38:00.966933+00:00",
+  "recorded_at": "2026-11-14T08:09:51.028170+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3499,6 +3499,31 @@
       "kind": "CHANNEL_CURRENT_EXECUTION_SUCCESSOR",
       "source": "891e99c0a139b510eb8fb175886f6044b4c8d4a8",
       "detail": "Actual16 selected real local-Git channel methods PASS22.264s. Complete12 source inputs physical/Git and HEAD/index stable before/after. Renew15 same-status TESTED refs after declared packager dependency changed, retaining original0830 nineteen-case proof at genuine891e anchor. No native/provider/installed/publication or new task/cell qualification."
+    },
+    {
+      "recorded_at": "2026-11-14T08:03:40.386622+00:00",
+      "kind": "PORTABLE_FARM_SIDEBAR_OFF_AND_SITE_COMPONENT_ACCEPTANCE",
+      "source": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "detail": "Retain original Farm Linux RED, real WSL Git lifecycle discriminator and focused Windows9 repair; repaired full hosted Linux pending. Retain actual sidebar-off RED/GREEN, owning48 component cases/typecheck/scoped coverage and zero-finding independent reviews. Source repairs committed separately. Carry exactly5 original 6d browser-component TESTED cells (S55:07,S55:09,S62:05,SF11,SF16); controlled Pagefind responses and component markup only, no production page/index/layout qualification. Five existing Pi TESTED rows await genuine committed-source51 renewal; original a0 evidence remains historical. No task/machine/installed/native/whole-program completion."
+    },
+    {
+      "kind": "EXACT_HEAD_CI_TERMINAL_6D4C858F",
+      "source": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+      "run_id": 43572058255,
+      "success_checks": 88,
+      "detail": "Terminal failure: Farm premerge fixture and same Linux coverage rerun; coverage aggregate and merge gate derived. All cold-package platforms and native authority checks passed, including Windows/arm64. Its historical cause remains unknown. Docs validation passed and Pages deploy skipped. Portable fixture repair committed45a6; new exact-head CI pending."
+    },
+    {
+      "recorded_at": "2026-11-14T08:08:26.345174+00:00",
+      "kind": "PI_CURRENT_FIVE_SOURCE_SUCCESSORS",
+      "source": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "detail": "Actual identical51-case selection PASS with child exit0;37 pattern-filtered cases. Complete103 immutable/physical inputs and HEAD/index stable. Renew only isolation3 and footer/doctor2 same-status TESTED rows after sidebar source/test/bundle changed; a0 proof/runtime retained as history. Original wrapper failure lost its child exit receipt, so one bounded rerun persisted it before observation checks; read-only normalization resolved later skipped/pending observer mismatch without another runtime. No full Pi/installed/TUI/author/task completion."
+    },
+    {
+      "recorded_at": "2026-11-14T08:09:51.028170+00:00",
+      "kind": "FARM_FINITE_OUTER_ERROR_ACCEPTANCE",
+      "source": "5768d4f24994ee628538b39ffb921691cd54264b",
+      "detail": "Characterization at actual45a6+Temp two-case test overlay: source/bundle outer branch-creation error exits1, dispatches no author, preserves operator refs/blob/registry, publishes truthful final blocked report; receipt-only inspection preserves original bytes. Three focused cases and typecheck pass; removing final report publication fails the report-existence assertion. All30 tested bytes join actual committed5768, execution epoch is unchanged. Admit only finite S23:12, no all-exceptions/double-failure/task qualification."
     }
   ],
   "scoped_blockers": [
