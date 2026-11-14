@@ -240,6 +240,8 @@ jobs:
         # The npm lockfile does not authenticate browser bytes.
         # No exact hosted Chrome version is claimed; this log records the observed one.
         run: google-chrome --version
+      - name: Browser component acceptance
+        run: npm run test:components
       - name: Browser publication gate
         id: browser-gate
         run: npm run test:browser
