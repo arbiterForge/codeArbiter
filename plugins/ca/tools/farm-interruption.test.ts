@@ -104,7 +104,7 @@ function originalFiles(root: string): Record<string, string> {
   return result;
 }
 
-async function fixture(paused: boolean) {
+async function fixture(paused: boolean, boundary: "post-merge" | "post-commit" | "pre-merge-commit" = "post-merge") {
   const root = realpathSync(mkdtempSync(path.join(tmpdir(), "farm-process-interruption-")));
   const repo = path.join(root, "repo"), control = path.join(root, "control");
   mkdirSync(repo); mkdirSync(control);
@@ -115,14 +115,14 @@ async function fixture(paused: boolean) {
   const base = git("rev-parse", "HEAD");
   const hooks = path.join(control, "hooks"), ackPath = path.join(control, "merge-ack.json"), release = path.join(control, "release");
   mkdirSync(hooks);
-  const hookScript = path.join(control, "post-merge.cjs");
+  const hookScript = path.join(control, `${boundary}.cjs`);
   writeFileSync(hookScript, `const fs=require('node:fs');const cp=require('node:child_process');
 const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 fs.writeFileSync(${JSON.stringify(ackPath)},JSON.stringify({pid:process.pid,hookParentPid:process.ppid,head}));
-if(${paused}){const check=setInterval(()=>{if(fs.existsSync(${JSON.stringify(release)})){clearInterval(check);process.exit(0);}},20);setTimeout(()=>process.exit(75),20000);}
+if(${paused}){const check=setInterval(()=>{if(fs.existsSync(${JSON.stringify(release)})){clearInterval(check);process.exit(${boundary === "pre-merge-commit" ? 75 : 0});}},20);setTimeout(()=>process.exit(75),20000);}
 `);
   const shellQuote = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
-  writeFileSync(path.join(hooks, "post-merge"), `#!/bin/sh\nexec ${shellQuote(process.execPath.replaceAll("\\", "/"))} ${shellQuote(hookScript.replaceAll("\\", "/"))}\n`, { mode: 0o700 });
+  writeFileSync(path.join(hooks, boundary), `#!/bin/sh\nexec ${shellQuote(process.execPath.replaceAll("\\", "/"))} ${shellQuote(hookScript.replaceAll("\\", "/"))}\n`, { mode: 0o700 });
   git("config", "core.hooksPath", hooks.replaceAll("\\", "/"));
   let authors = 0;
   const server = createServer((req, res) => {
@@ -217,3 +217,108 @@ it("FARM-R01 unblocked real post-merge hook control publishes normal green recei
     expect(report.results).toMatchObject([{ id: "task", status: "green" }]);
   } finally { await f.dispose(); }
 }, 30_000);
+
+for (const entry of ["source", "bundle"] as const) {
+  it(`FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (${entry})`, async () => {
+    const f = await fixture(true, "post-commit");
+    try {
+      const running = f.start(entry);
+      const observed = await until(f.ack, running.output);
+      expect(running.child.exitCode).toBeNull();
+      const effectFile = path.join(f.runDir, "effects/task.json");
+      const effect = JSON.parse(readFileSync(effectFile, "utf8"));
+      expect(effect.stage).toBe("commit-pending");
+      expect(effect.base.commit).toBe(f.base);
+      expect(effect.candidate).toBeUndefined();
+      expect(observed.head).not.toBe(f.base);
+      expect(observed.head).toBe(f.git("rev-parse", "farm/task"));
+      expect(f.git("show", "-s", "--format=%P", observed.head)).toBe(f.base);
+      expect(f.git("rev-parse", "farm/task^{tree}")).toBe(effect.expectedTree);
+      expect(f.git("rev-parse", "farm/integration")).toBe(f.base);
+      // The real commit exists, but the blocked post-commit acknowledgement has
+      // not returned to Farm. Parent death is not a child-containment claim.
+      running.child.kill("SIGKILL");
+      expect((await running.result).code).not.toBe(0);
+      writeFileSync(f.release, "release after actual producer death\n");
+      await until(() => !alive(observed.pid) && !alive(observed.hookParentPid) ? true : undefined,
+        () => "owned Git post-commit hook has not settled", 5_000);
+      expect(existsSync(path.join(f.runDir, "farm-report.json"))).toBe(false);
+      const refs = f.git("show-ref"), registry = f.git("worktree", "list", "--porcelain"), originals = originalFiles(f.runDir);
+      const recovered = await Promise.all([f.start(entry, ["--recover-receipt", "interrupted"], false).result,
+        f.start(entry, ["--recover-receipt", "interrupted"], false).result]);
+      for (const result of recovered) {
+        expect(result.code, result.out).toBe(0);
+        const receipt = JSON.parse(result.out);
+        expect(receipt.results[0].candidateMatches).toBe(false);
+        expect(receipt.results).toMatchObject([{ stage: "commit-pending", candidateMatches: false,
+          candidate: { commit: observed.head, tree: effect.expectedTree }, integration: { commit: f.base },
+          merge: "unknown", status: "unknown", cleanup: "unknown", author: "not-invoked" }]);
+      }
+      expect(f.authors()).toBe(1);
+      expect(f.git("show-ref")).toBe(refs);
+      expect(f.git("worktree", "list", "--porcelain")).toBe(registry);
+      expect(originalFiles(f.runDir)).toEqual(originals);
+      expect(readdirSync(f.runDir).filter(name => /^farm-recovered-[a-f0-9]+\.json$/.test(name))).toHaveLength(2);
+      expect(JSON.parse(readFileSync(effectFile, "utf8")).stage).toBe("commit-pending");
+      expect(existsSync(path.join(f.runDir, "farm-report.json"))).toBe(false);
+    } finally { await f.dispose(); }
+  }, 30_000);
+}
+
+for (const entry of ["source", "bundle"] as const) {
+  it(`FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (${entry})`, async () => {
+    const f = await fixture(true, "pre-merge-commit");
+    try {
+      const running = f.start(entry);
+      const observed = await until(f.ack, running.output);
+      const integration = path.join(f.runDir, "integration-wt");
+      const effectFile = path.join(f.runDir, "effects/task.json");
+      const effect = JSON.parse(readFileSync(effectFile, "utf8"));
+      expect(running.child.exitCode).toBeNull();
+      expect(effect.stage).toBe("merge-pending");
+      expect(effect.integrationBefore.commit).toBe(f.base);
+      expect(effect.candidate.commit).toBe(f.git("rev-parse", "farm/task"));
+      expect(observed.head).toBe(f.base);
+      expect(f.git("rev-parse", "farm/integration")).toBe(f.base);
+      const metadata = (name: string) => f.git("-C", integration, "rev-parse", "--path-format=absolute", "--git-path", name);
+      const mergeHead = metadata("MERGE_HEAD"), index = metadata("index");
+      // Git has staged the merge before this hook, but publishes MERGE_HEAD
+      // only after the hook refuses; observe both sides of that boundary.
+      expect(existsSync(mergeHead)).toBe(false);
+      expect(f.git("-C", integration, "diff", "--cached", "--name-only")).toBe("src/task.ts");
+      // Kill the real producer while the merge is staged but uncommitted. The
+      // owned hook then refuses commit, leaving Git's actual pending merge for
+      // inspection. This does not claim parent death stopped detached Git.
+      running.child.kill("SIGKILL");
+      expect((await running.result).code).not.toBe(0);
+      writeFileSync(f.release, "release owned hook with controlled refusal\n");
+      await until(() => !alive(observed.pid) && !alive(observed.hookParentPid) ? true : undefined,
+        () => "owned pre-merge hook/Git has not settled", 5_000);
+      expect(f.git("rev-parse", "farm/integration")).toBe(f.base);
+      expect(readFileSync(mergeHead, "utf8").trim()).toBe(effect.candidate.commit);
+      const pending = () => ({ mergeHead: readFileSync(mergeHead).toString("hex"), index: readFileSync(index).toString("hex"),
+        implementation: readFileSync(path.join(integration, "src/task.ts"), "utf8") });
+      const effects = pending();
+      const refs = f.git("show-ref"), registry = f.git("worktree", "list", "--porcelain"), originals = originalFiles(f.runDir);
+      expect(existsSync(path.join(f.runDir, "farm-report.json"))).toBe(false);
+      const recovered = await Promise.all([f.start(entry, ["--recover-receipt", "interrupted"], false).result,
+        f.start(entry, ["--recover-receipt", "interrupted"], false).result]);
+      for (const result of recovered) {
+        expect(result.code, result.out).toBe(0);
+        const receipt = JSON.parse(result.out);
+        expect(receipt.results[0].merge).toBe("unknown");
+        expect(receipt.results).toMatchObject([{ stage: "merge-pending", candidateMatches: true,
+          candidate: { commit: effect.candidate.commit }, integration: { commit: f.base },
+          merge: "unknown", status: "unknown", cleanup: "unknown", author: "not-invoked" }]);
+      }
+      expect(f.authors()).toBe(1);
+      expect(pending()).toEqual(effects);
+      expect(f.git("show-ref")).toBe(refs);
+      expect(f.git("worktree", "list", "--porcelain")).toBe(registry);
+      expect(originalFiles(f.runDir)).toEqual(originals);
+      expect(readdirSync(f.runDir).filter(name => /^farm-recovered-[a-f0-9]+\.json$/.test(name))).toHaveLength(2);
+      expect(JSON.parse(readFileSync(effectFile, "utf8")).stage).toBe("merge-pending");
+      expect(existsSync(path.join(f.runDir, "farm-report.json"))).toBe(false);
+    } finally { await f.dispose(); }
+  }, 30_000);
+}

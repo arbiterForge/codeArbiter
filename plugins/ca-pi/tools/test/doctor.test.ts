@@ -228,6 +228,30 @@ describe("Pi structured doctor", () => {
     },
   );
 
+  test("aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state", () => {
+    const healthy = healthyInput();
+    const before = JSON.stringify(healthy);
+    const rows = diagnosePi(healthy);
+    expect(rows.find(row => row.id === "active-dispatch")?.state).toBe("degraded");
+    expect(formatPiDoctorReport(rows).split("\n").at(-1)).toBe("doctor: DEGRADED");
+    expect(JSON.stringify(healthy)).toBe(before);
+
+    const broken = healthyInput();
+    broken.runtime.pythonMajor = 2;
+    const brokenBefore = JSON.stringify(broken);
+    const failures = diagnosePi(broken);
+    expect(failures.find(row => row.id === "python")?.state).toBe("unhealthy");
+    expect(failures.find(row => row.id === "active-dispatch")?.state).toBe("degraded");
+    expect(formatPiDoctorReport(failures).split("\n").at(-1)).toBe("doctor: UNHEALTHY");
+    expect(formatPiDoctorReport([...failures].reverse()).split("\n").at(-1)).toBe("doctor: UNHEALTHY");
+    expect(JSON.stringify(broken)).toBe(brokenBefore);
+
+    // Formatter-only control: the real running doctor above remains degraded.
+    const informational = [{ id: "owned-observation", state: "healthy" as const,
+      message: "observed", remediation: "not needed" }];
+    expect(formatPiDoctorReport(informational)).toBe("HEALTHY  owned-observation: observed\ndoctor: HEALTHY");
+  });
+
   test("reports exact active origins and limits the module-identity claim", () => {
     const result = diagnosePi(healthyInput());
     expect(result).toHaveLength(15);

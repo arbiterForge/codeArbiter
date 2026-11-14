@@ -1,7 +1,7 @@
 {
   "schema": "codearbiter-execution-state/1",
   "program_id": "codearbiter-major-state-contracts",
-  "work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
   "head": "1e06da1b6483591350b090c8eed4a6f37f277d55 plus reconciled component observations in this commit",
@@ -11,7 +11,7 @@
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T06:14:28.857316+00:00",
+  "recorded_at": "2026-11-14T06:51:43.202225+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -1808,17 +1808,32 @@
     {
       "id": "DEF-WINDOWS-PROCESS-RUNDOWN-01",
       "owner": "authority-runtime",
-      "status": "IMPLEMENTED_UNQUALIFIED",
+      "status": "DONE",
       "source": "0830 job132342773253 and retained local typed Win32 experiments",
       "detail": "Parent0 and descendant exit code visible before descendant process object signals/cwd releases. Accounting-only drain and empty live PID list were empirically insufficient. Minimal identity-safe shared supervisor repair uses actual process-handle rundown observations; no deletion retries/ignore.",
-      "current_detail": "Confirmed and repaired Windows Job Object rundown: exit-code visibility can precede descendant rundown and owned-cwd release. The shared authority supervisor now observes private job creation identities before launch, terminates its job and waits for identity-bound member completion; incomplete observation refuses. Genuine local rundown and fast-exit output-error counterexamples are retained;15 focused Windows checks and normal98-helper/three-host sync parity passed. Existing inherited pipe-reader shutdown bounds remain unchanged. Hosted/full-suite/installed acceptance remains owned by normal CI and the host proof owners."
+      "current_detail": "Actual exactce3 native-authority checks passed on both Windows platforms and all selected other platforms; closes this shared rundown repair only. OverallCIfailed separately at cold installed-host commit-proof."
     },
     {
       "id": "QUAL-REAL-EXECUTION-BOUNDARIES-01",
       "owner": "farm-sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "9b7ff759da109944fda5a3af7a4b5d1b9aed9920",
-      "detail": "Actual Farm source/bundle producer interruption at an acknowledged Git merge, concurrent receipt-only recovery, private child environment canary and normal control are locally observed. Three real Docker partial-create compensation tests collected/SKIP locally/typechecked; actual Docker outcomes await required hosted execution. No whole crash-matrix or paid-provider claim."
+      "detail": "Actual Farm source/bundle producer interruption at an acknowledged Git merge, concurrent receipt-only recovery, private child environment canary and normal control are locally observed. Three real Docker partial-create compensation tests collected/SKIP locally/typechecked; actual Docker outcomes await required hosted execution. No whole crash-matrix or paid-provider claim.",
+      "current_detail": "Original currentce3 CI jobs132359071160/132359071112 show all4 Farm interruption cases and3 Docker partial-create compensation cases passed; requiredDockerlayer sentinel includes the new layer. Newer postcommit/premerge Farm tests remain a separate Temp overlay until this batch is committed/hosted; whole crash matrix and tasks remain unqualified."
+    },
+    {
+      "id": "DEF-PI-FOOTER-OWNERSHIP-01",
+      "owner": "pi",
+      "status": "IMPLEMENTED_UNQUALIFIED",
+      "source": "FrozenS18:07 + validated diagnosis45381931 and exact new source959aa8a9",
+      "detail": "Retire only the component/generation Pi disposed; stale and repeated callback cannot retire a newer footer. Actual component R/G and41status tests pass; fullhost/cohort acceptance pending."
+    },
+    {
+      "id": "DIAG-COLD-INSTALLED-FAILURE-01",
+      "owner": "packaging",
+      "status": "IN_PROGRESS",
+      "source": "ce3 job132360668173",
+      "detail": "Add closed exception/host/audit-site diagnostic symbols with strict decoding and privacy canaries, preserving original guard decisions. Original WindowsARM cause remains unknown; no unchangedrerun or falsefixclaim."
     }
   ],
   "new_transition_rows": [
@@ -3429,6 +3444,36 @@
         "Unknown/dropped member observations, unavailable queries and deadline exhaustion refuse. No deletion retry, arbitrary PID termination, authority grant or cleanup-ignore behavior was introduced."
       ],
       "evidence_impact": "Thirty previously recorded TESTED cells directly bind the changed authority source. Their original source/result epochs remain intact; current applicability must become STALE until actual owning acceptance renews them. No source-only hash refresh or status promotion."
+    },
+    {
+      "recorded_at": "2026-11-14T06:51:43.202225+00:00",
+      "kind": "WORK_OWNER_IDENTITY_CORRECTION",
+      "former_metadata_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
+      "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+      "origin": "github:arbiterForge/codeArbiter:pull/1098",
+      "detail": "Installed work facade could not resolve the prior metadata ID; exact origin lookup returned no match. Created and started this one origin-backed legacy work record through the owning writer. External82-task specification remains unchanged. Optional cycles are unsupported by this legacy owner; no native shadow store was created."
+    },
+    {
+      "recorded_at": "2026-11-14T06:51:43.202225+00:00",
+      "kind": "CURRENT_CE3_CI_COMPLETION",
+      "source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+      "run_id": 43565706104,
+      "docs_run_id": 43565706034,
+      "detail": "81successful checks and one primary WindowsARM64 adapters/conformance failure at cold installed-host commit-proof/enforce_runtime_event, followed by two derived artifact/mergegate failures. Docs and all native-authority jobs passed, including the repaired Windows supervisor. Original154-byte stderr is exactly the bounded unknown record plusWindowsCRLF; no hidden traceback is recoverable. Cause unresolved; bounded diagnostic extension underway, not represented as a functional repair."
+    },
+    {
+      "recorded_at": "2026-11-14T06:51:43.202225+00:00",
+      "kind": "RECOVERY_CURRENT_EXECUTION_SUCCESSOR",
+      "source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+      "detail": "One actual38-case canonical recovery/legacy-board run passed at committedce3a4a91,25.132s. Complete100 physical/Git inputs and successful Windows-sensitive physical/immutable owned lookup before/after match. Replaces22 current proof references with a distinct observed successor while preserving all old runtime epochs. No new disposition/status/task/installed qualification.",
+      "proof": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+      "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63"
+    },
+    {
+      "recorded_at": "2026-11-14T06:51:43.202225+00:00",
+      "kind": "FOOTER_OWNERSHIP_REPAIR_LOCAL",
+      "source_epoch": "ce3a4a91 plus exact Temp-author overlay, not a later commit execution",
+      "detail": "Current component loses ownership when another extension replaces it, but historical installed/context flags let later shutdown clear the foreign footer. FrozenS18:07 and inspectedPi1.5 shared setter establish expectation. Genuine foreign-replacement RED plus positive control retained. Identity/generation-scoped retirement repairs it; target/focused7/fullstatus41 pass, owningV8 lines94.73/branches91.08 and typecheck pass; supported root bundle regeneration and combined typecheck pass. Independent security/coverage review reports no findings. No actual TUI/installed/full-adapter claim."
     }
   ],
   "scoped_blockers": [
@@ -3438,24 +3483,24 @@
       "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
     },
     {
-      "id": "CI-WINDOWS-PROCESS-RUNDOWN",
-      "scope": "Current1103 exact-head CI and dependent artifact qualification",
-      "detail": "Actual native authority failure and local bound reproduction establish premature settlement on exit-code visibility. Shared Windows process rundown repair must pass affected tests and replacement exact-head checks."
-    },
-    {
       "id": "PI-HTTP-ENDPOINT-POLICY",
       "scope": "Selected Pi upstream transport contract and S10/S11",
       "detail": "Awaiting explicit user choice between currentCON004 HTTPS rule and acceptedADR0018/0019 HTTP compatibility. No side selected or source changed; independent work remains authorized."
+    },
+    {
+      "id": "CI-COLD-WINDOWS-ARM-COMMIT-PROOF",
+      "scope": "Current1103 exact-head CI and dependent finalcohort",
+      "detail": "Original cold installed-host commit-proof failed with an unclassified154-byte bounded record. Bounded instrumentation required to discriminate actual exception/site/host; no speculative guard relaxation or successfulwhole-run claim."
     }
   ],
   "unknown_outcomes": [],
   "next_actions": [
-    "Push the coherent source/tests/evidence batch once; watch current exact-head CI, diagnose genuine failures and preserve original outcomes. Renew only affected runtime proof from actual owning acceptance; keep1098/main/publication held.",
+    "Finish bounded cold-failure diagnostics; commit and push one coherent footer/test/diagnostic/evidence batch, then watch exact-head CI. Original ARM cause remains unknown until actual evidence establishes it; keep1098/main/publication held.",
     "Merge1103 by true merge after the required exact-head aggregate passes; named child auto-deletion is approved. Never merge1098 to main or publish without the user testing hold being lifted.",
     "Continue remaining row-specific qualification and missing authorized behavior. Preserve historical raw results and report current applicability separately; do not repeat broad tests merely for a new phase or receipt.",
     "Acquire only authenticated original artifacts for any final-source installed/platform journeys; diagnostic old-source TUI evidence does not replace them."
   ],
-  "delivery_state": "PR1103_WINDOWS_REPAIR_BATCH_AWAITING_EXACT_HEAD_CI_MAIN_HOLD",
+  "delivery_state": "PR1103_COLD_ARM_FAILURE_NEXT_COHERENT_SOURCE_BATCH_MAIN_HOLD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [

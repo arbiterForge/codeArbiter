@@ -66,6 +66,7 @@ export class PiFooterLifecycle {
   private activationEnabled = false;
   private expected = false;
   private installed = false;
+  private componentOwner: object | undefined;
   private refreshQueue: Promise<void> = Promise.resolve();
 
   constructor(
@@ -133,11 +134,14 @@ export class PiFooterLifecycle {
     }
     if (this.context !== context || generation !== this.generation) return;
     const factory: PiFooterFactoryPort = (tui, _theme, footerData) => {
-      if (this.context !== context) {
+      if (this.context !== context || generation !== this.generation) {
         return { render: () => [], invalidate: () => undefined };
       }
+      const componentOwner = {};
+      this.componentOwner = componentOwner;
       this.tui = tui;
       this.footerData = footerData;
+      let disposed = false;
       let unsubscribe: (() => void) | undefined;
       try {
         const result = footerData.onBranchChange?.(() => requestRender(tui));
@@ -187,9 +191,20 @@ export class PiFooterLifecycle {
           }
         },
         dispose: () => {
+          if (disposed) return;
+          disposed = true;
           try { unsubscribe?.(); } catch { /* Host subscription disposal is fail-soft. */ }
-          if (this.tui === tui) this.tui = undefined;
-          if (this.footerData === footerData) this.footerData = undefined;
+          // Pi disposes the old custom component before installing another
+          // extension's footer. Retire only this live owner, without touching UI.
+          if (this.componentOwner === componentOwner && this.context === context
+              && generation === this.generation) {
+            this.componentOwner = undefined;
+            this.generation += 1;
+            this.installed = false;
+            this.context = undefined;
+            this.tui = undefined;
+            this.footerData = undefined;
+          }
         },
       };
     };
@@ -253,6 +268,7 @@ export class PiFooterLifecycle {
     const context = this.context;
     this.generation += 1;
     this.context = undefined;
+    this.componentOwner = undefined;
     this.footerData = undefined;
     this.tui = undefined;
     this.usageCursor = -1;

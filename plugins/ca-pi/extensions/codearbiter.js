@@ -4989,6 +4989,7 @@ var PiFooterLifecycle = class {
   activationEnabled = false;
   expected = false;
   installed = false;
+  componentOwner;
   refreshQueue = Promise.resolve();
   requestActivityRender() {
     requestRender(this.tui);
@@ -5046,11 +5047,14 @@ var PiFooterLifecycle = class {
     }
     if (this.context !== context || generation !== this.generation) return;
     const factory = (tui, _theme, footerData) => {
-      if (this.context !== context) {
+      if (this.context !== context || generation !== this.generation) {
         return { render: () => [], invalidate: () => void 0 };
       }
+      const componentOwner = {};
+      this.componentOwner = componentOwner;
       this.tui = tui;
       this.footerData = footerData;
+      let disposed = false;
       let unsubscribe;
       try {
         const result3 = footerData.onBranchChange?.(() => requestRender(tui));
@@ -5100,12 +5104,20 @@ var PiFooterLifecycle = class {
           }
         },
         dispose: () => {
+          if (disposed) return;
+          disposed = true;
           try {
             unsubscribe?.();
           } catch {
           }
-          if (this.tui === tui) this.tui = void 0;
-          if (this.footerData === footerData) this.footerData = void 0;
+          if (this.componentOwner === componentOwner && this.context === context && generation === this.generation) {
+            this.componentOwner = void 0;
+            this.generation += 1;
+            this.installed = false;
+            this.context = void 0;
+            this.tui = void 0;
+            this.footerData = void 0;
+          }
         }
       };
     };
@@ -5160,6 +5172,7 @@ var PiFooterLifecycle = class {
     const context = this.context;
     this.generation += 1;
     this.context = void 0;
+    this.componentOwner = void 0;
     this.footerData = void 0;
     this.tui = void 0;
     this.usageCursor = -1;

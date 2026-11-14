@@ -279,5 +279,80 @@ class TestArgvHandling(_SyntheticRepoFixture):
         self.assertIn("unknown argument", err)
 
 
+
+
+class TestSyncOwnerAcceptance(_SyntheticRepoFixture):
+    def test_declared_inventory_excludes_host_adapter_and_nonpython_owners(self):
+        from host_descriptors import load_host_descriptors
+        _write(self.repo, "core/hosts.json", (REPO_ROOT / "core/hosts.json").read_bytes())
+        _write(self.core, "_host.py", b"must never replace host authority\n")
+        _write(self.core, "notes.md", b"not a shared helper\n")
+        _write(self.core, "nested/hidden.py", b"not a top-level shared helper\n")
+        Path(self.core, "directory.py").mkdir()
+        hosts = load_host_descriptors(self.repo)
+        for host in hosts:
+            _write(self.repo, host.hooks_dir + "/_host.py", host.name.encode() + b" adapter\n")
+            _write(self.repo, host.hooks_dir + "/manual.txt", b"handwritten\n")
+        with mock.patch.object(S, "load_host_descriptors", wraps=load_host_descriptors):
+            self.assertEqual(self.run_main([])[0], 0)
+        for host in hosts:
+            target = Path(self.repo, host.hooks_dir)
+            self.assertEqual((target / "_host.py").read_bytes(), host.name.encode() + b" adapter\n")
+            self.assertEqual((target / "manual.txt").read_bytes(), b"handwritten\n")
+            for name in ("hostapi.py", "_hooklib.py"):
+                self.assertEqual((target / name).read_bytes(), Path(self.core, name).read_bytes())
+            for name in ("notes.md", "nested", "directory.py"):
+                self.assertFalse((target / name).exists(), str(target / name))
+            for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+                self.assertEqual((target.parent / name).read_bytes(), Path(self.repo, name).read_bytes())
+
+    def test_invalid_real_descriptor_refuses_before_publication_or_other_effect(self):
+        from host_descriptors import load_host_descriptors
+        _write(self.repo, "core/hosts.json", b'{"hosts": []}\n')
+        before = {p.relative_to(self.repo).as_posix(): p.read_bytes()
+                  for p in Path(self.repo).rglob("*") if p.is_file()}
+        with mock.patch.object(S, "load_host_descriptors", wraps=load_host_descriptors), \
+             mock.patch.object(S, "publish_files", wraps=S.publish_files) as publish:
+            rc, _out, error = self.run_main([])
+        self.assertEqual(rc, 2)
+        self.assertIn("expected a non-empty array", error)
+        publish.assert_not_called()
+        self.assertEqual(before, {p.relative_to(self.repo).as_posix(): p.read_bytes()
+                                 for p in Path(self.repo).rglob("*") if p.is_file()})
+        self.assertFalse(list(Path(self.repo).glob(".generated-*")))
+
+    def test_later_host_publish_fault_restores_complete_set_then_rerun_converges(self):
+        self.assertEqual(self.run_main([])[0], 0)
+        def outputs():
+            return {p.relative_to(self.repo).as_posix(): p.read_bytes()
+                    for p in Path(self.repo, "plugins").rglob("*") if p.is_file()}
+        old = outputs()
+        for name in ("hostapi.py", "_hooklib.py"):
+            _write(self.core, name, ("new " + name + "\n").encode())
+        first_plugin, late_plugin = sorted((Path(self.repo, self.plugin_a), Path(self.repo, self.plugin_b)))
+        failure_target = late_plugin / "hostapi.py"
+        first_host = first_plugin / "hostapi.py"
+        real_replace = os.replace
+        effects_before_fault = []
+        def fail_late(source, destination):
+            if Path(destination) == failure_target and str(source).endswith(".new"):
+                # This is a late actual second-host effect, not a stage-only error.
+                self.assertEqual(first_host.read_bytes(), Path(self.core, "hostapi.py").read_bytes())
+                effects_before_fault.append(True)
+                raise OSError("controlled later-host replacement failure")
+            return real_replace(source, destination)
+        with mock.patch("os.replace", side_effect=fail_late):
+            rc, _out, error = self.run_main([])
+        self.assertEqual(rc, 1)
+        self.assertIn("controlled later-host replacement failure", error)
+        self.assertEqual(effects_before_fault, [True])
+        self.assertEqual(outputs(), old)
+        self.assertFalse(list(Path(self.repo).glob(".generated-*")))
+        self.assertEqual(self.run_main([])[0], 0)
+        self.assertEqual(self.run_main(["--check"])[0], 0)
+        for plugin in (self.plugin_a, self.plugin_b):
+            for name in ("hostapi.py", "_hooklib.py"):
+                self.assertEqual(Path(self.repo, plugin, name).read_bytes(), Path(self.core, name).read_bytes())
+
 if __name__ == "__main__":
     unittest.main()

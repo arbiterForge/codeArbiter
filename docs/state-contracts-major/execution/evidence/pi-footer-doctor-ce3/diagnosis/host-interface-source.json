@@ -1,0 +1,11 @@
+{
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-supported-1.5.0-msc-20261113\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\modes\\interactive\\interactive-mode.js",
+  "sha256": "718980c4931aa457ba8f531c07c0f2ef4d2c8f1f660f044028029f59f11daa2c",
+  "setter_method_lines": [
+    2043,
+    2060
+  ],
+  "setter_method_text": "    setExtensionFooter(factory) {\n        // Dispose existing custom footer\n        if (this.customFooter?.dispose) {\n            this.customFooter.dispose();\n        }\n        this.footerContainer.clear();\n        if (factory) {\n            // Create and add custom footer, passing the data provider\n            this.customFooter = factory(this.ui, theme, this.footerDataProvider);\n            this.footerContainer.addChild(this.customFooter);\n        }\n        else {\n            // Restore built-in footer\n            this.customFooter = undefined;\n            this.footerContainer.addChild(this.footer);\n        }\n        this.ui.requestRender();\n    }",
+  "public_ui_delegation_line": 2156,
+  "scope": "Actual installed distribution source read only; unit models its shared setter, no actualTUI render/execution"
+}
