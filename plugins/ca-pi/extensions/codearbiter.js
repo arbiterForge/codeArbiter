@@ -5674,8 +5674,8 @@ var Manager = class {
   autoDecided = false;
   lastReason;
   metrics;
-  /** PI-L02: bumped by dispose(); an install that awaited across a disposal
-   * belongs to a retired session and must not patch the terminal. */
+  /** PI-L02: disposal or explicit off retires pending installs; a late metrics
+   * result may be cached but must not patch a retired generation's terminal. */
   generation = 0;
   register(context) {
     if (!interactiveParent(context)) return false;
@@ -5792,6 +5792,7 @@ var Manager = class {
     }
   }
   turnOff(context) {
+    this.generation += 1;
     this.userDisabled = true;
     this.autoDecided = true;
     try {

@@ -293,6 +293,28 @@ describe("sidebar manager disposal while installation is pending (PI-L02)", () =
     return { h, requests, tui };
   }
 
+  test("off while metrics are pending keeps native hooks after metrics resolve", async () => {
+    const { h, requests, tui } = pendingHarness();
+    const nativeRender = tui.doRender;
+    const manager = createSidebarManager(h.ports);
+    const context = h.context();
+    manager.register(context);
+    const pending = manager.autoInstall(context);
+    await h.command("off", context);
+    expect(manager.health().installed).toBe(false);
+    expect(h.terminal.columns).toBe(140);
+    expect(tui.doRender).toBe(nativeRender);
+    requests[0]!.resolve();
+    await pending;
+    try {
+      expect(manager.health().installed).toBe(false);
+      expect(h.terminal.columns).toBe(140);
+      expect(tui.doRender).toBe(nativeRender);
+    } finally {
+      manager.dispose(); // Release only the fixture-owned hooks even on RED.
+    }
+  });
+
   test("dispose while metrics are pending, then resolve: nothing installs", async () => {
     const { h, requests, tui } = pendingHarness();
     const nativeRender = tui.doRender;
@@ -304,6 +326,72 @@ describe("sidebar manager disposal while installation is pending (PI-L02)", () =
     await pending;
     expect(manager.health()).toMatchObject({ expected: false, installed: false });
     expect(manager.health().reason).toBeUndefined();
+    expect(h.terminal.columns).toBe(140);
+    expect(tui.doRender).toBe(nativeRender);
+  });
+
+  test.each(["old-first", "new-first"] as const)(
+    "explicit on after pending off resolves %s: only the current request installs",
+    async (order) => {
+      const { h, requests, tui } = pendingHarness();
+      const nativeRender = tui.doRender;
+      const context = h.context();
+      const manager = createSidebarManager(h.ports);
+      manager.register(context);
+      const oldInstall = manager.autoInstall(context);
+      await h.command("off", context);
+      const currentInstall = h.command("on", context);
+      expect(requests).toHaveLength(2);
+      try {
+        if (order === "old-first") {
+          requests[0]!.resolve();
+          await oldInstall;
+          expect(manager.health().installed).toBe(false);
+          expect(h.terminal.columns).toBe(140);
+          expect(tui.doRender).toBe(nativeRender);
+          requests[1]!.resolve();
+          await currentInstall;
+        } else {
+          requests[1]!.resolve();
+          await currentInstall;
+          const currentRender = tui.doRender;
+          requests[0]!.resolve();
+          await oldInstall;
+          expect(tui.doRender).toBe(currentRender);
+        }
+        expect(manager.health()).toMatchObject({ installed: true, degraded: false });
+        expect(h.terminal.columns).toBe(140 - 41);
+      } finally {
+        manager.dispose();
+      }
+      expect(h.terminal.columns).toBe(140);
+      expect(tui.doRender).toBe(nativeRender);
+    },
+  );
+
+  test("off during pending metrics does not persist into a new session", async () => {
+    const { h, requests, tui } = pendingHarness();
+    const nativeRender = tui.doRender;
+    const manager = createSidebarManager(h.ports);
+    manager.register(h.context());
+    const oldInstall = manager.autoInstall(h.context());
+    await h.command("off");
+    manager.dispose();
+    manager.register(h.context());
+    const newInstall = manager.autoInstall(h.context());
+    expect(requests).toHaveLength(2);
+    try {
+      requests[0]!.resolve();
+      await oldInstall;
+      expect(manager.health().installed).toBe(false);
+      expect(tui.doRender).toBe(nativeRender);
+      requests[1]!.resolve();
+      await newInstall;
+      expect(manager.health().installed).toBe(true);
+      expect(h.terminal.columns).toBe(140 - 41);
+    } finally {
+      manager.dispose();
+    }
     expect(h.terminal.columns).toBe(140);
     expect(tui.doRender).toBe(nativeRender);
   });

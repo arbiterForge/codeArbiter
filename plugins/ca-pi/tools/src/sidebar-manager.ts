@@ -74,8 +74,8 @@ class Manager implements SidebarManager {
   private autoDecided = false;
   private lastReason: string | undefined;
   private metrics: FooterTextMetrics | undefined;
-  /** PI-L02: bumped by dispose(); an install that awaited across a disposal
-   * belongs to a retired session and must not patch the terminal. */
+  /** PI-L02: disposal or explicit off retires pending installs; a late metrics
+   * result may be cached but must not patch a retired generation's terminal. */
   private generation = 0;
 
   constructor(private readonly ports: SidebarManagerPorts) {}
@@ -197,6 +197,7 @@ class Manager implements SidebarManager {
   }
 
   private turnOff(context: ExtensionContextPort): void {
+    this.generation += 1;
     this.userDisabled = true;
     this.autoDecided = true;
     try { this.compositor?.dispose(); } catch { /* Restore is fail-soft. */ }
