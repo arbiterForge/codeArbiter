@@ -178,6 +178,8 @@ jobs:
       artifacts: ${{ steps.filter.outputs.artifacts == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - name: Resolve supported Pi versions from repository policy
         id: pi-policy
         shell: python
@@ -194,7 +196,7 @@ jobs:
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
-          list-files: shell
+          list-files: none
           # A change to shared CI infra (.github/) flags BOTH plugins so the
           # full mechanical surface re-runs. A plugin-only change flags just
           # that plugin - this is the path-scoping ADR-0007 requires.
@@ -580,13 +582,11 @@ jobs:
               - '.github/workflows/ci.yml'
       - name: Write impact receipt
         id: impact
-        env:
-          CHANGED_FILES: ${{ steps.filter.outputs.all_files }}
         run: |
           python tools/ci-impact.py \
             --map .github/ci-impact-map.json \
             --hosts core/hosts.json \
-            --changed-files "$CHANGED_FILES" \
+            --github-event "$GITHUB_EVENT_PATH" \
             --output impact.json \
             --summary "$GITHUB_STEP_SUMMARY"
       - name: Store impact receipt

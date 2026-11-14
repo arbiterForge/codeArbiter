@@ -1143,7 +1143,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", ci)
         self.assertIn("id: impact", ci)
         self.assertIn("python tools/ci-impact.py", ci)
-        self.assertIn("list-files: shell", ci)
+        self.assertIn("list-files: none", ci)
         # P-01: the integration branch push selects every domain.
         self.assertIn("impact: ${{ steps.filter.outputs.impact == 'true' || "
                       "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}", ci)
@@ -2917,6 +2917,176 @@ class ReceiptCommandTest(unittest.TestCase):
             markdown = summary.read_text(encoding="utf-8")
             self.assertIn("## CI impact receipt", markdown)
 
+
+
+
+class ChangedPathTransportTest(unittest.TestCase):
+    """Changed paths travel as data, without an exec-sized argument or environment."""
+
+    def _receipt(self, root, *arguments):
+        output, summary = root / "impact.json", root / "summary.md"
+        command = [sys.executable, "-B", str(_TOOL),
+                   "--map", str(REPO_ROOT / ".github/ci-impact-map.json"),
+                   "--hosts", str(REPO_ROOT / "core/hosts.json"),
+                   "--output", str(output), "--summary", str(summary), *arguments]
+        result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(output.read_text(encoding="utf-8"))
+
+    def test_large_path_file_is_lossless_without_large_exec_strings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            paths = ["core/artifacts/" + str(i).zfill(5) + "x" * 90 + ".go"
+                     for i in range(1500)]
+            paths += ["core/artifacts/quote' space\" unicode-λ.go",
+                      "core/artifacts/line\nbreak.go"]
+            source = root / "paths.json"
+            source.write_text(json.dumps(paths, ensure_ascii=False), encoding="utf-8")
+            self.assertGreater(source.stat().st_size, 148885)
+            receipt = self._receipt(root, "--changed-files-file", str(source))
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(paths))
+            self.assertEqual({item["id"] for item in receipt["selected"]},
+                             {"artifact-engine", "artifact-browser", "artifact-package-cold"})
+            # Exercise the exact workflow input mode too, including the large Git
+            # stdout-to-Python boundary; the path list never becomes an exec input.
+            repo = root / "repo"
+            repo.mkdir()
+            _, main, _, _, main_paths, _ = self._history(repo)
+            head = self._commit(repo, {**main_paths, **dict.fromkeys(paths, b"large\n")}, main)
+            receipt = self._event_receipt(root, repo,
+                {"repository": {"default_branch": "main"}, "before": main},
+                "push", "refs/heads/main", head)
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(paths))
+
+    def test_bad_path_file_falls_back_without_partial_selection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "paths.json"
+            for contents in ('{}', '["core/artifacts/good.go", 42]', '["../escape"]',
+                             '["core/artifacts/nul\\u0000.go"]', 'not json'):
+                with self.subTest(contents=contents):
+                    source.write_text(contents, encoding="utf-8")
+                    receipt = self._receipt(root, "--changed-files-file", str(source))
+                    self.assertTrue(receipt["fallback"])
+                    self.assertEqual(receipt["matched_paths"], [])
+            receipt = self._receipt(root, "--changed-files-file", str(root / "missing"))
+            self.assertTrue(receipt["fallback"])
+
+    def _git(self, root, *arguments, data=None):
+        result = subprocess.run(["git", "--no-lazy-fetch", "-C", str(root), *arguments],
+                                input=data, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+        return result.stdout.decode("utf-8").strip()
+
+    def _history(self, root):
+        self._git(root, "init", "--quiet", "--initial-branch=main")
+        self._git(root, "config", "user.name", "Transport fixture")
+        self._git(root, "config", "user.email", "fixture@example.invalid")
+        self._git(root, "config", "core.autocrlf", "false")
+        # Index-only fixture: Git for Windows otherwise silently ignores quote names.
+        self._git(root, "config", "core.protectNTFS", "false")
+        base_paths = {"core/artifacts/base.go": b"base\n",
+                      "core/artifacts/old 'λ.go": b"rename\n"}
+        base = self._commit(root, base_paths)
+        main_paths = dict(base_paths, **{"core/artifacts/main-only.go": b"main\n"})
+        main = self._commit(root, main_paths, base)
+        feature_paths = {"core/artifacts/base.go": b"changed\n",
+                         "core/artifacts/new \"λ\n.go": b"rename\n",
+                         "core/artifacts/feature.go": b"feature\n"}
+        feature = self._commit(root, feature_paths, base)
+        self._git(root, "update-ref", "refs/heads/main", main)
+        self._git(root, "update-ref", "refs/remotes/origin/main", main)
+        self._git(root, "update-ref", "refs/heads/feature", feature)
+        return base, main, feature, base_paths, main_paths, feature_paths
+
+    def _commit(self, root, files, parent=None):
+        self._git(root, "read-tree", "--empty")
+        entries = bytearray()
+        blobs = {}
+        for path, contents in files.items():
+            if contents not in blobs:
+                blobs[contents] = self._git(root, "hash-object", "-w", "--stdin", data=contents)
+            blob = blobs[contents]
+            entries.extend(("100644 " + blob + "\t" + path + "\0").encode("utf-8"))
+        self._git(root, "update-index", "-z", "--index-info", data=bytes(entries))
+        tree = self._git(root, "write-tree")
+        return self._git(root, "commit-tree", tree, *(["-p", parent] if parent else []),
+                         data=b"transport fixture\n")
+
+    def _event_receipt(self, root, repository, event, name, ref, sha):
+        source = root / "event.json"
+        source.write_text(json.dumps(event), encoding="utf-8")
+        return self._receipt(root, "--github-event", str(source), "--event-name", name,
+                             "--ref", ref, "--sha", sha, "--repository", str(repository))
+
+    def test_event_ranges_preserve_pr_push_major_queue_and_initial_semantics(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "repo"
+            repo.mkdir()
+            base, main, feature, base_paths, main_paths, feature_paths = self._history(repo)
+            repository = {"default_branch": "main"}
+            changed = sorted(set(base_paths) | set(feature_paths))
+            cases = [
+                ("pull_request", {"pull_request": {"base": {"sha": main},
+                    "head": {"sha": feature}}}, "refs/pull/1/merge", feature, changed),
+                ("push", {"before": base}, "refs/heads/main", main,
+                    ["core/artifacts/main-only.go"]),
+                # Non-default pushes compare merge base, NOT before/main tip.
+                ("push", {"before": feature}, "refs/heads/feature", feature, changed),
+                ("merge_group", {"merge_group": {"base_sha": base, "head_sha": feature}},
+                    "refs/heads/gh-readonly-queue/main/test", feature, changed),
+                ("push", {"before": "0" * 40}, "refs/heads/main", main, sorted(main_paths)),
+                ("push", {"before": "0" * 40}, "refs/heads/feature", feature, changed),
+                ("push", {}, "refs/heads/main", main, ["core/artifacts/main-only.go"]),
+            ]
+            for name, event, ref, sha, expected in cases:
+                with self.subTest(name=name, ref=ref, before=event.get("before")):
+                    event["repository"] = repository
+                    receipt = self._event_receipt(root, repo, event, name, ref, sha)
+                    self.assertFalse(receipt["fallback"], receipt["reason"])
+                    self.assertEqual(receipt["matched_paths"], expected)
+            # The pinned action directly compares trees when histories are unrelated.
+            orphan_paths = {"core/artifacts/unrelated.go": b"orphan\n"}
+            orphan = self._commit(repo, orphan_paths)
+            receipt = self._event_receipt(root, repo,
+                {"repository": repository, "before": base}, "push",
+                "refs/heads/unrelated", orphan)
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(set(main_paths) | set(orphan_paths)))
+
+    def test_unknown_event_or_unavailable_revision_broadens_without_fetch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "repo"
+            repo.mkdir()
+            base, main, feature, *_ = self._history(repo)
+            for name, event, sha in [
+                ("workflow_dispatch", {}, main),
+                ("pull_request", {"pull_request": {"base": [], "head": None}}, main),
+                ("merge_group", {"merge_group": []}, main),
+                ("push", {"repository": {"default_branch": "main"},
+                          "before": "f" * 40}, main),
+                ("push", {"repository": {"default_branch": "--upload-pack=bad"},
+                          "before": base}, feature),
+                ("merge_group", {"merge_group": {"base_sha": "-bad", "head_sha": main}}, main),
+            ]:
+                with self.subTest(name=name, event=event):
+                    receipt = self._event_receipt(root, repo, event, name,
+                                                 "refs/heads/main", sha)
+                    self.assertTrue(receipt["fallback"])
+                    self.assertEqual(receipt["matched_paths"], [])
+
+    def test_workflow_never_exports_changed_paths_into_exec_environment_or_script(self):
+        changes = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["changes"]
+        self.assertNotIn("CHANGED_FILES", changes)
+        self.assertNotIn("steps.filter.outputs.all_files", changes)
+        self.assertIn("list-files: none", changes)
+        self.assertIn('--github-event "$GITHUB_EVENT_PATH"', changes)
+        self.assertIn("fetch-depth: 0", changes)
+        self.assertNotIn("--changed-files ", changes)
 
 
 class NoOrphanedSuiteTest(unittest.TestCase):

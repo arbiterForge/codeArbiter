@@ -26,6 +26,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Read large CI change sets from event files and Git so integration qualification can start without exceeding process argument or environment limits.
+
 - Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
 
 - Respect late Claude sandbox cancellation before reporting readiness, with scoped cleanup and token-safe errors.
