@@ -3256,6 +3256,8 @@ jobs:
     if: needs.changes.outputs.hooks == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    env:
+      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../workflow-recovery-native
     permissions:
       contents: read
     strategy:
@@ -3277,6 +3279,10 @@ jobs:
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
+      - name: Qualify one native installation for workflow recovery
+        env:
+          ARTIFACT_TEST_INSTALLATION: ""
+        run: python tools/build-artifacts.py --output "${{ github.workspace }}/../workflow-recovery-native"
       - name: Test durable runtime and concurrency
         run: python .github/scripts/test_workflow_recovery.py
       - name: Test actual installed helper and native effects

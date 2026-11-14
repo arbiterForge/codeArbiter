@@ -32,6 +32,21 @@ NATIVE_PREPARE = (
     '          ARTIFACT_TEST_INSTALLATION: ""\n'
     '        run: ' + NATIVE_PREPARE_COMMAND + '\n'
 )
+RECOVERY_NATIVE_ENV = "    env:\n      ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../workflow-recovery-native\n"
+RECOVERY_PREPARE_COMMAND = 'python tools/build-artifacts.py --output "${{ github.workspace }}/../workflow-recovery-native"'
+RECOVERY_PREPARE = (
+    '      - name: Qualify one native installation for workflow recovery\n'
+    '        env:\n'
+    '          ARTIFACT_TEST_INSTALLATION: ""\n'
+    '        run: ' + RECOVERY_PREPARE_COMMAND + '\n'
+)
+RECOVERY_COMMANDS = (
+    'python .github/scripts/test_workflow_recovery.py',
+    'python .github/scripts/test_workflow_recovery_cli.py',
+    'python .github/scripts/test_workflow_recovery_hosts.py',
+    'python .github/scripts/test_workflow_recovery_generator.py',
+    'python .github/scripts/test_review_resubmission.py',
+)
 # sha256(compact JSON of the ordered pre-partition command list). This binds
 # the guard to all 73 reviewed command steps without duplicating the workflow here.
 # Release-workflow and Codex identity regressions run in separate native steps.
@@ -164,6 +179,98 @@ def fixture() -> str:
     return pre+"  ci-passed:\n    needs:\n      - hooks\n    steps:\n      - run: echo '${{ needs.hooks.result }}'\n"
 
 
+def validate_recovery(text: str) -> dict[str, int]:
+    block = job_block(text, 'workflow-recovery')
+    pre = block.split('    steps:\n', 1)[0]
+    require("    if: needs.changes.outputs.hooks == 'true'\n" in pre, 'Recovery applicability changed')
+    require('    runs-on: ${{ matrix.os }}\n' in pre, 'Recovery cells must remain native')
+    require('    timeout-minutes: 15\n' in pre, 'Recovery must retain the 15-minute budget')
+    require(pre.count(RECOVERY_NATIVE_ENV) == 1, 'Recovery consumers require the fixed same-job native installation')
+    require(pre.split('    env:\n', 1)[1].split('    permissions:\n', 1)[0]
+            == RECOVERY_NATIVE_ENV.split('    env:\n', 1)[1], 'Recovery environment cannot reuse arbitrary ambient inputs')
+    require(pre.split('    permissions:\n', 1)[1].split('    strategy:\n', 1)[0]
+            == '      contents: read\n', 'Recovery permissions must remain read-only')
+    require('      fail-fast: false\n' in pre, 'Recovery cannot cancel sibling evidence')
+    require(pre.split('      matrix:\n', 1)[1]
+            == '        os: [ubuntu-latest, windows-latest, macos-latest]\n', 'Recovery must retain exactly three OS cells')
+    require('continue-on-error:' not in block, 'Recovery failures cannot be softened')
+    steps = step_blocks(block)
+    require(len(steps) == 9, 'Recovery requires three setup steps, one qualification and five original commands')
+    require(not any(re.search(r'^        if:', step, re.M) for step in steps), 'Recovery preparation and consumers must be unconditional')
+    require('uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' in steps[0]
+            and 'fetch-depth: 0' in steps[0] and 'persist-credentials: false' in steps[0], 'Recovery checkout pin/history/credential scope changed')
+    require(steps[1] == '      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
+            '        with:\n          python-version: "3.14"\n', 'Recovery Python setup changed')
+    require(steps[2] == GO_SETUP, 'Recovery qualification requires the existing pinned Go setup')
+    require(steps[3] == RECOVERY_PREPARE, 'Recovery must clear inherited installation input and qualify once before consumers')
+    require(tuple(command(step) for step in steps[4:]) == RECOVERY_COMMANDS, 'Recovery original five commands or order changed')
+    require(not any('        env:\n' in step for step in steps[4:]), 'Recovery consumers cannot override the qualified installation')
+    return {'commands': 5, 'native_setup': 1, 'cells': 3}
+
+
+def recovery_fixture() -> str:
+    pre = ("jobs:\n  workflow-recovery:\n    needs: changes\n"
+           "    if: needs.changes.outputs.hooks == 'true'\n"
+           '    runs-on: ${{ matrix.os }}\n    timeout-minutes: 15\n'
+           + RECOVERY_NATIVE_ENV
+           + '    permissions:\n      contents: read\n    strategy:\n'
+           '      fail-fast: false\n      matrix:\n'
+           '        os: [ubuntu-latest, windows-latest, macos-latest]\n    steps:\n')
+    pre += ('      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n'
+            '        with:\n          fetch-depth: 0\n          persist-credentials: false\n'
+            '      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
+            '        with:\n          python-version: "3.14"\n')
+    pre += GO_SETUP + RECOVERY_PREPARE
+    for index, cmd in enumerate(RECOVERY_COMMANDS):
+        pre += f'      - name: recovery {index}\n        run: {cmd}\n'
+    return pre
+
+
+class RecoveryContractTests(unittest.TestCase):
+    def bad(self, before: str, after: str):
+        with self.assertRaises(ValueError):
+            validate_recovery(recovery_fixture().replace(before, after, 1))
+
+    def test_current_recovery_qualifies_once_before_all_five_commands(self):
+        text = (Path(__file__).resolve().parents[2] / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        self.assertEqual(validate_recovery(text), {'commands': 5, 'native_setup': 1, 'cells': 3})
+
+    def test_valid_recovery_three_host_contract(self):
+        self.assertEqual(validate_recovery(recovery_fixture())['cells'], 3)
+
+    def test_recovery_requires_preparation_and_every_original_command(self):
+        self.bad(RECOVERY_PREPARE, '')
+        for cmd in RECOVERY_COMMANDS:
+            with self.subTest(command=cmd):
+                self.bad(cmd, 'python replacement.py')
+
+    def test_recovery_refuses_ambient_reuse_and_qualification_bypass(self):
+        self.bad('          ARTIFACT_TEST_INSTALLATION: ""', '          ARTIFACT_TEST_INSTALLATION: unqualified-parent')
+        self.bad(RECOVERY_PREPARE_COMMAND, RECOVERY_PREPARE_COMMAND + ' --skip-tests')
+        self.bad('      - name: recovery 0\n', '      - name: recovery 0\n        env:\n          ARTIFACT_TEST_INSTALLATION: other-input\n')
+
+    def test_recovery_preserves_budget_matrix_permissions_and_pins(self):
+        for before, after in (
+            ('timeout-minutes: 15', 'timeout-minutes: 30'),
+            ('os: [ubuntu-latest, windows-latest, macos-latest]', 'os: [ubuntu-latest]'),
+            ('contents: read', 'contents: write'),
+            ('fail-fast: false', 'fail-fast: true'),
+            ('go-version: "1.27.1"', 'go-version: "latest"'),
+        ):
+            with self.subTest(change=before):
+                self.bad(before, after)
+
+    def test_recovery_qualification_cannot_move_repeat_or_be_conditional(self):
+        self.bad(GO_SETUP + RECOVERY_PREPARE, RECOVERY_PREPARE + GO_SETUP)
+        self.bad(RECOVERY_PREPARE, RECOVERY_PREPARE + RECOVERY_PREPARE)
+        self.bad(RECOVERY_PREPARE, RECOVERY_PREPARE.replace('        env:', '        if: false\n        env:'))
+
+    def test_recovery_requires_legal_fixed_sibling_environment(self):
+        self.bad(RECOVERY_NATIVE_ENV, '')
+        self.bad('${{ github.workspace }}/../workflow-recovery-native', '${{ runner.temp }}/workflow-recovery-native')
+        self.bad(RECOVERY_PREPARE_COMMAND, RECOVERY_PREPARE_COMMAND.replace('workflow-recovery-native', 'other-input'))
+
+
 class PartitionContractTests(unittest.TestCase):
     fixture_digest=command_digest(['python contract.py',ISOLATION])
     fixture_counts={'contracts':1,'isolation':1,'guard':1,'setup':3,'native_setup':1}
@@ -228,11 +335,12 @@ class PartitionContractTests(unittest.TestCase):
 
 
 def main() -> int:
-    results=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(PartitionContractTests))
+    results=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
     if not results.wasSuccessful() or results.skipped: return 1
     path=Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml'
     try:
         counts=validate(path.read_text(encoding='utf-8'))
+        recovery_counts=validate_recovery(path.read_text(encoding='utf-8'))
         hermetic=(path.parents[1]/'scripts/test_suite_hermeticity.py').read_text(encoding='utf-8')
         for script in HERMETIC_ONLY:
             require(f'".github/scripts/{script}"' in hermetic,f'{script} lost its only CI execution')
@@ -240,6 +348,7 @@ def main() -> int:
         print(f'Hook partition contract failed: {error}',file=sys.stderr)
         return 1
     print(f'Hook partition contract validated: {counts}')
+    print(f'Recovery installation contract validated: {recovery_counts}')
     return 0
 
 if __name__=='__main__':
