@@ -1,0 +1,157 @@
+{
+  "schema": "codearbiter.release-recovery-assertion-map/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "actual_selection": [
+    "EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+    "CompletionModelTests",
+    "ReceiptReadbackTests",
+    "FaultInjectionTests",
+    "CompositionContractTests"
+  ],
+  "actual_named_population": 24,
+  "finding": {
+    "id": "C-F01",
+    "proposed_status": "TESTED",
+    "boundary": "The original finding explicitly describes a pure local decision probe. Real maintained eligible() and plan() agree on public missing receipt; completion/digest/source/receipt failure controls and interrupted model recovery pass. External publication is separate.",
+    "named_assertion_ids": [
+      "test_release_target.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+      "test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state",
+      "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+      "test_release_target.CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner",
+      "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+      "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+      "test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+      "test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+      "test_release_target.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+      "test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it",
+      "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+    ]
+  },
+  "candidate13": {
+    "C16:03": {
+      "observed": [
+        "test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state"
+      ],
+      "gap": "Production release workflow per-target loop/manual target filtering, separate failure output and sibling independence are not executed. Actual current shell also imposes retained-artifact and required pre-tag gates. Direct eligible() coverage alone is not the whole row.",
+      "frozen_row_sha256": "278ede2e3414e545c39fbf53e600938c4fd556904246c0f32bf35607028de7e9",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C16:04": {
+      "observed": [
+        "test_release_target.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "reason": "R-01 explicitly retires the old public-release-means-complete predicate. Current public-but-missing-receipt observation stays eligible and plans only receipt; fully complete stays ineligible. The old erroneous skip state is not preserved.",
+      "frozen_row_sha256": "f938f068880af4f04e2c6f0fe9055c26098683483a27209084c9cad0d5f0f19e",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:01": {
+      "observed": [
+        "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+        "test_release_target.CompletionModelTests.test_plan_cli_refuses_a_cohort_file_that_is_not_the_declared_asset"
+      ],
+      "gap": "Actual original-run artifact download, cohort/hash/cold matrix and manifest/companion/changelog admission are not exercised by selected local planner/model tests.",
+      "frozen_row_sha256": "bc323d16ba3a5f2b3646e835e7c5cee5ee99cbcca1593d9e9d81914528e3c2b7",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:02": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed"
+      ],
+      "gap": "Model mutates an in-memory tag map; no annotated Git tag/changelog-date creation or push/indeterminate push readback executes.",
+      "frozen_row_sha256": "51a8f2141d42abc4928f139b55f0b59d40d618a4c4d1ab6f6ee7d8af9a249283",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:03": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed"
+      ],
+      "gap": "Exact modeled tag mismatch refuses; actual remote peel, exclusive published-tag identity receipt and retained artifact after failure do not execute.",
+      "frozen_row_sha256": "fb3d9cf19ba32b125958d8d286bcfae66ecf18563c17b220edc6e8ced4a0fb1b",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:04": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects"
+      ],
+      "gap": "Model appends/reuses release dict; actual POST draft=true/non-prerelease/extracted-notes and lost API response readback are unexecuted.",
+      "frozen_row_sha256": "02871aacdd2aeb5c4a9b458d09da79da7d14d3dc33c1342c875ea2f8a189f3be",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:05": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_wrong_package_bytes_on_rerun_are_refused",
+        "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over"
+      ],
+      "gap": "Actual remote upload/download byte hashing is not executed; model stores expected digest strings and direct planner validates observed metadata.",
+      "frozen_row_sha256": "d41dae675165f2b5b5d34691df3832e9f0266e3c10001bdf9dc2914e08260d1e",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:06": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+        "test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it"
+      ],
+      "gap": "Real host publishers immutable distribution/channel checks, Git pushes and independent readback do not execute. Model preserves once-only channel count and existing source action selects readback.",
+      "frozen_row_sha256": "639437a9bb6d51f5a2dd4c2e62160f6a6d6ffba7afe7de8e80eb148b079aa1c8",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:07": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_registry_mismatch_is_not_completed",
+        "test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+        "test_release_target.FaultInjectionTests.test_pi_new_publish_still_requires_matching_workflow_commit"
+      ],
+      "gap": "Registry classifier executes on fixture responses; actual exact tarball/npm/OIDC/signature/SLSA/workflow-source verification is not exercised by this selection.",
+      "frozen_row_sha256": "c452c4921fdd19553c4225249d47197f9a8532aeb965ddfa0aba52b8c8aa66db",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:08": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects"
+      ],
+      "gap": "Model flips draft flag; actual PATCH public and independent API tag/public readback are unexecuted.",
+      "frozen_row_sha256": "d43a037a9d9c77d72a487d3541f704e0d4a76befde2fd4769cb7a15ea334efb3",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:09": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+        "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+      ],
+      "gap": "Actual metadata receipt CLI construction/upload POST/lost response is not executed by this selection. Corrected retry effect is directly observed, but whole external attachment row is not TESTED.",
+      "frozen_row_sha256": "df4c452c87e17a43c844ac7371f2e8cc1663560c2e36050f30d5449e88c1934c",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:10": {
+      "observed": [
+        "test_release_target.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+        "test_release_target.ReceiptReadbackTests.test_matching_attached_receipt_is_accepted",
+        "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "reason": "R-01 explicitly retires acceptance by receipt name without content readback. Current action always downloads attached bytes and invokes verify-receipt; actual verifier rejects wrong source/digest/format/public-state/tag fixtures. No live remote receipt readback is claimed.",
+      "frozen_row_sha256": "756bac54e8e1c979afeb7cc26dce9c144d4680e0ade2248986264ceb4391d885",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:11": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt"
+      ],
+      "gap": "Actual original failed hosted-job rerun and retained source/package identities are not executed. Model confirms no duplicate completed writes; baseline retry prose describing already-public recovery blockage is intentionally corrected by R-01.",
+      "frozen_row_sha256": "fa56b1e442c5175fed604e8618918c7b09f60caaaa6940b54d606bd91f682673",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    }
+  },
+  "limits": [
+    "Actual local Windows/amd64 Python3.14.6 source-test/component acceptance only. Direct RT eligible/observe/plan/verify_receipt and registry classifier execute; PublicationRun is a hermetic test model, not the production composite shell or external publication.",
+    "No gh/npm/registry/marketplace/provider/network/publication effects. Real API/digest/artifact admission, OIDC/signatures/provenance and original hosted failed-job rerun are unexecuted.",
+    "The existing four composition tests inspect actual action text/gates/order; they do not execute shell or establish every source-to-effect correspondence.",
+    "No whole R-01 task, SEQ-22, machine or program closure. Only the documented pure local C-F01 defect boundary is TESTED.",
+    "Fresh isolated child before project imports with PYTHONDONTWRITEBYTECODE and PYTHONNOUSERSITE; no installed/bootstrap bytecode-completeness attestation. All9 declared source/data inputs were immutableGit==working before/after.",
+    "Original reported42PASS lane summary is inventory only and not used as actual command evidence."
+  ],
+  "loaded_module_observation_note": "sys.modules projection records4 repository modules. RT and NPM are loaded by existing test explicit spec loader without registry insertion; their exact source files are explicitly declared9-input before/after bindings. No complete imported bytecode manifest is asserted."
+}

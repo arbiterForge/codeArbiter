@@ -1,0 +1,72 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: exact inherited analytical-contract correction; no runtime test"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+    "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+    "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S59:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/correction-inspection.json",
+      "sha256": "d0d23a770d1f7f8f493d925b1ad413b0161fc3bf62c23ad1aecb7a5d72e74295"
+    }
+  ],
+  "contract": "analytical-baseline:S59:01",
+  "rationale": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. PROGRAM5/9/13/46 supplies the governing analytical-versus-advertised-feature distinction. DecisionEvidence selects first case; ContextExplorer validates and honors declared initial/default overlap; ExampleChoices selects0 only with matched panes/buttons; AcademyOverview synchronizes existing details disclosures. No common first-panel protocol exists across this family.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S59:01",
+      "unsupported_contract": "Uniform first-eligible-panel initialization/aria-hidden synchronization across all four heterogeneous component owners.",
+      "actual_owner_contract": "DecisionEvidence selects first case; ContextExplorer validates and honors declared initial/default overlap; ExampleChoices selects0 only with matched panes/buttons; AcademyOverview synchronizes existing details disclosures. No common first-panel protocol exists across this family.",
+      "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "2746c7282977449c8aeaabeaf4509b2504403c10d80607cdb120938b8f0172f0",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 60,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 70,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 15,
+          "end": 24,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 250,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Source inspection only; no new tests/browser/visual/physical-user/installed observations.",
+    "Original frozen105 intake remains unchanged. Append analytical-audit correction to live accounting; no new user policy choice or advertised-feature deferral.",
+    "N/A covers unsupported whole analytical composites, not valid initialization/native-button keyboard/static print/TOC/source-validation behavior. No broad capability waiver.",
+    "Parent1098 remains held for full user testing; no publication."
+  ]
+}

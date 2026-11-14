@@ -1,0 +1,53 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: exact inherited analytical-contract correction; no runtime test"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+    "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+    "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S63:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/correction-inspection.json",
+      "sha256": "d0d23a770d1f7f8f493d925b1ad413b0161fc3bf62c23ad1aecb7a5d72e74295"
+    }
+  ],
+  "contract": "analytical-baseline:S63:01",
+  "rationale": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. PROGRAM5/9/13/46 supplies the governing analytical-versus-advertised-feature distinction. TOC updates initially and on coalesced scroll/resize using current header height and heading positions; disconnect removes listeners/cancels frame. No arbitrary independent layout-change event/observer is registered. ThemeProvider is dark-only, not a layout producer.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S63:01",
+      "unsupported_contract": "Automatic TOC frame queuing for arbitrary standalone layout changes as an owned event.",
+      "actual_owner_contract": "TOC updates initially and on coalesced scroll/resize using current header height and heading positions; disconnect removes listeners/cancels frame. No arbitrary independent layout-change event/observer is registered. ThemeProvider is dark-only, not a layout producer.",
+      "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "582c8b21abb265be37b7b8fd7f61b32ce79faa1ff82f97c7f2309cacfb315b83",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 70,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Source inspection only; no new tests/browser/visual/physical-user/installed observations.",
+    "Original frozen105 intake remains unchanged. Append analytical-audit correction to live accounting; no new user policy choice or advertised-feature deferral.",
+    "N/A covers unsupported whole analytical composites, not valid initialization/native-button keyboard/static print/TOC/source-validation behavior. No broad capability waiver.",
+    "Parent1098 remains held for full user testing; no publication."
+  ]
+}

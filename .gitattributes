@@ -146,3 +146,7 @@ site/**/*.json    text eol=lf
 # MANIFEST.json binds 105 files by SHA-256; never normalize these bytes. The
 # live execution/ records beside the intake are ordinary branch bookkeeping.
 /docs/state-contracts-major/** -text
+
+# Retained evidence is byte-bound, including original Windows line terminators.
+# Recognize CRLF while retaining the normal whitespace error checks.
+/docs/state-contracts-major/execution/evidence/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

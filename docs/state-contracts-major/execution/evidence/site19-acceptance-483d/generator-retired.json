@@ -1,0 +1,65 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: explicit BUILD-G01 supersession inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/gen.ts": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/scripts/generator/generate.ts": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S64:02",
+    "disposition:transitions:S64:05",
+    "disposition:transitions:S67:04",
+    "disposition:transitions:S67:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/inspection.json",
+      "sha256": "bd79337c146ebf2c0792950656dccec184ff81907945f3047f38e45fd7808658"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/finite-acceptance-citation-inputs/source-inspection.json",
+      "sha256": "a0614434d1441c873f7ac5d95d5e8173d9cc6c7fe1424d7b9abc657a004659c9"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S64:02",
+      "rationale": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented.",
+      "frozen_row_sha256": "a84b6fd8ede374e1a5ddf359e72933bbed6116cc52b72b82c7933ff40e12244f"
+    },
+    {
+      "cell": "disposition:transitions:S64:05",
+      "rationale": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed.",
+      "frozen_row_sha256": "4ed935e3c55d71865f608b4c4e12457330c214c64d253a5aaad1fe24a58bf07a"
+    },
+    {
+      "cell": "disposition:transitions:S67:04",
+      "rationale": "BUILD-G01 deliberately replaces Academy-root deletion before rendering. Current code constructs every Academy route/generated projection in memory before owned staged publication. Stale owned files are removed only in the promotion transaction; the old output-removed-first intermediate state is retired.",
+      "frozen_row_sha256": "26b9e42b3ea8d1d4121d35b08840a9cc7f11254446c33453668cdcff8b4ceb18"
+    },
+    {
+      "cell": "disposition:transitions:S67:06",
+      "rationale": "BUILD-G01 deliberately replaces late Academy render failure leaving an incomplete tree. Action/render errors precede the publisher. Publication failure restores the old projection or retains an unusable marker/journal if rollback fails. This does not certify all consumers/global output trees or an executed crash journey.",
+      "frozen_row_sha256": "eb5261ded38e1b685bb8af5e86b70bec60c113a85b8a9bc93be13d457c816eac"
+    }
+  ],
+  "contract": "frozen-task:BUILD-G01",
+  "rationale": "Maintained BUILD-G01 explicitly requires staging/validation before replacement and old-complete or unusable outcome on failure, superseding the four named baseline delete-first/unconditionally-partial intermediate states. Successful ownership-safe generation remains required.",
+  "limits": [
+    "Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+    "Every frozen cited source path is bound, with logic witnesses separate from broader family citation exposure.",
+    "Metadata and unrelated staged cancellation changes are outside these inputs. Source epoch is immutable483d; no claim the whole worktree was clean."
+  ]
+}

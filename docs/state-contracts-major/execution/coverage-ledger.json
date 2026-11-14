@@ -888,8 +888,16 @@
    "task_ids": [
     "R-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/c-f01-tested.json",
+     "sha256": "0a787da7b18aaa075259d6a2532401f52c371334f48a9b6a90c1144000d66423"
+    }
+   ],
+   "candidate_contract_note": "The original finding explicitly describes a pure local decision probe. Real maintained eligible() and plan() agree on public missing receipt; completion/digest/source/receipt failure controls and interrupted model recovery pass. External publication is separate."
   },
   "C-F02": {
    "owner": null,
@@ -906,8 +914,16 @@
    "task_ids": [
     "R-03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+     "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76"
+    }
+   ],
+   "candidate_contract_note": "Authenticated ADR0048 accepted choice and finite source conformance only. No new runtime test, ADRdelivery or full R03/task qualification."
   },
   "C-F04": {
    "owner": null,
@@ -27251,12 +27267,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
-     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
+     "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7"
     }
    ],
-   "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   "candidate_contract_note": "Current79 full guard/effect/retry source-only renewal. Six actual parser/mapped outcomes at79 plus seven distinct c3 unchanged-path facts retained; no new execution/host/task/scenario completion.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+     "ref_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+    }
+   ]
   },
   "S38:02": {
    "owner": "hooks-workflows",
@@ -27268,12 +27293,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
-     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
+     "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7"
     }
    ],
-   "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   "candidate_contract_note": "Current79 full guard/effect/retry source-only renewal. Six actual parser/mapped outcomes at79 plus seven distinct c3 unchanged-path facts retained; no new execution/host/task/scenario completion.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+     "ref_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+    }
+   ]
   },
   "S38:03": {
    "owner": "hooks-workflows",
@@ -27285,12 +27319,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
-     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
+     "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7"
     }
    ],
-   "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   "candidate_contract_note": "Current79 full guard/effect/retry source-only renewal. Six actual parser/mapped outcomes at79 plus seven distinct c3 unchanged-path facts retained; no new execution/host/task/scenario completion.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+     "ref_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+    }
+   ]
   },
   "S38:04": {
    "owner": "hooks-workflows",
@@ -27311,12 +27354,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
-     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
+     "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7"
     }
    ],
-   "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   "candidate_contract_note": "Current79 full guard/effect/retry source-only renewal. Six actual parser/mapped outcomes at79 plus seven distinct c3 unchanged-path facts retained; no new execution/host/task/scenario completion.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+     "ref_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+    }
+   ]
   },
   "S38:06": {
    "owner": "hooks-workflows",
@@ -27328,12 +27380,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
-     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
+     "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7"
     }
    ],
-   "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   "candidate_contract_note": "Current79 full guard/effect/retry source-only renewal. Six actual parser/mapped outcomes at79 plus seven distinct c3 unchanged-path facts retained; no new execution/host/task/scenario completion.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+     "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286",
+     "ref_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+    }
+   ]
   },
   "S39:01": {
    "owner": "hooks-workflows",
@@ -29881,8 +29942,17 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-01-not-applicable.json",
+     "sha256": "6c1943297978c8bac83c1a6c29eeaf0b7fdc3d9369b97f322329dc216194c611"
+    }
+   ],
+   "contract": "analytical-baseline:S59:01",
+   "candidate_contract_note": "Analytical audit description correction only: Uniform first-eligible-panel initialization/aria-hidden synchronization across all four heterogeneous component owners. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: DecisionEvidence selects first case; ContextExplorer validates and honors declared initial/default overlap; ExampleChoices selects0 only with matched panes/buttons; AcademyOverview synchronizes existing details disclosures. No common first-panel protocol exists across this family."
   },
   "S59:02": {
    "owner": "site",
@@ -29907,8 +29977,17 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-03-not-applicable.json",
+     "sha256": "9d5f306b9c1796a5b255f46bb0815e45e9a2b1ba7bec5fb92b29cb0b9bbf8a7d"
+    }
+   ],
+   "contract": "analytical-baseline:S59:03",
+   "candidate_contract_note": "Analytical audit description correction only: An aria-selected and roving tab-stop tab widget for the example-choice button group. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: ExampleChoices deliberately uses a labelled role=group of aria-pressed buttons, native Tab/Enter and extra Arrow/Home/End focus/selection. Its source explicitly avoids tab roles. No aria-selected/roving tab-stop widget is declared."
   },
   "S59:04": {
    "owner": "site",
@@ -29984,8 +30063,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+     "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; A new fragment cancels the earlier frame, resolves a literal owned target, reveals only its ancestors and queues one frame. The frame requires non-aborted connection and connected target; explicit link focus is retained across native hash rescheduling, then scrollIntoView runs. No programmatic history write. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S60:04": {
    "owner": "site",
@@ -30010,8 +30097,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+     "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; New chapter selection cancels pending animation; click microtask checks abort before resolution. Disconnect aborts the connection controller, removes signal-owned listeners and cancels its frame. Reconnection aborts the previous controller. Stale queued work cannot write history; only native links do. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S61:01": {
    "owner": "site",
@@ -30172,8 +30267,17 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-10-not-applicable.json",
+     "sha256": "5e0632ac6fa5f47dd09190e5cb97364b6fd5e68215dc9d9a7b9e65e7058e5d32"
+    }
+   ],
+   "contract": "analytical-baseline:S61:10",
+   "candidate_contract_note": "Analytical audit description correction only: A beforeprint general interactive-state snapshot and fit of the canvas for print. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport."
   },
   "S61:11": {
    "owner": "site",
@@ -30181,8 +30285,17 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-11-not-applicable.json",
+     "sha256": "16b5cc21caf103922b7752832e3150be5cd7a706abc61b1f7d6342921943c917"
+    }
+   ],
+   "contract": "analytical-baseline:S61:11",
+   "candidate_contract_note": "Analytical audit description correction only: An afterprint/disconnect general selections/details/viewport restoration from a print backup. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: afterprint/disconnect restores reading.open and clears that backup; selection/zoom/viewport are left unmodified by printing. Disconnect separately aborts listeners/frames/observer/export work. No general print-state restoration exists."
   },
   "S61:12": {
    "owner": "site",
@@ -30331,8 +30444,17 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S63-01-not-applicable.json",
+     "sha256": "b37ee5820e87c6135c08fcac2b9c87fb49f483ddb31f917e39577e7269440992"
+    }
+   ],
+   "contract": "analytical-baseline:S63:01",
+   "candidate_contract_note": "Analytical audit description correction only: Automatic TOC frame queuing for arbitrary standalone layout changes as an owned event. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: TOC updates initially and on coalesced scroll/resize using current header height and heading positions; disconnect removes listeners/cancels frame. No arbitrary independent layout-change event/observer is registered. ThemeProvider is dark-only, not a layout producer."
   },
   "S63:02": {
    "owner": "site",
@@ -30409,8 +30531,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+     "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S64:02": {
    "owner": "site",
@@ -30419,8 +30549,17 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+     "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1"
+    }
+   ],
+   "contract": "frozen-task:BUILD-G01",
+   "candidate_contract_note": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented."
   },
   "S64:03": {
    "owner": "site",
@@ -30429,8 +30568,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+     "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S64:04": {
    "owner": "site",
@@ -30439,8 +30586,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+     "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S64:05": {
    "owner": "site",
@@ -30449,8 +30604,17 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+     "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1"
+    }
+   ],
+   "contract": "frozen-task:BUILD-G01",
+   "candidate_contract_note": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed."
   },
   "S65:01": {
    "owner": "site",
@@ -30803,8 +30967,17 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S67-01-not-applicable.json",
+     "sha256": "682e34402a40cb9df8ac547020cb7043a5e71ac59075e3e0650a25335639531e"
+    }
+   ],
+   "contract": "analytical-baseline:S67:01",
+   "candidate_contract_note": "Analytical audit description correction only: One loader transition attesting a closed exact top-level manifest key set and independent parent Git-submodule identity. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: Academy loader resolves canonical academy-source, requires contained existing paths, validates required inventory fields/order/duplicates/release/tracks and Home setup, and records nested Git HEAD. It neither rejects extra top-level keys nor independently inspects parent Git mode160000/.gitmodules. Separate installer checksum/commit verification remains strict."
   },
   "S67:02": {
    "owner": "site",
@@ -30813,8 +30986,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+     "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Installer token counts are exact per OS, checksum text canonical, SHA256 matches actual installer bytes and both checksum/installer bytes equal Git show of observed commit. Remaining installer tokens refuse. Home/lesson action validation and guide reads follow; errors throw before Academy publication. This preservation excludes a claim every guide/action equals Git. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S67:03": {
    "owner": "site",
@@ -30823,8 +31004,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+     "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Caller validates topic pages/lesson membership before Academy generation. Guide metadata/identity/tracks and authored next links are checked in memory; duplicate/unknown/self links or missing topic coverage throw. Output models are constructed before publisher can replace prior Academy files. Runtime admission of a particular Academy corpus is not inferred. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S67:04": {
    "owner": "site",
@@ -30833,8 +31022,17 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+     "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1"
+    }
+   ],
+   "contract": "frozen-task:BUILD-G01",
+   "candidate_contract_note": "BUILD-G01 deliberately replaces Academy-root deletion before rendering. Current code constructs every Academy route/generated projection in memory before owned staged publication. Stale owned files are removed only in the promotion transaction; the old output-removed-first intermediate state is retired."
   },
   "S67:05": {
    "owner": "site",
@@ -30843,8 +31041,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+     "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Every guide action macro must resolve during in-memory lesson rendering, all index/track/content/sidebar strings are assembled, then owned publication completes before return. No successful current course is returned after a thrown action/render/write error. The old delete-first intermediate state is retired separately. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S67:06": {
    "owner": "site",
@@ -30853,8 +31059,17 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+     "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1"
+    }
+   ],
+   "contract": "frozen-task:BUILD-G01",
+   "candidate_contract_note": "BUILD-G01 deliberately replaces late Academy render failure leaving an incomplete tree. Action/render errors precede the publisher. Publication failure restores the old projection or retains an unusable marker/journal if rollback fails. This does not certify all consumers/global output trees or an executed crash journey."
   },
   "S67:07": {
    "owner": "site",
@@ -30863,8 +31078,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+     "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+     "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+    }
+   ],
+   "candidate_contract_note": "Source-clause-only; Observed Git HEAD is recorded while Home/lesson guide/action bytes are read from working files. Only installer/checksum bytes are separately compared to committed bytes. No global guide/action cleanliness check exists; this caveat is preserved, not a claim that all rendered content equals the source commit. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
   },
   "S68:01": {
    "owner": "packaging",
@@ -32943,8 +33166,16 @@
     "R-04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+     "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76"
+    }
+   ],
+   "candidate_contract_note": "Authenticated ADR0048 accepted choice and finite source conformance only. No new runtime test, ADRdelivery or full R03/task qualification."
   },
   "C15:05": {
    "owner": "release-and-tooling",
@@ -32956,8 +33187,17 @@
     "R-04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+     "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+     "sha256": "b40b72a1f5042ac35939d784bf2f7248049e32c0b72e363504f7b263191e7a2e"
+    }
+   ],
+   "contract": "accepted-adr:0048-required-declared-pre-tag-checks",
+   "candidate_contract_note": "ADR0048 explicitly supersedes ADR0040 advisory pre-tag treatment. The old release-preflight warning fallback allowing failed declared pre-tag proof to proceed is intentionally retired. Current release preflight uses the same required owner as CI, holds only failing targets and separately fails eligibility-errors. Other advisory checks are preserved separately."
   },
   "C16:01": {
    "owner": "release-and-tooling",
@@ -33008,8 +33248,17 @@
     "R-04",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/retired-defect-states.json",
+     "sha256": "be281044924fc6f22e9b28a1b7398aee5197f4384981620592cb7baba071f7fa"
+    }
+   ],
+   "contract": "frozen-task:R-01",
+   "candidate_contract_note": "R-01 explicitly retires the old public-release-means-complete predicate. Current public-but-missing-receipt observation stays eligible and plans only receipt; fully complete stays ineligible. The old erroneous skip state is not preserved."
   },
   "C16:05": {
    "owner": "release-and-tooling",
@@ -33164,8 +33413,17 @@
     "R-08",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+     "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/retired-defect-states.json",
+     "sha256": "be281044924fc6f22e9b28a1b7398aee5197f4384981620592cb7baba071f7fa"
+    }
+   ],
+   "contract": "frozen-task:R-01",
+   "candidate_contract_note": "R-01 explicitly retires acceptance by receipt name without content readback. Current action always downloads attached bytes and invokes verify-receipt; actual verifier rejects wrong source/digest/format/public-state/tag fixtures. No live remote receipt readback is claimed."
   },
   "C17:11": {
    "owner": "release-and-tooling",

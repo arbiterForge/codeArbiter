@@ -1,0 +1,156 @@
+{
+  "schema": "codearbiter.original-local-unittest-observation/1",
+  "selectors": [
+    "EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+    "CompletionModelTests",
+    "ReceiptReadbackTests",
+    "FaultInjectionTests",
+    "CompositionContractTests"
+  ],
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "tests_run": 24,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "observed": [
+    {
+      "id": "test_release_target.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+      "status": "PASSED",
+      "seconds": 0.00015769992023706436
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_another_sources_finished_version_is_a_no_op",
+      "status": "PASSED",
+      "seconds": 4.6200002543628216e-05
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner",
+      "status": "PASSED",
+      "seconds": 9.630003478378057e-05
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+      "status": "PASSED",
+      "seconds": 6.949994713068008e-05
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state",
+      "status": "PASSED",
+      "seconds": 0.00037919997703284025
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_hostless_target_needs_only_tag_release_and_receipt",
+      "status": "PASSED",
+      "seconds": 2.2999942302703857e-05
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_malformed_tag_listing_is_refused",
+      "status": "PASSED",
+      "seconds": 3.620004281401634e-05
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_package_asset_names_mirror_the_ci_package_owner",
+      "status": "PASSED",
+      "seconds": 0.0002775999018922448
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_plan_cli_refuses_a_cohort_file_that_is_not_the_declared_asset",
+      "status": "PASSED",
+      "seconds": 0.0032788000535219908
+    },
+    {
+      "id": "test_release_target.CompletionModelTests.test_public_release_without_its_tag_is_an_inconsistent_observation",
+      "status": "PASSED",
+      "seconds": 5.500006955116987e-05
+    },
+    {
+      "id": "test_release_target.ReceiptReadbackTests.test_matching_attached_receipt_is_accepted",
+      "status": "PASSED",
+      "seconds": 1.850002445280552e-05
+    },
+    {
+      "id": "test_release_target.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+      "status": "PASSED",
+      "seconds": 5.149992648512125e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+      "status": "PASSED",
+      "seconds": 0.001810799934901297
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed",
+      "status": "PASSED",
+      "seconds": 4.349998198449612e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_pi_new_publish_still_requires_matching_workflow_commit",
+      "status": "PASSED",
+      "seconds": 5.080003757029772e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+      "status": "PASSED",
+      "seconds": 8.590007200837135e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+      "status": "PASSED",
+      "seconds": 0.0003046999918296933
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+      "status": "PASSED",
+      "seconds": 9.790004696696997e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_registry_mismatch_is_not_completed",
+      "status": "PASSED",
+      "seconds": 7.54999928176403e-05
+    },
+    {
+      "id": "test_release_target.FaultInjectionTests.test_wrong_package_bytes_on_rerun_are_refused",
+      "status": "PASSED",
+      "seconds": 6.260001100599766e-05
+    },
+    {
+      "id": "test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it",
+      "status": "PASSED",
+      "seconds": 0.0003475999692454934
+    },
+    {
+      "id": "test_release_target.CompositionContractTests.test_effect_steps_run_in_the_simulated_order",
+      "status": "PASSED",
+      "seconds": 0.00011440005619078875
+    },
+    {
+      "id": "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified",
+      "status": "PASSED",
+      "seconds": 9.520002640783787e-05
+    },
+    {
+      "id": "test_release_target.CompositionContractTests.test_plan_receives_the_declared_assets_and_verified_digest",
+      "status": "PASSED",
+      "seconds": 8.260004688054323e-05
+    }
+  ],
+  "loaded_repository_modules": {
+    ".github/scripts/test_release_target.py": {
+      "sha256": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+      "module": "test_release_target"
+    },
+    "core/pysrc/_releaselib.py": {
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "module": "_release_mechanism"
+    },
+    ".github/scripts/_releaselib.py": {
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "module": "_releaselib"
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "module": "_artifactmanifestlib"
+    }
+  },
+  "scope": "Actual planner/helper calls, in-process CLI plus hermetic PublicationRun model and source composition guards; no real external publisher/registry/npm/provider effects."
+}

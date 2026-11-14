@@ -1,0 +1,60 @@
+{
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "index_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs": {
+    ".github/scripts/test_release_target.py": {
+      "sha256": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+      "bytes": 29705,
+      "git_blob": "1e6e275e8acab2f743e169ffa9e27aad1914df0d",
+      "physical_equals_git": true
+    },
+    ".github/scripts/release_target.py": {
+      "sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+      "bytes": 20383,
+      "git_blob": "5b052f79d9ef812cdf22fce415f9d0eb690e2f9d",
+      "physical_equals_git": true
+    },
+    ".github/scripts/_releaselib.py": {
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "bytes": 22106,
+      "git_blob": "51f5852cb658c5e602e52e080d1af73cba7b3fee",
+      "physical_equals_git": true
+    },
+    "core/pysrc/_releaselib.py": {
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "bytes": 211540,
+      "git_blob": "7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8",
+      "physical_equals_git": true
+    },
+    ".github/scripts/_npm_publishlib.py": {
+      "sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "bytes": 54361,
+      "git_blob": "140ad53be2c20a567e00bf695b4ef9ec8aa1f791",
+      "physical_equals_git": true
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "bytes": 4249,
+      "git_blob": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+      "physical_equals_git": true
+    },
+    ".github/actions/publish-target/action.yml": {
+      "sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+      "bytes": 27706,
+      "git_blob": "e84fb5e185e62f1e564254d289596332f2622947",
+      "physical_equals_git": true
+    },
+    ".github/workflows/release.yml": {
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "bytes": 25073,
+      "git_blob": "119ad4820e6c8f9ac5b9c00698cb1d0db34c513c",
+      "physical_equals_git": true
+    },
+    "tools/build-host-packages.py": {
+      "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "bytes": 116956,
+      "git_blob": "2e00bf31140b6e6354e09f6bc23fff94a539c8e6",
+      "physical_equals_git": true
+    }
+  }
+}

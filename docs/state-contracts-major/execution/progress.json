@@ -3684,6 +3684,33 @@
         "No actual user/model/host permission or installed qualification implied by native API fixtures.",
         "No machine/task/scenario/program/publication promotion; ten other nativePLANNED/mixed hiddenevent gaps remain."
       ]
+    },
+    {
+      "id": "finite-site-release-mapped-acceptance",
+      "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+      "facts": [
+        "Site: nine finite source clauses preserved, four obsolete delete-first/partial-output states retired under BUILD-G01.",
+        "Six inaccurate analytical baseline descriptions corrected with unsupported/inapplicable contracts and original/current source inspection; actual supported UI behavior retained and frozen intake unchanged.",
+        "Release C-F01 tested at its original pure eligibility/planning boundary:24 actual focused cases passed, zero skips. Two obsolete receipt defect states retired; external shell/publication effects remain separate.",
+        "Five mapped-target source clauses renewed to current79 source; original evidence retained in history. Six actual parser outcomes and seven older unchanged-path outcomes remain distinct."
+      ],
+      "limits": [
+        "No machine/task/scenario/installed/user/model/publication completion.",
+        "Whole S38:04 and machine acceptance still require target-local error coverage; tests are being qualified separately.",
+        "Eleven actual shell/external R-01 boundaries were not inferred from the local planner model."
+      ]
+    },
+    {
+      "id": "adr48-authenticated-current-policy",
+      "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+      "facts": [
+        "ADR0048 accepted successor to exactADR0040 authenticates through current installed read-only lifecycle owner with zero errors.",
+        "Current required pre-tag source is consistent with the accepted forward decision. Old lane pending-decision wording is historical."
+      ],
+      "limits": [
+        "ADR lifecycle remains Accepted/Planned: no implementation or verification events minted from source review.",
+        "Ten sealed obligations and broader task qualification remain distinct; PiHTTP decision unaffected."
+      ]
     }
   ],
   "superseded_scoped_blockers": [

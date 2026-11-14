@@ -1,0 +1,320 @@
+{
+  "schema": "codearbiter.source-clause-cas-proposal/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "base_source": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 JSON sort_keys=True,separators=(comma,colon)",
+  "counts": {
+    "PRESERVED": 9,
+    "NOT_APPLICABLE": 4,
+    "HOLD": 6,
+    "TESTED": 0,
+    "machines": 0
+  },
+  "updates": [
+    {
+      "section": "transitions",
+      "id": "S60:03",
+      "expected_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+        "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f"
+      },
+      "candidate_contract_note": "Source-clause-only; A new fragment cancels the earlier frame, resolves a literal owned target, reveals only its ancestors and queues one frame. The frame requires non-aborted connection and connected target; explicit link focus is retained across native hash rescheduling, then scrollIntoView runs. No programmatic history write. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S60:05",
+      "expected_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+        "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f"
+      },
+      "candidate_contract_note": "Source-clause-only; New chapter selection cancels pending animation; click microtask checks abort before resolution. Disconnect aborts the connection controller, removes signal-owned listeners and cancels its frame. Reconnection aborts the previous controller. Stale queued work cannot write history; only native links do. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S64:01",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+        "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+      },
+      "candidate_contract_note": "Source-clause-only; Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S64:03",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+        "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+      },
+      "candidate_contract_note": "Source-clause-only; Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S64:04",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+        "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d"
+      },
+      "candidate_contract_note": "Source-clause-only; Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:02",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+        "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+      },
+      "candidate_contract_note": "Source-clause-only; Installer token counts are exact per OS, checksum text canonical, SHA256 matches actual installer bytes and both checksum/installer bytes equal Git show of observed commit. Remaining installer tokens refuse. Home/lesson action validation and guide reads follow; errors throw before Academy publication. This preservation excludes a claim every guide/action equals Git. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:03",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+        "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+      },
+      "candidate_contract_note": "Source-clause-only; Caller validates topic pages/lesson membership before Academy generation. Guide metadata/identity/tracks and authored next links are checked in memory; duplicate/unknown/self links or missing topic coverage throw. Output models are constructed before publisher can replace prior Academy files. Runtime admission of a particular Academy corpus is not inferred. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:05",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+        "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+      },
+      "candidate_contract_note": "Source-clause-only; Every guide action macro must resolve during in-memory lesson rendering, all index/track/content/sidebar strings are assembled, then owned publication completes before return. No successful current course is returned after a thrown action/render/write error. The old delete-first intermediate state is retired separately. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:07",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+        "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6"
+      },
+      "candidate_contract_note": "Source-clause-only; Observed Git HEAD is recorded while Home/lesson guide/action bytes are read from working files. Only installer/checksum bytes are separately compared to committed bytes. No global guide/action cleanliness check exists; this caveat is preserved, not a claim that all rendered content equals the source commit. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance."
+    },
+    {
+      "section": "transitions",
+      "id": "S64:02",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:BUILD-G01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+        "sha256": "70a060d13ade140dc8a142e7995ceb666f16fe54f214aae20b287ff874b1b685"
+      },
+      "candidate_contract_note": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented."
+    },
+    {
+      "section": "transitions",
+      "id": "S64:05",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:BUILD-G01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+        "sha256": "70a060d13ade140dc8a142e7995ceb666f16fe54f214aae20b287ff874b1b685"
+      },
+      "candidate_contract_note": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:04",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:BUILD-G01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+        "sha256": "70a060d13ade140dc8a142e7995ceb666f16fe54f214aae20b287ff874b1b685"
+      },
+      "candidate_contract_note": "BUILD-G01 deliberately replaces Academy-root deletion before rendering. Current code constructs every Academy route/generated projection in memory before owned staged publication. Stale owned files are removed only in the promotion transaction; the old output-removed-first intermediate state is retired."
+    },
+    {
+      "section": "transitions",
+      "id": "S67:06",
+      "expected_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:BUILD-G01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+        "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+        "sha256": "70a060d13ade140dc8a142e7995ceb666f16fe54f214aae20b287ff874b1b685"
+      },
+      "candidate_contract_note": "BUILD-G01 deliberately replaces late Academy render failure leaving an incomplete tree. Action/render errors precede the publisher. Publication failure restores the old projection or retains an unusable marker/journal if rollback fails. This does not certify all consumers/global output trees or an executed crash journey."
+    }
+  ],
+  "holds": {
+    "S59:01": {
+      "reason": "Inherited audit description is not a uniform family contract: DecisionEvidence selects first section; ContextExplorer selects validated declared initial/default overlap; ExampleChoices selects0; AcademyOverview synchronizes existing disclosure state. No uniform first eligible panel across all four.",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 60,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 70,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 15,
+          "end": 24,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 250,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ]
+    },
+    "S59:03": {
+      "reason": "Inherited audit wording requires aria-selected and tab stops; original/current ExampleChoices explicitly uses labelled button group, aria-pressed and native Tab/Enter, with Arrow/Home/End selecting/focusing. It deliberately avoids tab roles. Other cited families are disclosure/button selections. No new tab-widget feature is selected by SITE-U01/U02.",
+      "witnesses": [
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 6,
+          "end": 54,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        }
+      ]
+    },
+    "S61:10": {
+      "reason": "Original/current print handler saves only reading.open and reveals static reading; CSS hides canvas/controls and prints static reading. It does not snapshot selection/viewport or fit the canvas for print. Existing browser print case observes static reading and original view/zoom, not the full literal frozen clause.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "start": 92,
+          "end": 92,
+          "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+        }
+      ]
+    },
+    "S61:11": {
+      "reason": "Original/current afterprint/disconnect restores reading.open and clears that backup. Selections/viewport are left unmodified, not saved/restored by a full print backup. Full literal clause remains unestablished; no regression from fd7 and no accepted new print design requirement identified.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 299,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ]
+    },
+    "S63:01": {
+      "reason": "Original/current TOC connects scroll/resize listeners, coalesces a frame and accounts for header offset; disconnect removes listeners/cancels frame. No general arbitrary layout-change observer/event is present. The combined literal scroll/resize/layout-change clause is broader than that actual baseline.",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 70,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ]
+    },
+    "S67:01": {
+      "reason": "Original/current loader validates required inventory arrays, order, duplicates, release, tracks, safe resolved paths and Home setup, but does not reject extra manifest keys as an exact closed shape or independently establish a Git submodule relationship. The full literal exact-shape/real-submodule wording is stronger than its actual source.",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 139,
+          "end": 158,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 309,
+          "end": 357,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ]
+    }
+  },
+  "no_new_implementation_gap_confirmed": true
+}

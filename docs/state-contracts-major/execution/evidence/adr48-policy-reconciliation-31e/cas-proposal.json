@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter.source-clause-cas-proposal/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "base_source": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "updates": [
+    {
+      "section": "findings",
+      "id": "C-F03",
+      "expected_row_sha256": "1ec690b473e88021c9da228f0069ba054c4ec862e82493b7bfe16dd6f99384d9",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+        "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+        "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76"
+      },
+      "candidate_contract_note": "Authenticated ADR0048 accepted choice and finite source conformance only. No new runtime test, ADRdelivery or full R03/task qualification."
+    },
+    {
+      "section": "transitions",
+      "id": "C15:04",
+      "expected_row_sha256": "4b680cf346eb988fed2797b2f3a90cecda7ad309e3e5b48c4fbc44b6cc7ae9ce",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "PRESERVED",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+        "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+        "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76"
+      },
+      "candidate_contract_note": "Authenticated ADR0048 accepted choice and finite source conformance only. No new runtime test, ADRdelivery or full R03/task qualification."
+    },
+    {
+      "section": "transitions",
+      "id": "C15:05",
+      "expected_row_sha256": "4b680cf346eb988fed2797b2f3a90cecda7ad309e3e5b48c4fbc44b6cc7ae9ce",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "accepted-adr:0048-required-declared-pre-tag-checks",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+        "ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+        "sha256": "b40b72a1f5042ac35939d784bf2f7248049e32c0b72e363504f7b263191e7a2e"
+      },
+      "candidate_contract_note": "ADR0048 explicitly supersedes ADR0040 advisory pre-tag treatment. The old release-preflight warning fallback allowing failed declared pre-tag proof to proceed is intentionally retired. Current release preflight uses the same required owner as CI, holds only failing targets and separately fails eligibility-errors. Other advisory checks are preserved separately."
+    }
+  ],
+  "task_note_proposal": {
+    "G-01": "D-GOV-PRETAG/ADR0048 acceptance prerequisite authenticated; existing pending wording stale. Broader governance task remains open.",
+    "R-03": "Accepted required policy/source agreement inspected; full runtime/ADRdelivery qualification remains separate."
+  },
+  "counts": {
+    "finding_source_preserved": 1,
+    "transition_source_preserved": 1,
+    "obsolete_transition_NA": 1,
+    "runtime_tests_or_tasks_promoted": 0
+  }
+}

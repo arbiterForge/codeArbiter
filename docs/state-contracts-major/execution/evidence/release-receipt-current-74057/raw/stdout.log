@@ -1,0 +1,6 @@
+tag=create
+release=create
+release-id=
+missing-assets=codearbiter-ca-2.0.0.tar.gz codearbiter-publication.json
+complete=false
+effects=tag draft asset channel publish receipt
