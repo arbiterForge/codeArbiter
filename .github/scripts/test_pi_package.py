@@ -4490,7 +4490,7 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
-PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "shutdown", "publish")
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc-observed", "rpc", "shutdown", "publish")
 
 
 def platform_package_suites():
@@ -4507,6 +4507,11 @@ def platform_package_suites():
     for case in cases(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])):
         if isinstance(case, NpmPublishContractTest):
             partition = "publish"
+        elif case._testMethodName in (
+            "test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture",
+            "test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture",
+        ):
+            partition = "rpc-observed"
         elif "shutdown" in case._testMethodName or "post_exit_entry" in case._testMethodName:
             partition = "shutdown"
         elif "rpc" in case._testMethodName:
