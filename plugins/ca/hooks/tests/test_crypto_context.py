@@ -485,6 +485,29 @@ class CryptoContextHookTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertNotIn("H-09b", result.stderr)
 
+    def test_ordinary_context_derives_no_unused_approval_identities(self):
+        # Approval identities belong to findings, not every ordinary added row.
+        # This work oracle is deterministic even on a fast/local interpreter.
+        from unittest.mock import patch
+        with patch.object(sys, "path", [HOOKS, *sys.path]):
+            import _sensitivelib as scanner
+        source = "DES = 1\nitems = (\n    DES,\n)\n" + "value = 0\n" * 20_000
+        with patch.object(scanner, "line_digest", wraps=scanner.line_digest) as identities:
+            result = scanner.security_scan_source("sample.py", source, range(1, 20_005))
+            self.assertIsNotNone(result)
+            self.assertFalse(result.crypto)
+            self.assertEqual(result.findings, ())
+            self.assertEqual(result.digests, set())
+            self.assertEqual(identities.call_count, 0)
+        expected = scanner.line_digest("key_type = RSA", "sample.py")
+        with patch.object(scanner, "line_digest", wraps=scanner.line_digest) as identities:
+            result = scanner.security_scan_lines(["value = 0", "key_type = RSA"], "sample.py", [1, 2])
+            self.assertTrue(result.crypto)
+            self.assertEqual([(f.category, f.path, f.line, f.digest) for f in result.findings],
+                             [("crypto", "sample.py", 2, expected)])
+            self.assertEqual(result.digests, {expected})
+            self.assertEqual(identities.call_count, 1)
+
     def test_contextual_import_list_and_statement_boundaries(self):
         # R8-S1: the trusted import context, not a single-item line shape,
         # decides multi-item, alias, final-statement and continuation rows.
