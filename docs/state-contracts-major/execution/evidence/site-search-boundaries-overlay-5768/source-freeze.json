@@ -1,0 +1,28 @@
+{
+  "source_HEAD_actual": "5768d4f24994ee628538b39ffb921691cd54264b",
+  "source_component_epoch": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+  "changed_paths": {
+    "site/test/components/search-boundaries.spec.ts": {
+      "local": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\site\\test\\components\\search-boundaries.spec.ts",
+      "sha256": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "observed_predecessor_sha256": "268ce616672f45114c3adeebc87ae9149bc51faf1aa70a7834af4009feb930bf",
+      "declaration_only_join": "typecheck.json"
+    }
+  },
+  "patch": {
+    "local": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\final.patch",
+    "sha256": "cf13c516e752f99fd1a89d7d24b4de829cd801eccf25640bbb1e97eb5c64728c"
+  },
+  "checks": {
+    "actual_component_browser": {
+      "exit_code": 0,
+      "named_pass": 5,
+      "seconds": 4.766723155975342
+    },
+    "new_file_typecheck": {
+      "exit_code": 0,
+      "seconds": 0.583
+    }
+  },
+  "boundary": "Temp only. No production code changes, no Gov/index writes, no production-page/real-index claim. Old lifecycle/browser5 unchanged."
+}

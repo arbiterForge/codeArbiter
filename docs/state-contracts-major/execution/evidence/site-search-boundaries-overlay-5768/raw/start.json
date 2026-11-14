@@ -1,0 +1,67 @@
+{
+  "source_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+  "HEAD_before": "5768d4f24994ee628538b39ffb921691cd54264b",
+  "index_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs_before": {
+    "site/src/components/Search.astro": {
+      "physical": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+      "immutable_Git": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183"
+    },
+    "site/playwright.components.config.ts": {
+      "physical": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+      "immutable_Git": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff"
+    },
+    "site/package.json": {
+      "physical": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "immutable_Git": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c"
+    },
+    "site/package-lock.json": {
+      "physical": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "immutable_Git": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+    },
+    "site/test/components/search-boundaries.spec.ts": {
+      "physical": "268ce616672f45114c3adeebc87ae9149bc51faf1aa70a7834af4009feb930bf",
+      "immutable_Git": null,
+      "epoch": "Temp new-test overlay"
+    }
+  },
+  "runtime_before": {
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+  },
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\cli.js",
+    "test",
+    "test/components/search-boundaries.spec.ts",
+    "--config=playwright.components.config.ts",
+    "--reporter=json",
+    "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\playwright-output"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\site",
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\home\\.cache",
+    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1"
+  },
+  "runtime_version": "v24.22.1",
+  "scope": "Actual Search markup/script, controlled fake Pagefind, real installed Chrome; Temp test overlay not committed"
+}
