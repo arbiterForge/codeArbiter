@@ -356,3 +356,46 @@ for (const entry of ["source", "bundle"] as const) {
     } finally { await f.dispose(); }
   }, 30_000);
 }
+
+for (const entry of ["source", "bundle"] as const) {
+  it(`FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (${entry})`, async () => {
+    const f = await fixture(false);
+    try {
+      f.git("checkout", "-b", "farm/integration");
+      writeFileSync(path.join(f.repo, "operator.txt"), "retained operator integration work\n");
+      f.git("add", "--", "operator.txt"); f.git("commit", "-m", "operator integration");
+      const operator = f.git("rev-parse", "HEAD");
+      expect(operator).not.toBe(f.base);
+      f.git("checkout", "main");
+      const refs = f.git("show-ref"), registry = f.git("worktree", "list", "--porcelain");
+      const result = await f.start(entry).result;
+      expect(result.code, result.out).toBe(1);
+      expect(result.out).toContain("could not create integration branch");
+      expect(f.authors()).toBe(0);
+      expect(f.ack()).toBeUndefined();
+      expect(f.git("show-ref")).toBe(refs);
+      expect(f.git("worktree", "list", "--porcelain")).toBe(registry);
+      expect(f.git("show", "farm/integration:operator.txt")).toBe("retained operator integration work");
+      const reportPath = path.join(f.runDir, "farm-report.json");
+      expect(existsSync(reportPath), result.out).toBe(true);
+      expect(existsSync(path.join(f.runDir, "farm-report.md"))).toBe(true);
+      const report = JSON.parse(readFileSync(reportPath, "utf8"));
+      expect(report.run_id).toBe("interrupted");
+      expect(report.aborted).toBe(false);
+      expect(report.results).toEqual([]);
+      expect(report.blocked).toHaveLength(1);
+      expect(report.blocked[0]).toMatchObject({ id: "task" });
+      expect(report.blocked[0].reason).toContain("run interrupted before settlement");
+      expect(readFileSync(path.join(f.runDir, "farm-results.jsonl"), "utf8")).toBe("");
+      expect(readdirSync(path.join(f.runDir, "effects"))).toEqual([]);
+      const originals = originalFiles(f.runDir);
+      const recovered = await f.start(entry, ["--recover-receipt", "interrupted"], false).result;
+      expect(recovered.code, recovered.out).toBe(0);
+      expect(JSON.parse(recovered.out)).toMatchObject({ recovery: "receipt-only", empty: true, results: [] });
+      expect(f.authors()).toBe(0);
+      expect(f.git("show-ref")).toBe(refs);
+      expect(f.git("worktree", "list", "--porcelain")).toBe(registry);
+      expect(originalFiles(f.runDir)).toEqual(originals);
+    } finally { await f.dispose(); }
+  }, 30_000);
+}
