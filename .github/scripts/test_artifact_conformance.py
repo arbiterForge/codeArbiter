@@ -406,6 +406,8 @@ EXPECTED_SUITES = {
         "test_mapped_preclaim_programmer_error_is_not_swallowed",
         "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
         "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+        "test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+        "test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target",
         "test_parser_depth_failure_is_sanitized_without_hiding_other_types",
         "test_programmer_type_error_at_parser_is_not_swallowed",
         "test_valid_json_and_existing_shape_guards_remain",

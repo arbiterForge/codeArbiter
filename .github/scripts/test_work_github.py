@@ -1557,6 +1557,79 @@ class GithubWorkTest(unittest.TestCase):
         self._check_mapped_preclaim_transport_failure(
             TimeoutError("fixture-private-network-detail"))
 
+    def test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target(self):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        original_call = self.client.call
+        denials = []
+
+        def stale_first_issue_claim(operation, fields=None, **kwargs):
+            if operation == "work-effect-claim" and not denials:
+                expected = fields["expected"]
+                current_hash = expected["model_sha256"]
+                stale_hash = ("0" if current_hash[0] != "0" else "1") + current_hash[1:]
+                stale = {**fields, "expected": {**expected, "model_sha256": stale_hash}}
+                try:
+                    return original_call(operation, stale, **kwargs)
+                except _artifactlib.ArtifactError as failure:
+                    denials.append(failure.code)
+                    raise
+            return original_call(operation, fields, **kwargs)
+
+        with mock.patch.object(self.client, "call", side_effect=stale_first_issue_claim):
+            first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertEqual(denials, ["REVISION_CONFLICT"])
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"]["status"], "failed")
+        self.assertEqual(first["targets"]["issue"]["code"], "REVISION_CONFLICT")
+        self.assertEqual(first["targets"]["project"]["status"], "synchronized")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["provider_effect"], pending)
+        self.assertEqual(current["provider_effect"]["status"], "pending")
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(transport.field_updates, 1)
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertTrue(again["ok"])
+        self.assertEqual(again["targets"]["issue"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.field_updates, 1)
+
+    def test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target(self):
+        transport, pending = self._mapped_targets_ready_for_transport_failure()
+        original_request = transport.request
+        changed = False
+        foreign_work_id = "WORK-" + ("0" * 32 if self.work_id != "WORK-" + "0" * 32 else "1" * 32)
+
+        def foreign_first_issue_read(method, path, body, token):
+            nonlocal changed
+            status, issue = original_request(method, path, body, token)
+            if not changed and method == "GET" and path.endswith("/issues/7"):
+                changed = True
+                issue = {**issue, "body": "<!-- codearbiter-work: " + foreign_work_id + " -->"}
+            return status, issue
+
+        with mock.patch.object(transport, "request", side_effect=foreign_first_issue_read):
+            first = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                            transport, lambda _: "fixture-token")
+        self.assertTrue(changed)
+        self.assertFalse(first["ok"])
+        self.assertEqual(first["targets"]["issue"], {
+            "status": "failed", "code": "REMOTE_BINDING_UNVERIFIED",
+            "error": "GitHub issue readback did not match this work identity"})
+        self.assertEqual(first["targets"]["project"]["status"], "synchronized")
+        current = self.client.call("work-get", {"work_id": self.work_id})
+        self.assertEqual(current["provider_effect"], pending)
+        self.assertEqual(current["provider_effect"]["status"], "pending")
+        self.assertEqual(transport.patches, [])
+        self.assertEqual(transport.field_updates, 1)
+        again = _workgithub.sync_mapped(self.root, self.client, self.work_id,
+                                        transport, lambda _: "fixture-token")
+        self.assertTrue(again["ok"])
+        self.assertEqual(again["targets"]["issue"]["status"], "synchronized")
+        self.assertEqual(transport.patches, [{"state": "closed"}])
+        self.assertEqual(transport.field_updates, 1)
+
     def test_mapped_preclaim_programmer_error_is_not_swallowed(self):
         transport, pending = self._mapped_targets_ready_for_transport_failure()
         with mock.patch.object(transport, "request", side_effect=TypeError("fixture-programmer-error")):
