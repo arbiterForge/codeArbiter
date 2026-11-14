@@ -1,0 +1,364 @@
+{
+  "schema": "codearbiter.S48-eight-clause-finite-conformance/1",
+  "source_commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+  "rows": [
+    {
+      "id": "S48:01",
+      "literal_frozen_clause": {
+        "event": "create source volume",
+        "guard": "safe name/source/mount policy",
+        "to": "volume created",
+        "effects": "Create labeled volume before clone/build operation try block.",
+        "failure_retry": "An uncertain volume-create result before the try has no compensation path.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "validated",
+        "transition_id": "S48:01"
+      },
+      "current_guard": "safe managed source/name/mount plan",
+      "current_effect": "validateRepoUrl before effects; derive managed volume/name and membership+instance labels; create volume before clone/build try.",
+      "current_failure_retry": "A failed/uncertain initial volume-create result produces typed unknown effect with logical sandbox and volume references, outside compensation. No invented verified absence or blind retry.",
+      "source_symbols": [
+        "validateRepoUrl",
+        "createSandbox",
+        "buildMountArgs"
+      ],
+      "classification": "finite preserved source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    },
+    {
+      "id": "S48:02",
+      "literal_frozen_clause": {
+        "event": "clone source",
+        "guard": "source clone admitted",
+        "to": "cloning",
+        "effects": "Start network-capable clone helper writing only managed source volume.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "volume created",
+        "transition_id": "S48:02"
+      },
+      "current_guard": "admitted clone source and managed volume",
+      "current_effect": "defaultCloneRepo forwards signal and declared clone deadline through spawnAsync/makeDockerRun. buildCloneArgs uses managed volume, labels, --rm, clone --depth1 and end-of-options separator.",
+      "current_failure_retry": "Nonzero clone returns bounded error and enters existing compensation. Network-capable clone helper is distinct from ordinary offline runtime; no automatic author retry.",
+      "source_symbols": [
+        "defaultCloneRepo",
+        "spawnAsync",
+        "buildCloneArgs"
+      ],
+      "classification": "finite preserved source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    },
+    {
+      "id": "S48:03",
+      "literal_frozen_clause": {
+        "event": "clone finishes",
+        "guard": "Git clone success",
+        "to": "checkout copied",
+        "effects": "Copy volume checkout into a newly named host temp directory for build analysis.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "cloning",
+        "transition_id": "S48:03"
+      },
+      "current_guard": "clone code0 and ordinary signal not aborted",
+      "current_effect": "defaultBuildImage creates a fresh host staging directory and exact helper name; managed volume mount and explicit helper-create/copy exit checks precede manifest observation.",
+      "current_failure_retry": "Temporary host copy is real, not a no-host-staging claim. Independent finally removes and observes exact helper, removes owned staging, and retains primary/staging failure separately.",
+      "source_symbols": [
+        "defaultBuildImage",
+        "buildCpHelperCreateArgs"
+      ],
+      "classification": "finite preserved source conformance",
+      "runtime_mapping": "Original142e mapped default staging/primary+cleanup controlled cases and current unchanged helper-body joins; build cache guard has separate retained named controls. No new runtime result."
+    },
+    {
+      "id": "S48:04",
+      "literal_frozen_clause": {
+        "event": "build image",
+        "guard": "build helper returns image",
+        "to": "image built",
+        "effects": "Resolve dependency image/cache and build; remove temporary host checkout in finally.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "checkout copied",
+        "transition_id": "S48:04"
+      },
+      "current_guard": "observed builder/platform/key/provenance and successful image result",
+      "current_effect": "readManifests rejects unreadable/nonregular declared inputs; buildOrReuseImage verifies cache label+immutable ID or runs admitted builder. Current cache-cancel guard is separately tested.",
+      "current_failure_retry": "No unverified retag or destructive cache cleanup. Builder revalidation/cancellation errors propagate; defaultBuildImage finally owns helper/staging cleanup. Docker/installed builder qualification is separate.",
+      "source_symbols": [
+        "readManifests",
+        "defaultBuildImage",
+        "buildOrReuseImage"
+      ],
+      "classification": "finite preserved source conformance",
+      "runtime_mapping": "Original142e mapped default staging/primary+cleanup controlled cases and current unchanged helper-body joins; build cache guard has separate retained named controls. No new runtime result."
+    },
+    {
+      "id": "S48:05",
+      "literal_frozen_clause": {
+        "event": "run sandbox",
+        "guard": "labels/workdir/env/mount plan valid",
+        "to": "container created then ready",
+        "effects": "Start ordinary runtime container on offline network policy; source volume mounted at workspace.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "image built",
+        "transition_id": "S48:05"
+      },
+      "current_guard": "valid runtime image/volume and bind-free mount/isolation/network plan",
+      "current_effect": "buildRunArgs uses managed source volume/tmpfs, workspace, membership+instance labels and shared hardeningFlags; ordinary network remains offline. create prefers observed immutable image ID.",
+      "current_failure_retry": "Successful run records physical ID before final cancellation check. Run error or final cancellation enters compensation; normal un-aborted success returns original result without cleanup.",
+      "source_symbols": [
+        "createSandbox",
+        "runContainer",
+        "buildRunArgs",
+        "hardeningFlags"
+      ],
+      "classification": "finite preserved source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    },
+    {
+      "id": "S48:06",
+      "literal_frozen_clause": {
+        "event": "failure",
+        "guard": "resource may have been created",
+        "to": "cleanup attempted",
+        "effects": "Attempt container removal then source volume removal; rethrow original error.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "any post-volume phase",
+        "transition_id": "S48:06"
+      },
+      "current_guard": "failure after a potentially created resource",
+      "current_effect": "compensateCreate uses fresh signal-free scoped listings; only successful discovery authorizes exact container removals, followed by named volume removal and fresh absence observations.",
+      "current_failure_retry": "Original cause and independent cleanup facts remain CreateFailure. Known physical start identity is retained as recovery context and in CLI-visible message; it is never passed into deletion selection.",
+      "source_symbols": [
+        "compensateCreate",
+        "CreateFailure"
+      ],
+      "classification": "accepted scoped change plus finite source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    },
+    {
+      "id": "S48:07",
+      "literal_frozen_clause": {
+        "event": "remove command fails or cancelled",
+        "guard": "cleanup exit result ignored",
+        "to": "unknown residue",
+        "effects": "Original error remains; resource absence is not verified.",
+        "failure_retry": "Compensation should return residual resource identities/unknown status, not silently discard them.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "cleanup attempted",
+        "transition_id": "S48:07"
+      },
+      "current_guard": "removal or observation unavailable/unsuccessful",
+      "current_effect": "Failed listing stdout is not parsed into deletion targets; cleanup.verified requires successful before/after listings and observed target/volume absence. Residual/unknown outcomes stay explicit.",
+      "current_failure_retry": "Last-known createdContainerId remains available even when both listings fail, while containers[] stays an honest observed target set. No false destroyed result, partial-stdout removal or unselected cleanup.",
+      "source_symbols": [
+        "compensateCreate",
+        "CreateFailure",
+        "listContainersResult"
+      ],
+      "classification": "accepted scoped change plus finite source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    },
+    {
+      "id": "S48:08",
+      "literal_frozen_clause": {
+        "event": "caller abort",
+        "guard": "default clone/build lacks propagated AbortSignal",
+        "to": "same phase until helper ends",
+        "effects": "Cancellation reaches later Docker/runtime stages, but host clone/build may continue.",
+        "failure_retry": "Do not claim immediate whole-create cancellation from CLI abort alone.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/create.ts",
+            "symbol": "createSandbox and defaultBuildImage",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+            "lines": "1-480"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "runtime container plan",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/mounts.ts",
+            "symbol": "mount boundary",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/mounts.ts",
+            "lines": "1-157"
+          }
+        ],
+        "from": "cloning/building",
+        "transition_id": "S48:08"
+      },
+      "current_guard": "caller abort during ordinary create pipeline",
+      "current_effect": "Accepted SBX-C03 replacement propagates AbortSignal through clone, host build/copy and runtime start. Checks after clone/build and final awaited run invalidate ordinary success after observed cancellation.",
+      "current_failure_retry": "Cleanup/reconciliation keeps independent authority. Physical known ID, logical instance/volume and primary cause survive unknown compensation. This does not claim immediate whole-create/daemon workload containment.",
+      "source_symbols": [
+        "createSandbox",
+        "defaultCloneRepo",
+        "defaultBuildImage",
+        "generateNixpacks",
+        "runDocker"
+      ],
+      "classification": "accepted scoped change plus finite source conformance",
+      "runtime_mapping": "New exact5: successful pipeline, late cancellation, unknown removal, unavailable-discovery identity retention, pre-run clone failure. All use controlled clone/build/Docker seams; no default Docker clone/build execution implied."
+    }
+  ],
+  "normative_basis": {
+    "PROGRAM.md": "Lines5/13/46 analytical counts and meaningful baseline test/review mapping; source/controlled runtime/installed/publication remain separate.",
+    "SBX-C03": "Accepted propagation, independent cleanup, explicit uncertainty and retained created identities. Baseline08 missing-signal defect is corrected, not literally asserted unchanged."
+  },
+  "machine_acceptance": {
+    "id": "S48",
+    "status": "PRESERVED",
+    "basis": "All8 complete current guard/effect/retry/source contracts accounted for. Healthy01\u201305 preserved; accepted06/07 compensation and08 cancellation replacements retain honest uncertainty and ownership. Two discovered real gaps now have committed fixes and actual regression/control outcomes.",
+    "old06_07_rows_untouched": true,
+    "old17_cell_proof_and_history_untouched": true
+  },
+  "limits": [
+    "Finite source conformance with authentic controlled unit facts; not all25/current44/full401 execution.",
+    "No actual Docker/installed, all-crash/all-interleaving, immediate whole-phase containment, scenario/model consent or Q01/whole-task/program closure.",
+    "Historical8623/401 is not used as new current proof. Initial volume-create uncertainty remains outside compensation.",
+    "Known created CID is diagnostic/recovery context, never newly authorized deletion."
+  ],
+  "input_join": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/input-join.json",
+    "sha256": "1146ff244acf80d99c9d4ff091f14d53bb40b09d29ec5d0c20372fc8a129a119"
+  }
+}

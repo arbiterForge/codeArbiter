@@ -4335,8 +4335,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S49": {
    "owner": "sandbox",
@@ -29025,8 +29034,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S48:02": {
    "owner": "sandbox",
@@ -29037,8 +29055,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S48:03": {
    "owner": "sandbox",
@@ -29049,8 +29076,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S48:04": {
    "owner": "sandbox",
@@ -29061,8 +29097,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S48:05": {
    "owner": "sandbox",
@@ -29073,8 +29118,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S48:06": {
    "owner": "sandbox",
@@ -29171,8 +29225,17 @@
     "SBX-D03",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+     "ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+     "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f"
+    }
+   ],
+   "evidence_history": [],
+   "candidate_contract_note": "Finite current S48 complete guard/effect/retry conformance; accepted SBX-C03 cancellation/compensation replacement, current exact5 controlled cases and unchanged-path original facts. Initial volume uncertainty/unknown cleanup and diagnostic-only CID retention remain explicit. No Docker/installed/scenario/model/whole-task claim."
   },
   "S49:01": {
    "owner": "sandbox",

@@ -1,0 +1,185 @@
+{
+  "changed_lines": {
+    "101": "constructor(message: string, readonly id: string, readonly volumeName: string, readonly cleanup: Compensation, cause?: unknown, readonly createdContainerId?: string) {",
+    "103": "+ (createdContainerId ? `; created-container=${createdContainerId}` : \"\"),",
+    "461": "let createdContainerId: string | undefined;",
+    "491": "createdContainerId = containerId;",
+    "504": "throw new CreateFailure(err instanceof Error ? err.message : String(err), id, volumeName, cleanup, err, createdContainerId);"
+  },
+  "statements": [
+    {
+      "id": "11",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 101,
+          "column": 40
+        },
+        "end": {
+          "line": 101,
+          "column": 52
+        }
+      }
+    },
+    {
+      "id": "12",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 101,
+          "column": 61
+        },
+        "end": {
+          "line": 101,
+          "column": 81
+        }
+      }
+    },
+    {
+      "id": "13",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 101,
+          "column": 90
+        },
+        "end": {
+          "line": 101,
+          "column": 113
+        }
+      }
+    },
+    {
+      "id": "14",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 101,
+          "column": 139
+        },
+        "end": {
+          "line": 101,
+          "column": 168
+        }
+      }
+    },
+    {
+      "id": "130",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 491,
+          "column": 4
+        },
+        "end": {
+          "line": 491,
+          "column": null
+        }
+      }
+    },
+    {
+      "id": "134",
+      "hits": 4,
+      "location": {
+        "start": {
+          "line": 504,
+          "column": 4
+        },
+        "end": {
+          "line": 504,
+          "column": null
+        }
+      }
+    }
+  ],
+  "branches": [
+    {
+      "id": "7",
+      "hits": [
+        3,
+        1
+      ],
+      "location": {
+        "loc": {
+          "start": {
+            "line": 103,
+            "column": 13
+          },
+          "end": {
+            "line": 103,
+            "column": null
+          }
+        },
+        "type": "cond-expr",
+        "locations": [
+          {
+            "start": {
+              "line": 103,
+              "column": 34
+            },
+            "end": {
+              "line": 103,
+              "column": 80
+            }
+          },
+          {
+            "start": {
+              "line": 103,
+              "column": 80
+            },
+            "end": {
+              "line": 103,
+              "column": null
+            }
+          }
+        ],
+        "line": 103
+      }
+    },
+    {
+      "id": "47",
+      "hits": [
+        4,
+        0
+      ],
+      "location": {
+        "loc": {
+          "start": {
+            "line": 504,
+            "column": 28
+          },
+          "end": {
+            "line": 504,
+            "column": 78
+          }
+        },
+        "type": "cond-expr",
+        "locations": [
+          {
+            "start": {
+              "line": 504,
+              "column": 51
+            },
+            "end": {
+              "line": 504,
+              "column": 65
+            }
+          },
+          {
+            "start": {
+              "line": 504,
+              "column": 65
+            },
+            "end": {
+              "line": 504,
+              "column": 78
+            }
+          }
+        ],
+        "line": 504
+      }
+    }
+  ],
+  "compensateCreate_literal_body_unchanged": true,
+  "scope": "Partial V8 only over5 focused maintained cases; original24 test callbacks unchanged. Known-ID and no-known-ID diagnostic paths exercised. No full-owner floor/runtime/installed claim."
+}
