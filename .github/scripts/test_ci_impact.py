@@ -154,7 +154,7 @@ def reviewed_cold_event_guards(block: str) -> set[str]:
         "Observe the original exact-package claude workflow": "${{ !cancelled() && " + push + " }}",
         "Emit installed Claude qualification report": (
             "github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
-            "github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' "
+            "github.ref == 'refs/heads/major/state-contracts') "
             "&& steps.cold_claude_observed.outcome == 'success' "
             "&& hashFiles('.github/integration-candidate.json') != ''"),
     }
