@@ -11,6 +11,10 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ## [0.2.0] - 2026-11-13
 
+### Added
+
+- Add a trusted CI path that checks the retained Sandbox CLI's exec, copy-out and scoped destroy commands against its shipped package.
+
 ### Changed
 
 - Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.

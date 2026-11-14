@@ -126,7 +126,15 @@ export function loadVersionFacts(read: SourceReader): VersionFacts {
   add("node.minimum", nodeMinimum[1], SOURCES.piPackage);
 
   const ciSource = read(SOURCES.ciWorkflow);
-  const ciMatrix = exactlyOne(ciSource, /^\s*codex-version: \[([^\]]*)\]\s*$/m, "codex.ci", SOURCES.ciWorkflow);
+  // The source compatibility job owns this fact. Other installed-observer
+  // jobs may deliberately test their own independent Codex matrix.
+  const codexHost = exactlyOne(
+    ciSource,
+    /^  codex-host:[ \t]*\r?\n([\s\S]*?)(?=^  [A-Za-z0-9_-]+:[^\r\n]*(?:\r?\n|$)|(?![\s\S]))/m,
+    "codex.ci job",
+    SOURCES.ciWorkflow,
+  );
+  const ciMatrix = exactlyOne(codexHost[1], /^        codex-version: \[([^\]]*)\][ \t]*\r?$/m, "codex.ci", SOURCES.ciWorkflow);
   const ciVersions = quotedList(ciMatrix[1], "codex.ci", SOURCES.ciWorkflow);
   add("codex.ci", ciVersions.join(" and "), SOURCES.ciWorkflow);
 

@@ -26,6 +26,10 @@ def put(path,raw):path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes
 def js(value):return (json.dumps(value,sort_keys=True)+'\n').encode()
 
 class ProducerTests(unittest.TestCase):
+    def setUp(self):
+        # The private seam inherits this setting from the public entry point.
+        self.enterContext(mock.patch.object(sys, 'dont_write_bytecode', True))
+
     def fixture(self, fault=None, version='0.143.0'):
         root=Path(self.enterContext(tempfile.TemporaryDirectory(prefix='codex-producer-unit-')))
         workspace=root/'workspace';out=root/'output';packages=root/'packages';stage=root/'stage'
