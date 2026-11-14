@@ -4,7 +4,8 @@
 Observers reuse an owning test execution. Selection maps are reviewed semantic
 claims, not discovery or pass flags. Missing mappings, skipped selected tests,
 source drift and source-only claims about installed hosts refuse emission.
-Only trusted-main CI can emit the final report; the existing readiness owner
+Only trusted main/program push CI can emit reports; final readiness remains main-only.
+The existing readiness owner
 authenticates its original upload job and archive independently.
 """
 from __future__ import annotations
@@ -275,14 +276,21 @@ def validate_selections(document):
 def build_report(req, *, job_name, job_id, selections, observations, payloads):
     require(type(job_id) is int and job_id > 0, "positive actual job identity required")
     groups = validate_selections(selections)
+    # One declared original-package role is source-bound; no general formatting
+    # or caller-provided replacement expressions are accepted.
+    require(isinstance(req["source_commit"], str) and readiness.SHA.fullmatch(req["source_commit"]), "exact report source required")
+    groups = [dict(g, payload_name="artifact-release-packages-" + req["source_commit"])
+              if g["payload_name"] == "artifact-release-packages-{source_commit}" else g for g in groups]
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
     require(expected, "job has no required mapped cells")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,
             "semantic cell mapping is missing, extra or assigned to another job")
     results, indices, retained_payloads = [], {}, {}
+    installed_admissions, dual_payload_report = {}, False
     for cell in sorted(expected):
         evidence, selected, executed, payload_name, native_bindings = [], set(), set(), set(), []
+        installed_payloads = {}
         for group in (g for g in selected_groups if cell in g["cells"]):
             observed = observations.get(group["observation"], {})
             require(observed.get("format") == OBSERVATION
@@ -302,8 +310,22 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads):
                         "native module tests cannot qualify an upstream host")
             producers = {"source-test": ("python-test-result-observer", "vitest-json-observer"),
                          "native-module": ("go-named-ci20-join",)}
-            require(observed.get("producer") in producers.get(group["proof_kind"], ()),
-                    "no qualified observer for this proof kind")
+            if group["proof_kind"] == "retained-archive-cli":
+                from retained_archive_cli_observation import admit
+                if group["observation"] not in installed_admissions:
+                    installed_admissions[group["observation"]] = admit(
+                        observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT)
+                admitted = installed_admissions[group["observation"]]
+                require(group["payload_name"] == admitted["primary_payload_name"], "cold primary payload differs")
+                require(not cell.startswith("installed:") or cell in admitted["installed_cells"],
+                        "cold profile cannot qualify this upstream installed cell")
+                require(cell != "task:PI-D07", "cold profile cannot qualify packaged Pi authorship")
+                for item in admitted["payloads"]:
+                    installed_payloads[item["artifact_id"]] = item
+                dual_payload_report = True
+            else:
+                require(observed.get("producer") in producers.get(group["proof_kind"], ()),
+                        "no qualified observer for this proof kind")
             if group["proof_kind"] == "native-module":
                 native_bindings.append(observed.get("native_binding"))
             key = group["observation"]
@@ -338,10 +360,24 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads):
         require(identity not in retained_payloads or retained_payloads[identity] == retained,
                 "one payload artifact has conflicting consumed bytes")
         retained_payloads[identity] = retained
-        results.append({"cell": cell, "result": "PASSED", "commands": evidence,
-                        "selected_population": len(selected), "executed_population": len(executed),
-                        "payload_artifact_id": identity})
-    return {"schema": "codearbiter-major-qualification/2", "source_commit": req["source_commit"],
+        for extra_id, extra in installed_payloads.items():
+            require(extra_id not in retained_payloads or retained_payloads[extra_id] == extra,
+                    "one payload artifact has conflicting consumed bytes")
+            retained_payloads[extra_id] = extra
+        result = {"cell": cell, "result": "PASSED", "commands": evidence,
+                  "selected_population": len(selected), "executed_population": len(executed)}
+        if installed_payloads:
+            require(identity in installed_payloads and len(installed_payloads) == 2,
+                    "cold report requires both distinct original payloads")
+            result["payload_artifact_ids"] = sorted(installed_payloads)
+        else:
+            result["payload_artifact_id"] = identity
+        results.append(result)
+    if dual_payload_report:
+        for result in results:
+            if "payload_artifact_id" in result:
+                result["payload_artifact_ids"] = [result.pop("payload_artifact_id")]
+    return {"schema": "codearbiter-major-qualification/3" if dual_payload_report else "codearbiter-major-qualification/2", "source_commit": req["source_commit"],
             "source_tree": req["source_tree"], "ci_run_id": req["ci_run_id"],
             "job_id": job_id, "results": results,
             "payloads": [retained_payloads[i] for i in sorted(retained_payloads)]}
@@ -371,6 +407,13 @@ def authenticated_payload(metadata, req, consumed_root):
             "members": members, "native_bindings": native_bindings}
 
 
+def validate_emitter_environment():
+    require(os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_REPOSITORY") == readiness.REPOSITORY
+            and os.environ.get("GITHUB_REF") in ("refs/heads/main", "refs/heads/major/state-contracts")
+            and os.environ.get("GITHUB_EVENT_NAME") == "push", "reports require trusted main/program push CI")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=("observe-python", "observe-vitest", "admit-go", "emit"))
@@ -395,14 +438,11 @@ def main(argv=None):
             tree = git(args.repo, "rev-parse", binding["source_commit"] + "^{tree}")
             new_output(args.output, admit_go(load_json(args.observation[0]), binding, tree))
             return 0
-        require(os.environ.get("GITHUB_ACTIONS") == "true"
-                and os.environ.get("GITHUB_REPOSITORY") == readiness.REPOSITORY
-                and os.environ.get("GITHUB_REF") == "refs/heads/main"
-                and os.environ.get("GITHUB_EVENT_NAME") == "push", "reports require trusted main push CI")
+        validate_emitter_environment()
         source, run_id = os.environ["GITHUB_SHA"], int(os.environ["GITHUB_RUN_ID"])
         identity = source_identity(args.repo)
         require(identity["source_commit"] == source and identity["clean"], "report source differs from actual clean checkout")
-        req, _, artifacts, jobs = readiness.collect(args.repo, source, run_id, producing=True)
+        req, _, artifacts, jobs = readiness.collect(args.repo, source, run_id, producing=True, allow_program_branch=True, producer_scope=True)
         matching = [j for j in jobs if j["name"] == args.job_name and j.get("status") == "in_progress"]
         require(len(matching) == 1, "one current original owning job required")
         observations = {}

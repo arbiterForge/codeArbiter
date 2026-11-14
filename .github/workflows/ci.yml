@@ -1578,7 +1578,7 @@ jobs:
         run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
       - name: Cold-execute the complete exact-package claude workflow
         id: cold_claude
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && !(github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '') }}
         run: >-
           python tools/build-host-packages.py
           --release-package-stage "${{ runner.temp }}/artifact-host-payloads"
@@ -1591,12 +1591,61 @@ jobs:
           --trusted-workflow-run "${{ github.run_id }}"
           --cold-promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"
           --cold-receipt "${{ runner.temp }}/cold-claude/artifact-package-cold.json"
+      - name: Observe the original exact-package claude workflow
+        id: cold_claude_observed
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -I -B .github/scripts/retained_archive_cli_observation.py
+          --repo .
+          --stage "${{ runner.temp }}/artifact-host-payloads"
+          --package-root "${{ runner.temp }}/artifact-release-packages"
+          --host claude
+          --platform "${{ matrix.platform }}"
+          --output "${{ runner.temp }}/cold-claude/observation.json"
       - name: Preserve the exact claude cold-execution receipt
-        if: ${{ !cancelled() && steps.cold_claude.outcome == 'success' }}
+        if: ${{ !cancelled() && (steps.cold_claude.outcome == 'success' || steps.cold_claude_observed.outcome == 'success') }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: artifact-package-cold-${{ matrix.platform_token }}-claude-${{ github.sha }}
           path: ${{ runner.temp }}/cold-claude/artifact-package-cold.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Preserve original installed Claude observation
+        if: ${{ !cancelled() && steps.cold_claude_observed.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-cold-observation-${{ matrix.platform_token }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cold-claude/*.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit installed Claude qualification report
+        id: cold-qualification
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && matrix.platform == 'linux/amd64' && steps.cold_claude_observed.outcome == 'success' && hashFiles('.github/integration-candidate.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . \
+            --job-name "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>" \
+            --observation "cold=${{ runner.temp }}/cold-claude/observation.json" \
+            --payload-root "artifact-host-payloads-${{ github.sha }}=${{ runner.temp }}/artifact-host-payloads" \
+            --payload-root "artifact-release-packages-${{ github.sha }}=${{ runner.temp }}/artifact-release-packages" \
+            --output "${{ runner.temp }}/qualification.json"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.cold-qualification.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.cold-qualification.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -2884,6 +2933,12 @@ jobs:
       - name: Test original named-test qualification reports
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_major_qualification_report.py
+      - name: Test retained archive CLI observations
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_retained_archive_cli_observation.py
+      - name: Test retained cold observation pipeline
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_retained_cold_observer_pipeline.py
       - name: Test reviewed builder acquisition boundaries
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_acquire_nixpacks.py

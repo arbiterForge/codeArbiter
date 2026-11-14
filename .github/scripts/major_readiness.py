@@ -356,18 +356,25 @@ def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, c
                     run_id, job_id, artifact_id = (proof.get(k) for k in ('run_id', 'job_id', 'artifact_id'))
                     require(all(type(n) is int and n > 0 for n in (run_id, job_id, artifact_id)),
                             'invalid original hosted evidence identity')
-                    run, job = api(f'actions/runs/{run_id}'), api(f'actions/jobs/{job_id}')
-                    require(run.get('head_sha') == tested and run.get('event') == 'push'
-                            and run.get('repository', {}).get('full_name') == REPOSITORY
-                            and run.get('path') in ('.github/workflows/ci.yml', '.github/workflows/docs.yml')
-                            and run.get('head_branch') in ('main', 'major/state-contracts')
-                            and run.get('conclusion') == 'success'
-                            and job.get('run_id') == run_id and job.get('conclusion') == 'success',
-                            'original hosted evidence is unavailable or not applicable')
-                    metadata = api(f'actions/artifacts/{artifact_id}')
-                    expected = {'source_commit': tested, 'ci_run_id': run_id}
-                    content = artifact_bytes(metadata, expected)
-                    require(digest(content) == proof.get('sha256'), 'original hosted evidence digest differs')
+                    expected_digest = proof.get("sha256")
+                    require(isinstance(expected_digest, str) and DIGEST.fullmatch(expected_digest),
+                            "invalid original hosted evidence digest")
+                    raw_key = ("authenticated-hosted-raw", tested, run_id, job_id, artifact_id, expected_digest)
+                    if raw_key not in cache:
+                        run, job = api(f'actions/runs/{run_id}'), api(f'actions/jobs/{job_id}')
+                        require(run.get('head_sha') == tested and run.get('event') == 'push'
+                                and run.get('repository', {}).get('full_name') == REPOSITORY
+                                and run.get('path') in ('.github/workflows/ci.yml', '.github/workflows/docs.yml')
+                                and run.get('head_branch') in ('main', 'major/state-contracts')
+                                and run.get('conclusion') == 'success'
+                                and job.get('run_id') == run_id and job.get('conclusion') == 'success',
+                                'original hosted evidence is unavailable or not applicable')
+                        metadata = api(f'actions/artifacts/{artifact_id}')
+                        expected = {'source_commit': tested, 'ci_run_id': run_id}
+                        content = artifact_bytes(metadata, expected)
+                        require(digest(content) == proof.get('sha256'), 'original hosted evidence digest differs')
+                        # Positive fact only: no archive bytes, failed observations or cross-source reuse.
+                        cache[raw_key] = True
             inputs = record.get('inputs', {})
             require(isinstance(inputs, dict) and inputs, 'disposition proof lacks checked inputs')
             for path, expected in inputs.items():
@@ -431,6 +438,84 @@ def bind_named_jobs(cell_jobs, policy):
                     and not any(ord(c) < 32 for c in name) for name in overrides.values()),
             'invalid explicit cell/job binding')
     return {cell: overrides.get(cell, name) for cell, name in cell_jobs.items()}
+
+
+def disposition_job(cell, row, contract, task_owners):
+    owner_name = row.get('owner') or contract.get('owner')
+    if not owner_name:
+        owners = {task_owners[t] for t in row.get('task_ids', contract.get('task_ids', []))}
+        require(len(owners) == 1, 'disposition owner requires explicit assignment: ' + cell)
+        owner_name = owners.pop()
+    require(isinstance(owner_name, str) and owner_name and len(owner_name) <= 512
+            and not any(ord(c) < 32 for c in owner_name), 'invalid disposition owner')
+    return 'major qualification / ' + owner_name
+
+
+def qualification_routes(required, tasks, progress, scenarios, disposition_jobs, policy):
+    cells = ["task:" + t for t in required] + ["scenario:" + s["id"] for s in scenarios] + list(disposition_jobs)
+    owners = {t["id"]: t["owner"] for t in tasks}
+    owners.update({t["id"]: t["owner"] for t in progress.get("new_required_work", [])})
+    cell_jobs = {"task:" + t: "major qualification / " + owners[t] for t in required}
+    cell_jobs.update({"scenario:" + s["id"]: "major qualification / scenarios" for s in scenarios})
+    cell_jobs.update(disposition_jobs)
+    require(policy.get("program_id") == PROGRAM and policy.get("required_installed_cells"),
+            "installed qualification policy missing")
+    routes = policy.get('owner_job_routes', {})
+    require(isinstance(routes, dict) and all(isinstance(k, str) and isinstance(v, str) and k and v
+                                           for k, v in routes.items()), 'invalid explicit owner/job routes')
+    for cell, job_name in list(cell_jobs.items()):
+        if cell.startswith('disposition:'):
+            original_owner = job_name.removeprefix('major qualification / ')
+            cell_jobs[cell] = 'major qualification / ' + routes.get(original_owner, original_owner)
+    cells.extend(policy["required_installed_cells"])
+    cell_jobs.update({cell: "major qualification / " + cell for cell in policy["required_installed_cells"]})
+    cell_jobs = bind_named_jobs(cell_jobs, policy)
+    require(len(cells) == len(set(cells)), "duplicate required cell")
+    return sorted(cells), cell_jobs
+
+
+def producer_requirements(repo, source, run_id):
+    """Declared finite routes, not program completion/publication authentication.
+
+    Reading unfinished owner-routing metadata does not endorse its statuses or
+    evidence. Only final requirements() can assert the complete ready program.
+    """
+    require(SHA.fullmatch(source or ""), "exact producer source required")
+    require(type(run_id) is int and run_id > 0, "positive producer run required")
+    def read(path):return json.loads(blob(repo, source, path))
+    program = read(CORPUS + "contracts/program.json")
+    tasks = read(CORPUS + "contracts/tasks.json")["tasks"]
+    progress = read(CORPUS + "execution/progress.json")
+    require(program.get("id") == PROGRAM and program.get("counts") ==
+            {"tasks":82,"findings":70,"machines":287,"transitions":1748,"composed_scenarios":31},
+            "frozen producer program population differs")
+    required = sorted(t["id"] for t in tasks if t["required_before_publication"] and t["id"] != "Q-03")
+    require(sorted(program["delivery_predicates"]["PREPUBLICATION_READY"]["required_task_ids"]) == required,
+            "producer task population differs from program contract")
+    required += [t["id"] for t in progress.get("new_required_work", [])]
+    ledger = read(CORPUS + "execution/coverage-ledger.json")
+    groups = {
+        "findings": {r["finding_id"]:r for r in read(CORPUS+"contracts/finding-dispositions.json")["records"]},
+        "machines": {r["machine_id"]:r for r in read(CORPUS+"contracts/machine-coverage.json")["machines"]},
+        "transitions": {r["transition_id"]:r for r in read(CORPUS+"contracts/transition-coverage.json")["transitions"]},
+        "added_transitions": {r["transition_id"]:r for r in progress.get("new_transition_rows", [])},
+    }
+    task_owners = {t["id"]:t["owner"] for t in tasks}
+    task_owners.update({t["id"]:t["owner"] for t in progress.get("new_required_work", [])})
+    jobs = {}
+    for group, contracts in groups.items():
+        require(set(ledger.get(group, {})) == set(contracts), "producer declaration population differs: " + group)
+        for identity, contract in contracts.items():
+            cell = 'disposition:' + group + ':' + identity
+            # Only owner/task assignment is consumed from this mutable lifecycle
+            # record. No status/evidence/currentness predicate is accepted here.
+            jobs[cell] = disposition_job(cell, ledger[group][identity], contract, task_owners)
+    scenarios = read(CORPUS+"contracts/scenarios.json")["scenarios"]
+    cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, jobs,
+                                           read(".github/major-qualification-policy.json"))
+    tree = command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip()
+    require(SHA.fullmatch(tree), "producer source tree unavailable")
+    return {"source_commit":source,"source_tree":tree,"ci_run_id":run_id,"cells":cells,"cell_jobs":cell_jobs}
 
 
 def requirements(repo, source, run_id):
@@ -504,12 +589,7 @@ def requirements(repo, source, run_id):
             paths = evidence_paths(contract)
             require(paths, 'disposition has no source scope: ' + cell)
             dispositions[cell] = authenticate_disposition(repo, source, cell, row, paths, load, authenticated)
-            owner_name = row.get('owner') or contract.get('owner')
-            if not owner_name:
-                owners = {task_owners[t] for t in row.get('task_ids', [])}
-                require(len(owners) == 1, 'disposition owner requires explicit assignment: ' + cell)
-                owner_name = owners.pop()
-            disposition_jobs[cell] = 'major qualification / ' + owner_name
+            disposition_jobs[cell] = disposition_job(cell, row, contract, task_owners)
     # Accepted lifecycle identities are validated by the existing immutable owner,
     # not inferred from an accepted label inside this record.
     command([sys.executable, str(Path(__file__).with_name("check_adr_lifecycle.py")),
@@ -518,26 +598,8 @@ def requirements(repo, source, run_id):
     targets = candidate_marker(load(source, '.github/integration-candidate.json'))
     prefixes = {"ca": "v", "ca-codex": "ca-codex-v", "ca-pi": "ca-pi-v", "ca-sandbox": "ca-sandbox-v"}
     scenarios = read(CORPUS + "contracts/scenarios.json")["scenarios"]
-    cells = ["task:" + t for t in required] + ["scenario:" + s["id"] for s in scenarios] + list(dispositions)
-    owners = {t["id"]: t["owner"] for t in tasks}
-    owners.update({t["id"]: t["owner"] for t in progress.get("new_required_work", [])})
-    cell_jobs = {"task:" + t: "major qualification / " + owners[t] for t in required}
-    cell_jobs.update({"scenario:" + s["id"]: "major qualification / scenarios" for s in scenarios})
-    cell_jobs.update(disposition_jobs)
     policy = read(".github/major-qualification-policy.json")
-    require(policy.get("program_id") == PROGRAM and policy.get("required_installed_cells"),
-            "installed qualification policy missing")
-    routes = policy.get('owner_job_routes', {})
-    require(isinstance(routes, dict) and all(isinstance(k, str) and isinstance(v, str) and k and v
-                                           for k, v in routes.items()), 'invalid explicit owner/job routes')
-    for cell, job_name in list(cell_jobs.items()):
-        if cell.startswith('disposition:'):
-            original_owner = job_name.removeprefix('major qualification / ')
-            cell_jobs[cell] = 'major qualification / ' + routes.get(original_owner, original_owner)
-    cells.extend(policy["required_installed_cells"])
-    cell_jobs.update({cell: "major qualification / " + cell for cell in policy["required_installed_cells"]})
-    cell_jobs = bind_named_jobs(cell_jobs, policy)
-    require(len(cells) == len(set(cells)), "duplicate required cell")
+    cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, disposition_jobs, policy)
     return {"source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
@@ -576,10 +638,11 @@ def members(archive):
     return sorted(result, key=lambda r: r["path"])
 
 
-def validate_run(run, req, producing=False):
+def validate_run(run, req, producing=False, *, allow_program_branch=False):
     require(isinstance(run, dict) and run.get("id") == req["ci_run_id"]
             and run.get("head_sha") == req["source_commit"] and run.get("event") == "push"
-            and run.get("head_branch") == "main"
+            and (run.get("head_branch") == "main" or producing and allow_program_branch
+                 and run.get("head_branch") == "major/state-contracts")
             and (run.get("conclusion") == "success" or producing and run.get("conclusion") is None)
             and run.get("path") == ".github/workflows/ci.yml"
             and run.get("repository", {}).get("full_name") == REPOSITORY,
@@ -663,7 +726,7 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
         require(row.get("result") == "PASSED" and job.get("conclusion") == "success"
                 and job.get("name") == req["cell_jobs"][row["cell"]],
                 "required qualification cell lacks successful named execution: " + row["cell"])
-        qualified_ids.add(row.get("evidence_artifact_id"))
+        qualified_ids.update(evidence_payload_ids(row))
     archives = record.get("artifacts", [])
     require(archives and len({a["artifact_id"] for a in archives}) == len(archives), "missing or duplicate payload artifacts")
     for payload in archives:
@@ -695,10 +758,11 @@ def artifact_bytes(artifact, req):
     return content
 
 
-def collect(repo, source, run_id, producing=False):
-    req = requirements(repo, source, run_id)
+def collect(repo, source, run_id, producing=False, *, allow_program_branch=False, producer_scope=False):
+    require(not producer_scope or producing, "finite producer scope is producing-only")
+    req = producer_requirements(repo, source, run_id) if producer_scope else requirements(repo, source, run_id)
     run = api(f"actions/runs/{run_id}")
-    validate_run(run, req, producing)
+    validate_run(run, req, producing, allow_program_branch=allow_program_branch)
     # gh's complete paginated list is bounded before consumption.
     artifacts = json.loads(command(["gh", "api", "--paginate", "--slurp",
         f"repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100"]))
@@ -724,6 +788,34 @@ def read_artifact_json(artifact, req, filename):
         return json.loads(z.read(filename))
 
 
+def evidence_payload_ids(row):
+    """Final readiness preserves legacy scalar evidence and explicit v3 lists."""
+    if "evidence_artifact_ids" not in row:
+        value = row.get("evidence_artifact_id")
+        require(type(value) is int and value > 0, "invalid legacy evidence artifact identity")
+        return [value]
+    require("evidence_artifact_id" not in row, "ambiguous scalar/plural evidence")
+    return bounded_payload_ids(row["evidence_artifact_ids"])
+
+
+def bounded_payload_ids(values):
+    require(isinstance(values, list) and 1 <= len(values) <= 2
+            and all(type(value) is int and value > 0 for value in values)
+            and values == sorted(set(values)), "invalid bounded plural payload identities")
+    return values
+
+
+def report_row_payload_ids(report, row):
+    if report.get("schema") == "codearbiter-major-qualification/3":
+        require("payload_artifact_id" not in row and "payload_members" not in row
+                and "payload_archive_sha256" not in row, "ambiguous v3 payload binding")
+        return bounded_payload_ids(row.get("payload_artifact_ids"))
+    require("payload_artifact_ids" not in row, "plural references require explicit report3")
+    value = row.get("payload_artifact_id")
+    require(type(value) is int and value > 0, "invalid legacy payload artifact identity")
+    return [value]
+
+
 def report_payloads(report, rows):
     """Resolve the v2 intern table without changing per-cell byte admission.
 
@@ -734,6 +826,22 @@ def report_payloads(report, rows):
     if report.get("schema") == "codearbiter-major-qualification/1":
         require("payloads" not in report, "ambiguous legacy qualification payload table")
         return None
+    if report.get("schema") == "codearbiter-major-qualification/3":
+        table = report.get("payloads")
+        require(isinstance(table, list) and 0 < len(table) <= 2 * len(rows),
+                "v3 qualification payload table missing or unbounded")
+        result = {}
+        for entry in table:
+            require(isinstance(entry, dict) and set(entry) == {"artifact_id", "archive_sha256", "members"}
+                    and type(entry.get("artifact_id")) is int and entry["artifact_id"] > 0
+                    and entry["artifact_id"] not in result
+                    and isinstance(entry.get("archive_sha256"), str) and DIGEST.fullmatch(entry["archive_sha256"])
+                    and isinstance(entry.get("members"), list) and entry["members"],
+                    "invalid or duplicate v3 payload table entry")
+            result[entry["artifact_id"]] = entry
+        referenced = {identity for row in rows for identity in report_row_payload_ids(report, row)}
+        require(set(result) == referenced, "v3 payload references missing or unused")
+        return result
     require(report.get("schema") == "codearbiter-major-qualification/2",
             "unsupported qualification report schema")
     table = report.get("payloads")
@@ -775,7 +883,7 @@ def produce(req, artifacts, jobs):
         require(isinstance(report_artifact, dict), 'required original qualification report missing')
         validate_upload(job, report_artifact, 'Upload major qualification report')
         report = read_artifact_json(report_artifact, req, "qualification.json")
-        require(report.get("schema") in ("codearbiter-major-qualification/1", "codearbiter-major-qualification/2")
+        require(report.get("schema") in ("codearbiter-major-qualification/1", "codearbiter-major-qualification/2", "codearbiter-major-qualification/3")
                 and report.get("source_commit") == req["source_commit"]
                 and report.get("source_tree") == req["source_tree"]
                 and report.get("ci_run_id") == req["ci_run_id"] and report.get("job_id") == job["id"],
@@ -794,21 +902,26 @@ def produce(req, artifacts, jobs):
                             and all(isinstance(arg, str) and arg for arg in c["argv"])
                             for c in row["commands"]),
                     "required cell lacks affirmative executed evidence: " + row["cell"])
-            payload_id = row.get("payload_artifact_id")
-            require(payload_id in by_id, "qualification payload artifact missing")
-            if payload_id not in payloads:
-                payload = by_id[payload_id]
-                content = artifact_bytes(payload, req)
-                payloads[payload_id] = {"artifact_id": payload_id,
-                    "archive_sha256": digest(content), "members": members(content)}
-            binding = row if retained_payloads is None else retained_payloads[payload_id]
-            require(binding.get("payload_archive_sha256" if retained_payloads is None else "archive_sha256")
-                    == payloads[payload_id]["archive_sha256"]
-                    and binding.get("payload_members" if retained_payloads is None else "members") == payloads[payload_id]["members"],
-                    "executed qualification bytes differ from retained payload: " + row["cell"])
-            results.append({"cell": row["cell"], "result": "PASSED", "job_id": job["id"],
-                            "evidence_artifact_id": payload_id,
-                            "report_artifact_id": report_artifact["id"]})
+            payload_ids = report_row_payload_ids(report, row)
+            for payload_id in payload_ids:
+                require(payload_id in by_id, "qualification payload artifact missing")
+                if payload_id not in payloads:
+                    payload = by_id[payload_id]
+                    content = artifact_bytes(payload, req)
+                    payloads[payload_id] = {"artifact_id": payload_id,
+                        "archive_sha256": digest(content), "members": members(content)}
+                binding = row if retained_payloads is None else retained_payloads[payload_id]
+                require(binding.get("payload_archive_sha256" if retained_payloads is None else "archive_sha256")
+                        == payloads[payload_id]["archive_sha256"]
+                        and binding.get("payload_members" if retained_payloads is None else "members") == payloads[payload_id]["members"],
+                        "executed qualification bytes differ from retained payload: " + row["cell"])
+            result = {"cell": row["cell"], "result": "PASSED", "job_id": job["id"],
+                      "report_artifact_id": report_artifact["id"]}
+            if report.get("schema") == "codearbiter-major-qualification/3":
+                result["evidence_artifact_ids"] = payload_ids
+            else:
+                result["evidence_artifact_id"] = payload_ids[0]
+            results.append(result)
     require(set(req["required_artifact_names"]) <= {by_id[i]["name"] for i in payloads},
             "qualification has no complete exact package cohort")
     producers = [j for j in jobs if j.get('name') == 'major readiness producer']

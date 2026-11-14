@@ -740,5 +740,127 @@ class PagesBuildAdmissionTest(unittest.TestCase):
             owner.validate_upload(self.job,self.artifact,'Upload Pages artifact')
 
 
+
+class DualPayloadReportTest(unittest.TestCase):
+    def test_original_v3_producer_authenticates_both_payloads_and_refuses_second_tamper(self):
+        fixture=ReadinessTest("test_valid_receipt_is_non_circular");fixture.setUp()
+        req=fixture.requirements
+        def archive(name, data):
+            output=io.BytesIO()
+            with zipfile.ZipFile(output,"w") as z:z.writestr(name,data)
+            return output.getvalue()
+        content={12:archive("package",b"package bytes"),13:archive("stage",b"stage bytes")}
+        table=[{"artifact_id":i,"archive_sha256":owner.digest(raw),"members":owner.members(raw)} for i,raw in content.items()]
+        reports={}
+        artifacts=[dict(fixture.build_artifacts[0],id=i,name="qualified-payload" if i==12 else "stage-original",digest="sha256:"+owner.digest(raw)) for i,raw in content.items()]
+        for i,cell in enumerate(req["cells"]):
+            name="major-qualification-"+str(20+i)
+            artifacts.append({"id":30+i,"name":name})
+            reports[name]={"schema":"codearbiter-major-qualification/3","source_commit":req["source_commit"],"source_tree":req["source_tree"],"ci_run_id":7,"job_id":20+i,"payloads":copy.deepcopy(table),
+                "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["actual-original-check"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_ids":[12,13]}]}
+        with mock.patch.object(owner,"read_artifact_json",side_effect=lambda a,r,n:reports[a["name"]]),mock.patch.object(owner,"validate_upload"),mock.patch.object(owner,"artifact_bytes",side_effect=lambda a,r:content[a["id"]]) as fetch:
+            record=owner.produce(req,artifacts,fixture.jobs)
+            self.assertEqual(fetch.call_count,2)
+            self.assertEqual({p["artifact_id"] for p in record["artifacts"]},{12,13})
+            self.assertTrue(all(r["evidence_artifact_ids"]==[12,13] for r in record["results"]))
+            reports[next(iter(reports))]["payloads"][1]["members"][0]["sha256"]="0"*64
+            with self.assertRaisesRegex(owner.ReadinessError,"qualification bytes differ"):
+                owner.produce(req,artifacts,fixture.jobs)
+
+    def test_v3_exact_dual_payload_table_preserves_distinct_original_identities(self):
+        rows=[{"payload_artifact_ids":[12,13]}]
+        table=[{"artifact_id":i,"archive_sha256":str(i%10)*64,"members":[{"path":"member","sha256":"a"*64}]} for i in [12,13]]
+        result=owner.report_payloads({"schema":"codearbiter-major-qualification/3","payloads":table},rows)
+        self.assertEqual(set(result),{12,13})
+
+    def test_v3_duplicate_missing_mixed_scalar_and_unused_references_refuse(self):
+        table=[{"artifact_id":i,"archive_sha256":"a"*64,"members":[{"path":"member","sha256":"b"*64}]} for i in [12,13]]
+        for row in [{"payload_artifact_ids":[12,12]}, {"payload_artifact_ids":[13,12]},
+                    {"payload_artifact_ids":[12,99]}, {"payload_artifact_ids":[12]},
+                    {"payload_artifact_ids":[12,13],"payload_artifact_id":12},
+                    {"payload_artifact_ids":[True,13]}, {"payload_artifact_ids":[12,13,14]}]:
+            with self.subTest(row=row),self.assertRaises(owner.ReadinessError):
+                owner.report_payloads({"schema":"codearbiter-major-qualification/3","payloads":table},[row])
+
+    def test_final_readiness_verifies_every_plural_evidence_artifact(self):
+        fixture=ReadinessTest("test_valid_receipt_is_non_circular");fixture.setUp()
+        for row in fixture.record["results"]:
+            row.pop("evidence_artifact_id");row["evidence_artifact_ids"]=[12,13]
+        fixture.record["artifacts"].append({"artifact_id":13,"archive_sha256":"3"*64,"members":[{"path":"stage","sha256":"4"*64}]})
+        fixture.build_artifacts.append(dict(fixture.build_artifacts[0],id=13,name="second-original",digest="sha256:"+"3"*64))
+        self.assertEqual(fixture.verify()["state"],"PREPUBLICATION_READY")
+        fixture.record["artifacts"][1]["archive_sha256"]="5"*64
+        with self.assertRaises(owner.ReadinessError):fixture.verify()
+
+
+class ProgramProducingGuardTest(unittest.TestCase):
+    def test_finite_producer_catalog_does_not_require_unfinished_program_to_be_ready(self):
+        root=Path(__file__).resolve().parents[2]
+        source="a"*40
+        def blob(repo,commit,path):
+            self.assertEqual(commit,source)
+            raw=(root/path).read_bytes()
+            if path==owner.CORPUS+"execution/progress.json":
+                progress=json.loads(raw)
+                for task in progress["task_updates"]:task["status"]="PLANNED"
+                return json.dumps(progress).encode()
+            return raw
+        with mock.patch.object(owner,"blob",side_effect=blob),mock.patch.object(owner,"command",return_value=b"b"*40):
+            req=owner.producer_requirements(root,source,7)
+            self.assertEqual(set(req),{"source_commit","source_tree","ci_run_id","cells","cell_jobs"})
+            self.assertIn("installed:claude:workflow",req["cells"])
+            self.assertEqual(set(req["cells"]),set(req["cell_jobs"]))
+            with self.assertRaisesRegex(owner.ReadinessError,"unfinished required task"):
+                owner.requirements(root,source,7)
+
+    def test_program_push_is_producing_only_and_publication_reader_stays_main_only(self):
+        fixture=ReadinessTest("test_valid_receipt_is_non_circular");fixture.setUp()
+        run=dict(fixture.run,head_branch="major/state-contracts",conclusion=None)
+        owner.validate_run(run,fixture.requirements,producing=True,allow_program_branch=True)
+        for changes in ({"event":"pull_request"},{"head_branch":"feature/topic"},{"conclusion":"failure"},{"repository":{"full_name":"fork/codeArbiter"}}):
+            with self.subTest(changes=changes),self.assertRaises(owner.ReadinessError):
+                owner.validate_run(dict(run,**changes),fixture.requirements,producing=True,allow_program_branch=True)
+        with self.assertRaises(owner.ReadinessError):
+            owner.validate_run(dict(run,conclusion="success"),fixture.requirements,allow_program_branch=True)
+        with self.assertRaises(owner.ReadinessError):
+            fixture.verify(run=dict(run,conclusion="success"))
+
+
+class HostedRawAuthenticationCacheTest(unittest.TestCase):
+    def fixture(self):
+        raw=b"original retained bytes"
+        source="a"*40
+        def record(commit=source,job=9,digest=None):
+            return {"schema":"codearbiter-disposition-evidence/1","source_commit":commit,"kind":"test","result":"PASSED",
+                "producer":{"class":"hosted","identity":"original job"},"raw_evidence":[{"run_id":7,"job_id":job,"artifact_id":10,"sha256":digest or owner.digest(raw)}],
+                "inputs":{"owner.py":owner.digest(b"original owner")},"commands":[{"argv":["actual-original-check"],"exit_code":0}],
+                "disposition_ids":["disposition:transitions:fixture"]}
+        def api(path):
+            if path=="actions/runs/7":return {"head_sha":source,"event":"push","repository":{"full_name":owner.REPOSITORY},"path":".github/workflows/docs.yml","head_branch":"major/state-contracts","conclusion":"success"}
+            if path.startswith("actions/jobs/"):return {"run_id":7,"conclusion":"success" if path.endswith("/9") else "failure"}
+            if path=="actions/artifacts/10":return {"id":10}
+            raise AssertionError("unexpected API route")
+        def call(name,rec,cache):
+            blob=json.dumps(rec).encode()
+            row={"status":"TESTED","evidence":[{"kind":"test","commit":rec["source_commit"],"ref":name,"sha256":owner.digest(blob)}]}
+            def load(commit,path):return b"original owner" if path=="owner.py" else blob
+            return owner.authenticate_recorded_disposition(Path.cwd(),source,"disposition:transitions:fixture",row,{"owner.py"},load,cache)
+        return raw,record,api,call
+
+    def test_distinct_proofs_share_only_positive_full_identity_raw_authentication(self):
+        raw,record,api,call=self.fixture();cache={}
+        with mock.patch.object(owner,"command",return_value=b""),mock.patch.object(owner,"api",side_effect=api),mock.patch.object(owner,"artifact_bytes",return_value=raw) as fetch:
+            call("proof-one.json",record(),cache)
+            call("proof-two.json",record(),cache)
+            self.assertEqual(fetch.call_count,1,"same original source/run/job/artifact/digest must authenticate once per transaction")
+
+    def test_other_source_job_digest_and_failed_authentication_never_reuse_success(self):
+        raw,record,api,call=self.fixture();cache={}
+        with mock.patch.object(owner,"command",return_value=b""),mock.patch.object(owner,"api",side_effect=api),mock.patch.object(owner,"artifact_bytes",return_value=raw) as fetch:
+            call("valid.json",record(),cache)
+            for name,rec in [("wrong-source.json",record(commit="b"*40)),("wrong-job.json",record(job=8)),("wrong-digest1.json",record(digest="0"*64)),("wrong-digest2.json",record(digest="0"*64))]:
+                with self.subTest(name=name),self.assertRaises(owner.ReadinessError):call(name,rec,cache)
+            self.assertEqual(fetch.call_count,3,"failed digest authentication must not be cached")
+
 if __name__ == "__main__":
     unittest.main()

@@ -4061,8 +4061,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertEqual(cold_hosts.count(binding), 3, binding)
         for host in ("claude", "codex", "pi"):
             self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
-            self.assertEqual(cold.count(f"id: cold_{host}"), 1)
-            self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
+            self.assertEqual(cold.count(f"id: cold_{host}\n"), 1)
+            if host == "claude":
+                self.assertIn("if: ${{ !cancelled() && (steps.cold_claude.outcome == 'success' || steps.cold_claude_observed.outcome == 'success') }}", cold)
+            else:
+                self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
             self.assertIn(f'--cold-receipt "${{{{ runner.temp }}}}/cold-{host}/artifact-package-cold.json"', cold)
             self.assertIn(f"name: artifact-package-cold-${{{{ matrix.platform_token }}}}-{host}-${{{{ github.sha }}}}", cold)
         for runner, platform_name in (
