@@ -79,12 +79,19 @@ class AuthorityRetentionTest(unittest.TestCase):
                    'native_metadata_sha256':hashlib.sha256(metadata.read_bytes()).hexdigest()}
         return subject, env, effects, context
 
+    # Child env cannot prevent the parent import/discovery from writing caches
+    # into the committed fixture. Keep both processes' source checks truthful.
+    @mock.patch.object(sys, 'dont_write_bytecode', True)
     def test_real_four_original_shards_retain_observations_and_execute_once(self):
         subject,env,effects,context = self._fixture()
         # Only native CI context is a unit double. The four child processes,
         # Git source checks, unittest events and original observer JSON are real.
         with mock.patch.dict(os.environ,env,clear=True), mock.patch.object(subject,'retention_context',return_value=context,create=True):
             cases=subject.discover(); shards,_=subject.partition(cases,4,subject.load_weights())
+            self.assertEqual(subprocess.check_output(
+                ['git', '-C', str(Path(subject.__file__).resolve().parents[2]),
+                 'status', '--porcelain', '--untracked-files=all'],
+                env=env), b'', 'parent imports must preserve the committed fixture')
             expected=[case.id() for case in cases]
             self.assertTrue(subject.run_all(4,expected,plan_sha256=subject.plan_digest(shards)))
         retained=Path(env['AUTHORITY_OBSERVATION_DIR'])
