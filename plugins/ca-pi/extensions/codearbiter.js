@@ -10863,7 +10863,12 @@ async function runFarmPreview(input, signal, dependencies = {}) {
     return result2(backend, "degraded", { message: "shared farm backend could not be started" });
   }
   const completed = await waitForFarm(child, signal, dependencies.createCleanup ?? createProcessTreeCleanup);
-  if (completed.cancelled) return result2(backend, "cancelled");
+  if (completed.cancelled) {
+    if (completed.cleanupVerified) return result2(backend, "cancelled");
+    return result2(backend, "degraded", {
+      message: "shared farm backend cancellation requested; process-tree cleanup could not be verified"
+    });
+  }
   if (completed.overflow) return result2(backend, "degraded", { message: "shared farm backend output exceeded the preview limit" });
   if (!completed.cleanupVerified) return result2(backend, "degraded", {
     ...completed.code === null ? {} : { exitCode: completed.code },

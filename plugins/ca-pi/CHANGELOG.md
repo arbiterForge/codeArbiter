@@ -20,6 +20,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Keep unverified process-tree cleanup explicit when a Farm preview is cancelled.
 - Classify malformed provider JSON at the transport boundary without hiding programmer errors.
 - Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
 - Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
