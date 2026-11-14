@@ -1913,12 +1913,21 @@ async function stillRegistered(gitFn: GitRunner, wt: string): Promise<boolean> {
     .some((l) => samePath(l.slice("worktree ".length).trim(), wt));
 }
 
-async function pathExists(p: string): Promise<boolean> {
+type WorktreePathObservation =
+  | { kind: "present" }
+  | { kind: "absent" }
+  | { kind: "unknown"; code: string };
+
+async function observeWorktreePath(p: string): Promise<WorktreePathObservation> {
   try {
-    await stat(p);
-    return true;
-  } catch {
-    return false;
+    // Observe the owned directory entry itself: a dangling link is still a
+    // present resource, not proof that cleanup released the path.
+    await lstat(p);
+    return { kind: "present" };
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException)?.code;
+    if (code === "ENOENT") return { kind: "absent" };
+    return { kind: "unknown", code: typeof code === "string" && /^[A-Z0-9_]{1,40}$/.test(code) ? code : "UNKNOWN" };
   }
 }
 
@@ -1945,23 +1954,30 @@ export async function removeWorktreeVerified(
     // The backoff below is deliberately OUTSIDE the lock: holding it across a
     // sleep would park every other worker behind this one's retry schedule,
     // turning a bounded local delay into a global stall.
-    const { registered, present } = await withWorktreeLock(async () => {
+    const { registered, observation } = await withWorktreeLock(async () => {
       const rmR = await gitFn(["worktree", "remove", "--force", wt]);
       if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
       let reg = await stillRegistered(gitFn, wt);
-      const exists = await pathExists(wt);
+      const observation = await observeWorktreePath(wt);
       // Prune clears a stale registration whose directory is already gone — the
       // exact state a partially-failed removal or an external delete leaves.
       // Run it ONLY in that state: `git worktree prune` is repo-wide, and a
       // blanket call would also deregister an unrelated worktree whose path is
       // merely unreachable right now (an unmounted volume, a temporarily denied
       // directory). Narrow it to the condition it is actually needed for.
-      if (reg && !exists) {
+      if (reg && observation.kind === "absent") {
         await gitFn(["worktree", "prune"]);
         reg = await stillRegistered(gitFn, wt);
       }
-      return { registered: reg, present: exists };
+      return { registered: reg, observation };
     });
+    // An unreadable path cannot authorize prune or another destructive attempt.
+    // Keep its ownership unresolved for explicit recovery instead.
+    if (observation.kind === "unknown") {
+      return { ok: false, target: wt, attempts: i,
+        detail: `filesystem observation unavailable (${observation.code}); cleanup remains unverified` };
+    }
+    const present = observation.kind === "present";
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else

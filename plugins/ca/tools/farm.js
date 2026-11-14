@@ -2008,12 +2008,14 @@ async function stillRegistered(gitFn, wt) {
   if (listed.code !== 0) return true;
   return listed.stdout.split("\n").filter((l) => l.startsWith("worktree ")).some((l) => samePath(l.slice("worktree ".length).trim(), wt));
 }
-async function pathExists(p) {
+async function observeWorktreePath(p) {
   try {
-    await stat(p);
-    return true;
-  } catch {
-    return false;
+    await lstat3(p);
+    return { kind: "present" };
+  } catch (error) {
+    const code = error?.code;
+    if (code === "ENOENT") return { kind: "absent" };
+    return { kind: "unknown", code: typeof code === "string" && /^[A-Z0-9_]{1,40}$/.test(code) ? code : "UNKNOWN" };
   }
 }
 async function removeWorktreeVerified(gitFn, wt, opts = {}) {
@@ -2021,17 +2023,26 @@ async function removeWorktreeVerified(gitFn, wt, opts = {}) {
   const delayMs = opts.delayMs ?? CLEANUP_DELAY_MS;
   let lastErr = "";
   for (let i = 1; i <= attempts; i++) {
-    const { registered, present } = await withWorktreeLock(async () => {
+    const { registered, observation } = await withWorktreeLock(async () => {
       const rmR = await gitFn(["worktree", "remove", "--force", wt]);
       if (rmR.code !== 0) lastErr = rmR.out.trim().split("\n").slice(-1)[0] ?? "";
       let reg = await stillRegistered(gitFn, wt);
-      const exists = await pathExists(wt);
-      if (reg && !exists) {
+      const observation2 = await observeWorktreePath(wt);
+      if (reg && observation2.kind === "absent") {
         await gitFn(["worktree", "prune"]);
         reg = await stillRegistered(gitFn, wt);
       }
-      return { registered: reg, present: exists };
+      return { registered: reg, observation: observation2 };
     });
+    if (observation.kind === "unknown") {
+      return {
+        ok: false,
+        target: wt,
+        attempts: i,
+        detail: `filesystem observation unavailable (${observation.code}); cleanup remains unverified`
+      };
+    }
+    const present = observation.kind === "present";
     if (!registered && !present) return { ok: true, target: wt, attempts: i };
     if (i < attempts) await sleep(delayMs * i);
     else
