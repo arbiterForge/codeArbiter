@@ -22,6 +22,7 @@
  *   running behind it. That is the assertion the argv tests cannot make.
  */
 import { EventEmitter } from "node:events";
+import { randomUUID } from "node:crypto";
 import type { spawn } from "node:child_process";
 import { describe, it, expect } from "vitest";
 import {
@@ -240,6 +241,36 @@ realDocker("#394 — a real hung command terminates within its deadline", () => 
       expect(alive.stdout.trim(), result.stderr).toBe("");
     } finally {
       await defaultDockerRun(["rm", "-f", id || name]);
+    }
+  }, 120_000);
+
+  it("SBX-C02 real output overflow stops only its exact target and preserves another running box", async () => {
+    const namespace = `ca-sbx-overflow-${randomUUID()}`;
+    const owned: string[] = [];
+    try {
+      for (const role of ["target", "survivor"]) {
+        const created = await defaultDockerRun([
+          "run", "-d", "--name", `${namespace}-${role}`, "alpine:latest", "sleep", "600",
+        ]);
+        if (created.code === 0 && /^[a-f0-9]{64}$/.test(created.stdout.trim())) owned.push(created.stdout.trim());
+        expect(created.code, created.stderr).toBe(0);
+        expect(owned).toHaveLength(role === "target" ? 1 : 2);
+      }
+      const [target, survivor] = owned;
+      const result = await execInSandbox(target, ["sh", "-c", "while :; do printf 'overflow-output\\n'; done"], {
+        dockerRun: makeDockerRun({}, { maxBuffer: 1024, timeoutMs: 5_000 }),
+      });
+      expect(result.overflowed).toBe(true);
+      expect(result.timedOut).not.toBe(true);
+      expect(result.containment, result.stderr).toBe("verified-stopped");
+      const stopped = await defaultDockerRun(["inspect", "--format", "{{.State.Running}}", target]);
+      expect(stopped.code, stopped.stderr).toBe(0);
+      expect(stopped.stdout.trim()).toBe("false");
+      const alive = await defaultDockerRun(["inspect", "--format", "{{.State.Running}}", survivor]);
+      expect(alive.code, alive.stderr).toBe(0);
+      expect(alive.stdout.trim()).toBe("true");
+    } finally {
+      for (const id of owned) await defaultDockerRun(["rm", "-f", id]);
     }
   }, 120_000);
 });
