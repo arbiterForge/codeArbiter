@@ -98,26 +98,35 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       };
 
       let pagefind: any = null;
+      let pendingPagefind: Promise<void> | null = null;
       let loadErr = false;
       let loadAttempt = 0;
       const loadPagefind = async (force = false) => {
         if (pagefind) return;
+        if (pendingPagefind) return pendingPagefind;
         if (loadErr && !force) return;
         if (force) {
           loadErr = false;
           loadAttempt += 1;
         }
-        try {
-          // Runtime path so Vite does not try to bundle the build-time asset.
-          const retrySuffix = loadAttempt > 0 ? `?retry=${loadAttempt}` : "";
-          pagefind = await import(
-            /* @vite-ignore */ `${base}/pagefind/pagefind.js${retrySuffix}`
-          );
-          await pagefind.options?.({ basePath: `${base}/pagefind/` });
-        } catch {
-          pagefind = null;
-          loadErr = true;
-        }
+        // Focus and query callers share complete initialization, including options.
+        pendingPagefind = (async () => {
+          try {
+            // Runtime path so Vite does not try to bundle the build-time asset.
+            const retrySuffix = loadAttempt > 0 ? `?retry=${loadAttempt}` : "";
+            const loaded = await import(
+              /* @vite-ignore */ `${base}/pagefind/pagefind.js${retrySuffix}`
+            );
+            await loaded.options?.({ basePath: `${base}/pagefind/` });
+            pagefind = loaded;
+          } catch {
+            pagefind = null;
+            loadErr = true;
+          } finally {
+            pendingPagefind = null;
+          }
+        })();
+        return pendingPagefind;
       };
 
       // --- Combobox state: the option elements and the active (highlighted) one.
