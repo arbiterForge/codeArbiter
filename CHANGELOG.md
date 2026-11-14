@@ -24,6 +24,19 @@ predate the plugin rewrite and are grouped by date.
 - Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
+## [3.8.9] - 2026-11-12
+
+### Fixed
+
+- Read ADR lifecycle JSONL using LF record boundaries so Unicode line separators in reviewer names survive later appends and verification.
+
+## [3.8.8] - 2026-11-12
+
+### Fixed
+
+- Ship a verifier-compatible ADR acceptance writer and append-only correction path for malformed historical bindings.
+- Preserve canonical obligations in pending acceptance packets and validate correction replay without hiding malformed ledger entries.
+
 ## [3.8.7] - 2026-11-10
 
 ### Fixed
