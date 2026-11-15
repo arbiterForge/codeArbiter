@@ -338,8 +338,8 @@
     },
     {
       "path": "core/pysrc/_workflowrecoverylib.py",
-      "blob": "1926007b7b414790f1d986ea94c58a332dac1040",
-      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved. Only finite trusted reason codes supply bounded scan and startup recovery guidance. An uncertain decline stays claimed until exact audit readback settles it; changed facts use a new linked obligation without reopening settled history.",
+      "blob": "a211da361e2fa03333b98fce0260687af330079d",
+      "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved. Only finite trusted reason codes supply bounded scan and startup recovery guidance. An uncertain decline stays claimed until exact audit readback settles it; changed facts use a new linked obligation without reopening settled history. Fallback notices use the same session fingerprint check after a host records delivery.",
       "nodes": [
         "c-harvest",
         "c-decisions",
