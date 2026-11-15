@@ -156,13 +156,21 @@ def _scope_declarations(record):
     roots = set()
     for scope in scopes:
         require(isinstance(scope, dict) and set(scope) == {'profile', 'root', 'path_order', 'sha256'}
-                and scope.get('profile') == 'go-module-v1'
+                and scope.get('profile') in ('go-module-v1', 'python-import-directory-v1')
                 and scope.get('path_order') in ('posix', 'windows')
                 and isinstance(scope.get('sha256'), str) and DIGEST.fullmatch(scope['sha256']),
                 'unsupported input membership declaration')
         root = _scope_path(scope['root'])
-        require(root not in roots and root + '/go.mod' in record['inputs'],
-                'input membership lacks unique owning go.mod')
+        require(root not in roots, 'input membership lacks unique root')
+        if scope['profile'] == 'go-module-v1':
+            require(root + '/go.mod' in record['inputs'],
+                    'input membership lacks unique owning go.mod')
+        else:
+            require(scope['path_order'] != 'windows' or root.isascii(),
+                    'unsupported Windows Python namespace root')
+            require(any(isinstance(path, str) and path.startswith(root + '/')
+                        and path.endswith('.py') for path in record['inputs']),
+                    'Python namespace lacks positive owning source')
         roots.add(root)
     seen = set()
     for lookup in absent:
@@ -180,13 +188,15 @@ def _scope_declarations(record):
     return scopes, absent
 
 
-def _tree_entries(repo, source, root, recursive=False):
+def _tree_entries(repo, source, root, recursive=False, *, include_trees=False):
     # A failed read is never a negative lookup. A successful tree inventory is
     # the only way absence is established; literal object paths avoid pathspecs.
     tree = source + (':' + root if root else '^{tree}')
     argv = ['git', '--no-lazy-fetch', 'ls-tree', '-z', '-l']
     if recursive:
         argv.append('-r')
+    if include_trees:
+        argv.append('-t')
     raw = command(argv + [tree], repo)
     require(len(raw) <= 2 * 1024 * 1024, 'input inventory exceeds bound')
     rows = raw.split(b'\0')
@@ -229,6 +239,47 @@ def _module_membership(repo, source, scope, load, cache):
     return cache[key]
 
 
+def _python_import_directory(repo, source, scope, cache):
+    """Track import namespace changes; observed source bytes remain inputs.
+
+    Packages, extension modules and bytecode can shadow a source module. The
+    whole bounded namespace is recorded rather than guessing source suffixes.
+    Unread files' content and object IDs are deliberately outside this profile.
+    """
+    key = ('python-import-directory-v1', source, scope['root'], scope['path_order'])
+    if key not in cache:
+        windows = scope['path_order'] == 'windows'
+        if windows:
+            # The literal Git tree alone cannot expose a differently cased
+            # sibling of the root or any ancestor on a Windows checkout.
+            require(_lookup_present(repo, source,
+                                    {'path': scope['root'], 'path_style': 'windows'}, cache),
+                    'Python namespace root is absent')
+        rows = _tree_entries(repo, source, scope['root'], recursive=True, include_trees=True)
+        if windows:
+            require(all(name.isascii() for name in rows),
+                    'unsupported Windows Python namespace comparison')
+            require(len({name.lower() for name in rows}) == len(rows),
+                    'ambiguous Windows Python namespace')
+        order = PureWindowsPath if windows else PurePosixPath
+        entries = []
+        for name in sorted(rows, key=order):
+            mode, kind, size = rows[name]
+            require((kind == 'tree' and mode == '040000' and size is None)
+                    or (kind == 'blob' and mode in ('100644', '100755') and size is not None),
+                    'unsupported Python namespace object')
+            entries.append([name, mode, kind])
+        encoded = json.dumps(entries, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
+        cache[key] = digest(b'python-import-directory-v1\n' + encoded)
+    return cache[key]
+
+
+def _scope_membership(repo, source, scope, load, cache):
+    if scope['profile'] == 'python-import-directory-v1':
+        return _python_import_directory(repo, source, scope, cache)
+    return _module_membership(repo, source, scope, load, cache)
+
+
 def _lookup_present(repo, source, lookup, cache):
     parts = PurePosixPath(lookup['path']).parts
     windows = lookup['path_style'] == 'windows'
@@ -263,7 +314,7 @@ def _lookup_present(repo, source, lookup, cache):
 def _authenticate_scope_evidence(repo, source, record, load, cache):
     scopes, absent = _scope_declarations(record)
     for scope in scopes:
-        require(_module_membership(repo, source, scope, load, cache) == scope['sha256'],
+        require(_scope_membership(repo, source, scope, load, cache) == scope['sha256'],
                 'original input membership differs')
     for lookup in absent:
         require(not _lookup_present(repo, source, lookup, cache), 'original declared absence is present')
@@ -281,7 +332,7 @@ def disposition_input_applicability(repo, source, record, load, cache):
             unavailable.add(path)
     if (record['kind'] in ('test', 'sequence-test', 'installed-run', 'hosted-run')
             and any(p.startswith('core/artifacts/') for p in record['inputs'])
-            and not any(s['root'] == 'core/artifacts' for s in scopes)):
+            and not any(s['profile'] == 'go-module-v1' and s['root'] == 'core/artifacts' for s in scopes)):
         # Positive-only legacy runtime evidence remains authentic history, but
         # does not establish complete compiler/read membership at a candidate.
         unavailable.add('membership:core/artifacts')
@@ -295,7 +346,7 @@ def disposition_input_applicability(repo, source, record, load, cache):
     for scope in scopes:
         label = 'membership:' + scope['root']
         try:
-            if _module_membership(repo, source, scope, load, cache) != scope['sha256']:
+            if _scope_membership(repo, source, scope, load, cache) != scope['sha256']:
                 changed.add(label)
         except ReadinessError:
             unavailable.add(label)
