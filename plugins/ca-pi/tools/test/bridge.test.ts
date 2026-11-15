@@ -166,6 +166,58 @@ describe("plan-file bridge protocol", () => {
 
 const roots: string[] = [];
 
+test("enforces no-bytecode before local package imports with default and isolated Python", async () => {
+  const observations: Array<{ isolated: boolean; noBytecode: boolean; additions: string[] }> = [];
+  const inherited = process.env.PYTHONDONTWRITEBYTECODE;
+  process.env.PYTHONDONTWRITEBYTECODE = "1";
+  try {
+    for (const prefix of [[], ["-I"]]) {
+      const { packageRoot } = await clientFixture([
+        "import json, pathlib, sys",
+        "sys.path.insert(0, str(pathlib.Path(__file__).parent))",
+        "import private_owned_helper",
+        "print(json.dumps({'noBytecode': sys.dont_write_bytecode}))",
+      ].join("\n"));
+      const hooks = resolve(packageRoot, "hooks");
+      await writeFile(resolve(hooks, "private_owned_helper.py"), "VALUE = 1\n", "utf8");
+      const before = (await readdir(hooks, { recursive: true })).sort();
+      let captured: { command: string; args: readonly string[]; options: SpawnOptions } | undefined;
+      __setBridgeSpawnForTests(((command: string, args: readonly string[] = [], options: SpawnOptions = {}) => {
+        captured = { command, args, options };
+        throw new Error("owned inert spawn boundary");
+      }) as unknown as BridgeSpawnImpl);
+      const bridge = new BridgeClient({
+        packageRoot, bridgeScript: resolve(hooks, "pi-bridge.py"),
+        pythonExecutable: pythonExecutable(), pythonPrefixArgs: prefix,
+        gitExecutable: gitExecutable(), toolClasses: { read: "READ" },
+      });
+      const refused = await bridge.call(request("read", { path: "README.md" }), new AbortController().signal);
+      expect(refused.outcome).toBe("warn");
+      expect(captured, "actual SDK launch must reach the inert process boundary").toBeDefined();
+      const launch = captured!;
+      expect(launch.options.env?.OPENAI_API_KEY).toBeUndefined();
+      expect(launch.options.shell).toBe(false);
+      // Only the private four-line import fixture runs; no Pi or project helper runs.
+      const imported = spawnSync(launch.command, [...launch.args], {
+        ...launch.options, encoding: "utf8", timeout: 3_000,
+      });
+      expect(imported.status).toBe(0);
+      const after = (await readdir(hooks, { recursive: true })).sort();
+      observations.push({ isolated: prefix.includes("-I"),
+        noBytecode: (JSON.parse(imported.stdout) as { noBytecode: boolean }).noBytecode,
+        additions: after.filter((name) => !before.includes(name)) });
+    }
+  } finally {
+    __setBridgeSpawnForTests(undefined);
+    if (inherited === undefined) delete process.env.PYTHONDONTWRITEBYTECODE;
+    else process.env.PYTHONDONTWRITEBYTECODE = inherited;
+  }
+  expect(observations).toEqual([
+    { isolated: false, noBytecode: true, additions: [] },
+    { isolated: true, noBytecode: true, additions: [] },
+  ]);
+});
+
 test("actual authenticated credential-blind BridgeClient transports owning workflow snapshot", async () => {
   const cwd = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-workflow-bridge-")));
   roots.push(cwd);

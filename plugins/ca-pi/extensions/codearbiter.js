@@ -932,7 +932,7 @@ var BridgeClient = class {
     return await new Promise((resolveResponse) => {
       let child;
       try {
-        child = spawnImpl(paths.python, [...this.options.pythonPrefixArgs ?? [], paths.script], {
+        child = spawnImpl(paths.python, [...this.options.pythonPrefixArgs ?? [], "-B", paths.script], {
           cwd: paths.root,
           detached: process.platform !== "win32",
           env: minimalEnvironment({ git: paths.git, python: paths.python }, userHome),
@@ -12270,7 +12270,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "1fd82a0bb78bd58c143765a7f5f9222df1100ed30f6a192e112ee12fadd962eb"
+        childFingerprint: "ff1e66e8c87329b2c533bd3a9292bde45c05bf7c627fac97aff709befdc7be93"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

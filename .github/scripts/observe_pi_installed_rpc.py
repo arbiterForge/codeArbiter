@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -62,6 +63,25 @@ def pairs(items):
         require(key not in result,'duplicate Pi observer JSON key');result[key]=value
     return result
 def load(path):return json.loads(raw(path),object_pairs_hook=pairs)
+def source_checkout_diagnostic(error):
+    """Project only the cold source owner's closed, content-free diagnostic."""
+    value=getattr(error,'source_checkout_diagnostic',None)
+    if type(value) is not dict or set(value)!={'format','status_sha256','entries'}:
+        return None
+    if value['format']!='codearbiter.source-checkout-diagnostic/1' or type(value['status_sha256']) is not str or not re.fullmatch(r'[0-9a-f]{64}',value['status_sha256']):
+        return None
+    if type(value['entries']) is not list or len(value['entries'])>128:return None
+    entries=[]
+    for row in value['entries']:
+        if type(row) is not dict or set(row) not in ({'status','path_sha256'},{'status','path_sha256','path'}):return None
+        if type(row['status']) is not str or not re.fullmatch(r'[ MTADRCU?!]{2}',row['status']):return None
+        if type(row['path_sha256']) is not str or not re.fullmatch(r'[0-9a-f]{64}',row['path_sha256']):return None
+        if 'path' in row:
+            path=row['path']
+            if type(path) is not str or not 0<len(path.encode('utf8'))<=4096 or sha(path.encode('utf8'))!=row['path_sha256']:return None
+            if PurePosixPath(path).is_absolute() or str(PurePosixPath(path))!=path or '..' in PurePosixPath(path).parts or any(ord(c)<32 for c in path) or ':' in path or '\\' in path:return None
+        entries.append(dict(row))
+    return {'format':value['format'],'status_sha256':value['status_sha256'],'entries':entries}
 def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path)
     require(spec is not None and spec.loader is not None,'Pi observer source unavailable')
@@ -211,8 +231,10 @@ def acquire_runtime(config,cold,output,spawn):
     save(output/'runtime-acquisition.json',result)
     return result
 
-def installed_members(cold,extracted,expected):
+def installed_members(cold,extracted,expected,*,diagnostic_output=None):
     actual=cold.physical_members(extracted)['members']
+    if diagnostic_output is not None:
+        save(diagnostic_output,{'members':actual})
     require(actual=={p:v['sha256'] for p,v in expected.items()},'complete original installed Pi membership changed')
     require(all((Path(extracted)/p).stat().st_size==v['size'] for p,v in expected.items()),'installed Pi member sizes changed')
     return copy.deepcopy(expected)
@@ -252,7 +274,8 @@ def run_owner(config,cold,output):
     test={'id':test_id,'run_count':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),'skips':len(result.skipped),'result':'passed' if result.wasSuccessful() and not result.skipped else 'failed'}
     save(output/'original-test-result.json',{**test,'failure_sha256':[sha(text.encode()) for _,text in result.failures+result.errors]})
     require(test['result']=='passed' and result.testsRun==1 and len(retained)==1,'original installed Pi RPC owner failed/skipped/missing')
-    value={'format':'codearbiter.pi-installed-rpc-result/1','test':test,'routes':routes,'doctor':doctor,'source_before':source,'source_after':source_snapshot(cold,config),'runtime_before':runtime,'runtime_after':runtime_snapshot(config),'graph_before':graph,'graph_after':graph_snapshot(Path(acq['prefix'])),'payload_before':payload,'payload_after':{role:cold.physical_members(path)['members'] for role,path in [('promoted-stage',stage),('release-packages',packages)]},'installed_before':before,'installed_after':installed_members(cold,extracted,entry['members'])}
+    after=installed_members(cold,extracted,entry['members'],diagnostic_output=output/'installed-after.json')
+    value={'format':'codearbiter.pi-installed-rpc-result/1','test':test,'routes':routes,'doctor':doctor,'source_before':source,'source_after':source_snapshot(cold,config),'runtime_before':runtime,'runtime_after':runtime_snapshot(config),'graph_before':graph,'graph_after':graph_snapshot(Path(acq['prefix'])),'payload_before':payload,'payload_after':{role:cold.physical_members(path)['members'] for role,path in [('promoted-stage',stage),('release-packages',packages)]},'installed_before':before,'installed_after':after}
     save(output/'worker-result.json',value)
     return value
 
@@ -323,7 +346,11 @@ def produce(config,*,authenticated_payloads):
         save(output/'observation.json',observation)
         return observation
     except Exception as error:
-        if not (output/'failure.json').exists():save(output/'bootstrap-failure.json',{'family':'pi-observer-bootstrap','diagnostic_sha256':sha(str(error).encode('utf8',errors='replace'))})
+        if not (output/'failure.json').exists():
+            failure={'family':'pi-observer-bootstrap','diagnostic_sha256':sha(str(error).encode('utf8',errors='replace'))}
+            detail=source_checkout_diagnostic(error)
+            if detail is not None:failure['source_checkout_diagnostic']=detail
+            save(output/'bootstrap-failure.json',failure)
         if workspace.exists():
             try:ordinary(workspace);shutil.rmtree(workspace)
             except OSError:pass  # original failure stays primary; no success record exists

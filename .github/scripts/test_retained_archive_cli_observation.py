@@ -276,6 +276,47 @@ class ColdProducerTest(unittest.TestCase):
             self.assertEqual(json.loads((root/"refusal.json").read_bytes())["tests"], [])
 
 
+class SourceCheckoutDiagnosticTests(unittest.TestCase):
+    def test_dirty_source_refusal_retains_closed_status_provenance(self):
+        import retained_archive_cli_observation as owner
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory).resolve()
+            tracked = "core/pysrc/helper.py"
+            unknown = "private-unknown-name-canary.py"
+            file = repo / tracked
+            file.parent.mkdir(parents=True)
+            file.write_bytes(b"# original public source\n")
+            def git(*args):
+                return subprocess.run(["git", "--no-lazy-fetch", "-C", str(repo), *args],
+                                      check=True, capture_output=True).stdout
+            git("init", "-q")
+            git("add", ".")
+            git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+                "-c", "commit.gpgsign=false", "commit", "-qm", "private fixture")
+            file.write_bytes(b"# changed owned fixture\n")
+            (repo / unknown).write_bytes(b"# private fixture content must never be retained\n")
+            status = git("status", "--porcelain=v1", "--untracked-files=all", "-z")
+            self.assertIn(b" M " + tracked.encode() + b"\0", status)
+            self.assertIn(b"?? " + unknown.encode() + b"\0", status)
+            with self.assertRaisesRegex(ValueError, "observer source checkout is not clean") as caught:
+                owner._source_snapshot(repo)
+            diagnostic = getattr(caught.exception, "source_checkout_diagnostic", None)
+            self.assertIsInstance(diagnostic, dict, "clean refusal must retain bounded status provenance")
+            self.assertEqual(diagnostic["format"], "codearbiter.source-checkout-diagnostic/1")
+            self.assertEqual(diagnostic["status_sha256"], hashlib.sha256(status).hexdigest())
+            entries = {entry["path_sha256"]: entry for entry in diagnostic["entries"]}
+            self.assertEqual(len(entries), 2)
+            public = entries[hashlib.sha256(tracked.encode()).hexdigest()]
+            private = entries[hashlib.sha256(unknown.encode()).hexdigest()]
+            self.assertEqual(public["status"], " M")
+            self.assertEqual(public["path"], tracked)
+            self.assertEqual(private["status"], "??")
+            self.assertNotIn("path", private)
+            self.assertNotIn(unknown, json.dumps(diagnostic))
+            self.assertNotIn("private fixture content", json.dumps(diagnostic))
+            self.assertEqual(git("status", "--porcelain=v1", "--untracked-files=all", "-z"), status)
+
+
 class PhysicalSourceTest(unittest.TestCase):
     def test_project_bootstrap_loads_actual_shim_not_same_path_stale_module_and_restores_registry(self):
         import retained_archive_cli_observation as owner

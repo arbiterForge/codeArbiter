@@ -182,6 +182,110 @@ class ProducerTests(unittest.TestCase):
             if old is None:sys.modules.pop('_artifactmanifestlib',None)
             else:sys.modules['_artifactmanifestlib']=old
 
+
+    def nested_bridge_fixture(self, git_outcome='success', native_error=False):
+        # The installed bridge, manifest parser, Git policy resolver and bounded
+        # child stay real. Only Popen is inert; no fixture bytes are executable.
+        import io
+        cfg,s,count=self.fixture()
+        root=cfg['workspace'].parent;plugin=root/'original-package/plugins/ca-codex'
+        core=HERE.parents[1]/'core/pysrc'
+        for name in ('_artifactlib.py','_artifactmanifestlib.py'):
+            put(plugin/'hooks'/name,(core/name).read_bytes())
+        gitdir=root/'inert-git';gitdir.mkdir()
+        for name in ('git','git.exe'):
+            put(gitdir/name,b'INERT GIT; Popen MUST BE INTERCEPTED')
+            (gitdir/name).chmod(0o700)
+        cfg['git_executable']=gitdir/('git.exe' if os.name=='nt' else 'git')
+        binaries={}
+        for system,magic in (('windows',b'MZ'),('linux',b'\x7fELF'),('darwin',b'\xcf\xfa\xed\xfe')):
+            for arch in ('amd64','arm64'):
+                name='ca-artifact-'+system+'-'+arch+('.exe' if system=='windows' else '')
+                data=magic+b' INERT UNIT PAYLOAD; NEVER EXECUTED'
+                put(plugin/'helpers/artifacts'/name,data);(plugin/'helpers/artifacts'/name).chmod(0o700)
+                binaries[system+'/'+arch]={'file':name,'sha256':sha(data),'native_tested':True}
+        # This is a unit-only manifest, not evidence of an installed binary.
+        put(plugin/'helpers/artifacts/release.json',js({'format':'codearbiter.artifact-release/0.1.0',
+            'version':'unit','protocol':'codearbiter.artifact-api/0.1.0','schema_version':'0.3.2','binaries':binaries}))
+        cohort=json.loads((cfg['package_root']/'artifact-package-cohort.json').read_bytes())
+        cohort['packages']['codex']['members']={'plugins/ca-codex/'+p.relative_to(plugin).as_posix():
+            {'type':'file','mode':'0644','size':p.stat().st_size,'sha256':sha(p.read_bytes())}
+            for p in sorted(plugin.rglob('*')) if p.is_file()}
+        put(cfg['package_root']/'artifact-package-cohort.json',js(cohort))
+        # Preserve the fixture's verifier closure, which owns this same object.
+        original_cohort=s.verify(require_production=True)
+        original_cohort.clear();original_cohort.update(cohort);count['verify']=0
+        for name in ('helpers/artifacts/release.json','helpers/artifacts/ca-artifact-windows-amd64.exe'):
+            put(cfg['stage_root']/'plugins/ca-codex'/name,(plugin/name).read_bytes())
+        s.authenticated_payloads['stage']['members']=[
+            {'path':p.relative_to(cfg['stage_root']).as_posix(),'sha256':sha(p.read_bytes())}
+            for p in sorted(cfg['stage_root'].rglob('*')) if p.is_file()]
+        auth=s.authenticated_payloads['packages']
+        auth['members']=[{'path':p.relative_to(cfg['package_root']).as_posix(),'sha256':sha(p.read_bytes())}
+                        for p in sorted(cfg['package_root'].rglob('*')) if p.is_file()]
+        calls=[];git_error=OSError('inert nested Git failure');outer_error=OSError('inert native failure')
+        class InertProcess:
+            def __init__(process,argv,**kw):
+                calls.append((list(argv),dict(kw)))
+                self.assertIs(kw['close_fds'],True);self.assertIs(kw['start_new_session'],True)
+                self.assertIs(kw['stdin'],subprocess.PIPE);self.assertIs(kw['stdout'],subprocess.PIPE)
+                if Path(argv[0]).parent==gitdir:
+                    self.assertEqual(argv[1:5],['--no-lazy-fetch','--no-optional-locks','-C',str(cfg['workspace']/'codex-home')])
+                    self.assertEqual(argv[-4:],['--default',str(cfg['workspace']/'profile/config/git/ignore'),'--get','core.excludesFile'])
+                    self.assertEqual(kw['cwd'],cfg['workspace']/'codex-home')
+                    self.assertEqual(kw['env']['HOME'],str(cfg['workspace']/'profile'))
+                    self.assertNotIn('GIT_DIR',kw['env']);self.assertNotIn('GIT_CONFIG',kw['env'])
+                    if git_outcome=='oserror':raise git_error
+                    raw=(str(root/'unit-ignore').encode()+b'\0') if git_outcome=='success' else b'not-NUL-terminated'
+                    code=0 if git_outcome!='nonzero' else 9
+                else:
+                    self.assertEqual(argv[1],'capabilities')
+                    self.assertEqual(kw['env']['CODEARBITER_GIT_EXECUTABLE'],str(cfg['git_executable']))
+                    if git_outcome=='success':
+                        self.assertEqual(kw['env']['GIT_CONFIG_VALUE_0'],str(root/'unit-ignore'))
+                    else:self.assertNotIn('GIT_CONFIG_COUNT',kw['env'])
+                    if native_error:raise outer_error
+                    raw=js({'protocol':'codearbiter.artifact-api/0.1.0','operation':'capabilities','ok':True,
+                        'result':{'repository_operations_available':True,'host_default_enabled':True,'runtime_downloads':False}});code=0
+                process.stdin=io.BytesIO();process.stdout=io.BytesIO(raw);process.stderr=io.BytesIO(b'')
+                process.returncode=code
+            def wait(process,timeout=None):return process.returncode
+            def kill(process):self.fail('inert completed process unexpectedly killed')
+        git_module=load('nested_git_dependency_'+str(id(root)),core/'_gitexec.py')
+        self.enterContext(mock.patch.dict(sys.modules,{'_gitexec':git_module}))
+        self.enterContext(mock.patch.object(subprocess,'Popen',InertProcess))
+        return cfg,s,count,calls
+
+    def test_native_observer_preserves_nested_git_lookup_and_keyword_arguments(self):
+        for outcome in ('success','nonzero','malformed','oserror'):
+            with self.subTest(git_outcome=outcome):
+                cfg,s,count,calls=self.nested_bridge_fixture(outcome)
+                try:result=P._produce(cfg,s)
+                except ValueError:
+                    report=json.loads((cfg['output']/'checker-result.json').read_bytes())
+                    case=next(r for r in report['results'] if r['code']=='CODEX-HOST-ARTIFACT-CAPABILITY')
+                    self.assertEqual(case['status'],'pass',case['detail'])
+                    raise
+                self.assertEqual(count['checker'],1);self.assertEqual(count['spawn'],4)
+                self.assertEqual(len(calls),2);self.assertEqual(calls[1][0][1],'capabilities')
+                self.assertEqual(len(list(cfg['output'].glob('native-command-*.start.json'))),1)
+                self.assertEqual(len(list(cfg['output'].glob('native-command-*.exit.json'))),1)
+                self.assertEqual(list(cfg['output'].glob('native-command-*.failure.json')),[])
+                self.assertTrue(all(t['result']=='passed' for t in result['tests']))
+
+    def test_nested_lookup_keeps_native_error_and_one_outer_failure_receipt(self):
+        cfg,s,count,calls=self.nested_bridge_fixture(native_error=True)
+        with self.assertRaisesRegex(ValueError,'native/checker'):P._produce(cfg,s)
+        failure=json.loads((cfg['output']/'native-command-01.failure.json').read_bytes())
+        self.assertEqual(failure['exception_type'],'OSError')
+        report=json.loads((cfg['output']/'checker-result.json').read_bytes())
+        case=next(r for r in report['results'] if r['code']=='CODEX-HOST-ARTIFACT-CAPABILITY')
+        self.assertEqual(case['detail'],'inert native failure')
+        self.assertEqual(len(calls),2)
+        self.assertEqual(len(list(cfg['output'].glob('native-command-*.start.json'))),1)
+        self.assertFalse((cfg['output']/'observation.json').exists())
+        self.assertFalse((cfg['workspace']/'codex-home').exists())
+
 class PublicBootstrapTests(unittest.TestCase):
     fixture=ProducerTests.fixture
     COPY_FILES=(

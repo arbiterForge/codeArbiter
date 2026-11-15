@@ -107,4 +107,69 @@ class RetainedColdPipelineTest(unittest.TestCase):
                  "steps.cold_claude_observed.outcome == 'success'"):
    self.assertIn(clause,report)
 
+
+ def _cold_named_step(self, name):
+  import re
+  matches=[step for step in re.split(r"(?m)^      - name: ",self.cold)[1:]
+           if step.splitlines()[0] == name]
+  self.assertEqual(len(matches),1)
+  return matches[0]
+
+ def _cold_condition_applies(self, step, outcome, cancelled=False):
+  """Interpret only this workflow's closed boolean/string guard grammar."""
+  import ast
+  import re
+  expressions=re.findall(r"(?m)^        if: (.+)$",step)
+  self.assertEqual(len(expressions),1)
+  expression=expressions[0].removeprefix('${{').removesuffix('}}').strip()
+  # GitHub adds success() when a condition has no explicit status function.
+  if not any(status in expression for status in ('cancelled()','success()','failure()')):
+   if outcome == 'failure' or cancelled:return False
+  substitutions={"steps.cold_claude_observed.outcome":repr(outcome),
+                 "steps.cold-qualification.outcome":repr(outcome),
+                 "github.event_name":repr('push'),"github.ref":repr('refs/heads/major/state-contracts'),
+                 "hashFiles('.github/integration-candidate.json')":repr('candidate-present'),
+                 'cancelled()':repr(cancelled),'success()':repr(outcome != 'failure' and not cancelled),
+                 'failure()':repr(outcome == 'failure')}
+  for old,new in substitutions.items():expression=expression.replace(old,new)
+  expression=expression.replace('&&',' and ').replace('||',' or ')
+  expression=re.sub(r'!(?!=)',' not ',expression).strip()
+  def boolean(node):
+   if isinstance(node,ast.Constant) and type(node.value) in (str,bool):return node.value
+   if isinstance(node,ast.BoolOp):
+    values=[boolean(value) for value in node.values]
+    return all(values) if isinstance(node.op,ast.And) else any(values)
+   if isinstance(node,ast.UnaryOp) and isinstance(node.op,ast.Not):return not boolean(node.operand)
+   if isinstance(node,ast.Compare) and len(node.ops)==len(node.comparators)==1:
+    self.assertIsInstance(node.ops[0],(ast.Eq,ast.NotEq))
+    equal=boolean(node.left)==boolean(node.comparators[0])
+    return equal if isinstance(node.ops[0],ast.Eq) else not equal
+   self.fail('unsupported cold condition node: '+type(node).__name__)
+  return bool(boolean(ast.parse(expression,mode='eval').body))
+
+ def test_attempted_failed_original_observation_remains_diagnostic_upload_eligible(self):
+  step=self._cold_named_step('Preserve original installed Claude observation')
+  for outcome,cancelled,expected in [('success',False,True),('failure',False,True),
+                                     ('skipped',False,False),('cancelled',True,False)]:
+   with self.subTest(outcome=outcome,cancelled=cancelled):
+    self.assertEqual(self._cold_condition_applies(step,outcome,cancelled),expected,
+                     'an attempted failed original observer must retain its diagnostic record')
+  self.assertIn(UPLOAD,step)
+  self.assertIn('path: ${{ runner.temp }}/cold-claude/*.json',step)
+  self.assertIn('overwrite: false',step)
+
+ def test_missing_original_observation_does_not_mask_the_primary_failure(self):
+  import re
+  step=self._cold_named_step('Preserve original installed Claude observation')
+  self.assertEqual(re.findall(r'(?m)^          if-no-files-found: (.+)$',step),['ignore'],
+                   'an admission refusal before writing a record must keep its primary failure')
+  self.assertFalse(self._cold_condition_applies(step,'skipped'))
+
+ def test_failed_or_skipped_observation_cannot_emit_or_upload_qualification(self):
+  for name in ('Emit installed Claude qualification report','Upload major qualification report'):
+   step=self._cold_named_step(name)
+   for outcome,expected in [('success',True),('failure',False),('skipped',False)]:
+    with self.subTest(step=name,outcome=outcome):
+     self.assertEqual(self._cold_condition_applies(step,outcome),expected)
+
 if __name__=='__main__':unittest.main(verbosity=2)

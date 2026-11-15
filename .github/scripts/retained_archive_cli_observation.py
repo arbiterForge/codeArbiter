@@ -365,10 +365,52 @@ def _literal_source_inputs(repo, source):
     return inputs
 
 
+class _SourceCheckoutError(ValueError):
+    """A source refusal with diagnostics produced by this immutable owner."""
+
+
+def _dirty_source_diagnostic(repo, source):
+    """Retain public tracked names; hash unknown names without reading content."""
+    env = dict(os.environ)
+    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+                 "GIT_GRAFT_FILE", "GIT_REPLACE_REF_BASE", "GIT_SHALLOW_FILE"):
+        env.pop(name, None)
+    command = ["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo)]
+    status = subprocess.run([*command, "status", "--porcelain=v1", "--untracked-files=all", "-z"],
+                            env=env, capture_output=True, timeout=30, check=True).stdout
+    tree = subprocess.run([*command, "ls-tree", "-rz", "--name-only", source],
+                          env=env, capture_output=True, timeout=30, check=True).stdout
+    require(len(status) <= 1024 * 1024 and len(tree) <= 4 * 1024 * 1024,
+            "source diagnostic inventory exceeds bound")
+    tracked = set(tree.split(b"\0")); parts = iter(status.split(b"\0")); entries = []
+    for item in parts:
+        if not item:
+            continue
+        require(len(item) >= 4 and item[2:3] == b" " and
+                re.fullmatch(rb"[ MTADRCU?!]{2}", item[:2]), "invalid source diagnostic status")
+        path = item[3:]
+        entry = {"status": item[:2].decode("ascii"), "path_sha256": digest(path)}
+        if path in tracked:
+            entry["path"] = safe_path(path.decode("utf-8"))
+        if b"R" in item[:2] or b"C" in item[:2]:
+            require(next(parts, None) is not None, "missing source rename origin")
+        if len(entries) < 128:
+            entries.append(entry)
+    return {"format": "codearbiter.source-checkout-diagnostic/1",
+            "status_sha256": digest(status), "entries": entries}
+
+
 def _source_snapshot(repo):
     import major_qualification_report as reports
     identity = reports.source_identity(repo)
-    require(identity["clean"], "observer source checkout is not clean")
+    if not identity["clean"]:
+        error = _SourceCheckoutError("observer source checkout is not clean")
+        try:
+            error.source_checkout_diagnostic = _dirty_source_diagnostic(repo, identity["source_commit"])
+        except (OSError, ValueError, UnicodeError, subprocess.SubprocessError):
+            pass  # Diagnostic collection must not replace the original refusal.
+        raise error
     inputs = _literal_source_inputs(repo, identity["source_commit"])
     python_paths = sorted(p.removeprefix("core/pysrc/") for p in inputs if p.startswith("core/pysrc/"))
     actual = []
@@ -511,6 +553,8 @@ def observe(*, repo, req, job_id, host, platform, stage, package_root, authentic
                     code, execution["phase"] = 0, "complete"
             except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
                 execution["failure_text_sha256"] = digest(str(error).encode("utf-8", errors="replace"))
+                if isinstance(error, _SourceCheckoutError) and type(getattr(error, "source_checkout_diagnostic", None)) is dict:
+                    execution["source_checkout_diagnostic"] = error.source_checkout_diagnostic
     document = {"format": OBSERVATION, "source_commit": req["source_commit"], "source_tree": req["source_tree"], "source_stable": stable and code == 0,
         "ci_run_id": req["ci_run_id"], "proof_kind": "retained-archive-cli", "producer": PRODUCER, "argv": command,
         "exit_code": code, "tests": tests if code == 0 else [], "installed_binding": binding, "execution": execution}

@@ -54,6 +54,94 @@ def fixture():
     return req,observation,payloads,acq
 
 
+class FailedInstalledSnapshotTests(unittest.TestCase):
+    def test_bootstrap_failure_retains_attached_source_checkout_diagnostic(self):
+        import observe_pi_installed_rpc as owner
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            repo = root / "repo"
+            repo.mkdir()
+            diagnostic = {"format": "codearbiter.source-checkout-diagnostic/1",
+                          "status_sha256": "a" * 64,
+                          "entries": [{"status": "??", "path_sha256": "b" * 64}]}
+            refusal = ValueError("observer source checkout is not clean")
+            refusal.source_checkout_diagnostic = diagnostic
+            config = {"repo": repo, "workspace": root / "workspace", "output": root / "output",
+                      "expected": {}, "git": sys.executable, "python": sys.executable,
+                      "node": sys.executable, "npm_launcher": sys.executable}
+            with mock.patch.object(owner, "owners", side_effect=refusal), \
+                 mock.patch.object(owner, "_produce", side_effect=AssertionError("no runtime effects permitted")), \
+                 self.assertRaises(ValueError) as caught:
+                owner.produce(config, authenticated_payloads={})
+            self.assertIs(caught.exception, refusal)
+            retained = json.loads((root / "output/bootstrap-failure.json").read_text())
+            self.assertEqual(retained["family"], "pi-observer-bootstrap")
+            self.assertEqual(retained.get("source_checkout_diagnostic"), diagnostic,
+                             "bootstrap sink must preserve the actual closed source refusal")
+            self.assertFalse((root / "output/observation.json").exists())
+            self.assertFalse((root / "workspace").exists())
+
+    def test_failed_installed_membership_is_saved_before_refusal(self):
+        import observe_pi_installed_rpc as owner
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            output = root / "output"
+            output.mkdir()
+            for name in ("repo", "stage", "packages", "workspace", "runtime"):
+                (root / name).mkdir()
+            (root / "runtime/cli.js").write_bytes(b"// inert, never executed\n")
+            original = b"{}"
+            added = b"# owned mutation fixture, not historical evidence\n"
+            expected_members = {"package/package.json": {
+                "type": "file", "size": len(original),
+                "sha256": hashlib.sha256(original).hexdigest(),
+            }}
+            cohort = {"packages": {"pi": {"file": "pi.tgz", "members": expected_members}}}
+            (root / "packages/artifact-package-cohort.json").write_text(json.dumps(cohort))
+            extracted = root / "workspace/installed-pi"
+            def extract(archive, destination, *, host):
+                self.assertEqual(host, "pi")
+                self.assertEqual(destination, extracted)
+                (destination / "package").mkdir(parents=True)
+                (destination / "package/package.json").write_bytes(original)
+                return destination
+            def physical(path):
+                return {"members": {p.relative_to(path).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                                    for p in sorted(Path(path).rglob("*")) if p.is_file()}}
+            fake = SimpleNamespace(
+                tempfile=SimpleNamespace(TemporaryDirectory=tempfile.TemporaryDirectory),
+                live_pi_cli=lambda: (sys.executable, root / "runtime/cli.js"),
+                run_rpc_commands=lambda *a, **kw: self.fail("no real RPC may run"),
+            )
+            class PassingOriginalBoundary(unittest.TestCase):
+                def test_owned(self):
+                    with fake.tempfile.TemporaryDirectory(prefix="ca-pi-rpc-"):
+                        (extracted / "package/private-added.py").write_bytes(added)
+            fake.PiPackageTests = lambda name: PassingOriginalBoundary("test_owned")
+            cold = SimpleNamespace(
+                _verify_production=mock.Mock(),
+                _load_packager=lambda repo: SimpleNamespace(extract_artifact_release_package=extract),
+                physical_members=physical,
+            )
+            config = {"repo": str(root / "repo"), "stage": str(root / "stage"),
+                      "packages": str(root / "packages"), "workspace": str(root / "workspace"),
+                      "expected": {}, "acquisition": {"prefix": str(root / "runtime")},
+                      "node": sys.executable, "promotion_sha256": "0" * 64}
+            with mock.patch.object(owner, "module", return_value=fake), \
+                 mock.patch.object(owner, "runtime_snapshot", return_value={}), \
+                 mock.patch.object(owner, "graph_snapshot", return_value={}), \
+                 mock.patch.object(owner, "source_snapshot", return_value={}):
+                with self.assertRaisesRegex(ValueError, "complete original installed Pi membership changed"):
+                    owner.run_owner(config, cold, output)
+            self.assertEqual(json.loads((output / "original-test-result.json").read_text())["result"], "passed")
+            self.assertFalse((output / "worker-result.json").exists())
+            snapshot = output / "installed-after.json"
+            self.assertTrue(snapshot.is_file(), "actual rejecting member snapshot must survive before equality refusal")
+            self.assertEqual(json.loads(snapshot.read_text())["members"], physical(extracted)["members"])
+            self.assertEqual(json.loads(snapshot.read_text())["members"]["package/private-added.py"],
+                             hashlib.sha256(added).hexdigest())
+
+
 class ProfileTests(unittest.TestCase):
     def admit(self,mutate=None):
         import _pi_rpc_profile as owner

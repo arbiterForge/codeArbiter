@@ -365,8 +365,19 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
                         sys.modules["_artifactmanifestlib"] = previous_parser
             if artifact_exchange_observer is not None:
                 original_exchange = bridge._bounded_child
+                exchange_depth = 0
                 def observed_exchange(*args, **kwargs):
-                    return artifact_exchange_observer(original_exchange, *args, **kwargs)
+                    nonlocal exchange_depth
+                    # Resolving the native child's environment can make a nested
+                    # Git lookup through this same bridge. Observe the outer
+                    # capability transaction while preserving that lookup's API.
+                    if exchange_depth:
+                        return original_exchange(*args, **kwargs)
+                    exchange_depth += 1
+                    try:
+                        return artifact_exchange_observer(original_exchange, *args, **kwargs)
+                    finally:
+                        exchange_depth -= 1
                 bridge._bounded_child = observed_exchange
             client = bridge.ArtifactClient(
                 home, bridge.helper_installation(str(bridge_path))
