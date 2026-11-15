@@ -1,0 +1,21 @@
+{
+  "source_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+  "source_tree": "c10565d2c1fc927d57166113d9b6920328ad1d7e",
+  "HEAD_index_stable": true,
+  "p02": {
+    "PASS": 14,
+    "seconds": 8.317100400003255,
+    "positive_inputs": 117
+  },
+  "recovery": {
+    "PASS": 29,
+    "seconds": 27.58587599999737,
+    "positive_inputs": 103,
+    "actual_fixture_launches": 22,
+    "actual_loaded_child_module_observation": 1
+  },
+  "runtime_records_per_before_after": 1905,
+  "parity": "PASS",
+  "first_recovery_capture": "Preserved INVALID_EVIDENCE collector failure, never admitted/relabelled",
+  "corrected_recovery_capture": "Actual exit/time/source/runtime/namespace closure retained before assertions; overstrict target-root postprocessing corrected from same immutable data, no third run."
+}

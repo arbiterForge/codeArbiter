@@ -1,0 +1,33 @@
+{
+  "state": "COLLECTOR_ONLY_FAILURE_NOT_ELIGIBLE_FOR_PROOF",
+  "raw_unittest_summary": [
+    "Ran 29 tests in 31.625s"
+  ],
+  "raw_reports_OK": true,
+  "actual_returncode": "NOT_DURABLY_CAPTURED_BEFORE_COLLECTOR_ASSERTION",
+  "actual_child_observations": [
+    {
+      "forbidden_present": {
+        "APPDATA": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "FARM_API_KEY": false,
+        "GITHUB_TOKEN": false,
+        "LOCALAPPDATA": false,
+        "OPENAI_API_KEY": false,
+        "PYTHONPATH": false,
+        "XDG_CACHE_HOME": false,
+        "XDG_CONFIG_HOME": false
+      },
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-Recovery-e62-refresh-z26kxlj5\\recovery\\profile\\tmp\\ca-workflow-recovery-nd5c9q4x\\disposable-home",
+      "module_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_workflowrecoverylib.py",
+      "no_user_site": 1,
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-Recovery-e62-refresh-z26kxlj5\\recovery\\profile\\tmp\\ca-workflow-recovery-nd5c9q4x\\private-bytecode",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-Recovery-e62-refresh-z26kxlj5\\recovery\\profile\\tmp\\ca-workflow-recovery-nd5c9q4x\\disposable-home"
+    }
+  ],
+  "cause": "Windows Popen audit event argv is converted to a string; list-only observer skipped it. Need original Popen.args from caller frame, no command-line parsing.",
+  "original_capture_sha256": "2c573b63fefbd5f972b73f6e73de13e8e980ccf0ba2942b68673f871bcbfab1f",
+  "stderr_sha256": "76d1200c3a7323eb09f129d990dc3f1c30da09996d021d27b57a3f598a62be98",
+  "stdout_sha256": "81092851a616253cb674f7798a61499e1ed0ee69ac2043d9a8fa4b9dd072a605",
+  "limits": "All original partial capture bytes preserved. Do not relabel first incomplete run as complete evidence."
+}
