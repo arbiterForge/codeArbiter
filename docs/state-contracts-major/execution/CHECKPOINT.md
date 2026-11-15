@@ -2,6 +2,20 @@
 
 PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
 
+- Last observed pushed #1108 source is `2df782d48576e72bd01ef303c9f3546f3b620b05`; Git supplies the current local metadata head. Exact2df Windows Pi job132653838973/run43662186921 failed both the original discovery/doctor natural EOF wait and the strict SDK captured control. Earlier rpc/rpc-observed partitions passed. Historical a7 green checks do not qualify this source.
+- The closed OS report identifies the original Pi process still running after JavaScript exit markers. Actual debugger status was unavailable with no tool hashes or frames. The separate owned-Node SDK control returned unrecognized. No stack, native call completion, exit cause or application repair is established. Authenticated selected failure JSON and manifest are retained under `evidence/pi-2df-unresolved-shutdown/` before artifact expiry.
+- Numbered/plain stack parsing is repaired, but the exact hosted control still fails. A bounded local startup matrix is prepared. Microsoft-signed private CDB component review passed; extraction and execution have not occurred and await the already-requested explicit tool confirmation. No further full CI retry merely for metadata.
+- Fresh27 recovery methods and44 Sandbox unit assertions passed, supporting39 existing TESTED successors at actual2df source. Original scopes, complete dependencies, before/after physical inputs and1473 runtime-member hashes remain retained. No task, installed, user/model or whole-program promotion follows.
+- The earlier27 source-only PRESERVED records are committed in5dc. Earlier full integrity passed105 frozen files/1309 advanced/1027 applicable/282 stale; final current39 staged validation is recorded separately.133 native stale records await eligible trusted successful integration-push evidence; a successful native job in a failing PR run is not that principal.
+- Next: finish evidence retention; after pending tool confirmation, perform the local probe and demonstrated fix, then push once and watch exact-head CI promptly. Integrate1108 only when required checks pass and named remote branch auto-deletion is authorized. Never merge1098 to main or publish.
+- Gov and D:/projects/codeArbiter/.git remain repaired. Preserve unrelated worktrees/audits/artifacts. Never reopen the original handoff ZIP. Pi HTTP policy and actual parent/user/model/lifecycle acceptance remain open.
+
+## Preserved checkpoint history
+
+# Current delivery checkpoint (2026-11-15 UTC)
+
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
+
 - Active child #1108 is at pushed head `553d07fe`. Its Windows Pi job132646451284 in run43659807673 failed the new owned-Node SDK control (`unrecognized` instead of `captured`); original RPC and observed-RPC partitions passed. The predecessor a7's 92 green checks are historical evidence for a7 only.
 - A confirmed diagnostic format gap is under repair: the parser required numbered frames while kL did not request them. A two-file Temp successor uses the documented knL command and safe numbered/unnumbered parsing. Two regression failures preceded four pure passing controls; independent affected-scope review passes. Actual SDK capture/Node survival still requires the next hosted run. No Pi application cause or repair is inferred.
 - The bbba normal integration run43649759117 failed because an environment value containing 1,910 paths and 148,885 bytes prevented shell startup. No installed reports ran. Committed source a7 reads event files and Git output; 15 focused controls and independent review passed.

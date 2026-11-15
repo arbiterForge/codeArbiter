@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "head": "2df782d48576e72bd01ef303c9f3546f3b620b05",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T01:10:03.054864+00:00",
+  "recorded_at": "2026-11-15T02:15:57.581055+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3814,15 +3814,23 @@
       "state": "UNRESOLVED",
       "run_id": 43606646328,
       "detail": "Six original cold observers refused attribution; final archived data passes old/current predicates. Historicalcauseunknown; inspect actualnextnormalrun with closed diagnostic categories."
+    },
+    {
+      "id": "PI-WINDOWS-2DF-OS-RUNNING",
+      "state": "UNRESOLVED",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/manifest.json",
+      "sha256": "5a1732b86997736205804ccec1ddb78f301af78ff73221ed0ba1017c55e5db1b",
+      "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+      "detail": "Matched original OS process remains running after JavaScript exit markers; independent SDK control unrecognized and actual Pi debugger unavailable. No stack/cause established."
     }
   ],
   "next_actions": [
-    "Commit the bounded CDB format repair and this coherent source-accounting batch, push once to1108, and observe its exact-head hosted SDK control and required gates before authorized integration.",
-    "Observe the next actual trusted integration push promptly. Normal bbba run43649759117 failed before installed reports executed; earlier startup status is superseded, and no installed qualification is inferred.",
-    "Continue remaining native and baseline qualification from authentic named observations and complete current dependency closures. Preserve stale original facts as history; no blanket source rebinding.",
-    "Continue independent accepted work while the Pi HTTP policy choice and actual user/model/parent UI/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized."
+    "After explicit pending tool confirmation, extract the vetted private CDB component, verify Microsoft signatures and actual hashes, then run the prepared bounded owned-Node startup matrix. Do not assume its cause before observations.",
+    "Repair only the demonstrated debugger defect with targeted regression proof; push the coherent source/evidence batch once and promptly observe exact-head hosted checks. Merge1108 only on green and named remote auto-deletion authority.",
+    "Observe the next trusted normal integration push and its13 installed reports. Renew finite eligible native evidence from genuine matching observations; never bypass producer eligibility or relabel old source epochs.",
+    "Continue independent accepted work while Pi HTTP policy and actual user/model/parent/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized."
   ],
-  "delivery_state": "CHILD1108_SDK_FORMAT_CONTROL_FAILED_BOUNDED_FIX_PREPARED",
+  "delivery_state": "CHILD1108_WINDOWS_RPC_AND_SDK_CONTROL_FAILED_LOCAL_PROBE_AWAITS_TOOL_APPROVAL",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4047,6 +4055,22 @@
         "No new runtime/native/Go/provider/build/installed or task qualification from these27 source-only rows. Native N03/N06/N27/N10 mismatch holds and the Pi HTTP decision remain separate.",
         "Keep1098 draft and held from main; no publication authority."
       ]
+    },
+    {
+      "id": "current39-runtime-renewal-and-2df-os-observation",
+      "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+      "facts": [
+        "27 original recovery methods passed in15.553s;44 Sandbox named unit assertions passed in1.565s. These scoped observations renew39 existing TESTED records without changing their classification.",
+        "Complete original source assertions, before/after committed and physical inputs, Windows host-lookup absence and1473 cached runtime-member hashes were retained. Maintained prospective owner authentication passed all39; final staged integrity is recorded separately.",
+        "The two-file CDB numbering/parser repair was committed and pushed as2df. Exact-head hosted Windows Pi job132653838973 still failed both the strict owned-Node SDK control and original discovery/doctor EOF wait. The format correction is not a demonstrated cause fix.",
+        "Authenticated closed sidecars now establish the original OS process remained running after JS markers. No stack/cause was captured. The original failure and exact artifact authentication are retained in pi-2df-unresolved-shutdown.",
+        "Private Microsoft SDK component review passed; extraction and local probe execution remain unperformed pending the explicit tool confirmation requested under ca-add-dep. No package, lockfile, base image or shipped SDK adoption."
+      ],
+      "limits": [
+        "No task, platform, installed, physical/user/model, parent-consent or publication completion follows from39 finite runtime successors.",
+        "133 native stale TESTED records require eligible trusted successful integration-push evidence. The successful native build inside a failing PR run cannot substitute for that principal.",
+        "Remaining110 non-native stale records were unselected by this batch. Pi HTTP policy choice remains pending;1098 must not merge to main."
+      ]
     }
   ],
   "superseded_scoped_blockers": [
@@ -4059,5 +4083,6 @@
       "superseded_by": "M46e29 normal push successful, including native/cold matrix; local Windows cold3 also passed.",
       "historical_cause": "UNKNOWN; no old runtime-cause fix inferred"
     }
-  ]
+  ],
+  "head_semantics": "Last pushed source head observed for the recorded CI failure; use Git for the current metadata head."
 }
