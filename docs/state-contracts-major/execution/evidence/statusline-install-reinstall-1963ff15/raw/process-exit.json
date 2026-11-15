@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+  "exit_code": 0,
+  "seconds": 0.5584545000019716,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "3b803697ccb80aa1825b34c437ec176781a133931a939b41cf9a1bbbe127eb27"
+}

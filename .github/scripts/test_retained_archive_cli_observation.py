@@ -514,4 +514,43 @@ class UploadLogProducerDiagnosticTest(unittest.TestCase):
         cycle.__cause__ = cycle
         self.assertIsNone(self.cold_details(cycle)[0])
 
+
+
+class UploadHTTPReasonProjectionTest(unittest.TestCase):
+    def detail(self, **extra):
+        return {"operation":"github-actions-job-log", "code":"UPLOAD_LOG_COMMAND_FAILED", "exit_code":9,
+                "http_status":403, "stderr_sha256":"a"*64, **extra}
+
+    def render(self, detail):
+        from major_readiness import ReadinessError
+        error = ReadinessError("upload attribution unavailable or malformed")
+        cause = ReadinessError("readiness job log HTTP observation failed")
+        cause.command_diagnostic = detail
+        error.__cause__ = cause
+        return ColdCliDiagnosticTest().render_cli_error(error)
+
+    def test_optional_closed_http_transport_reason_survives_existing_cold_failure_sink(self):
+        for reason in ("http_error","redirect_refused","redirect_limit","body_limit","network_error","invalid_request","worker_failed","tls_error","dns_error","timeout"):
+            with self.subTest(reason=reason):
+                expected = self.detail(transport_reason=reason)
+                text = self.render(expected)
+                marker = "; command_diagnostic="
+                observed = json.loads(text.split(marker,1)[1].strip()) if marker in text else None
+                self.assertEqual(observed, expected)
+                self.assertIn("code=UPLOAD_LOG_COMMAND_FAILED;", text)
+
+    def test_optional_reason_projection_preserves_legacy_and_refuses_unknown_or_extra_values(self):
+        from retained_archive_cli_observation import _command_diagnostic
+        from major_readiness import ReadinessError
+        legacy=self.detail();error=ReadinessError("fixed")
+        error.command_diagnostic=legacy;self.assertEqual(_command_diagnostic(error),legacy)
+        class StringSpoof(str):
+            pass
+        for bad in [self.detail(transport_reason="unit-private-arbitrary"),self.detail(transport_reason=True),
+                    self.detail(transport_reason=StringSpoof("http_error")),
+                    self.detail(transport_reason="http_error", extra="unit-private-arbitrary")]:
+            with self.subTest(keys=sorted(bad)):
+                error.command_diagnostic=bad;self.assertIsNone(_command_diagnostic(error))
+
+
 if __name__ == "__main__": unittest.main(verbosity=2)

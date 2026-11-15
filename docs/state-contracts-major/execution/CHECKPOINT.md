@@ -1,121 +1,16 @@
 # Current delivery checkpoint (2026-11-15 UTC)
 
-PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
+PR #1111 merged into `major/state-contracts` as `9f9cde6b7af516ce36d85b1dd0a78533869852ec` at `2026-11-15T18:52:56Z`. PR #1098 remains OPEN/DRAFT and held from main for the user's testing. Publication is not authorized.
 
-- Last failed CI source was `2df782d48576e72bd01ef303c9f3546f3b620b05`; committed SDK repair source is `db50f8e3a0170b8a1c4f8b7567897c8574b8d34c`. Git/provider supply the current containing metadata and exact pushed CI head. Exact2df Windows Pi job132653838973/run43662186921 failed both the original discovery/doctor natural EOF wait and the strict SDK captured control. Earlier rpc/rpc-observed partitions passed. Historical a7 green checks do not qualify this source.
-- The closed OS report identifies the original Pi process still running after JavaScript exit markers. Actual debugger status was unavailable with no tool hashes or frames. The separate owned-Node SDK control returned unrecognized. No stack, native call completion, exit cause or application repair is established. Authenticated selected failure JSON and manifest are retained under `evidence/pi-2df-unresolved-shutdown/` before artifact expiry.
-- Replace the failing CDB front-end route with a typed DbgEng SDK worker. Exact unchanged SDK regression now locally passes0.860s,12threads74knownRVAframes, ownedHANDLE/Node survival/lateexit retained. Fiveaffected controls/CIselectorRED-GREEN/ABI/syntax and one exactsixfile independent securityreview PASS. Runtime source was the observed dirtyca496 patch, then committed byte-identicallydb50. Hosted result remains pending; original Pi exit cause is unresolved.
-- Fresh27 recovery methods and44 Sandbox unit assertions passed, supporting39 existing TESTED successors at actual2df source. Original scopes, complete dependencies, before/after physical inputs and1473 runtime-member hashes remain retained. No task, installed, user/model or whole-program promotion follows.
-- The earlier27 source-only PRESERVED records are committed in5dc. Earlier full integrity passed105 frozen files/1309 advanced/1027 applicable/282 stale; final current39 staged validation is recorded separately.133 native stale records await eligible trusted successful integration-push evidence; a successful native job in a failing PR run is not that principal.
-- Reader follow-on:14 existing targeted methods PASS, renewing six finite mechanical reader/deadline records. Five executable inputs match2df and actual execution108dc before/after. The two C36 bundle/benchmark gaps are superseded by the actual observation below. No actual host CLI, native, provider, platform or task qualification follows.
-- C36 follow-on: original production-wrapper benchmark PASS4.929s, temporary bundle/child/CLI exit0,4 wrappers/100 timings/105+105 original stub counters. Thirty source inputs plus actual tool/bundle/runtime and lookup witnesses retained; exactly two existing TESTED rows renewed. Profiling overhead and fixture/native/installed distinctions remain explicit.
-- Sandbox follow-on:40new named unit controls PASS1.102s and5same-source observations reused, renewing11existing finite TESTED rows. No Docker/imagebuild/installed claim. P02six remains held after14passing tests because7causal Python lookup absences require explicit shared reader support; no metadata workaround.
-- Next: push the coherent SDK source/evidence once and watch exact-head CI promptly, then push once and watch exact-head CI promptly. Integrate1108 only when required checks pass and named remote branch auto-deletion is authorized. Never merge1098 to main or publish.
-- Gov and D:/projects/codeArbiter/.git remain repaired. Preserve unrelated worktrees/audits/artifacts. Never reopen the original handoff ZIP. Pi HTTP policy and actual parent/user/model/lifecycle acceptance remain open.
+- Active branch: `codex/state-contracts-job-log-transport` in `C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter`. Root is the sole canonical writer. The bounded job-log HTTP repair and early three-OS control are committed through `051d16eb23c490d3d5df458065ed0c7f34645b78`. Local transport/security, workflow and cold-observer checks pass; hosted transport remains unproven.
+- Trusted normal run [43745054317](https://github.com/arbiterForge/codeArbiter/actions/runs/43745054317), source `8ca1393c8e70f8dcc5eaa1736fcfd356717007ce`, is terminal FAILED: 78 successful, 7 skipped and 12 failed jobs. The failures are 11 original installed owners plus the required gate. Its 69 artifact metadata records do not make installed13 or native133 eligible. The original closed receipts are retained under [normal-8ca-refusal](evidence/normal-8ca-refusal/terminal-failure-receipt.json); the private watch directory remains `C:/Users/brenn/AppData/Local/Temp/ca-normal-8ca-CI-watch-sjttm5rt`.
+- The retained closed diagnostic is operation `github-actions-job-log`, code `UPLOAD_LOG_COMMAND_FAILED`, exit `1`, HTTP status `null`, stderr SHA256 `8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467`. The historical cause is unknown. A desktop isolated configured gh client succeeds against the same original log; that separate observation does not prove a CI permissions or timing cause.
+- The old P02 Python lookup-capability blockers are superseded by committed `8d04b33c4e8b6ac56644cbd2517cae2dde228d64` and the genuine e62 P02six proof at [software-refresh-e62a2a85/p02/tested.json](evidence/software-refresh-e62a2a85/p02/tested.json). Original refused packets and observations remain historical. This is not blanket P02 completion or migration of every old native scope. The six affected P02 software records now reference an actual 14-method PASS at committed `051d16eb` (6.962664 seconds), preserving 117 inputs, seven causal absences, two namespaces, 1905 runtime records and every prior source epoch. See [the current P02 proof](evidence/p02-six-current-051d16eb/tested.json).
+- Only statusline01/02 advance to TESTED from exactly three passing methods at `1963ff15` (0.5584545 seconds). The original 14-input/1905-runtime closure and 03..07 evidence remain unchanged. See [the install/reinstall proof](evidence/statusline-install-reinstall-1963ff15/tested.json). The statusline machine remains PLANNED; the current reader does not authenticate a union of distinct original captures as a new machine observation.
+- The historical2df Windows Pi natural EOF/OS-exit failure remains unresolved. JavaScript exit-entry markers did not prove OS exit. The SDK capture repair is independently verified instrumentation, not a Pi application repair. Actual parent/user/model/lifecycle acceptance and the existing Pi HTTP policy decision remain separate open boundaries.
+- Next: push this coherent source/evidence child, observe its early live controls and exact-head required checks, then merge into the integration branch under existing authority. Authenticate the resulting normal push and original installed reports. No child PR result substitutes for successful trusted normal qualification. The failed `f4dc` P02 capture (12 PASS, two old wiring expectations rejected) is retained without passing-proof promotion; corrected expectations were committed before the distinct successful capture.
+- Standing cleanup permission covers merged remote child branches only. It excludes the integration branch, main and all worktrees. Preserve unrelated worktrees/audits/artifacts and the original handoff ZIP. Normal push concurrency uses `run_id`; only PR concurrency cancels. A necessary coherent source push does not require waiting for an older normal run merely to avoid cancellation.
 
-## Preserved checkpoint history
+The previous checkpoint is preserved byte-for-byte at [checkpoint-history/CHECKPOINT-before-job-log-transport-9f9cde6b.md](checkpoint-history/CHECKPOINT-before-job-log-transport-9f9cde6b.md). Read `progress.json` for all retained task updates, decisions, unresolved outcomes and their original scope.
 
-# Current delivery checkpoint (2026-11-15 UTC)
-
-PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
-
-- Active child #1108 is at pushed head `553d07fe`. Its Windows Pi job132646451284 in run43659807673 failed the new owned-Node SDK control (`unrecognized` instead of `captured`); original RPC and observed-RPC partitions passed. The predecessor a7's 92 green checks are historical evidence for a7 only.
-- A confirmed diagnostic format gap is under repair: the parser required numbered frames while kL did not request them. A two-file Temp successor uses the documented knL command and safe numbered/unnumbered parsing. Two regression failures preceded four pure passing controls; independent affected-scope review passes. Actual SDK capture/Node survival still requires the next hosted run. No Pi application cause or repair is inferred.
-- The bbba normal integration run43649759117 failed because an environment value containing 1,910 paths and 148,885 bytes prevented shell startup. No installed reports ran. Committed source a7 reads event files and Git output; 15 focused controls and independent review passed.
-- The earlier 40-record batch includes S38:04's actual three-test observation against the authenticated tested native build. It resolves that complete-dependency unknown; no local Go build or retrospective input capture was used.
-- The next coherent metadata batch adds 27 source-only PRESERVED records: five native records and 22 packaging records. Prior runtime/installed observations remain at their actual epochs. Full current-source joins cover 281 distinct inputs; no whole-task, platform, model, user or publication completion follows.
-- Next: commit the bounded format repair, push the coherent batch once, observe exact-head CI promptly, then integrate #1108 only when green. Named remote branch auto-deletion still requires permission. Never merge #1098 to main or publish.
-- Gov remains `C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter`; common Git is `D:/projects/codeArbiter/.git`. Preserve all unrelated source/audit/artifact/worktree state. Never reopen the original handoff ZIP. Pi endpoint policy and actual parent/user/model/lifecycle acceptance remain open.
-
-## Preserved checkpoint history
-
-# Current delivery checkpoint (2026-11-14)
-
-PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. Its exact head22a passed 92 checks including required merge-readiness; six checks skipped. Both merge parents and identical source tree were verified. The named remote branch deletion was authorized and confirmed. PR #1098 remains draft and held from main for Brennon testing; publication is not authorized.
-
-- Trusted normal integration push43649759117 is running. Actual installed-package reports and retained artifacts still need observation.
-- Follow-on code source0c882f43 adds receipt-reconciliation characterization and corrects two Sandbox catalog claims. Fresh native11subcases pass with complete245-member before/after closure. These synthetic native fixtures do not establish human/installed approval.
-- Full integrity passes all105 frozen files and1,270 advanced records:965applicable,304stale,oneunknown. The new test source changes native module fingerprints; old records remain authentic history pending their owning current evidence.
-- This batch admits32 bounded updates. It corrects the prior inaccurate SW01 catalog narrative while retaining history, preserves complete finite source clauses, and records N10's actual executed command. The initial malformed proof proposal was refused and retained; only truthful command metadata was added, with no gate weakening or test rerun.
-- S38:04 remains UNKNOWN until an authenticated tested native installation supports the actual missing closure observation. Do not use a skipped-tests installation or invent past membership/absence facts.
-- Continue remaining acceptance, real parent-consent/lifecycle and physical/model journeys. The existing Pi endpoint policy decision stays pending. Preserve primary/author/acceptance worktrees, audit records and recovery metadata; never reopen the original handoff ZIP.
-
-## Preserved checkpoint history
-
-# Current CI repair checkpoint (2026-11-13)
-
-- Delivery PR: #1103 into major/state-contracts. Source head55509ec5 produced original run43498670196 (actual checkout e4ecd09d, identical source tree). Its failures remain retained.
-- Native repair source02c2c8b5 fixes nested retirement collection discovery and owned fixture paths/SMARTS epoch setup. Fresh normal Windows477selected/474PASS3SKIP+vet; newc36binary passes4older-client journeys and2installedbridge checks. Other hosted platforms remain pending.
-- Native101local dispositions retain their counts and now bind this committed native source; originaled9/0cc/f974 proof bytes stay unchanged. Remaining2004baseline dispositions are not inferred from totals.
-- Current coherent retry adds closed reader diagnostics, one exact public-digest exemption, typed UTF8 check-name repair, bounded contract oracles, Pi owned-temp canonicalization and explicit pinned Go/nonworkspaceRust generation. Original4Dockerstack fixtures retained; actualDocker/profile qualification pending.
-- PR1098 stays draft and unmerged for B fulltesting. No publication. Originalcheckout/authorworktrees and unrelated local state remain preserved.
-
-## Preserved checkpoint history
-
-# Current delivery checkpoint (2026-11-13)
-
-- Delivery checkout: codex/state-contracts-governance, C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter. Component source is committed through b9f183672424b7bdadabd50161e52a940649fe32; remaining qualification/CI source is being committed as one final batch. Original assembly and author worktrees remain preserved.
-- Native: current normal Windows build472PASS/3SKIP,475named observed, vetPASS, f9749e71 qualified manifest. Other-platform and upstream host claims remain pending.
-- Site: current44-file source review and typecheck pass; production browser evidence reused only at matching scopes.
-- Framework repairs include current HTML readers, bounded farm recovery reads, honest interrupted-effect reporting, compact authenticated qualification payload inventories and narrow readonly lock stability handling.
-- Formal readiness remains incomplete:2105dispositions are not inferred from suite totals; exact hosted/package/host journeys and evidence reconciliation remain.
-- PR1098 stays draft and unmerged for B full testing. No publication.
-
-## Preserved prior checkpoint
-
-# Program checkpoint â€” live
-
-Current coordinator: Codex. Read current Git state, `progress.json` and lane evidence before mutation. Frozen intake remains byte-identical; its PLANNED labels are historical.
-
-- Integration: `major/state-contracts`, draft PR #1098. User holds merge to main until full testing. No publication authority.
-- Delivered: PR #1101 merged as `97e1ecac795138cacb83a9d5e81c39d4c234867a`; its named child branch deletion was authorized. PR #1102 contains actual framework HTML-reader fixes and remains open.
-- Assembly: `C:/Users/brenn/.codex/worktrees/program-hooks-state-contracts/codeArbiter`, branch `codex/program-hooks-state-contracts`, base `38c8b8e75d47d5502a487fb7af6e303ae651a5ad` plus preserved mixed staged/unstaged work. No assembly commit yet. Original author worktrees remain intact.
-- Native: full qualified Windows source epoch471PASS/3platform skips; final descriptor-only metadata repair independently checked. The final descriptor development binary is not native-tested; final six-platform qualification remains required.
-- Pi: actual local child mutation/cancellation/journal tests and1067PASS/2platform skips; final readonly snapshot fix239affected testsPASS. Visible real parent/provider/consent and final installed cohort are separate pending observations.
-- Recovery: actual34 runtime,7 installed-source,5 host-event checks; bounded independent review exposed a real target CAS lost update, now repaired with4 actual concurrent-append regression cases and affected rerun pending. No source/fixture pass is called final retained-cohort qualification.
-- Packaging: shared manifest decoder and interrupted-publication handling implemented. Independent review reproduced and closed Windows junction escape and direct truncate generation. Production Atlas/site and cold historical authority fixture remain pending.
-- Real outstanding defects: HW08 fresh linked corrected-review attempt; Pi promotion must write HTML knowledge through its owner; Windows Pi raw RPC EOF timeout needs exact hosted follow-up. Candidate intent notes are being updated in the same fix batch.
-- Qualification: Docker unavailable locally; required real Docker/build-cache checks must run hosted. Baseline2105-disposition ledger is stillPLANNED until exact evidence is reconciled; no blanket suite-total qualification.
-- Toolchain for current local Pi checks: Node24.22.1 process-only PATH and isolated Pi1.5.0. Node24.18 crash evidence retained. Operator credentials and unrelated WIP are preserved.
-- Cleanup: a prior Pi dummy-test-directory deletion was rejected by automatic approval review. Do not bypass it; retain the exact dummy temp root and report unresolved cleanup.
-- Next: finish bounded fixes, final generation and source-backed Atlas, commit one implementation child PR, run exact hosted qualification, then reconcile live evidence. Reuse unaffected reviews. PR1098 remains held.
-
-## Earlier checkpoint history
-
-# Program checkpoint â€” live
-
-Resume protocol: read current Git state first (`git fetch; git log major/state-contracts`), then `execution/progress.json`, then this file. Intake PLANNED/NOT_RUN labels are history, not status.
-
-- **Repository:** arbiterForge/codeArbiter (origin verified)
-- **Integration branch:** `major/state-contracts`
-- **Active writer:** Codex integrator, taking over at B's request on 2026-11-13 after Claude exhausted tokens. Existing lane worktrees and their uncommitted payloads are preserved.
-- **Current head and inspected main base:** head = the commit carrying this file; base = `33abc347` (main at branch creation). Audit baseline `fd7eb34b`; 15 commits between. Drift worklist: `execution/source-drift-33abc347.json`.
-- **Candidate versions and tag availability observation:** integration candidates (provisional, `.github/integration-candidate.json`): ca 4.0.0, ca-codex 0.30.0, ca-pi 0.30.0, ca-sandbox 0.2.0 - all untagged 2026-11-12; re-select at freeze. Current published: v3.8.7, ca-codex-v0.26.7, ca-pi-v0.27.7, ca-sandbox-v0.1.10. ca-pi-v0.27.4/0.27.5 still draft.
-- **Completed task IDs with evidence links:** none.
-- **Implemented but unqualified task IDs:** P-00 (105/105 committed intake files, including the evidence ZIP under its logged override; disposable-clone exercise remaining). P-01 (integration candidate rule and workflow admission; earlier integration push and child PR CI passed; packet-validator CI wiring and event-matrix observations remain). P-02 is in progress; ledger accounting and shared vocabulary are implemented, owner compatibility evidence remains incomplete.
-- **Next runnable task IDs and owners:** P-01 (release-and-integration), P-02 (integration-architect).
-- **Scoped decisions still needed from B:** none blocking implementation. Decided 2026-11-12: D-PROGRESS=B, D-HIGH=maintenanceâ†’MEDIUM, D-GOV-PRETAG=required (see progress.json later_decisions). Evidence ZIP override completed. Integration ruleset deletion protection retains the program branch; individual child-branch deletion remains separately authorized.
-- **Actual commands/tests executed:** `tools/validate_packet.py --repo . --initial` â†’ PASSED (structure only), Windows 11 / Python 3.14.
-- **Source/artifact digests tested:** intake MANIFEST.json 105 sha256 entries match imported bytes.
-- **Pending transaction, authority, cleanup, publication or receipt outcomes:** none.
-- **Safe recovery action for each unknown outcome:** n/a.
-- **Current rollback boundary:** whole branch is additive; nothing merged to main, no tags/releases/Pages/marketplace effects.
-- **Exact next action:** finish remaining conversion consumer CI repairs in PR #1102, continue Pi, release corrections and farm/sandbox lanes, review the native batch, then dispatch packaging/site/tooling. Integrator reconciles exact per-task/per-row evidence and retains the user's main-merge testing hold.
-
-## Codex takeover observations (2026-11-13)
-
-- PR #1101 independently reviewed at `22f696aec11aba0eccf7c40a6efddada8589c8b1`: no blocking findings; one LOW test assertion weakness. Its 86 successful checks and installed ADR merge-method preflight were rechecked before B-authorized squash merge `97e1ecac795138cacb83a9d5e81c39d4c234867a` into `major/state-contracts`. Remote `program/version-candidates` auto-deletion separately confirmed by B; local worktree retained.
-- PR #1098 remains draft, open and unmerged. B permits child PR integration as needed but requires their own full testing before #1098 may merge to main. No publication authority is inferred.
-- Integration push CI run `43438527900` and matching docs push run `43438527943` completed SUCCESS. Earlier integration push run `43318792176` passed (78 successful jobs, 6 skipped). These are observations, not whole-program qualification.
-- All 105 frozen MANIFEST entries match their SHA-256 and byte count. Coverage-ledger tests: 11 passed; accounting check passed with 70 findings, 287 machines and 1,748 rows still PLANNED. Lane evidence has not yet been reconciled into the ledger.
-- Preserved local owner work: `program/native-nt01` at `1deff7ce` plus 25 changed/untracked paths; `program/hooks-hw01` at `870dc9ec` plus 16; `program/pi-d01` at `6ff9d388` plus 4; `program/release-r01` at `29f22e16` plus 5. These populations include local audit/recovery metadata where present and do not imply task completion.
-- New conversion branch `codex/state-contracts-html-context` starts at integration head `97e1ecac` in `C:/Users/brenn/.codex/worktrees/state-contracts-integrator/codeArbiter`. Conversion uses the installed knowledge writer with section coverage; the frozen intake and existing spec/plan pairs are outside conversion scope.
-- Conversion is committed in PR #1102 (`685b51f8`, `de880024`), with all 44 sections accounted for and 43 exact meaningful-section readbacks; remaining Markdown-only source conformance readers and an unnecessary transient fingerprint field are being repaired after actual CI failures. No gate is waived.
-- Native batch reports 470 passed, 3 skipped plus Go vet and actual old-client/bridge matrices, pending independent batch review/hosted evidence. Pi reports 986 passed, 1 skipped under isolated supported Pi 1.5.0; remaining composition/host cells stay explicit. Farm/sandbox work is active; local Docker unavailable. Release readiness review found two blocking evidence/decision-source gaps and one source-attribution issue; author is correcting all three.
-- Disposable-clone P-00 procedure passed on `97e1ecac`: pre-existing integration branch unchanged; dirty tracked and untracked bytes retained; clean task worktree; all 105 intake hashes intact; no remote effects. This closes the previously missing procedural exercise, not product qualification.
-- Current main adds three commits after the branch-creation base: `3b46392a` (ADR acceptance writer), `36c8982d` (LF-boundary lifecycle parsing), and merge `3f1bd137`. Source synchronization and affected evidence refresh remain required before promotion.
-
-## Environment notes
-
-- `tools/validate_packet.py` on Windows: run with `python -X utf8` (it reads text with the locale codec) and normalize relative path separators (its manifest population check compares `str(Path)` to `/`-separated names). A shim outside the corpus did this without editing the validator. On Linux it runs unmodified.
-- Repo `delete_branch_on_merge=true`: the final promotion PR merge would delete this branch unless handled (see progress.json pending decisions).
+Source/test/review receipts and genuine failure history are retained under [job-log-transport-source](evidence/job-log-transport-source/delivery.json). No failure is relabelled as a successful execution.

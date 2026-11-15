@@ -1,0 +1,25 @@
+{
+  "head": "8ca1393c8e70f8dcc5eaa1736fcfd356717007ce",
+  "run": 43745054317,
+  "event": "push",
+  "attempt": 1,
+  "verdict": "AUTHENTICATED_DIAGNOSTICS_ONLY",
+  "exact_owner_source_sha256": "83a5ccf5a201d9364acaf3873e4a7479307235603dea6a4622cf3d07456c54a8",
+  "joins": [
+    {
+      "job_id": 132915950511,
+      "artifact_id": 14175231632,
+      "upload_step": "Retain original Codex coordinator and execution records",
+      "pinned_uploader_log_identity_digest_verified": true,
+      "log_sha256": "4f84e06f09c9ace981313442b96e2a178f154b4bc7c4b9f1d3028471ef119ffc"
+    },
+    {
+      "job_id": 132915950496,
+      "artifact_id": 14174962190,
+      "upload_step": "Retain original Pi coordinator and execution records",
+      "pinned_uploader_log_identity_digest_verified": true,
+      "log_sha256": "ec92c904114c0fa3b821648d137cfcc86af03abc6500d7d359e117fa4b3a260c"
+    }
+  ],
+  "no_qualification": true
+}

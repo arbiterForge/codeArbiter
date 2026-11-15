@@ -1,0 +1,197 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "1963ff150b28c163eac38537a001055c22edfbed",
+  "source_tree": "b884123ff6e9e925e7bba82cfecac9ad516b3c3e",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools one3-method Windows private-main statusline install/reinstall characterization at1963ff15"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca/hooks",
+      "path_order": "windows",
+      "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+      "exit_code": 0,
+      "seconds": 0.5584545000019716,
+      "selected_named_population": 3,
+      "selected_skipped": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/actual-imports-62276.json",
+      "sha256": "01d56f8525dd325978208a771e13d084fa8dc5784dd72584243cd0c248fab20d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/after-snapshot.json",
+      "sha256": "cf24b879cdcaf3e6fd416ee36777a97b293c092d403a7d12d7925d0a85c90e12"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/capture-complete.json",
+      "sha256": "2cebbed754d8e62f9853047b4172d193480e7d0c25af24397e5e6d489c314b0d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/capture.py",
+      "sha256": "703a36f0cdae35affb42f2da867dfcf7f27845e992b88c9c7579a18dbca07adf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/named-results.json",
+      "sha256": "abd7fc2c6c529e194d88566432173c7403657e5e15a27cda509fb2a2f199de6d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/original.stderr.log.base64.json",
+      "sha256": "1de8ee93576f25c6a5ce80ce0b2a34b096afba11bdb5a151f81e70043dbe8895"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/original.stdout.log.base64.json",
+      "sha256": "2b42100c518e4307040d320c3e32fa964c187dbfdb6eb8d14c5529a04b8f7650"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/process-exit.json",
+      "sha256": "b0114bb244110a24201d50c92e0fbd815a569ff2fc4969ff00b22d30d1dfebdc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/run-result.json",
+      "sha256": "dedd8a167572b113e0fbc73d23b3550340996025b1463fc1f6c13a8d62439780"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/run-selected.py",
+      "sha256": "6e2c18d212dc6c2e9faa49925940136f461a971e9a70d6a3e1a34ce2b8c24e07"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/run-start.json",
+      "sha256": "685587e48dad2891349bce1c25c0c74a2a2d2d1d0fc5282ac823d300ad76fe65"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/source-freeze.json",
+      "sha256": "7729c26afa781d85fb8a2b4ff37ec611eb1454362ad2f5ec6af8ff932b9d9e8c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/supervisor-exit.json",
+      "sha256": "1dbd9b3330725259a5cff7226ca7ec83146a0fbb82442087939ad49c79db735e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/test_install_refusals_preserve_existing_settings.readbacks.json",
+      "sha256": "791942a36a8706f19b64fe5368698b2f220d3412bd5bd70ac57707abbefa4233"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/test_install_reinstall_user_takeover_and_restore_preserves_whole_settings.readbacks.json",
+      "sha256": "fa12d47d5b2437475d827b7d2dd388338b2cfa57690fb66aecd34877b1227b98"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/test_legacy_source_and_cache_reinstall_preserves_original_backup.readbacks.json",
+      "sha256": "6d1f63683e58cf660b324f18ea8f18fa685dea2132687f3b99a9416a44c01cf7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/raw/validated-selection.json",
+      "sha256": "e598d04a8dbfc2a48e3dbdeb363c934b6803f642c68e4b182296014a5ce581f6"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:hooks:statusline-wiring:01",
+    "disposition:transitions:hooks:statusline-wiring:02"
+  ],
+  "original_named_results": [
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    }
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:01",
+      "observed_named_cases": [
+        "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+        "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+      ],
+      "assertion_scope": "Real main(install) through documented fixture Host writes exact command/owner/spinner and exact prior backups with full-object readback. Mismatch/missing Host, ephemeral root, missing renderer, malformed JSON and injected unreadable read refuse before replacing settings or changing directory entries.",
+      "failure_retry": "Each refusal preserves complete original bytes/tree; normal valid private durable install positive supplies the successful branch. PermissionError is injected, not actual OS ACL behavior.",
+      "limits": [
+        "Private fixture Host, not actual installed Claude adapter or live settings/rendering. No cross-writer CAS or universal filesystem-lifetime claim."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:02",
+      "observed_named_cases": [
+        "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+        "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup"
+      ],
+      "assertion_scope": "Owned reinstall to a new durable renderer preserves original backups and unrelated object fields. Strict source/cache legacy reinstall retains original backup; nearby foreign filename gets a fresh exact live backup. User custom line/spinner survive automatic refresh; explicit reinstall backs up those current user choices, then uninstall restores them exactly.",
+      "failure_retry": "Automatic refresh never silently takes over foreign custom values. Only explicit reinstall refreshes backup to the current foreign choice. No old test result or source epoch relabeled.",
+      "limits": [
+        "Three newly executed private methods only; original03..07 methods were not selected or reexecuted."
+      ]
+    }
+  ],
+  "source_clause_binding": {
+    "canonical_owner": "core/pysrc/wire-statusline.py",
+    "executed_generated_owner": "plugins/ca/hooks/wire-statusline.py",
+    "canonical_generated_byte_parity": true,
+    "clauses": [
+      "plugin_root",
+      "load_settings",
+      "cmd_install",
+      "is_ours",
+      "_install_spinner_verbs",
+      "cmd_uninstall"
+    ]
+  },
+  "scope_limits": [
+    "Actual new run observed14 positive source inputs,11 imports,2 complete typed namespaces and1905 structured runtime records before/after; no claim that old29-input contributor was executed in this run.",
+    "Only remaining01/02 proposed; no machine/task/finding/installed/native/UI/model/provider/publication promotion.",
+    "No actual OS ACL or multi-writer CAS proof; deliberate durable fallback remains as previously qualified.",
+    "All settings, fixture roots and user replacements are private deterministic inputs; no real HOME/configuration or renderer commands executed."
+  ]
+}

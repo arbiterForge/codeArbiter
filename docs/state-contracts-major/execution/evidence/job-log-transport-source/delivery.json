@@ -1,0 +1,421 @@
+{
+  "format": "codearbiter.passive-source-delivery/1",
+  "state": "LOCAL_SOURCE_GATES_OBSERVED_HOSTED_TRANSPORT_UNPROVEN",
+  "source_commits": [
+    "e8bd77ccfa9c48776e24f0de8c81cd3dd7d4db48",
+    "f4dc4f9d614fb00455f06e7c60c9112b24ff2a6c",
+    "729066e097716d0a7c0c474f1dac667cc2920469",
+    "051d16eb23c490d3d5df458065ed0c7f34645b78"
+  ],
+  "tests": {
+    "job-log-http-full-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-full-green.json",
+      "sha256": "ab5b4ebc25198481994a5eade3924a5dc3ffadf42a4088d1a0e26135b8bbff29",
+      "bytes": 1777,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_readiness",
+          "test_retained_archive_cli_observation",
+          "test_retained_cold_observer_pipeline",
+          "test_major_qualification_report",
+          "test_ci_impact"
+        ],
+        "returncode": 1,
+        "elapsed_seconds": 153.08911609649658,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "b44bca64d9f3b0d7ac0cc3718b3f3e76972352ae857f491b86594b83eff65900",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "1e2eccda1e3a0f84a9be80ebcfa03ff0c54ffecd838042f45571783d9fa4e99c"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "b44bca64d9f3b0d7ac0cc3718b3f3e76972352ae857f491b86594b83eff65900",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "1e2eccda1e3a0f84a9be80ebcfa03ff0c54ffecd838042f45571783d9fa4e99c"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3096b4cf1056013abcdedc05f41dbe9b6cc8605641f0cc4dd46bfb4ae4a9a5c5"
+      }
+    },
+    "job-log-http-workflow-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-workflow-green.json",
+      "sha256": "5177b70c0b87e4435909097f2deac8641da408cba4313c8dd02017d73e8eff5d",
+      "bytes": 1638,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.1480507850646973,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "b44bca64d9f3b0d7ac0cc3718b3f3e76972352ae857f491b86594b83eff65900",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "b44bca64d9f3b0d7ac0cc3718b3f3e76972352ae857f491b86594b83eff65900",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "8dd8192d956918f15b286990211d10183e165f4467e2c4f1451d355aa3163644"
+      }
+    },
+    "job-log-http-cold-final-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-cold-final-green.json",
+      "sha256": "329389e499574370fa4ee341b0f0f532bf2e45856e250ba732ed3a63068dfee4",
+      "bytes": 1640,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_retained_archive_cli_observation"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.1736364364624023,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "b7d3ffd66d0a332843732192084397da46a7a33b34fc7d30ad047ce42bc05cb6"
+      }
+    },
+    "job-log-http-wiring-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-wiring-green.json",
+      "sha256": "80770fb9e1342b9c17afe09116ee9fa7f991b80dbc39114cf0b51e848993a95a",
+      "bytes": 1665,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_state_contracts_integration.IntegrationWorkflowWiringTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.4325113296508789,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "475c9eaa0d5db75c49025d612b015d59697940827dabceabedb225e10c84872a"
+      }
+    },
+    "job-log-http-classification-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-red.json",
+      "sha256": "31925665dd5759587f599e7ab5314afa62292629f87f7d001dd7b11785daa9e8",
+      "bytes": 1672,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_retained_archive_cli_observation.UploadHTTPReasonProjectionTest"
+        ],
+        "returncode": 1,
+        "elapsed_seconds": 0.22303485870361328,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "af2b6fc2b1c942065f120bb7ab008d9edbf66933e6cf2081f9d8ae50d0cf3c41"
+      }
+    },
+    "job-log-http-classification-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-green.json",
+      "sha256": "058b921a74198dddd913c14c3ccf4821aa5b26cfee6d8cfb3a47cec819ed9988",
+      "bytes": 1640,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_retained_archive_cli_observation"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.1088976860046387,
+        "before": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "01285722b1ee177736d218925d93eee728510885a1643113ffefab3b437401da",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "after": {
+          ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          ".github/scripts/retained_archive_cli_observation.py": "01285722b1ee177736d218925d93eee728510885a1643113ffefab3b437401da",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          ".github/scripts/test_retained_archive_cli_observation.py": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+          ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016"
+        },
+        "stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "9a8fd21d31ffe14b932a5be6bcdfd9877a60b83231b8e69f80f35c08641dfccc"
+      }
+    }
+  },
+  "test_author": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\delivery.json",
+    "sha256": "80eeac931c5db4a86afd8df83d4ffd40ed9971364d8275af03a157561d12ebf6",
+    "bytes": 5325,
+    "record": {
+      "schema": "codearbiter.author-delivery/1",
+      "state": "FROZEN_TESTS_RED_AWAITING_ROOT_IMPLEMENTATION",
+      "source_commit": "9f9cde6b7af516ce36d85b1dd0a78533869852ec",
+      "apply_files": [
+        {
+          "path": ".github/scripts/test_major_readiness.py",
+          "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\candidate\\.github\\scripts\\test_major_readiness.py",
+          "preimage_sha256": "ab43ae9d55da3a7b2568488ea258541e177f2b27a109714cf4c6fbb30d1e5773",
+          "sha256": "df12a201e92e2e2d499a77554ac5c437d9467346f64170e21372ab08cf136da6",
+          "bytes": 76336
+        },
+        {
+          "path": ".github/scripts/test_retained_archive_cli_observation.py",
+          "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py",
+          "preimage_sha256": "27169fd622cb0bf4ec2ef1e3e3450b11af974599c5c32c0c9c562572fb138a9a",
+          "sha256": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+          "bytes": 36801
+        }
+      ],
+      "patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\proposal.patch",
+        "sha256": "820edee9fef9b898fae2d8f603858d8add974ee511e0d6584b3e69fbd015a04c"
+      },
+      "source_freeze": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\source-freeze.json",
+        "sha256": "0ad38e40518cff307429091f2e1f5f00aa8e516961fe5aee0cf72166eb702b60"
+      },
+      "checks": {
+        "primary-red.json": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\primary-red.json",
+          "sha256": "a2aaa05e7f870f1236400236ebd84592d71e622f84c8ac62ceba7595e42cf03b",
+          "bytes": 1660
+        },
+        "primary-red.stdout": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\primary-red.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "primary-red.stderr": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\primary-red.stderr",
+          "sha256": "564983cb8f33d6878b0d8a480aae5dc5160b7fdc651cb142db5875382333726f",
+          "bytes": 10470
+        },
+        "final-red.json": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\final-red.json",
+          "sha256": "c5aed13f9483a47e186a68a0f26c2f281b280b5b10918362f66661fc9c9286a4",
+          "bytes": 1985
+        },
+        "final-red.stdout": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\final-red.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "final-red.stderr": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\final-red.stderr",
+          "sha256": "1b58723b11a321bd2ea1b7db99d6ee595623f7868f899de0954415fc366d9ac6",
+          "bytes": 54359
+        },
+        "original-AST-parity.json": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\original-AST-parity.json",
+          "sha256": "4ad84389ddeddf8e93ef8c1a4039ec0f4da3a959f4107ca9e251e7b70e4ecf34",
+          "bytes": 2227
+        }
+      },
+      "new_test_methods": {
+        ".github/scripts/test_major_readiness.py": [
+          "UploadLogHTTPTransportTest.test_no_token_selects_existing_gh_once_before_any_http_attempt",
+          "UploadLogHTTPTransportTest.test_token_does_not_change_non_job_log_api_transport",
+          "UploadLogHTTPTransportTest.test_environment_token_reads_original_attribution_without_opaque_gh_client",
+          "UploadLogHTTPWorkerBoundaryTest.test_worker_refuses_non_https_foreign_userinfo_and_suffix_confusion_redirects",
+          "UploadLogHTTPWorkerBoundaryTest.test_worker_http_and_native_errors_have_only_closed_reason_status",
+          "UploadLogHTTPTransportTest.test_malformed_worker_error_protocol_is_worker_failed_without_reflected_values",
+          "UploadLogHTTPWorkerBoundaryTest.test_worker_refuses_over_32mib_body_without_unbounded_read_or_partial_stdout",
+          "UploadLogHTTPTransportTest.test_http_worker_keeps_120s_timeout_and_original_tree_cleanup",
+          "UploadLogHTTPTransportTest.test_http_failure_keeps_actual_exit_hash_status_and_reason_without_retry",
+          "UploadLogHTTPWorkerBoundaryTest.test_worker_follows_official_https_redirect_without_forwarding_authorization",
+          "UploadLogHTTPTransportTest.test_http_transport_never_relaxes_original_artifact_identity_predicates",
+          "UploadLogHTTPWorkerBoundaryTest.test_worker_drops_authorization_even_on_api_redirect_and_bounds_redirect_chain"
+        ],
+        ".github/scripts/test_retained_archive_cli_observation.py": [
+          "UploadHTTPReasonProjectionTest.test_optional_reason_projection_preserves_legacy_and_refuses_unknown_or_extra_values",
+          "UploadHTTPReasonProjectionTest.test_optional_closed_http_transport_reason_survives_existing_cold_failure_sink"
+        ]
+      },
+      "unchanged_original_classmethods": {
+        ".github/scripts/test_major_readiness.py": 75,
+        ".github/scripts/test_retained_archive_cli_observation.py": 30
+      },
+      "limits": "Worker internal boundary GREEN is not claimed yet. Root must apply tests/production, run affected tests and preserve unchanged uploader/clock/id/name/digest predicates. No source/runtime/provider/CI qualification from these inert tests."
+    }
+  },
+  "fixture_successor": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\delivery.json",
+    "sha256": "152f659460c58f8d6517fa6649596e89ea53eb65d824e4136095aaced92e979d",
+    "bytes": 4617,
+    "record": {
+      "schema": "codearbiter.fixture-successor-delivery/1",
+      "state": "FROZEN_MINIMAL_FIXTURE_CORRECTION_GREEN",
+      "predecessor_delivery": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\delivery.json",
+        "sha256": "80eeac931c5db4a86afd8df83d4ffd40ed9971364d8275af03a157561d12ebf6",
+        "preserved_unchanged": true
+      },
+      "apply_files": [
+        {
+          "path": ".github/scripts/test_major_readiness.py",
+          "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\candidate\\.github\\scripts\\test_major_readiness.py",
+          "preimage_sha256": "df12a201e92e2e2d499a77554ac5c437d9467346f64170e21372ab08cf136da6",
+          "sha256": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          "bytes": 77071
+        }
+      ],
+      "patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\proposal.patch",
+        "sha256": "80b5ce96630939431e71701eb067f5e2aaf2a54e637a56cd6eba2971dccb197c"
+      },
+      "changed_helpers": [
+        "UploadLogHTTPTransportTest.observe_upload",
+        "UploadLogHTTPTransportTest.assert_http_worker",
+        "UploadLogHTTPWorkerBoundaryTest.execute_inert_worker"
+      ],
+      "all_test_method_ASTs_unchanged": 69,
+      "root_cause": "Fixture replaced entire environment with GH_TOKEN only. Python3.14 Windows SSLContext requires OS environment at construction. Actual worker preserves OS keys; old fixture did not. This is a unit-fixture mismatch, not a claim that hosted transport failure is solved.",
+      "minimal_change": "Preserve only actual SYSTEMROOT/WINDIR/TEMP/TMP keys case-insensitively in parent/inert environments, add nonsecret GH_TOKEN; worker kwargs allowlist and required OS propagation assertions. No create_default_context/SSL verification mocks.",
+      "actual_checks": {
+        "original_fixture_RED": {
+          "named_methods": 1,
+          "subcase_assertion_failures": 2,
+          "unittest_seconds": 0.022,
+          "controller_seconds": 0.2222230000043055,
+          "exit_code": 1
+        },
+        "corrected_fixture_GREEN": {
+          "named_methods": 5,
+          "unittest_seconds": 0.119,
+          "controller_seconds": 0.29566740000154823,
+          "exit_code": 0
+        },
+        "executed_production_source": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\candidate\\.github\\scripts\\major_readiness.py",
+          "sha256": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+          "state": "Exact read-only copy of Root current uncommitted worker; no Git commit claim"
+        }
+      },
+      "retained": {
+        "original.json": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\original.json",
+          "sha256": "668ccb329f177ce3cf7a00fe8c6aad580c22ea799eace832d860305f2da0879b",
+          "bytes": 674
+        },
+        "original.stdout": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\original.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "original.stderr": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\original.stderr",
+          "sha256": "18be3a33c70fb0a080fcd48a06c7e2e4fcdac46743faa10d439e6f51d12d652a",
+          "bytes": 3702
+        },
+        "corrected.json": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\corrected.json",
+          "sha256": "3e3590a733f929d61ab1df03b8d96022f7b2c935631caac9cd3a0d504605ef90",
+          "bytes": 676
+        },
+        "corrected.stdout": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\corrected.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "corrected.stderr": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\corrected.stderr",
+          "sha256": "3fa1d7127e93a19c1d4b66fa0a00677c3afaa8a69eeecce3f699f5db33a0bd05",
+          "bytes": 1172
+        }
+      },
+      "limits": [
+        "No Gov/source/index/ref writes, no full69 or full repository rerun.",
+        "Five tests execute actual static worker under inert HTTPS responses/socket and DNS guards. Real TLS-context construction remains active.",
+        "No actual credentials, GH/HTTP/API request, external worker process, install or provider/model effects.",
+        "Root full69 original10 TLS failures remain original history; this packet retains one precise fixture RED and5 affected GREEN only.",
+        "Cold test candidate and production are unchanged; original14-method transport RED remains valid immutable predecessor."
+      ]
+    }
+  },
+  "limits": [
+    "Tests executed against recorded physical source bytes; individual receipts are not relabeled as execution at a later commit. Exact per-path hashes and source commits preserve the join.",
+    "Original combined257 execution failed only one queue contract. After YAML correction63 workflow tests passed; after final diagnostic delta26 cold tests passed. No fabricated whole257 GREEN execution.",
+    "No ledger/task/installed/native/model/main/publication qualification is granted by this passive delivery record. Hosted transport and installed runtime remain separately gated."
+  ]
+}

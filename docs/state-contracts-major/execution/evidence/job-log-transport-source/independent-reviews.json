@@ -1,0 +1,398 @@
+{
+  "format": "codearbiter.passive-independent-reviews/1",
+  "reviews": [
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-independent-review-2evsdj3e\\review.json",
+      "sha256": "dd76fbc6671cfe0718f4b03370a47f734094904d74671916ac89dea53d11b4e2",
+      "bytes": 11369,
+      "record": {
+        "schema": "affected-http-auth-crypto-ci-coverage-review/1",
+        "reviewer": "crypto_evidence_review",
+        "reviewed_charters": [
+          "auth-crypto-reviewer",
+          "security-reviewer",
+          "reviewer-contract",
+          "crypto-compliance"
+        ],
+        "verdict": "PASS",
+        "auth_crypto_verdict": "PASS",
+        "ci_deployment_security_verdict": "PASS",
+        "coverage_verdict": "PASS",
+        "findings": [],
+        "HEAD": "9f9cde6b7af516ce36d85b1dd0a78533869852ec",
+        "branch": "codex/state-contracts-job-log-transport",
+        "candidate": "candidate-v1:37e921a150bea15953dd0828695cb02601fe18fbaa793962ecb33120d68a9ef1",
+        "patch_sha256": "5cf0dd6746a7a67ea25559b05555a89209259f56fdf810b50c2db52de937ed17",
+        "subjects": [
+          {
+            "path": ".github/scripts/major_readiness.py",
+            "index_sha256": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+            "bytes": 68803,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "83a5ccf5a201d9364acaf3873e4a7479307235603dea6a4622cf3d07456c54a8"
+          },
+          {
+            "path": ".github/scripts/retained_archive_cli_observation.py",
+            "index_sha256": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+            "bytes": 44939,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "7e15ec71286e7da515be115f3a39d52d4aba24ed58c18d8892cc741bf32aae0c"
+          },
+          {
+            "path": ".github/scripts/test_major_readiness.py",
+            "index_sha256": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+            "bytes": 77071,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "ab43ae9d55da3a7b2568488ea258541e177f2b27a109714cf4c6fbb30d1e5773"
+          },
+          {
+            "path": ".github/scripts/test_retained_archive_cli_observation.py",
+            "index_sha256": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+            "bytes": 36801,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "27169fd622cb0bf4ec2ef1e3e3450b11af974599c5c32c0c9c562572fb138a9a"
+          },
+          {
+            "path": ".github/workflows/ci.yml",
+            "index_sha256": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016",
+            "bytes": 250859,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "2a8908543822bc95499c7fb3e6237d0f97dc36751e86d7d7947753b22826529f"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "index_sha256": "286f33f2db6e85c8da5e6ab42d2ff506e48a8d219b93812042d99af42e4d9bcb",
+            "bytes": 216011,
+            "physical_equals_index": true,
+            "HEAD_preimage_sha256": "725008d0c3de3fffbc49bc47252e4eeed9f6216f2e440054fbd7e704a4eb3c9c"
+          }
+        ],
+        "policy": {
+          "all32_exact_records_consumed": true,
+          "constraint_note_identical_pairs": 16,
+          "source_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+          "controls": [
+            "CON-002",
+            "CON-003",
+            "CON-004",
+            "CON-009",
+            "CON-011",
+            "CON-013"
+          ]
+        },
+        "auth_crypto_analysis": [
+          "Only approved SHA256 integrity and verified stdlib default TLS context; no banned/custom crypto or TLS verification bypass.",
+          "Owning GH_TOKEN/GITHUB_TOKEN preselects fixed-source Python -I -S -B worker. Only selected GH_TOKEN and SystemRoot/WINDIR/TEMP/TMP enter that child; no token in argv/source/log/receipt/cache.",
+          "Fixed repository/positive bounded jobID; manual maximum three HTTPS redirects check allowed host/port/userinfo/control characters. Authorization is stripped on every redirect, including same origin.",
+          "Proxy/environment credential discovery excluded; response read is32MiB+1 and whole operation deadline120s retains original process-tree containment.",
+          "No-token route preselects old gh once, with no error fallback/retry. Other JSON/binaryZIP API paths unchanged.",
+          "Exact typed closed reason/status protocol and bounded five/six-key renderer exclude arbitrary response/native exception text and signed URLs; malformed/extra values fail closed. Nonsecret fixture labels only."
+        ],
+        "ci_deployment_analysis": [
+          "Existing three-OS Program integrity job retains actions:read/contents:read and completed changes dependency; no privilege/install/deployment/publication expansion.",
+          "Explicit push/merge_group/same-repoPR condition and correct event source identity; original runID/attempt/repository/source checks precede selection of one completed successful Impact selection job.",
+          "Existing cold private_environment isolates HOME/import/client state; printed output only jobID/byte count/SHA256/fixed state. ForkPR skips this token-backed control.",
+          "Original validate_upload full AST unchanged, retaining pinned uploader action/time-window/artifact-ID/name/digest checks. Only api routing changes among original readiness functions."
+        ],
+        "coverage": {
+          "source_ref": "CTX-TECH-STACK#FACT-005; NOTE-005 identical",
+          "profile": "Accepted Python infra no-tooling exemption with direct behavior/security outcome tests.",
+          "numeric_coverage": "UNMEASURED; no numeric pass claimed.",
+          "tested_boundaries": [
+            "valid uploader and mismatched ID/name/digest",
+            "one preselected transport/no retry",
+            "isolated child env/argv and timeout cleanup",
+            "closed failures/malformed fields/secret suppression",
+            "redirect HTTPS/domain restrictions/credential stripping/count",
+            "32MiB response boundary",
+            "DNS/TLS/timeout/network errors",
+            "merge-queue reachability/source binding"
+          ],
+          "no_scope_or_threshold_change": true
+        },
+        "verification": {
+          "actual_red": "14 additive methods/30 assertion failures/0errors against frozen9f9 production; original source/preimage hashes joined.",
+          "fixture_successor": "Only three test helpers preserve required Windows OS TLS keys; all assertions preserved, real TLS context still active;5 worker tests PASS0.119s.",
+          "executed_checks": {
+            "job-log-http-full-green": {
+              "exit_code": 1,
+              "tests": 257,
+              "stable": true,
+              "stderr_sha256": "3096b4cf1056013abcdedc05f41dbe9b6cc8605641f0cc4dd46bfb4ae4a9a5c5",
+              "elapsed_seconds": 153.08911609649658
+            },
+            "job-log-http-workflow-green": {
+              "exit_code": 0,
+              "tests": 63,
+              "stable": true,
+              "stderr_sha256": "8dd8192d956918f15b286990211d10183e165f4467e2c4f1451d355aa3163644",
+              "elapsed_seconds": 1.1480507850646973
+            },
+            "job-log-http-cold-final-green": {
+              "exit_code": 0,
+              "tests": 26,
+              "stable": true,
+              "stderr_sha256": "b7d3ffd66d0a332843732192084397da46a7a33b34fc7d30ad047ce42bc05cb6",
+              "elapsed_seconds": 1.1736364364624023
+            }
+          },
+          "interpretation": "Original combined257 retains256pass/1real CI-contract failure. Corrected WorkflowContractTest63PASS0.948s and final cold26PASS1.014s are affected successors; unchanged earlier outcomes reused. No fresh whole257-green claim.",
+          "old_test_classmethod_ASTs_unchanged": {
+            ".github/scripts/test_major_readiness.py": 75,
+            ".github/scripts/test_retained_archive_cli_observation.py": 30
+          },
+          "old_readiness_functions_changed": [
+            "api"
+          ]
+        },
+        "subset_reuse": "Same substantive review can cover byte-identical5-file fix and1-file CI subsets after Root independently binds each exact subset candidate. Receipt covers exact complete6-file candidate.",
+        "limits": [
+          "No hosted transport or installed/native qualification; opaque8ca gh-client underlying cause remains unknown.",
+          "No unrelated source review, tests, network/token/provider/runtime probes, new agents, or Gov/index/ref/marker/source writes by reviewer.",
+          "Root alone owns security-pass markers/commits; no marker for changed bytes."
+        ],
+        "receipts": [
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-peer-input.txt",
+            "sha256": "ebd9a4b11796642b90931ed3c18dac87e41373604dac04ed4982c42194e7435b"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-peer-context.json",
+            "sha256": "219712ab1d66ee0b1dd80a588a5ad99c096af26593875b555a397c96d4a7cfce"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+            "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+            "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-source-guards.json",
+            "sha256": "a56a6cd79ab69fa35642b819c140ab150dd0fcc25f3a5a026aa2a3286582b53e"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-full-green.json",
+            "sha256": "ab5b4ebc25198481994a5eade3924a5dc3ffadf42a4088d1a0e26135b8bbff29"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-full-green.stderr",
+            "sha256": "3096b4cf1056013abcdedc05f41dbe9b6cc8605641f0cc4dd46bfb4ae4a9a5c5"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-workflow-green.json",
+            "sha256": "5177b70c0b87e4435909097f2deac8641da408cba4313c8dd02017d73e8eff5d"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-workflow-green.stderr",
+            "sha256": "8dd8192d956918f15b286990211d10183e165f4467e2c4f1451d355aa3163644"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-cold-final-green.json",
+            "sha256": "329389e499574370fa4ee341b0f0f532bf2e45856e250ba732ed3a63068dfee4"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-cold-final-green.stderr",
+            "sha256": "b7d3ffd66d0a332843732192084397da46a7a33b34fc7d30ad047ce42bc05cb6"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\delivery.json",
+            "sha256": "80eeac931c5db4a86afd8df83d4ffd40ed9971364d8275af03a157561d12ebf6"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\final-red.json",
+            "sha256": "c5aed13f9483a47e186a68a0f26c2f281b280b5b10918362f66661fc9c9286a4"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-tests-eal2drpn\\final-red.stderr",
+            "sha256": "1b58723b11a321bd2ea1b7db99d6ee595623f7868f899de0954415fc366d9ac6"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\delivery.json",
+            "sha256": "152f659460c58f8d6517fa6649596e89ea53eb65d824e4136095aaced92e979d"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-fixture-mx3b3jh2\\proposal.patch",
+            "sha256": "80b5ce96630939431e71701eb067f5e2aaf2a54e637a56cd6eba2971dccb197c"
+          }
+        ],
+        "utc": "2026-11-15T19:28:12.527863+00:00"
+      }
+    },
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-wiring-independent-review-bc78vpa8\\review.json",
+      "sha256": "6acb572ac8bc978e6d3d2f9daf3425706c6df40f083ab9918b165f17e8860783",
+      "bytes": 5224,
+      "record": {
+        "schema": "bounded-test-wiring-security-review/1",
+        "verdict": "PASS",
+        "findings": [],
+        "HEAD": "f4dc4f9d614fb00455f06e7c60c9112b24ff2a6c",
+        "candidate": "candidate-v1:84241151ce514a77458ab9bd3e71907b18ed871dcfefa98459be372460550965",
+        "patch_sha256": "89532b92a521ea7504a957b8b6dcedf2766f2a47f2e7f192d99ba7ac449a50ca",
+        "subject": {
+          "path": ".github/scripts/test_state_contracts_integration.py",
+          "index_sha256": "ae4b348b40928ab0d789ed034208d8f65f6cc9a6c13d72b597e3e9d19832023d",
+          "HEAD_preimage_sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+          "physical_equals_index": true
+        },
+        "changed_methods": [
+          [
+            "IntegrationWorkflowWiringTest",
+            "test_actual_owning_ci_runs_partial_check_for_ledger_only_children"
+          ],
+          [
+            "IntegrationWorkflowWiringTest",
+            "test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only"
+          ]
+        ],
+        "unchanged_old_methods": 51,
+        "classification": {
+          "kind": "secret",
+          "path": ".github/scripts/test_state_contracts_integration.py",
+          "line": 703,
+          "path_digest": "path-v1:6a676226a5735803887e314b76b5b76a094cd201344cbcc701081751dfb64a91",
+          "actual_line": "self.assertNotIn(\"GH_TOKEN:\", pre)",
+          "verdict": "BENIGN_STATIC_NEGATIVE_ASSERTION",
+          "reason": "The literal names GH_TOKEN to forbid job-scope transport. It is not a credential value; other static github.token text names the approved Actions expression, not a token."
+        },
+        "security_boundary": [
+          "Original four validation commands preserved in exact order plus one explicitly counted block-run control.",
+          "Exact approved control name, push/merge_group/same-repoPR predicate, event source expression, private_environment and job-log API call asserted.",
+          "Original actions:read/contents:read exact permissions retained; GH_TOKEN prohibited at job scope, all unrelated steps and hook job. Only original checker and exact new named control accept step-local github.token.",
+          "No workflow/production/credential/store/API/permissions change and no scanner waiver."
+        ],
+        "evidence": {
+          "actual_original14": "12PASS/2genuine wiringFAIL/0errors; no proof/CAS update. Failure retained; not relabelled.",
+          "owning_four": "Root actual4 owning wiring methods PASS0.226s. Retained command receipt hashes five unchanged production/workflow inputs; changed test file is bound separately by exact current indexed/preimage digests in this review.",
+          "whole_P02": "NOT claimed; fresh14 after test-only commit remains separate.",
+          "coverage": "CTX-TECH-STACK#FACT-005 unchanged Python no-tooling exemption; no numeric claim."
+        },
+        "prior_review": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-independent-review-2evsdj3e\\review.json",
+          "sha256": "dd76fbc6671cfe0718f4b03370a47f734094904d74671916ac89dea53d11b4e2",
+          "all_prior_six_subject_bytes_unchanged": true,
+          "full32_policy_unchanged_and_reused": true
+        },
+        "limits": [
+          "Only new single-file expectation boundary reviewed; previous source/CI/auth review reused.",
+          "No tests/network/credential/provider/runtime/Gov/index/ref/marker/source writes or calls by reviewer.",
+          "Root alone owns marker/commit; no prior frozen proof rewrite or new successful P02/hosted/installed qualification implied."
+        ],
+        "receipts": [
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-wiring-peer-input.txt",
+            "sha256": "9f8726741610503eceb9d42328ca8425e1b0bee950b7f59ef47883faeebc3926"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-wiring-peer-context.json",
+            "sha256": "1a36927835b8f80d543ca0e6eb4301b2353e2fbb9ef2ef5c9060edbf1a7aca47"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-six-f4dc-6wl4elvy\\failure-receipt.json",
+            "sha256": "a10601e0abc1c7dfc0643b0d17de790dc7a6136e58baa128f4f6b0bc2e25f45e"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-wiring-green.json",
+            "sha256": "80770fb9e1342b9c17afe09116ee9fa7f991b80dbc39114cf0b51e848993a95a"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-wiring-green.stderr",
+            "sha256": "475c9eaa0d5db75c49025d612b015d59697940827dabceabedb225e10c84872a"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-independent-review-2evsdj3e\\review.json",
+            "sha256": "dd76fbc6671cfe0718f4b03370a47f734094904d74671916ac89dea53d11b4e2"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+            "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+            "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4"
+          }
+        ],
+        "utc": "2026-11-15T19:35:37.588015+00:00"
+      }
+    },
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-classification-review-mlmg08qf\\review.json",
+      "sha256": "6c36479a5055cba27b61ad6383a3d8963fee2e07443d1de13ca422b99c8d1701",
+      "bytes": 4430,
+      "record": {
+        "schema": "bounded-http-diagnostic-classification-review/1",
+        "verdict": "PASS",
+        "findings": [],
+        "HEAD": "729066e097716d0a7c0c474f1dac667cc2920469",
+        "candidate": "candidate-v1:3aa0814ae51cd66ba3960c0d5e67ea4f0dbc924b86faf85bfb1bfa44943d3d16",
+        "patch_sha256": "c9661e14a7e00972aea3e5a65dda7fc2b03be722373526419ca0f880cd53a617",
+        "subjects": [
+          {
+            "path": ".github/scripts/retained_archive_cli_observation.py",
+            "index_sha256": "01285722b1ee177736d218925d93eee728510885a1643113ffefab3b437401da",
+            "HEAD_preimage_sha256": "2dd8e00a210925f5d577a2ff096926b423f2a70b42659574866d0bb437310ae8",
+            "physical_equals_index": true
+          },
+          {
+            "path": ".github/scripts/test_retained_archive_cli_observation.py",
+            "index_sha256": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+            "HEAD_preimage_sha256": "de4ecf5d278be27eacf30b29a6e31ef2b8738fd3c100e959de209c1be4591595",
+            "physical_equals_index": true
+          }
+        ],
+        "scope": "Exactly one fixed-message production condition and one matching test fixture literal; unchanged full HTTP/auth/CI review and32 policy records reused.",
+        "analysis": [
+          "Legacy gh fixed message remains recognized. New exact HTTP fixed literal is the same one emitted by the actual reviewed caller.",
+          "Recognition remains within upload-attribution cause-chain context. Arbitrary strings remainUNKNOWN; no raw cause/URL/token/body reflection is introduced.",
+          "Strict bounded five/six-key closed metadata projection full AST is unchanged; no auth, crypto, TLS, uploader/provenance or permissions change.",
+          "Fixture now represents the actual caller rather than old client path; all ten reason subcases genuinely RED before production correction."
+        ],
+        "verification": {
+          "RED": "2 methods,10 assertion failures,0errors,0.091s; exact original production/current fixture joins verified.",
+          "GREEN": "Full cold26 tests PASS0.960s; source/test/workflow hashes stable and joined exact current bytes.",
+          "coverage": "Existing CTX-TECH-STACK#FACT-005 Python no-tooling exemption; direct affected behavior proof, no numeric coverage claim.",
+          "hosted_installed": "NOT claimed; fresh P02 and hosted transport remain separate."
+        },
+        "prior_review_sha256": "dd76fbc6671cfe0718f4b03370a47f734094904d74671916ac89dea53d11b4e2",
+        "receipts": [
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-peer-input.txt",
+            "sha256": "8acf8ae75fdbce7aa1cd0a30c701eeaae6b0a14d49538a28e4c29bec483068e6"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-peer-context.json",
+            "sha256": "5cc1a03caf318718bba71e523ea36d0207349aaf9072b619d3fd5c3ff24f0077"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-red.json",
+            "sha256": "31925665dd5759587f599e7ab5314afa62292629f87f7d001dd7b11785daa9e8"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-red.stderr",
+            "sha256": "af2b6fc2b1c942065f120bb7ab008d9edbf66933e6cf2081f9d8ae50d0cf3c41"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-green.json",
+            "sha256": "058b921a74198dddd913c14c3ccf4821aa5b26cfee6d8cfb3a47cec819ed9988"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\job-log-http-classification-green.stderr",
+            "sha256": "9a8fd21d31ffe14b932a5be6bcdfd9877a60b83231b8e69f80f35c08641dfccc"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-job-log-http-independent-review-2evsdj3e\\review.json",
+            "sha256": "dd76fbc6671cfe0718f4b03370a47f734094904d74671916ac89dea53d11b4e2"
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+            "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+          }
+        ],
+        "limits": "Read-only affected review; no tests/network/credentials/provider/runtime/Gov/index/ref/marker/source writes. Root owns marker and commit.",
+        "utc": "2026-11-15T19:37:53.906648+00:00"
+      }
+    }
+  ]
+}

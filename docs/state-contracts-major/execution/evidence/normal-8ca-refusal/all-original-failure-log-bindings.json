@@ -1,0 +1,190 @@
+{
+  "head": "8ca1393c8e70f8dcc5eaa1736fcfd356717007ce",
+  "run": 43745054317,
+  "attempt": 1,
+  "event": "push",
+  "failures": [
+    {
+      "job_id": 132915950495,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950495.log",
+      "log_sha256": "fef769525b7ab45be927ea3453971d9c21758345bafb8c6726fdf730c47d3e83",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": []
+    },
+    {
+      "job_id": 132915950496,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950496.log",
+      "log_sha256": "ec92c904114c0fa3b821648d137cfcc86af03abc6500d7d359e117fa4b3a260c",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": []
+    },
+    {
+      "job_id": 132915950511,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950511.log",
+      "log_sha256": "4f84e06f09c9ace981313442b96e2a178f154b4bc7c4b9f1d3028471ef119ffc",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": []
+    },
+    {
+      "job_id": 132915950528,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950528.log",
+      "log_sha256": "0efeeeb7b7a76bd1d79ca3481d9ceb74beb96160cd7e72f2eff7fb579ce8035f",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": []
+    },
+    {
+      "job_id": 132915950552,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950552.log",
+      "log_sha256": "b1c032ea6f52c11f6118872b006c4a07d35237474b13675f3a2ad8bc7913afcd",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": []
+    },
+    {
+      "job_id": 132915950561,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950561.log",
+      "log_sha256": "121fc11122c802326b5d229aec046af557ea241841cb4b68ac0ab584c38f2afd",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132915950565,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950565.log",
+      "log_sha256": "841dc7a307b678e8ac8032293133c76310ab0cadd17654ee11413c652366b3c0",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132915950569,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950569.log",
+      "log_sha256": "43d54bca1e23468b4c423e93e6044f125360cc3d858d625659d65bd814d2e4fd",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132915950582,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950582.log",
+      "log_sha256": "8fc0669ed3e895b075ab0a0cfc451cb60ea683233f1914e87a2e52c26368ae9a",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132915950594,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950594.log",
+      "log_sha256": "5592270ecfa45f05427e0d64ec3a3383f9b2a6d357c2b0a58212e6c360cff6b0",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132915950610,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132915950610.log",
+      "log_sha256": "aa5dce68336bf0853527ebe5b22d0f817cf0862794df1ab73b3ce0b37fbeee0b",
+      "diagnostic_sha256_values": [
+        "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+      ],
+      "closed_command_diagnostics": [
+        {
+          "code": "UPLOAD_LOG_COMMAND_FAILED",
+          "exit_code": 1,
+          "http_status": null,
+          "operation": "github-actions-job-log",
+          "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+        }
+      ]
+    },
+    {
+      "job_id": 132918404772,
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "conclusion": "failure",
+      "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\failed-job-132918404772.log",
+      "log_sha256": "b259aa62f29c1d76fdd130d64a02e89f40b40bf5d41a0b7bf1d4ec8689db30cf",
+      "diagnostic_sha256_values": [],
+      "closed_command_diagnostics": [],
+      "gate_error_lines": [
+        "2026-11-15T18:50:00.3056935Z ##[error]a required CI job concluded 'failure'",
+        "2026-11-15T18:50:00.3074187Z ##[error]Process completed with exit code 1."
+      ]
+    }
+  ]
+}

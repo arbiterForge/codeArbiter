@@ -2804,6 +2804,43 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.14"
+      - name: Read completed dependency log through isolated Actions transport
+        if: github.event_name == 'push' || github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRANSPORT_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+        shell: bash
+        run: |
+          python -I -B - <<'PY'
+          import hashlib, json, os, sys, tempfile
+          from pathlib import Path
+          repo = Path.cwd().resolve()
+          sys.path[:0] = [str(repo / '.github/scripts'), str(repo / 'core/pysrc')]
+          import major_readiness as readiness
+          from retained_archive_cli_observation import private_environment
+          run_id = int(os.environ['GITHUB_RUN_ID'])
+          attempt = int(os.environ['GITHUB_RUN_ATTEMPT'])
+          source = os.environ['TRANSPORT_SOURCE_COMMIT']
+          with tempfile.TemporaryDirectory(prefix='ca-actions-log-control-') as temporary:
+              with private_environment(Path(temporary) / 'control-home'):
+                  run = readiness.api(f'actions/runs/{run_id}')
+                  readiness.require(run.get('id') == run_id and run.get('run_attempt') == attempt
+                      and run.get('head_sha') == source
+                      and run.get('repository', {}).get('full_name') == readiness.REPOSITORY,
+                      'transport control run identity differs')
+                  pages = json.loads(readiness.command(['gh', 'api', '--paginate', '--slurp',
+                      f'repos/{readiness.REPOSITORY}/actions/runs/{run_id}/attempts/{attempt}/jobs?per_page=100']))
+                  jobs = [job for page in pages for job in page['jobs']
+                      if job.get('name') == '[CHECK] | [REPO] | Impact selection'
+                      and job.get('status') == 'completed' and job.get('conclusion') == 'success'
+                      and job.get('run_id') == run_id]
+                  readiness.require(len(jobs) == 1 and type(jobs[0].get('id')) is int
+                      and jobs[0]['id'] > 0, 'transport control dependency missing or ambiguous')
+                  raw = readiness.api(f"actions/jobs/{jobs[0]['id']}/logs", binary=True)
+                  readiness.require(bool(raw), 'transport control dependency log empty')
+                  print(json.dumps({'job_id': jobs[0]['id'], 'bytes': len(raw),
+                      'sha256': hashlib.sha256(raw).hexdigest(), 'state': 'READ'}))
+          PY
       - name: Check partial-program coverage accounting
         run: python docs/state-contracts-major/execution/tools/coverage_ledger.py check
       - name: Test bounded immutable Git object reads

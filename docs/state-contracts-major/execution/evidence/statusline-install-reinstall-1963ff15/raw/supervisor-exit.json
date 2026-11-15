@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov\\capture.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+  "exit_code": 0,
+  "seconds": 2.189392299987958,
+  "stdout_sha256": "3ea41743d05d1dc34bf493f7696b04900764d61413d3a3f33df559c0a4303880",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "validated3_method_ids": [
+    "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+    "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+    "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+  ],
+  "no_credential_keys_in_supervisor": true
+}

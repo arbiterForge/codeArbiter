@@ -1,0 +1,59 @@
+{
+  "format": "finite-current-statusline-capture/1",
+  "actual_source": "1963ff150b28c163eac38537a001055c22edfbed",
+  "actual_methods": [
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    }
+  ],
+  "actual_process_exit": {
+    "argv": [
+      "C:/Python314/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov\\run-selected.py",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+    "exit_code": 0,
+    "seconds": 0.5584545000019716,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "3b803697ccb80aa1825b34c437ec176781a133931a939b41cf9a1bbbe127eb27"
+  },
+  "capture_complete": {
+    "state": "CAPTURE_SEALED_RELEASE_SOURCE_HOLD",
+    "source_commit": "1963ff150b28c163eac38537a001055c22edfbed",
+    "exit_code": 0,
+    "seconds": 0.5584545000019716,
+    "PASS": 3,
+    "positive_inputs": 14,
+    "runtime_records": 1905,
+    "source_tree": "b884123ff6e9e925e7bba82cfecac9ad516b3c3e",
+    "HEAD_index_source_runtime_namespaces_stable": true
+  },
+  "prepared_source_freeze_sha256": "7729c26afa781d85fb8a2b4ff37ec611eb1454362ad2f5ec6af8ff932b9d9e8c",
+  "driver_original_sha256": "6e2c18d212dc6c2e9faa49925940136f461a971e9a70d6a3e1a34ce2b8c24e07",
+  "protocol_original_sha256": "703a36f0cdae35affb42f2da867dfcf7f27845e992b88c9c7579a18dbca07adf",
+  "scope": "Only01/02; conditional machine remains held with separate original contributor map.",
+  "data_transport": "Original test stdout/stderr wrapped byte-exact Base64; all raw observations and prepared source bytes preserved. No new source/runtime measurements during packaging.",
+  "omitted_seed_copies": "Prepared seed-proof/runtime-seed remain immutable private originals and hashed in source-freeze; their original declared14inputs/1905paths are fully present in actual run-start/after-snapshot. No duplicate runtime corpus copied.",
+  "source_hold_released": true,
+  "original_private_capture": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+  "limits": [
+    "Actual new run observed14 positive source inputs,11 imports,2 complete typed namespaces and1905 structured runtime records before/after; no claim that old29-input contributor was executed in this run.",
+    "Only remaining01/02 proposed; no machine/task/finding/installed/native/UI/model/provider/publication promotion.",
+    "No actual OS ACL or multi-writer CAS proof; deliberate durable fallback remains as previously qualified.",
+    "All settings, fixture roots and user replacements are private deterministic inputs; no real HOME/configuration or renderer commands executed."
+  ]
+}

@@ -617,6 +617,9 @@ class IntegrationIntegrityTest(unittest.TestCase):
 
 
 class IntegrationWorkflowWiringTest(unittest.TestCase):
+    TRANSPORT_STEP = "Read completed dependency log through isolated Actions transport"
+    TRANSPORT_IF = ("github.event_name == 'push' || github.event_name == 'merge_group' || "
+                    "(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)")
     COMMANDS = [
         "python docs/state-contracts-major/execution/tools/coverage_ledger.py check",
         "python .github/scripts/test_immutable_git_blobs.py",
@@ -653,8 +656,9 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         self.assertNotIn("build-artifacts.py", job)
         self.assertNotIn("continue-on-error:", job)
         self.assertNotIn("--require-complete", job)
-        self.assertEqual(re.findall(r"(?m)^        run: (.*)$", job), self.COMMANDS)
-        self.assertEqual(re.findall(r"(?m)^        if: (.*)$", job), [])
+        self.assertEqual(re.findall(r"(?m)^        run: (.*)$", job), ["|", *self.COMMANDS])
+        self.assertEqual(re.findall(r"(?m)^        if: (.*)$", job), [self.TRANSPORT_IF])
+        self.assertEqual(job.count("      - name: " + self.TRANSPORT_STEP + "\n"), 1)
         hooks = self.job(text, "hooks")
         self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n", hooks)
         for command in self.COMMANDS:
@@ -696,12 +700,20 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         pre = job.split("    steps:\n", 1)[0]
         permissions = re.search(r"(?m)^    permissions:\n((?:      [^\n]+\n)+)", pre).group(1)
         self.assertEqual(permissions, "      contents: read\n      actions: read\n")
+        self.assertNotIn("GH_TOKEN:", pre)
         steps = re.split(r"(?m)^      - ", job.split("    steps:\n", 1)[1])[1:]
         consumers = [step for step in steps if "run: python .github/scripts/check_state_contracts_integration.py" in step]
         self.assertEqual(len(consumers), 1)
         self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", consumers[0])
+        controls = [step for step in steps if step.startswith("name: " + self.TRANSPORT_STEP + "\n")]
+        self.assertEqual(len(controls), 1)
+        self.assertIn("        if: " + self.TRANSPORT_IF + "\n", controls[0])
+        self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", controls[0])
+        self.assertIn("TRANSPORT_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}", controls[0])
+        self.assertIn("with private_environment(Path(temporary) / 'control-home'):", controls[0])
+        self.assertIn('readiness.api(f"actions/jobs/{jobs[0][\'id\']}/logs", binary=True)', controls[0])
         for step in steps:
-            if step != consumers[0]:
+            if step not in (consumers[0], controls[0]):
                 self.assertNotIn("GH_TOKEN:", step)
         self.assertNotIn("GH_TOKEN:", self.job(text, "hooks"))
 
