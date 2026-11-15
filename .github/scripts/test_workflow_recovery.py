@@ -814,5 +814,39 @@ class RecoveryRuntimeTest(unittest.TestCase):
                     self.assertEqual(path.read_text().count("(from " + offer["origin"] + ")"), 1)
 
 
+    def test_emitted_fallback_notice_is_deduplicated_per_session(self):
+        self.registered()
+        before = self.snapshot()
+        target = self.root / ".codearbiter/open-tasks.md"
+        target_before = target.read_bytes()
+        session = "fallback-notice-session"
+        with mock.patch.object(recovery, "automatic_snapshot", side_effect=RuntimeError("fixture observer failure")):
+            first = recovery.presentation(self.root, session)
+            self.assertIn("workflow recovery notice unavailable", first["text"])
+            self.assertIn("Independent authorized work continues", first["text"])
+            self.assertRegex(first["fingerprint"], r"^[a-f0-9]{64}$")
+            # Selecting text is not sink delivery; no notice may be lost here.
+            self.assertEqual(recovery.presentation(self.root, session), first)
+            self.assertFalse((self.root / ".codearbiter/.markers").exists())
+            recovery.record_notice_emitted(self.root, session, first["fingerprint"])
+            marker = self.root / ".codearbiter/.markers" / (
+                "workflow-recovery-notice-v1-" + hashlib.sha256(session.encode()).hexdigest() + ".json")
+            marker_before = marker.read_bytes()
+            self.assertEqual(json.loads(marker_before), {
+                "format": "codearbiter.workflow-notice/1", "fingerprint": first["fingerprint"]})
+            self.assertEqual(recovery.presentation(self.root, "different-session"), first)
+            changed = recovery.snapshot(self.root, result={
+                "status": "unavailable", "reason": "capacity", "items": [], "bytes_read": 0})
+            self.assertNotEqual(changed["fingerprint"], first["fingerprint"])
+            self.assertEqual(recovery.presentation(self.root, session, observed=changed), {
+                "text": changed["notice"], "fingerprint": changed["fingerprint"]})
+            self.assertEqual(before, self.snapshot())
+            self.assertEqual(target.read_bytes(), target_before)
+            self.assertEqual(marker.read_bytes(), marker_before)
+            # The identical fallback was actually recorded as emitted above.
+            self.assertEqual(recovery.presentation(self.root, session), {
+                "text": "", "fingerprint": first["fingerprint"]})
+
+
 if __name__ == "__main__":
     unittest.main()

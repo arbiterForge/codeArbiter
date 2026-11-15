@@ -2216,7 +2216,7 @@ def presentation(root, session_id, *, observed=None):
             raise ValueError("unavailable notice")
     except Exception:
         text = "codeArbiter: workflow recovery notice unavailable; inspect the selected ledger explicitly. Independent authorized work continues."
-        return {"text": text, "fingerprint": _sha(text.encode("utf-8"))}
+        observed = {"notice": text, "fingerprint": _sha(text.encode("utf-8"))}
     if not observed["notice"]:
         return {"text": "", "fingerprint": observed["fingerprint"]}
     try:
