@@ -1,0 +1,140 @@
+{
+  "format": "sandbox-eleven-prospective-owner/1",
+  "candidate": "ca4966745fa44f1baddd08613702db023d83fe60",
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "results": [
+    {
+      "cell": "disposition:transitions:S49:02",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:03",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:04",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:05",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:06",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:07",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:08",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:09",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+          "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    }
+  ],
+  "limits": "Future new proof/raw bytes are explicit metadata overlay only, not claimed already committed. Source and original retained raws/ancestors read from immutable Git. Root owns final retention commit/admission."
+}

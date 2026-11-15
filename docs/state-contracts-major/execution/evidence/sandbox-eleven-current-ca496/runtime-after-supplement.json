@@ -1,0 +1,16 @@
+{
+  "format": "sandbox-runtime-post-run-read/1",
+  "observed_at": "2026-11-15T14:04:32.962340+00:00",
+  "actual_after_file_sha256": {
+    "node_path": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "python_path": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "transport_path": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+  },
+  "matches_actual_pre_run": true,
+  "node_version_identity": "v24.22.1 from original retained node-version-after observation on same literal executable SHA, not a new version invocation",
+  "original_version_evidence": {
+    "path": "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/node-version-after.json",
+    "sha256": "289b63b4b89aa736d1a25a7ef1e0e06cf966374aa5d9b2efee7c258710fa5943"
+  },
+  "limits": "This explicit supplemental after-run file read occurred while sealing, after root was released from the source hold; no timestamp is fabricated for the earlier command completion."
+}

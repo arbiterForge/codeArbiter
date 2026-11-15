@@ -1,0 +1,495 @@
+[
+  {
+    "schemaVersion": 1,
+    "outcome": "original-failure",
+    "identity": "matched",
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "running",
+      "exitCode": null
+    },
+    "processId": 55720,
+    "creationTime": 134392257229606001,
+    "nodeSha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+    "debugger": {
+      "status": "unavailable",
+      "threads": [],
+      "truncated": false
+    },
+    "elapsedMs": 48
+  },
+  {
+    "schemaVersion": 1,
+    "outcome": "original-failure",
+    "identity": "matched",
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "running",
+      "exitCode": null
+    },
+    "processId": 55720,
+    "creationTime": 134392257229606001,
+    "nodeSha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+    "debugger": {
+      "status": "captured",
+      "threads": [
+        {
+          "frames": [
+            {
+              "module": "kernelbase",
+              "returnOffset": 781807
+            },
+            {
+              "module": "node",
+              "returnOffset": 4167320
+            },
+            {
+              "module": "node",
+              "returnOffset": 4170149
+            },
+            {
+              "module": "node",
+              "returnOffset": 3973493
+            },
+            {
+              "module": "node",
+              "returnOffset": 2676618
+            },
+            {
+              "module": "node",
+              "returnOffset": 3367248
+            },
+            {
+              "module": "node",
+              "returnOffset": 3362478
+            },
+            {
+              "module": "node",
+              "returnOffset": 651868
+            },
+            {
+              "module": "node",
+              "returnOffset": 29060108
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 182654
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 182654
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 182654
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "Other",
+              "returnOffset": null
+            },
+            {
+              "module": "node",
+              "returnOffset": 4050566
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 614706
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 183840
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "kernelbase",
+              "returnOffset": 115439
+            },
+            {
+              "module": "node",
+              "returnOffset": 4050701
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 614706
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 183840
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 182654
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "kernelbase",
+              "returnOffset": 781807
+            },
+            {
+              "module": "node",
+              "returnOffset": 4167320
+            },
+            {
+              "module": "node",
+              "returnOffset": 4170149
+            },
+            {
+              "module": "node",
+              "returnOffset": 2492058
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097427
+            },
+            {
+              "module": "node",
+              "returnOffset": 29191579
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 115115
+            },
+            {
+              "module": "kernelbase",
+              "returnOffset": 147224
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097632
+            },
+            {
+              "module": "node",
+              "returnOffset": 2488151
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097427
+            },
+            {
+              "module": "node",
+              "returnOffset": 29191579
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 115115
+            },
+            {
+              "module": "kernelbase",
+              "returnOffset": 147224
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097632
+            },
+            {
+              "module": "node",
+              "returnOffset": 2488151
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097427
+            },
+            {
+              "module": "node",
+              "returnOffset": 29191579
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 115115
+            },
+            {
+              "module": "kernelbase",
+              "returnOffset": 147224
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097632
+            },
+            {
+              "module": "node",
+              "returnOffset": 2488151
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097427
+            },
+            {
+              "module": "node",
+              "returnOffset": 29191579
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        },
+        {
+          "frames": [
+            {
+              "module": "ntdll",
+              "returnOffset": 115115
+            },
+            {
+              "module": "kernelbase",
+              "returnOffset": 147224
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097632
+            },
+            {
+              "module": "node",
+              "returnOffset": 2488151
+            },
+            {
+              "module": "node",
+              "returnOffset": 4097427
+            },
+            {
+              "module": "node",
+              "returnOffset": 29191579
+            },
+            {
+              "module": "kernel32",
+              "returnOffset": 190807
+            },
+            {
+              "module": "ntdll",
+              "returnOffset": 556060
+            },
+            {
+              "module": "Other",
+              "returnOffset": null
+            }
+          ]
+        }
+      ],
+      "truncated": false,
+      "temporarilySuspends": true,
+      "toolHashes": {
+        "cdb.exe": "e8f7d1e2986e541c82eb7917460e8118e7a262c16e402a5b1333b01f147a0fc3",
+        "dbgeng.dll": "f70a0ae7ebd1c37da334d6b3c388aba107b54b4de869bdbd54a270251145e649",
+        "dbghelp.dll": "3ce12537291b46af6914ea6865f176d9528cd7707c752fca8be96ad2a7562220"
+      },
+      "publisherSignature": "not-verified",
+      "toolVersion": "not-observed"
+    },
+    "elapsedMs": 802
+  },
+  {
+    "schemaVersion": 1,
+    "outcome": "original-failure",
+    "identity": "mismatch",
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "unknown",
+      "exitCode": null
+    },
+    "processId": 55720,
+    "creationTime": 134392257229606001,
+    "nodeSha256": null,
+    "debugger": {
+      "status": "not-attempted",
+      "threads": [],
+      "truncated": false
+    },
+    "elapsedMs": 1
+  },
+  {
+    "schemaVersion": 1,
+    "outcome": "original-failure",
+    "identity": "owned-exited",
+    "before": {
+      "state": "signaled",
+      "exitCode": 1
+    },
+    "after": {
+      "state": "signaled",
+      "exitCode": 1
+    },
+    "processId": 55720,
+    "creationTime": 134392257229606001,
+    "nodeSha256": null,
+    "debugger": {
+      "status": "not-attempted",
+      "threads": [],
+      "truncated": false
+    },
+    "elapsedMs": 0
+  }
+]
