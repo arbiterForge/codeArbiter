@@ -1,7 +1,8 @@
 """Failure-only Windows RPC observation. Raw debugger output never leaves RAM.
 
 This observes a previously failed wait; it cannot replace that failure or prove
-an OS exit from a JavaScript exit event. CDB is optional, fixed SDK capability.
+an OS exit from a JavaScript exit event. The existing SDK is optional; its fixed
+CDB location identifies the sibling DLLs used by the private typed worker.
 """
 from __future__ import annotations
 
@@ -11,8 +12,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import stat
+import sys
 import subprocess
 import tempfile
 import time
@@ -62,6 +63,10 @@ class WindowsKernel:
             "GetExitCodeProcess": (wintypes.BOOL, [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]),
             "QueryFullProcessImageNameW": (wintypes.BOOL, [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]),
             "CloseHandle": (wintypes.BOOL, [wintypes.HANDLE]),
+            "GetCurrentProcess": (wintypes.HANDLE, []),
+            "DuplicateHandle": (wintypes.BOOL, [wintypes.HANDLE, wintypes.HANDLE, wintypes.HANDLE,
+                                                ctypes.POINTER(wintypes.HANDLE), wintypes.DWORD,
+                                                wintypes.BOOL, wintypes.DWORD]),
             "PeekNamedPipe": (wintypes.BOOL, [wintypes.HANDLE, wintypes.LPVOID, wintypes.DWORD,
                                              ctypes.POINTER(wintypes.DWORD), ctypes.POINTER(wintypes.DWORD), ctypes.POINTER(wintypes.DWORD)]),
         }
@@ -78,6 +83,14 @@ class WindowsKernel:
     def close(self, handle: int) -> None:
         if not self.api.CloseHandle(handle):
             raise OSError("process handle close failed")
+
+    def duplicate_query(self, handle: int) -> int:
+        duplicate = wintypes.HANDLE()
+        current = self.api.GetCurrentProcess()
+        if not self.api.DuplicateHandle(current, handle, current, ctypes.byref(duplicate),
+                                        0x00100000 | 0x1000, True, 0):
+            raise OSError("query handle duplication unavailable")
+        return duplicate.value
 
     def snapshot(self, handle: int) -> dict:
         pid = self.api.GetProcessId(handle)
@@ -107,65 +120,14 @@ class WindowsKernel:
         return count.value
 
 
-def parse_stacks(raw: bytes) -> dict:
-    """Keep only module-relative return addresses; ignore all symbol/path text."""
-    result = {"status": "unrecognized", "threads": [], "truncated": False}
-    if len(raw) > MAX_OUTPUT:
-        return {**result, "status": "output_limit", "truncated": True}
-    ranges = []
-    current = None
-    for line in raw.decode("ascii", errors="replace").splitlines():
-        module = re.fullmatch(r"\s*([0-9a-fA-F`]{4,17})\s+([0-9a-fA-F`]{4,17})\s+([A-Za-z0-9_]+)\s+.*", line)
-        # The fixed profile lists modules before entering any thread table.
-        # Within a table two address columns may precede a bare symbol name.
-        if module and current is None:
-            low, high = (int(module[index].replace("`", ""), 16) for index in (1, 2))
-            if 0 <= low < high <= 2**64 and len(ranges) < 256:
-                name = module[3].lower()
-                ranges.append((low, high, name if name in MODULES else "Other"))
-            else:
-                result["truncated"] = True
-            continue
-        if re.match(r"\s*(?:[.#]\s*)?\d+\s+Id:\s+[0-9a-fA-F]+\.[0-9a-fA-F]+\s+", line):
-            current = None
-            if len(result["threads"]) < 16:
-                current = {"frames": []}
-                result["threads"].append(current)
-            else:
-                result["truncated"] = True
-            continue
-        frame = re.fullmatch(r"\s*(?:[0-9a-fA-F]{1,2}\s+)?[0-9a-fA-F`]{4,17}\s+([0-9a-fA-F`]{4,17})(?:\s+.*)?", line)
-        if frame and current is not None:
-            if len(current["frames"]) >= 24:
-                result["truncated"] = True
-                continue
-            address = int(frame[1].replace("`", ""), 16)
-            matches = [(low, name) for low, high, name in ranges if low <= address < high]
-            name, offset = "Other", None
-            if len(matches) == 1 and matches[0][1] != "Other":
-                name, offset = matches[0][1], address - matches[0][0]
-            current["frames"].append({"module": name, "returnOffset": offset})
-    if any(row["frames"] for row in result["threads"]):
-        result["status"] = "captured"
-    return result
-
-
-def _profile(pid: int, root: Path) -> tuple[list[str], dict[str, str]]:
-    if type(pid) is not int or not 0 < pid <= 0xFFFFFFFF:
-        raise ValueError("invalid owned PID")
-    root = root.resolve(strict=True)
-    for name in ("symbols", "images", "sources", "home", "temp", "appdata", "localappdata"):
-        (root / name).mkdir(exist_ok=True)
-    commands = root / "empty.commands"
-    commands.write_bytes(b"")
+def _worker_environment(root: Path) -> dict[str, str]:
     env = {name: os.environ[name] for name in ("SystemRoot", "WINDIR") if name in os.environ}
-    system = Path(env.get("SystemRoot", "C:/Windows")) / "System32"
+    for name in ("home", "temp", "appdata", "localappdata"):
+        (root / name).mkdir(exist_ok=True)
     env.update(HOME=str(root / "home"), USERPROFILE=str(root / "home"),
                APPDATA=str(root / "appdata"), LOCALAPPDATA=str(root / "localappdata"),
-               TEMP=str(root / "temp"), TMP=str(root / "temp"), PATH=os.pathsep.join((str(CDB.parent), str(system))))
-    return ([str(CDB), "-pv", "-pd", "-kqm", "-noshell", "-nosqm", "-sins", "-snul", "-netsyms:no",
-             "-y", str(root / "symbols"), "-i", str(root / "images"), "-srcpath", str(root / "sources"),
-             "-cf", str(commands), "-p", str(pid), "-c", "lm; ~*knL 18; q"], env)
+               TEMP=str(root / "temp"), TMP=str(root / "temp"))
+    return env
 
 
 def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic, _sleep=time.sleep):
@@ -207,36 +169,73 @@ def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic,
     return status, bytes(raw[:MAX_OUTPUT])
 
 
-def _debugger(pid: int, kernel: WindowsKernel, deadline: float) -> dict:
+def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict) -> dict:
+    from _windows_dbgeng import decode_result
     result = {"status": "unavailable", "threads": [], "truncated": False,
-              "temporarilySuspends": False, "toolHashes": None, "publisherSignature": "not-verified", "toolVersion": "not-observed"}
+              "temporarilySuspends": False, "toolHashes": None,
+              "publisherSignature": "not-verified", "toolVersion": "not-observed"}
     try:
-        hashes = {name: _digest(CDB.parent / name, deadline) for name in ("cdb.exe", "dbgeng.dll", "dbghelp.dll")}
+        sdk = _regular(CDB.parent, directory=True)
+        hashes = {name: _digest(sdk / name, deadline) for name in ("cdb.exe", "dbgeng.dll", "dbghelp.dll")}
     except Exception:
         return result
     result["toolHashes"] = hashes
-    process = None
+    process, duplicate = None, None
     try:
         with tempfile.TemporaryDirectory(prefix="ca-rpc-native-") as directory:
             root = _regular(Path(directory), directory=True)
-            argv, env = _profile(pid, root)
-            if time.monotonic() >= deadline:
+            worker = _regular(Path(__file__).with_name("_windows_dbgeng.py"))
+            duplicate = kernel.duplicate_query(binding["handle"])
+            request = {"handle": duplicate, "pid": pid, "created": binding["created"],
+                       "image": binding["image"], "sdk": str(sdk), "hashes": hashes,
+                       "deadline": deadline}
+            encoded = json.dumps(request, separators=(",", ":")).encode("utf-8")
+            if len(encoded) > 4096 or time.monotonic() >= deadline:
                 return {**result, "status": "deadline"}
-            process = subprocess.Popen(argv, cwd=root, env=env, stdin=subprocess.DEVNULL,
-                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0,
-                                       creationflags=subprocess.CREATE_NO_WINDOW)
+            startup = subprocess.STARTUPINFO()
+            startup.lpAttributeList = {"handle_list": [duplicate]}
+            process = subprocess.Popen([sys.executable, "-I", "-B", str(worker), "--worker"],
+                cwd=root, env=_worker_environment(root), startupinfo=startup, close_fds=True,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0,
+                creationflags=subprocess.CREATE_NO_WINDOW)
             result["temporarilySuspends"] = True
+            kernel.close(duplicate)
+            duplicate = None
+            if process.stdin.write(encoded) != len(encoded):
+                raise OSError("worker input incomplete")
+            process.stdin.close()
             status, raw = _collect(process, kernel.available, deadline=deadline)
-            parsed = parse_stacks(raw) if status == "captured" else {"status": status, "threads": [], "truncated": status == "output_limit"}
-            return {**result, **parsed}
+            if status != "captured":
+                result.update(status=status, truncated=status == "output_limit")
+            else:
+                decoded = decode_result(raw, pid, binding["created"])
+                if decoded is None:
+                    result["status"] = "transport_failed"
+                else:
+                    result.update(status=decoded["status"], threads=decoded["threads"],
+                                  truncated=decoded["truncated"], temporarilySuspends=decoded["attached"])
+            del raw  # Unexpected SDK/worker text is never a retained diagnostic.
     except Exception:
-        return {**result, "status": "transport_failed"}
+        result.update(status="transport_failed", threads=[])
     finally:
+        if duplicate is not None:
+            try:
+                kernel.close(duplicate)
+            except Exception:
+                result.update(status="cleanup_unknown", threads=[])
         if process is not None:
-            if process.stdout is not None:
-                process.stdout.close()
-            # We own this debugger handle; never touch the observed Popen handle.
-            process._handle.Close()
+            try:
+                if process.poll() is None:
+                    process.kill()  # Only this worker; target cleanup remains the parent's.
+                    process.wait(timeout=max(0, deadline - time.monotonic()))
+                if process.stdin is not None and not process.stdin.closed:
+                    process.stdin.close()
+                if process.stdout is not None:
+                    process.stdout.close()
+                process._handle.Close()
+            except Exception:
+                result.update(status="cleanup_unknown", threads=[])
+    return result
 
 
 def _state(snapshot: dict) -> dict:
@@ -286,7 +285,12 @@ def capture(process, expected_node: Path, *, _kernel=None, _debugger=None) -> di
         result["nodeSha256"] = _digest(expected_node, deadline)
         result["identity"] = "matched"
         if original["state"] == "running" and independent["state"] == "running":
-            result["debugger"] = (_debugger or globals()["_debugger"])(process.pid, kernel, deadline)
+            if _debugger is not None:
+                result["debugger"] = _debugger(process.pid, kernel, deadline)
+            else:
+                result["debugger"] = globals()["_debugger"](process.pid, kernel, deadline,
+                    binding={"handle": int(process._handle), "created": original["created"],
+                             "image": original["image"]})
         after = kernel.snapshot(int(process._handle))
         if after["pid"] != original["pid"] or after["created"] != original["created"]:
             result["identity"] = "mismatch"

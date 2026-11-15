@@ -1484,48 +1484,53 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 class PiPackageTests(unittest.TestCase):
     def test_rpc_native_shutdown_stack_projection_is_closed_and_bounded(self):
-        import _windows_rpc_timeout as native
-        raw = (b"00001000 00002000 node (deferred)\n"
-               b"00003000 00004000 ntdll (deferred)\n"
-               b"  0 Id: 123.456 Suspend: 1 Teb: PrivateFixtureValue\n"
-               b" # Child-SP RetAddr Call Site\n"
-               b"00 00009999 00001010 node!PrivateFixtureValue(C:/private)\n"
-               b"01 00009998 00003020 ntdll!PrivateFixtureValue\n"
-               b"02 00009997 00005000 PrivateFixtureValue!secret\n")
-        report = native.parse_stacks(raw)
-        self.assertEqual(report["status"], "captured")
-        self.assertEqual(report["threads"], [{"frames": [
-            {"module": "node", "returnOffset": 16},
-            {"module": "ntdll", "returnOffset": 32},
-            {"module": "Other", "returnOffset": None}]}])
-        self.assertNotIn("PrivateFixtureValue", json.dumps(report))
-        self.assertNotIn("C:/private", json.dumps(report))
-        # kL omits the frame index; knL explicitly includes it. Both valid
-        # tables must project identical closed data, never the symbol column.
-        unnumbered = (b"00001000 00002000 node (deferred)\n"
-                      b"00003000 00004000 ntdll (deferred)\n"
-                      b"  0 Id: 123.456 Suspend: 1 Teb: PrivateFixtureValue\n"
-                      b"Child-SP RetAddr Call Site\n"
-                      b"00009999 00001010 node!PrivateFixtureValue(C:/private)\n"
-                      b"00009998 00003020 ntdll!PrivateFixtureValue\n"
-                      b"00009997 00005000 PrivateFixtureValue secret\n")
-        self.assertEqual(native.parse_stacks(unnumbered), report)
-        # Missing thread identity and non-frame text cannot become a capture.
-        for invalid in (b"Child-SP RetAddr Call Site\nPrivateFixtureValue",
-                        b"00009999 00001010 PrivateFixtureValue secret\n",
-                        b"  0 Id: 1.2 Suspend: 1\nPrivateFixtureValue 1010 secret\n"):
-            self.assertEqual(native.parse_stacks(invalid)["status"], "unrecognized")
-        oversized = native.parse_stacks(b"x" * (native.MAX_OUTPUT + 1))
-        self.assertEqual(oversized["status"], "output_limit")
-        self.assertEqual(oversized["threads"], [])
-        many = b"00001000 00002000 node (deferred)\n" + b"".join(
-            b"  0 Id: 1.2 Suspend: 1\n" + b"00 9999 1010 ignored\n" * 30
-            for _ in range(20))
-        report = native.parse_stacks(many)
-        self.assertEqual(len(report["threads"]), 16)
-        self.assertTrue(all(len(row["frames"]) == 24 for row in report["threads"]))
-        self.assertTrue(report["truncated"])
-        self.assertEqual(native.parse_stacks(b"PrivateFixtureValue")["status"], "unrecognized")
+        import _windows_dbgeng as sdk
+        self.assertEqual(sdk.project_frame(b"NODE", 0x1010, 0x1000, True),
+                         {"module": "node", "returnOffset": 16})
+        for name, address, base, unique in (
+            (b"PrivateFixtureValue!private/path", 0x1010, 0x1000, True),
+            (b"node", 0x1010, 0x1000, False), (b"node", 1, 2, True),
+            (b"node", 2**64, 0, True), (b"node\xff", 0x1010, 0x1000, True)):
+            self.assertEqual(sdk.project_frame(name, address, base, unique),
+                             {"module": "Other", "returnOffset": None})
+        # Exercise the actual metadata lookup, including its overlap refusal.
+        for ambiguous in (False, True):
+            engine = object.__new__(sdk.Engine)
+            seen = []
+            def query(interface, index, argtypes, *args):
+                seen.append(index)
+                if index == 15:
+                    if args[1] and not ambiguous:
+                        return 0x80004005
+                    sdk.C.cast(args[2], sdk.C.POINTER(sdk.U32)).contents.value = args[1]
+                    sdk.C.cast(args[3], sdk.C.POINTER(sdk.U64)).contents.value = 0x1000
+                    return 0
+                self.assertEqual(index, 16)
+                args[5].value = b"node"
+                sdk.C.cast(args[7], sdk.C.POINTER(sdk.U32)).contents.value = 5
+                return 0
+            engine.call = query
+            self.assertEqual(engine.frame(0x1010),
+                {"module": "Other", "returnOffset": None} if ambiguous else
+                {"module": "node", "returnOffset": 16})
+            self.assertEqual(seen.count(16), int(not ambiguous))
+        good = {"schemaVersion": 1, "status": "captured", "threads": [{"frames": [
+            {"module": "node", "returnOffset": 16}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True,
+            "policy": sdk.POLICY, "detached": True, "hresult": 0}
+        self.assertEqual(sdk.decode_result(json.dumps(good).encode(), 33, 44), good)
+        for key, value in (("pid", 99), ("created", 55), ("policy", 0),
+                           ("policy", sdk.POLICY | sdk.ALLOW_NETWORK),
+                           ("detached", False), ("bound", False), ("hresult", 1),
+                           ("threads", [{"frames": [{"module": "PrivateFixtureValue", "returnOffset": 1}]}]),
+                           ("threads", [{"frames": [{"module": "Other", "returnOffset": None}]}]),
+                           ("threads", [{"frames": [{"module": "node", "returnOffset": 1}] * 25}]),
+                           ("threads", [{"frames": []}] * 17)):
+            with self.subTest(key=key, value_kind=type(value).__name__):
+                changed = {**good, key: value}
+                self.assertIsNone(sdk.decode_result(json.dumps(changed).encode(), 33, 44))
+        self.assertIsNone(sdk.decode_result(b"x" * (sdk.MAX_JSON + 1), 33, 44))
+        self.assertIsNone(sdk.decode_result(b"PrivateFixtureValue", 33, 44))
 
     def test_rpc_native_shutdown_identity_refuses_foreign_or_unknown_handles(self):
         import _windows_rpc_timeout as native
@@ -1621,20 +1626,78 @@ class PiPackageTests(unittest.TestCase):
 
     def test_rpc_native_shutdown_fixed_debugger_profile_and_private_sidecar(self):
         import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
-            with mock.patch.dict(os.environ, {"PRIVATE_TOKEN": "PrivateFixtureValue", "_NT_SYMBOL_PATH": "https://private"}):
-                argv, env = native._profile(42, root)
-            self.assertEqual(argv[0], str(native.CDB))
-            for flag in ("-pv", "-pd", "-kqm", "-noshell", "-nosqm", "-sins", "-snul", "-netsyms:no"):
-                self.assertIn(flag, argv)
-            self.assertEqual(argv[-4:], ["-p", "42", "-c", "lm; ~*knL 18; q"])
+            with mock.patch.dict(os.environ, {"PRIVATE_TOKEN": "PrivateFixtureValue", "_NT_SYMBOL_PATH": "https://private", "INIT": "private"}):
+                env = native._worker_environment(root)
             self.assertNotIn("PrivateFixtureValue", json.dumps(env))
             self.assertNotIn("_NT_SYMBOL_PATH", env)
+            self.assertNotIn("INIT", env)
             for key in ("HOME", "USERPROFILE", "TEMP", "TMP", "APPDATA", "LOCALAPPDATA"):
                 self.assertTrue(Path(env[key]).is_relative_to(root))
-            with self.assertRaises(ValueError):
-                native._profile(-1, root)
+            request = {"handle": 77, "pid": 33, "created": 44, "image": str(root / "node.exe"),
+                       "sdk": str(root), "hashes": {name: "a" * 64 for name in
+                           ("cdb.exe", "dbgeng.dll", "dbghelp.dll")}, "deadline": time.monotonic() + 5}
+            class Kernel:
+                def snapshot(self, handle):
+                    return {"pid": 33, "created": 44, "state": "running", "image": request["image"]}
+                def close(self, handle):
+                    self.closed = handle
+            kernel = Kernel()
+            fake_native = SimpleNamespace(WindowsKernel=lambda: kernel, _regular=lambda path, **kw: path,
+                                          _digest=lambda path, deadline: "a" * 64)
+            class Backend:
+                closed = True
+                seen = []
+                def __init__(self, path):
+                    self.seen = []
+                check = staticmethod(sdk.Engine.check)
+                def policy(self):
+                    return sdk.POLICY
+                def call(self, name, index, args, *values):
+                    self.seen.append((name, index))
+                    return 0
+                def threads(self, deadline):
+                    return [{"frames": [{"module": "node", "returnOffset": 16}]}], False
+                def close(self):
+                    return self.closed
+            for cleanup in (True, False):
+                with self.subTest(cleanup=cleanup):
+                    Backend.closed = cleanup
+                    actual = sdk.run(request, fake_native, engine_factory=Backend)
+                    self.assertEqual(actual["status"], "captured" if cleanup else "cleanup_unknown")
+                    self.assertEqual(actual["detached"], cleanup)
+                    self.assertEqual(kernel.closed, 77)
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+                    if not cleanup:
+                        self.assertEqual(actual["threads"], [])
+            # A Detach exception must not skip releasing any queried interface.
+            closing = object.__new__(sdk.Engine)
+            closing.interfaces = {"client": None, "control": None, "systems": None, "symbols": None}
+            released = []
+            def release_after_detach_failure(name, index, args, *values, **kwargs):
+                if index == 25:
+                    raise OSError("PrivateFixtureValue")
+                self.assertEqual(index, 2)
+                released.append(name)
+                return 0
+            closing.call = release_after_detach_failure
+            self.assertFalse(closing.close())
+            self.assertEqual(released, ["symbols", "systems", "control", "client"])
+            self.assertEqual(closing.interfaces, {})
+            Backend.closed = True
+            bad_policy = Backend(root)
+            bad_policy.policy = lambda: sdk.ALLOW_NETWORK
+            actual = sdk.run(request, fake_native, engine_factory=lambda path: bad_policy)
+            self.assertEqual(actual["status"], "engine_failed")
+            self.assertNotIn(("client", 12), bad_policy.seen, "reject policy before attaching")
+            kernel.snapshot = lambda handle: {"pid": 99, "created": 44, "state": "running", "image": request["image"]}
+            factory = mock.Mock(side_effect=AssertionError("must not create an engine"))
+            actual = sdk.run(request, fake_native, engine_factory=factory)
+            self.assertEqual(actual["status"], "identity_refused")
+            factory.assert_not_called()
             report = {"schemaVersion": 1, "outcome": "original-failure", "identity": "unknown"}
             with mock.patch.object(native, "capture", return_value=report):
                 first = native.retain_failure(None, Path("node"), root)

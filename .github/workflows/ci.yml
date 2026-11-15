@@ -243,6 +243,8 @@ jobs:
               - '.github/workflows/ci.yml'
             ca-pi:
               - '.github/scripts/_pi_rpc_profile.py'
+              - '.github/scripts/_windows_rpc_timeout.py'
+              - '.github/scripts/_windows_dbgeng.py'
               - '.github/scripts/observe_pi_installed_rpc.py'
               - '.github/scripts/test_observe_pi_installed_rpc.py'
               - '.github/scripts/coordinate_pi_host.py'

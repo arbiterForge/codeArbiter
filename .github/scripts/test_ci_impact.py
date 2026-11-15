@@ -909,7 +909,10 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 class WorkflowContractTest(unittest.TestCase):
     def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
-        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))['ca-pi-tools']
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        for helper in ('_windows_rpc_timeout.py', '_windows_dbgeng.py'):
+            self.assertIn('.github/scripts/' + helper, paths_filter(ci, 'ca-pi'))
+        job = workflow_jobs(ci)['ca-pi-tools']
         for name in ('Test real package RPC activation and aliases',
                      'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
             step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
