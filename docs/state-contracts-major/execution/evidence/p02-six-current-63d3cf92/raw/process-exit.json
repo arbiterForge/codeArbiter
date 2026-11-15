@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 6.297007000001031,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e7d0373ded45ca79ea2b4affd73bb2064ea75860a548592f4e57f4b5f96a753d"
+}

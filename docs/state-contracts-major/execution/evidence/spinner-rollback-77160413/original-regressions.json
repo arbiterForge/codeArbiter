@@ -1,0 +1,474 @@
+{
+  "format": "codearbiter.passive-original-regressions/1",
+  "original_install": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-HW05-rollback-tests-8x34m6dk/delivery.json",
+    "sha256": "839b5fcb614dfc34a729325c81061d3b422ed22aea03fe7f1dbe75c452fbcbdc",
+    "bytes": 11612,
+    "record": {
+      "schema": "codearbiter.test-author-delivery/1",
+      "state": "GENUINE_TARGET_RED_TESTS_ONLY_ROOT_FIX_PENDING",
+      "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+      "source_commit": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+      "apply_files": [
+        {
+          "path": "plugins/ca/hooks/tests/test_wire_statusline.py",
+          "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\candidate\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+          "preimage_sha256": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+          "sha256": "286f47a0be3058b8b362d813d1f460e051122ed65ff19a5025b71553db795cf5",
+          "bytes": 52574
+        }
+      ],
+      "patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\proposal.patch",
+        "sha256": "e384a4de63fd600aabe94e8540f637d5e13b3c64c109e878c7b95ac7f42c7d22"
+      },
+      "source_freeze": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\source-freeze.json",
+        "sha256": "eb9410c5c86b966b3726223313405dfd7e3e3f930da5954e73f36184fbd23902"
+      },
+      "provenance": {
+        "source_ref": "ca-codex-v0.26.9",
+        "source_commit": "3f1bd13762ed9f25320e58907f9bf98a81128504",
+        "path": "core/pysrc/wire-statusline.py",
+        "blob_sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92",
+        "function_ast_sha256": "99dacd81e587cd91cc6c92ab4943c2ee45af0dad696788dd09ad05a25fab655c",
+        "constants": {
+          "SPINNER_BACKUP_KEY": "_codearbiterSpinnerVerbsBackup"
+        },
+        "function": "def _uninstall_spinner_verbs(settings):\n    if SPINNER_BACKUP_KEY not in settings:\n        return\n    prior_sv = settings.pop(SPINNER_BACKUP_KEY)\n    if prior_sv is None:\n        settings.pop(\"spinnerVerbs\", None)\n    else:\n        settings[\"spinnerVerbs\"] = prior_sv"
+      },
+      "prior_reader_authorship_verification": {
+        "release_tag_commit_and_blob": true,
+        "verbatim_pure_function_and_AST": true,
+        "fixture_global_legacy_constant": true,
+        "future_test_Git_or_network_dependency": false,
+        "old_full_module_or_package_executed": false
+      },
+      "new_test_ids": [
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+      ],
+      "obligations": [
+        {
+          "id": "HW05-ROLLBACK-0-1",
+          "criterion": "docs/state-contracts-major/contracts/tasks.json#/tasks/32/rollback/0 and /rollback/1",
+          "state": "TARGET_RED_CONFIRMED_FIX_PENDING",
+          "test": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner",
+          "oracle": "Actual current private install; current exported backup/owner constants populated; user custom spinner and later nested data; exact released pure reader must preserve current spinner plus backup/owner/full current metadata."
+        },
+        {
+          "id": "HW05-LEGACY-LITERAL",
+          "criterion": "docs/state-contracts-major/contracts/tasks.json#/tasks/32/tests/required_cases/2",
+          "state": "PASS_CHARACTERIZATION",
+          "test": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+          "scope": "Literal old backup key, valid unstamped PRIOR, both currently-owned restore and user-custom preservation, whole unrelated object retained."
+        },
+        {
+          "id": "HW05-MALFORMED-NONOWNED",
+          "criterion": "docs/state-contracts-major/contracts/tasks.json#/tasks/32/tests/required_cases/2",
+          "state": "PASS_CHARACTERIZATION",
+          "test": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+          "scope": "Valid JSON wrong-shaped legacy backup and current backup/owner metadata cannot grant ownership of a clearly non-owned custom spinner; unrelated fields preserved. No universal sanitizer/owned-malformed restoration policy invented."
+        }
+      ],
+      "actual": {
+        "methods": 3,
+        "PASS": 2,
+        "FAIL": 1,
+        "errors": 0,
+        "skips": 0,
+        "unittest_seconds": 0.05,
+        "controller_seconds": 0.2155079000076512,
+        "exit_code": 1,
+        "first_and_only_cohort_execution": true,
+        "failure_reason": "Released old pure function replaced custom append spinner with prior replace spinner and popped legacy backup; target failed custom-value assertion, not missing future helper/field/setup.",
+        "readbacks": {
+          "before": {
+            "spinnerVerbs": {
+              "mode": "append",
+              "verbs": [
+                "new private user spinner"
+              ]
+            },
+            "theme": "private-theme",
+            "nested": {
+              "keep": [
+                1,
+                true,
+                null
+              ],
+              "later_user_choice": {
+                "keep": "current"
+              }
+            },
+            "_codearbiterStatuslineBackup": null,
+            "statusLine": {
+              "type": "command",
+              "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\profile\\tmp\\tmp91whv1nx\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+              "padding": 0
+            },
+            "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\profile\\tmp\\tmp91whv1nx\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+            "_codearbiterSpinnerVerbsBackup": {
+              "mode": "replace",
+              "verbs": [
+                "previous private spinner"
+              ]
+            },
+            "_codearbiterSpinnerVerbsOwned": {
+              "mode": "replace",
+              "verbs": [
+                "Deliberating",
+                "Weighing the evidence",
+                "Consulting precedent",
+                "Reviewing the docket",
+                "Summoning the council",
+                "In chambers",
+                "Examining exhibits",
+                "Drafting the ruling",
+                "Calling order",
+                "Overruling prior context",
+                "Sustaining the objection",
+                "Issuing findings",
+                "Cross-examining the codebase",
+                "Invoking arbitration",
+                "Rendering judgment"
+              ]
+            }
+          },
+          "after": {
+            "spinnerVerbs": {
+              "mode": "replace",
+              "verbs": [
+                "previous private spinner"
+              ]
+            },
+            "theme": "private-theme",
+            "nested": {
+              "keep": [
+                1,
+                true,
+                null
+              ],
+              "later_user_choice": {
+                "keep": "current"
+              }
+            },
+            "_codearbiterStatuslineBackup": null,
+            "statusLine": {
+              "type": "command",
+              "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\profile\\tmp\\tmp91whv1nx\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+              "padding": 0
+            },
+            "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\profile\\tmp\\tmp91whv1nx\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+            "_codearbiterSpinnerVerbsOwned": {
+              "mode": "replace",
+              "verbs": [
+                "Deliberating",
+                "Weighing the evidence",
+                "Consulting precedent",
+                "Reviewing the docket",
+                "Summoning the council",
+                "In chambers",
+                "Examining exhibits",
+                "Drafting the ruling",
+                "Calling order",
+                "Overruling prior context",
+                "Sustaining the objection",
+                "Issuing findings",
+                "Cross-examining the codebase",
+                "Invoking arbitration",
+                "Rendering judgment"
+              ]
+            }
+          }
+        },
+        "Gov_source_HEAD_index_unchanged": true,
+        "original_classmethod_ASTs_unchanged": 114,
+        "all_original_module_AST_unchanged_after_removing_only_added_class": true,
+        "literal_original_source_copies": 14,
+        "Gov_source_hashes_before_after": 17,
+        "actual_private_sys_modules_import_records": 10,
+        "owner_loader_note": "Owning original test explicitly importlib-executes its sibling wire-statusline.py; it is not registered in sys.modules. Its literal private copy and pre/post digest are in the frozen source graph."
+      },
+      "fix_expectation": "Disable the unsafe released legacy-reader restoration trigger while retaining current backup/ownership metadata and conservative explicit legacy input compatibility. No future key/helper or migration implementation prescribed by this test author.",
+      "coverage": "Accepted CTX-TECH-STACK#FACT-005 Python direct behavior tests; no numeric coverage claim.",
+      "receipts": [
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\proposal.patch",
+          "sha256": "e384a4de63fd600aabe94e8540f637d5e13b3c64c109e878c7b95ac7f42c7d22",
+          "bytes": 5730
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\source-freeze.json",
+          "sha256": "eb9410c5c86b966b3726223313405dfd7e3e3f930da5954e73f36184fbd23902",
+          "bytes": 3366
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\supported-prior-reader.json",
+          "sha256": "72aaa99aef7381e9f9eca1b3ca9993c1ccf5f73df3f19229b13cf29998194711",
+          "bytes": 711
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\run-additive.py",
+          "sha256": "76407d07c0869c0d7380f37ddbdd46e68f9b89dccba5e9ec151f368b00113718",
+          "bytes": 2203
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\actual-red.json",
+          "sha256": "fcc56f12f73dc49d0e189b8d408d32b52cba08dd55128d9e37e251392e78ffe0",
+          "bytes": 1296
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\actual-red.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\actual-red.stderr",
+          "sha256": "6707a8f3f8c5fdd091e7f6f5aace59b5304c2257623df0f3204508529a2b56d5",
+          "bytes": 2054
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\named-results.json",
+          "sha256": "1d79889c01e5595627afff563003f905cb9070280634ec5e35c1be503724fb72",
+          "bytes": 5934
+        }
+      ],
+      "limits": [
+        "Test-only private Temp candidate; Root is sole Gov/production/Git/index/refs/markers writer.",
+        "No full suite, production modification, old package/full module import, real user settings/host/renderer/ACL/native/SDK/provider/model/network or external subprocess from tests.",
+        "Only three additive methods once; existing partial-write proof reused and not reexecuted.",
+        "No fresh machine/task/installed/hosted/rollback-release qualification or successful repair claim. Root applies only after1112 disposition and genuine RED."
+      ],
+      "utc": "2026-11-15T20:23:23.698490+00:00"
+    }
+  },
+  "original_refresh": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-HW05-rollback-refresh-tests-mzhs1fkq/delivery.json",
+    "sha256": "dcc71c4cf67ad990fe3824015a8f69041456cfc2da329102c63d913ff349adaf",
+    "bytes": 11528,
+    "record": {
+      "schema": "codearbiter.test-author-successor-delivery/1",
+      "state": "GENUINE_REFRESH_WRITER_RED_ROOT_FIX_PENDING",
+      "source_commit": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+      "predecessor_delivery": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\delivery.json",
+        "sha256": "839b5fcb614dfc34a729325c81061d3b422ed22aea03fe7f1dbe75c452fbcbdc",
+        "preserved_unchanged": true,
+        "first3_methods_reexecuted": false
+      },
+      "apply_files": [
+        {
+          "path": "plugins/ca/hooks/tests/test_wire_statusline.py",
+          "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\candidate\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+          "preimage_sha256": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+          "sha256": "eec9efa8fb39d86406e81c50821a1fc5d84423ef5488bbe721e610985028bd61",
+          "bytes": 55320
+        }
+      ],
+      "full_patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\proposal.patch",
+        "sha256": "247194e2a3928c3052063784c662d27ff10d1d6bd6a01d184a07462f7a406b02",
+        "from": "Original9c1 owning test, includes first3 and newrefresh method"
+      },
+      "successor_only_patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\successor-only.patch",
+        "sha256": "0d4869ed5383645ff34586b9bfcb1f787d24f95f3937bb54334356da5d02f3c2",
+        "from_candidate_sha256": "286f47a0be3058b8b362d813d1f460e051122ed65ff19a5025b71553db795cf5"
+      },
+      "new_test_id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+      "actual": {
+        "selected_methods": 1,
+        "subcases": 2,
+        "assertion_failures": 2,
+        "errors": 0,
+        "skips": 0,
+        "unittest_seconds": 0.026,
+        "controller_seconds": 0.2204864999948768,
+        "exit_code": 1,
+        "once_against_original9c": true,
+        "pre_old_reader_controls": "Both states passed durable renderer/owned predicate, desired path/owner, custom spinner and prior backup checks.",
+        "stale_owned_refresh_changed": true,
+        "already_current_owned_refresh_changed": false,
+        "target_failure": "After exact released pure reader, old PRIOR replaces current CUSTOM and legacy backup is popped in each state; no setup/missing helper/new field failure.",
+        "readbacks": [
+          {
+            "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "subcase": {
+              "path_state": "stale-owned"
+            },
+            "outcome": "FAIL",
+            "assertion": "{'mode': 'replace', 'verbs': ['previous private spinner']} != {'mode': 'append', 'verbs': ['new private user spinner']}\n- {'mode': 'replace', 'verbs': ['previous private spinner']}\n?           ^ ^^^^^              ^^ ^^^^^\n\n+ {'mode': 'append', 'verbs': ['new private user spinner']}\n?           ^^^ ^^              ^ ^        +++++\n : released reader clobbered custom spinner after owned refresh",
+            "readback": [
+              {
+                "path_state": "stale-owned",
+                "refresh_changed": true,
+                "before_old_reader": {
+                  "statusLine": {
+                    "type": "command",
+                    "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                    "padding": 0
+                  },
+                  "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                  "spinnerVerbs": {
+                    "mode": "append",
+                    "verbs": [
+                      "new private user spinner"
+                    ]
+                  },
+                  "_codearbiterSpinnerVerbsBackup": {
+                    "mode": "replace",
+                    "verbs": [
+                      "previous private spinner"
+                    ]
+                  },
+                  "theme": "private-theme",
+                  "nested": {
+                    "keep": [
+                      1,
+                      true,
+                      null
+                    ]
+                  }
+                },
+                "after_old_reader": {
+                  "statusLine": {
+                    "type": "command",
+                    "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                    "padding": 0
+                  },
+                  "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                  "spinnerVerbs": {
+                    "mode": "replace",
+                    "verbs": [
+                      "previous private spinner"
+                    ]
+                  },
+                  "theme": "private-theme",
+                  "nested": {
+                    "keep": [
+                      1,
+                      true,
+                      null
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "subcase": {
+              "path_state": "already-current-owned"
+            },
+            "outcome": "FAIL",
+            "assertion": "{'mode': 'replace', 'verbs': ['previous private spinner']} != {'mode': 'append', 'verbs': ['new private user spinner']}\n- {'mode': 'replace', 'verbs': ['previous private spinner']}\n?           ^ ^^^^^              ^^ ^^^^^\n\n+ {'mode': 'append', 'verbs': ['new private user spinner']}\n?           ^^^ ^^              ^ ^        +++++\n : released reader clobbered custom spinner after owned refresh",
+            "readback": [
+              {
+                "path_state": "already-current-owned",
+                "refresh_changed": false,
+                "before_old_reader": {
+                  "statusLine": {
+                    "type": "command",
+                    "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                    "padding": 0
+                  },
+                  "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                  "spinnerVerbs": {
+                    "mode": "append",
+                    "verbs": [
+                      "new private user spinner"
+                    ]
+                  },
+                  "_codearbiterSpinnerVerbsBackup": {
+                    "mode": "replace",
+                    "verbs": [
+                      "previous private spinner"
+                    ]
+                  },
+                  "theme": "private-theme",
+                  "nested": {
+                    "keep": [
+                      1,
+                      true,
+                      null
+                    ]
+                  }
+                },
+                "after_old_reader": {
+                  "statusLine": {
+                    "type": "command",
+                    "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                    "padding": 0
+                  },
+                  "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\profile\\tmp\\tmpxmmlmnor\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+                  "spinnerVerbs": {
+                    "mode": "replace",
+                    "verbs": [
+                      "previous private spinner"
+                    ]
+                  },
+                  "theme": "private-theme",
+                  "nested": {
+                    "keep": [
+                      1,
+                      true,
+                      null
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "Gov_source_HEAD_index_unchanged": true
+      },
+      "scope": "One additional method, stale/current durable owned statusLine with literal old backup and no spinner stamp. Exercise shared refresh_if_stale directly and persist only its returned changed flag, matching session-start/cmd_refresh ownership. No foreign/ephemeral/missing-renderer mutations or sanitizer policy added.",
+      "preservation": {
+        "original_classmethod_helpers": 114,
+        "first_candidate_classmethods_helpers_unchanged": 122,
+        "first3_additive_test_assertions_unchanged": true,
+        "legacy_function_fixture_and_provenance_unchanged": true,
+        "actual_production_copies_unchanged": true
+      },
+      "obligation": "HW05 rollback0/1 shared automatic-refresh path must preserve current custom/unrelated settings and backup metadata across the exact released old reader, including already-current owned path. Future key/helper not prescribed.",
+      "receipts": [
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\proposal.patch",
+          "sha256": "247194e2a3928c3052063784c662d27ff10d1d6bd6a01d184a07462f7a406b02"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\successor-only.patch",
+          "sha256": "0d4869ed5383645ff34586b9bfcb1f787d24f95f3937bb54334356da5d02f3c2"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\source-freeze.json",
+          "sha256": "ae0e8cd79a6bad032078d5c8db408226c8e2c9541e3a79d9ec545203c3cb4ae7"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\run-refresh.py",
+          "sha256": "eb687c8e36ba04c489ec4380a2c546d9fb6f5ea8589eb5bdbe44a1c3d8ef9062"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\actual-red.json",
+          "sha256": "c72847adbb2d73b2038b3598ae6a44d11f6641502ac346cd8057c48bad3b2d97"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\actual-red.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\actual-red.stderr",
+          "sha256": "49409fe64a84290ea75eb2d1b125087aa77909580859393a8b0caea1ade7e58c"
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\named-results.json",
+          "sha256": "42bd66fca98c4f55bda7b19f05bf45aaf6450d08253a60b661b586d980fa54b2"
+        }
+      ],
+      "limits": "Private test-only candidate. No full suite/first3 rerun, production/Gov/index/ref/marker/network/provider/old package/full-module/real settings/host/native/SDK effects. Root implements only after disposition; no GREEN/qualification claim.",
+      "utc": "2026-11-15T20:28:42.596890+00:00"
+    }
+  }
+}

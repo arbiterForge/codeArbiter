@@ -1,0 +1,253 @@
+{
+  "format": "codearbiter.passive-settings-fix/1",
+  "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+  "local_tests": {
+    "HW05-primary-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-primary-green.json",
+      "sha256": "bcef34c939d69309d4ffc0c60c4c138e811d5abcb9ca794f72ed221f1f91d855",
+      "bytes": 1978,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback"
+        ],
+        "exit_code": 0,
+        "seconds": 0.414596700007678,
+        "before": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "eec9efa8fb39d86406e81c50821a1fc5d84423ef5488bbe721e610985028bd61"
+          }
+        },
+        "after": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "eec9efa8fb39d86406e81c50821a1fc5d84423ef5488bbe721e610985028bd61"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "b8b15cb9589c82323b0cc2681700b74a0eadc4369c864ffb4b0893740b4ae1e2"
+      }
+    },
+    "HW05-owning-final-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-owning-final-green.json",
+      "sha256": "8e95613c7e6345642fc8f16acb15224a0b32c622ae653733ee2260a69a188fe9",
+      "bytes": 2054,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_wire_statusline",
+          "test_session_start.TestHealStatuslineWiring",
+          "test_session_start.TestHealRefusesNonDurableRoot"
+        ],
+        "exit_code": 0,
+        "seconds": 1.5131606000068132,
+        "before": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "a915d95b30c0beb6998f7278892458669e01ade289618199bd6b53a7c35e8ca6"
+          }
+        },
+        "after": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "a915d95b30c0beb6998f7278892458669e01ade289618199bd6b53a7c35e8ca6"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "6a1119e86c16145bab0febe7e1577bd5757b150f29e056ecf91cb61a75a2c13f",
+        "stderr_sha256": "4166c799ef8ade4cfafe35a20fbdd385edd61cbfe03a1550c189b4b09e555e67"
+      }
+    },
+    "HW05-idempotence-final-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-idempotence-final-green.json",
+      "sha256": "c6025c08adff25579de0d60878fdf2619eafb089ba6bf4c7f4c419a951a660c9",
+      "bytes": 2043,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader"
+        ],
+        "exit_code": 0,
+        "seconds": 0.39441020000958815,
+        "before": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "8f555d0a147a568dbc39655f835dc42fd387ad537c4c558f44d320df1b8d670e"
+          }
+        },
+        "after": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "f882d0ccdb05a95cb1d75b0338da485c8b9c68e86600d8690612cd41dea6b11b",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "8f555d0a147a568dbc39655f835dc42fd387ad537c4c558f44d320df1b8d670e"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0a97f4fca8ec1d36a9565a1ff1c0b1c003acc35d490999fac68e8129ec479ef5"
+      }
+    },
+    "HW05-final-fixture-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-final-fixture-green.json",
+      "sha256": "608235437d9130fd225eee26fd184cbc34c615d10c004df1eec5a2fe930742ae",
+      "bytes": 1979,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback"
+        ],
+        "exit_code": 0,
+        "seconds": 0.4600055000046268,
+        "before": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "0e1dae73b0503a446e3d8aa8e5d2a020b46b49b585bb5c8e474ce33b2d4038a9",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9"
+          }
+        },
+        "after": {
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "index": "0e1dae73b0503a446e3d8aa8e5d2a020b46b49b585bb5c8e474ce33b2d4038a9",
+          "files": {
+            "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+            "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "9cd9427a37abcd86cdc3f1d4c13ab97bcfe73e2ab2b98b6dc8641b7b1523e440"
+      }
+    }
+  },
+  "release_preflight": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-release-preflight.json",
+    "sha256": "3373f61d6555573ba09053bf7ec65ed7030b0e2dc98320bd237a699c5021eab0",
+    "bytes": 943,
+    "record": {
+      "command": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/check_auto_release_candidate.py",
+        "--candidate",
+        "HEAD",
+        "--run-pre-tag"
+      ],
+      "exit_code": 0,
+      "seconds": 17.20045669999672,
+      "before": {
+        "head": "771604132801a0e67c971581fbbf76227af2f712",
+        "status": "?? .codearbiter/.artifacts/store.lock\u0000",
+        "index_sha256": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0"
+      },
+      "after": {
+        "head": "771604132801a0e67c971581fbbf76227af2f712",
+        "status": "?? .codearbiter/.artifacts/store.lock\u0000",
+        "index_sha256": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0"
+      },
+      "stable": true,
+      "publication_performed": false,
+      "stdout_sha256": "674bae47f8383b3fd0bf79baa806704df2b6dbfc6451c4f97fbae7865f032abf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_guards": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-source-guards.json",
+    "sha256": "6f3ebf3f7deaaa9d8f0897d190be32e3f372f49e22fc600edd1380582aa89473",
+    "bytes": 1099,
+    "record": {
+      "state": "PASS",
+      "original114_methods_and_helpers_unchanged": true,
+      "new_test_methods": [
+        "test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+        "test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+        "test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+        "test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+        "test_owned_refresh_protects_legacy_backup_from_released_reader",
+        "test_released_reader_cannot_restore_over_new_user_spinner"
+      ],
+      "four_runtime_copies_equal": {
+        "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192"
+      },
+      "syntax": "PASS",
+      "no_new_namespace_paths": true
+    }
+  },
+  "scope_gates": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-scope-gates.json",
+    "sha256": "47da7ca5999737b938994bc38104a0a534883ad64b8887210ce6a3232a229c86",
+    "bytes": 214,
+    "record": {
+      "database_migration_paths": [],
+      "ci_paths": [],
+      "deploy_paths": [],
+      "semantic_settings_migration_review": "Independently requested for user-data compatibility despite no database migration path."
+    }
+  },
+  "limits": [
+    "Original92 execution passed1.044s. Final6 newcases passed0.078s after stronger source-byte fixture pin and idempotence assertion; other86 unchanged results reused.",
+    "No actual prior package/realHost/UI/fullHW05/Q01/CAS/installed/main/publication qualification."
+  ]
+}

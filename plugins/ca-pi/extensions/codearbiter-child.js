@@ -519,7 +519,7 @@ var BridgeClient = class {
     return await new Promise((resolveResponse) => {
       let child;
       try {
-        child = spawnImpl(paths.python, [...this.options.pythonPrefixArgs ?? [], paths.script], {
+        child = spawnImpl(paths.python, [...this.options.pythonPrefixArgs ?? [], "-B", paths.script], {
           cwd: paths.root,
           detached: process.platform !== "win32",
           env: minimalEnvironment({ git: paths.git, python: paths.python }, userHome),

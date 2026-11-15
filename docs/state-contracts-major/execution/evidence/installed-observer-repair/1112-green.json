@@ -1,0 +1,238 @@
+{
+  "format": "codearbiter.reconstructible-public-api-receipt/1",
+  "original_sha256": "83bc10244ad5979f9360ff803bedba5ccccf4c28bde1f565f352aa466fea65cc",
+  "original_bytes": 8013,
+  "original_serialization": {
+    "indent": 2,
+    "newline": "\n"
+  },
+  "record": {
+    "format": "exact-head-PR-CI-green-with-three-OS-transport/1",
+    "captured_utc": "2026-11-15T20:29:40.914156+00:00",
+    "PR": 1112,
+    "url": "https://github.com/arbiterForge/codeArbiter/pull/1112",
+    "head": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+    "branch": "codex/state-contracts-job-log-transport",
+    "base": "major/state-contracts",
+    "state": "OPEN",
+    "event": "pull_request",
+    "run_id": 43755214499,
+    "attempt": 1,
+    "workflow": ".github/workflows/ci.yml",
+    "run_started_at": "2026-11-15T19:56:36Z",
+    "run_updated_at": "2026-11-15T20:27:56Z",
+    "watch_exit_code": 0,
+    "watch_command": [
+      "gh",
+      "run",
+      "watch",
+      "43755214499",
+      "--repo",
+      "arbiterForge/codeArbiter",
+      "--exit-status",
+      "--interval",
+      "60"
+    ],
+    "job_counts": {
+      "success": 90,
+      "skipped": 4
+    },
+    "PR_check_counts": {
+      "SUCCESS": 92,
+      "SKIPPED": 6
+    },
+    "required_checks": [
+      {
+        "bucket": "pass",
+        "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43755214499/job/132946878408",
+        "name": "[GATE ] | [REPO] | Merge readiness",
+        "state": "SUCCESS",
+        "workflow": "ci"
+      }
+    ],
+    "merge_readiness": {
+      "id": 132946878408,
+      "conclusion": "success",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43755214499/job/132946878408"
+    },
+    "three_OS_actual_controls": [
+      {
+        "platform": "macos",
+        "job_id": 132937787524,
+        "original_log_sha256": "b32bac53e7c99686f445b064838ef01ca476685cac0403850364fd6eabfdd737",
+        "control_result": {
+          "job_id": 132937705657,
+          "bytes": 122716,
+          "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+          "state": "READ"
+        },
+        "readback_receipt_sha256": "5da604817450ebe00a2ba9b6458a4755ebccc7000b340449ce58f576f2818810"
+      },
+      {
+        "platform": "windows",
+        "job_id": 132937787386,
+        "original_log_sha256": "6606ec8a89ef2b4c62398bee0fe20bb83027196785ce1d94a6fbab6b57535d19",
+        "control_result": {
+          "job_id": 132937705657,
+          "bytes": 122716,
+          "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+          "state": "READ"
+        },
+        "readback_receipt_sha256": "8800aaf2c9e562fd228dfff0e151975f892afeca41d4cb86dc8549e69a02e976"
+      },
+      {
+        "platform": "linux",
+        "job_id": 132937787522,
+        "original_log_sha256": "9cc15432b96044fdbcc5294c4aae2ef88c5cda4236eb7222d3426f2f52c43262",
+        "control_result": {
+          "job_id": 132937705657,
+          "bytes": 122716,
+          "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+          "state": "READ"
+        },
+        "readback_receipt_sha256": "8b441f7307c37ab1b53b5705da185a3f4ab7e464ffa2e88f734e95e94d257ceb"
+      }
+    ],
+    "control_receipt_sha256": "e354bd174174d3c9bb04b285275c570d22d6a1df7ad1c9c8e910eb379e5f59a6",
+    "retained": {
+      "binding.json": {
+        "sha256": "46d55c9322d8117d7293db5d84a20a9280d6952a0c1fa9199b519c7af88d6574",
+        "bytes": 446
+      },
+      "control-job-132937787386-completed.json": {
+        "sha256": "fb19367de83211cadd6f6551ed8696577c1136f152a37ac095cc3dce96b3f70c",
+        "bytes": 3085
+      },
+      "control-job-132937787386.json": {
+        "sha256": "6ef5da32dfa87e1b93afbf2ec6617a01995b4313439cc39d60f997d960dda8c5",
+        "bytes": 2803
+      },
+      "control-job-132937787386.log": {
+        "sha256": "6606ec8a89ef2b4c62398bee0fe20bb83027196785ce1d94a6fbab6b57535d19",
+        "bytes": 522465
+      },
+      "control-job-132937787386.log.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "control-job-132937787386.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "control-job-132937787522.json": {
+        "sha256": "dd83059c250e56b4f89897d2889e4399b865d3b38dd8ee7e0dfe70930573d131",
+        "bytes": 3083
+      },
+      "control-job-132937787522.log": {
+        "sha256": "9cc15432b96044fdbcc5294c4aae2ef88c5cda4236eb7222d3426f2f52c43262",
+        "bytes": 511739
+      },
+      "control-job-132937787522.log.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "control-job-132937787524.json": {
+        "sha256": "010353e7a9028960f8a9e48c4df82ef8ab4ba1a3b594c780a109bf4ac44365c5",
+        "bytes": 3081
+      },
+      "control-job-132937787524.log": {
+        "sha256": "b32bac53e7c99686f445b064838ef01ca476685cac0403850364fd6eabfdd737",
+        "bytes": 511193
+      },
+      "control-job-132937787524.log.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "control-job-132937787524.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "early-controls.json": {
+        "sha256": "fccea2ffc40105f5d5957ae526a5d1235007b8e4cbd0451109976d4f00a5e231",
+        "bytes": 1305
+      },
+      "jobs-terminal.json": {
+        "sha256": "dd35192a4a2ca7ad24914f92b59fbde1dac299df8fcae42920095b943d0e37c1",
+        "bytes": 402215
+      },
+      "jobs-terminal.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "linux-control-closed-readback.json": {
+        "sha256": "8b441f7307c37ab1b53b5705da185a3f4ab7e464ffa2e88f734e95e94d257ceb",
+        "bytes": 792
+      },
+      "macos-control-closed-readback.json": {
+        "sha256": "5da604817450ebe00a2ba9b6458a4755ebccc7000b340449ce58f576f2818810",
+        "bytes": 474
+      },
+      "pr-after.json": {
+        "sha256": "6e18739142f3dbcd3a5c2cdb81e9575d1b7e49c77f15453f206ea6237ee9843c",
+        "bytes": 32266
+      },
+      "pr-after.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "pr-before.json": {
+        "sha256": "ee6b7a36080e28ba586f600230822fb561b24d2985712b8a46c412b79f1b239e",
+        "bytes": 22224
+      },
+      "pr-before.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "required-checks.json": {
+        "sha256": "11f82d904524604b824d9ca52147a1dde5eea34e700d7e81ece765698b476cf3",
+        "bytes": 193
+      },
+      "required-checks.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "run-after.json": {
+        "sha256": "88702cd16ecf8d8df438d35a95a91239bd0fde75d09c6fd5d690662008559be7",
+        "bytes": 13268
+      },
+      "run-after.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "run-before.json": {
+        "sha256": "16d808682e62c45f51e5c85b894cec27fa14d581ef21acd3a499dc9cb0ce9c4a",
+        "bytes": 13260
+      },
+      "run-before.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "three-OS-control-receipt.json": {
+        "sha256": "e354bd174174d3c9bb04b285275c570d22d6a1df7ad1c9c8e910eb379e5f59a6",
+        "bytes": 1941
+      },
+      "watch-exit.txt": {
+        "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+        "bytes": 1
+      },
+      "watch.log": {
+        "sha256": "cfda6990102f5907cabc91f1d5a573d79b2ac1c687e7f8df7acb6dbce5463eec",
+        "bytes": 2459314
+      },
+      "windows-control-closed-readback.json": {
+        "sha256": "8800aaf2c9e562fd228dfff0e151975f892afeca41d4cb86dc8549e69a02e976",
+        "bytes": 453
+      }
+    },
+    "eligibility": "Exact child pull_request CI and actual three-OS Actions HTTP log transport observations. No normal-push installed13, publication, main merge, host/model/UI or historical-gh-rootcause qualification inferred.",
+    "mutations": {
+      "retry": false,
+      "cancel": false,
+      "merge": false,
+      "Gov_source_index_ref_marker": false,
+      "provider_model_host_runtime_probe": false
+    },
+    "merge_owner": "Root alone; parent1098 remains held frommain/publication."
+  },
+  "representation_note": "Typed path/sha256 maps retain every original value. Restore path-sha256-pairs maps and serialize with the recorded indent/newline, ensure_ascii true, and final newline for exact original bytes. No scanner exemption."
+}

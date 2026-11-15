@@ -1,0 +1,144 @@
+{
+  "format": "codearbiter.reconstructible-public-api-receipt/1",
+  "original_sha256": "4aef6922d5b0d3c145ff88633178b184b59f2ff1c582faff5f46e6386e796297",
+  "original_bytes": 4983,
+  "original_serialization": {
+    "indent": 2,
+    "newline": "\n"
+  },
+  "record": {
+    "source": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+    "run_id": 43758478716,
+    "attempt": 1,
+    "artifacts": [
+      {
+        "artifact_id": 14180851537,
+        "name": "installed-pi-observation-linux-1",
+        "zip_sha256": "52ac98283099da14fddcb9a1edd3f1626b811ae168e6caf92816d60fb667c2bc",
+        "members": [
+          "coordinator-failure.json",
+          "coordinator-inputs.json",
+          "producer/cleanup.json",
+          "producer/failure.json",
+          "producer/install-exit.json",
+          "producer/original-test-result.json",
+          "producer/production-admission.json",
+          "producer/route-alias.json",
+          "producer/route-bare.json",
+          "producer/route-doctor.json",
+          "producer/runtime-acquisition.json",
+          "producer/worker-exit.json",
+          "production-admission.json"
+        ],
+        "failure_records": [
+          {
+            "member": "coordinator-failure.json",
+            "sha256": "cf908274b92090d7937f7ab1265899a69dcf31511865ecab299458be3b612bd0",
+            "closed": {
+              "phase": "reviewed-install-and-original-rpc",
+              "diagnostic_sha256": "6c7371914ac7cbd16b4f241c2af633e519540aee71d5f6d45fc2b1fff42fda7c"
+            },
+            "keys": [
+              "diagnostic_sha256",
+              "phase"
+            ]
+          }
+        ]
+      },
+      {
+        "artifact_id": 14181011157,
+        "name": "installed-codex-observation-0.143.0-1",
+        "zip_sha256": "03f1c35a17833e8ea6b53519a85866ce8afb07356b7d65b31b80e9f866bbd141",
+        "members": [
+          "coordinator-failure.json",
+          "producer/cache-before-checks.json",
+          "coordinator-inputs.json",
+          "producer/checker-result.json",
+          "producer/cleanup.json",
+          "producer/command-01.exit.json",
+          "producer/command-01.start.json",
+          "producer/command-01.stderr-utf8-projection.log",
+          "producer/command-01.stdout-utf8-projection.log",
+          "producer/command-02.exit.json",
+          "producer/command-02.start.json",
+          "producer/command-02.stderr-utf8-projection.log",
+          "producer/command-02.stdout-utf8-projection.log",
+          "producer/command-03.exit.json",
+          "producer/command-03.start.json",
+          "producer/command-03.stderr-utf8-projection.log",
+          "producer/command-03.stdout-utf8-projection.log",
+          "producer/command-04.exit.json",
+          "producer/command-04.start.json",
+          "producer/command-04.stderr-utf8-projection.log",
+          "producer/command-04.stdout-utf8-projection.log",
+          "producer/event-0001.json",
+          "producer/event-0002.json",
+          "producer/event-0003.json",
+          "producer/event-0004.json",
+          "producer/event-0005.json",
+          "producer/event-0006.json",
+          "producer/event-0007.json",
+          "producer/event-0008.json",
+          "producer/event-0009.json",
+          "producer/event-0010.json",
+          "producer/event-0011.json",
+          "producer/failure.json",
+          "producer/inputs-before.json",
+          "producer/inputs-terminal-after-cleanup.json",
+          "producer/inputs-terminal-before-cleanup.json",
+          "producer/native-command-01.failure.json",
+          "producer/native-command-01.start.json",
+          "producer/production-admission.json",
+          "production-admission.json",
+          "runtime/codex-runtime-0.143.0-nvtl7mi4/acquisition.json",
+          "runtime/codex-runtime-0.143.0-nvtl7mi4/package/package.json",
+          "runtime/codex-runtime-0.143.0-nvtl7mi4/package/vendor/x86_64-unknown-linux-musl/codex-package.json",
+          "runtime/codex-runtime-0.143.0-nvtl7mi4/runtime-policy.json"
+        ],
+        "failure_records": [
+          {
+            "member": "coordinator-failure.json",
+            "sha256": "96fb2b33d8b024ee73429d20e5d4521cdcafff60c92d9fed8ff8e206a40ff4b7",
+            "closed": {
+              "phase": "original-installed-cli-execution",
+              "exception_type": "ValueError",
+              "diagnostic_sha256": "13e193c2545887baf3c02da539f0918836c0c1224278442f4d5eeb50b6e689e2"
+            },
+            "keys": [
+              "diagnostic_sha256",
+              "exception_type",
+              "phase"
+            ]
+          }
+        ]
+      },
+      {
+        "artifact_id": 14181051212,
+        "name": "installed-pi-observation-windows-1",
+        "zip_sha256": "d01bf19757ff032f8f1a72de43a055b57c0abdc8ef22c16aa930bf2f5f6c5641",
+        "members": [
+          "coordinator-failure.json",
+          "producer/bootstrap-failure.json",
+          "coordinator-inputs.json",
+          "production-admission.json"
+        ],
+        "failure_records": [
+          {
+            "member": "coordinator-failure.json",
+            "sha256": "828d7be14a653df4c1a916a6b7db5cc990e5f698fc9fbe76694a01340bcad9fb",
+            "closed": {
+              "phase": "reviewed-install-and-original-rpc",
+              "diagnostic_sha256": "82afe6852d270a948050c47e176d3813d42e26b4462c6b51399c785c40940f40"
+            },
+            "keys": [
+              "diagnostic_sha256",
+              "phase"
+            ]
+          }
+        ]
+      }
+    ],
+    "qualification": false
+  },
+  "representation_note": "Typed path/sha256 maps retain every original value. Restore path-sha256-pairs maps and serialize with the recorded indent/newline, ensure_ascii true, and final newline for exact original bytes. No scanner exemption."
+}

@@ -1,0 +1,38 @@
+{
+  "node_path": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "node_version": "v24.22.1",
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "test/security.test.ts",
+    "test/status.test.ts",
+    "test/doctor.test.ts",
+    "-t",
+    "(?:#464)|^(?:Pi keyed status lifecycle reports only bounded live footer and background health across session modes|Pi keyed status lifecycle installs the rich footer globally for an interactive plain repository|Pi keyed status lifecycle installs the rich footer globally for an interactive dormant repository|Pi keyed status lifecycle installs the rich footer globally for an interactive untrusted enabled repository|Pi keyed status lifecycle installs the rich footer globally for an interactive trusted enabled repository|Pi keyed status lifecycle renders current session activity immediately and clears the registry on shutdown|Pi keyed status lifecycle does not install footer UI in JSON mode|Pi keyed status lifecycle does not install footer UI in RPC mode|Pi keyed status lifecycle does not install footer UI in print mode|Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract|Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced|Pi keyed status lifecycle stale and repeated component disposal cannot retire a newer footer generation|Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation|Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect|Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect|Pi keyed status lifecycle restores Pi's native footer on session shutdown|Pi keyed status lifecycle renders through Pi's authoritative width primitives and unsubscribes branch updates|Pi keyed status lifecycle fatal factory registration restores native state and publishes a bounded diagnosis|Pi keyed status lifecycle missing interactive footer UI fails soft with the bounded doctor direction|Pi keyed status lifecycle keeps governance bridge reads trust-gated in plain repositories|Pi keyed status lifecycle keeps governance bridge reads trust-gated in untrusted enabled repositories|Pi keyed status lifecycle keeps governance bridge reads trust-gated in trusted enabled repositories|Pi keyed status lifecycle retains the last valid usage snapshot while retrying the exact first unacknowledged range|Pi keyed status lifecycle limits startup accounting to one 256-entry bridge range|Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work|Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it|Pi keyed status lifecycle returns a nonempty bounded ASCII fallback even when both injected width functions throw|Pi keyed status lifecycle retains a valid cached update fact across later usage-only refreshes|Pi keyed status lifecycle hides an already-read governance snapshot immediately when Pi trust is withdrawn|Pi keyed status lifecycle setArbiterStatus composes through only the codearbiter key|Pi keyed status lifecycle retains status through end, retry, and compaction and clears only when settled|Pi keyed status lifecycle session shutdown is the only non-settled lifecycle clear|Pi keyed status lifecycle a never-published dormant lifecycle remains status-silent through shutdown|Pi keyed status lifecycle failed activation clears its unhealthy status on a dormant start and on shutdown|Pi keyed status lifecycle agent work and settling never erase a persistent command-ownership degradation|Pi keyed status lifecycle a late alias collision becomes the persistent baseline through agent_settled|Pi keyed status lifecycle an explicit alias degradation in a bare repo clears on session shutdown|footer git-facts lifecycle \\(spec pi-footer-parity-gaps O-3/O-4\\) O-3: trusted refresh collects facts once and the render shows repository and dirty marker|footer git-facts lifecycle \\(spec pi-footer-parity-gaps O-3/O-4\\) O-3: an untrusted project never invokes the collector and stays branch-only|footer git-facts lifecycle \\(spec pi-footer-parity-gaps O-3/O-4\\) O-3: facts collected under trust never render after trust is withdrawn|footer git-facts lifecycle \\(spec pi-footer-parity-gaps O-3/O-4\\) O-3: a failing collector degrades to the branch-only segment without breaking the box|Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state|Pi structured doctor reports exact active origins and limits the module-identity claim|Pi structured doctor reports enabled global untrusted state without a bridge probe or wrapper self-test|Pi structured doctor wrapper self-test calls only the stored wrapper with the exact H-03 dry-run|Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block|Pi structured doctor wrapper self-test skips while dormant without claiming active dispatch)$",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-committed51-a0f4-6db6sc7k\\original-vitest51.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+  "HOME_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-committed51-a0f4-6db6sc7k\\private-home",
+  "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "LOCALAPPDATA",
+    "NO_COLOR",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME"
+  ],
+  "credential_policy": "Minimalrequired OS env +exclusive privateHOME before Node imports; no provider/parentauthvariables forwarded; existing Vitest setup then creates sanctioned dummy auth home."
+}

@@ -1,0 +1,569 @@
+{
+  "format": "codearbiter.reconstructible-public-api-receipt/1",
+  "original_sha256": "c56f043efac27b2b32f4c67d6b79ea6e1faaea3dea583c7a1c25b8db35629cdb",
+  "original_bytes": 17384,
+  "original_serialization": {
+    "indent": 2,
+    "newline": "\n"
+  },
+  "record": {
+    "source": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+    "run_id": 43758478716,
+    "attempt": 1,
+    "rows": [
+      {
+        "artifact_id": 14180851537,
+        "member": "producer/failure.json",
+        "sha256": "df0299586d9d4189078df3a02336f3e10fd7a46e86793e620e2fb56d713c2e01",
+        "closed_projection": {
+          "family": {
+            "exact_public_source_literal": "pi-installed-rpc-refusal",
+            "source_refs": [
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 295
+              }
+            ]
+          },
+          "diagnostic_sha256": "6c7371914ac7cbd16b4f241c2af633e519540aee71d5f6d45fc2b1fff42fda7c"
+        }
+      },
+      {
+        "artifact_id": 14180851537,
+        "member": "producer/worker-exit.json",
+        "sha256": "aaab1da308c6a90e68d1531245dc9e1cfe3c2aad2b00e3b63fae5047eb70f794",
+        "closed_projection": {
+          "argv": [
+            {
+              "string_sha256": "2eb7c64e1f3d05c61c24f6b3270ae67792974e0c4f1b1d033b21b1946d4d82fc",
+              "length": 53
+            },
+            {
+              "string_sha256": "4c3a1b75ae7e2fb96bf49999f1c9c33f9edc7580ff9002e2f5cdf411bb1169b1",
+              "length": 2
+            },
+            {
+              "string_sha256": "71fbb8ec87f49f3c9d2c521011c3b7d4420003406bc441a916aa6a4c68672e89",
+              "length": 2
+            },
+            {
+              "string_sha256": "6f45f043ad7c5bf8ddd9f09def86d019d1298bff2a538b05e9943c79f7a32a26",
+              "length": 85
+            },
+            {
+              "exact_public_source_literal": "--worker",
+              "source_refs": [
+                {
+                  "source": ".github/scripts/observe_pi_installed_rpc.py",
+                  "line": 333
+                },
+                {
+                  "source": ".github/scripts/observe_pi_installed_rpc.py",
+                  "line": 285
+                }
+              ]
+            },
+            {
+              "string_sha256": "28b8eeb4b1a9fd89de5633eea12d8cf5019aeffac3a57f8dd813b6979dea5821",
+              "length": 68
+            }
+          ],
+          "returncode": 1,
+          "timed_out": false,
+          "containment": {
+            "exact_public_source_literal": "exited",
+            "source_refs": [
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 192
+              },
+              {
+                "source": ".github/scripts/retained_archive_cli_observation.py",
+                "line": 490
+              }
+            ]
+          },
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "f0f0cc7278ffbae5f25cd6c14f21a0f19c97e557cc1f7b7ce5a7408bd8e37a6a"
+        }
+      },
+      {
+        "artifact_id": 14180851537,
+        "member": "producer/original-test-result.json",
+        "sha256": "a9e95c63ae11e88adc72f69d433020aff03c074e2af398261257095ed565c624",
+        "closed_projection": {
+          "id": {
+            "string_sha256": "8bcae126085ae7dafdf01db5a23c04ac680a9eb43f4fbc9836f8d3ce661f13b5",
+            "length": 130
+          },
+          "run_count": 1,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "result": {
+            "exact_public_source_literal": "passed",
+            "source_refs": [
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 252
+              },
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 254
+              }
+            ]
+          },
+          "failure_sha256": []
+        }
+      },
+      {
+        "artifact_id": 14180851537,
+        "member": "producer/cleanup.json",
+        "sha256": "ad1ed6243ea081e7d97d9e7bf7443870a40e1ea693c6c7fb4a35354451f1de93",
+        "closed_projection": {
+          "complete": true
+        }
+      },
+      {
+        "artifact_id": 14181011157,
+        "member": "producer/failure.json",
+        "sha256": "43c1306ac4299e6ec979e20186dfad015976e8e4bb11b3219b5d278d4d326b15",
+        "closed_projection": {
+          "exception_type": {
+            "string_sha256": "b6276ba72bbc508431b11298180ac724c3eef76599d6862ff5914355b7524739",
+            "length": 10
+          },
+          "reason": {
+            "string_sha256": "13e193c2545887baf3c02da539f0918836c0c1224278442f4d5eeb50b6e689e2",
+            "length": 36
+          }
+        }
+      },
+      {
+        "artifact_id": 14181011157,
+        "member": "producer/checker-result.json",
+        "sha256": "6edfeb5cf7d05240bd0cc0c9b52760221efa0ee2622b8cd3308f9fd59db455ee",
+        "closed_projection": {
+          "schema": {
+            "exact_public_source_literal": "codearbiter-codex-host-v1",
+            "source_refs": [
+              {
+                "source": ".github/scripts/check_codex_host.py",
+                "line": 71
+              }
+            ]
+          },
+          "status": {
+            "exact_public_source_literal": "fail",
+            "source_refs": [
+              {
+                "source": ".github/scripts/check_codex_host.py",
+                "line": 488
+              },
+              {
+                "source": ".github/scripts/check_codex_host.py",
+                "line": 439
+              }
+            ]
+          },
+          "runtime": {
+            "string_sha256": "8114ce97890f3fe911ba379ca0fbfcbf02ca3328b73f1b4a726e6a21536b0d9d",
+            "length": 17
+          },
+          "results": [
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-MARKETPLACE",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 185
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-INSTALL",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 191
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-LIST",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 198
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-ENABLED",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 209
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-VERSION",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 225
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-RESOLVED-VERSION",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 232
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-HOOKS-INSTALLED",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 239
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-HOOKS-MATCH",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 246
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 249
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-HOOK-SCRIPTS",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 288
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 293
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-AGENT-ROUTES",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 313
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-PACKAGE-MEMBERS",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 323
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "pass",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 487
+                  }
+                ]
+              }
+            },
+            {
+              "code": {
+                "exact_public_source_literal": "CODEX-HOST-ARTIFACT-CAPABILITY",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 384
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 389
+                  }
+                ]
+              },
+              "status": {
+                "exact_public_source_literal": "fail",
+                "source_refs": [
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 488
+                  },
+                  {
+                    "source": ".github/scripts/check_codex_host.py",
+                    "line": 439
+                  }
+                ]
+              },
+              "detail": {
+                "string_sha256": "18173460fe51857c041a7a36150239eb2d1a450e4f16fc485aec3e5fd39fe340",
+                "length": 84
+              }
+            }
+          ]
+        }
+      },
+      {
+        "artifact_id": 14181011157,
+        "member": "producer/native-command-01.failure.json",
+        "sha256": "7ca4da19c04d6a572c0cf1e5621bab1d50ff2dfbb47fedeaf64bb242ffdd250d",
+        "closed_projection": {
+          "exception_type": {
+            "string_sha256": "7af339841d330e8a316ba6eb8b2928adf4297d7b6b1734abc7150afc25234b37",
+            "length": 9
+          },
+          "cleanup": {
+            "string_sha256": "6721c2c01b43324a4b425b89bc75c1a44815c73a1a032684956769b6b549ded8",
+            "length": 70
+          }
+        }
+      },
+      {
+        "artifact_id": 14181011157,
+        "member": "producer/command-04.exit.json",
+        "sha256": "223f81f9e18f2a846972eaad6b2706b3518a43b5f1b0c79ab86ba00403eb551e",
+        "closed_projection": {
+          "argv": [
+            {
+              "string_sha256": "8c967d9a37fd605e6a27dce031894534d853778c5f57b3bb98124b1c01b6d724",
+              "length": 139
+            },
+            {
+              "exact_public_source_literal": "plugin",
+              "source_refs": [
+                {
+                  "source": ".github/scripts/check_codex_host.py",
+                  "line": 183
+                },
+                {
+                  "source": ".github/scripts/check_codex_host.py",
+                  "line": 190
+                }
+              ]
+            },
+            {
+              "exact_public_source_literal": "list",
+              "source_refs": [
+                {
+                  "source": ".github/scripts/check_codex_host.py",
+                  "line": 196
+                }
+              ]
+            }
+          ],
+          "exit_code": 0,
+          "timed_out": false,
+          "containment": {
+            "exact_public_source_literal": "exited",
+            "source_refs": [
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 192
+              },
+              {
+                "source": ".github/scripts/retained_archive_cli_observation.py",
+                "line": 490
+              }
+            ]
+          },
+          "stdout_projection_sha256": "011c2083683d3346f877aeb11a7d5bc7ce81dd4df217c325ea93cfb9751d5f92",
+          "stderr_projection_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "artifact_id": 14181051212,
+        "member": "producer/bootstrap-failure.json",
+        "sha256": "0bb3de3e844b7e38bbb4c0b9e13b2306bf2e460b2f3a0e129c9452ae7bfe484b",
+        "closed_projection": {
+          "family": {
+            "exact_public_source_literal": "pi-observer-bootstrap",
+            "source_refs": [
+              {
+                "source": ".github/scripts/observe_pi_installed_rpc.py",
+                "line": 326
+              }
+            ]
+          },
+          "diagnostic_sha256": "82afe6852d270a948050c47e176d3813d42e26b4462c6b51399c785c40940f40"
+        }
+      }
+    ],
+    "limits": "Unknown strings retained only as hash/length; exact literals independently source-matched. No raw provider/runtime/stderr text disclosed."
+  },
+  "representation_note": "Typed path/sha256 maps retain every original value. Restore path-sha256-pairs maps and serialize with the recorded indent/newline, ensure_ascii true, and final newline for exact original bytes. No scanner exemption."
+}

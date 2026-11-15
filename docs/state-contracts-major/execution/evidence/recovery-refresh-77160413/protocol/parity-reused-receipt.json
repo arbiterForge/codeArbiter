@@ -1,0 +1,16 @@
+{
+  "source": "771604132801a0e67c971581fbbf76227af2f712",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "tools/sync-core.py",
+    "--check"
+  ],
+  "exit_code": 0,
+  "seconds": 0.23430139999254607,
+  "stdout": "sync-core --check: OK (98 core file(s) x 3 plugin(s), all byte-identical)\r\n",
+  "stderr": "",
+  "note": "A prior successful observation was printed in the tool transcript without a durable standalone receipt; this execution fills that missing evidence, without rewriting the prior observation."
+}

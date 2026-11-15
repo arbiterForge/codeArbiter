@@ -1649,12 +1649,12 @@ jobs:
           include-hidden-files: false
           overwrite: false
       - name: Preserve original installed Claude observation
-        if: ${{ !cancelled() && steps.cold_claude_observed.outcome == 'success' }}
+        if: ${{ !cancelled() && (steps.cold_claude_observed.outcome == 'success' || steps.cold_claude_observed.outcome == 'failure') }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: installed-cold-observation-${{ matrix.platform_token }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/cold-claude/*.json
-          if-no-files-found: error
+          if-no-files-found: ignore
           retention-days: 14
           include-hidden-files: false
           overwrite: false

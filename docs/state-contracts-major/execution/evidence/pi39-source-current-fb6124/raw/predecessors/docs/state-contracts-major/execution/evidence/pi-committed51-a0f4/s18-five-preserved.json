@@ -1,0 +1,371 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "inputs": {
+    "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+    "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+    "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+    "plugins/ca-pi/tools/src/git-facts.ts": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+    "plugins/ca-pi/tools/src/bridge.ts": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+    "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/test/status.test.ts": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d"
+  },
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/pi_program fresh finite changed-owner source conformance at actuala0f4 with current committed51 component support; old component epochs remain history"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S18:01",
+    "disposition:transitions:S18:02",
+    "disposition:transitions:S18:04",
+    "disposition:transitions:S18:05",
+    "disposition:transitions:S18:06"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S18:01",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "start session",
+        "guard": "interactive hasUI and mode absent/TUI",
+        "to": "install pending",
+        "effects": "Dispose prior generation; await metrics library; retain native footer until safe installation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "any",
+        "transition_id": "S18:01"
+      },
+      "contract_sha256": "969c62491f567e254cad86e9acf27911db13bf4868773496465d7ec3fa84e679",
+      "inspected_source_clauses": "Start still disposes prior locally owned footer, advances generation, resets snapshots and admits only interactive hasUI/mode. No current factory is installed before metrics await/current-generation check. New classdispose token clear precedes host callback so old component retirement cannot erase newly prepared ownership; start remains independently reusable.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 103,
+          "end": 135,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 267,
+          "end": 289,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+      ],
+      "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+    },
+    {
+      "cell": "disposition:transitions:S18:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "metrics ready",
+        "guard": "generation still current",
+        "to": "installed",
+        "effects": "Install owned footer; guard against stale async completion.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "install pending",
+        "transition_id": "S18:02"
+      },
+      "contract_sha256": "1cac585030fdc803c1b484ab58bed0c5e03a2ed655a89951ee0f9e727bc0e64a",
+      "inspected_source_clauses": "Post-metrics context/generation admission remains; the factory now also checks captured generation before creating its unique component owner. setFooter installs and records initialized state only on the same synchronous supported UI path. Current host component disposal explicitly retires only matching owner/context/generation, so a foreign replacement is not treated as continued ownership.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 136,
+          "end": 148,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 193,
+          "end": 219,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+      ],
+      "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+    },
+    {
+      "cell": "disposition:transitions:S18:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "refresh",
+        "guard": "current lease/generation",
+        "to": "refreshing",
+        "effects": "Serialize refreshes; softly prepare bridge; independently await usage/governance/Git using allSettled.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "installed",
+        "transition_id": "S18:04"
+      },
+      "contract_sha256": "868e97fdcf24ea51f390cff2f141f2652408f238ac3ba83275962517036b9be9",
+      "inspected_source_clauses": "Refresh queue serialization and initial/post-prepare context+generation/installed guards remain intact. Usage/governance/Git remain independent Promise.allSettled inputs. New component retirement advances generation and clears context, causing previously queued/in-flight refresh to refuse application after ownership loss; no delegated effect authority is inferred.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 222,
+          "end": 248,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+      ],
+      "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+    },
+    {
+      "cell": "disposition:transitions:S18:05",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "partial data success",
+        "guard": "same current lifecycle",
+        "to": "installed",
+        "effects": "Use fulfilled usage cursor; keep prior governance if a trusted refresh fails; clear governance if inactive/untrusted; unavailable Git remains unknown.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "refreshing",
+        "transition_id": "S18:05"
+      },
+      "contract_sha256": "1b3e5da53d2b13132b8c47fb514a62272fa6798d04a7f4411357b462157af5be",
+      "inspected_source_clauses": "Fulfilled usage cursor, trusted governance retention on failure, inactive/untrusted governance clearing, unknown repository/dirty enrichment and fulfilled update-version handling are unchanged. They remain behind post-results context/generation check; new retirement can suppress obsolete UI data rather than apply it to another owner. Independent Pi branch fact is still separate from missing Git enrichment.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 249,
+          "end": 264,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+      ],
+      "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+    },
+    {
+      "cell": "disposition:transitions:S18:06",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "stale completion",
+        "guard": "generation changed",
+        "to": "disposed or newer installed",
+        "effects": "Ignore result rather than overwrite new session.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "refreshing",
+        "transition_id": "S18:06"
+      },
+      "contract_sha256": "726c9a7925882061f8a221ed3d5e91853bd9e74a4a81183dc9ed5a1d990d99bc",
+      "inspected_source_clauses": "Old async result cannot pass changed context/generation checks. New foreign-disposal retirement increments generation; stale component callback is idempotent and cannot clear a new unique component owner/context/generation. Existing current focused replacement-load/refresh tests plus samecontext new-generation stale disposal assertion pass; no actualTUI claim.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 193,
+          "end": 210,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 234,
+          "end": 254,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 267,
+          "end": 289,
+          "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect"
+      ],
+      "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+    }
+  ],
+  "withheld": [
+    {
+      "cell": "disposition:transitions:S18:03",
+      "reason": "Combined frozen metrics-unavailable/noninteractive/stale row includes a bounded notice; current source warns on current metrics/install failure but noninteractive and stale completion return silently. Keep full row withheld rather than generalizing one tested failure. No defect or new requirement inferred."
+    },
+    {
+      "cell": "disposition:machines:S18",
+      "reason": "S18:03 full combined clause remains unresolved; no wholemachine qualification inferred."
+    },
+    {
+      "cell": "task:PI-L02",
+      "reason": "This finite group is not complete footer/live-host task acceptance."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/selected51-original-projection.json",
+      "sha256": "7f4357cf615d2121c88351233a0cb261b7a139ba3269132cf84a9b9ac24be716"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/original103-inputs.json",
+      "sha256": "48c85f53f4132a70cf5b40eeee6ff5b1a03455168eec8e696d345095f15e8d2d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/runtime-and-command.json",
+      "sha256": "e5ceca4345ea26ef630b4e62f587772add9c4f87f3cca0305c86ea3af5dba681"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/observation.json",
+      "sha256": "cfbafbeaf8b12cd2f95abc1bbae4bbd155c3f5b168fd1128de1c0407562d6a0c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/finite-acceptance-source-review.json",
+      "sha256": "5a8ea4f913f04765461a8355d5bb3abfd7b4c1bbf6e0c5323286a091d9db78dd"
+    }
+  ],
+  "limits": [
+    "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+    "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+    "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+    "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+  ],
+  "state": "PROPOSED_COMMITTED_SOURCE_JOIN_COMPLETE",
+  "inspection_base_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "predecessor_proof": {
+    "ref": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/pi-s18-source-preserved.json",
+    "sha256": "1eb611a5d94980e6f14b877bd14597ebd9a34f357371b93fcb197822186333d2"
+  }
+}

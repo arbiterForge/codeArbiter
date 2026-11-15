@@ -1,0 +1,451 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "source_tree": "b92f2bdb83237a59d8c79c9f24746dfe1336c209",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools one actual currentfb6124c4 fourteen-method bounded-reader Windows observation; unchanged assertions/deadlines/inert owned Python children"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "-v",
+        "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+        "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+        "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+        "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+        "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+        "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+        "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+        "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 7.585700199997518,
+      "selected_named_population": 14,
+      "skipped": 0,
+      "actual_execution_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/capture-reader14.py",
+      "sha256": "fd113d7c0eaac77a5f5929cb8899e41dceb1d4deef03cb9d40e60e693fe1a472"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/source-freeze.json",
+      "sha256": "798b6184778173d19e938e40130c15422c23553fc97f5fbfe6af938dd44bc3e2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/selectors.json",
+      "sha256": "c31231d195cb11d5e76c276e03178b6c8c547f112357a752eaa9a37857b77d2c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/predecessor-proof.json",
+      "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/run-start.json",
+      "sha256": "310b0b49c6ad43feb027b505a7ce0241bc2d76f9b3cbfebd6354277e662e421b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/process-exit.json",
+      "sha256": "b751f845d3c731157a22d3cd4d2a537602af0b689d08f6bc9c6d2cbfad677ec3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/after-snapshot.json",
+      "sha256": "059b3fdc8ae7d71dbf58d26c790d0a1d9301ef4e17dedeed82a7709f75b9eda7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/run-result.json",
+      "sha256": "7673164ab13418af36f77d2bde5be0c7f468729c62c3763ebd54e2c3a83de319"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/capture-complete.json",
+      "sha256": "e3c3094c06dad04e6b125777d3fdca0034d9131030113ae8df0e5729eea1fdd6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/supervisor-exit.json",
+      "sha256": "c35146844d2496165a85293615727d0bbf39901f01da0cb43cd5e2494fdf5c23"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/policy-orientation-correction.json",
+      "sha256": "b239254c01594032d7881024723d8f8e42406d0cb937ef8e1d4936d9f9a7903e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/observer/sitecustomize.py",
+      "sha256": "1d0ca2e391b485d701a2e29fdc9988678672f7d845ac2f578504af1ea0fec8bf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-10356.json",
+      "sha256": "a2b241198440788fa9d060774aa88d789db4853b55f394d295453ee441cb757e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-19876.json",
+      "sha256": "49b71f046fe5f32258f3ef49d9b5e1416514401ec5050de66110a3edff11e133"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-32016.json",
+      "sha256": "16636f7477a19f62bb57c96b93c5455d03ce850610d0c980b4bc0c1dc5e8fbcf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-40712.json",
+      "sha256": "a1881f9c671942e0ede1eee068ef72b6dc99389eec0509d75f412bb6404bcfb0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-42904.json",
+      "sha256": "5b42a9162f3429a70b15acd74ded332a38942f94fe02b33f41d27992351c1703"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-44056.json",
+      "sha256": "04c082bdb60af3d9c53af016d328d71dd0683b703366757981086779232352d6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-45080.json",
+      "sha256": "0bb39b1ce45e4570b3fb5b345221089a4aada59e8059b78a77dd19f41dca4da3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-55292.json",
+      "sha256": "32f4e369507000d05df8f51ff142e7c91faab6a3d8692c48c3045dbba6a88b4a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-57076.json",
+      "sha256": "8760a31d942563c16fa3554139e50040cea49e1ad356ab0035c267ebab2b6608"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-68868.json",
+      "sha256": "27ecc5986d57e34aec9fdb00a11d50bc8c28870cd70b2fac9d08fb98f0537261"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-71260.json",
+      "sha256": "0cc8f5e6616b8c845b96b3a246472d06f284f55263f7a0b44a394f8f290fb595"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/actual-imports-73484.json",
+      "sha256": "852f945d0ef14606379c73996e61064d3b853595db1462ed2843b18b266c4061"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/original.stdout.log.base64.json",
+      "sha256": "50082cd34ba8c0d2b62f5dfd469553d06c3a9437a4b4cf5c4d729946783947c8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/original.stderr.log.base64.json",
+      "sha256": "1a89459224bb32acb17b1a54b27c80665c73dee90d763cf72acc5d03ad70d4b6"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:findings:C-F08",
+    "disposition:added_transitions:C36:added-prefetched-completion",
+    "disposition:added_transitions:C36:added-stdin-eof",
+    "disposition:added_transitions:C36:added-input-once",
+    "disposition:added_transitions:C36:added-input-timeout",
+    "disposition:added_transitions:C36:added-cleanup-denied"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:findings:C-F08",
+      "assertions": [
+        "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+        "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ],
+      "scope": "Both actual mechanical wait owners receive real controlled Python children: hanging Codex command fails with partial diagnostics/deadline/cleanup status, marketplace timeout remains failure, Pi readiness/completion rejects absent/partial/early/hanging output and preserves primary readiness failure when cleanup is unknown. Positive one-write completion retained. This resolves the unbounded-wait defect boundary, not the entire host install/benchmark task."
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-prefetched-completion",
+      "assertions": [
+        "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+        "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes"
+      ],
+      "scope": "One stdout owner retains exact text/binary completion prefetched with readiness; binary EOF terminates with actual nonzero code and no infinite empty-reader loop."
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-stdin-eof",
+      "assertions": [
+        "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness"
+      ],
+      "scope": "Actual text+binary children wait for stdin EOF; communicate(None) closes pipe and receives exact completion with exit0."
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-input-once",
+      "assertions": [
+        "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+        "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once"
+      ],
+      "scope": "Actual text/binary payloads complete;512KiB timeout then no-input retry yields exact original byte count/SHA. Attempt to resubmit input refuses; no duplicate payload."
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-input-timeout",
+      "assertions": [
+        "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer"
+      ],
+      "scope": "Actual child never reads larger-than-pipe input; communicate times out, existing owned tree cleanup settles the blocked writer and closes stdin."
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-cleanup-denied",
+      "assertions": [
+        "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ],
+      "scope": "Actual partial-output early-exit child plus explicit denied group-signal syscall fixture preserves original readiness failure/partial output and containment=unconfirmed. No real macOS/permission-denial host outcome inferred."
+    }
+  ],
+  "original_named_results": [
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+      "outcome": "PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+  ],
+  "runtime": {
+    "python_executable": "C:\\Python314\\python.exe",
+    "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "runtime_records": 1905,
+    "owned_cleanup_executable_before_after": {
+      "C:\\WINDOWS\\System32\\taskkill.exe": "1249717315fc8f4d2df17d5db9da0444795fdb9fb83dfb1f763c3f39282244f7"
+    },
+    "runtime_snapshot_ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/raw/run-start.json",
+    "observed_executables": {},
+    "actual_process_reported_interpreters": [
+      "C:\\Python314\\python.exe"
+    ],
+    "process_audit_limit": "Windows Popen audit delivered no accepted executable/argv-list projection in this run; empty observed_executables is retained. Python identity comes from actual12 process observer records and before/after1905runtime. taskkill.exe is pinned physical before/after and its owned cleanup source/control path, not claimed as an independent OS process-handle attestation."
+  },
+  "execution_context": {
+    "actual_start_git_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+    "actual_end_git_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+    "complete_before_after_closure_equal": true,
+    "old_five_not_assumed_complete": true,
+    "actual_repository_imports": {
+      ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+      ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+      ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+      ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77"
+    },
+    "actual_import_count": 5,
+    "passive_observer_process_records": 12,
+    "private_prefix_before_imports": true,
+    "parent_no_user_site": 1,
+    "namespace_roots_observed": [
+      ".github/scripts",
+      "core/pysrc"
+    ],
+    "typed_causal_namespace_roots": [
+      ".github/scripts"
+    ],
+    "causal_hostapi_or_Go_lookup": false,
+    "physical_namespace_projection": {
+      ".github/scripts": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_boundedproc.cpython-314.pyc",
+          "__pycache__/_codex_cli_profile.cpython-314.pyc",
+          "__pycache__/_contextverificationlib.cpython-314.pyc",
+          "__pycache__/_immutable_git_blobs.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check-plugin-refs.cpython-314.pyc",
+          "__pycache__/check_adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check_codex_host.cpython-314.pyc",
+          "__pycache__/check_codex_skill_resources.cpython-314.pyc",
+          "__pycache__/check_codex_static_package.cpython-314.pyc",
+          "__pycache__/check_control_bytes.cpython-314.pyc",
+          "__pycache__/check_sandbox_docker_layers.cpython-314.pyc",
+          "__pycache__/check_skill_portability.cpython-314.pyc",
+          "__pycache__/check_state_contracts_integration.cpython-314.pyc",
+          "__pycache__/ci20_native_binding.cpython-314.pyc",
+          "__pycache__/codex_agent_routes.cpython-314.pyc",
+          "__pycache__/major_qualification_report.cpython-314.pyc",
+          "__pycache__/major_readiness.cpython-314.pyc",
+          "__pycache__/observe_codex_installed_cli.cpython-314.pyc",
+          "__pycache__/observe_pi_installed_rpc.cpython-314.pyc",
+          "__pycache__/payload_scope.cpython-314.pyc",
+          "__pycache__/pi_benchmark.cpython-314.pyc",
+          "__pycache__/pi_cli_resolver.cpython-314.pyc",
+          "__pycache__/pi_host_locks.cpython-314.pyc",
+          "__pycache__/prepare_adr_acceptance.cpython-314.pyc",
+          "__pycache__/project_knowledge.cpython-314.pyc",
+          "__pycache__/retained_archive_cli_observation.cpython-314.pyc",
+          "__pycache__/run_artifact_authority_shard.cpython-314.pyc",
+          "__pycache__/run_concurrent_suites.cpython-314.pyc",
+          "__pycache__/test_artifact_authoring.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_adapter.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_retention.cpython-314.pyc",
+          "__pycache__/test_artifact_consumers.cpython-314.pyc",
+          "__pycache__/test_artifact_git_excludes.cpython-314.pyc",
+          "__pycache__/test_artifact_installed_host.cpython-314.pyc",
+          "__pycache__/test_artifact_npm_nested_launch.cpython-314.pyc",
+          "__pycache__/test_build_surface.cpython-314.pyc",
+          "__pycache__/test_ci20_native_pipeline.cpython-314.pyc",
+          "__pycache__/test_ci_impact.cpython-314.pyc",
+          "__pycache__/test_context_native.cpython-314.pyc",
+          "__pycache__/test_generated_output.cpython-314.pyc",
+          "__pycache__/test_hook_ci_partition.cpython-314.pyc",
+          "__pycache__/test_major_qualification_report.cpython-314.pyc",
+          "__pycache__/test_pi_child_live.cpython-314.pyc",
+          "__pycache__/test_pi_package.cpython-314.pyc",
+          "__pycache__/test_review_resubmission.cpython-314.pyc",
+          "__pycache__/test_sync_core.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_cli.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_hosts.cpython-314.pyc",
+          "__pycache__/verify_pi_support.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "limits": "All entries and byte hashes retained; Git/Windows physical modes are distinct. Legacy cache content is not deleted or called absent."
+      },
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_adrlifecycle.cpython-314.pyc",
+          "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+          "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_artifactpromptlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_intentlib.cpython-314.pyc",
+          "__pycache__/_knowledgelib.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/_replylib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/knowledge.cpython-314.pyc",
+          "__pycache__/security-pass.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "limits": "All entries and byte hashes retained; Git/Windows physical modes are distinct. Legacy cache content is not deleted or called absent."
+      }
+    },
+    "lookup_limits": "Full physical/Git names/modes/source bytes captured before/after; legacy caches remain explicit preserved entries, never declared absent. Positive inputs are actual observed imports joined to before/after physical namespace and immutablefb source. No invented global host absence."
+  },
+  "scope": "Exactly six sameTESTED C-F08 and managed-reader added transitions, actual14 named fixture methods atfb6124c4; no production100-warm/fullmodule/CLI/SDK/native or installed acceptance.",
+  "limits": [
+    "14 exact existing fixture methods; neither full23 module nor warm100 benchmark executed.",
+    "No Pi/Codex CLI, Node, esbuild, native/Go, provider, network, install, API or production build.",
+    "Cleanup statuses are the existing Windows process-group/taskkill owner, not Job Object/native rundown guarantees.",
+    "The generic grandchild test was excluded because its untyped Windows liveness helper is not needed or adopted as a stronger oracle.",
+    "The deterministic denied-signal control is not a real POSIX platform qualification.",
+    "No stronger identity-safe tree/native-rundown guarantee or whole R-07 completion is claimed.",
+    "Actual currentfb execution/inputs/import/runtime/namespaces retained. Old2df declared input and actual108dc execution proof remains immutable historical evidence; no relabel.",
+    "Only .github/scripts typed import profile is causal; core namespace was additionally observed, not treated as a global host/Go dependency.",
+    "Passive Windows executable-audit projection is empty, not fabricated. Actual process interpreter records and fixed cleanup-tool before/after hashes retained; no stronger process identity/containment claim."
+  ],
+  "historical_evidence_not_relabelled": {
+    "prior_proof_ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+    "prior_proof_sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+    "prior_source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+    "prior_actual_runtime_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+    "read_from_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "ba26cb7e243ea1d7c06d5f5b5f017d0cec71ed399c262e0d72409bed2e6ccf93"
+    }
+  ]
+}

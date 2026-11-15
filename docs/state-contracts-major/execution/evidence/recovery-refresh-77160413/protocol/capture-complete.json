@@ -1,0 +1,17 @@
+{
+  "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+  "source_tree": "75c056788eae3c323d76add34ec9742f2214f119",
+  "HEAD_index_stable": true,
+  "cohorts": {
+    "recovery": {
+      "PASS": 29,
+      "seconds": 22.9641685999959,
+      "positive_inputs": 103,
+      "runtime_records": 1905,
+      "actual_imports": 21,
+      "fixture_child_observations": 1
+    }
+  },
+  "raw_immutable": true,
+  "limits": "Recovery-only capture. P02 and parity were not executed. No prospective proof or ledger mutation/admission yet."
+}

@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65\\capture-reader14.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65",
+  "exit_code": 0,
+  "seconds": 8.759748000011314,
+  "stdout_sha256": "51b890846218f82d74a8fe8a3e77b812cfa03ed49c46ceab6d47a0ad2e0abba6",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

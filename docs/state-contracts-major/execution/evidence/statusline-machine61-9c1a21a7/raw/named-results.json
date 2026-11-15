@@ -1,0 +1,250 @@
+{
+  "run": 61,
+  "outcomes": [
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+      "outcome": "PASS"
+    }
+  ],
+  "success": true
+}
