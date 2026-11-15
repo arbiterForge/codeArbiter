@@ -51,7 +51,7 @@ def digest(data):
 def command(argv, cwd=None):
     process = start(argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
-        stdout, _ = process.communicate(timeout=120)
+        stdout, stderr = process.communicate(timeout=120)
     except subprocess.TimeoutExpired:
         containment = terminate_tree(process)
         try:
@@ -59,7 +59,25 @@ def command(argv, cwd=None):
         except subprocess.TimeoutExpired:
             pass
         raise ReadinessError("readiness observation timed out; containment=" + containment) from None
-    require(process.returncode == 0, "readiness observation failed: " + argv[0])
+    if process.returncode != 0:
+        error = ReadinessError("readiness observation failed: " + argv[0])
+        # Retain only fixed, bounded facts for this authenticated API operation.
+        # CLI stderr can contain a signed URL or other private response text.
+        if (len(argv) == 3 and argv[:2] == ["gh", "api"]
+                and isinstance(argv[2], str)
+                and re.fullmatch(r"repos/" + re.escape(REPOSITORY)
+                                 + r"/actions/jobs/[1-9][0-9]*/logs", argv[2])
+                and type(stderr) is bytes and type(process.returncode) is int
+                and -(1 << 31) <= process.returncode < (1 << 32)):
+            statuses = set(re.findall(rb"\(HTTP ([0-9]{3})\)", stderr[:65536]))
+            status = int(next(iter(statuses))) if len(statuses) == 1 else None
+            error.command_diagnostic = {
+                "operation": "github-actions-job-log", "code": "UPLOAD_LOG_COMMAND_FAILED",
+                "exit_code": process.returncode,
+                "http_status": status if status is not None and 400 <= status <= 599 else None,
+                "stderr_sha256": digest(stderr),
+            }
+        raise error
     return stdout
 
 

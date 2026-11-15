@@ -565,6 +565,31 @@ def main(argv=None):
                 stage=args.stage, package_root=args.package_root, authenticated_payloads=payloads, output=args.output)
 
 
+def _command_diagnostic(error):
+    """Project only closed upload-log command metadata, never exception text."""
+    seen = set()
+    keys = {"operation", "code", "exit_code", "http_status", "stderr_sha256"}
+    for _ in range(16):
+        if not isinstance(error, BaseException) or id(error) in seen:
+            break
+        seen.add(id(error))
+        detail = BaseException.__getattribute__(error, "__dict__").get("command_diagnostic")
+        if detail is not None:
+            if (type(detail) is dict and len(detail) == len(keys) and set(detail) == keys
+                    and type(detail["operation"]) is str
+                    and detail["operation"] == "github-actions-job-log"
+                    and type(detail["code"]) is str and detail["code"] == "UPLOAD_LOG_COMMAND_FAILED"
+                    and type(detail["exit_code"]) is int
+                    and -(1 << 31) <= detail["exit_code"] < (1 << 32)
+                    and (detail["http_status"] is None
+                         or type(detail["http_status"]) is int and 400 <= detail["http_status"] <= 599)
+                    and type(detail["stderr_sha256"]) is str and DIGEST.fullmatch(detail["stderr_sha256"])):
+                return {key: detail[key] for key in sorted(keys)}
+            return None
+        error = BaseException.__getattribute__(error, "__cause__")
+    return None
+
+
 def _diagnostic_code(error):
     """Classify only known fixed causes; never render an underlying value."""
     seen, upload = set(), False
@@ -605,5 +630,7 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
-        print("::error::Retained cold observer refused; code=" + _diagnostic_code(error) + "; diagnostic_sha256=" + digest(str(error).encode("utf-8", errors="replace")), file=sys.stderr)
+        detail = _command_diagnostic(error)
+        suffix = "; command_diagnostic=" + json.dumps(detail, sort_keys=True, separators=(",", ":")) if detail else ""
+        print("::error::Retained cold observer refused; code=" + _diagnostic_code(error) + "; diagnostic_sha256=" + digest(str(error).encode("utf-8", errors="replace")) + suffix, file=sys.stderr)
         raise SystemExit(1)

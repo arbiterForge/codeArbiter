@@ -418,4 +418,100 @@ class ColdCliDiagnosticTest(unittest.TestCase):
         self.assertIn("code=UNKNOWN;", self.render_cli_error(self.chained(UnsafeString("untrusted"))))
 
 
+
+class UploadLogProducerDiagnosticTest(unittest.TestCase):
+    def failure(self):
+        from test_major_readiness import UploadLogDiagnosticTest
+        case = UploadLogDiagnosticTest()
+        return case.failed_upload(), case.expected(case.STDERR)
+
+    def cold_details(self, error):
+        text = ColdCliDiagnosticTest().render_cli_error(error)
+        self.assertNotIn("unit-private-diagnostic", text)
+        self.assertNotIn("unit.invalid", text)
+        self.assertNotIn("never-report", text)
+        marker = "; command_diagnostic="
+        detail = json.loads(text.split(marker, 1)[1].strip()) if marker in text else None
+        return detail, text
+
+    def test_existing_cold_cli_failure_retains_closed_upload_command_detail(self):
+        error, expected = self.failure()
+        detail, text = self.cold_details(error)
+        self.assertIn("code=UPLOAD_LOG_COMMAND_FAILED;", text)
+        self.assertEqual(detail, expected)
+
+    def test_existing_coordinator_failure_artifacts_retain_closed_upload_command_detail(self):
+        from contextlib import ExitStack, nullcontext
+        from types import SimpleNamespace
+        import os
+        import coordinate_codex_host
+        import coordinate_pi_host
+        import retained_archive_cli_observation as cold
+        for family, coordinator in (("codex", coordinate_codex_host), ("pi", coordinate_pi_host)):
+            with self.subTest(family=family), tempfile.TemporaryDirectory() as temporary:
+                error, expected = self.failure()
+                root = Path(temporary)
+                repo = root / "source"
+                repo.mkdir()
+                output = root / "output"
+                producer = SimpleNamespace(source_binding=lambda *args: None,
+                                           actual_platform=lambda: "linux/amd64")
+                def bootstrap(_repo, _source, relative, _name, _git):
+                    return cold if relative.endswith("retained_archive_cli_observation.py") else producer
+                argv = ["--repo", str(repo), "--stage", str(root / "stage"),
+                        "--package-root", str(root / "packages"),
+                        "--workspace", str(root / "workspace"), "--output-root", str(output)]
+                argv += ["--codex-version", "0.143.0"] if family == "codex" else [
+                    "--expected-platform", "linux/amd64"]
+                # Synthetic refusal setup only: the control boundary raises before
+                # acquisition, host execution or any API call. It never qualifies.
+                with ExitStack() as stack:
+                    stack.enter_context(mock.patch.dict(os.environ, {"GITHUB_SHA": "a" * 40}))
+                    stack.enter_context(mock.patch.object(coordinator, "program_mode", return_value=True))
+                    stack.enter_context(mock.patch.object(coordinator.shutil, "which", return_value="unit-git"))
+                    stack.enter_context(mock.patch.object(coordinator.subprocess, "run",
+                        return_value=SimpleNamespace(stdout=("a" * 40 + "\n").encode())))
+                    stack.enter_context(mock.patch.object(coordinator, "_verified_bootstrap_module", side_effect=bootstrap))
+                    stack.enter_context(mock.patch.object(coordinator, "_run_control", side_effect=error))
+                    stack.enter_context(mock.patch.object(cold, "private_environment", side_effect=lambda _root: nullcontext()))
+                    stack.enter_context(mock.patch.object(cold, "_literal_source_inputs", return_value={}))
+                    if family == "pi":
+                        stack.enter_context(mock.patch.object(coordinator, "selected_runtime", return_value={"git": "unit-git"}))
+                        stack.enter_context(mock.patch.object(coordinator, "_python_lookup_membership"))
+                    with self.assertRaises(type(error)) as caught:
+                        coordinator.main(argv)
+                self.assertIs(caught.exception, error)
+                record = json.loads((output / "coordinator-failure.json").read_text())
+                self.assertEqual(record["phase"], "bootstrap")
+                self.assertEqual(record["diagnostic_sha256"], hashlib.sha256(str(error).encode()).hexdigest())
+                self.assertEqual(record.get("command_diagnostic"), expected)
+                serialized = json.dumps(record)
+                self.assertNotIn("unit-private-diagnostic", serialized)
+                self.assertNotIn("unit.invalid", serialized)
+                self.assertNotIn("never-report", serialized)
+
+    def test_closed_upload_diagnostic_projection_refuses_malformed_or_unbounded_causes(self):
+        from test_major_readiness import owner as readiness
+        error, expected = self.failure()
+        class StringSpoof(str):
+            pass
+        bad = [dict(expected, extra="unit-private-diagnostic"),
+               dict(expected, operation=StringSpoof("github-actions-job-log")),
+               dict(expected, exit_code=True), dict(expected, http_status="403"),
+               dict(expected, stderr_sha256="unit-private-diagnostic")]
+        for detail in bad:
+            with self.subTest(keys=sorted(detail)):
+                error.__cause__.command_diagnostic = detail
+                observed, _ = self.cold_details(error)
+                self.assertIsNone(observed)
+        error.__cause__.command_diagnostic = expected
+        for _ in range(20):
+            wrapper = readiness.ReadinessError("unit wrapper")
+            wrapper.__cause__ = error
+            error = wrapper
+        self.assertIsNone(self.cold_details(error)[0])
+        cycle = readiness.ReadinessError("unit cycle")
+        cycle.__cause__ = cycle
+        self.assertIsNone(self.cold_details(cycle)[0])
+
 if __name__ == "__main__": unittest.main(verbosity=2)

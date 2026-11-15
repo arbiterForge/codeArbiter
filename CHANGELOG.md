@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Retain closed upload-log command diagnostics for installed qualification failures without exposing response text or changing artifact checks.
 - Deduplicate delivered recovery fallback notices within each session while retaining notices whose delivery has not been recorded.
 - Reject invalid suite deadlines and unavailable interpreters before launch, and contradictory or zero-test unittest summaries even when the child exits successfully.
 - Track Python import-directory membership so shadow modules invalidate evidence while unread file content changes remain outside the declared scope.

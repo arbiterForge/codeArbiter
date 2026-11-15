@@ -69,8 +69,11 @@ def main(argv=None):
                     'source_tree':git('rev-parse','HEAD^{tree}').decode().strip()},git)
                 return _run_control(a,cold,producer,Path(raw),state)
     except BaseException as error:
-        save(a.output_root/'coordinator-failure.json',{'phase':state['phase'],'exception_type':type(error).__name__,
-             'diagnostic_sha256':digest(str(error).encode('utf8',errors='replace'))})
+        failure={'phase':state['phase'],'exception_type':type(error).__name__,
+             'diagnostic_sha256':digest(str(error).encode('utf8',errors='replace'))}
+        detail=cold._command_diagnostic(error) if 'cold' in locals() else None
+        if detail is not None:failure['command_diagnostic']=detail
+        save(a.output_root/'coordinator-failure.json',failure)
         raise
 
 def _run_control(a,cold,producer,private,state):

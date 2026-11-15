@@ -886,5 +886,67 @@ class HostedRawAuthenticationCacheTest(unittest.TestCase):
                 with self.subTest(name=name),self.assertRaises(owner.ReadinessError):call(name,rec,cache)
             self.assertEqual(fetch.call_count,3,"failed digest authentication must not be cached")
 
+
+class UploadLogDiagnosticTest(unittest.TestCase):
+    STDERR = (b"gh: controlled refusal (HTTP 403)\n"
+              b"unit-private-diagnostic https://unit.invalid/?fixture=never-report\n")
+
+    @staticmethod
+    def expected(stderr, status=403):
+        import hashlib
+        return {"operation": "github-actions-job-log",
+                "code": "UPLOAD_LOG_COMMAND_FAILED", "exit_code": 7,
+                "http_status": status,
+                "stderr_sha256": hashlib.sha256(stderr).hexdigest()}
+
+    def failed_upload(self, stderr=None):
+        stderr = self.STDERR if stderr is None else stderr
+        job = {"id": 7, "steps": [{"name": "Upload exact payload",
+            "status": "completed", "conclusion": "success",
+            "started_at": "2026-11-15T15:00:00Z",
+            "completed_at": "2026-11-15T15:00:01Z"}]}
+        artifact = {"id": 11, "name": "unit-payload",
+            "created_at": "2026-11-15T15:00:01Z", "digest": "sha256:" + "a" * 64}
+        process = mock.Mock(returncode=7)
+        process.communicate.return_value = (b"", stderr)
+        with mock.patch.object(owner, "start", return_value=process) as start:
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.validate_upload(job, artifact, "Upload exact payload")
+        start.assert_called_once()
+        self.assertEqual(start.call_args.args[0], ["gh", "api",
+            "repos/arbiterForge/codeArbiter/actions/jobs/7/logs"])
+        self.assertEqual(str(caught.exception), "upload attribution unavailable or malformed")
+        self.assertEqual(str(caught.exception.__cause__), "readiness observation failed: gh")
+        return caught.exception
+
+    def test_upload_log_command_failure_retains_closed_diagnostic_through_attribution(self):
+        cases = [(self.STDERR, 403),
+                 (b"gh: first (HTTP 404)\ngh: second (HTTP 500)\n", None),
+                 (b"gh: outside HTTP range (HTTP 999)\n", None),
+                 (b"gh: malformed status (HTTP 403x)\n", None),
+                 (b"unit-private-diagnostic with no status\n", None),
+                 (b"gh: repeated (HTTP 403)\ngh: repeated (HTTP 403)\n", 403)]
+        for stderr, status in cases:
+            with self.subTest(status=status, stderr_sha256=self.expected(stderr, status)["stderr_sha256"]):
+                error = self.failed_upload(stderr)
+                # Existing exception API, safe missing-field assertion on old code.
+                detail = getattr(error.__cause__, "command_diagnostic", None)
+                self.assertEqual(detail, self.expected(stderr, status))
+                encoded = json.dumps(detail)
+                self.assertNotIn("unit-private-diagnostic", encoded)
+                self.assertNotIn("unit.invalid", encoded)
+                self.assertNotIn("never-report", encoded)
+
+    def test_unrelated_command_failure_has_no_upload_log_diagnostic(self):
+        process = mock.Mock(returncode=7)
+        process.communicate.return_value = (b"", self.STDERR)
+        with mock.patch.object(owner, "start", return_value=process) as start:
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.command(["gh", "api", "repos/arbiterForge/codeArbiter/actions/runs/7"])
+        start.assert_called_once()
+        self.assertEqual(str(caught.exception), "readiness observation failed: gh")
+        self.assertIsNone(getattr(caught.exception, "command_diagnostic", None))
+        self.assertNotIn("unit-private-diagnostic", repr(caught.exception))
+
 if __name__ == "__main__":
     unittest.main()

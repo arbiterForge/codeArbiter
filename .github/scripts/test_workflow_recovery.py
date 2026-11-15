@@ -25,7 +25,8 @@ class RecoveryRuntimeTest(unittest.TestCase):
         home = self.root / "disposable-home"
         home.mkdir()
         safe = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "TEMP", "TMP", "PATH") if key in os.environ}
-        safe.update(HOME=str(home), USERPROFILE=str(home), PYTHONDONTWRITEBYTECODE="1")
+        safe.update(HOME=str(home), USERPROFILE=str(home), PYTHONDONTWRITEBYTECODE="1",
+                    PYTHONPYCACHEPREFIX=str(self.root / "private-bytecode"), PYTHONNOUSERSITE="1")
         environment = mock.patch.dict(os.environ, safe, clear=True)
         environment.start()
         self.addCleanup(environment.stop)
@@ -846,6 +847,36 @@ class RecoveryRuntimeTest(unittest.TestCase):
             # The identical fallback was actually recorded as emitted above.
             self.assertEqual(recovery.presentation(self.root, session), {
                 "text": "", "fingerprint": first["fingerprint"]})
+
+
+    def test_real_child_uses_fixture_private_cache_and_disables_user_site(self):
+        # Capture interpreter policy BEFORE importing any project module.
+        script = (
+            "import sys,os,json;from pathlib import Path;"
+            "observed={'pycache_prefix':sys.pycache_prefix,'no_user_site':sys.flags.no_user_site,"
+            "'home':os.environ.get('HOME'),'userprofile':os.environ.get('USERPROFILE'),"
+            "'forbidden_present':{key:key in os.environ for key in "
+            "('APPDATA','LOCALAPPDATA','XDG_CONFIG_HOME','XDG_CACHE_HOME','PYTHONPATH',"
+            "'FARM_API_KEY','CLAUDE_CODE_OAUTH_TOKEN','GITHUB_TOKEN','OPENAI_API_KEY')}};"
+            "sys.path.insert(0,sys.argv[1]);import _workflowrecoverylib as recovery;"
+            "observed['module_path']=str(Path(recovery.__file__).resolve());"
+            "print(json.dumps(observed))"
+        )
+        child = subprocess.run([sys.executable, "-B", "-c", script, str(ROOT / "core/pysrc")],
+                               capture_output=True, text=True, timeout=10, check=True)
+        observed = json.loads(child.stdout)
+        self.assertEqual(Path(observed["module_path"]), (ROOT / "core/pysrc/_workflowrecoverylib.py").resolve())
+        self.assertEqual(Path(observed["home"]).resolve(), self.root / "disposable-home")
+        self.assertEqual(Path(observed["userprofile"]).resolve(), self.root / "disposable-home")
+        self.assertFalse(any(observed["forbidden_present"].values()), observed["forbidden_present"])
+        print("Recovery child isolation observation:", json.dumps(observed, sort_keys=True))
+        with self.subTest(boundary="fixture-private bytecode cache"):
+            self.assertIsInstance(observed["pycache_prefix"], str)
+            prefix = Path(observed["pycache_prefix"]).resolve()
+            self.assertNotEqual(prefix, self.root)
+            self.assertTrue(prefix.is_relative_to(self.root), "cache prefix escaped the owned fixture")
+        with self.subTest(boundary="user site disabled before project import"):
+            self.assertEqual(observed["no_user_site"], 1)
 
 
 if __name__ == "__main__":
