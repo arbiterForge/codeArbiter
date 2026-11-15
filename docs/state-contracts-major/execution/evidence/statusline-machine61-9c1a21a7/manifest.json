@@ -1,0 +1,27 @@
+{
+  "format": "coherent-statusline-machine-capture/1",
+  "source": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+  "actual": {
+    "state": "CAPTURE_SEALED_RELEASE_SOURCE_HOLD",
+    "source_commit": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+    "exit_code": 0,
+    "seconds": 1.6192860000010114,
+    "PASS": 61,
+    "positive_inputs": 29,
+    "runtime_records": 1905,
+    "source_tree": "fa37188394ab64c1d168e9922413057cb25e23eb",
+    "HEAD_index_source_runtime_namespaces_stable": true
+  },
+  "new_observation": "61 genuine named outcomes in one current-source29-input invocation; not an aggregate of old captures.",
+  "source_hold_released": true,
+  "protocol_source_freeze_sha256": "2872c93ee726b3f53903f71ce11de97050e6884cc9ff23fafbf15b86b3b6acaa",
+  "static_ID_precheck_sha256": "8e87f37b38373c256e79f030f047e87fac347d0d9f2d2c501b64243778b83b32",
+  "originals_private": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-machine61-9c1a-qs7lh6wx",
+  "log_transport": "Original stdout/stderr exact Base64 length/SHA roundtrips; no whitespace stripping.",
+  "seed_retention": "Private seed maps remain hashed in original source-freeze; all29/1905 actual beforeafter observations retained, no duplicated runtime corpus.",
+  "limits": [
+    "One machine PLANNED to TESTED only; all seven edge rows and old evidence/history remain untouched.",
+    "One capture only; original exit/time/output and aftersnapshot persisted before validation.",
+    "No source/test/Gov/index/ref/marker/provider/network/real-home/SDK/native/build/install effects."
+  ]
+}

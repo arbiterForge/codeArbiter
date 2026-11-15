@@ -1,0 +1,408 @@
+{
+  "format": "codearbiter.passive-installed-observer-repair/1",
+  "source_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+  "reviewed_candidate": "candidate-v1:88a17721d107103a2d4372e4611e44b112fa65362d7f5924eab972ba1b054929",
+  "source_inputs": [
+    {
+      "path": ".github/scripts/check_codex_host.py",
+      "sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4"
+    },
+    {
+      "path": ".github/scripts/observe_pi_installed_rpc.py",
+      "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352"
+    },
+    {
+      "path": ".github/scripts/retained_archive_cli_observation.py",
+      "sha256": "60cbe03bf2ae22e1c62a47dc3b5023598f3f1d9d5e7e51ffd7e5a658bfd9cefd"
+    },
+    {
+      "path": ".github/scripts/test_observe_codex_installed_cli.py",
+      "sha256": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7"
+    },
+    {
+      "path": ".github/scripts/test_observe_pi_installed_rpc.py",
+      "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302"
+    },
+    {
+      "path": ".github/scripts/test_retained_archive_cli_observation.py",
+      "sha256": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a"
+    },
+    {
+      "path": ".github/scripts/test_retained_cold_observer_pipeline.py",
+      "sha256": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e"
+    },
+    {
+      "path": "plugins/ca-pi/CHANGELOG.md",
+      "sha256": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831"
+    },
+    {
+      "path": "plugins/ca-pi/extensions/codearbiter-child.js",
+      "sha256": "ff1e66e8c87329b2c533bd3a9292bde45c05bf7c627fac97aff709befdc7be93"
+    },
+    {
+      "path": "plugins/ca-pi/extensions/codearbiter.js",
+      "sha256": "ec6c7bcde51b724c6ff6b1cdbeb9a64922d8a0504aba892f3dd9e08756fc617c"
+    },
+    {
+      "path": "plugins/ca-pi/helpers/approval-dialog.js",
+      "sha256": "c0d2f3a55d6485a2db1a3e9a7ec205263253c1dd3877d1999c942e07386ad7c4"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899"
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/bridge.test.ts",
+      "sha256": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2"
+    }
+  ],
+  "local_receipts": {
+    "codex-cold-owning-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\codex-cold-owning-green.json",
+      "sha256": "57a644d23cc79b9f376e900b8fe46fe72f79a9e9574fb3e9e9a8a1da0f7b840f",
+      "bytes": 1824,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_observe_codex_installed_cli",
+          "test_check_codex_host",
+          "test_retained_cold_observer_pipeline"
+        ],
+        "exit_code": 0,
+        "seconds": 5.23318830000062,
+        "before": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c"
+          }
+        },
+        "after": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dcd49b85d7ef3517fe3f4f1a9b86e4545b4574440be52f0ff8ec60d6a240e15d"
+      }
+    },
+    "pi-diagnostic-owning-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-owning-green.json",
+      "sha256": "97fed83b0c29b08f0724b7b77cd553d1d3a835c9a44334494d5db178aa69ce12",
+      "bytes": 3673,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_observe_pi_installed_rpc",
+          "test_retained_archive_cli_observation"
+        ],
+        "exit_code": 0,
+        "seconds": 9.948847500010743,
+        "before": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/observe_pi_installed_rpc.py": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+            ".github/scripts/retained_archive_cli_observation.py": "d53847150ae46c1e62437d7c6a5ecd6cd2ba9c50ce13f3fe731d1e47a3916dbc",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_observe_pi_installed_rpc.py": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+            ".github/scripts/test_retained_archive_cli_observation.py": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+            "CHANGELOG.md": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e",
+            "plugins/ca-pi/CHANGELOG.md": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+            "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+            "plugins/ca-pi/tools/test/bridge.test.ts": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2"
+          }
+        },
+        "after": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/observe_pi_installed_rpc.py": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+            ".github/scripts/retained_archive_cli_observation.py": "d53847150ae46c1e62437d7c6a5ecd6cd2ba9c50ce13f3fe731d1e47a3916dbc",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_observe_pi_installed_rpc.py": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+            ".github/scripts/test_retained_archive_cli_observation.py": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+            "CHANGELOG.md": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e",
+            "plugins/ca-pi/CHANGELOG.md": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+            "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+            "plugins/ca-pi/tools/test/bridge.test.ts": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "29915ebe20cff769cfbf9aea4b1ec7a6b32c1bca5e20419b77e1b5dbaae04e69"
+      }
+    },
+    "pi-diagnostic-before-sink-fix": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-before-sink-fix.json",
+      "sha256": "efaa50ac045b48c66ea45bb7c9e5539d77d98a9e3354a96b5a6856339867f56c",
+      "bytes": 3674,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_observe_pi_installed_rpc",
+          "test_retained_archive_cli_observation"
+        ],
+        "exit_code": 1,
+        "seconds": 11.875870700008818,
+        "before": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/observe_pi_installed_rpc.py": "b75c01b9957bcbcee91f6db9e0c90debcc4f186ee3cc6f891ef4571986e39a5c",
+            ".github/scripts/retained_archive_cli_observation.py": "666a7e64e831b282505497cd3bfb5130d6ab398a6492975ccdcba76c075e597c",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_observe_pi_installed_rpc.py": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+            ".github/scripts/test_retained_archive_cli_observation.py": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+            "CHANGELOG.md": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e",
+            "plugins/ca-pi/CHANGELOG.md": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+            "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+            "plugins/ca-pi/tools/test/bridge.test.ts": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2"
+          }
+        },
+        "after": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "29fbf8cae6200bc9e7c90905b2ec61c2a97fd6412c47e04da9cc6c32feca60e0",
+          "files": {
+            ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+            ".github/scripts/observe_pi_installed_rpc.py": "b75c01b9957bcbcee91f6db9e0c90debcc4f186ee3cc6f891ef4571986e39a5c",
+            ".github/scripts/retained_archive_cli_observation.py": "666a7e64e831b282505497cd3bfb5130d6ab398a6492975ccdcba76c075e597c",
+            ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+            ".github/scripts/test_observe_pi_installed_rpc.py": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+            ".github/scripts/test_retained_archive_cli_observation.py": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+            ".github/scripts/test_retained_cold_observer_pipeline.py": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+            ".github/workflows/ci.yml": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+            "CHANGELOG.md": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e",
+            "plugins/ca-pi/CHANGELOG.md": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+            "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+            "plugins/ca-pi/tools/test/bridge.test.ts": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "746ff274981687caa9bad9aecdd516309d187a1bf04f9e8d0a9e31b3af6c84a2"
+      }
+    },
+    "cold-source-class-green": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\cold-source-class-green.json",
+      "sha256": "1646f05069b6b6ebdf01acb3160462783945a99dc88b275703098cca318f5e5d",
+      "bytes": 949,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_retained_archive_cli_observation.SourceCheckoutDiagnosticTests",
+          "test_retained_archive_cli_observation.ColdProducerTest.test_failed_execution_is_durably_recorded_and_never_qualified_or_leaked"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7470201999967685,
+        "before": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "1e370eb3b4ed2671c5ca636a8d0d3220b0bcb59ba8aafbe8b1592c30e4627373",
+          "files": {}
+        },
+        "after": {
+          "head": "771604132801a0e67c971581fbbf76227af2f712",
+          "index": "1e370eb3b4ed2671c5ca636a8d0d3220b0bcb59ba8aafbe8b1592c30e4627373",
+          "files": {}
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "514b0c8f74650fb940aaa61aed88ab1a61ccc8c07f3a8ef070c76edd2c28111c"
+      }
+    },
+    "pi-tests": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-tests.json",
+      "sha256": "e2d5a8f92dbaf51b6285bf8f2d4b603c7dbc3fc1e2e2dd8a0eb5ef48aa12675c",
+      "bytes": 834,
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/bridge.test.ts",
+          "--no-cache",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-launcher-green-tests.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 25.182806800003164,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "stdout_sha256": "89752ee2f216b4fe751f65c9fc4fde551e6318d00ec4a45d0acbfa85ec17a764",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "pi-target": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-target.json",
+      "sha256": "43c9361bfecfe97681524a1541094665f0e2b307969e941b7b7c497236c9b4d5",
+      "bytes": 749,
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/bridge.test.ts",
+          "--no-cache",
+          "-t",
+          "enforces no-bytecode before local package imports",
+          "--reporter=default"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 0.7183338000031654,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "stdout_sha256": "41d6ca794384e2db4d3a183c7a098b7d0fc35213f0b2bab8e50d50ea2d072ceb",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "pi-typecheck": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-typecheck.json",
+      "sha256": "f129c5a82ac6286784f1545c98d0bf6ee13f3b12faba2e296be3d5e9eff44198",
+      "bytes": 612,
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 1.8524810999952024,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "pi-typecheck-original-fixture-error": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-typecheck-original-fixture-error.json",
+      "sha256": "72191fe576585eba2b5eed59d7cb637d7a902c818c280c76fbe3521023e947f4",
+      "bytes": 611,
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 2,
+        "seconds": 5.015639800010831,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "stdout_sha256": "5e35dae20db4c8a4d2f8dce355cc25108929be40ffd1f3fc6b2a6e4db9cddb21",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "pi-build": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-build.json",
+      "sha256": "5261ce9e10ef114b28262feeb5ea6e191ced11e4ee86749b2368db2dc787b0e8",
+      "bytes": 574,
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "build.mjs"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 0.21784050000132993,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "181529dad2f67c1d2ef07138f5d48352c58b0f0a60f5083a7dd9a5c94eec4e28"
+      }
+    },
+    "observer-release-preflight": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\observer-release-preflight.json",
+      "sha256": "9f9fb227395d1d4e8de7e4c49005d14c340692b1cf0a229b93696616775dda7b",
+      "bytes": 941,
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          ".github/scripts/check_auto_release_candidate.py",
+          "--candidate",
+          "HEAD",
+          "--run-pre-tag"
+        ],
+        "exit_code": 0,
+        "seconds": 30.734129899996333,
+        "before": {
+          "head": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+          "status": "?? .codearbiter/.artifacts/store.lock\u0000",
+          "index_sha256": "1e370eb3b4ed2671c5ca636a8d0d3220b0bcb59ba8aafbe8b1592c30e4627373"
+        },
+        "after": {
+          "head": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+          "status": "?? .codearbiter/.artifacts/store.lock\u0000",
+          "index_sha256": "1e370eb3b4ed2671c5ca636a8d0d3220b0bcb59ba8aafbe8b1592c30e4627373"
+        },
+        "stable": true,
+        "publication_performed": false,
+        "stdout_sha256": "674bae47f8383b3fd0bf79baa806704df2b6dbfc6451c4f97fbae7865f032abf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "independent_review": {
+    "path": "docs/state-contracts-major/execution/evidence/installed-observer-repair/independent-review.json",
+    "original_sha256": "0fddf1b03fc934532dcbc76141bdb8c7b6e455e9f6ef2e046765826c34227685"
+  },
+  "observed_repairs": [
+    "Codex nested Git exchange forwards original args and keyword arguments; only outer capability is observed.",
+    "Cold attempted failures retain diagnostics; missing files do not mask primary failure; qualification remains success-only.",
+    "Pi Python -B applies before imports even with -I, keeping owned package import membership unchanged.",
+    "Pi actual after-membership map is saved before comparison; dirty source failure retains bounded status provenance with unknown names hashed."
+  ],
+  "limits": [
+    "Local fixture evidence only; exact-head hosted CI, original installed/native qualification and numeric hosted coverage remain pending.",
+    "Historic actual added Pi member and dirty status path remain unknown. Demonstrated no-bytecode policy loss is not a claim an old observed file was __pycache__.",
+    "No qualification updates to installed13/native133 from terminal failed normal run43758478716.",
+    "PR1098 remains held from main; publication and worktree deletion unauthorized."
+  ]
+}

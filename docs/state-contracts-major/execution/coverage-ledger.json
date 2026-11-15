@@ -609,12 +609,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
-     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
-     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Real fixture settings install writes separate exact owner stamp and prior backup; later custom spinner survives uninstall, stale bookkeeping is dropped, unrelated theme remains, and ownership-ended report is emitted. Still-owned prior value restores; deleted spinner is not recreated; legacy backup conservatively restores only exact current installed value; repeated uninstall is no-op. Independent status replacement survives while still-owned spinner restores."
+   "candidate_contract_note": "Real fixture settings install writes separate exact owner stamp and prior backup; later custom spinner survives uninstall, stale bookkeeping is dropped, unrelated theme remains, and ownership-ended report is emitted. Still-owned prior value restores; deleted spinner is not recreated; legacy backup conservatively restores only exact current installed value; repeated uninstall is no-op. Independent status replacement survives while still-owned spinner restores. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
+     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "HOOK-B01": {
    "owner": null,
@@ -3664,8 +3673,16 @@
     "HW-05",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
+    }
+   ],
+   "candidate_contract_note": " Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim."
   },
   "hooks:doctor": {
    "owner": "hooks-workflows",
@@ -21194,12 +21211,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "1963ff150b28c163eac38537a001055c22edfbed",
-     "ref": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/tested.json",
-     "sha256": "e8b72fc3ad0ed1c116a48a3b872e44c842d6fdd1e5922798c5189bd4c5f6afe8"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Real main(install) through documented fixture Host writes exact command/owner/spinner and exact prior backups with full-object readback. Mismatch/missing Host, ephemeral root, missing renderer, malformed JSON and injected unreadable read refuse before replacing settings or changing directory entries."
+   "candidate_contract_note": "Real main(install) through documented fixture Host writes exact command/owner/spinner and exact prior backups with full-object readback. Mismatch/missing Host, ephemeral root, missing renderer, malformed JSON and injected unreadable read refuse before replacing settings or changing directory entries. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "1963ff150b28c163eac38537a001055c22edfbed",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/tested.json",
+     "sha256": "e8b72fc3ad0ed1c116a48a3b872e44c842d6fdd1e5922798c5189bd4c5f6afe8",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:02": {
    "owner": "hooks-workflows",
@@ -21212,12 +21238,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "1963ff150b28c163eac38537a001055c22edfbed",
-     "ref": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/tested.json",
-     "sha256": "e8b72fc3ad0ed1c116a48a3b872e44c842d6fdd1e5922798c5189bd4c5f6afe8"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Owned reinstall to a new durable renderer preserves original backups and unrelated object fields. Strict source/cache legacy reinstall retains original backup; nearby foreign filename gets a fresh exact live backup. User custom line/spinner survive automatic refresh; explicit reinstall backs up those current user choices, then uninstall restores them exactly."
+   "candidate_contract_note": "Owned reinstall to a new durable renderer preserves original backups and unrelated object fields. Strict source/cache legacy reinstall retains original backup; nearby foreign filename gets a fresh exact live backup. User custom line/spinner survive automatic refresh; explicit reinstall backs up those current user choices, then uninstall restores them exactly. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "1963ff150b28c163eac38537a001055c22edfbed",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-install-reinstall-1963ff15/tested.json",
+     "sha256": "e8b72fc3ad0ed1c116a48a3b872e44c842d6fdd1e5922798c5189bd4c5f6afe8",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:03": {
    "owner": "hooks-workflows",
@@ -21230,12 +21265,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
-     "ref": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/tested.json",
-     "sha256": "06fcb6afc4e948176fe56bc081dbd640afc4bc58207d33a1482bb12a1acef77e"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged."
+   "candidate_contract_note": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/tested.json",
+     "sha256": "06fcb6afc4e948176fe56bc081dbd640afc4bc58207d33a1482bb12a1acef77e",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:04": {
    "owner": "hooks-workflows",
@@ -21248,12 +21292,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
-     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
-     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Install followed by uninstall restores the exact prior statusLine dictionary with extra fields; no-prior owned line is removed together with owner/backup metadata; a user replacement after install remains unchanged while independent owned spinner is restored."
+   "candidate_contract_note": "Install followed by uninstall restores the exact prior statusLine dictionary with extra fields; no-prior owned line is removed together with owner/backup metadata; a user replacement after install remains unchanged while independent owned spinner is restored. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
+     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:05": {
    "owner": "hooks-workflows",
@@ -21266,12 +21319,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
-     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
-     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "HW-05 deliberately corrects historical unconditional spinner restoration: current exact installed-value equality grants restoration, while later user changes or deletion survive and stale own bookkeeping is removed. Legacy unstamped backup restores only while current spinner equals this version installed value; explicit reinstall backs up the current custom choice; repeated uninstall is idempotent."
+   "candidate_contract_note": "HW-05 deliberately corrects historical unconditional spinner restoration: current exact installed-value equality grants restoration, while later user changes or deletion survive and stale own bookkeeping is removed. Legacy unstamped backup restores only while current spinner equals this version installed value; explicit reinstall backs up the current custom choice; repeated uninstall is idempotent. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+     "ref": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/tested.json",
+     "sha256": "55435ed77dfa2f46c3c9fd523cb117c1eb08915086271942c0f841be2ec4ab94",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:06": {
    "owner": "hooks-workflows",
@@ -21284,12 +21346,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
-     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
-     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive."
+   "candidate_contract_note": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
+     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:statusline-wiring:07": {
    "owner": "hooks-workflows",
@@ -21302,12 +21373,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
-     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
-     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+     "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
     }
    ],
-   "candidate_contract_note": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged."
+   "candidate_contract_note": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged. Current77160413 one67-method software fixture observation additionally verifies accepted HW05 V2 backup/legacy migration and exact released-reader compatibility; no installed old package, realHost/UI, task/HW27/Q01 or multiwriter-CAS claim.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
+     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+   ]
   },
   "hooks:doctor:01": {
    "owner": "hooks-workflows",
@@ -40942,9 +41022,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -40989,6 +41069,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41003,9 +41090,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -41050,6 +41137,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41064,9 +41158,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -41111,6 +41205,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41125,9 +41226,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -41172,6 +41273,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41186,9 +41294,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -41233,6 +41341,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41247,9 +41362,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
-     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+     "commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+     "sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
     }
    ],
    "evidence_history": [
@@ -41294,6 +41409,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
      "ref_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+     "kind": "test",
+     "commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+     "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+     "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+     "ref_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8"
     }
    ]
   },
@@ -41309,9 +41431,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41342,6 +41464,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41357,9 +41486,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41390,6 +41519,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41405,9 +41541,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41438,6 +41574,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41453,9 +41596,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41486,6 +41629,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41502,9 +41652,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41535,6 +41685,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41550,9 +41707,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41583,6 +41740,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41598,9 +41762,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41631,6 +41795,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41646,9 +41817,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41679,6 +41850,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41694,9 +41872,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41727,6 +41905,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41742,9 +41927,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41775,6 +41960,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41790,9 +41982,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41823,6 +42015,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41838,9 +42037,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41871,6 +42070,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41886,9 +42092,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41919,6 +42125,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41934,9 +42147,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -41967,6 +42180,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -41983,9 +42203,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42016,6 +42236,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42031,9 +42258,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42064,6 +42291,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42080,9 +42314,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42113,6 +42347,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42128,9 +42369,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42161,6 +42402,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42176,9 +42424,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42209,6 +42457,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42225,9 +42480,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42258,6 +42513,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42273,9 +42535,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42306,6 +42568,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },
@@ -42321,9 +42590,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
-     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
-     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b"
+     "commit": "771604132801a0e67c971581fbbf76227af2f712",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+     "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
     }
    ],
    "evidence_history": [
@@ -42354,6 +42623,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
      "ref_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+    },
+    {
+     "kind": "test",
+     "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+     "ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+     "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+     "ref_commit": "771604132801a0e67c971581fbbf76227af2f712"
     }
    ]
   },

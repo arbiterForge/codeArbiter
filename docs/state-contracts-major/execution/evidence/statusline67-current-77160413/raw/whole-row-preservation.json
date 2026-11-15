@@ -1,0 +1,139 @@
+{
+  "source_entry": "ws.main(refresh)",
+  "before": {
+    "statusLine": {
+      "type": "command",
+      "command": "\"python\" \"C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py\""
+    },
+    "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca\\2.0.1\\hooks\\statusline.py\"",
+    "_codearbiterStatuslineBackup": {
+      "type": "command",
+      "command": "prior-safe-line",
+      "padding": 17
+    },
+    "spinnerVerbs": {
+      "mode": "replace",
+      "verbs": [
+        "private-custom-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsBackupV2": {
+      "mode": "append",
+      "verbs": [
+        "private-prior-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsOwned": {
+      "mode": "replace",
+      "verbs": [
+        "old-owned-spinner"
+      ]
+    },
+    "theme": "private-theme",
+    "permissions": {
+      "allow": [
+        "private-inert-entry"
+      ]
+    },
+    "nested": {
+      "unchanged": [
+        1,
+        true,
+        null
+      ]
+    }
+  },
+  "after": {
+    "statusLine": {
+      "type": "command",
+      "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\profile\\tmp\\tmp8cy05e70\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+      "padding": 0
+    },
+    "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\profile\\tmp\\tmp8cy05e70\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+    "_codearbiterStatuslineBackup": {
+      "type": "command",
+      "command": "prior-safe-line",
+      "padding": 17
+    },
+    "spinnerVerbs": {
+      "mode": "replace",
+      "verbs": [
+        "private-custom-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsBackupV2": {
+      "mode": "append",
+      "verbs": [
+        "private-prior-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsOwned": {
+      "mode": "replace",
+      "verbs": [
+        "old-owned-spinner"
+      ]
+    },
+    "theme": "private-theme",
+    "permissions": {
+      "allow": [
+        "private-inert-entry"
+      ]
+    },
+    "nested": {
+      "unchanged": [
+        1,
+        true,
+        null
+      ]
+    }
+  },
+  "exact_expected": {
+    "statusLine": {
+      "type": "command",
+      "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\profile\\tmp\\tmp8cy05e70\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+      "padding": 0
+    },
+    "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\profile\\tmp\\tmp8cy05e70\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+    "_codearbiterStatuslineBackup": {
+      "type": "command",
+      "command": "prior-safe-line",
+      "padding": 17
+    },
+    "spinnerVerbs": {
+      "mode": "replace",
+      "verbs": [
+        "private-custom-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsBackupV2": {
+      "mode": "append",
+      "verbs": [
+        "private-prior-spinner"
+      ]
+    },
+    "_codearbiterSpinnerVerbsOwned": {
+      "mode": "replace",
+      "verbs": [
+        "old-owned-spinner"
+      ]
+    },
+    "theme": "private-theme",
+    "permissions": {
+      "allow": [
+        "private-inert-entry"
+      ]
+    },
+    "nested": {
+      "unchanged": [
+        1,
+        true,
+        null
+      ]
+    }
+  },
+  "only_changed_top_level_keys": [
+    "_codearbiterStatuslineOwner",
+    "statusLine"
+  ],
+  "exact_preservation_assertion": true
+}

@@ -1,0 +1,446 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+  "source_tree": "ee88e6cc372815374a74eea3c3c5f6e837ed66fe",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/ci_repair_review one current-source P02-only Windows14-method capture on committed051d16eb; no test/source edits by producer"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/_immutable_git_blobs.py": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+    ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+    ".github/scripts/test_state_contracts_integration.py": "ae4b348b40928ab0d789ed034208d8f65f6cc9a6c13d72b597e3e9d19832023d",
+    ".github/workflows/ci.yml": "42c54daecf87b07df4e1ce3aae77e6b5cd0ff9da0d1ecd76ce5d0b65ecca7016",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "docs/state-contracts-major/ADR-PROPOSALS.md": "bce13659a2ec1edf196e6e1dcadae9a72cb3d0a741117965393df1f46b165f2b",
+    "docs/state-contracts-major/AGENT-ROLES.md": "e59248d80f4cafe3b374a09daeea977bde1a15ee4dbd9f4b7fdee766f1ee70aa",
+    "docs/state-contracts-major/BRANCH-AND-RELEASE.md": "7e9021f921c997a0a9eb76f3eb5c69d1a19317f4852fd0aacdd18bbdc8806129",
+    "docs/state-contracts-major/CHECKPOINT.md": "515a2c3392c90dcac7c9e76d100921bbb18b08acf99f8db6b0c85d6bccef60ba",
+    "docs/state-contracts-major/CLAIM-REGISTRY-DELTA.md": "4ef2b4a4d674e54abe61cd039733c580c9d152dc251bda8abfce1a3c457cf852",
+    "docs/state-contracts-major/CORRECTNESS-REVIEW.md": "2e95142b9a5ff729738e9a7141860842f63ac4e55cc971b8ac3ca7fdb530f8f7",
+    "docs/state-contracts-major/DECISIONS.md": "8065f74f46a1c958a6db94a442e5dc9b98016b176527d00da430ed2090dd7e94",
+    "docs/state-contracts-major/EXECUTION-RECORDS.md": "57b6e359cc0e8be049aad989972822d57a8ede19867af7eb977676b74625bfd9",
+    "docs/state-contracts-major/FINDING-DISPOSITIONS.md": "fb6ee2a5ad7160a9180a9e4ea109270b62e3727cf4788445a3f61ce322f480bf",
+    "docs/state-contracts-major/IMPLEMENTATION-TASKS.md": "90bd8baf41fcc21f7c670358a996de2eaf110d9e7f89133b248e38a74d286b28",
+    "docs/state-contracts-major/INTERRUPTION-RECOVERY.md": "7be7c95d551ecd6122a1b42758848eeb2c84f89d81a6e664b0f9dcbc7dcba86a",
+    "docs/state-contracts-major/MACHINE-ACCOUNTABILITY.md": "bdd863c9ef2989bda09034367f176cacb731bbc866ad0e0f7825d3a450348053",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "docs/state-contracts-major/MIGRATION-AND-ROLLBACK.md": "9e56ca373068640cf684cb8a1a53a64506654f11648363bfda0f3b27b256ecbc",
+    "docs/state-contracts-major/PI-DELEGATION.md": "243762e86960900ce43154d2c7de5522fe84132fd25a07c946888f4c6b9525e7",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/PROMPT.txt": "11ba19bc380bb556bdff3785a448fbbdbf0ec8faa96b6a4c58ff9284fd704e2e",
+    "docs/state-contracts-major/README.md": "0bc54c111e51ef440fd76ede54f085b742f102f8d3d9ab0a8ce99279f515b5c7",
+    "docs/state-contracts-major/SMARTS-PROGRESS-EVIDENCE.md": "4a7ccc629319f63d869d56a3d1d2b597ac3edb6bb3e96b37495ce884c6b4a18f",
+    "docs/state-contracts-major/START-HERE.md": "53e43546fe00d79419ee6435fae4bc10b8abc7acaf1aa859dad4f3683f50a659",
+    "docs/state-contracts-major/TEST-AND-QUALIFICATION.md": "87f10d4668897c3ff1e3d62a508213f9f066ec22adf4c5c5f185de1a1cf0e786",
+    "docs/state-contracts-major/audit-work/augment_workflows.py": "cbb3e5213cd21987e62493d5c82e3ee66aba96dd0f2d98bc7be6f87c25af2033",
+    "docs/state-contracts-major/audit-work/build_coverage.py": "0cb550a3b8afd00dd4cb37151a7360a0bd9fc756e4a77b6aafa0c26108d3d98b",
+    "docs/state-contracts-major/audit-work/build_report.py": "232772b6d22a4b2673dba02e587ffb1723ff858f53e91400bc095766ac442215",
+    "docs/state-contracts-major/audit-work/build_site_extra.py": "d2575232b945334f203e73d6b7ba8d79ebe9119316c1fcc1d9fe172c7697eead",
+    "docs/state-contracts-major/audit-work/build_surfaces_report.py": "7ab25debd0df4f3cc041c4481066e4a567b0023f9e0a8a65a13f07e62ea203bf",
+    "docs/state-contracts-major/audit-work/build_workflows.py": "4f68bc11534e2b94bbcba2f7444c37219e8705a324432b5d384a4f040bf19bcd",
+    "docs/state-contracts-major/audit-work/coverage.json": "da66ca3a3ca071600595cf15ddf5e5938b3754400c700dee9c953c551afb3b09",
+    "docs/state-contracts-major/audit-work/generator-extra.json": "d774ca0f733e5d08f7c2334a0c4ed48ca783ef0a323b50217bdf04e069e84bab",
+    "docs/state-contracts-major/audit-work/generator-read-files.txt": "8bd38174ee2f55ae75a4c380faf79cb9e352bca188216693803d3da382e3e8cd",
+    "docs/state-contracts-major/audit-work/head-final.json": "807587d5cb724c405e4e0abf8e488dbd7f7675550c4404b2d81bed084be2cef4",
+    "docs/state-contracts-major/audit-work/hook-copy-equality.json": "b2fbdef31e0b4dab3399802022621377d60ccf06ce78b5a124f2526723d7bbf3",
+    "docs/state-contracts-major/audit-work/hooks-read-files.txt": "c726c921eba22c71616bbc8797ddef8b48e31bdb16bf55f0a9ad378b757706f3",
+    "docs/state-contracts-major/audit-work/hooks.json": "5988c3fb6af91a52f352379f435950531f34ffcf1c502b8129b0d0b487b1c92e",
+    "docs/state-contracts-major/audit-work/native-read-files.txt": "285d7da09ee6f7978548a1c8b3d821ccd675658af61b387ccc3b9ffdc9daacf1",
+    "docs/state-contracts-major/audit-work/native.json": "d1395e188c09659b8c645b283ef340008e9d74ddb8399346db89ff096d182e1a",
+    "docs/state-contracts-major/audit-work/pi-qualification-extra.json": "bea762f02b1f61b59565f685713f58cd41e9434a927d3f3ec1d98e1a6a78b8f6",
+    "docs/state-contracts-major/audit-work/pi-qualification-read-files.txt": "7bef4ed4fdf5bef8ab6aee487cbd6732410291710df57bc34a540227402b8ff5",
+    "docs/state-contracts-major/audit-work/probe-pi-child-mutation-result.json": "9ba3a08dcaf401931bfedbf335bf1e38a7f67cea2a34a86e6d8c06944340d973",
+    "docs/state-contracts-major/audit-work/probe-pi-child-mutation.mjs": "20345ef953f12a5217ac259e3fae34f0ed4fb9545bd6eb94c552e004b19ff9b8",
+    "docs/state-contracts-major/audit-work/probe-pi-sidebar-dispose-result.json": "f847b75ea4b7f0a5eb3d172c37e813c48da404dd7a5aa35c823b7fe5c0f6cd4a",
+    "docs/state-contracts-major/audit-work/probe-pi-sidebar-dispose.mjs": "05382f7501307cb76c300a8dd0c75a681cd3fdf12cee663a1f8f0c4de9f06bb7",
+    "docs/state-contracts-major/audit-work/probe-sandbox-lifecycle-result.json": "21bb5530280011a795e37560ecc203bd4ebdbbf5a6f0533001385ab259feaf32",
+    "docs/state-contracts-major/audit-work/probe-sandbox-lifecycle.mjs": "59d4fb9fc2c02c03d8d580a0214c9a79f1bd9bdf185bf3d73230fac6983ab43f",
+    "docs/state-contracts-major/audit-work/probe-site-publication-result.json": "667afa46d165e1d1987b4cdf10518b6fd238fcda05345188df6a568d506e6121",
+    "docs/state-contracts-major/audit-work/probe-site-publication.mjs": "17065e31b8364076f5782482b723609ac670eb528936391e5661dad491b999c5",
+    "docs/state-contracts-major/audit-work/probe_diagnostics.py": "1092907215ceefd8bbb576e7e31cae66e5bddea544ba455ed0dbc61a15f39154",
+    "docs/state-contracts-major/audit-work/probe_diagnostics_results.json": "41dacdab2e864a8711da5c8bc4b57739e28fda870b8a44a744d5d6c927ae6227",
+    "docs/state-contracts-major/audit-work/probe_launch_binding.py": "fa89399af7209b8815948a1140eaf7e89b39abb2b274df25b8c0018c8f1ec5ca",
+    "docs/state-contracts-major/audit-work/probe_launch_binding_results.json": "cebdfd8fb3a2328142fc1b4b842466ab9e410d8f312143caafc74135804091a7",
+    "docs/state-contracts-major/audit-work/probe_mode.py": "907b67dda79d26f484444c5f3b60a2cc64919cce63dcb05ce0572d921873f976",
+    "docs/state-contracts-major/audit-work/probe_mode_results.json": "bfc7698d6743bcb2c855e7d49847b3ae2ebd2a6c8001756b186af8b20667cafd",
+    "docs/state-contracts-major/audit-work/probe_release_recovery_results.json": "596e888a9204cd72d8cc7b8de9a2b8f822bf7f163082354cb56b71df2e3c9171",
+    "docs/state-contracts-major/audit-work/probe_tool_verdicts.json": "e863cf4ce11cb737e3d847ef6cc810240a9b2a8b07416e9d9282d4ba3ae7ee5c",
+    "docs/state-contracts-major/audit-work/release-ci-read-files.txt": "ae8958afea5341c23b96d129facfd589b9931b4214b38d5f89409191de093aad",
+    "docs/state-contracts-major/audit-work/release-ci.json": "8be523bbe069dd295e9d75ed85cd4d1be7260bf03ba643f1a5e7807b24be5ed7",
+    "docs/state-contracts-major/audit-work/report-validation.json": "a3e1ff8ce2742c212b421e5ad53eb57154c5f7ea13aefd8642e7617cc6e24e74",
+    "docs/state-contracts-major/audit-work/root-final-read-files.txt": "de73400b5e499817875647c489193412d3380ea6a9e0bfc95e2f813166bc19c9",
+    "docs/state-contracts-major/audit-work/root-read-files.json": "3d3f6f7b471bcb9fd3761f4231328adcb0a2545323c1c89bd829efbb6248f61c",
+    "docs/state-contracts-major/audit-work/root-site-read-files.txt": "66b6abfcec3c4549edd56407f0cd023854bf40ee13901e0076f6e745770d0deb",
+    "docs/state-contracts-major/audit-work/sandbox-workflows-read-files.txt": "ca691618df1a92f2034f05659c072c061ed5198b9b295f73d181629695f1d191",
+    "docs/state-contracts-major/audit-work/sandbox-workflows.json": "1f11e6ccc8d58bdd653b17f94c5a9b07caedf0a81c7616445cfed137d6ae49c6",
+    "docs/state-contracts-major/audit-work/site-extra.json": "ee70c310c09339baa9a4d32e915e5d1d2c0a475c656eed69e6cea900d01c945c",
+    "docs/state-contracts-major/audit-work/surface-render-equality.json": "1f65462a9aab923b8695fb1581e4bb5b2683f97cb4d11701ad0fe7618c42ee55",
+    "docs/state-contracts-major/audit-work/surfaces-component-classification.json": "83616f13151535f983437e7a69081b33c992837cc9bd50f2689c2fae62436ed2",
+    "docs/state-contracts-major/audit-work/surfaces-read-files.txt": "d7fd216ab715ea5315756d4b2285bd173ed22b9883649564cb6dc7f836cbd16d",
+    "docs/state-contracts-major/audit-work/surfaces.json": "c57e8841e89092e4c0a53c72dbfd871030f20e80c0e476d79abccc5aadb3f9d2",
+    "docs/state-contracts-major/audit-work/tooling-read-files.txt": "ea8e6c3c3fbd81f83986bd758b74e17fabdc23ec9550fea8c1bd617aa48fa5c5",
+    "docs/state-contracts-major/audit-work/tooling.json": "057569db4bbe43d2503da4e3bf0cce3cb4c5f821d3ef3d4b5f38ff70bd169baf",
+    "docs/state-contracts-major/audit-work/workflows.json": "2f28ca3ceee79dfd3da56cd1f470b2026f80b02df6d7a5addef9550390083003",
+    "docs/state-contracts-major/audit/codearbiter_audit_evidence.zip": "cd5c767b1076fc1057bee2e7b21f03e253be1bd907d2af9702b6374127313af1",
+    "docs/state-contracts-major/audit/codearbiter_state_machine_audit.html": "eb5b0c3630d5aaa3462fa6b2573e652be22c30b8b653e67cd0c63c9170ad7c60",
+    "docs/state-contracts-major/audit/codearbiter_state_machines.json": "d8895379a704e3db60b28fc80f91e004d06d9747c5e0ecf325f35d876d4edb6b",
+    "docs/state-contracts-major/contracts/acceptance-record-template.json": "e8054040f067ba4629a3a47e50f39e2cc24621a83f09d573c944fe974bfb852c",
+    "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+    "docs/state-contracts-major/contracts/execution-state-template.json": "2f693753dcdf2a1c9e81246d592f8dd3a32ddec7ad0ab1cdaa44e42294a6cba0",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/scenarios.json": "5fe7863a28d28c7a2d3484cc23a85f74e47476a4743597ace1d24e27df541af3",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/evidence/ci-job-inventory.json": "930221a87fa17ec13bab1ea317daea999b4654459202f1d339cb9d74676d00cf",
+    "docs/state-contracts-major/evidence/closing-main-recheck.json": "61180fd2bc3f7c32d50e41e0f390da781318087ce7053f1d4c9e4048f2f4aed6",
+    "docs/state-contracts-major/evidence/document-qa.json": "b2476e7fbc6f8343a8145356724814ecad5c1bffb02b1d89bb49e9d84c8b125e",
+    "docs/state-contracts-major/evidence/domain-cross-review.md": "2816bd7c0b19d52e5eac8048e57d46c48ecb2f380aa43868e66586254165d26c",
+    "docs/state-contracts-major/evidence/guide-client-qa.json": "c1e5153d4f509da2750edb56ae1d7f688a6d9515756d9fdc7a1b441391c69e32",
+    "docs/state-contracts-major/evidence/hooks-workflow-read-files.txt": "dc7e8402161dd8e5f423bb3cfab9a85e5ffc7a20e88090b15f3df54f34079f73",
+    "docs/state-contracts-major/evidence/hooks-workflow-validation.json": "f7c510972246868fd981cb234111187ad5951f5dbe96a05d5e4a1e851d08dd33",
+    "docs/state-contracts-major/evidence/live-github-observations.json": "910f8b1a37df3bf173a19673bf5b61499e484e1b8ffb13d3ee3572bd6733a6b6",
+    "docs/state-contracts-major/evidence/native-handoff-read-files.txt": "09746b8407fa66ca72cde0969caa7bcfa0162caa82766fec420d1e74ff7f2207",
+    "docs/state-contracts-major/evidence/native-handoff-validation.json": "80bc96c9db7b8c89e4212699ee16500972a225e108bff5f15a53a846f6ca3c14",
+    "docs/state-contracts-major/evidence/packet-validation.json": "f17a50fde09c278b7d4392df589049397ccc6073da2c81c457760bf2bf06150e",
+    "docs/state-contracts-major/evidence/release-tag-bindings.json": "cace9e52938b2e7e60664b90131b1674538856cd711dec718430bd462a5c69b4",
+    "docs/state-contracts-major/evidence/root-cross-review.md": "0eed821aa4d357d13b20b2a1b089b4fa63b4e59c8c5fea45397d9af8057b7994",
+    "docs/state-contracts-major/evidence/surfaces-handoff-read-files.txt": "5b0abda5c28b5273bfc1b67abf9170665362d4bca65e30290267c866c547fccd",
+    "docs/state-contracts-major/evidence/surfaces-handoff-validation.json": "0f7b3fe266b5554ccd78290972ec9f228cedf6d3991d501c2e6b72bb3b1e1853",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+    "docs/state-contracts-major/index.html": "ac441658fe70381657b3e484b12d13d1ef1a44ec071352bba2c3e2259747003a",
+    "docs/state-contracts-major/native-tasks.json": "67f5d19ac75c1da7250fb6736add7dc8fcee49a74cb416cec3661218ad50a56b",
+    "docs/state-contracts-major/project-context/01-03-BRAND-VOICE-AND-EXCEPTIONS.md": "5feef18404862fa2150cba33fca87b852287974572d985bb421ac0bafe38f39c",
+    "docs/state-contracts-major/project-context/02-00-ARBITERFORGE-OPERATING-CONTRACT.md": "acade9e177de26266a6bbfb6533e67d1b20e66d9e54e1ad6c6b9c7074cccbde8",
+    "docs/state-contracts-major/project-context/README.md": "14856097504e998ebf91fe3c46bbc4fc7e3239822d8882290594f7df476446b0",
+    "docs/state-contracts-major/root-tasks.json": "d3b7e723c0a8576fc2d8d69ac57f0e97700607aee5c62c646f45e77b182f8e13",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "docs/state-contracts-major/tools/validate_packet.py": "6e75599ad6b1f0c02428ddd68183e39fc1bd0490c015eda18abb110ab08131f6",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "ba26cb7e243ea1d7c06d5f5b5f017d0cec71ed399c262e0d72409bed2e6ccf93"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "-v",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 6.962664400009089,
+      "selected_named_population": 14,
+      "selected_skipped": 0,
+      "actual_execution_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/capture-p02-only.py",
+      "sha256": "bc36875910df943b3c53da60151f34f475a353f7c4b460f2d624867371174f79"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/selectors.json",
+      "sha256": "404fa9d495170feb038b80fa0f3b7344a322410efed21bb2630a6bc8c15f02b8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/runtime-and-lookup-seed.json",
+      "sha256": "4f1a8b2723be28080c52d0c2b4007100aa8b9e2e92e77cf5dd89f4a614c3ac78"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/predecessor-proof.json",
+      "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-start.json",
+      "sha256": "0f9220cab42306d5272f595575b4c0368dcd470399026bf3f9720964f2e6af7c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/process-exit.json",
+      "sha256": "252f98cdeb81d6aa311d6a1fe47ab5f61a8360a0c7767984784d51fa320840f3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/after-snapshot.json",
+      "sha256": "99825e39252191507ef3ac02afaa00bb72a6f4b093535da1bc607803a9e6b4c3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-result.json",
+      "sha256": "480f6982761ca68b02942351402e3e83e9f79013e08425054a805f45d5faaa33"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/capture-complete.json",
+      "sha256": "39b94e57895bc9650046352fbf7fac814732dff0fe9c80ae1043de12791a3186"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/actual-imports-69220.json",
+      "sha256": "1376d541b1b20e90212857e0a73d3303a615ffd28292a86870571d433ecd1911"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/original.stdout.log.base64.json",
+      "sha256": "50082cd34ba8c0d2b62f5dfd469553d06c3a9437a4b4cf5c4d729946783947c8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/original.stderr.log.base64.json",
+      "sha256": "af944074a3af620922c0bbb756f06aeaafd3f9669f60dd0be80805f85576c60f"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-selected-gate"
+  ],
+  "semantic_groups": [
+    {
+      "id": "P02:added-stale-history",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-stale-history"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-unknown-input",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-unknown-input"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-original-tamper",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-original-tamper"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-frozen-anchor",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-frozen-anchor"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-origin-mix",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-origin-mix"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    },
+    {
+      "id": "P02:added-selected-gate",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-selected-gate"
+      ],
+      "observed_named_cases": [
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "limits": "Local Windows disposable Git and workflow fixtures; no hosted result, publication, native build, installed host or provider acceptance."
+    }
+  ],
+  "original_named_results": [
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    },
+    {
+      "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate",
+      "result": "PASSED",
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    }
+  ],
+  "execution_context": {
+    "actual_start_git_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+    "actual_end_git_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+    "HEAD_full_index_source_closure_stable": true,
+    "complete_import_namespaces_Git_physical_before_after_stable": true,
+    "runtime_before_after_structured_records": 1905,
+    "runtime_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-start.json",
+    "actual_repository_imports": {
+      ".github/scripts/test_state_contracts_integration.py": "ae4b348b40928ab0d789ed034208d8f65f6cc9a6c13d72b597e3e9d19832023d",
+      ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+      ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+      ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      ".github/scripts/_immutable_git_blobs.py": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+    },
+    "parent_private_prefix_before_imports": true,
+    "parent_no_user_site": 1,
+    "raw_seven_causal_lookup_facts_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-start.json",
+    "owning_core_host_lookup_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-start.json",
+    "fixture_parameters_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/raw/run-start.json",
+    "Git_physical_projection": {
+      ".github/scripts": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": 52,
+        "other_entries_preserved": []
+      },
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": 22,
+        "other_entries_preserved": []
+      }
+    }
+  },
+  "scope": "Renew exactly same six P02 TESTED rows using original14 selected methods once at committed051d16eb after actual source/YAML/owning-test corrections;117positive paths/full2 typed Git+physical namespaces/7raw causalabsences/1905structuredruntime/8actualimports preserved. No new IDs or task/machine status.",
+  "limits": [
+    "Local Windows disposable Git/software fixtures only; no actual HTTP transport/hosted runner/native/installed13/model/provider/UI/publication acceptance.",
+    "Exactly original14 selected P02 methods once at051d; no Recovery29/parity/statusline or broad suite repeated.",
+    "The original f4dc capture remains failed history12PASS2wiringFAIL with no proof; this separate source epoch includes Root owning expectation correction and HTTP classification fix. No historical failure relabelled or hidden.",
+    "All117 positive paths rehashed at literal source before/after; full two typed immutable namespace inventories plus independently full physical names/types/modes/hashes retained, including existing cache/untracked contents. No blanket cache or shadow absence invented.",
+    "Actual process exit/duration/raw outputs and full after-snapshot persisted before validation. All1905 runtime records retain structured path/SHA256 shape from outset;7 causal absence facts reconstructed against current physical/Git candidates.",
+    "Raw transcripts retain exact original bytes via lossless base64/decoded digest envelopes; prior source epochs/proofs and full ledger histories remain unmodified.",
+    "Strict original-proof/candidate input applicability authentication below is prospective retained-file overlay only; Root owns final staging/full-program integrity and commit."
+  ],
+  "predecessor_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
+    "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
+    "source_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+    "read_from_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+    "old_epoch_and_bytes_preserved": true
+  }
+}
