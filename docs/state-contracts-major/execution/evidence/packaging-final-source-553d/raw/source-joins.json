@@ -1,0 +1,363 @@
+{
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "source_tree": "201c662dee158a880d74ebb574f3320a95548b15",
+  "basis": "immutable source objects joined to physically inspected owner bytes; no runtime observation",
+  "inputs": {
+    ".claude-plugin/marketplace.json": {
+      "git_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "physical_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "physical_equal": true
+    },
+    ".github/integration-candidate.json": {
+      "git_sha256": "39264033eba8bd03e758bf61597f2ebe52820b7aed6e62bed1d2b687d199566c",
+      "physical_sha256": "39264033eba8bd03e758bf61597f2ebe52820b7aed6e62bed1d2b687d199566c",
+      "physical_equal": true
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "git_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "physical_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "physical_equal": true
+    },
+    ".github/scripts/_releaselib.py": {
+      "git_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "physical_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "physical_equal": true
+    },
+    ".github/scripts/check_codex_skill_resources.py": {
+      "git_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "physical_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "physical_equal": true
+    },
+    ".github/scripts/check_codex_static_package.py": {
+      "git_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "physical_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "physical_equal": true
+    },
+    ".github/scripts/integration_candidate.py": {
+      "git_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+      "physical_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+      "physical_equal": true
+    },
+    ".github/scripts/test_artifact_installed_host.py": {
+      "git_sha256": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+      "physical_sha256": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+      "physical_equal": true
+    },
+    ".github/scripts/test_context_installed.py": {
+      "git_sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+      "physical_sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+      "physical_equal": true
+    },
+    "LICENSE": {
+      "git_sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+      "physical_sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+      "physical_equal": true
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "git_sha256": "988af357749400c2bee20459d7c74bafe7c6dbc0f14528b389fc1ae84772a05e",
+      "physical_sha256": "988af357749400c2bee20459d7c74bafe7c6dbc0f14528b389fc1ae84772a05e",
+      "physical_equal": true
+    },
+    "core/hosts.json": {
+      "git_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "physical_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "physical_equal": true
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "git_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "physical_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "physical_equal": true
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "git_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "physical_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "physical_equal": true
+    },
+    "core/pysrc/_gitexec.py": {
+      "git_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "physical_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "physical_equal": true
+    },
+    "core/pysrc/_releaselib.py": {
+      "git_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "physical_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "physical_equal": true
+    },
+    "core/surface/command-routes.json": {
+      "git_sha256": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+      "physical_sha256": "9882caf3f5c5f769f420c2d2c0bf03e958d5822b156e15b9231ec21a7a39f756",
+      "physical_equal": true
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "git_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "physical_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "physical_equal": true
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "git_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "physical_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "physical_equal": true
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "git_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "physical_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "physical_equal": true
+    },
+    "package.json": {
+      "git_sha256": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+      "physical_sha256": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+      "physical_equal": true
+    },
+    "plugins/ca-pi/CHANGELOG.md": {
+      "git_sha256": "a27356bb5c0f203ce97e9ce81fbbe8dea5c2f683615e31406bc7f18ed90993e3",
+      "physical_sha256": "a27356bb5c0f203ce97e9ce81fbbe8dea5c2f683615e31406bc7f18ed90993e3",
+      "physical_equal": true
+    },
+    "plugins/ca-pi/package.json": {
+      "git_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+      "physical_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/build.mjs": {
+      "git_sha256": "d659b6b6d0b712cd28b35331991aa41c8948cc3b954c700ae8916d022b378049",
+      "physical_sha256": "d659b6b6d0b712cd28b35331991aa41c8948cc3b954c700ae8916d022b378049",
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/package-lock.json": {
+      "git_sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+      "physical_sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+      "physical_equal": true
+    },
+    "plugins/ca-pi/tools/package.json": {
+      "git_sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+      "physical_sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+      "physical_equal": true
+    },
+    "plugins/ca/hooks/secret-detection-corpus.json": {
+      "git_sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+      "physical_sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+      "physical_equal": true
+    },
+    "tools/build-host-packages.py": {
+      "git_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "physical_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "physical_equal": true
+    },
+    "tools/build-surface.py": {
+      "git_sha256": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+      "physical_sha256": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+      "physical_equal": true
+    },
+    "tools/command_compatibility.py": {
+      "git_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+      "physical_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+      "physical_equal": true
+    },
+    "tools/host_descriptors.py": {
+      "git_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "physical_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "physical_equal": true
+    },
+    "tools/install-artifact-payload.py": {
+      "git_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "physical_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "physical_equal": true
+    },
+    "tools/owned_output.py": {
+      "git_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "physical_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "physical_equal": true
+    },
+    "tools/promote-claude-marketplace.py": {
+      "git_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "physical_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "physical_equal": true
+    },
+    "tools/promote-codex-marketplace.py": {
+      "git_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "physical_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "physical_equal": true
+    },
+    "tools/sync-core.py": {
+      "git_sha256": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+      "physical_sha256": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+      "physical_equal": true
+    }
+  },
+  "baseline_selected_tree_succeeded": true,
+  "baseline": {
+    ".claude-plugin/marketplace.json": {
+      "mode_type_blob": "100644 blob 6c624166c4104e9ff3d9996749f099d31bdc31b5",
+      "sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "same_bytes": true
+    },
+    ".github/integration-candidate.json": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "mode_type_blob": "100644 blob 39659a2f01511cef975cfeb6de3038e94564a969",
+      "sha256": "77a3aee73f8e6ae333158133d2045c6bd653c40d08914d8ed5578001f3bb4dc5",
+      "same_bytes": false
+    },
+    ".github/scripts/_releaselib.py": {
+      "mode_type_blob": "100644 blob 51f5852cb658c5e602e52e080d1af73cba7b3fee",
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "same_bytes": true
+    },
+    ".github/scripts/check_codex_skill_resources.py": {
+      "mode_type_blob": "100644 blob 212eca3d09fcdc739d6b95db92c348b090188403",
+      "sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "same_bytes": true
+    },
+    ".github/scripts/check_codex_static_package.py": {
+      "mode_type_blob": "100644 blob a88fc04dc94868b10ab6a2bee723e9b5a2bcfb2c",
+      "sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "same_bytes": true
+    },
+    ".github/scripts/integration_candidate.py": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    ".github/scripts/test_artifact_installed_host.py": {
+      "mode_type_blob": "100644 blob d06b5cd72f4dbd9117ffd79babe892aedecafac9",
+      "sha256": "0c017c619144e1433e528a5e9d305b7bf65a8e842b0a2c8961b96bcc15451ccc",
+      "same_bytes": false
+    },
+    ".github/scripts/test_context_installed.py": {
+      "mode_type_blob": "100644 blob d2b8f7a65ede0cedbbe517973b1442b92163bb62",
+      "sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+      "same_bytes": true
+    },
+    "LICENSE": {
+      "mode_type_blob": "100644 blob be3f7b28e564e7dd05eaf59d64adba1a4065ac0e",
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+      "same_bytes": true
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "mode_type_blob": "100644 blob 346e0c63677aac60426a20efd3984907dc3bcaf5",
+      "sha256": "988af357749400c2bee20459d7c74bafe7c6dbc0f14528b389fc1ae84772a05e",
+      "same_bytes": true
+    },
+    "core/hosts.json": {
+      "mode_type_blob": "100644 blob 4ee02473d7560ff1c6c90943ed28be9da741ab7f",
+      "sha256": "7ee1de9bf256d5d46a2cf1580a542f39b95af70205ad1b90c5c964dcd2ff4f88",
+      "same_bytes": false
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "mode_type_blob": "100644 blob 3bd569c1cbc9be1d25da7bff51429c0cd60793af",
+      "sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+      "same_bytes": false
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "core/pysrc/_gitexec.py": {
+      "mode_type_blob": "100644 blob 492afd199f317dac3624164bc65dae9da6ca8fae",
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "same_bytes": true
+    },
+    "core/pysrc/_releaselib.py": {
+      "mode_type_blob": "100644 blob aebed6013f86458a81e71aeedc55cde1bfce62f6",
+      "sha256": "4039900b3b8713f8052d7bd1a3fa174e0b357292c700d6b4ab5edfc65d4840d6",
+      "same_bytes": false
+    },
+    "core/surface/command-routes.json": {
+      "mode_type_blob": "100644 blob fd6ae79b90425f0d7a97c29711274939f17c3edf",
+      "sha256": "18a87c94393aef590df171798ef6b97f6bb550187d37129aaa1f873e86fcd6b5",
+      "same_bytes": false
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "package.json": {
+      "mode_type_blob": "100644 blob 12740c2dfa107a8637e339d3cf5f889f9032743f",
+      "sha256": "d5047dfc538faf68cf6d1b6420a189a6ceabe85654cae98bf9005f8cdd2a4c97",
+      "same_bytes": false
+    },
+    "plugins/ca-pi/CHANGELOG.md": {
+      "mode_type_blob": "100644 blob 5c077c97939c8a799b2427abeb2b16fbd0fbdde2",
+      "sha256": "ea6ccba14100f7b13e2f8819638e2fda5e1d88092793b64c50690c4a3fcb2dff",
+      "same_bytes": false
+    },
+    "plugins/ca-pi/package.json": {
+      "mode_type_blob": "100644 blob df0f7eb9ab94b8d68cccfba7596dec049563b621",
+      "sha256": "315a88721071f23c076dd283dbb5373db12853a23cb05aeac330ed0462fdd872",
+      "same_bytes": false
+    },
+    "plugins/ca-pi/tools/build.mjs": {
+      "mode_type_blob": "100644 blob afd86bbac299f97fa2517501a83da4d13a725ad2",
+      "sha256": "7a93be836d55d7903b4f3fa969f624113264946f3e5d11ac1314a66121c22df7",
+      "same_bytes": false
+    },
+    "plugins/ca-pi/tools/package-lock.json": {
+      "mode_type_blob": "100644 blob 46c8a74396b93a46a15e2672a5d2a231a01c1486",
+      "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+      "same_bytes": true
+    },
+    "plugins/ca-pi/tools/package.json": {
+      "mode_type_blob": "100644 blob 278c9927bfad1ca66939f0d683ec2e77b18b22f8",
+      "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+      "same_bytes": true
+    },
+    "plugins/ca/hooks/secret-detection-corpus.json": {
+      "mode_type_blob": "100644 blob c4eb2c7e02b8acd46ec444805a24fe27d3548ee1",
+      "sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+      "same_bytes": true
+    },
+    "tools/build-host-packages.py": {
+      "mode_type_blob": "100644 blob 955430a404bd61cea6e66536c905dc6b967d0d00",
+      "sha256": "be7f6fad13b5041bfc901e8c803d2426fc9bb2d8b313786cd622d8d961a386be",
+      "same_bytes": false
+    },
+    "tools/build-surface.py": {
+      "mode_type_blob": "100644 blob 63306bd51b2a35b702e7e799c810640245cf5b0f",
+      "sha256": "bc107e5586d46facb9e1d309dfdd138b0e910cc06dae0a5f87921c31b7b6f1e3",
+      "same_bytes": false
+    },
+    "tools/command_compatibility.py": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "tools/host_descriptors.py": {
+      "mode_type_blob": "100644 blob 6d0d178b20a13168acdeb37674c39f3bb7eed3b4",
+      "sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "same_bytes": true
+    },
+    "tools/install-artifact-payload.py": {
+      "mode_type_blob": "100644 blob 02d4e9a37b149b14e0fade02c5ada93dac84be6a",
+      "sha256": "f57d485479eefee873437f3c9546f85a6a6bc08bf5c04f5c3600c6678d058ce5",
+      "same_bytes": false
+    },
+    "tools/owned_output.py": {
+      "state": "not-in-successfully-enumerated-selected-baseline-tree"
+    },
+    "tools/promote-claude-marketplace.py": {
+      "mode_type_blob": "100644 blob 029da595c8489ecf3a149ca4f6ff519a13b109db",
+      "sha256": "3c0fb4537105ec655f43d46501d0095e76a456c72779a87ba6d429fa6cd6c029",
+      "same_bytes": false
+    },
+    "tools/promote-codex-marketplace.py": {
+      "mode_type_blob": "100644 blob 840738f5edbf3ce7e878385072a0a55d41c185fe",
+      "sha256": "c3313a2d5b5b58f262f3b06993e504523e933a221c67cdae2d37d79617471cd3",
+      "same_bytes": false
+    },
+    "tools/sync-core.py": {
+      "mode_type_blob": "100644 blob d59a9546e70499a41145d88d3635ccd5858fe0b1",
+      "sha256": "fd9b2a2b653f48d379aca690a7fc74effd0954a9da5326cd2f1b1f6d3af41e00",
+      "same_bytes": false
+    }
+  },
+  "unchanged_function_asts_support_only": {
+    "render_package": true,
+    "expected_package": true,
+    "_semver_key": true,
+    "_semver_greater": true,
+    "validate_pi_release_advance": true,
+    "pi_release_guard": true,
+    "cold_execute_artifact_host_payload": true
+  }
+}

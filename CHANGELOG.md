@@ -26,6 +26,12 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Capture bounded Windows timeout stack projections through the typed SDK engine, verifying process identity, policy and detachment before reporting captured frames.
+- Retain bounded Windows process state and private stack projections after Pi RPC timeouts without changing the failed result or cleanup.
+- Read large CI change sets from event files and Git so integration qualification can start without exceeding process argument or environment limits.
+
+- Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+
 - Respect late Claude sandbox cancellation before reporting readiness, with scoped cleanup and token-safe errors.
 - Keep observed Sandbox container IDs available for recovery when cancellation cleanup discovery fails.
 - Qualify native installations from their matching cold-package executions and refuse source-only test substitutes.

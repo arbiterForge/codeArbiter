@@ -1,13 +1,44 @@
+# Current delivery checkpoint (2026-11-15 UTC)
+
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
+
+- Last failed CI source was `2df782d48576e72bd01ef303c9f3546f3b620b05`; committed SDK repair source is `db50f8e3a0170b8a1c4f8b7567897c8574b8d34c`. Git/provider supply the current containing metadata and exact pushed CI head. Exact2df Windows Pi job132653838973/run43662186921 failed both the original discovery/doctor natural EOF wait and the strict SDK captured control. Earlier rpc/rpc-observed partitions passed. Historical a7 green checks do not qualify this source.
+- The closed OS report identifies the original Pi process still running after JavaScript exit markers. Actual debugger status was unavailable with no tool hashes or frames. The separate owned-Node SDK control returned unrecognized. No stack, native call completion, exit cause or application repair is established. Authenticated selected failure JSON and manifest are retained under `evidence/pi-2df-unresolved-shutdown/` before artifact expiry.
+- Replace the failing CDB front-end route with a typed DbgEng SDK worker. Exact unchanged SDK regression now locally passes0.860s,12threads74knownRVAframes, ownedHANDLE/Node survival/lateexit retained. Fiveaffected controls/CIselectorRED-GREEN/ABI/syntax and one exactsixfile independent securityreview PASS. Runtime source was the observed dirtyca496 patch, then committed byte-identicallydb50. Hosted result remains pending; original Pi exit cause is unresolved.
+- Fresh27 recovery methods and44 Sandbox unit assertions passed, supporting39 existing TESTED successors at actual2df source. Original scopes, complete dependencies, before/after physical inputs and1473 runtime-member hashes remain retained. No task, installed, user/model or whole-program promotion follows.
+- The earlier27 source-only PRESERVED records are committed in5dc. Earlier full integrity passed105 frozen files/1309 advanced/1027 applicable/282 stale; final current39 staged validation is recorded separately.133 native stale records await eligible trusted successful integration-push evidence; a successful native job in a failing PR run is not that principal.
+- Reader follow-on:14 existing targeted methods PASS, renewing six finite mechanical reader/deadline records. Five executable inputs match2df and actual execution108dc before/after. The two C36 bundle/benchmark gaps are superseded by the actual observation below. No actual host CLI, native, provider, platform or task qualification follows.
+- C36 follow-on: original production-wrapper benchmark PASS4.929s, temporary bundle/child/CLI exit0,4 wrappers/100 timings/105+105 original stub counters. Thirty source inputs plus actual tool/bundle/runtime and lookup witnesses retained; exactly two existing TESTED rows renewed. Profiling overhead and fixture/native/installed distinctions remain explicit.
+- Sandbox follow-on:40new named unit controls PASS1.102s and5same-source observations reused, renewing11existing finite TESTED rows. No Docker/imagebuild/installed claim. P02six remains held after14passing tests because7causal Python lookup absences require explicit shared reader support; no metadata workaround.
+- Next: push the coherent SDK source/evidence once and watch exact-head CI promptly, then push once and watch exact-head CI promptly. Integrate1108 only when required checks pass and named remote branch auto-deletion is authorized. Never merge1098 to main or publish.
+- Gov and D:/projects/codeArbiter/.git remain repaired. Preserve unrelated worktrees/audits/artifacts. Never reopen the original handoff ZIP. Pi HTTP policy and actual parent/user/model/lifecycle acceptance remain open.
+
+## Preserved checkpoint history
+
+# Current delivery checkpoint (2026-11-15 UTC)
+
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
+
+- Active child #1108 is at pushed head `553d07fe`. Its Windows Pi job132646451284 in run43659807673 failed the new owned-Node SDK control (`unrecognized` instead of `captured`); original RPC and observed-RPC partitions passed. The predecessor a7's 92 green checks are historical evidence for a7 only.
+- A confirmed diagnostic format gap is under repair: the parser required numbered frames while kL did not request them. A two-file Temp successor uses the documented knL command and safe numbered/unnumbered parsing. Two regression failures preceded four pure passing controls; independent affected-scope review passes. Actual SDK capture/Node survival still requires the next hosted run. No Pi application cause or repair is inferred.
+- The bbba normal integration run43649759117 failed because an environment value containing 1,910 paths and 148,885 bytes prevented shell startup. No installed reports ran. Committed source a7 reads event files and Git output; 15 focused controls and independent review passed.
+- The earlier 40-record batch includes S38:04's actual three-test observation against the authenticated tested native build. It resolves that complete-dependency unknown; no local Go build or retrospective input capture was used.
+- The next coherent metadata batch adds 27 source-only PRESERVED records: five native records and 22 packaging records. Prior runtime/installed observations remain at their actual epochs. Full current-source joins cover 281 distinct inputs; no whole-task, platform, model, user or publication completion follows.
+- Next: commit the bounded format repair, push the coherent batch once, observe exact-head CI promptly, then integrate #1108 only when green. Named remote branch auto-deletion still requires permission. Never merge #1098 to main or publish.
+- Gov remains `C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter`; common Git is `D:/projects/codeArbiter/.git`. Preserve all unrelated source/audit/artifact/worktree state. Never reopen the original handoff ZIP. Pi endpoint policy and actual parent/user/model/lifecycle acceptance remain open.
+
+## Preserved checkpoint history
+
 # Current delivery checkpoint (2026-11-14)
 
-Child PR #1107 targets `major/state-contracts`. Current code is `d98e12f51d409cfd3cdb8c06b82e02eee0e3da61`; the original governance checkout now resolves Git through `D:/projects/codeArbiter/.git`. PR #1098 remains draft and held from main for Brennon testing. No publication authority.
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. Its exact head22a passed 92 checks including required merge-readiness; six checks skipped. Both merge parents and identical source tree were verified. The named remote branch deletion was authorized and confirmed. PR #1098 remains draft and held from main for Brennon testing; publication is not authorized.
 
-- Actual fixes cover Farm shared-registry locking, mapped-target failures, conservative read guards, authenticated installed-report routes, and Sandbox cancellation/known-container recovery. Latest Claude cancellation regression: four RED to 43 affected tests GREEN, strict TypeScript, rebuilt companion. Docker/runtime acceptance remains separate.
-- The previous #1107 head7eba finished 90 successful checks, six skips and two failures: the stale Impact predicate expectation and its dependent aggregate. All three Pi adapter jobs passed. Correction2263 passed five affected tests; historical Windows shutdown failures remain unexplained.
-- Current staged integrity passes: all 105 frozen intake files, 1,239 advanced records, 1,108 applicable, 130 stale and one unknown. This batch renews 74 guard/mapped source records and preserves nine more Sandbox clauses plus three machines. Original evidence/history remains intact; these counts do not qualify tasks, installed hosts, models or scenarios.
-- S38:04 has authentic controlled runtime observations but incomplete explicit native membership/host-lookup closure. Retain UNKNOWN. Pi endpoint policy remains awaiting the existing user decision.
-- Next: push this coherent correction batch, require exact-head hosted merge-readiness, then inspect actual installed observations from the trusted normal integration push. Continue receipt-bearing reconcile characterization and real parent-consent/lifecycle qualification. Never substitute fixture or source passes for those outcomes.
-- Preserve primary/author/acceptance checkouts, append-only audit records and recovery metadata. Local branch deletion after merge is authorized; remote child deletion still needs named approval. Never reopen the original handoff ZIP.
+- Trusted normal integration push43649759117 is running. Actual installed-package reports and retained artifacts still need observation.
+- Follow-on code source0c882f43 adds receipt-reconciliation characterization and corrects two Sandbox catalog claims. Fresh native11subcases pass with complete245-member before/after closure. These synthetic native fixtures do not establish human/installed approval.
+- Full integrity passes all105 frozen files and1,270 advanced records:965applicable,304stale,oneunknown. The new test source changes native module fingerprints; old records remain authentic history pending their owning current evidence.
+- This batch admits32 bounded updates. It corrects the prior inaccurate SW01 catalog narrative while retaining history, preserves complete finite source clauses, and records N10's actual executed command. The initial malformed proof proposal was refused and retained; only truthful command metadata was added, with no gate weakening or test rerun.
+- S38:04 remains UNKNOWN until an authenticated tested native installation supports the actual missing closure observation. Do not use a skipped-tests installation or invent past membership/absence facts.
+- Continue remaining acceptance, real parent-consent/lifecycle and physical/model journeys. The existing Pi endpoint policy decision stays pending. Preserve primary/author/acceptance worktrees, audit records and recovery metadata; never reopen the original handoff ZIP.
 
 ## Preserved checkpoint history
 

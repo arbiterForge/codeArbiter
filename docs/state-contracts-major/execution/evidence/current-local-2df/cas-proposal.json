@@ -1,0 +1,1952 @@
+{
+  "schema": "codearbiter-current-local-proof-cas/1",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "source_tree": "067a1d25ff569baa9f0cc37657ccee6bc0fd52f8",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "added_transitions",
+      "id": "WR-01",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-02",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-03",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-04",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-05",
+      "old_row_sha256": "04bffa00551bcd4960836b3782c97062b2dc4c3d46b2d2fab115cd799600c8de",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15",
+          "HW-14"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-06",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-07",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-08",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-09",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-10",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-11",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-12",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-13",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-14",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-15",
+      "old_row_sha256": "04bffa00551bcd4960836b3782c97062b2dc4c3d46b2d2fab115cd799600c8de",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15",
+          "HW-14"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-16",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-17",
+      "old_row_sha256": "04bffa00551bcd4960836b3782c97062b2dc4c3d46b2d2fab115cd799600c8de",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15",
+          "HW-14"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-18",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-19",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-20",
+      "old_row_sha256": "04bffa00551bcd4960836b3782c97062b2dc4c3d46b2d2fab115cd799600c8de",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15",
+          "HW-14"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-21",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "WR-22",
+      "old_row_sha256": "b1bbd6aa288de6d7f77d51e81e1d2df6d0d42cf814a4b341c70e608c7affdab0",
+      "proposed_row": {
+        "owner": "hooks-workflows",
+        "treatment": "INTRODUCED_DURABLE_RECOVERY",
+        "task_ids": [
+          "HW-11",
+          "HW-12",
+          "HW-15"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+            "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+            "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+            "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+            "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+            "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S52:01",
+      "old_row_sha256": "bfc3e13ad98db372838892b8ab70ae06a2ef31d15cf491fa3b6be274a128d0a1",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S52:02",
+      "old_row_sha256": "bfc3e13ad98db372838892b8ab70ae06a2ef31d15cf491fa3b6be274a128d0a1",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S52:03",
+      "old_row_sha256": "bfc3e13ad98db372838892b8ab70ae06a2ef31d15cf491fa3b6be274a128d0a1",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S52:04",
+      "old_row_sha256": "bfc3e13ad98db372838892b8ab70ae06a2ef31d15cf491fa3b6be274a128d0a1",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S52:05",
+      "old_row_sha256": "bfc3e13ad98db372838892b8ab70ae06a2ef31d15cf491fa3b6be274a128d0a1",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S48:06",
+      "old_row_sha256": "57200dda2c17dd610585a69817efa539714c30183ea398a2340fd11eabe7c09f",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S48:07",
+      "old_row_sha256": "57200dda2c17dd610585a69817efa539714c30183ea398a2340fd11eabe7c09f",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:01",
+      "old_row_sha256": "b0f00979d95eb24d47708588f473ce8d342232a51cdda3923e80b062bac75604",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S51:05",
+      "old_row_sha256": "68e32cd866a6c4cc63a5b7ec535fbcc32226d368172aa1cce5b7bccc39e704e4",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Controlled Docker failure130 after token container creation triggers exact independent rm+ps without cancelled signal; failed removal/observation retain containerId, original commandCode and cleanup unknown. Dummy token only; no real provider/token-host qualification.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:01",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:02",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:03",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:04",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:05",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:06",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S53:07",
+      "old_row_sha256": "c470e5e13849c2c8df545b7184ce1479987dde26b67e1a8e6c511edfd8fa8023",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "candidate_contract_note": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S53",
+      "old_row_sha256": "3d181874d7b3e505be61e9dcdbe4cf80f9bf395018200016c73bd9f33676e6e8",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D02",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+            "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/farm-sandbox-tested.json",
+            "sha256": "e52cd82632b118e3e6c8a79638c85b92d29bec65dfb500b93a12b08ca2533f25",
+            "ref_commit": "106c34670a1a110e5f9e184544b3224958c46cf7"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/sandbox-tested-successor.json",
+            "sha256": "bc15f30128cc37766edaf7013295ce4c35d1d33e416d5c681bd3f607340ce55f",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox17-tested-successor.json",
+            "sha256": "2fbb2d2be8f6ec025da716769793481d37d286f01ec550238c9498208f765113",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+            "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+            "ref_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+          }
+        ]
+      }
+    }
+  ],
+  "counts": {
+    "renew_existing_TESTED": 39,
+    "introduced_new_rows": 0,
+    "new_task_installed_platform_promotions": 0
+  },
+  "metadata_ref_commit": null,
+  "limits": [
+    "Original active proof refs appended with actual2df retained-metadata anchors; their original source/run/runtime facts unchanged.",
+    "New proof files are prospective; Root must retain and bind their actual future metadata commit.",
+    "No other stale/native/installed/source-preserved rows are changed."
+  ]
+}

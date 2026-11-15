@@ -1,0 +1,252 @@
+{
+  "schema": "codearbiter.finite-packaging-source-inspection/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "producer": "/root/packaging_site_tools",
+  "scope": "Finite complete conditional source guard/effect/retry conformance, after owning/caller/helper inspection; equality only exposes bytes, not the semantic argument. No application code/test executed.",
+  "records": [
+    {
+      "transition_id": "S70:01",
+      "ledger_update": true,
+      "frozen_row_sha256": "b534995f72fdc2fe6f5e99432c5ac821f23c26beaba42df35dd6e623aab96964",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            42,
+            116
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "source unverified",
+        "event": "load payload",
+        "guard": "bounded regular files; exact schema incl optional context qualification; native-tested/magic/hash valid",
+        "to": "source verified",
+        "effects": "Read immutable manifest/binary bytes; reject duplicates/unsafe platform/file entries.",
+        "failure_retry": ""
+      },
+      "assessment": "Opened bounded regular sources, duplicate-key rejection, exact supported required/optional shape/platform/filename/native_tested and magic+digest; context validated locally and by canonical decoder. Returns immutable verified bytes.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:02",
+      "ledger_update": true,
+      "frozen_row_sha256": "ddbd05bef0ce2912645d2670f9275bcbf4e5dea7636a64280e1eb44ea4def9fa",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            119,
+            221
+          ],
+          [
+            284,
+            294
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "source unverified",
+        "event": "load promoted payload",
+        "guard": "trusted receipt hash/source/workflow/run/host; exact source file set and qualification binding",
+        "to": "source verified",
+        "effects": "Return immutable snapshot; installation never reopens unverified source paths.",
+        "failure_retry": ""
+      },
+      "assessment": "Trusted receipt digest/source/workflow/run, real authorized host directory, exact inventory, payload/manifest hashes, qualifications/context joins precede immutable snapshot. Promoted install consumes snapshot without reopening source.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:03",
+      "ledger_update": true,
+      "frozen_row_sha256": "f08c2b86458fca164bb4df32d219b70cf15527db7c69a73ae49fc272632c8f4d",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            224,
+            274
+          ],
+          [
+            297,
+            309
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "source verified",
+        "event": "install",
+        "guard": "POSIX supported; safe descriptor plugin path; pinned no-follow ancestors; destination absent",
+        "to": "destination created",
+        "effects": "Create helpers/artifacts exactly once with pinned directory handle.",
+        "failure_retry": ""
+      },
+      "assessment": "Descriptor owner validates routes and unique host; safe relative plugin path, Windows refusal and POSIX pinned directory/nofollow ancestors; final artifacts leaf create once. Conditional supported POSIX primitives, no observed install.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:04",
+      "ledger_update": true,
+      "frozen_row_sha256": "8bbe13958c3b7650dfd7f4df1d78f4666833c717456e101c3fe4d8c10a6fc39d",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            239,
+            250
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "source verified",
+        "event": "install",
+        "guard": "destination already exists",
+        "to": "existing refused",
+        "effects": "Refuse overwrite; require reviewed versioned upgrade.",
+        "failure_retry": "No automatic in-place update/uninstall lifecycle is implemented by this installer."
+      },
+      "assessment": "Existing leaf explicitly refuses overwrite and asks reviewed versioned upgrade. No update/uninstall/rollback implemented; retry same partial destination refuses.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:05",
+      "ledger_update": true,
+      "frozen_row_sha256": "273c959579f14a69dd114a855a7fa2f302e9b7097f87d0b586d8b0f1a025ff48",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            230,
+            232
+          ],
+          [
+            277,
+            282
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "source verified",
+        "event": "install on Windows developer path",
+        "guard": "os.name==nt",
+        "to": "refused",
+        "effects": "Developer installer fails closed; Windows payload installation is release-packaging path only.",
+        "failure_retry": ""
+      },
+      "assessment": "Ordinary developer entry refuses Windows before loading/writing and underlying installer also refuses. Release packaging remains separate owner, no fallback.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:06",
+      "ledger_update": true,
+      "frozen_row_sha256": "c9d30c8826e369b59fb6a8c8452a0cda40a845e3cfd2e2bf1f40cbd121b559aa",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            66,
+            71
+          ],
+          [
+            257,
+            262
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "destination created",
+        "event": "write binaries",
+        "guard": "exclusive safe relative names",
+        "to": "binaries written",
+        "effects": "Write all bytes, fsync and set executable permissions.",
+        "failure_retry": ""
+      },
+      "assessment": "Verified binary map feeds exclusive nofollow create, complete write loop, fsync and executable mode; fd closes finally, no overwrite.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:07",
+      "ledger_update": true,
+      "frozen_row_sha256": "a95d97674bed165a1ee53142b3e25fc733fb82febe123965462212e3e3c06987",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            255,
+            271
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "binaries written",
+        "event": "write manifest last",
+        "guard": "binary writes complete",
+        "to": "manifest installed then available",
+        "effects": "Exclusive-create release.json, fsync file then directory; manifest availability is final entrypoint signal.",
+        "failure_retry": ""
+      },
+      "assessment": "All binaries precede exclusive release.json write/file-fsync and directory-fsync. Manifest-last availability signal, no multi-file atomicity or host authority/enablement claim.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S70:08",
+      "ledger_update": true,
+      "frozen_row_sha256": "c1b16e538e2fd54da52485f0b3ec235d287fbcdee07ee748c2d937520b18c780",
+      "source": {
+        "path": "tools/install-artifact-payload.py",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "spans": [
+          [
+            239,
+            274
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "destination created or binaries written",
+        "event": "write/fsync failure",
+        "guard": "multi-file operation interrupted",
+        "to": "partial unavailable",
+        "effects": "Close handles and leave partial create-only directory.",
+        "failure_retry": "No rollback or PATH fallback; do not retry same path blindly or claim plugin enabled."
+      },
+      "assessment": "Owned files/directories close in finally; failed partial create-only output remains unavailable. No deletion retry, PATH fallback or plugin/farm enable action. OS close/fsync effects not executed here.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    }
+  ],
+  "machine_coverage": {
+    "S70": {
+      "all_frozen_edges": [
+        "S70:01",
+        "S70:02",
+        "S70:03",
+        "S70:04",
+        "S70:05",
+        "S70:06",
+        "S70:07",
+        "S70:08"
+      ],
+      "covered_by_this_source_inspection": [
+        "S70:01",
+        "S70:02",
+        "S70:03",
+        "S70:04",
+        "S70:05",
+        "S70:06",
+        "S70:07",
+        "S70:08"
+      ],
+      "scope": "Whole finite source contract only. Existing higher-status edge records unchanged/not re-executed."
+    }
+  },
+  "dependency_review": "Canonical manifest and descriptor owner inspected. Descriptor CLI also scans host condition tags when called: no claim that all external templates or actual CLI completed. POSIX primitives, Windows refusal and installed lifecycle kept distinct.",
+  "historical_delta_review": "fd7 diff: shared manifest constants/validator added; pinned create-only/manifest-last/failure flow unchanged."
+}

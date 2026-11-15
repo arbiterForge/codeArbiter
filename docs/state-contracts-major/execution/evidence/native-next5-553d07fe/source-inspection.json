@@ -1,0 +1,1513 @@
+{
+  "schema": "codearbiter.finite-native-source-accounting/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "selected_machine_ids": [
+    "N01",
+    "N02",
+    "N36",
+    "N37"
+  ],
+  "complete_transition_count": 22,
+  "rows": [
+    {
+      "transition_id": "N01:01",
+      "frozen_clause": {
+        "from_state": "closed",
+        "from": "closed",
+        "event": "capabilities / schema",
+        "guard": "valid protocol/request",
+        "to": "closed",
+        "effects": "Return process capabilities/schema without opening repository.",
+        "failure_retry": "Invalid request or unknown operation rejects before repository effects.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:01"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Run calls CheckRequest and canonical.Clone before its capabilities/schema branches, and both branches return before openStore. CheckRequest resolves the closed RequestSchema and validates it; unknown operations/keys fail before repository opening.",
+        "Current capabilities adds versioned operation/retirement/progress metadata, as authorized by NT-03; it does not move either branch behind repository opening or enable a backend. Schema returns the selected owned schema. This preserves the finite admission/effect boundary rather than claiming every payload field is unchanged."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": []
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:02",
+      "frozen_clause": {
+        "from_state": "closed",
+        "from": "closed",
+        "event": "repository operation",
+        "guard": "supported platform, safe real root",
+        "to": "opened",
+        "effects": "Open root-anchored filesystem and operation-local memo.",
+        "failure_retry": "Unsupported platform/unsafe root refuse.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:02"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After the repository-free branches, Run calls openStore(root), returns its error immediately and registers defer f.Close only after success. Production openStore is store.Open. Linux Open anchors an existing real directory with O_DIRECTORY/O_NOFOLLOW/O_CLOEXEC; portable Open checks a real directory and resolved root path before os.OpenRoot. Both successful constructors allocate newMemo per FS.",
+        "Build-selected fs_other.Open always returns UNSUPPORTED_PLATFORM. Its bounded message now derives the declared backends and explicitly distinguishes source capability from release qualification (NT-08); no unsupported platform is opened. Unsafe roots refuse UNSAFE_ROOT. No OS runtime result is inferred from this source inspection."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": null,
+        "limits": []
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:03",
+      "frozen_clause": {
+        "from_state": "opened",
+        "from": "opened",
+        "event": "shared observation",
+        "guard": "operation in sharedObservation, or read mode exact",
+        "to": "shared lock",
+        "effects": "Acquire shared lock for selected read operations. Windows observation requires existing store metadata; Linux needs none. Darwin lock path may create store.lock.",
+        "failure_retry": "Busy: bounded 2s retry then LOCK_TIMEOUT; fresh read advised. Missing Windows metadata: NO_LOCAL_STORE.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "sharedObservation",
+            "lines": [
+              42
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:03"
+      },
+      "guard_effect_retry_source_assessment": [
+        "sharedObservation uses the exact explicit allowlist and read mode exact; default/other modes are exclusive. Run passes a two-second timeout. Windows uses ObservationLock with existing-only metadata/read access, distinct missing metadata NO_LOCAL_STORE and lock failure/timeout. Linux shared flock uses the repository descriptor without metadata. Darwin calls its ordinary lockFile path, which may initialize metadata.",
+        "Lock failure returns before dispatch or transaction work. Busy backends use nonblocking acquire/retry until their bounded deadline then LOCK_TIMEOUT with fresh-read advice. These are source semantics, not a hard wall-clock bound on all OS calls."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationSharedClassification",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationWriterExclusion",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Windows branch TESTED; Linux no-metadata and Darwin lock-file behavior remain unexecuted/pending, not inferred from this row."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:04",
+      "frozen_clause": {
+        "from_state": "opened",
+        "from": "opened",
+        "event": "all other operations / index",
+        "guard": "not shared observation",
+        "to": "exclusive lock",
+        "effects": "Acquire exclusive lock; index remains exclusive despite being observational. Windows index uses read-access ObservationLock.",
+        "failure_retry": "LOCK_FAILED / LOCK_TIMEOUT; no semantic mutation.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:04"
+      },
+      "guard_effect_retry_source_assessment": [
+        "All non-shared operations default to exclusive locking; index is not on the shared allowlist. Windows explicitly routes index through ObservationLock(exclusive=true), preserving existing-only read access while taking an exclusive mutex. Other supported platforms use f.Lock(exclusive=true).",
+        "Acquisition errors return before request hash/Engine creation/Pending/dispatch and make no semantic mutation. LOCK_FAILED/LOCK_TIMEOUT remain distinct; permitted lock metadata creation is not canonical artifact content."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Windows exclusive admission only; no Darwin/Linux runtime claim or arbitrary LOCK_FAILED injection claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:05",
+      "frozen_clause": {
+        "from_state": "opened",
+        "from": "opened",
+        "event": "init-store",
+        "guard": "writer lock possible",
+        "to": "released",
+        "effects": "Initialize platform lock metadata only; report created or present. Linux reports present.",
+        "failure_retry": "Native filesystem failures remain explicit.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "initStore",
+            "lines": [
+              57
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:05"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Run branches init-store after successful Open and before generic dispatch. initStore checks LockMetadataPresent, acquires ordinary writer Lock(true,2s), immediately unlocks, and returns present/created from pre-acquisition metadata. Linux metadata is intrinsically present. Native errors return unchanged; the outer deferred Close remains registered.",
+        "This initializes platform lock metadata only; it does not write a canonical document, create a transaction, or claim installation/release initialization."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreCreatesOnlyLockMetadata",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreIsIdempotent",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Windows actual created/present; Linux present-only and Darwin effects remain pending; not an installed-host initialization proof."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:06",
+      "frozen_clause": {
+        "from_state": "locked",
+        "from": "locked",
+        "event": "pending prepared journal detected",
+        "guard": "operation is not recovery or successful replay",
+        "to": "recovery blocked",
+        "effects": "Refuse normal canonical reads and writes until deliberate recovery.",
+        "failure_retry": "RECOVERY_REQUIRED; use existing transaction ID, not blind new mutation ID.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:06"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After lock/request hashing, recover deliberately branches before Pending. Journaled mutations perform Lookup first; a successful committed replay returns the stored outcome. A pending same-ID replay refuses RECOVERY_REQUIRED. All remaining operations check Pending and return RECOVERY_REQUIRED before canonical dispatch if prepared journals exist.",
+        "Recovery and same-ID recorded state govern safe retry. This barrier does not promise rollback, bypass with a fresh ID, or masking a corrupt/unreadable journal as absence."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Original controlled Windows/amd64 native execution only; no Linux/Darwin backend effects, installed production cohort, visible parent, provider or release claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N01:07",
+      "frozen_clause": {
+        "from_state": "locked",
+        "from": "locked",
+        "event": "return or error",
+        "guard": "deferred cleanup",
+        "to": "released",
+        "effects": "Unlock and close filesystem; discard per-operation memo.",
+        "failure_retry": "No daemon or persistent in-memory coordinator.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:07"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After successful Open, Run defers Close; after successful acquisition it defers unlock. LIFO releases the mutex before closing the FS on return/error/recoverable unwinding. init-store immediately unlocks its own successful lock. Failed acquisition has no acquired-unlock obligation.",
+        "Each Run constructs a local Engine and fresh FS memo; no daemon/global memo is assigned. The lifetime claim is reachability within the operation, not synchronous erasure of an externally retained FS pointer, os.Exit handling, or process-death cleanup."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+        "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+        "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+        "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+        "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+          "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+        },
+        "limits": [
+          "Existing runtime tests exercise successful return and subsequent operations, lock exclusion/retry and bounded per-operation reuse; no named test directly observes every deferred close on every error branch."
+        ]
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:01",
+      "frozen_clause": {
+        "from_state": "absent",
+        "from": "absent",
+        "event": "Commit",
+        "guard": "valid id/hash, <=512 safe disjoint edits, exact before bytes, no pending journal",
+        "to": "staged unpublished",
+        "effects": "Write synced before-images and destination stages; create directories as needed; retain request hash and result.",
+        "failure_retry": "Prepublication errors clean temporary stages/backups when safe; no target changes.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Commit",
+            "lines": [
+              258
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:01"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Commit, under its owning engine lock and valid canonical request hash, validates the safe operation ID, existing Lookup/Pending state, 1..512 edits, safe portable disjoint paths, valid before/after shape and exact current before bytes before staging. It creates needed transaction/history/target directories and synced createOrCompare before-images and destination stages, retaining request hash/result in the prepared journal.",
+        "Until journal publication is durable, deferred cleanup best-effort removes only recorded stage/backup paths. Errors preserve canonical targets; existing unexpected partial journal stages require explicit reconciliation. This does not claim metadata-directory rollback or successful cleanup despite arbitrary I/O failure."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPathEscapeAndSymlink",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Windows two-target creation/replacement/CAS and named injected I/O tested; numeric512 limit and every collision permutation are inspected source clauses, not claimed as separately executed test cases; no power-loss guarantee."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:02",
+      "frozen_clause": {
+        "from_state": "staged unpublished",
+        "from": "staged unpublished",
+        "event": "publish prepared journal",
+        "guard": "create-only journal publication",
+        "to": "prepared",
+        "effects": "Durably publish full write intent before touching canonical targets.",
+        "failure_retry": "Publication uncertainty returns COMMIT_OUTCOME_UNKNOWN and preserves recovery material.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Commit",
+            "lines": [
+              258
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:02"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Commit marshals complete prepared intent/result, creates/syncs a non-authoritative .next and create-only publishes the final .json before canonical target effects. Pending and Recover recognize only authoritative journal names.",
+        "Publication failure may occur after publication/unlink/sync; durable=true prevents deleting recovery material and returns COMMIT_OUTCOME_UNKNOWN with the original operation ID. No blind new-ID resubmission is advised."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPartialJournalStageRequiresManualReconciliation",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Process death is real Windows subprocess exit; not hardware power interruption, arbitrary disk/fsync failure, or other OS backend qualification."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:03",
+      "frozen_clause": {
+        "from_state": "prepared",
+        "from": "prepared",
+        "event": "apply target edits",
+        "guard": "current target still equals its before hash",
+        "to": "prepared",
+        "effects": "Replace/create/delete targets sequentially; may expose partial files only behind recovery block.",
+        "failure_retry": "Any failure after publication returns COMMIT_OUTCOME_UNKNOWN; do not assume no change.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Commit",
+            "lines": [
+              258
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:03"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After publication Commit rereads each target and compares its before hash, then sequentially removes/replaces/creates the corresponding target. A postpublication read, digest mismatch, replacement or injected failure returns the original outcome plus COMMIT_OUTCOME_UNKNOWN.",
+        "Partial canonical effects can exist behind the prepared Pending barrier and are reconciled through deliberate recovery; an error is not proof of no change or a transaction-wide atomic filesystem replacement."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextRecoveryAndPaths",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Windows actual create-pair replacement sequence; external concurrent after-journal digest race rejection is source-inspected, not independently injected in this retained case."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:04",
+      "frozen_clause": {
+        "from_state": "prepared",
+        "from": "prepared",
+        "event": "finish all target edits",
+        "guard": "all replacements successful",
+        "to": "committed",
+        "effects": "Persist committed journal including original result and before-image references.",
+        "failure_retry": "Final acknowledgement write failure is outcome unknown; inspect/replay same operation ID.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Commit",
+            "lines": [
+              258
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:04"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Only after every target replacement succeeds does Commit mark the retained journal committed, marshal it and updateMetadata including original result/before-image references. Final write or after-complete error remains outcome unknown with the original operation ID.",
+        "No failure acknowledgement is interpreted as rollback; same-ID inspection/replay is authoritative for recovery."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Lost-response/durable outcome exercised via controlled injection; no independent arbitrary disk acknowledgement failure claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:05",
+      "frozen_clause": {
+        "from_state": "committed",
+        "from": "committed",
+        "event": "retry identical operation",
+        "guard": "same request hash",
+        "to": "committed",
+        "effects": "Return stored original outcome with replay=true; no new revision, no repeated effect.",
+        "failure_retry": "Old journals without result require refresh_required, not fabricated latest identity.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Lookup",
+            "lines": [
+              183
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:05"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Lookup reads and validates the recorded journal, compares the request hash, rejects prepared/rolled_back states, then constructs outcome(j,true) from the committed record. Commit/Run return this before new staging/effects. mutationResult copies the original stored result; a legacy result-less journal emits refresh_required rather than inventing latest identity.",
+        "Exact replay preserves original revision/outcome without another effect. Legacy refresh fallback is source-inspected, not claimed as a separately observed hosted case."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Replay executed; result-less legacy journal refresh_required fallback inspected at source, not executed by this selector."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:06",
+      "frozen_clause": {
+        "from_state": "any existing ID",
+        "from": "any existing ID",
+        "event": "retry different request",
+        "guard": "hash differs",
+        "to": "unchanged",
+        "effects": "Refuse operation-id reuse.",
+        "failure_retry": "OPERATION_ID_REUSE; new logical intent needs new ID.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Lookup",
+            "lines": [
+              183
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:06"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Lookup compares request_sha256 before any terminal-state replay and returns OPERATION_ID_REUSE on mismatch. Commit returns that error before Pending/staging and engine returns it before canonical dispatch. A new logical intent requires a new identity."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Original controlled Windows/amd64 native execution only; no Linux/Darwin backend effects, installed production cohort, visible parent, provider or release claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:07",
+      "frozen_clause": {
+        "from_state": "prepared",
+        "from": "prepared",
+        "event": "retry identical operation",
+        "guard": "journal pending",
+        "to": "prepared",
+        "effects": "Refuse ordinary replay pending recovery.",
+        "failure_retry": "RECOVERY_REQUIRED.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Lookup",
+            "lines": [
+              183
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:07"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Lookup returns RECOVERY_REQUIRED with the original ID for a matching prepared journal, before outcome construction or a repeated effect. Run also retains the global Pending barrier for other ordinary operations. Explicit recovery is the exit from this state."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Original controlled Windows/amd64 native execution only; no Linux/Darwin backend effects, installed production cohort, visible parent, provider or release claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N02:08",
+      "frozen_clause": {
+        "from_state": "rolled_back",
+        "from": "rolled_back",
+        "event": "retry original operation",
+        "guard": "terminal rollback",
+        "to": "rolled_back",
+        "effects": "Refuse resurrecting rolled-back write.",
+        "failure_retry": "OPERATION_ROLLED_BACK; inspect then explicitly choose new operation.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/transaction.go",
+            "symbol": "Lookup",
+            "lines": [
+              183
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+          }
+        ],
+        "transition_id": "N02:08"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Lookup returns OPERATION_ROLLED_BACK for a matching terminal rollback; Commit and Run propagate it rather than resurrecting the write. The engine also rejects a noncommitted replay defensively. The operator inspects current identity and explicitly chooses a new operation for new intent."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/transaction.go": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+        "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": "Original controlled Windows/amd64 native execution only; no Linux/Darwin backend effects, installed production cohort, visible parent, provider or release claim."
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N36:01",
+      "frozen_clause": {
+        "from_state": "unseen",
+        "from": "unseen",
+        "event": "successful content-addressed read/validation",
+        "guard": "hash matches path; complete checks passed",
+        "to": "validated/retained",
+        "effects": "Record positive validation and optionally copied bytes within 64MiB; failures/missing never cached.",
+        "failure_retry": "Budget exhaustion merely causes reread; no behavior downgrade.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/memo.go",
+            "symbol": "KeepRaw",
+            "lines": [
+              140
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/memo.go"
+          }
+        ],
+        "transition_id": "N36:01"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Memo keys validated values by kind/full hash. Hash-checked root-relative ReadRecorded only records a successful read; KeepRaw independently requires bytes hashing to the ref basename and clones retained bytes. Validation/chain markers are added only after the owning schema/link checks pass. Failed/missing/mismatched reads do not create trusted reuse.",
+        "The operation raw budget is 64MiB; excess recording simply returns without caching, so a later read reopens and validates. Returned raw bytes are cloned; no behavior or schema downgrade follows budget exhaustion. A raw-byte cache entry is not itself a schema/whole-chain validity marker."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/memo.go": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2",
+        "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+        "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "core/artifacts/internal/authority/reuse.go": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5",
+        "core/artifacts/internal/evidence/snapshot.go": "57ee8711c04d053cdc8ced739c51b6848e4b87a5a61d5c9f03a985998b8748d7",
+        "core/artifacts/internal/evidence/completion_workspace.go": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+        "core/artifacts/internal/evidence/completion.go": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": []
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N36:02",
+      "frozen_clause": {
+        "from_state": "validated/retained",
+        "from": "validated/retained",
+        "event": "same operation consumer read",
+        "guard": "same kind/full hash; appropriate memo view",
+        "to": "same",
+        "effects": "Reuse validated evidence; scan view still reads its own bytes and sees only validation marker.",
+        "failure_retry": "Cannot seed whole-chain validity through arbitrary reader data.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/store/memo.go",
+            "symbol": "KeepRaw",
+            "lines": [
+              140
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/memo.go"
+          }
+        ],
+        "transition_id": "N36:02"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Held requires the exact kind/full-hash key; Scan exposes only validation markers, disables Raw/KeepRaw/KeepValue and still invokes its own supplied reader. Observation and receipt readers recheck bytes against expected hashes even when skipping repeated schema validation.",
+        "InspectMemo for arbitrary readers passes trusted=false and never marks receipt-chains; only store-backed Inspect may reuse a whole repository chain. reuseReceipt requires the chain marker and recorded copied receipt/event bytes. Snapshot scan still obtains its own bytes and rejects absent/invalid objects."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/memo.go": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2",
+        "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+        "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "core/artifacts/internal/authority/reuse.go": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5",
+        "core/artifacts/internal/evidence/snapshot.go": "57ee8711c04d053cdc8ced739c51b6848e4b87a5a61d5c9f03a985998b8748d7",
+        "core/artifacts/internal/evidence/completion_workspace.go": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+        "core/artifacts/internal/evidence/completion.go": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": []
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N36:03",
+      "frozen_clause": {
+        "from_state": "any memo state",
+        "from": "any memo state",
+        "event": "operation closes FS",
+        "guard": "deferred close",
+        "to": "discarded",
+        "effects": "No cross-operation trust/cache survives.",
+        "failure_retry": "Completion normalized cache only valid if no intervening output/catalog write in same operation.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/evidence/completion_workspace.go",
+            "symbol": "completionWorkspaceKey",
+            "lines": [
+              92
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+          }
+        ],
+        "transition_id": "N36:03"
+      },
+      "guard_effect_retry_source_assessment": [
+        "Open allocates a fresh memo per handle; Run closes its operation-local FS and does not publish that handle to another operation. completionWorkspaces keeps derived snapshots only after two identical successful passes. completionWorkspaceKey distinguishes roots/identity/normalized mode; reuse returns a canonical clone.",
+        "Normalized reuse assumes no intervening catalog/internal-output write; reusing completion checks run before publication, while operations needing a fresh check use the non-reusing API. This is an explicit call-graph condition, not automatic invalidation on arbitrary writes or synchronous memory erasure."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/internal/store/memo.go": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2",
+        "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+        "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "core/artifacts/internal/authority/reuse.go": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5",
+        "core/artifacts/internal/evidence/snapshot.go": "57ee8711c04d053cdc8ced739c51b6848e4b87a5a61d5c9f03a985998b8748d7",
+        "core/artifacts/internal/evidence/completion_workspace.go": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+        "core/artifacts/internal/evidence/completion.go": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+          "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+        },
+        "limits": [
+          "Operation ownership/lifetime source contract only; Close does not promise synchronous erasure of an externally retained FS pointer. No timing/memory-retention or cross-process runtime claim."
+        ]
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N37:01",
+      "frozen_clause": {
+        "from_state": "request input",
+        "from": "request input",
+        "event": "decode/check/Run",
+        "guard": "strict JSON and supported operation",
+        "to": "operation running or request rejected",
+        "effects": "Run semantic operation once; may commit before response serialization.",
+        "failure_retry": "Structured error on invalid request.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:01"
+      },
+      "guard_effect_retry_source_assessment": [
+        "CLI parses the bounded request through canonical.Read, requiring a JSON object, then calls operations.Run exactly once. The canonical parser rejects duplicate keys, trailing JSON, invalid Unicode and unsupported numeric shapes; Run checks the closed request schema/operation before repository effects.",
+        "Errors return structured public JSON fault/stderr/exit class; valid operations may already commit before success-envelope encoding. No acknowledgement or error is a general rollback guarantee."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/cmd/ca-artifact/main.go": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/canonical/json.go": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+        "core/artifacts/internal/fault/fault.go": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+            "result": "pass"
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+            "result": "pass"
+          }
+        ],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+          "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+        },
+        "limits": []
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N37:02",
+      "frozen_clause": {
+        "from_state": "durable result",
+        "from": "durable result",
+        "event": "encode bounded response",
+        "guard": "encoded payload fits budget",
+        "to": "response encoded",
+        "effects": "Build JSON stdout result.",
+        "failure_retry": "RESPONSE_TOO_LARGE after Run may occur after side effect; do not infer no commit from error.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:02"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After operations.Run succeeds, CLI marshals the success envelope and checks encoded length plus newline against the default65536 or request budget before stdout success write. RESPONSE_TOO_LARGE therefore can follow a completed mutation.",
+        "Same-ID journal/recovery state remains authoritative. No named retained fixture directly exercises oversized post-Run success, especially after mutation; this is finite source conformance only."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/cmd/ca-artifact/main.go": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/canonical/json.go": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+        "core/artifacts/internal/fault/fault.go": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+          "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+        },
+        "limits": [
+          "No named runtime fixture covers a successful Run whose final encoded envelope exceeds the wrapper budget, especially after a mutation. Source ordering establishes the limited no-rollback contract, not a local execution observation."
+        ]
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N37:03",
+      "frozen_clause": {
+        "from_state": "response encoded",
+        "from": "response encoded",
+        "event": "stdout write",
+        "guard": "write succeeds",
+        "to": "ack delivered",
+        "effects": "Caller observes result.",
+        "failure_retry": "Write failure exits5; same operation ID/recovery state is authority for uncertain acknowledgement.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:03"
+      },
+      "guard_effect_retry_source_assessment": [
+        "After successful encoding/budget admission, CLI writes the success envelope plus newline once. A returned write error exits5. Successful writing proceeds to exit0 (or validation exit2). No rollback is performed or claimed.",
+        "The contract assumes a conforming io.Writer and recovery/operation identity for uncertain acknowledgement. The separate public-fault best-effort writer is not this success branch. No retained direct stdout-error fixture is claimed."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/cmd/ca-artifact/main.go": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/canonical/json.go": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+        "core/artifacts/internal/fault/fault.go": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+          "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+        },
+        "limits": [
+          "No direct named stdout-write-error/exit5 assertion found. Existing actual JSON-fault test does not exercise successful-envelope write failure."
+        ]
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    },
+    {
+      "transition_id": "N37:04",
+      "frozen_clause": {
+        "from_state": "operation running",
+        "from": "operation running",
+        "event": "panic",
+        "guard": "recover handler",
+        "to": "error acknowledgement",
+        "effects": "Return INTERNAL_ERROR with recovery inspection advice.",
+        "failure_retry": "No rollback claim; transaction state controls safe retry.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:04"
+      },
+      "guard_effect_retry_source_assessment": [
+        "A deferred recover handler is installed before argument/request/Run processing. A recoverable panic becomes INTERNAL_ERROR with no-completion/recovery-inspection advice and the public fault exit class; it never claims rollback.",
+        "Fatal process termination and a second reporting-writer panic are outside this handler contract. No retained direct injected-panic fixture is claimed."
+      ],
+      "current_owner_inputs": {
+        "core/artifacts/cmd/ca-artifact/main.go": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb",
+        "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "core/artifacts/internal/canonical/json.go": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+        "core/artifacts/internal/fault/fault.go": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+      },
+      "retained_observations": {
+        "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "raw": {
+          "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+          "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+        },
+        "original_named_results": [],
+        "original_mapping": {
+          "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+          "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+        },
+        "limits": [
+          "No direct named injected panic→INTERNAL_ERROR/recovery-advice assertion found; the ordinary public fault named pass is only partial output-shape evidence."
+        ]
+      },
+      "current_runtime_claim": false,
+      "assessment": "FINITE_SOURCE_PRESERVED"
+    }
+  ],
+  "machine_compositions": {
+    "N01": {
+      "frozen_machine": {
+        "machine_id": "N01",
+        "name": "Operation admission, lock ownership and store availability",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-03",
+          "NT-06",
+          "NT-08",
+          "NT-10",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-03",
+          "NT-06",
+          "NT-08",
+          "NT-10"
+        ],
+        "source_intersection_task_ids": [
+          "NT-03",
+          "NT-06",
+          "NT-10"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-04",
+          "SEQ-31"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "transition_ids": [
+        "N01:01",
+        "N01:02",
+        "N01:03",
+        "N01:04",
+        "N01:05",
+        "N01:06",
+        "N01:07"
+      ],
+      "assessment": "All complete frozen guard/effect/retry clauses accounted in rows; source conformance only."
+    },
+    "N02": {
+      "frozen_machine": {
+        "machine_id": "N02",
+        "name": "Journaled transaction and operation identity",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-10",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-10"
+        ],
+        "source_intersection_task_ids": [
+          "NT-10"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "transition_ids": [
+        "N02:01",
+        "N02:02",
+        "N02:03",
+        "N02:04",
+        "N02:05",
+        "N02:06",
+        "N02:07",
+        "N02:08"
+      ],
+      "assessment": "All complete frozen guard/effect/retry clauses accounted in rows; source conformance only."
+    },
+    "N36": {
+      "frozen_machine": {
+        "machine_id": "N36",
+        "name": "Operation-scoped evidence memo",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-06",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-06"
+        ],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 3,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/memo.go"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "transition_ids": [
+        "N36:01",
+        "N36:02",
+        "N36:03"
+      ],
+      "assessment": "All complete frozen guard/effect/retry clauses accounted in rows; source conformance only."
+    },
+    "N37": {
+      "frozen_machine": {
+        "machine_id": "N37",
+        "name": "CLI execution versus response acknowledgement",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-03",
+          "NT-10"
+        ],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-04"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "transition_ids": [
+        "N37:01",
+        "N37:02",
+        "N37:03",
+        "N37:04"
+      ],
+      "assessment": "All complete frozen guard/effect/retry clauses accounted in rows; source conformance only."
+    }
+  },
+  "separate_holds": {
+    "N03": "Required recovery-byte loss is CORRUPT_JOURNAL, not the frozen RECOVERY_CONFLICT wording; no unchanged whole claim.",
+    "N06": "Baseline :03 deliberately changed/fixed; not an unchanged whole-machine candidate.",
+    "N27": "Baseline :02 absent repair-apply capability deliberately changed; not unchanged.",
+    "N10": "Baseline :02 changed under ADR0046 and remains TESTED; no unchanged whole promotion."
+  },
+  "scope": "Only four whole-machine source conformance dispositions plus previously unaccounted N01:02. No transition TESTED status, task, installed package, provider, runtime or release promotion."
+}

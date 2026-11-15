@@ -1,0 +1,155 @@
+{
+  "schema": "codearbiter.retained-native-observation-join/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "original_source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "original_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+    "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+  },
+  "original_raw": {
+    "path": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/raw/original-native-tests.json",
+    "sha256": "5a0a226e198ee1cf43ceba5773b4a0a49f763faa84aad8c208b85cdd5cb13d5d"
+  },
+  "original_complete": true,
+  "original_module_sha256_before": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+  "original_module_sha256_after": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+  "checked_unique_named_passes": [
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationSharedClassification",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationWriterExclusion",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreCreatesOnlyLockMetadata",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreIsIdempotent",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPathEscapeAndSymlink",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPartialJournalStageRequiresManualReconciliation",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextRecoveryAndPaths",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+      "result": "pass"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+      "result": "pass"
+    }
+  ],
+  "previous_source_only_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+    "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+  },
+  "current_retained_source_successor": {
+    "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+    "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
+  },
+  "limits": [
+    "Named pass facts were read from the original committed raw observation; no new execution or API authentication was performed.",
+    "Original tests are controlled Windows/amd64 observations. No Linux/Darwin runtime result or unexecuted stdout-failure/panic/post-Run-size outcome is inferred.",
+    "All TESTED rows remain byte-for-byte unchanged; their current applicability is not promoted by this source-only proposal."
+  ]
+}

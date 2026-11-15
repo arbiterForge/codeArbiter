@@ -1,0 +1,104 @@
+{
+  "header": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-vendor-review-mk_s822c\\portable-cdb-10.0.26100.9457\\Windows Kits\\10\\Debuggers\\inc\\dbgeng.h",
+  "header_sha256": "3daa5d6aebbfca3aefcee6fd0b5b34abd2eebf2a0313facb3f5939da6ae8defa",
+  "source_sha256": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424",
+  "interfaces": {
+    "IDebugClient": {
+      "count": 48,
+      "guid_verified": true,
+      "selected": {
+        "QueryInterface": {
+          "index": 0,
+          "prototype": "    STDMETHOD(QueryInterface)(\n        THIS_\n        _In_ REFIID InterfaceId,\n        _Out_ PVOID* Interface\n        ) PURE;"
+        },
+        "Release": {
+          "index": 2,
+          "prototype": "    STDMETHOD_(ULONG, Release)(\n        THIS\n        ) PURE;"
+        },
+        "AttachProcess": {
+          "index": 12,
+          "prototype": "    STDMETHOD(AttachProcess)(\n        THIS_\n        _In_ ULONG64 Server,\n        _In_ ULONG ProcessId,\n        _In_ ULONG AttachFlags\n        ) PURE;"
+        },
+        "DetachProcesses": {
+          "index": 25,
+          "prototype": "    STDMETHOD(DetachProcesses)(\n        THIS\n        ) PURE;"
+        }
+      }
+    },
+    "IDebugControl": {
+      "count": 95,
+      "guid_verified": true,
+      "selected": {
+        "Release": {
+          "index": 2,
+          "prototype": "    STDMETHOD_(ULONG, Release)(\n        THIS\n        ) PURE;"
+        },
+        "GetStackTrace": {
+          "index": 31,
+          "prototype": "    STDMETHOD(GetStackTrace)(\n        THIS_\n        _In_ ULONG64 FrameOffset,\n        _In_ ULONG64 StackOffset,\n        _In_ ULONG64 InstructionOffset,\n        _Out_writes_(FramesSize) PDEBUG_STACK_FRAME Frames,\n        _In_ ULONG FramesSize,\n        _Out_opt_ PULONG FramesFilled\n        ) PURE;"
+        },
+        "GetEngineOptions": {
+          "index": 53,
+          "prototype": "    STDMETHOD(GetEngineOptions)(\n        THIS_\n        _Out_ PULONG Options\n        ) PURE;"
+        },
+        "SetEngineOptions": {
+          "index": 56,
+          "prototype": "    STDMETHOD(SetEngineOptions)(\n        THIS_\n        _In_ ULONG Options\n        ) PURE;"
+        },
+        "WaitForEvent": {
+          "index": 93,
+          "prototype": "    STDMETHOD(WaitForEvent)(\n        THIS_\n        _In_ ULONG Flags,\n        _In_ ULONG Timeout\n        ) PURE;"
+        }
+      }
+    },
+    "IDebugSystemObjects": {
+      "count": 32,
+      "guid_verified": true,
+      "selected": {
+        "Release": {
+          "index": 2,
+          "prototype": "    STDMETHOD_(ULONG, Release)(\n        THIS\n        ) PURE;"
+        },
+        "SetCurrentThreadId": {
+          "index": 6,
+          "prototype": "    STDMETHOD(SetCurrentThreadId)(\n        THIS_\n        _In_ ULONG Id\n        ) PURE;"
+        },
+        "GetNumberThreads": {
+          "index": 9,
+          "prototype": "    STDMETHOD(GetNumberThreads)(\n        THIS_\n        _Out_ PULONG Number\n        ) PURE;"
+        },
+        "GetThreadIdsByIndex": {
+          "index": 11,
+          "prototype": "    STDMETHOD(GetThreadIdsByIndex)(\n        THIS_\n        _In_ ULONG Start,\n        _In_ ULONG Count,\n        _Out_writes_opt_(Count) PULONG Ids,\n        _Out_writes_opt_(Count) PULONG SysIds\n        ) PURE;"
+        }
+      }
+    },
+    "IDebugSymbols": {
+      "count": 52,
+      "guid_verified": true,
+      "selected": {
+        "Release": {
+          "index": 2,
+          "prototype": "    STDMETHOD_(ULONG, Release)(\n        THIS\n        ) PURE;"
+        },
+        "GetModuleByOffset": {
+          "index": 15,
+          "prototype": "    STDMETHOD(GetModuleByOffset)(\n        THIS_\n        _In_ ULONG64 Offset,\n        _In_ ULONG StartIndex,\n        _Out_opt_ PULONG Index,\n        _Out_opt_ PULONG64 Base\n        ) PURE;"
+        },
+        "GetModuleNames": {
+          "index": 16,
+          "prototype": "    STDMETHOD(GetModuleNames)(\n        THIS_\n        _In_ ULONG Index,\n        _In_ ULONG64 Base,\n        _Out_writes_opt_(ImageNameBufferSize) PSTR ImageNameBuffer,\n        _In_ ULONG ImageNameBufferSize,\n        _Out_opt_ PULONG ImageNameSize,\n        _Out_writes_opt_(ModuleNameBufferSize) PSTR ModuleNameBuffer,\n        _In_ ULONG ModuleNameBufferSize,\n        _Out_opt_ PULONG ModuleNameSize,\n        _Out_writes_opt_(LoadedImageNameBufferSize) PSTR LoadedImageNameBuffer,\n        _In_ ULONG LoadedImageNameBufferSize,\n        _Out_opt_ PULONG LoadedImageNameSize\n        ) PURE;"
+        }
+      }
+    }
+  },
+  "sizes": {
+    "pointer": 8,
+    "HRESULT": 4,
+    "ULONG": 4,
+    "ULONG64": 8,
+    "GUID": 16,
+    "DEBUG_STACK_FRAME": 128
+  },
+  "policy": 561160
+}

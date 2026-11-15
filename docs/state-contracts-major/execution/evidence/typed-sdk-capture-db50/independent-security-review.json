@@ -1,0 +1,131 @@
+{
+  "schema": "bounded-security-ABI-review/1",
+  "reviewer": "crypto_evidence_review",
+  "orientation": "read-only",
+  "verdict": "PASS",
+  "findings": [],
+  "head": "ca4966745fa44f1baddd08613702db023d83fe60",
+  "candidate": "candidate-v1:c9ebe0ef77783b36196495b007ea669687899b2cf7c6b8f0df0c21f5370fd060",
+  "staged_patch_sha256": "9d3781607feecc26ab1708fd994a4b950343d7894c6c0d13693118cb86fb42d8",
+  "subjects": [
+    {
+      "path": ".github/scripts/_windows_dbgeng.py",
+      "sha256": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424",
+      "bytes": 13888,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/scripts/_windows_rpc_timeout.py",
+      "sha256": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a",
+      "bytes": 15670,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/scripts/test_ci_impact.py",
+      "sha256": "0343d54d9889f8e63706be6d678af0cf42bd46a7ba3582e1af91487591466b1d",
+      "bytes": 261718,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/scripts/test_pi_package.py",
+      "sha256": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c",
+      "bytes": 250086,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "2a8908543822bc95499c7fb3e6237d0f97dc36751e86d7d7947753b22826529f",
+      "bytes": 248252,
+      "physical_equals_index": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "38512f3fcda257960267a590100ca570ba7fa163ebfea94e474a0f05b92f5429",
+      "bytes": 215225,
+      "physical_equals_index": true
+    }
+  ],
+  "policy": {
+    "records": 32,
+    "source_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "consumption": "Previously fully read current32 constraints/notes reused; exact HTML unchanged verified now."
+  },
+  "reviewed": [
+    "All six exact staged subjects and Root conservative temporarilySuspends assignment; source/physical/index joined.",
+    "Microsoft header SHA256 and independent complete base-interface method enumeration: Client48/Control95/SystemObjects32/Symbols52; every called slot/prototype, four IIDs, fixed-width HRESULT/ULONG/ULONG64/pointer and DEBUG_STACK_FRAME layout matched.",
+    "Only explicitly inherited SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION proof handle; original Popen handle retained; child rechecks PID/creation/image/running state before optional SDK engine creation.",
+    "Prehashed regular SDK DLLs loaded only with LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32. No PATH/cwd DLL search, interpreter isolated with -I, private environment/profile, no debugger Execute/text callbacks/dumps.",
+    "DISALLOW_NETWORK_PATHS|DISALLOW_SHELL_COMMANDS|DISABLE_MODULE_SYMBOL_LOAD|DISABLESQM set, ALLOW_NETWORK_PATHS cleared, actual engine policy read back before noninvasive attach.",
+    "Only fixed public module enum/Other and numeric module-relative return offsets emitted; ambiguous/unknown module lookup refuses projection, closed key/type/value schema and16-thread/24-frame/32KiB JSON bounds.",
+    "Five-second shared deadline with128KiB transport cap; private worker is externally bounded. Captured requires bound+attached+policy+successful detach and HRESULT0, known frames. Detach/release or parent worker cleanup uncertainty clears frames and refuses captured; original failure and target cleanup ownership preserved.",
+    "Both helper paths now select existing ca-pi CI owner; failure artifact ordering/upload/permissions unchanged. Changelog matches narrow diagnostic change."
+  ],
+  "abi_header": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-vendor-review-mk_s822c\\portable-cdb-10.0.26100.9457\\Windows Kits\\10\\Debuggers\\inc\\dbgeng.h",
+    "sha256": "3daa5d6aebbfca3aefcee6fd0b5b34abd2eebf2a0313facb3f5939da6ae8defa",
+    "counts": {
+      "IDebugClient": 48,
+      "IDebugControl": 95,
+      "IDebugSystemObjects": 32,
+      "IDebugSymbols": 52
+    },
+    "frame_bytes": 128
+  },
+  "actual_receipts": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-dbgeng-capture-fix-7tqy3cke\\delivery.json",
+      "sha256": "b14c5e223b663cf9b46094763c359b38a8dff91ee0051930c59fc8896d3b25f0"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-vendor-review-mk_s822c\\owned-regression-green.json",
+      "sha256": "d3c552c772676b82d33980713ee241145208a55ad00b442a016649e8eb8ae6c6"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-vendor-review-mk_s822c\\owned-regression-green-captures.json",
+      "sha256": "520ce1fa39c9fb35dde7be516cec399281588912605e9863dbbb55a3c789b3b0"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\dbgeng-final-pure.log",
+      "sha256": "d171bf2aad0accb9330b6ed2023b9e83b9050987447cb16e048b627fd6c7dd56"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\dbgeng-wiring-red.log",
+      "sha256": "34d91bb2d5315c7240434910a8a6f27d7a2876aa6f6ffc154f75f3e1f2e543d4"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\dbgeng-wiring-green.log",
+      "sha256": "961791e786972d421d9350e99fcc1645eff73fa9aea5bc1583302ff993330060"
+    }
+  ],
+  "observations": {
+    "SDK_exact_current_source_receipt": {
+      "exit_code": 0,
+      "controller_seconds": 1.05,
+      "threads": 12,
+      "known_module_RVA_frames": 74,
+      "before_after_source_equal": true,
+      "SDK_locator_override_only": true
+    },
+    "affected_pure_tests": {
+      "passed": 5,
+      "seconds": 0.35
+    },
+    "CI_selector_regression": {
+      "actual_original_RED": true,
+      "actual_GREEN": true,
+      "green_seconds": 0.008
+    },
+    "test_structure": "81 IDs preserved; exactly two existing parser/profile methods adapted. Strict owned-Node SDK method and all original75 pre-observer ASTs unchanged."
+  },
+  "secret_finding": {
+    "path": ".github/scripts/test_pi_package.py",
+    "line": 1633,
+    "classification": "Synthetic mock.patch.dict PRIVATE_TOKEN=PrivateFixtureValue plus private symbol/INIT strings. No credential, token source, network sink or bypass added."
+  },
+  "limits": [
+    "No SDK/test/runtime execution by reviewer; exact source-bound existing Gov receipts consumed.",
+    "PASS applies only to this exact six-file staged candidate; no current hosted CI, original Pi OS-exit cause, installed-host qualification, whole program completion, main merge or publication claim.",
+    "Synchronous native-call timeout containment is the private worker deadline; cleanup uncertainty remains explicitly reported. Private profile is not universal OS isolation; runtime publisher signature/version remain honestly not-verified/not-observed."
+  ],
+  "utc": "2026-11-15T14:21:38.882250+00:00"
+}

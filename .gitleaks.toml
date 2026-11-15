@@ -325,3 +325,25 @@ fingerprint with no secret input or access authority; the filename caused
 the generic detector match. Only this exact value is exempted.
 """
 regexes = ['\Ac3aaa89a68286cda575886cf71cafc4fb1e0786a58a19a8332008db918be7bfa\z']
+
+# Exact public source-file hashes retained by the S38 native runtime evidence.
+# Both are recomputed from committed source at c2cf0a18. No secret input,
+# credential authority, path exemption or general digest pattern is allowed.
+[[allowlists]]
+description = "Public source SHA-256 values for plugins/ca-codex/agents/auth-crypto-reviewer.md and plugins/ca-codex/routines/tribunal/references/lenses/secrets-supply.md, recorded by mapped-S38-current-native-c2cf0a18 runtime evidence"
+regexes = [
+  '''\Aea491e797261a42487cd9b42ee324c79b9394e6b2b26449eaa856f4b4118d1e2\z''',
+  '''\Ab0058695371f6c7dff1ab274283cfc2352fa5ece86aed537f99697af712b400d\z''',
+]
+
+# Exact public dependency-file hashes retained by the current Sandbox runtime
+# inventory. Values were recomputed from existing cached files; none is a key.
+[[allowlists]]
+description = "Public SHA-256 values for @babel/types toComputedKey.js and its source map, postcss tokenize.js, undici-types api.d.ts, and the locked Vitest cli-api chunk in current-local-2df/sandbox/runtime-members.json"
+regexes = [
+  '''\Ac54a9b025a4c5e7ec4c9b93e9f2b795aa8a6f928e0de1793590f012c78e01b46\z''',
+  '''\A177c3bd70b823195ac63ad1ab51bbb8babb97b98446b3171d17399a2fed7784f\z''',
+  '''\Addfcaaa01f5eac9e4e8652044df1401ce6cc70295fd3f9fbb214ca66fb2bec72\z''',
+  '''\A8aee8b6d4f9f62cf3776cda1305fb18763e2aade7e13cea5bbe699112df85214\z''',
+  '''\A222aa60f8555aea9311703c68edaaa8eba0888ea29bfb4a49b37f98e0811ee2d\z''',
+]

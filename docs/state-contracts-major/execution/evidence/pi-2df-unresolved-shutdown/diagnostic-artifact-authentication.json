@@ -1,0 +1,40 @@
+{
+  "artifact": {
+    "id": 14140473144,
+    "node_id": "MDg6QXJ0aWZhY3QxNDE0MDQ3MzE0NA==",
+    "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+    "size_in_bytes": 5565,
+    "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14140473144",
+    "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14140473144/zip",
+    "expired": false,
+    "digest": "sha256:46b965ffcc8a3c35594aa17dbebe62020120510080245a811e0c532ef4f24422",
+    "created_at": "2026-11-15T01:29:56Z",
+    "updated_at": "2026-11-15T01:29:56Z",
+    "expires_at": "2026-11-18T01:15:04Z",
+    "workflow_run": {
+      "id": 43662186921,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "codex/state-contracts-native-reconcile",
+      "head_sha": "2df782d48576e72bd01ef303c9f3546f3b620b05"
+    }
+  },
+  "download_sha256": "46b965ffcc8a3c35594aa17dbebe62020120510080245a811e0c532ef4f24422",
+  "actual_log_artifact_digest_equal": true,
+  "selected": {
+    "rpc-native-exit-khrcb5m5.json": {
+      "archive_member": "rpc-native-exit-khrcb5m5.json",
+      "sha256": "20c85446d1d1d9a755b2bc402c2d0ca1fdb2983b8845873aafbbfb2f8b039a1b",
+      "bytes": 485
+    },
+    "rpc-shutdown-lip_fhx4.json": {
+      "archive_member": "rpc-shutdown-lip_fhx4.json",
+      "sha256": "5b36146a0027f4c9648a85529419b019c2d83fefb811381ad8a4af7cce7493b6",
+      "bytes": 1289
+    }
+  },
+  "limits": [
+    "Only named actual failure artifacts selected from authenticated job upload.",
+    "No raw debugger output retained or printed; actual closed report remains observation, not cause."
+  ]
+}

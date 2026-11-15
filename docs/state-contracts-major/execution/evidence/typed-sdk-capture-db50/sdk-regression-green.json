@@ -1,0 +1,27 @@
+{
+  "case": "green",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import pathlib,unittest,json,_windows_rpc_timeout as native\nnative.CDB=pathlib.Path('C:/Users/brenn/AppData/Local/Temp/ca-cdb-vendor-review-mk_s822c/portable-cdb-10.0.26100.9457/Windows Kits/10/Debuggers/x64/cdb.exe')\nobserved=[]\noriginal_capture=native.capture\ndef observe(*args,**kwargs):\n    value=original_capture(*args,**kwargs)\n    observed.append(value)\n    return value\nnative.capture=observe\nsuite=unittest.defaultTestLoader.loadTestsFromName('test_pi_package.PiPackageTests.test_rpc_native_shutdown_real_owned_node_handles_and_late_exit')\nresult=unittest.TextTestRunner(verbosity=2).run(suite)\npathlib.Path('C:/Users/brenn/AppData/Local/Temp/ca-cdb-vendor-review-mk_s822c/owned-regression-green-captures.json').write_text(json.dumps(observed,indent=2)+'\\n',encoding='utf-8')\nraise SystemExit(0 if result.wasSuccessful() else 1)\n"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 1.05,
+  "source_before": {
+    ".github/scripts/_windows_rpc_timeout.py": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a",
+    ".github/scripts/test_pi_package.py": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c",
+    ".github/scripts/_windows_dbgeng.py": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424"
+  },
+  "source_after": {
+    ".github/scripts/_windows_rpc_timeout.py": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a",
+    ".github/scripts/test_pi_package.py": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c",
+    ".github/scripts/_windows_dbgeng.py": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424"
+  },
+  "private_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-regression-green-57lp4ke1",
+  "CDB_path_override_only": true,
+  "Node": "22.19.0"
+}

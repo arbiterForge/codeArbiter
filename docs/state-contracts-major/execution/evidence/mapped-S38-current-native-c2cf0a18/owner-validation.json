@@ -1,0 +1,43 @@
+{
+  "schema": "codearbiter.S38-full-original-owner-validation/1",
+  "state": "TEMP_OVERLAY_VALIDATED_NOT_APPLIED",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "candidate_checked": "a7ca0738fed21e4cf24358cdf934884f81436103",
+  "cell": "disposition:transitions:S38:04",
+  "owning_paths_from_unmodified_evidence_paths": [
+    "core/pysrc/_workgithub.py"
+  ],
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "actual_top_level_argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:/Users/brenn/AppData/Local/Temp/ca-S38-runtime-c2cf0a18-log-envelope/validate_owner.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter",
+  "original_owner_result": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-current-native-c2cf0a18/target-failure-tested.json",
+      "sha256": "5ea044ccac53bb85c83577662b5a05b92912e87e0c4f16bf1353ae7e1e58e7df",
+      "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "producer_class": "local-host"
+    }
+  ],
+  "current_strict_owner_result": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-current-native-c2cf0a18/target-failure-tested.json",
+      "sha256": "5ea044ccac53bb85c83577662b5a05b92912e87e0c4f16bf1353ae7e1e58e7df",
+      "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "producer_class": "local-host"
+    }
+  ],
+  "current_applicability": {
+    "changed_inputs": [],
+    "unavailable_inputs": []
+  },
+  "exit_code": 0,
+  "seconds": 19.897337600001265,
+  "overlay_boundary": "OnlynewcandidateevidencepayloadpathsservedfromprivateD. Allsourceinputs/module/absencelookupsuseactualimmutableGit atitsrequestedcommit. No cachedPASS/marker/API fallback; noclaimmetadataalreadycommitted.",
+  "top_level_proof_commands_nonempty_actual": true
+}

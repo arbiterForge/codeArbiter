@@ -1,0 +1,51 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools bounded complete packaging clause inspection"
+  },
+  "inputs": {
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/test_context_native.py": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/build-artifacts.py": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+    "tools/go-test-timings.json": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+    "tools/go_test_parallel.py": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S68:01",
+    "disposition:transitions:S68:02",
+    "disposition:transitions:S68:03",
+    "disposition:transitions:S68:04",
+    "disposition:transitions:S68:05",
+    "disposition:transitions:S68:06",
+    "disposition:transitions:S68:07",
+    "disposition:machines:S68"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/inspection.json",
+      "sha256": "51acbc7a90c6172fcf7052505c553628484956335e044ee94afb57509f5e1780"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/source-joins.json",
+      "sha256": "5c8f58974b8e1d2a4004daa18b65753df5e2037ac41f2429e9a2fee8b067f417"
+    }
+  ],
+  "scope": "Finite conditional source guard/effect/retry acceptance only. No authentic production artifact, runtime receipt, installed/native/remote publication or task/scenario/program qualification.",
+  "limits": [
+    "No tests/build/native/browser/provider/API/install/publication effects.",
+    "Positive source exposures are not retrospective loaded-module/native membership/absence/installed inventory observations.",
+    "Historical runtime evidence and unselected records remain original; no relabelled epoch.",
+    "Candidate/module/tool/OS/remote effects remain conditional caller boundaries, not proven observations."
+  ]
+}

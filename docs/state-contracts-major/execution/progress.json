@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61",
+  "head": "db50f8e3a0170b8a1c4f8b7567897c8574b8d34c",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-14T22:10:57.032337+00:00",
+  "recorded_at": "2026-11-15T14:27:24.389731+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -19,9 +19,9 @@
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-cancellation",
+        "branch": "codex/state-contracts-native-reconcile",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Combined delivery source commits, CI qualification and honest evidence reconciliation; no main/publication."
+        "scope": "PR1108 source and evidence integration; CI path transport repair and bounded Windows timeout diagnosis. No main merge or publication."
       },
       {
         "owner": "recovery",
@@ -3798,6 +3798,11 @@
       "id": "COLD-OBSERVER-M863-REFUSAL",
       "scope": "Retained cold-package observer normal-CI qualification",
       "detail": "M863 trusted normal run43606646328 cold observers refused upload attribution with generic hash on allsixplatforms. Archived finalmetadata/logs pass old/current predicates; actual historical cause remains unknown. No blind retry or clock-closure claim; closed safe diagnostic categories being added before next actual normal run. Existing ordinary cold commands and original raw failure remain separate."
+    },
+    {
+      "id": "P02-PYTHON-IMPORT-LOOKUP-PROFILE",
+      "scope": "Six prospective P02 current-evidence records",
+      "detail": "Actual14tests pass; current reader refuses7 precise module lookup absences. A new bounded causal Python lookup profile and current-source regression evidence are needed; no unsupported schema fields are silently discarded."
     }
   ],
   "unknown_outcomes": [
@@ -3814,16 +3819,24 @@
       "state": "UNRESOLVED",
       "run_id": 43606646328,
       "detail": "Six original cold observers refused attribution; final archived data passes old/current predicates. Historicalcauseunknown; inspect actualnextnormalrun with closed diagnostic categories."
+    },
+    {
+      "id": "PI-WINDOWS-2DF-OS-RUNNING",
+      "state": "UNRESOLVED",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/manifest.json",
+      "sha256": "5a1732b86997736205804ccec1ddb78f301af78ff73221ed0ba1017c55e5db1b",
+      "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+      "detail": "Matched original OS process remains running after JavaScript exit markers; independent SDK control unrecognized and actual Pi debugger unavailable. No stack/cause established."
     }
   ],
   "next_actions": [
-    "Push current child1107 corrections and source renewals; require exact-head merge-readiness, then integrate only into major/state-contracts. Parent1098/main/publication remain held.",
-    "Retain historical Pi shutdown failures as unresolved; latest7eba actual allthree Pi adapter jobs passed. Observe next actual result; no blind retry or cause/fix inference.",
-    "Observe the actual trusted normal integration push: allsix native installed cells now route to authenticated cold consumers; Codex/Pi/Sandbox/Claude installed cohorts still need their owning original observations.",
-    "Continue remaining finite acceptance and actual missing behavior using current source-bound evidence; do not derive task/model/scenario qualification from status counts.",
-    "Await the existing PiHTTP endpoint-policy choice and Brennon physical/UI/fulltesting; never merge1098 to main or publish until that hold is lifted."
+    "Push the coherent committed SDK fix and retained evidence once; promptly watch exact-head hosted CI and diagnose genuine failure. Merge1108 only when required checks pass and named remote auto-deletion is authorized.",
+    "Repair only the demonstrated debugger defect with targeted regression proof; push the coherent source/evidence batch once and promptly observe exact-head hosted checks. Merge1108 only on green and named remote auto-deletion authority.",
+    "Observe the next trusted normal integration push and its13 installed reports. Renew finite eligible native evidence from genuine matching observations; never bypass producer eligibility or relabel old source epochs.",
+    "Continue independent accepted work while Pi HTTP policy and actual user/model/parent/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized.",
+    "Fix the shared Python import-lookup evidence capability through its owner before admitting the heldP02six; preserve original raw/history and causal absences. Reuse unrelated results and reviews."
   ],
-  "delivery_state": "CHILD1107_FINAL_CANCELLATION_AND_SOURCE_RENEWAL_PENDING_EXACT_HEAD_CI",
+  "delivery_state": "CHILD1108_TYPED_SDK_CAPTURE_LOCAL_GREEN_HOSTED_PENDING",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3837,7 +3850,7 @@
       "rule": "Since ruleset 27158575, every change to major/state-contracts lands through a child branch PR whose base is major/state-contracts (including execution-record updates)."
     }
   ],
-  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1107",
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1108",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -3979,6 +3992,138 @@
         "Raw RED stderr preserved losslessly as UTF8 JSON text because original terminal blank line fails standard whitespace gate; no gate weakened.",
         "PiHTTP pending user policy choice preserved; parent1098 stays draft and held from main."
       ]
+    },
+    {
+      "id": "native-reconcile-catalog-and-finite-followon",
+      "source_commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+      "merged_child": {
+        "number": 1107,
+        "head": "22a1a6d9187ecdf2b91c2b7a880a0a84714c28ad",
+        "merge_commit": "bbba165ce513d5977ba11de7dd44d294658b67ca",
+        "method": "true merge",
+        "actual_checks": "92SUCCESS/6SKIPPED, requiredmergegatePASS; sourceTreeEqual and both parentsverified; namedremoteauto-delete explicitlyauthorized andconfirmed"
+      },
+      "facts": [
+        "N10:02 nowhas actual9a native receipt-reconciliation11subcases/2parents PASS16.769s with complete245member sourceclosure observedbefore/after. Earlier18named focused/3negativecontrol observations retainedseparately; syntheticfixtureauthority isnot actualuser/host approval.",
+        "Correct actualframework catalog omission: shell exit detaches; explicitnamed destroy differsfrombroadprune; Claudeusesits separateCLI, not anunsupportedordinaryflag. Prior SW01:01claim thatcatalogalreadyfixed was inaccurate; correctedsource/evidence retainsoldnarrative/history.",
+        "Admit32exactCASupdates:1newfinite runtimeTESTED N10, fourSandbox whole-source machines, correctedSW01clause+wholemachine,25packaging sourceclauses/aggregates. Preserveallotherrows/statuses/histories and105frozenintake.",
+        "Fulloriginal-evidence ownerPASS1270advanced/965currentapplicable/304stale/1unknown. Native modulefingerprint changedwith newtests, so olderbindings awaitrequalification; no failedtest/globalcompletion inferredfromtheseclasses.",
+        "N10initialproposal lackedtop-level executedcommand metadata and was refused by fulloriginal-proofauthenticator. Immutablecorrectedrecord addsauthentic rawargv/cwd/exit/tool/outputbindings; originalproposal retained, gateunchanged, no testsrerun."
+      ],
+      "limits": [
+        "Trustednormal installedrun43649759117 stillinprogress; no installedcohortPASSclaimed.",
+        "S38:04 actualoldnativeobservations remainauthentic, butcompletecurrentclosure requires realadmitted testedinstallation. No skippedtest/native_tested=false bypass or fabricatedretrospectiveabsence.",
+        "No whole-task/scenario/user/model/publication promotion; PiHTTP awaitinguserdecision remainsunchanged."
+      ]
+    },
+    {
+      "id": "ci-path-transport-a7-and-current-windows-pi-failure",
+      "source_commit": "a7ca0738fed21e4cf24358cdf934884f81436103",
+      "facts": [
+        "Normal integration bbba run43649759117 failed during Impact selection: the1910-path148885-byte CHANGED_FILES environment value prevented bash execution with Argument list too long. No installed report jobs ran. Earlier in-progress observation is historical and superseded.",
+        "CI framework repair a7 reads Git event metadata and changed paths through files/stdout instead of placing filenames in process argv or environment. Fifteen focused tests passed, including a real1502-path local Git case; independent scoped security and coverage review passed. Exact-head hosted run43655359437 is being watched; no terminal success is claimed.",
+        "Prior c2 PR run43651146996 failed its Windows Pi shutdown probe after the reallyExitCallEntered marker while the parent wait still timed out. Raw and observed companion controls passed. The marker does not prove native entry or OS process termination; the cause remains unresolved.",
+        "Ready follow-on evidence includes27 source-preservation renewals,12 accepted packaging source clauses, and one newly observed S38:04 runtime successor from exactly3 existing tests using the authenticated tested native candidate. No local Go rebuild or synthetic tested stamp was used.",
+        "Maintained original-evidence checker passed the proposed40-record ledger:105 frozen intake files intact,1282 advanced records,1000 currently applicable and282 stale, with no UNKNOWN current dependency result. This is finite evidence accounting, not complete program qualification. Final staged validation follows the lossless log-envelope correction.",
+        "Exact a7 PR CI43655359437 and docs43655359325 succeeded:92passing/6skipped, required Merge readiness success132641937309. This is the predecessor source observation, not evidence for later diagnostic9542."
+      ],
+      "limits": [
+        "The Windows diagnostic is implementation work in progress and is not an exit-cause fix.",
+        "No whole-task, installed platform union, user, model, scenario, main-merge or publication completion."
+      ]
+    },
+    {
+      "id": "bounded-windows-rpc-timeout-observation",
+      "source_commit": "9542cd9b9e931647bbf4d7fd9693be3e0e6e2b8b",
+      "facts": [
+        "Failure-only helper preserves the original timeout record and cleanup, verifies owned Windows HANDLE/PID/creation/image, and emits bounded OS state with optional fixed-SDK module-offset stack projection. Raw debugger output never leaves RAM; source and upload guard committed together.",
+        "Independent review caught a running-to-signaled snapshot race. Exact regression failed before the correction and passed afterward, with mismatched PID/creation still refused. The existing owned-Node control now exercises a present SDK and requires real captured frames plus Node survival.",
+        "Final actual Gov eight diagnostic/projection controls and one upload guard pass on complete stable ten-file source closure,1.024s and0.152s. All75 original test methods remain; six new methods are collected once, total81. Four scanner guard controls and a distinct canary verify the two exact public source-hash exceptions.",
+        "Independent security and coverage review PASS on exact six staged subjects/candidate d438; no open findings. Python numeric metrics remain unmeasured under its declared no-tooling exemption."
+      ],
+      "limits": [
+        "Fixed CDB SDK is absent locally; actual native-stack capture remains pending on a hosted runner where the SDK is present.",
+        "Five seconds bounds polling/output/waits; synchronous OS/filesystem calls are not universally cancellable.",
+        "No Pi/Node root-cause repair, installed-cohort, actual user/model/parent UI, whole-task or publication completion."
+      ]
+    },
+    {
+      "id": "553d-sdk-control-failure-and-remaining-source-clauses",
+      "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "facts": [
+        "Exact553d Windows Pi Adapter contract run43659807673/job132646451284 failed only the new owned-Node SDK control: debugger status unrecognized rather than captured. Original rpc and rpc-observed partitions passed. No Pi application failure or successful capture inferred.",
+        "Confirmed diagnostic source gap: parser required frame indices while fixed kL command did not request them. Microsoft documents n for frame numbering. A bounded two-file Temp successor adds knL and safe numbered/unnumbered parsing; two regression failures preceded four pure passing controls. Strict real SDK captured/frames/tool hashes/Node survival assertions remain unchanged. Independent affected-scope security/coverage review PASS; actual SDK capture still pending.",
+        "Admit27 further source-only PRESERVED dispositions: native N01/N02/N36/N37/N01:02 plus16 packaging transitions and6 machines. Complete281 current inputs and seven proofs join actual immutable553d source and physical files; previous runtime/installed facts and all unselected rows remain unchanged.",
+        "Packaging S72 source aggregate reuses its already admitted candidate-preflight correction, with live_qualified=false and no authority created. DIST-M02/HW21/BUILD-G01/BUILD-G02 accepted semantics are explicit; no new policy decision or runtime promotion."
+      ],
+      "limits": [
+        "The source-format gap is confirmed from code/docs; actual raw CDB text was intentionally not retained, so its full observed format is not claimed.",
+        "No new runtime/native/Go/provider/build/installed or task qualification from these27 source-only rows. Native N03/N06/N27/N10 mismatch holds and the Pi HTTP decision remain separate.",
+        "Keep1098 draft and held from main; no publication authority."
+      ]
+    },
+    {
+      "id": "current39-runtime-renewal-and-2df-os-observation",
+      "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+      "facts": [
+        "27 original recovery methods passed in15.553s;44 Sandbox named unit assertions passed in1.565s. These scoped observations renew39 existing TESTED records without changing their classification.",
+        "Complete original source assertions, before/after committed and physical inputs, Windows host-lookup absence and1473 cached runtime-member hashes were retained. Maintained prospective owner authentication passed all39; final staged integrity is recorded separately.",
+        "The two-file CDB numbering/parser repair was committed and pushed as2df. Exact-head hosted Windows Pi job132653838973 still failed both the strict owned-Node SDK control and original discovery/doctor EOF wait. The format correction is not a demonstrated cause fix.",
+        "Authenticated closed sidecars now establish the original OS process remained running after JS markers. No stack/cause was captured. The original failure and exact artifact authentication are retained in pi-2df-unresolved-shutdown.",
+        "Private Microsoft SDK component review passed; extraction and local probe execution remain unperformed pending the explicit tool confirmation requested under ca-add-dep. No package, lockfile, base image or shipped SDK adoption."
+      ],
+      "limits": [
+        "No task, platform, installed, physical/user/model, parent-consent or publication completion follows from39 finite runtime successors.",
+        "133 native stale TESTED records require eligible trusted successful integration-push evidence. The successful native build inside a failing PR run cannot substitute for that principal.",
+        "Remaining110 non-native stale records were unselected by this batch. Pi HTTP policy choice remains pending;1098 must not merge to main."
+      ]
+    },
+    {
+      "id": "reader-six-current-mechanical-boundaries",
+      "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+      "actual_execution_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+      "facts": [
+        "Fourteen existing targeted managed-reader/deadline methods passed in6.115s (unittest5.991s),0skip, with five complete explicit project inputs literally equal2df, actual108dc and physical before/after. Private HOME preceded imports.",
+        "Six existing TESTED dispositions receive same-status successors: C-F08 and five introduced C36 managed-reader states. Actual plain Python children exercise bounded Codex-command/Pi-benchmark mechanical wait owners; no actual Codex/Pi CLI or provider is invoked.",
+        "Strict prospective owner authentication passed six records. Original active refs/epochs remain in history with genuine108dc retention anchors; final staged validation is recorded separately."
+      ],
+      "limits": [
+        "C36:02 still requires the actual production JS bundle/startup criteria; C36:03 still requires100 timings,105 bridge calls and metric output. Both historical rows remain unchanged/stale; adjacent completion tests cannot qualify them.",
+        "No stronger Windows Job Object/native-rundown claim, real POSIX denial/platform result, warm benchmark, whole task, installed, user/model or publication qualification.",
+        "The SDK extraction/probe is still unperformed pending explicit tool confirmation. No further metadata-only CI retry;1098 stays held from main."
+      ]
+    },
+    {
+      "id": "C36-original-current-benchmark-and-approved-sdk-probes",
+      "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+      "facts": [
+        "Original pi_benchmark.py --samples100 passed once in4.929s: temporary production wrapper bundle build/child/CLI exit0, wrapperCount4, startup38.8513ms,100 Pi timings,105 original stub bridge and105 original stub factory calls. No --real-spawn or Go/native process was executed.",
+        "Thirty actual source inputs, nine-file TS cone/lock/config, cached Node22.19/esbuild0.28.1/Python identities, source lookup membership and successful Windows core_host absence were observed before/after. Inputs equal2df, actual executionb3b2 and physical source; HEAD/index stable. Original values retained through a read-only Python profiler, with no owner return replacement.",
+        "Exactly C36:02/:03 same-status TESTED successors replace the previously explicit missing current bundle/benchmark observations. Old dde4 history remains at its actual epoch and genuineb3b2 retention anchor. Strict prospective owner authentication passed both records; staged full-owner validation follows.",
+        "User explicitly approved private CDB extraction and bounded probes. The reviewed Microsoft MSI component was extracted without installer actions, registry/PATH writes or global SDK installation. Four tools have Valid Microsoft signatures and matching10.0.26100.9457 versions.",
+        "The existing strict owned-Node SDK regression reproduces the hosted unrecognized!=captured assertion locally. Bounded command transport, input, quiet-mode, hidden-console and fixed-output probes still have no target stack capture. No maintained source repair or application exit-cause claim is justified by these negative comparisons. Structured SDK native session diagnosis is the next prerequisite."
+      ],
+      "limits": [
+        "The105+105 counters are original in-memory bridge/tool factories around real production wrapBuiltins; they are not105 native executable calls. Local adapter benchmark does not qualify installed Pi, provider/model/parent consent/UI, native platforms or whole tasks.",
+        "Python profiling adds overhead; absolute/relative benchmark measurements are instrumented. No performance-improvement claim is made.",
+        "Private HOME/AppData environment is not a universal Windows KnownFolder or OS sandbox boundary. Symbol-path restrictions are not a firewall. Runtime debugger text is not retained.",
+        "No further metadata-only CI push or blind old-head retry.1098 remains draft and held from main; publication remains unauthorized."
+      ]
+    },
+    {
+      "id": "typed-sdk-capture-and-sandbox-eleven",
+      "source_commit": "db50f8e3a0170b8a1c4f8b7567897c8574b8d34c",
+      "facts": [
+        "Replace failing CDB text/startup path with typed DbgEng inside an owned credential-blind worker. Inherited query-only proofHANDLE bindsPID/creation/image; header-verified interfaces, explicit denybits/readback beforeattach, constrainedDLL loading, enum/RVA-only result, detach/reap beforecaptured.",
+        "Original permanent SDK regression genuinely RED then exactGov working-tree source GREEN0.860s with12threads74knownRVAframes. Those same code bytes are retained in db50; actualexecutionheadca496 is distinct and recorded. Fiveaffected purecontrols/CIselectorRED-GREEN/75oldASTs81IDs/syntax and exactsixfile independent security/ABI checks pass.",
+        "Exactly11existing Sandbox TESTED records receive same-status successors from40new named controls PASS1.102s plus5literal-source-bound current39 results reused.27sourceinputs/1473runtime members stable; no realDocker/Nixpacks/imagebuild or installed qualification.",
+        "Six P02 tests-record candidates passed14actualmethods but remain unadmitted because canonicalabsence declarations onlysupport hostapi/_host. The actualrefusal and7causal lookupobservations are preserved; do not hide absence or relax the reader."
+      ],
+      "limits": [
+        "No Pi application exit-cause fix or hosted success claimed.",
+        "No task/scenario/native/installed/user/model/main/publication promotion.",
+        "Keep1098draft andheld frommain; no publication."
+      ]
     }
   ],
   "superseded_scoped_blockers": [
@@ -3991,5 +4136,6 @@
       "superseded_by": "M46e29 normal push successful, including native/cold matrix; local Windows cold3 also passed.",
       "historical_cause": "UNKNOWN; no old runtime-cause fix inferred"
     }
-  ]
+  ],
+  "head_semantics": "Committed code-source anchor; read Git/provider for the containing metadata commit and actual pushed CI head."
 }

@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "--version"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-non-native-current-2df",
+  "exit_code": 0,
+  "stdout": "v24.22.1\r\n",
+  "stderr": "",
+  "time_relation": "After successful unit capture; executable digest unchanged from actual before-run runtime identity."
+}

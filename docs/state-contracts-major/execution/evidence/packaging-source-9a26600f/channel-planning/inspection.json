@@ -1,0 +1,347 @@
+{
+  "schema": "codearbiter.finite-packaging-source-inspection/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "producer": "/root/packaging_site_tools",
+  "scope": "Finite complete conditional source guard/effect/retry conformance, after owning/caller/helper inspection; equality only exposes bytes, not the semantic argument. No application code/test executed.",
+  "records": [
+    {
+      "transition_id": "S73:11",
+      "ledger_update": true,
+      "frozen_row_sha256": "84fbb4ab885f996de74b741427a902fe08632c9d3d1cb202ab570bf23d75b9e1",
+      "source": {
+        "path": "tools/promote-claude-marketplace.py",
+        "sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+        "spans": [
+          [
+            32,
+            107
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "channel planned",
+        "event": "push=false",
+        "guard": "local review mode",
+        "to": "staged result",
+        "effects": "Return concrete refs/commits/hashes without remote mutation.",
+        "failure_retry": ""
+      },
+      "assessment": "push=false may stage local files/commits and read remotes; all remote mutation nested under if push. Concrete exact refs/commits/archive hash returned. Shared Codex push helper inspected; no promise of no local writes.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:01",
+      "ledger_update": true,
+      "frozen_row_sha256": "94971b8b77d793012cb449ccd91155e966bae62215564cb05af009539a6db720",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            76,
+            85
+          ],
+          [
+            121,
+            167
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "qualified",
+        "event": "prepare",
+        "guard": "new work path; exact source/version/catalog digest; git or npm mode",
+        "to": "immutable planned",
+        "effects": "Stage exact package; derive deterministic ca-codex-dist-vVERSION orphan commit; optionally build exact npm bytes.",
+        "failure_retry": ""
+      },
+      "assessment": "New work/full source/version/mode; cohort source/version and exact Git catalog bytes+digest precede deterministic fixed-author/date orphan commit. npm projection consumes exact qualified archive. Actual artifact authenticity remains caller obligation.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:02",
+      "ledger_update": true,
+      "frozen_row_sha256": "c4be8fe5f240ec83cb8f758fb0282093771d73d1312b3e93fd9aa59f2b212ae1",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            49,
+            59
+          ],
+          [
+            162,
+            170
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "immutable planned",
+        "event": "observe tag",
+        "guard": "same version points elsewhere",
+        "to": "refused",
+        "effects": "Reject immutable distribution identity conflict.",
+        "failure_retry": ""
+      },
+      "assessment": "Malformed/ambiguous ref lookup refuses; same-version differing immutable commit refused before channel/push.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:03",
+      "ledger_update": false,
+      "frozen_row_sha256": "dd2f0103777769025f19e15f6658ffae7d290b103b8beecef45665474b2fbd27",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            61,
+            74
+          ],
+          [
+            230,
+            232
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "immutable planned",
+        "event": "push requested",
+        "guard": "tag absent",
+        "to": "immutable published",
+        "effects": "Push tag then exact readback; same existing commit is no-op.",
+        "failure_retry": ""
+      },
+      "assessment": "Existing TESTED edge unchanged: absent tag push once then exact readback; equal existing tag no repush; lost response accepted only after fresh equal observation.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:04",
+      "ledger_update": false,
+      "frozen_row_sha256": "026ddeeb15631999247036239a79b8b91ec98bcae3845a6dcb95abf23ee4f5e0",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            186,
+            200
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "immutable planned/published",
+        "event": "advance_channel requested",
+        "guard": "immutable tag already observed at exact expected commit",
+        "to": "channel eligible",
+        "effects": "Require tag preexist before channel advance; optional expected-marketplace-head is compare guard.",
+        "failure_retry": ""
+      },
+      "assessment": "Existing TESTED edge unchanged: expected-head compare and preexisting exact immutable distribution precede channel planning. Codex prerequisite remains distinct from Claude combined path.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:05",
+      "ledger_update": true,
+      "frozen_row_sha256": "c2d4291c31f95f2a7356478ffe6cf3926cfd70608314014e318e3d4f104fb403",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            141,
+            154
+          ],
+          [
+            189,
+            196
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "channel eligible",
+        "event": "npm channel",
+        "guard": "verified expected npm integrity+sha equal generated package",
+        "to": "channel eligible",
+        "effects": "Require registry artifact identity to be supplied before changing channel to npm source.",
+        "failure_retry": ""
+      },
+      "assessment": "npm advance compares supplied expected integrity+SHA to generated exact archive before channel changes; constructor pins canonical package/registry/version. Registry publication/authenticity not inferred.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:06",
+      "ledger_update": true,
+      "frozen_row_sha256": "bca1b1d1d5297d7a25e7977be8e2b03a055b8a2cfaab23adfaa135b31f72e3ab",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            13,
+            42
+          ],
+          [
+            106,
+            118
+          ],
+          [
+            201,
+            214
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "channel eligible",
+        "event": "observe prior channel",
+        "guard": "parseable approved source shape and no version rollback",
+        "to": "channel planned",
+        "effects": "Read old catalog/ledger, reject malformed/missing version or downgrade; preserve prior ledger entries and reject same-version record drift.",
+        "failure_retry": ""
+      },
+      "assessment": "Approved closed Git/npm source shape and parseable SemVer required; unreadable/unknown/malformed version or downgrade refuses. Ledger envelope preserves prior entries and rejects same-version record drift. Missing ledger keeps original initialization semantics.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:07",
+      "ledger_update": true,
+      "frozen_row_sha256": "689f1927b50e2d785302a61d12b9f5ad3b91ef73ce7fc2ce506c6a1fd45d9773",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            211,
+            223
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "channel eligible",
+        "event": "same catalog and ledger",
+        "guard": "byte equality",
+        "to": "channel unchanged",
+        "effects": "Reuse prior channel commit idempotently.",
+        "failure_retry": ""
+      },
+      "assessment": "Equal catalog+ledger bytes reuse previous channel commit. Changed data creates local commit with old-channel and immutable-distribution parents; no duplicate equal mutation.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:08",
+      "ledger_update": false,
+      "frozen_row_sha256": "d149ece1a3eeb3bb2a4fc5cdd3cbedf56be3fd839430d02e61f59fe3e1601df8",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            220,
+            236
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "channel planned",
+        "event": "push requested",
+        "guard": "expected head still leased",
+        "to": "channel published",
+        "effects": "Push channel commit with force-with-lease, then exact readback; includes old channel and distribution parents.",
+        "failure_retry": ""
+      },
+      "assessment": "Existing TESTED edge unchanged: both parents, exact force-with-lease and post-push readback retained; no unleased reset of competitor.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:09",
+      "ledger_update": false,
+      "frozen_row_sha256": "fdd08c8b5481fb41b2fe638b84a64a1561f9badaf7c1503a30d1d5239e053216",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            61,
+            74
+          ],
+          [
+            136,
+            139
+          ],
+          [
+            230,
+            236
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "any remote step",
+        "event": "failure/readback drift",
+        "guard": "mutation may have occurred",
+        "to": "outcome unknown",
+        "effects": "Stop; rerun with fresh work directory and remote re-observation.",
+        "failure_retry": "Immutable tag creation and channel advance are separate operations by design; do not infer rollback from failed final response."
+      },
+      "assessment": "Existing TESTED edge unchanged: unknown/conflicting readback raises after one attempt; no rollback or repush. New work and fresh remote observations required; tag/channel remain separate effects.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    },
+    {
+      "transition_id": "S74:10",
+      "ledger_update": true,
+      "frozen_row_sha256": "45547edd294d28e0b4495019553e6d98a02dede2e15eabe92445897ccfff5cc8",
+      "source": {
+        "path": "tools/promote-codex-marketplace.py",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "spans": [
+          [
+            224,
+            237
+          ]
+        ]
+      },
+      "whole_clause": {
+        "from": "any planning",
+        "event": "push=false",
+        "guard": "review path",
+        "to": "concrete result",
+        "effects": "Return exact candidate refs/commits/package hashes without writing remote.",
+        "failure_retry": ""
+      },
+      "assessment": "Exact ref/commit/package hash result constructed before return; every remote write under if push. Planning may still read remote/create local commits.",
+      "result": "PRESERVED_SOURCE_CONTRACT"
+    }
+  ],
+  "machine_coverage": {
+    "S74": {
+      "all_frozen_edges": [
+        "S74:01",
+        "S74:02",
+        "S74:03",
+        "S74:04",
+        "S74:05",
+        "S74:06",
+        "S74:07",
+        "S74:08",
+        "S74:09",
+        "S74:10"
+      ],
+      "covered_by_this_source_inspection": [
+        "S74:01",
+        "S74:02",
+        "S74:03",
+        "S74:04",
+        "S74:05",
+        "S74:06",
+        "S74:07",
+        "S74:08",
+        "S74:09",
+        "S74:10"
+      ],
+      "scope": "Whole finite source contract only. Existing higher-status edge records unchanged/not re-executed."
+    }
+  },
+  "dependency_review": "Both promoters, staging/archive digest/member projection, pinned directory stage, immutable installer snapshot, deterministic npm tar projection and canonical SemVer shim/owner inspected. No current remote, registry, package receipt or artifact authenticity admitted.",
+  "historical_delta_review": "fd7 diff: accepted DIST-M02 readback-only recovery, unknown Claude version refusal and one-attempt push/readback. Review path and Codex preexisting-tag sequencing preserved."
+}

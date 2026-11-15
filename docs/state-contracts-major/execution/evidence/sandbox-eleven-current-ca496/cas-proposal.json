@@ -1,0 +1,411 @@
+{
+  "schema": "codearbiter-sandbox-eleven-current-cas/1",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "actual_new_execution_commit": "ca4966745fa44f1baddd08613702db023d83fe60",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "transitions",
+      "id": "S49:02",
+      "old_row_sha256": "1225965efad55f7c2f57bc1384e25227b3c7253b0b3a316d17961d4dc73fd5cb",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01: V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:03",
+      "old_row_sha256": "b5e5b2db8ff138b2d7494091ad9b45e4eb1e9df0718c066aa811fef0b60178c2",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01: tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:04",
+      "old_row_sha256": "d9cc25b9c2ca64c760897cbe80e430a3ac0c2c90811a143ec64c2daf5dbffd5d",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:05",
+      "old_row_sha256": "3ab040fb02d492beb71753a379c5c2ea6b88ec3371533a9aff0af5484c502bc5",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:06",
+      "old_row_sha256": "4e3cc5712cea5e404e8da56ed5af5feed64bff045d2332b6c0134ab72def0eca",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:07",
+      "old_row_sha256": "3a31741942889565bec1c7cffb35e26677d067a312fd5b3730d2a3bccbc7800c",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:08",
+      "old_row_sha256": "de306335dfaae49661cffcf4785436acdc525bc88bbfcbbdcfdbe0125cd4996e",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S49:09",
+      "old_row_sha256": "a313ca489ae133bb2ee5a209c71d88fe9a9e90cc416e8b6f129673876c12afe3",
+      "proposed_row": {
+        "owner": "sandbox",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "candidate_contract_note": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions.",
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+            "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "SBX-BUILD-OBSERVATION:01",
+      "old_row_sha256": "8dd5ebb89973d0a73bca6bc33b3aaf0f00fe4938407a322a5ab66ee40dd894d7",
+      "proposed_row": {
+        "owner": "sandbox",
+        "task_ids": [
+          "SBX-D01",
+          "SBX-C01"
+        ],
+        "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+            "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/builder3-tested-successor.json",
+            "sha256": "48ad8c44b9f9130e4f1e8179b3d1b9bcb74c05f57449453f6f000adf9f22bf17",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "SBX-BUILD-OBSERVATION:02",
+      "old_row_sha256": "8dd5ebb89973d0a73bca6bc33b3aaf0f00fe4938407a322a5ab66ee40dd894d7",
+      "proposed_row": {
+        "owner": "sandbox",
+        "task_ids": [
+          "SBX-D01",
+          "SBX-C01"
+        ],
+        "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+            "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/builder3-tested-successor.json",
+            "sha256": "48ad8c44b9f9130e4f1e8179b3d1b9bcb74c05f57449453f6f000adf9f22bf17",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "SBX-BUILD-OBSERVATION:03",
+      "old_row_sha256": "3926b9504a726289825ab68535cb76ab0d800d0998a384ae0d61db467ccb21f0",
+      "proposed_row": {
+        "owner": "sandbox",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01"
+        ],
+        "treatment": "INTRODUCED_BUILDER_ADMISSION_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-eleven-current-ca496/sandbox-eleven-tested.json",
+            "sha256": "2541bca56c4768188ac888207bf1f6f3fdaef7ef09d504f3955f09c5a5ac7e78"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/sandbox-builder-tested.json",
+            "sha256": "82b5a2e342e6cd364d5808815dd0228bde18144c8c3d4482df5e4ec5b9cfff1a",
+            "ref_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+          },
+          {
+            "kind": "test",
+            "commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+            "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/builder3-tested-successor.json",
+            "sha256": "48ad8c44b9f9130e4f1e8179b3d1b9bcb74c05f57449453f6f000adf9f22bf17",
+            "ref_commit": "ca4966745fa44f1baddd08613702db023d83fe60"
+          }
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "Injected local unit boundaries only: no real Nixpacks, Docker daemon/image build, WSL execution, native/Go compilation, installed package, provider/model, network or task/machine/platform qualification.",
+    "Cache identity checks are cooperative current observations, not an atomic same-user executable pin. Failure/compensation observations retain unknown rather than claiming universal process containment.",
+    "Exactly40 new named controls ran once; five unchanged original current39 create-diagnostic cases were reused with literal joins and their original2df identity. No total-suite counts are used as clause evidence.",
+    "Unselected Docker and adjacent package/CLI/phase-interruption boundaries remain open. S52:06 and S54:01 are not inferred.",
+    "Initial Temp observer setup NameError occurred before test spawn, retained separately; no runtime/source failure is hidden and no test was rerun.",
+    "All27 source inputs literally equal2df/currentca496/physical/private beforeafter. Actual new execution remainsca496, distinct from original2df reused observations."
+  ]
+}
