@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Retain bounded Windows process state and private stack projections after Pi RPC timeouts without changing the failed result or cleanup.
 - Read large CI change sets from event files and Git so integration qualification can start without exceeding process argument or environment limits.
 
 - Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.

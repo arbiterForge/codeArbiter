@@ -919,6 +919,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn('if: always()', upload)
         self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
         self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-native-exit-*.json', upload)
         self.assertIn('if-no-files-found: ignore', upload)
         self.assertNotIn('continue-on-error:', upload)
 

@@ -2637,7 +2637,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pi-rpc-diagnostics-${{ matrix.os }}-${{ matrix.pi-version }}
-          path: ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-shutdown-*.json
+          path: |
+            ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-shutdown-*.json
+            ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-native-exit-*.json
           if-no-files-found: ignore
           retention-days: 7
           overwrite: false

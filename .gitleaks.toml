@@ -325,3 +325,13 @@ fingerprint with no secret input or access authority; the filename caused
 the generic detector match. Only this exact value is exempted.
 """
 regexes = ['\Ac3aaa89a68286cda575886cf71cafc4fb1e0786a58a19a8332008db918be7bfa\z']
+
+# Exact public source-file hashes retained by the S38 native runtime evidence.
+# Both are recomputed from committed source at c2cf0a18. No secret input,
+# credential authority, path exemption or general digest pattern is allowed.
+[[allowlists]]
+description = "Public source SHA-256 values for plugins/ca-codex/agents/auth-crypto-reviewer.md and plugins/ca-codex/routines/tribunal/references/lenses/secrets-supply.md, recorded by mapped-S38-current-native-c2cf0a18 runtime evidence"
+regexes = [
+  '''\Aea491e797261a42487cd9b42ee324c79b9394e6b2b26449eaa856f4b4118d1e2\z''',
+  '''\Ab0058695371f6c7dff1ab274283cfc2352fa5ece86aed537f99697af712b400d\z''',
+]

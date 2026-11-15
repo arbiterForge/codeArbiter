@@ -949,6 +949,7 @@ export default function registerCaptureProvider(pi: any) {
     stderr_bytes = b""
     stderr_error: Exception | None = None
     protocol = None
+    shutdown_waiting = False
 
     def stderr_tail() -> str:
         return stderr_bytes.decode("utf-8", errors="replace")[-2000:]
@@ -1060,7 +1061,9 @@ export default function registerCaptureProvider(pi: any) {
         process.stdin.close()
         rpc_protocol_observe(protocol, "closed_stdin")
         try:
+            shutdown_waiting = True
             returncode = wait_for_rpc_shutdown(process, shutdown_trace, observed=_observe_shutdown)
+            shutdown_waiting = False
             rpc_protocol_observe(protocol, "exited", returncode)
         except subprocess.TimeoutExpired as error:
             rpc_protocol_observe(protocol, "mark", "shutdown_timeout")
@@ -1109,6 +1112,16 @@ export default function registerCaptureProvider(pi: any) {
             retained = None
         if retained is not None:
             error.add_note(f"Pi RPC failure diagnostic artifact: {retained}")
+            if shutdown_waiting:
+                # Original failure and phase receipt exist before optional OS observation.
+                # No later observation may substitute for this failed wait.
+                try:
+                    from _windows_rpc_timeout import retain_failure
+                    native = retain_failure(process, Path(node), Path(os.environ["CA_PI_RPC_DIAGNOSTICS_DIR"]))
+                    if native is not None:
+                        error.add_note(f"Pi RPC native timeout diagnostic artifact: {native}")
+                except Exception:
+                    pass
         raise
     finally:
         cleanup_errors: list[str] = []
@@ -1470,6 +1483,269 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 
 class PiPackageTests(unittest.TestCase):
+    def test_rpc_native_shutdown_stack_projection_is_closed_and_bounded(self):
+        import _windows_rpc_timeout as native
+        raw = (b"00001000 00002000 node (deferred)\n"
+               b"00003000 00004000 ntdll (deferred)\n"
+               b"  0 Id: 123.456 Suspend: 1 Teb: PrivateFixtureValue\n"
+               b" # Child-SP RetAddr Call Site\n"
+               b"00 00009999 00001010 node!PrivateFixtureValue(C:/private)\n"
+               b"01 00009998 00003020 ntdll!PrivateFixtureValue\n"
+               b"02 00009997 00005000 PrivateFixtureValue!secret\n")
+        report = native.parse_stacks(raw)
+        self.assertEqual(report["status"], "captured")
+        self.assertEqual(report["threads"], [{"frames": [
+            {"module": "node", "returnOffset": 16},
+            {"module": "ntdll", "returnOffset": 32},
+            {"module": "Other", "returnOffset": None}]}])
+        self.assertNotIn("PrivateFixtureValue", json.dumps(report))
+        self.assertNotIn("C:/private", json.dumps(report))
+        oversized = native.parse_stacks(b"x" * (native.MAX_OUTPUT + 1))
+        self.assertEqual(oversized["status"], "output_limit")
+        self.assertEqual(oversized["threads"], [])
+        many = b"00001000 00002000 node (deferred)\n" + b"".join(
+            b"  0 Id: 1.2 Suspend: 1\n" + b"00 9999 1010 ignored\n" * 30
+            for _ in range(20))
+        report = native.parse_stacks(many)
+        self.assertEqual(len(report["threads"]), 16)
+        self.assertTrue(all(len(row["frames"]) == 24 for row in report["threads"]))
+        self.assertTrue(report["truncated"])
+        self.assertEqual(native.parse_stacks(b"PrivateFixtureValue")["status"], "unrecognized")
+
+    def test_rpc_native_shutdown_identity_refuses_foreign_or_unknown_handles(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            image = Path(directory).resolve() / "node.exe"
+            image.write_bytes(b"owned image")
+            for failure in (None, "pid", "created", "image", "query", "wait", "late",
+                            "rundown", "rundown-pid", "rundown-created"):
+                with self.subTest(failure=failure):
+                    class Kernel:
+                        closed = []
+                        def open(self, pid):
+                            self.closed = []
+                            return 22
+                        def close(self, handle):
+                            self.closed.append(handle)
+                        def snapshot(self, handle):
+                            if failure == "query":
+                                raise OSError("PrivateFixtureValue")
+                            return {"pid": 77 if failure in ("pid", "rundown-pid") and handle == 22 else 33,
+                                    "created": 88 if failure in ("created", "rundown-created") and handle == 22 else 44,
+                                    "image": "" if failure and failure.startswith("rundown") and handle == 22 else str(image.parent / "foreign.exe") if failure == "image" else str(image),
+                                    "state": "failed" if failure == "wait" else "signaled" if failure == "late" or (failure and failure.startswith("rundown") and handle == 22) else "running",
+                                    "exitCode": 0 if failure == "late" or (failure and failure.startswith("rundown") and handle == 22) else None}
+                    kernel = Kernel()
+                    debugger = mock.Mock(return_value={"status": "unavailable", "threads": [], "truncated": False})
+                    process = SimpleNamespace(pid=33, _handle=11)
+                    result = native.capture(process, image, _kernel=kernel, _debugger=debugger)
+                    self.assertEqual(vars(process), {"pid": 33, "_handle": 11})
+                    self.assertEqual(debugger.call_count, int(failure is None))
+                    self.assertNotIn(11, kernel.closed)
+                    if 22 in kernel.closed:
+                        self.assertEqual(kernel.closed, [22])
+                    self.assertEqual(result["outcome"], "original-failure")
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(result))
+                    if failure is None:
+                        self.assertEqual(result["identity"], "matched")
+                    elif failure == "late":
+                        self.assertEqual(result["before"]["state"], "signaled")
+                    elif failure == "rundown":
+                        self.assertEqual(result["identity"], "owned-exited")
+                        self.assertEqual(result["before"], {"state": "running", "exitCode": None})
+                        self.assertEqual(result["after"], {"state": "signaled", "exitCode": 0})
+                        self.assertEqual(result["processId"], 33)
+                        self.assertEqual(result["creationTime"], 44)
+                        self.assertEqual(kernel.closed, [22])
+                    elif failure in ("rundown-pid", "rundown-created"):
+                        self.assertEqual(result["identity"], "mismatch")
+                        self.assertEqual(result["after"], {"state": "unknown", "exitCode": None})
+                    else:
+                        self.assertNotEqual(result["identity"], "matched")
+
+    def test_rpc_native_shutdown_transport_has_one_deadline_and_aggregate_cap(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        for scenario in ("complete", "cap", "deadline", "pipe_failure"):
+            with self.subTest(scenario=scenario):
+                now = [0.0]
+                chunks = [b"closed"] if scenario == "complete" else [b"x" * (native.MAX_OUTPUT + 1)]
+                class Process:
+                    returncode = 0
+                    killed = False
+                    stdout = io.BytesIO()
+                    def poll(self):
+                        return 0 if scenario == "complete" and not chunks else None
+                    def kill(self):
+                        self.killed = True
+                    def wait(self, timeout):
+                        return 0
+                process = Process()
+                def available(stream):
+                    if scenario == "pipe_failure":
+                        raise OSError("PrivateFixtureValue")
+                    return len(chunks[0]) if chunks and scenario != "deadline" else 0
+                def read(stream, count):
+                    first = chunks[0][:count]
+                    chunks[0] = chunks[0][count:]
+                    if not chunks[0]:
+                        chunks.pop(0)
+                    return first
+                def sleep(seconds):
+                    now[0] += seconds
+                result = native._collect(process, available, deadline=0.05,
+                                         _read=read, _clock=lambda: now[0], _sleep=sleep)
+                expected = {"complete": "captured", "cap": "output_limit", "deadline": "deadline",
+                            "pipe_failure": "transport_failed"}[scenario]
+                self.assertEqual(result[0], expected)
+                self.assertLessEqual(len(result[1]), native.MAX_OUTPUT)
+                self.assertLessEqual(now[0], 0.051)
+                self.assertEqual(process.killed, scenario != "complete")
+                self.assertNotIn(b"PrivateFixtureValue", result[1])
+
+    def test_rpc_native_shutdown_fixed_debugger_profile_and_private_sidecar(self):
+        import _windows_rpc_timeout as native
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            with mock.patch.dict(os.environ, {"PRIVATE_TOKEN": "PrivateFixtureValue", "_NT_SYMBOL_PATH": "https://private"}):
+                argv, env = native._profile(42, root)
+            self.assertEqual(argv[0], str(native.CDB))
+            for flag in ("-pv", "-pd", "-kqm", "-noshell", "-nosqm", "-sins", "-snul", "-netsyms:no"):
+                self.assertIn(flag, argv)
+            self.assertEqual(argv[-4:], ["-p", "42", "-c", "lm; ~*kL 18; q"])
+            self.assertNotIn("PrivateFixtureValue", json.dumps(env))
+            self.assertNotIn("_NT_SYMBOL_PATH", env)
+            for key in ("HOME", "USERPROFILE", "TEMP", "TMP", "APPDATA", "LOCALAPPDATA"):
+                self.assertTrue(Path(env[key]).is_relative_to(root))
+            with self.assertRaises(ValueError):
+                native._profile(-1, root)
+            report = {"schemaVersion": 1, "outcome": "original-failure", "identity": "unknown"}
+            with mock.patch.object(native, "capture", return_value=report):
+                first = native.retain_failure(None, Path("node"), root)
+                second = native.retain_failure(None, Path("node"), root)
+            self.assertNotEqual(first, second)
+            self.assertTrue(first.startswith("rpc-native-exit-"))
+            self.assertEqual(json.loads((root / first).read_text()), report)
+            self.assertLessEqual((root / first).stat().st_size, native.MAX_JSON)
+            with mock.patch.object(native, "capture", side_effect=ValueError("PrivateFixtureValue")):
+                self.assertIsNone(native.retain_failure(None, Path("node"), root))
+
+    def test_rpc_native_shutdown_failure_hook_preserves_original_then_cleanup(self):
+        import _windows_rpc_timeout as native
+        current = sys.modules[__name__]
+        for observer_fails in (False, True):
+            with self.subTest(observer_fails=observer_fails), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                cwd, retained = root / "cwd", root / "retained"
+                cwd.mkdir()
+                order = []
+                original_run, original_cleanup = subprocess.run, terminate_process_tree
+                child = ("import sys,json; sys.stdin.readline(); "
+                         "print(json.dumps({'id':'commands','success':True}),flush=True); sys.stdin.read()")
+                def install(args, **kwargs):
+                    if len(args) > 2 and args[2] == "install":
+                        return subprocess.CompletedProcess(args, 0, "", "")
+                    return original_run(args, **kwargs)
+                original_retain = retain_rpc_shutdown_failure
+                def phase_receipt(*args, **kwargs):
+                    value = original_retain(*args, **kwargs)
+                    self.assertIsNotNone(value)
+                    order.append("original-retained")
+                    return value
+                def observe(process, node, destination):
+                    self.assertEqual(order, ["original-retained"])
+                    self.assertTrue(list(retained.glob("rpc-shutdown-*.json")))
+                    order.append("native-observed")
+                    if observer_fails:
+                        raise ValueError("PrivateFixtureValue")
+                    return None
+                def cleanup(process):
+                    order.append("cleanup")
+                    return original_cleanup(process)
+                with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}), \
+                     mock.patch.object(current, "live_pi_cli", return_value=(sys.executable, root / "unused-cli")), \
+                     mock.patch.object(current, "read_json", return_value={"packages": ["fixture"]}), \
+                     mock.patch.object(subprocess, "run", side_effect=install), \
+                     mock.patch.object(current, "wait_for_rpc_shutdown", side_effect=subprocess.TimeoutExpired("owned", 30)), \
+                     mock.patch.object(current, "retain_rpc_shutdown_failure", side_effect=phase_receipt), \
+                     mock.patch.object(native, "retain_failure", side_effect=observe), \
+                     mock.patch.object(current, "terminate_process_tree", side_effect=cleanup):
+                    with self.assertRaisesRegex(AssertionError, "did not exit within 30 seconds") as raised:
+                        run_rpc_commands(cwd, root / "agent", root / "home",
+                                         _rpc_command=[sys.executable, "-c", child])
+                self.assertIsInstance(raised.exception.__cause__, subprocess.TimeoutExpired)
+                self.assertEqual(order, ["original-retained", "native-observed", "cleanup"])
+                self.assertNotIn("PrivateFixtureValue", str(raised.exception))
+
+    @unittest.skipUnless(os.name == "nt", "Windows owned process HANDLE control")
+    def test_rpc_native_shutdown_real_owned_node_handles_and_late_exit(self):
+        import _windows_rpc_timeout as native
+        node = os.environ.get("CA_PI_DIAGNOSTIC_NODE") or shutil.which("node")
+        self.assertIsNotNone(node, "existing approved Node must be available")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR") if key in os.environ}
+            env.update(HOME=str(root), USERPROFILE=str(root), TEMP=str(root), TMP=str(root))
+            process = subprocess.Popen([node, "-e", "setInterval(()=>{},1000)"], cwd=root, env=env,
+                                       stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            original_handle = int(process._handle)
+            debugger = mock.Mock(return_value={"status": "unavailable", "threads": [], "truncated": False})
+            try:
+                alive = native.capture(process, Path(node), _debugger=debugger)
+                self.assertEqual(alive["identity"], "matched")
+                self.assertEqual(alive["before"]["state"], "running")
+                self.assertEqual(debugger.call_count, 1)
+                self.assertIsNone(process.poll())
+                self.assertEqual(int(process._handle), original_handle)
+                # Physical capability is observed, never inferred from the runner label.
+                if not native.CDB.exists():
+                    unavailable = native.capture(process, Path(node))
+                    self.assertEqual(unavailable["debugger"]["status"], "unavailable")
+                    self.assertEqual(unavailable["after"]["state"], "running")
+                else:
+                    # Existing SDK only: no download, install, Pi or provider.
+                    # A present tool must demonstrate recognized frames here;
+                    # unknown status cannot masquerade as capability proof.
+                    actual = native.capture(process, Path(node))
+                    self.assertEqual(actual["identity"], "matched")
+                    self.assertEqual(actual["before"]["state"], "running")
+                    self.assertEqual(actual["after"]["state"], "running")
+                    report = actual["debugger"]
+                    self.assertEqual(report["status"], "captured")
+                    self.assertEqual(set(report["toolHashes"]), {"cdb.exe", "dbgeng.dll", "dbghelp.dll"})
+                    for digest in report["toolHashes"].values():
+                        self.assertRegex(digest, r"\A[0-9a-f]{64}\Z")
+                    self.assertLessEqual(len(json.dumps(actual).encode("utf-8")), native.MAX_JSON)
+                    self.assertLessEqual(len(report["threads"]), 16)
+                    for thread in report["threads"]:
+                        self.assertEqual(set(thread), {"frames"})
+                        self.assertLessEqual(len(thread["frames"]), 24)
+                        for frame in thread["frames"]:
+                            self.assertEqual(set(frame), {"module", "returnOffset"})
+                            self.assertIn(frame["module"], native.MODULES | {"Other"})
+                            self.assertTrue(frame["returnOffset"] is None or
+                                            type(frame["returnOffset"]) is int and 0 <= frame["returnOffset"] < 2**64)
+                    if report["status"] == "captured":
+                        self.assertTrue(any(row["frames"] for row in report["threads"]))
+                    # Closed status only; never raw debugger text/symbols/paths.
+                    print("owned-node-native-debugger-status=" + report["status"])
+                    self.assertIsNone(process.poll(), "debugger quit must preserve the owned Node")
+                    self.assertEqual(int(process._handle), original_handle)
+                foreign = native.capture(process, Path(sys.executable), _debugger=debugger)
+                self.assertNotEqual(foreign["identity"], "matched")
+                self.assertEqual(debugger.call_count, 1)
+                process.terminate()
+                process.wait(timeout=3)
+                late = native.capture(process, Path(node), _debugger=debugger)
+                self.assertEqual(late["before"]["state"], "signaled")
+                self.assertEqual(debugger.call_count, 1)
+                self.assertEqual(int(process._handle), original_handle)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=3)
+
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
         # Pi 1.5.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
