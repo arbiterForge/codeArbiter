@@ -4,7 +4,7 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+  "head": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
@@ -3840,7 +3840,7 @@
     "Authenticate the next successful trusted normal run and original installed/native reports before installed13/native133 renewal.",
     "Retain actual user/model/parent/lifecycle acceptance, Pi HTTP policy and historical2df EOF holds. PR1098 main merge and publication remain unauthorized."
   ],
-  "delivery_state": "LOCAL_REPAIRS_AND37FINITE_RECORDS_PASS_CURRENT1041APP277STALE_NORMAL_BB4_FAILED_PARENT1098_HELD",
+  "delivery_state": "LOCAL_REPAIRS_AND82_FINITE_RECORDS_CURRENT_1086APP232STALE_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3864,7 +3864,7 @@
       "source": ".github/workflows/ci.yml current concurrency contract; current Root-scoped correction, 2026-11-15."
     }
   ],
-  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1112",
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1113",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -4199,7 +4199,7 @@
       "current_resolution": "Three-OS PR1112 control reads succeeded and original bb4 installed owners advanced past job-log transport. Historical 8ca underlying cause remains UNKNOWN; bb4 later-boundary failures are the current blocker."
     }
   ],
-  "head_semantics": "Committed repair source63d3cf92 before this coherent metadata commit; original statusline/Recovery execution771 and P02execution63d3 are retained without relabelling. New child and normal installed qualification remain unproven.",
+  "head_semantics": "Last committed anchorfb6124 before this45-record and documentation correction. Production63d3/HW05 source771 unchanged. Next pushed head and exact-head CI are read from Git/provider; no new installed/native qualification inferred.",
   "superseded_checkpoint_fields": [
     {
       "id": "before-job-log-transport-9f9cde6b",
@@ -4253,7 +4253,7 @@
     },
     {
       "id": "before-bb4-observer-repairs-77160413",
-      "checkpoint_history_ref": "docs/state-contracts-major/execution/checkpoint-history/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
+      "checkpoint_history_ref": "docs/state-contracts-major/execution/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
       "checkpoint_sha256": "368ef1b01ea802ed40672cec04a824566c299a26f71dde918140369297001e84",
       "progress_preimage_sha256": "539eff677787f9104fd276a8fa2e1a31124cc665b61459c9c140fea84aebee06",
       "fields": {
@@ -4400,7 +4400,7 @@
   ],
   "live_checkpoint": {
     "id": "after1112-observer-source63d3",
-    "last_committed_local_source_anchor": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+    "last_committed_local_source_anchor": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
     "pending_source_commit": null,
     "pending_source_note": "Repair committed63d3cf92; combined security/functional review PASS0findings, source hashes and receipts retained in evidence/installed-observer-repair/source-delivery.json.",
     "active_branch": "codex/state-contracts-spinner-rollback",
@@ -4568,7 +4568,45 @@
       "integration_branch_and_worktrees": "outside remote deletion grant",
       "publication": "not authorized"
     },
-    "history": "docs/state-contracts-major/execution/checkpoint-history/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
-    "new_child": null
+    "history": "docs/state-contracts-major/execution/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
+    "new_child": {
+      "pr": 1113,
+      "observed_head": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+      "observed_state": "OPEN; source/code checks progressed, docs capture and archive-link failures corrected locally; next exact-head hosted checks pending"
+    },
+    "finite45_successors": {
+      "state": "STAGED_UNCHANGED_OWNER_AND_CURRENT_APPLICABILITY_PASS",
+      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+      "Pi_source_conformance": {
+        "rows": 39,
+        "status": "PRESERVED",
+        "positive_inputs": 29,
+        "source_spans": 91,
+        "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+        "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+      },
+      "reader": {
+        "rows": 6,
+        "status": "TESTED",
+        "actual_PASS": 14,
+        "seconds": 7.585700199997518,
+        "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+        "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
+      },
+      "all_old_active_refs_and_full_histories_retained": true,
+      "limits": "No new status promotion, whole-task/user/model/UI/host/installed/native/main/publication closure.",
+      "measured_integrity": {
+        "result": "PASSED",
+        "frozen": 105,
+        "records": 1318,
+        "applicability": {
+          "APPLICABLE": 1086,
+          "STALE": 232
+        },
+        "all82_selected_records_currently_APPLICABLE": true,
+        "actual_owner_seconds": 35.707,
+        "scope": "Complete staged proof/ledger subject; final doc-only measured-counter refresh leaves this subject unchanged."
+      }
+    }
   }
 }

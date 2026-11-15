@@ -980,9 +980,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -992,6 +992,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -22398,9 +22405,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
      "ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
-     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d"
+     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -22415,12 +22431,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S03:03": {
    "owner": "pi",
@@ -22443,12 +22468,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S03:05": {
    "owner": "pi",
@@ -22461,9 +22495,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
      "ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
-     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d"
+     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -22478,9 +22521,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
      "ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
-     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d"
+     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -22505,9 +22557,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
      "ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
-     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d"
+     "sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -22522,12 +22583,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:01": {
    "owner": "pi",
@@ -22559,12 +22629,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:03": {
    "owner": "pi",
@@ -22578,12 +22657,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:04": {
    "owner": "pi",
@@ -22597,12 +22685,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:05": {
    "owner": "pi",
@@ -22616,12 +22713,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:06": {
    "owner": "pi",
@@ -22653,12 +22759,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S04:08": {
    "owner": "pi",
@@ -22690,12 +22805,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:02": {
    "owner": "pi",
@@ -22709,12 +22833,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:03": {
    "owner": "pi",
@@ -22728,12 +22861,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:04": {
    "owner": "pi",
@@ -22747,12 +22889,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:05": {
    "owner": "pi",
@@ -22766,12 +22917,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:06": {
    "owner": "pi",
@@ -22785,12 +22945,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:07": {
    "owner": "pi",
@@ -22804,12 +22973,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:08": {
    "owner": "pi",
@@ -22823,12 +23001,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S05:09": {
    "owner": "pi",
@@ -22842,12 +23029,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S06:01": {
    "owner": "pi",
@@ -23491,12 +23687,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:02": {
    "owner": "pi",
@@ -23510,12 +23715,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:03": {
    "owner": "pi",
@@ -23529,12 +23743,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:04": {
    "owner": "pi",
@@ -23548,12 +23771,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:05": {
    "owner": "pi",
@@ -23567,12 +23799,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:06": {
    "owner": "pi",
@@ -23586,12 +23827,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:07": {
    "owner": "pi",
@@ -23605,12 +23855,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:08": {
    "owner": "pi",
@@ -23624,12 +23883,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S13:09": {
    "owner": "pi",
@@ -23643,12 +23911,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S14:01": {
    "owner": "pi",
@@ -23901,12 +24178,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S17:03": {
    "owner": "pi",
@@ -23918,12 +24204,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S17:04": {
    "owner": "pi",
@@ -23935,12 +24230,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S17:05": {
    "owner": "pi",
@@ -23952,12 +24256,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
-     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
     }
    ],
-   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification."
+   "candidate_contract_note": "Finite source guard/effect/retry conformance only; no runtime, model, host, task or scenario qualification.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+     "sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
+    }
+   ]
   },
   "S17:06": {
    "owner": "pi",
@@ -23990,9 +24303,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
-     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -24009,9 +24331,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
-     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -24040,9 +24371,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
-     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -24059,9 +24399,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
-     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -24078,9 +24427,18 @@
    "evidence": [
     {
      "kind": "conformance-check",
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+     "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
-     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1"
+     "sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -40896,9 +41254,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -40908,6 +41266,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -40921,9 +41286,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -40933,6 +41298,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -40946,9 +41318,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -40958,6 +41330,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -40971,9 +41350,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -40983,6 +41362,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },
@@ -40996,9 +41382,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
-     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
-     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+     "commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+     "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+     "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
     }
    ],
    "evidence_history": [
@@ -41008,6 +41394,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
      "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+    },
+    {
+     "kind": "test",
+     "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+     "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+     "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+     "ref_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447"
     }
    ]
   },

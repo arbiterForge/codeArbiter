@@ -1,0 +1,682 @@
+{
+  "schema": "codearbiter.selected-original-vitest-results/1",
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-committed51-a0f4-6db6sc7k\\original-vitest51.json",
+    "sha256": "44fda9f3db9dae4b30b65a8bdcf5fa97706bc0fd8b75f187cbd6d7582cc5ec2b",
+    "bytes": 29887,
+    "unchanged": true
+  },
+  "representation": "Lossless selected assertion objects with explicit file association; unselected37 objects and runner bookkeeping omitted, not a lossless complete-report claim.",
+  "passed": 51,
+  "failed": 0,
+  "unselected": {
+    "count": 37,
+    "reason": "pattern-filtered, not platform skips"
+  },
+  "selected_assertions": [
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "status": "passed",
+      "title": "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "duration": 5.506599999999992,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor reports exact active origins and limits the module-identity claim",
+      "status": "passed",
+      "title": "reports exact active origins and limits the module-identity claim",
+      "duration": 2.8832000000000164,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor reports enabled global untrusted state without a bridge probe or wrapper self-test",
+      "status": "passed",
+      "title": "reports enabled global untrusted state without a bridge probe or wrapper self-test",
+      "duration": 4.459900000000005,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+      "status": "passed",
+      "title": "wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+      "duration": 0.21989999999999554,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+      "status": "passed",
+      "title": "wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+      "duration": 2.153599999999983,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test skips while dormant without claiming active dispatch",
+      "status": "passed",
+      "title": "wrapper self-test skips while dormant without claiming active dispatch",
+      "duration": 1.9043000000000063,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/doctor.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "#464 - the suite runs against a disposable operator home"
+      ],
+      "fullName": "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+      "status": "passed",
+      "title": "the setup file ran and repointed every home variable",
+      "duration": 0.7956999999999823,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/security.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "#464 - the suite runs against a disposable operator home"
+      ],
+      "fullName": "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+      "status": "passed",
+      "title": "os.homedir() resolves inside the disposable root, not the real profile",
+      "duration": 0.23060000000000969,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/security.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "#464 - the suite runs against a disposable operator home"
+      ],
+      "fullName": "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+      "status": "passed",
+      "title": "the seeded auth store is an obvious dummy, and is the one a child would read",
+      "duration": 0.39330000000001064,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/security.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "#464 - the suite runs against a disposable operator home"
+      ],
+      "fullName": "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home",
+      "status": "passed",
+      "title": "a spread of process.env therefore carries the disposable home",
+      "duration": 0.16199999999997772,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/security.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle reports only bounded live footer and background health across session modes",
+      "status": "passed",
+      "title": "reports only bounded live footer and background health across session modes",
+      "duration": 85.48159999999996,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle installs the rich footer globally for an interactive plain repository",
+      "status": "passed",
+      "title": "installs the rich footer globally for an interactive plain repository",
+      "duration": 30.634100000000103,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle installs the rich footer globally for an interactive dormant repository",
+      "status": "passed",
+      "title": "installs the rich footer globally for an interactive dormant repository",
+      "duration": 28.449100000000044,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle installs the rich footer globally for an interactive untrusted enabled repository",
+      "status": "passed",
+      "title": "installs the rich footer globally for an interactive untrusted enabled repository",
+      "duration": 2.786200000000008,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle installs the rich footer globally for an interactive trusted enabled repository",
+      "status": "passed",
+      "title": "installs the rich footer globally for an interactive trusted enabled repository",
+      "duration": 31.83960000000002,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle renders current session activity immediately and clears the registry on shutdown",
+      "status": "passed",
+      "title": "renders current session activity immediately and clears the registry on shutdown",
+      "duration": 30.915100000000052,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle does not install footer UI in JSON mode",
+      "status": "passed",
+      "title": "does not install footer UI in JSON mode",
+      "duration": 1.1911000000000058,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle does not install footer UI in RPC mode",
+      "status": "passed",
+      "title": "does not install footer UI in RPC mode",
+      "duration": 0.975400000000036,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle does not install footer UI in print mode",
+      "status": "passed",
+      "title": "does not install footer UI in print mode",
+      "duration": 0.987700000000018,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract",
+      "status": "passed",
+      "title": "disposes the owned footer subscription once through the Pi replacement contract",
+      "duration": 0.9072999999999638,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+      "status": "passed",
+      "title": "does not clear another extension footer after its owned component was replaced",
+      "duration": 0.7273000000000138,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle stale and repeated component disposal cannot retire a newer footer generation",
+      "status": "passed",
+      "title": "stale and repeated component disposal cannot retire a newer footer generation",
+      "duration": 0.7771000000000186,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+      "status": "passed",
+      "title": "a production metrics-loader failure restores native UI without aborting adapter activation",
+      "duration": 8.067299999999932,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+      "status": "passed",
+      "title": "shutdown during a deferred metrics load prevents every later activation and footer side effect",
+      "duration": 1.8211999999999762,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+      "status": "passed",
+      "title": "a replacement session wins while the prior deferred metrics load cannot resurrect",
+      "duration": 31.251199999999926,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+      "status": "passed",
+      "title": "restores Pi's native footer on session shutdown",
+      "duration": 29.161399999999958,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle renders through Pi's authoritative width primitives and unsubscribes branch updates",
+      "status": "passed",
+      "title": "renders through Pi's authoritative width primitives and unsubscribes branch updates",
+      "duration": 29.64059999999995,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle fatal factory registration restores native state and publishes a bounded diagnosis",
+      "status": "passed",
+      "title": "fatal factory registration restores native state and publishes a bounded diagnosis",
+      "duration": 1.3636999999998807,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle missing interactive footer UI fails soft with the bounded doctor direction",
+      "status": "passed",
+      "title": "missing interactive footer UI fails soft with the bounded doctor direction",
+      "duration": 1.0517999999999574,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in plain repositories",
+      "status": "passed",
+      "title": "keeps governance bridge reads trust-gated in plain repositories",
+      "duration": 31.6717000000001,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in untrusted enabled repositories",
+      "status": "passed",
+      "title": "keeps governance bridge reads trust-gated in untrusted enabled repositories",
+      "duration": 2.7211999999999534,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in trusted enabled repositories",
+      "status": "passed",
+      "title": "keeps governance bridge reads trust-gated in trusted enabled repositories",
+      "duration": 36.55439999999999,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle retains the last valid usage snapshot while retrying the exact first unacknowledged range",
+      "status": "passed",
+      "title": "retains the last valid usage snapshot while retrying the exact first unacknowledged range",
+      "duration": 88.18719999999985,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle limits startup accounting to one 256-entry bridge range",
+      "status": "passed",
+      "title": "limits startup accounting to one 256-entry bridge range",
+      "duration": 29.930200000000013,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+      "status": "passed",
+      "title": "serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+      "duration": 55.981700000000046,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+      "status": "passed",
+      "title": "lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+      "duration": 31.99610000000007,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle returns a nonempty bounded ASCII fallback even when both injected width functions throw",
+      "status": "passed",
+      "title": "returns a nonempty bounded ASCII fallback even when both injected width functions throw",
+      "duration": 30.59199999999987,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle retains a valid cached update fact across later usage-only refreshes",
+      "status": "passed",
+      "title": "retains a valid cached update fact across later usage-only refreshes",
+      "duration": 133.98140000000012,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle hides an already-read governance snapshot immediately when Pi trust is withdrawn",
+      "status": "passed",
+      "title": "hides an already-read governance snapshot immediately when Pi trust is withdrawn",
+      "duration": 32.116199999999935,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle setArbiterStatus composes through only the codearbiter key",
+      "status": "passed",
+      "title": "setArbiterStatus composes through only the codearbiter key",
+      "duration": 0.19629999999983738,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle retains status through end, retry, and compaction and clears only when settled",
+      "status": "passed",
+      "title": "retains status through end, retry, and compaction and clears only when settled",
+      "duration": 2.839300000000094,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle session shutdown is the only non-settled lifecycle clear",
+      "status": "passed",
+      "title": "session shutdown is the only non-settled lifecycle clear",
+      "duration": 2.8344999999999345,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle a never-published dormant lifecycle remains status-silent through shutdown",
+      "status": "passed",
+      "title": "a never-published dormant lifecycle remains status-silent through shutdown",
+      "duration": 1.0483999999999014,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle failed activation clears its unhealthy status on a dormant start and on shutdown",
+      "status": "passed",
+      "title": "failed activation clears its unhealthy status on a dormant start and on shutdown",
+      "duration": 3.508299999999963,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle agent work and settling never erase a persistent command-ownership degradation",
+      "status": "passed",
+      "title": "agent work and settling never erase a persistent command-ownership degradation",
+      "duration": 2.853700000000117,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle a late alias collision becomes the persistent baseline through agent_settled",
+      "status": "passed",
+      "title": "a late alias collision becomes the persistent baseline through agent_settled",
+      "duration": 6.021799999999985,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "Pi keyed status lifecycle"
+      ],
+      "fullName": "Pi keyed status lifecycle an explicit alias degradation in a bare repo clears on session shutdown",
+      "status": "passed",
+      "title": "an explicit alias degradation in a bare repo clears on session shutdown",
+      "duration": 4.512300000000096,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)"
+      ],
+      "fullName": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: trusted refresh collects facts once and the render shows repository and dirty marker",
+      "status": "passed",
+      "title": "O-3: trusted refresh collects facts once and the render shows repository and dirty marker",
+      "duration": 1.2328999999999724,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)"
+      ],
+      "fullName": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: an untrusted project never invokes the collector and stays branch-only",
+      "status": "passed",
+      "title": "O-3: an untrusted project never invokes the collector and stays branch-only",
+      "duration": 1.0954000000001543,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)"
+      ],
+      "fullName": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: facts collected under trust never render after trust is withdrawn",
+      "status": "passed",
+      "title": "O-3: facts collected under trust never render after trust is withdrawn",
+      "duration": 1.038000000000011,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    },
+    {
+      "ancestorTitles": [
+        "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)"
+      ],
+      "fullName": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: a failing collector degrades to the branch-only segment without breaking the box",
+      "status": "passed",
+      "title": "O-3: a failing collector degrades to the branch-only segment without breaking the box",
+      "duration": 1.0277999999998428,
+      "failureMessages": [],
+      "meta": {},
+      "tags": [],
+      "file": "test/status.test.ts"
+    }
+  ]
+}

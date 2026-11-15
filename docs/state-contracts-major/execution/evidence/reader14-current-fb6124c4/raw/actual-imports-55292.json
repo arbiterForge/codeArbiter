@@ -1,0 +1,57 @@
+{
+  "format": "finite-software-import-and-child-observation/1",
+  "pid": 55292,
+  "executed_repository_modules": {
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77"
+  },
+  "loaded_repository_modules": {
+    "_boundedproc": {
+      "path": ".github/scripts/_boundedproc.py",
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    "test_boundedproc": {
+      "path": ".github/scripts/test_boundedproc.py",
+      "sha256": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e"
+    },
+    "check_codex_host": {
+      "path": ".github/scripts/check_codex_host.py",
+      "sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4"
+    },
+    "codex_agent_routes": {
+      "path": ".github/scripts/codex_agent_routes.py",
+      "sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+    },
+    "pi_benchmark": {
+      "path": ".github/scripts/pi_benchmark.py",
+      "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77"
+    }
+  },
+  "observer_errors": [],
+  "parent_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65\\profile\\pycache",
+  "parent_no_user_site": 1,
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sys_path": [
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65\\observer",
+    "C:\\Python314\\python314.zip",
+    "C:\\Python314\\DLLs",
+    "C:\\Python314\\Lib",
+    "C:\\Python314",
+    "C:\\Python314\\Lib\\site-packages"
+  ],
+  "python_child_launches": [],
+  "owned_process_executable_identities": {},
+  "limits": "Passive source execution, final import registry and exact child-launch policy witness; no source/test/target replacement."
+}

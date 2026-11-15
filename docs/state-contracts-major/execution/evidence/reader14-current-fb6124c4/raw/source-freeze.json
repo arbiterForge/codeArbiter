@@ -1,0 +1,31 @@
+{
+  "format": "reader14-source-freeze/1",
+  "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "positive_inputs_before_capture": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+  },
+  "expected_original14_ids": [
+    "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+    "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+    "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+  ],
+  "capture_sha256": "fd113d7c0eaac77a5f5929cb8899e41dceb1d4deef03cb9d40e60e693fe1a472",
+  "observer_sha256": "1d0ca2e391b485d701a2e29fdc9988678672f7d845ac2f578504af1ea0fec8bf",
+  "old_inputs_not_assumed_complete": "Full before/after Git+physical namespaces capture any actual extra imports; proof extends only actual observed closure. No hostapi or Go lookup inferred.",
+  "actual_child_observation_plan": "Parent and inherited private observer children recorded separately; only actual imports extend positiveclosure. Fixed taskkill.exe OS runtime pinned before/after and observed executables, without argv/env payload."
+}
