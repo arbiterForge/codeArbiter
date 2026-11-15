@@ -1500,6 +1500,21 @@ class PiPackageTests(unittest.TestCase):
             {"module": "Other", "returnOffset": None}]}])
         self.assertNotIn("PrivateFixtureValue", json.dumps(report))
         self.assertNotIn("C:/private", json.dumps(report))
+        # kL omits the frame index; knL explicitly includes it. Both valid
+        # tables must project identical closed data, never the symbol column.
+        unnumbered = (b"00001000 00002000 node (deferred)\n"
+                      b"00003000 00004000 ntdll (deferred)\n"
+                      b"  0 Id: 123.456 Suspend: 1 Teb: PrivateFixtureValue\n"
+                      b"Child-SP RetAddr Call Site\n"
+                      b"00009999 00001010 node!PrivateFixtureValue(C:/private)\n"
+                      b"00009998 00003020 ntdll!PrivateFixtureValue\n"
+                      b"00009997 00005000 PrivateFixtureValue secret\n")
+        self.assertEqual(native.parse_stacks(unnumbered), report)
+        # Missing thread identity and non-frame text cannot become a capture.
+        for invalid in (b"Child-SP RetAddr Call Site\nPrivateFixtureValue",
+                        b"00009999 00001010 PrivateFixtureValue secret\n",
+                        b"  0 Id: 1.2 Suspend: 1\nPrivateFixtureValue 1010 secret\n"):
+            self.assertEqual(native.parse_stacks(invalid)["status"], "unrecognized")
         oversized = native.parse_stacks(b"x" * (native.MAX_OUTPUT + 1))
         self.assertEqual(oversized["status"], "output_limit")
         self.assertEqual(oversized["threads"], [])
@@ -1613,7 +1628,7 @@ class PiPackageTests(unittest.TestCase):
             self.assertEqual(argv[0], str(native.CDB))
             for flag in ("-pv", "-pd", "-kqm", "-noshell", "-nosqm", "-sins", "-snul", "-netsyms:no"):
                 self.assertIn(flag, argv)
-            self.assertEqual(argv[-4:], ["-p", "42", "-c", "lm; ~*kL 18; q"])
+            self.assertEqual(argv[-4:], ["-p", "42", "-c", "lm; ~*knL 18; q"])
             self.assertNotIn("PrivateFixtureValue", json.dumps(env))
             self.assertNotIn("_NT_SYMBOL_PATH", env)
             for key in ("HOME", "USERPROFILE", "TEMP", "TMP", "APPDATA", "LOCALAPPDATA"):

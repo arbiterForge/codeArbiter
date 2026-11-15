@@ -116,7 +116,9 @@ def parse_stacks(raw: bytes) -> dict:
     current = None
     for line in raw.decode("ascii", errors="replace").splitlines():
         module = re.fullmatch(r"\s*([0-9a-fA-F`]{4,17})\s+([0-9a-fA-F`]{4,17})\s+([A-Za-z0-9_]+)\s+.*", line)
-        if module:
+        # The fixed profile lists modules before entering any thread table.
+        # Within a table two address columns may precede a bare symbol name.
+        if module and current is None:
             low, high = (int(module[index].replace("`", ""), 16) for index in (1, 2))
             if 0 <= low < high <= 2**64 and len(ranges) < 256:
                 name = module[3].lower()
@@ -132,7 +134,7 @@ def parse_stacks(raw: bytes) -> dict:
             else:
                 result["truncated"] = True
             continue
-        frame = re.fullmatch(r"\s*[0-9a-fA-F]{1,2}\s+[0-9a-fA-F`]{4,17}\s+([0-9a-fA-F`]{4,17})(?:\s+.*)?", line)
+        frame = re.fullmatch(r"\s*(?:[0-9a-fA-F]{1,2}\s+)?[0-9a-fA-F`]{4,17}\s+([0-9a-fA-F`]{4,17})(?:\s+.*)?", line)
         if frame and current is not None:
             if len(current["frames"]) >= 24:
                 result["truncated"] = True
@@ -163,7 +165,7 @@ def _profile(pid: int, root: Path) -> tuple[list[str], dict[str, str]]:
                TEMP=str(root / "temp"), TMP=str(root / "temp"), PATH=os.pathsep.join((str(CDB.parent), str(system))))
     return ([str(CDB), "-pv", "-pd", "-kqm", "-noshell", "-nosqm", "-sins", "-snul", "-netsyms:no",
              "-y", str(root / "symbols"), "-i", str(root / "images"), "-srcpath", str(root / "sources"),
-             "-cf", str(commands), "-p", str(pid), "-c", "lm; ~*kL 18; q"], env)
+             "-cf", str(commands), "-p", str(pid), "-c", "lm; ~*knL 18; q"], env)
 
 
 def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic, _sleep=time.sleep):
