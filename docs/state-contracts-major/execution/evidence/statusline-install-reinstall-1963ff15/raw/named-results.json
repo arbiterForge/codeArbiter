@@ -1,0 +1,18 @@
+{
+  "run": 3,
+  "outcomes": [
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    }
+  ],
+  "success": true
+}

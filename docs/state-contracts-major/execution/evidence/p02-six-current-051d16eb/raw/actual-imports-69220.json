@@ -1,0 +1,65 @@
+{
+  "format": "finite-software-import-and-child-observation/1",
+  "pid": 69220,
+  "executed_repository_modules": {
+    ".github/scripts/test_state_contracts_integration.py": "ae4b348b40928ab0d789ed034208d8f65f6cc9a6c13d72b597e3e9d19832023d",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+    ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/scripts/_immutable_git_blobs.py": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+  },
+  "loaded_repository_modules": {
+    "_boundedproc": {
+      "path": ".github/scripts/_boundedproc.py",
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    "_artifactmanifestlib": {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    "_contextverificationlib": {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    "_gitexec": {
+      "path": "core/pysrc/_gitexec.py",
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+    },
+    "_immutable_git_blobs": {
+      "path": ".github/scripts/_immutable_git_blobs.py",
+      "sha256": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b"
+    },
+    "major_readiness": {
+      "path": ".github/scripts/major_readiness.py",
+      "sha256": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2"
+    },
+    "check_state_contracts_integration": {
+      "path": ".github/scripts/check_state_contracts_integration.py",
+      "sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+    },
+    "test_state_contracts_integration": {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "sha256": "ae4b348b40928ab0d789ed034208d8f65f6cc9a6c13d72b597e3e9d19832023d"
+    }
+  },
+  "observer_errors": [],
+  "parent_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-six-051d-qeslhn0g\\profile\\pycache",
+  "parent_no_user_site": 1,
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sys_path": [
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-six-051d-qeslhn0g\\observer",
+    "C:\\Python314\\python314.zip",
+    "C:\\Python314\\DLLs",
+    "C:\\Python314\\Lib",
+    "C:\\Python314",
+    "C:\\Python314\\Lib\\site-packages"
+  ],
+  "python_child_launches": [],
+  "limits": "Passive source execution, final import registry and exact child-launch policy witness; no source/test/target replacement."
+}

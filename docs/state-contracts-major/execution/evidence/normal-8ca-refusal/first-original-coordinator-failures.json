@@ -1,0 +1,58 @@
+{
+  "head": "8ca1393c8e70f8dcc5eaa1736fcfd356717007ce",
+  "run": 43745054317,
+  "event": "push",
+  "attempt": 1,
+  "diagnostics": [
+    {
+      "artifact_id": 14175231632,
+      "artifact_name": "installed-codex-observation-0.145.0-1",
+      "archive_sha256": "441ac7315e62999d9f685b29bfa097b3b08764d7417b217a4b9c12eef54af0f0",
+      "diagnostics": [
+        {
+          "member": "coordinator-failure.json",
+          "sha256": "a34117d7393b6268b7f2001cac7fbe685e4dd5eeac17bfd8f4a5cd2526eb9c66",
+          "diagnostics": [
+            {
+              "diagnostic_sha256": "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac",
+              "command_diagnostic": {
+                "code": "UPLOAD_LOG_COMMAND_FAILED",
+                "exit_code": 1,
+                "http_status": null,
+                "operation": "github-actions-job-log",
+                "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+              }
+            }
+          ],
+          "retained": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\artifact-14175231632-coordinator-failure.json"
+        }
+      ]
+    },
+    {
+      "artifact_id": 14174962190,
+      "artifact_name": "installed-pi-observation-linux-1",
+      "archive_sha256": "83d4402958ddd84b5de0ff3e7d83dc6fb27d142572ffb9018fe8939454e34684",
+      "diagnostics": [
+        {
+          "member": "coordinator-failure.json",
+          "sha256": "909977b6241eeaac6b880750de214520e26039b15a374d01525122c0092f7b50",
+          "diagnostics": [
+            {
+              "diagnostic_sha256": "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac",
+              "command_diagnostic": {
+                "code": "UPLOAD_LOG_COMMAND_FAILED",
+                "exit_code": 1,
+                "http_status": null,
+                "operation": "github-actions-job-log",
+                "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+              }
+            }
+          ],
+          "retained": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\artifact-14174962190-coordinator-failure.json"
+        }
+      ]
+    }
+  ],
+  "qualification": "BLOCK: original installed owner failures; no whole-run eligibility",
+  "note": "Original run metadata/archive digests verified; original uploader authentication retained in corresponding completed job logs, final joins pending."
+}

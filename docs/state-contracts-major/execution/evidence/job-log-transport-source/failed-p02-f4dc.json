@@ -1,0 +1,230 @@
+{
+  "format": "codearbiter.passive-failed-capture/1",
+  "receipt": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-six-f4dc-6wl4elvy\\failure-receipt.json",
+    "sha256": "a10601e0abc1c7dfc0643b0d17de790dc7a6136e58baa128f4f6b0bc2e25f45e",
+    "bytes": 9969,
+    "record": {
+      "format": "P02-current-capture-genuine-wiring-failure/1",
+      "state": "FAILED_STOPPED_NO_QUALIFICATION_SUCCESSOR",
+      "source_commit": "f4dc4f9d614fb00455f06e7c60c9112b24ff2a6c",
+      "source_tree": "441a978535e790de166da7024ae13225943ab159",
+      "actual_command": {
+        "argv": [
+          "C:/Python314/python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "-v",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+          "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+          "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+          "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+          "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+          "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+        "exit_code": 1,
+        "seconds": 6.662037699992652,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "ed438124d9bb1a21ebc91a1dd654836df443a68928b6a8522326bc9a1220e523"
+      },
+      "actual_named_results": [
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+          "outcomes": [
+            "FAIL"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+          "outcomes": [
+            "FAIL"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+          "outcomes": [
+            "ok"
+          ]
+        },
+        {
+          "id": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate",
+          "outcomes": [
+            "ok"
+          ]
+        }
+      ],
+      "counts": {
+        "selected": 14,
+        "PASS": 12,
+        "FAIL": 2,
+        "errors": 0,
+        "skips": 0
+      },
+      "source_hold_released": true,
+      "complete_before_after_snapshot_equal": true,
+      "original_positive_inputs": 117,
+      "structured_runtime_records": 1905,
+      "typed_namespace_roots": [
+        ".github/scripts",
+        "core/pysrc"
+      ],
+      "raw_causal_absence_count": 7,
+      "actual_import_observer_count": 1,
+      "actual_repo_imports": {
+        ".github/scripts/test_state_contracts_integration.py": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+        ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+        ".github/scripts/major_readiness.py": "f4b212687bec05db80ff7b76966b1f061434ec69953a8f2ec7919fbfb6ef52e2",
+        ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+        ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+        ".github/scripts/_immutable_git_blobs.py": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b",
+        "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+      },
+      "observer_errors": [
+        []
+      ],
+      "failures": [
+        {
+          "method": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+          "source_path": ".github/scripts/test_state_contracts_integration.py",
+          "assertion_line": 656,
+          "actual": "New authenticated transport-control YAML step adds run: | alongside original four fixed validation commands.",
+          "expected_by_existing_test": "Exactly original four run lines, with no additional block entry.",
+          "bounded_action": "Root should retain all four checks and assert the newly authorized exact control separately, rather than weaken arbitrary run acceptance."
+        },
+        {
+          "method": "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+          "source_path": ".github/scripts/test_state_contracts_integration.py",
+          "assertion_line": 705,
+          "actual": "New reviewed transport-control step carries step-local GH_TOKEN github.token.",
+          "expected_by_existing_test": "Every step except old named hosted-proof checker must omit GH_TOKEN.",
+          "bounded_action": "Root should assert this exact additional control token is step-local/trusted-event gated/read-only; preserve token prohibition on all other steps."
+        }
+      ],
+      "prospective_proof_updates": 0,
+      "CAS_updates": 0,
+      "repeat_performed": false,
+      "retained": {
+        "actual-imports-53800.json": {
+          "sha256": "d712da96d3114e8d97228bccab0e362fd1e75e512605377608ba8de4cc03e390",
+          "bytes": 3403
+        },
+        "after-snapshot.json": {
+          "sha256": "403204b3894808fc4376c29e9bb1fce25a1752eae5687d5e825b154d4a68a683",
+          "bytes": 463984
+        },
+        "capture-p02-only.py": {
+          "sha256": "e294eb1b99e82ceb2cb1e3de5e722d9ce9bec6310ff3f278ce81ae00cd7c39a3",
+          "bytes": 11229
+        },
+        "original.stderr.log": {
+          "sha256": "ed438124d9bb1a21ebc91a1dd654836df443a68928b6a8522326bc9a1220e523",
+          "bytes": 7882
+        },
+        "original.stdout.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "predecessor-proof.json": {
+          "sha256": "784a1fa1847991561621c29b7e2c807b3d1c7636cd3c75f311e43f8584522476",
+          "bytes": 34249
+        },
+        "process-exit.json": {
+          "sha256": "798488cb0a606a88bda54f7c8c5082658dc56d71c2014c544b9d3c4b9d9a0827",
+          "bytes": 2264
+        },
+        "run-result.json": {
+          "sha256": "307da95dbb17ea5819bbfa21485240564cc12b3a876cec1b0f604f2ee15ff393",
+          "bytes": 13388
+        },
+        "run-start.json": {
+          "sha256": "0239d572ebd44c166de8370e266eabd618c578a2c7060c44549fb58a0d206818",
+          "bytes": 500375
+        },
+        "runtime-and-lookup-seed.json": {
+          "sha256": "4f1a8b2723be28080c52d0c2b4007100aa8b9e2e92e77cf5dd89f4a614c3ac78",
+          "bytes": 451631
+        },
+        "selectors.json": {
+          "sha256": "404fa9d495170feb038b80fa0f3b7344a322410efed21bb2630a6bc8c15f02b8",
+          "bytes": 1793
+        }
+      },
+      "limits": "One actual original14 P02 local cohort only, no network/provider/native/installed/hosted effects. Root may repair owning expectations and later dispatch a new source epoch; current failure is retained unchanged, not relabelled as pass. Same six prior TESTED records/histories untouched."
+    }
+  },
+  "qualification_granted": false,
+  "limits": "Original14 capture12PASS/2wiringFAIL. No proof or TESTED successor was minted from this failure. Source changed through729066e0 before any distinct successor capture."
+}

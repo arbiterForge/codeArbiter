@@ -4,42 +4,27 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "db50f8e3a0170b8a1c4f8b7567897c8574b8d34c",
+  "head": "051d16eb23c490d3d5df458065ed0c7f34645b78",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T14:27:24.389731+00:00",
+  "recorded_at": "2026-11-15T19:43:41Z",
   "active_writer": {
-    "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
+    "agent": "Codex integrator",
     "since": "2026-11-13",
     "lanes": [
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-native-reconcile",
-        "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "PR1108 source and evidence integration; CI path transport repair and bounded Windows timeout diagnosis. No main merge or publication."
-      },
-      {
-        "owner": "recovery",
-        "assigned_agent": "/root/recovery_program",
-        "scope": "Recovery CAS repair and genuine HTML-aware Pi promotion framework fix."
-      },
-      {
-        "owner": "pi",
-        "assigned_agent": "/root/pi_program",
-        "scope": "Frozen Pi/HW14 batch plus fresh linked HW08 corrected review resubmission."
-      },
-      {
-        "owner": "packaging-site-tools",
-        "assigned_agent": "/root/packaging_site_tools",
-        "scope": "Frozen generator/manifest/site/tool implementation, focused independent recovery review; full site qualification awaits Atlas source freeze."
+        "branch": "codex/state-contracts-job-log-transport",
+        "worktree": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter",
+        "scope": "Sole canonical source/index/progress writer for bounded job-log HTTP transport repair and its affected proof refresh. Other actors prepare private Temp evidence only unless reassigned."
       }
     ],
-    "rule": "One writer per canonical owner. Codex integrator assigns resumed lanes explicitly and preserves existing committed and uncommitted work. Integrator owns main execution records, manifests/changelogs, integration-candidate.json and shared provenance; each assigned lane may record exact evidence only under execution/lanes/<owner>.json. B authorized child PR integration into major/state-contracts on 2026-11-13; PR #1098 remains held for B's full testing before any merge to main or publication. B authorized project-context HTML conversion, implemented in PR #1102; frozen intake remains unchanged. R-08 is reassigned to the later site lane. Reuse source-bound completed reviews; inspect only new affected code or actual failures. Parent PR #1098 remains draft and held for user testing."
+    "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts; PR1098 remains OPEN/DRAFT and held from main for user testing. No publication. Standing cleanup permission applies to merged remote child branches only, excluding integration/main branches and all worktrees. No obsolete lane assignment is operative; prior assignments remain in superseded_checkpoint_fields."
   },
   "task_updates": [
     {
@@ -3781,14 +3766,15 @@
       "kind": "FRAMEWORK_READER_AND_MAPPED_TARGET_REPAIRS",
       "source": "dc1bbbf7b32e57c03da43ecc55c679cc6a6138c5",
       "detail": "Expected provider read errors now return sanitized per-target failure, preserve pending intent and let independent targets continue without resending completed targets. Canonical guard and allthreehostcopies scope simple read-only statements correctly; complex syntax/redirection remains conservative. Original regression REDs, affected GREENs and focused independent reviews retained. A redirect bypass in an unintegrated prototype was caught and fixed; only cleared successor admitted. Actual dc1Windows coverage has3newfixturefailures/956pass/3skip; portable retained-owner fixture repair and new hosted observation pending."
+    },
+    {
+      "recorded_at": "2026-11-15T19:23:13.565125+00:00",
+      "kind": "CURRENT_CONTINUATION_AFTER1111_NORMAL8CA_REFUSAL",
+      "source": "9f9cde6b7af516ce36d85b1dd0a78533869852ec",
+      "detail": "PR1111 merged at2026-11-15T18:52:56Z. Normal8ca terminal failure and current unqualified HTTP repair are explicit in live_checkpoint; no task completion or normal installed/native/publication eligibility follows. Original P02 blocker descriptions are retained in superseded_scoped_blockers with8d04/e62 resolution and narrow limits."
     }
   ],
   "scoped_blockers": [
-    {
-      "id": "P02-DEPENDENCY-MEMBERSHIP",
-      "scope": "Final program qualification",
-      "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
-    },
     {
       "id": "PI-HTTP-ENDPOINT-POLICY",
       "scope": "Selected Pi upstream transport contract and S10/S11",
@@ -3800,9 +3786,9 @@
       "detail": "M863 trusted normal run43606646328 cold observers refused upload attribution with generic hash on allsixplatforms. Archived finalmetadata/logs pass old/current predicates; actual historical cause remains unknown. No blind retry or clock-closure claim; closed safe diagnostic categories being added before next actual normal run. Existing ordinary cold commands and original raw failure remain separate."
     },
     {
-      "id": "P02-PYTHON-IMPORT-LOOKUP-PROFILE",
-      "scope": "Six prospective P02 current-evidence records",
-      "detail": "Actual14tests pass; current reader refuses7 precise module lookup absences. A new bounded causal Python lookup profile and current-source regression evidence are needed; no unsupported schema fields are silently discarded."
+      "id": "NORMAL-8CA-JOB-LOG-TRANSPORT",
+      "scope": "Trusted normal installed-owner qualification",
+      "detail": "Normal run43745054317 is terminal FAILED:78success/7skip/12fail (11 original installed owners plus required gate),69 artifact metadata records. Original job-log command exit1/httpnull/stderrSHA8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467; historical cause remains UNKNOWN. Isolated configured desktop gh succeeds against the same original log; this does not establish a permissions or timing cause. HTTP transport repair on the active child is not yet qualified."
     }
   ],
   "unknown_outcomes": [
@@ -3827,16 +3813,25 @@
       "sha256": "5a1732b86997736205804ccec1ddb78f301af78ff73221ed0ba1017c55e5db1b",
       "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
       "detail": "Matched original OS process remains running after JavaScript exit markers; independent SDK control unrecognized and actual Pi debugger unavailable. No stack/cause established."
+    },
+    {
+      "id": "NORMAL-8CA-JOB-LOG-CAUSE",
+      "state": "UNRESOLVED",
+      "source_commit": "8ca1393c8e70f8dcc5eaa1736fcfd356717007ce",
+      "run_id": 43745054317,
+      "detail": "Exact closed operation github-actions-job-log/code UPLOAD_LOG_COMMAND_FAILED/exit1/http_status null/stderrSHA8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467. Desktop isolated configured-client success is a separate observation, not proof of historical credentials/permissions/timing. Repair and new successful trusted normal qualification remain pending.",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\terminal-failure-receipt.json",
+      "sha256": "4c620aa64a84529df2bb8ab185263c7d91dd59126a735f90b302f13f9be03857"
     }
   ],
   "next_actions": [
-    "Push the coherent committed SDK fix and retained evidence once; promptly watch exact-head hosted CI and diagnose genuine failure. Merge1108 only when required checks pass and named remote auto-deletion is authorized.",
-    "Repair only the demonstrated debugger defect with targeted regression proof; push the coherent source/evidence batch once and promptly observe exact-head hosted checks. Merge1108 only on green and named remote auto-deletion authority.",
-    "Observe the next trusted normal integration push and its13 installed reports. Renew finite eligible native evidence from genuine matching observations; never bypass producer eligibility or relabel old source epochs.",
-    "Continue independent accepted work while Pi HTTP policy and actual user/model/parent/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized.",
-    "Fix the shared Python import-lookup evidence capability through its owner before admitting the heldP02six; preserve original raw/history and causal absences. Reuse unrelated results and reviews."
+    "Push the coherent child into major/state-contracts, observe early threeOS Actions controls and all exact-head required gates, then merge under standing authority.",
+    "Authenticate a successful normal integration push and its original installed/native reports before finite qualification updates.",
+    "Keep statusline machine PLANNED: original-evidence/1 does not authenticate the union of distinct captures as a new machine execution.",
+    "Retain Pi HTTP policy, historical Windows Pi shutdown cause, and actual parent/user/model/lifecycle acceptance as separate unresolved boundaries.",
+    "Hold PR1098 from main and keep publication unauthorized until the user explicitly releases those boundaries."
   ],
-  "delivery_state": "CHILD1108_TYPED_SDK_CAPTURE_LOCAL_GREEN_HOSTED_PENDING",
+  "delivery_state": "LOCAL_HTTP_SOURCE_AND_P02_PASS_HOSTED_TRANSPORT_UNPROVEN_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3848,9 +3843,19 @@
     {
       "id": "PR-CHILD-PR",
       "rule": "Since ruleset 27158575, every change to major/state-contracts lands through a child branch PR whose base is major/state-contracts (including execution-record updates)."
+    },
+    {
+      "id": "MERGED-REMOTE-CHILD-CLEANUP",
+      "rule": "Standing user permission covers merged remote child branches only; it excludes major/state-contracts, main, all worktrees and unrelated/unique work. Do not infer local worktree deletion or parent promotion.",
+      "source": "Current Root-scoped instruction records existing standing user permission, 2026-11-15."
+    },
+    {
+      "id": "CI-PUSH-CONCURRENCY",
+      "rule": "Normal push workflow concurrency is scoped by run_id; cancellation applies only to PR concurrency. Do not delay a necessary coherent source push on the mistaken premise that it automatically cancels an earlier normal integration push.",
+      "source": ".github/workflows/ci.yml current concurrency contract; current Root-scoped correction, 2026-11-15."
     }
   ],
-  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1108",
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1111",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -4135,7 +4140,160 @@
       },
       "superseded_by": "M46e29 normal push successful, including native/cold matrix; local Windows cold3 also passed.",
       "historical_cause": "UNKNOWN; no old runtime-cause fix inferred"
+    },
+    {
+      "original": {
+        "id": "P02-DEPENDENCY-MEMBERSHIP",
+        "scope": "Final program qualification",
+        "detail": "Shared reader defect implemented and locally checked in89333ff3; exact-head hosted observation and honest legacy dependency/absence scope migration remain required before final program qualification."
+      },
+      "superseded_by": "Bounded shared Python import-directory/host-lookup support committed8d04b33c4e8b6ac56644cbd2517cae2dde228d64 and genuine current P02six capture retained at e62a2a85a6a804bd14a80ad6faec5cb61aff8b20; the old unsupported-seven-absence refusal is preserved as history.",
+      "resolution_source_commits": [
+        "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+        "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+      ],
+      "evidence_ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
+      "limits": "Supersedes this old reader-capability blocker only. No blanket P02/task completion or retrospective migration of incomplete native/runtime scopes. The current job-log source repair requires its own affected P02 refresh after commit."
+    },
+    {
+      "original": {
+        "id": "P02-PYTHON-IMPORT-LOOKUP-PROFILE",
+        "scope": "Six prospective P02 current-evidence records",
+        "detail": "Actual14tests pass; current reader refuses7 precise module lookup absences. A new bounded causal Python lookup profile and current-source regression evidence are needed; no unsupported schema fields are silently discarded."
+      },
+      "superseded_by": "Bounded shared Python import-directory/host-lookup support committed8d04b33c4e8b6ac56644cbd2517cae2dde228d64 and genuine current P02six capture retained at e62a2a85a6a804bd14a80ad6faec5cb61aff8b20; the old unsupported-seven-absence refusal is preserved as history.",
+      "resolution_source_commits": [
+        "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+        "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+      ],
+      "evidence_ref": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/p02/tested.json",
+      "limits": "Supersedes this old reader-capability blocker only. No blanket P02/task completion or retrospective migration of incomplete native/runtime scopes. The current job-log source repair requires its own affected P02 refresh after commit."
     }
   ],
-  "head_semantics": "Committed code-source anchor; read Git/provider for the containing metadata commit and actual pushed CI head."
+  "head_semantics": "Committed source anchor051d16eb before this coherent metadata admission. Local repair and P02 capture are observed; hosted transport, child CI and normal installed qualification remain unproven. Read Git/provider for subsequent exact PR/run identities.",
+  "superseded_checkpoint_fields": [
+    {
+      "id": "before-job-log-transport-9f9cde6b",
+      "checkpoint_history_ref": "docs/state-contracts-major/execution/checkpoint-history/CHECKPOINT-before-job-log-transport-9f9cde6b.md",
+      "checkpoint_sha256": "5c6ee1e9caa32f2d9df9546326dbc5a094f6caeaae7f66c02ea6f663a0d33ffa",
+      "progress_preimage_sha256": "acc7341b30924ac176149af017dae964c2ede998b90226b8033908eae3987849",
+      "fields": {
+        "head": "db50f8e3a0170b8a1c4f8b7567897c8574b8d34c",
+        "recorded_at": "2026-11-15T14:27:24.389731+00:00",
+        "active_writer": {
+          "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
+          "since": "2026-11-13",
+          "lanes": [
+            {
+              "owner": "integrator",
+              "assigned_agent": "/root",
+              "branch": "codex/state-contracts-native-reconcile",
+              "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+              "scope": "PR1108 source and evidence integration; CI path transport repair and bounded Windows timeout diagnosis. No main merge or publication."
+            },
+            {
+              "owner": "recovery",
+              "assigned_agent": "/root/recovery_program",
+              "scope": "Recovery CAS repair and genuine HTML-aware Pi promotion framework fix."
+            },
+            {
+              "owner": "pi",
+              "assigned_agent": "/root/pi_program",
+              "scope": "Frozen Pi/HW14 batch plus fresh linked HW08 corrected review resubmission."
+            },
+            {
+              "owner": "packaging-site-tools",
+              "assigned_agent": "/root/packaging_site_tools",
+              "scope": "Frozen generator/manifest/site/tool implementation, focused independent recovery review; full site qualification awaits Atlas source freeze."
+            }
+          ],
+          "rule": "One writer per canonical owner. Codex integrator assigns resumed lanes explicitly and preserves existing committed and uncommitted work. Integrator owns main execution records, manifests/changelogs, integration-candidate.json and shared provenance; each assigned lane may record exact evidence only under execution/lanes/<owner>.json. B authorized child PR integration into major/state-contracts on 2026-11-13; PR #1098 remains held for B's full testing before any merge to main or publication. B authorized project-context HTML conversion, implemented in PR #1102; frozen intake remains unchanged. R-08 is reassigned to the later site lane. Reuse source-bound completed reviews; inspect only new affected code or actual failures. Parent PR #1098 remains draft and held for user testing."
+        },
+        "next_actions": [
+          "Push the coherent committed SDK fix and retained evidence once; promptly watch exact-head hosted CI and diagnose genuine failure. Merge1108 only when required checks pass and named remote auto-deletion is authorized.",
+          "Repair only the demonstrated debugger defect with targeted regression proof; push the coherent source/evidence batch once and promptly observe exact-head hosted checks. Merge1108 only on green and named remote auto-deletion authority.",
+          "Observe the next trusted normal integration push and its13 installed reports. Renew finite eligible native evidence from genuine matching observations; never bypass producer eligibility or relabel old source epochs.",
+          "Continue independent accepted work while Pi HTTP policy and actual user/model/parent/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized.",
+          "Fix the shared Python import-lookup evidence capability through its owner before admitting the heldP02six; preserve original raw/history and causal absences. Reuse unrelated results and reviews."
+        ],
+        "delivery_state": "CHILD1108_TYPED_SDK_CAPTURE_LOCAL_GREEN_HOSTED_PENDING",
+        "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1108",
+        "head_semantics": "Committed code-source anchor; read Git/provider for the containing metadata commit and actual pushed CI head."
+      },
+      "note": "Exact former live fields retained as history; earlier lane assignments and next actions are not operative."
+    }
+  ],
+  "live_checkpoint": {
+    "id": "job-log-transport-after1111",
+    "source_anchor": "9f9cde6b7af516ce36d85b1dd0a78533869852ec",
+    "active_branch": "codex/state-contracts-job-log-transport",
+    "latest_delivered_child": {
+      "pr": 1111,
+      "state": "MERGED",
+      "merge_commit": "9f9cde6b7af516ce36d85b1dd0a78533869852ec",
+      "merged_at": "2026-11-15T18:52:56Z"
+    },
+    "parent": {
+      "pr": 1098,
+      "state": "OPEN",
+      "draft": true,
+      "main_merge": "HELD_FOR_USER_TESTING",
+      "publication_authorized": false
+    },
+    "normal_run": {
+      "run_id": 43745054317,
+      "source_commit": "8ca1393c8e70f8dcc5eaa1736fcfd356717007ce",
+      "event": "push",
+      "state": "TERMINAL_FAILED",
+      "jobs": {
+        "success": 78,
+        "skipped": 7,
+        "failure": 12
+      },
+      "artifact_metadata_count": 69,
+      "failed_installed_owners": 11,
+      "failed_required_gates": 1,
+      "installed13_eligible": false,
+      "native133_eligible": false,
+      "closed_command_diagnostic": {
+        "operation": "github-actions-job-log",
+        "code": "UPLOAD_LOG_COMMAND_FAILED",
+        "exit_code": 1,
+        "http_status": null,
+        "stderr_sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+      },
+      "underlying_cause": "UNKNOWN",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-8ca-CI-watch-sjttm5rt\\terminal-failure-receipt.json",
+      "receipt_sha256": "4c620aa64a84529df2bb8ab185263c7d91dd59126a735f90b302f13f9be03857",
+      "retained_receipt": "docs/state-contracts-major/execution/evidence/normal-8ca-refusal/terminal-failure-receipt.json"
+    },
+    "desktop_discriminator": "Root reports isolated configured gh client succeeds against the same original job log. Not an equivalent CI credential/environment proof and not a historical permissions/timing diagnosis.",
+    "HTTP_repair": "LOCAL_SOURCE_COMMITTED_051d16eb; transport/security and workflow gates observed; hosted HTTP/installed qualification remains UNPROVEN.",
+    "statusline01_02_private_ready": {
+      "delivery": "C:/Users/brenn/AppData/Local/Temp/ca-statusline-finish-capture-1963-f5l0pa8_/delivery.json",
+      "delivery_sha256": "f9e99239abc9589dda3fb1882a5d8dc0883a1a1eadfd75a2022c54c14ec4c050",
+      "actual_source": "1963ff150b28c163eac38537a001055c22edfbed",
+      "PASS": 3,
+      "seconds": 0.5584545000019716,
+      "proposal": "Original private proposal admitted ONLY01/02; machine remains PLANNED.",
+      "machine_status": "PLANNED"
+    },
+    "historical_pi_shutdown": "Original2df natural EOF/OS exit cause remains UNRESOLVED; independent SDK instrumentation repair is not an application fix.",
+    "history": "docs/state-contracts-major/execution/checkpoint-history/CHECKPOINT-before-job-log-transport-9f9cde6b.md",
+    "source_commits": [
+      "e8bd77ccfa9c48776e24f0de8c81cd3dd7d4db48",
+      "f4dc4f9d614fb00455f06e7c60c9112b24ff2a6c",
+      "729066e097716d0a7c0c474f1dac667cc2920469",
+      "051d16eb23c490d3d5df458065ed0c7f34645b78"
+    ],
+    "P02_successor": {
+      "source_commit": "051d16eb23c490d3d5df458065ed0c7f34645b78",
+      "PASS": 14,
+      "seconds": 6.962664400009089,
+      "scope": "Only six same TESTED P02 records; full history and original closure retained.",
+      "ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+      "sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097"
+    },
+    "original_failed_P02": "f4dc original14:12PASS/2wiringFAIL; no proof. Distinct changed-source051d capture passed after exact owning expectations were corrected. Retained failure and source receipts are passive history, not qualification."
+  }
 }
