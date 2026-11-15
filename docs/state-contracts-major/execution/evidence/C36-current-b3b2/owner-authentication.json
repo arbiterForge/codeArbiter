@@ -1,0 +1,33 @@
+{
+  "format": "C36-prospective-strict-owner/1",
+  "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "results": [
+    {
+      "cell": "disposition:transitions:C36:02",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+          "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+          "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C36:03",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+          "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+          "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+          "producer_class": "local-host"
+        }
+      ]
+    }
+  ],
+  "immutable_source_reads": 120,
+  "limits": "Explicit future-metadata overlay only; no new proof/raw claimed committed inb3b2. Original source inputs, Git ancestors and Windows absence use unmodified owning reader. Root owns final history/currentness admission."
+}

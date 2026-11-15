@@ -11,7 +11,7 @@
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T02:22:07.468166+00:00",
+  "recorded_at": "2026-11-15T13:47:48.970651+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3825,12 +3825,12 @@
     }
   ],
   "next_actions": [
-    "After explicit pending tool confirmation, extract the vetted private CDB component, verify Microsoft signatures and actual hashes, then run the prepared bounded owned-Node startup matrix. Do not assume its cause before observations.",
+    "Continue the approved private SDK native-session diagnosis from actual typed HRESULTs and owned-process observations. Apply only a demonstrated framework repair with the existing genuine SDK regression RED/GREEN; preserve telemetry/symbol/shell/identity/output/deadline boundaries.",
     "Repair only the demonstrated debugger defect with targeted regression proof; push the coherent source/evidence batch once and promptly observe exact-head hosted checks. Merge1108 only on green and named remote auto-deletion authority.",
     "Observe the next trusted normal integration push and its13 installed reports. Renew finite eligible native evidence from genuine matching observations; never bypass producer eligibility or relabel old source epochs.",
     "Continue independent accepted work while Pi HTTP policy and actual user/model/parent/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized."
   ],
-  "delivery_state": "CHILD1108_WINDOWS_RPC_AND_SDK_CONTROL_FAILED_LOCAL_PROBE_AWAITS_TOOL_APPROVAL",
+  "delivery_state": "CHILD1108_WINDOWS_RPC_AND_SDK_CAPTURE_UNRESOLVED_APPROVED_LOCAL_SDK_PROBES_EXECUTED",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4085,6 +4085,23 @@
         "C36:02 still requires the actual production JS bundle/startup criteria; C36:03 still requires100 timings,105 bridge calls and metric output. Both historical rows remain unchanged/stale; adjacent completion tests cannot qualify them.",
         "No stronger Windows Job Object/native-rundown claim, real POSIX denial/platform result, warm benchmark, whole task, installed, user/model or publication qualification.",
         "The SDK extraction/probe is still unperformed pending explicit tool confirmation. No further metadata-only CI retry;1098 stays held from main."
+      ]
+    },
+    {
+      "id": "C36-original-current-benchmark-and-approved-sdk-probes",
+      "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+      "facts": [
+        "Original pi_benchmark.py --samples100 passed once in4.929s: temporary production wrapper bundle build/child/CLI exit0, wrapperCount4, startup38.8513ms,100 Pi timings,105 original stub bridge and105 original stub factory calls. No --real-spawn or Go/native process was executed.",
+        "Thirty actual source inputs, nine-file TS cone/lock/config, cached Node22.19/esbuild0.28.1/Python identities, source lookup membership and successful Windows core_host absence were observed before/after. Inputs equal2df, actual executionb3b2 and physical source; HEAD/index stable. Original values retained through a read-only Python profiler, with no owner return replacement.",
+        "Exactly C36:02/:03 same-status TESTED successors replace the previously explicit missing current bundle/benchmark observations. Old dde4 history remains at its actual epoch and genuineb3b2 retention anchor. Strict prospective owner authentication passed both records; staged full-owner validation follows.",
+        "User explicitly approved private CDB extraction and bounded probes. The reviewed Microsoft MSI component was extracted without installer actions, registry/PATH writes or global SDK installation. Four tools have Valid Microsoft signatures and matching10.0.26100.9457 versions.",
+        "The existing strict owned-Node SDK regression reproduces the hosted unrecognized!=captured assertion locally. Bounded command transport, input, quiet-mode, hidden-console and fixed-output probes still have no target stack capture. No maintained source repair or application exit-cause claim is justified by these negative comparisons. Structured SDK native session diagnosis is the next prerequisite."
+      ],
+      "limits": [
+        "The105+105 counters are original in-memory bridge/tool factories around real production wrapBuiltins; they are not105 native executable calls. Local adapter benchmark does not qualify installed Pi, provider/model/parent consent/UI, native platforms or whole tasks.",
+        "Python profiling adds overhead; absolute/relative benchmark measurements are instrumented. No performance-improvement claim is made.",
+        "Private HOME/AppData environment is not a universal Windows KnownFolder or OS sandbox boundary. Symbol-path restrictions are not a firewall. Runtime debugger text is not retained.",
+        "No further metadata-only CI push or blind old-head retry.1098 remains draft and held from main; publication remains unauthorized."
       ]
     }
   ],
