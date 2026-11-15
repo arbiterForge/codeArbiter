@@ -1,0 +1,51 @@
+{
+  "format": "C05-verdict-test-author-RED/1",
+  "source_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\candidate\\.github\\scripts",
+  "exit_code": 1,
+  "seconds": 0.588992999997572,
+  "identity_before": {
+    "head": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+    "index_sha256": "2c3fb5ecb17b7d1996cff2b9745084ed7c1961ca5226b2b2f3cd6b1a71ca3553",
+    "Gov_runner_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    "Gov_test_sha256": "aaaed6286b1c44531191c5977cfb4fb0649bc6e279fa9cea8d1bb6c39c692979",
+    "private_runner_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    "private_test_sha256": "476fe6cf7cecee5055c7f2ddf20994f7a13e5617b5759f66445f77308dd7d733"
+  },
+  "identity_after": {
+    "head": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+    "index_sha256": "2c3fb5ecb17b7d1996cff2b9745084ed7c1961ca5226b2b2f3cd6b1a71ca3553",
+    "Gov_runner_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    "Gov_test_sha256": "aaaed6286b1c44531191c5977cfb4fb0649bc6e279fa9cea8d1bb6c39c692979",
+    "private_runner_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    "private_test_sha256": "476fe6cf7cecee5055c7f2ddf20994f7a13e5617b5759f66445f77308dd7d733"
+  },
+  "source_index_HEAD_stable": true,
+  "named_methods": 1,
+  "subcases": 7,
+  "target_assertion_failures": 3,
+  "setup_or_import_errors": false,
+  "actual_child_zero_exit_observations": 7,
+  "actual_bad_orders_accepted": [
+    "pass/fail",
+    "fail/pass",
+    "empty/pass"
+  ],
+  "working_existing_boundaries": [
+    "pass/empty refuses",
+    "pass/pass accepts",
+    "pass/skip accepts",
+    "pass/expectedFailure accepts"
+  ],
+  "limits": "Actual target RED only. Production source unchanged. No GREEN, repair, admission, new status or whole-program claim."
+}

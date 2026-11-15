@@ -1,0 +1,62 @@
+{
+  "format": "P02-actual-import-observation/1",
+  "executed_repository_modules": {
+    ".github/scripts/test_state_contracts_integration.py": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+    ".github/scripts/major_readiness.py": "5947a5ed0bd45dbe344c498f0b74ac6f6a0f4e8eba9fb3363e09c95227229595",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/scripts/_immutable_git_blobs.py": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+  },
+  "loaded_repository_modules": {
+    "_boundedproc": {
+      "path": ".github/scripts/_boundedproc.py",
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    "_artifactmanifestlib": {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    "_contextverificationlib": {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    "_gitexec": {
+      "path": "core/pysrc/_gitexec.py",
+      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+    },
+    "_immutable_git_blobs": {
+      "path": ".github/scripts/_immutable_git_blobs.py",
+      "sha256": "e4584dbeafe80241ae64fae3d1bef8b790ea27bfe217d98a3a210bf01168630b"
+    },
+    "major_readiness": {
+      "path": ".github/scripts/major_readiness.py",
+      "sha256": "5947a5ed0bd45dbe344c498f0b74ac6f6a0f4e8eba9fb3363e09c95227229595"
+    },
+    "check_state_contracts_integration": {
+      "path": ".github/scripts/check_state_contracts_integration.py",
+      "sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+    },
+    "test_state_contracts_integration": {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943"
+    }
+  },
+  "observer_errors": [],
+  "private_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\profile\\pycache",
+  "sys_path": [
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\observer",
+    "C:\\Python314\\python314.zip",
+    "C:\\Python314\\DLLs",
+    "C:\\Python314\\Lib",
+    "C:\\Python314",
+    "C:\\Python314\\Lib\\site-packages"
+  ],
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "limits": "Read-only profile records actual repository module execution and final registry paths. Synthetic disposable fixture code is not relabeled as product source."
+}

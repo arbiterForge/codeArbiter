@@ -1,0 +1,108 @@
+{
+  "schema": "bounded-independent-review/1",
+  "actor": "ci_repair_review",
+  "role": "Security and coverage",
+  "source_commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+  "candidate": "candidate-v1:61f56b4ffd01f64156082cf19fa1709d252d4e7df56eb0c37eaa320ac9dc180b",
+  "canonical_owner": "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\hooks\\security-pass.py:candidate_scan",
+  "review_scope": [
+    ".github/scripts/test_workflow_recovery.py"
+  ],
+  "subject": {
+    "path": ".github/scripts/test_workflow_recovery.py",
+    "sha256": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+    "bytes": 54070
+  },
+  "gate_status": "PASS",
+  "findings": [],
+  "severity_counts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "blockers": 0,
+  "analysis": [
+    "setUp retains the existing clear=True credential-blind allowlist and fixture-owned HOME/USERPROFILE; adds only fixture-descendant PYTHONPYCACHEPREFIX and PYTHONNOUSERSITE=1.",
+    "Cleanup order still restores environment before owned temporary fixture removal; new values remain within the existing fixture lifetime.",
+    "Actual child observes interpreter cache/site policy before any project import, then asserts explicit expected module identity, fixture HOME/USERPROFILE and forbidden key presence only. No credential values or host user-cache content is read.",
+    "Fixed argv uses existing sys.executable and literal script plus explicit project source path; the child remains bounded by the existing10-second call.",
+    "All39 original test methods remain AST-identical; only existing setUp changes, plus one additive real-child regression identical to the independent author packet."
+  ],
+  "evidence": {
+    "author_original_RED": {
+      "tests": 1,
+      "assertion_failures": 2,
+      "unittest_seconds": 0.101,
+      "controller_seconds": 1.1353888000012375,
+      "actual_prefix": null,
+      "actual_no_user_site": 0,
+      "module_home_and_credential_presence_controls": "PASS",
+      "no_setup_import_errors": true
+    },
+    "Root_affected_GREEN": {
+      "tests": 121,
+      "recovery_tests_included": 40,
+      "seconds": 41.681,
+      "skips": 0,
+      "limits": "Combined affected test result inspected; this peer semantically reviews only recovery fixture isolation."
+    },
+    "reviewer_test_reruns": 0
+  },
+  "coverage": {
+    "surface": ".github/scripts/test_workflow_recovery.py; test-fixture behavior only",
+    "numeric_metrics": "Unmeasured; exact FACT005 Python no-tooling exemption reused",
+    "quote": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation.",
+    "critical_boundary": "Actual original child RED and same-assertion GREEN, with identity/privacy positive controls retained."
+  },
+  "security_policy": {
+    "complete_records": 32,
+    "cached_policy_unchanged_verified": true,
+    "applicable": "CON-003 credential-lifetime/sink boundaries and existing cooperative-source scope",
+    "new_network_credential_dependency_privilege_or_publication_effect": false
+  },
+  "exclusions": [
+    "Seven diagnostic paths are outside this review because this actor authored their tests. No diagnostic production or self-review verdict is made.",
+    "Canonical eight-path candidate bound mechanically only; this one-file PASS does not approve the other seven paths.",
+    "No installed-host, physical UI, model/provider, task completion, hostedCI or publication claim."
+  ],
+  "receipts": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\recovery-fixture-peer-input.txt",
+      "sha256": "c58b542a4b4317042f71528d351f155442cc9fd52871b65a5d4c8d2e38efed33"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\recovery-fixture-peer-context.json",
+      "sha256": "39b86fc52d302b0f01e97b5d3e03553bb754968d6479a1d69939a70426d009d4"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\upload-diagnostic-and-isolation-full.log",
+      "sha256": "ced9107a1a5cea9a03ff781aacbae9da971ed89d0be3139c5469b154e959ebea"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\diagnostic-isolation-source-guards.json",
+      "sha256": "13d5eba94565c7a30e9ffe2e51244e57269b8f68bd1492a29f2d389409db8e42"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\delivery.json",
+      "sha256": "5ac1172d9c442a3b12d1d03718643c1492776eb2c4429a0e194641c66f1cbf53"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\red-result.json",
+      "sha256": "08346269d4740c036fba3db3e286497e8f0840e756d25c9b2833f324de84123d"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\original-red.stderr.log",
+      "sha256": "3f656c299e35e1d75eecb0acbfb85b18bbd128f781319a3845bfaa3d42a57644"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+      "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+      "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4"
+    }
+  ],
+  "utc": "2026-11-15T16:48:33.627687+00:00"
+}

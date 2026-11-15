@@ -20,6 +20,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Suppress repeated fallback workflow recovery notices after the host records the notice as delivered.
 - Inspect final check states after CI watching; cancelled checks and interrupted watches remain unverified.
 - Keep unverified process-tree cleanup explicit when a Farm preview is cancelled.
 - Classify malformed provider JSON at the transport boundary without hiding programmer errors.

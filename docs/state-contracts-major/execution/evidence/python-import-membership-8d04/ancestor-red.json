@@ -1,0 +1,71 @@
+{
+  "format": "python-namespace-ancestor-test-author-RED/1",
+  "source_commit": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_python_namespace_windows_scope_root_and_ancestor_collisions_refuse"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test",
+  "started_at": "2026-11-15T15:03:59.831154+00:00",
+  "exit_code": 1,
+  "seconds": 7.640685300000769,
+  "names": [
+    "test_python_namespace_windows_scope_root_and_ancestor_collisions_refuse"
+  ],
+  "inputs_before": {
+    ".github/scripts/test_state_contracts_integration.py": "eba1fea02e93b90267aab1c0f23c35d3ff98044d2bd5c2a9c71e3ccbb1710698",
+    ".github/scripts/major_readiness.py": "5fd5d1763993d0aebea2dc8ee1980426f9bd3b2aaaa1ececa100fc677438994a",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+  },
+  "inputs_after": {
+    ".github/scripts/test_state_contracts_integration.py": "eba1fea02e93b90267aab1c0f23c35d3ff98044d2bd5c2a9c71e3ccbb1710698",
+    ".github/scripts/major_readiness.py": "5fd5d1763993d0aebea2dc8ee1980426f9bd3b2aaaa1ececa100fc677438994a",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+  },
+  "identity_before": {
+    "head": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+    "index_sha256": "953a34f31ba4b7cbd63e105b1fb924d4f5e77b95166b4d2f0a29dfe6ec3c540a"
+  },
+  "identity_after": {
+    "head": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+    "index_sha256": "953a34f31ba4b7cbd63e105b1fb924d4f5e77b95166b4d2f0a29dfe6ec3c540a"
+  },
+  "private_profile_before_imports": true,
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home\\tmp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home\\tmp",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONPYCACHEPREFIX": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\private-home\\pycache",
+    "CODEARBITER_TEST_SOURCE_REPO": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "PYTHONPATH": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\candidate\\.github\\scripts;C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "PATH": "C:\\Program Files\\Git\\cmd;C:\\WINDOWS\\System32"
+  },
+  "candidate_test_sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+  "runtime": {
+    "python": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "target_false_applicable_count": 2,
+  "target_missing_refusal_count": 4,
+  "setup_or_import_failure": false,
+  "limits": "Actual RED against current staged reader: ambiguous Windows root/ancestor incorrectly APPLICABLE and accepted at current/original authentication boundaries. Valid controls pass; no production implementation."
+}

@@ -450,6 +450,172 @@ class IntegrationIntegrityTest(unittest.TestCase):
                 with self.assertRaises(owner.readiness.ReadinessError):self.check(current)
 
 
+    def python_namespace_case(self, root="python-lookup", native=False):
+        # Known inert fixture entries implement the documented wire framing;
+        # no proposed production helper, import, or generated result is used.
+        self.git("rm", "-rf", "--ignore-unmatch", root)
+        files = {self.input: self.load(self.tested, self.input),
+                 root + "/observer.py": b"# pinned owner, never imported\n",
+                 root + "/notes.txt": b"unloaded original notes\n",
+                 root + "/support/__init__.py": b"# inert package\n"}
+        entries = [["notes.txt", "100644", "blob"], ["observer.py", "100644", "blob"],
+                   ["support", "040000", "tree"], ["support/__init__.py", "100644", "blob"]]
+        if native:
+            files[root + "/go.mod"] = b"module fixture.invalid/namespace\n\ngo 1.24\n"
+            files[root + "/main.go"] = b"package main\nfunc main() {}\n"
+            entries += [["go.mod", "100644", "blob"], ["main.go", "100644", "blob"]]
+        for name, data in files.items(): self.put(name, data)
+        self.git("add", "."); self.git("commit", "-qm", "Original inert Python namespace", "--allow-empty")
+        tested = self.git("rev-parse", "HEAD")
+        proof = copy.deepcopy(self.proof)
+        proof["source_commit"] = tested
+        positive = [self.input, root + "/observer.py"] + ([root + "/go.mod"] if native else [])
+        proof["inputs"] = {name: hashlib.sha256(files[name]).hexdigest() for name in positive}
+        encoded_names = json.dumps(sorted(entries), separators=(",", ":"), ensure_ascii=False).encode("utf8")
+        proof["input_membership"] = [{"profile": "python-import-directory-v1", "root": root,
+            "path_order": "windows", "sha256": hashlib.sha256(b"python-import-directory-v1\n" + encoded_names).hexdigest()}]
+        encoded = json.dumps(proof).encode(); self.put(self.proof_path, encoded)
+        ledger = copy.deepcopy(self.ledger); row = ledger["transitions"][self.identity]
+        row.update(status="TESTED", evidence=[{"kind": "test", "commit": tested, "ref": self.proof_path,
+                                               "sha256": hashlib.sha256(encoded).hexdigest()}])
+        self.put(C + "execution/coverage-ledger.json", ledger)
+        self.git("add", "."); self.git("commit", "-qm", "Retain Python namespace fixture")
+        return self.git("rev-parse", "HEAD"), row
+
+    def python_namespace_proof_override(self, current, row, proof):
+        encoded = json.dumps(proof).encode(); self.overrides[current, self.proof_path] = encoded
+        ledger = copy.deepcopy(self.ledger); changed = copy.deepcopy(row)
+        changed["evidence"][0]["sha256"] = hashlib.sha256(encoded).hexdigest()
+        ledger["transitions"][self.identity] = changed
+        self.overrides[current, C + "execution/coverage-ledger.json"] = json.dumps(ledger).encode()
+
+    def test_python_namespace_tracks_shadow_forms_modes_and_removal_not_unread_bytes(self):
+        for change in ("shadow.py", "shadow.pyd", "shadow.pyc", "shadow/__init__.py", "remove", "mode"):
+            with self.subTest(change=change):
+                current, row = self.python_namespace_case()
+                self.assertEqual(owner.validate(self.repo, current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+                self.put("python-lookup/notes.txt", b"different unobserved content and size\n")
+                self.git("add", "."); self.git("commit", "-qm", "Only unread existing bytes change")
+                same_names = self.git("rev-parse", "HEAD")
+                self.assertEqual(owner.validate(self.repo, same_names)["current_applicability"][self.cell]["status"], "APPLICABLE")
+                owner.readiness.authenticate_disposition(self.repo, same_names, self.cell, row, {self.input}, self.load, {})
+                if change == "remove": self.git("rm", "-q", "python-lookup/support/__init__.py")
+                elif change == "mode": self.git("update-index", "--chmod=+x", "python-lookup/notes.txt")
+                else:
+                    self.put("python-lookup/" + change, b"inert new namespace candidate, never executed\n")
+                    self.git("add", ".")
+                self.git("commit", "-qm", "Namespace membership changes")
+                candidate = self.git("rev-parse", "HEAD")
+                report = owner.validate(self.repo, candidate)
+                self.assertEqual(report["current_applicability"][self.cell]["status"], "STALE")
+                self.assertFalse(report["recorded_statuses_changed"])
+                owner.readiness.authenticate_recorded_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+
+    def test_python_namespace_inventory_failure_is_unknown_or_original_refusal(self):
+        current, row = self.python_namespace_case()
+        self.assertEqual(owner.validate(self.repo, current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+        self.git("commit", "--allow-empty", "-qm", "Candidate namespace read failure")
+        candidate = self.git("rev-parse", "HEAD")
+        real = owner.readiness.command
+        def fail_inventory(source):
+            def command(argv, cwd=None):
+                if "ls-tree" in argv and any(value.startswith(source) for value in argv):
+                    raise owner.readiness.ReadinessError("controlled Python namespace inventory unavailable")
+                return real(argv, cwd)
+            return command
+        with mock.patch.object(owner.readiness, "command", side_effect=fail_inventory(candidate)):
+            self.assertEqual(owner.validate(self.repo, candidate)["current_applicability"][self.cell]["status"], "UNKNOWN")
+            with self.assertRaises(owner.readiness.ReadinessError):
+                owner.readiness.authenticate_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+        with mock.patch.object(owner.readiness, "command", side_effect=fail_inventory(row["evidence"][0]["commit"])):
+            with self.assertRaisesRegex(owner.readiness.ReadinessError, "inventory unavailable"):
+                owner.readiness.authenticate_recorded_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+
+    def test_python_namespace_refuses_unowned_shapes_and_unsafe_windows_inventory(self):
+        current, row = self.python_namespace_case()
+        self.assertEqual(owner.validate(self.repo, current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+        baseline = json.loads(self.load(current, self.proof_path))
+        for mutation in ("path", "unowned", "extra", "duplicate", "order", "digest"):
+            with self.subTest(mutation=mutation):
+                proof = copy.deepcopy(baseline); scope = proof["input_membership"][0]
+                if mutation == "path": scope["root"] = "../outside"
+                if mutation == "unowned": scope["root"] = "python-lookup/support"
+                if mutation == "extra": scope["optional"] = True
+                if mutation == "duplicate": proof["input_membership"] *= 2
+                if mutation == "order": scope["path_order"] = "guessed-platform"
+                if mutation == "digest": scope["sha256"] = "0" * 64
+                self.python_namespace_proof_override(current, row, proof)
+                with self.assertRaises(owner.readiness.ReadinessError): self.check(current)
+        self.overrides = {}
+        for shape in ("symlink", "gitlink", "ambiguous", "nonascii"):
+            with self.subTest(shape=shape):
+                current, row = self.python_namespace_case()
+                oid = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=self.repo,
+                    input=b"inert namespace entry\n", capture_output=True, check=True).stdout.decode().strip()
+                if shape in ("symlink", "gitlink"):
+                    mode, object_id = ("120000", oid) if shape == "symlink" else ("160000", current)
+                    self.git("update-index", "--add", "--cacheinfo", mode + "," + object_id + ",python-lookup/linked")
+                else:
+                    names = ("Alias.py", "alias.py") if shape == "ambiguous" else ("\u212Ashadow.py",)
+                    for name in names:
+                        self.git("-c", "core.ignorecase=false", "update-index", "--add", "--cacheinfo", "100644," + oid + ",python-lookup/" + name)
+                self.git("commit", "-qm", "Unsafe immutable namespace object")
+                candidate = self.git("rev-parse", "HEAD")
+                self.assertEqual(owner.validate(self.repo, candidate)["current_applicability"][self.cell]["status"], "UNKNOWN")
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+
+    def test_python_namespace_cannot_substitute_for_go_membership_and_legacy_host_stays(self):
+        current, row = self.membership_case(absence=True)
+        self.assertEqual(owner.validate(self.repo, current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+        owner.readiness.authenticate_disposition(self.repo, current, self.cell, row, {self.input}, self.load, {})
+        current, row = self.python_namespace_case(root="core/artifacts", native=True)
+        # Names are complete, but Go compilation also depends on every member's
+        # content. A Python name-only profile cannot satisfy the typed Go guard.
+        report = owner.validate(self.repo, current)
+        self.assertEqual(report["current_applicability"][self.cell]["status"], "UNKNOWN")
+        owner.readiness.authenticate_recorded_disposition(self.repo, current, self.cell, row, {self.input}, self.load, {})
+        with self.assertRaises(owner.readiness.ReadinessError):
+            owner.readiness.authenticate_disposition(self.repo, current, self.cell, row, {self.input}, self.load, {})
+
+
+    def test_python_namespace_windows_scope_root_and_ancestor_collisions_refuse(self):
+        for collision in ("nest/Python-Lookup/shadow.py", "Nest/python-lookup/shadow.py"):
+            # Git-only aliases must never be materialized on the Windows FS.
+            # Remove prior fixture index names, preserving the owned bytes used
+            # by the existing helper to recreate a single unambiguous baseline.
+            self.overrides = {}
+            self.git("rm", "-rf", "--cached", "--ignore-unmatch", "nest", "Nest")
+            current, row = self.python_namespace_case(root="nest/python-lookup")
+            self.assertEqual(owner.validate(self.repo, current)["current_applicability"][self.cell]["status"], "APPLICABLE")
+            owner.readiness.authenticate_disposition(self.repo, current, self.cell, row, {self.input}, self.load, {})
+            oid = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=self.repo,
+                input=b"# inert alias, never imported\n", capture_output=True, check=True).stdout.decode().strip()
+            self.git("-c", "core.ignorecase=false", "update-index", "--add", "--cacheinfo", "100644," + oid + "," + collision)
+            self.git("commit", "-qm", "Windows scope-root or ancestor alias appears")
+            candidate = self.git("rev-parse", "HEAD")
+            with self.subTest(collision=collision, boundary="current applicability"):
+                report = owner.validate(self.repo, candidate)
+                self.assertEqual(report["current_applicability"][self.cell]["status"], "UNKNOWN")
+                self.assertFalse(report["recorded_statuses_changed"])
+            with self.subTest(collision=collision, boundary="strict current authentication"):
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_disposition(self.repo, candidate, self.cell, row, {self.input}, self.load, {})
+            # The identical ambiguous tree is also invalid as an ORIGINAL
+            # observation, even though its literal lowercase subtree matches.
+            proof = json.loads(self.load(current, self.proof_path))
+            proof["source_commit"] = candidate
+            encoded = json.dumps(proof).encode()
+            self.overrides[candidate, self.proof_path] = encoded
+            original_claim = copy.deepcopy(row)
+            original_claim["evidence"][0].update(commit=candidate, sha256=hashlib.sha256(encoded).hexdigest())
+            with self.subTest(collision=collision, boundary="original authentication"):
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.authenticate_recorded_disposition(self.repo, candidate, self.cell, original_claim, {self.input}, self.load, {})
+
+
 class IntegrationWorkflowWiringTest(unittest.TestCase):
     COMMANDS = [
         "python docs/state-contracts-major/execution/tools/coverage_ledger.py check",

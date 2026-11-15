@@ -1,0 +1,91 @@
+{
+  "schema": "bounded-test-only-source-delivery/1",
+  "route": "test_change",
+  "caller": "fix",
+  "work": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+  "state": "GENUINE_NINE_ASSERTION_RED_READY_FOR_ROOT_IMPLEMENTATION",
+  "apply_files": [
+    {
+      "path": ".github/scripts/test_major_readiness.py",
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\candidate\\.github\\scripts\\test_major_readiness.py",
+      "preimage_sha256": "09030c47a2bdee9698254e98016e59c55700dd334e0217e89b4988bd281cf6fc",
+      "sha256": "ab43ae9d55da3a7b2568488ea258541e177f2b27a109714cf4c6fbb30d1e5773",
+      "bytes": 62256
+    },
+    {
+      "path": ".github/scripts/test_retained_archive_cli_observation.py",
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py",
+      "preimage_sha256": "cd273e8c0f22d1230ba425daa717d0ecce82b0518d02eb35629f0a33692571f5",
+      "sha256": "27169fd622cb0bf4ec2ef1e3e3450b11af974599c5c32c0c9c562572fb138a9a",
+      "bytes": 34629
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\test-only.patch",
+    "sha256": "e0368cb49396d7b165585c49ec1025d598b74008512b7bcd861c5c2b4f475d5c"
+  },
+  "source_freeze": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\source-freeze.json",
+    "sha256": "be00b75c980c042637de659ac9aae443677afb0c75ff555ee2340ac1ac8208f2"
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\filemap.json",
+    "sha256": "ce11c8ef22c6af5280595f3b2ca20fcf7681c70348729eb03a327d0ceb141ace"
+  },
+  "result": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\red-result.json",
+    "sha256": "356140b08002c2e9286273c67961e9243426bdbe01189f6f491cf5ce4b054ec3"
+  },
+  "actual": {
+    "test_methods": 5,
+    "assertion_failures": 9,
+    "test_seconds": 0.081,
+    "controller_seconds": 0.26089849999698345,
+    "exit_code": 1,
+    "setup_import_Attribute_errors": 0,
+    "production_process_calls": "Inert process mock only; communicate returns controlled bytes/nonzero status, actual validate_upload/api/command exception behavior remains.",
+    "RED_reasons": [
+      "Six existing inner errors omit command_diagnostic for recognizable, ambiguous, malformed or absent HTTP status.",
+      "Existing cold CLI omits safe optional command_diagnostic JSON field.",
+      "Existing Codex and Pi coordinator-failure.json omit safe optional command_diagnostic fields."
+    ],
+    "negative_controls": "Unrelated command excludes upload diagnostic; malformed field/type/schema, overlong/cyclic cause privacy controls pass.",
+    "raw_fixture_sentinels_absent_from_test_stdout_stderr": true,
+    "Gov_HEAD_index_source_stable_through_run": true,
+    "candidate_inputs_before_after_equal": true
+  },
+  "AST_preservation": [
+    {
+      "path": ".github/scripts/test_major_readiness.py",
+      "all_original_classes_AST_unchanged": true,
+      "old_test_methods": 55,
+      "new_test_methods": 57,
+      "added_test_methods": 2
+    },
+    {
+      "path": ".github/scripts/test_retained_archive_cli_observation.py",
+      "all_original_classes_AST_unchanged": true,
+      "old_test_methods": 21,
+      "new_test_methods": 24,
+      "added_test_methods": 3
+    }
+  ],
+  "Root_implementation_contract": {
+    "operation": "github-actions-job-log",
+    "code": "UPLOAD_LOG_COMMAND_FAILED",
+    "exit_code": "Actual7 in fixture; general actual bounded nonzero integer",
+    "http_status": "One unambiguous recognized4xx/5xx or null; duplicate same403 is unambiguous",
+    "stderr_sha256": "Actual stderr bytes SHA256 only",
+    "compatibility": "Original exception strings and causal wrapping unchanged; field absent for unrelated commands or malformed detail",
+    "cold_cli": "Append ; command_diagnostic=<closed JSON> only when admitted, preserving old fixed code/hash",
+    "coordinator_artifacts": "Optional structured command_diagnostic on original failure JSON, no raw data"
+  },
+  "limits": [
+    "Test-only two-path patch; no production/YAML/CHANGELOG change, new helper or dependency.",
+    "No network/provider/runtime/native/Gov/index/ref writes or execution.",
+    "Synthetic controlled refusal fixtures are not installed-host or hosted qualification evidence.",
+    "No diagnosis of historical HTTP reason and no claimed transport repair/qualification advancement."
+  ],
+  "utc": "2026-11-15T16:35:22.970779+00:00"
+}

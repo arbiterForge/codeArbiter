@@ -105,8 +105,11 @@ def main(argv=None):
                 require(producer.actual_platform()==a.expected_platform,'actual Pi platform differs from matrix owner')
                 return _run_control(a,cold,producer,Path(raw),state,runtime)
     except BaseException as error:
-        save(a.output_root/'coordinator-failure.json',{'phase':state['phase'],
-            'diagnostic_sha256':digest(str(error).encode('utf-8',errors='replace'))})
+        failure={'phase':state['phase'],
+            'diagnostic_sha256':digest(str(error).encode('utf-8',errors='replace'))}
+        detail=cold._command_diagnostic(error) if 'cold' in locals() else None
+        if detail is not None:failure['command_diagnostic']=detail
+        save(a.output_root/'coordinator-failure.json',failure)
         raise
 
 def _run_control(a,cold,producer,private,state,runtime):

@@ -1,0 +1,86 @@
+{
+  "source": "a04f4f07cbb66175faa7f106d2b1c105f408015b",
+  "run_id": 43730381874,
+  "static_actual_upload_checks": [
+    {
+      "artifact_id": 14169396994,
+      "step": "Preserve the exact multi-host package overlay",
+      "step_bounds": {
+        "start": "2026-11-15T16:12:24+00:00",
+        "end": "2026-11-15T16:12:30+00:00"
+      },
+      "timestamp_parse_errors": [],
+      "selected_log_lines": 38,
+      "checks": {
+        "pin": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            848,
+            949
+          ]
+        },
+        "digest": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            872
+          ]
+        },
+        "finalized": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            874
+          ]
+        }
+      }
+    },
+    {
+      "artifact_id": 14169576928,
+      "step": "Preserve the exact normal release package cohort",
+      "step_bounds": {
+        "start": "2026-11-15T16:13:00+00:00",
+        "end": "2026-11-15T16:13:04+00:00"
+      },
+      "timestamp_parse_errors": [],
+      "selected_log_lines": 51,
+      "checks": {
+        "pin": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            848,
+            949
+          ]
+        },
+        "digest": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            975
+          ]
+        },
+        "finalized": {
+          "in_expected_step_window": true,
+          "in_full_log": true,
+          "matching_line_numbers": [
+            977
+          ]
+        }
+      }
+    }
+  ],
+  "original_diagnostic": {
+    "phase": "bootstrap",
+    "exception_type": "ReadinessError",
+    "diagnostic_sha256": "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+  },
+  "diagnostic_artifact": {
+    "id": 14169871255,
+    "digest": "sha256:97392f3371baada01d75f539f8e52f17c6a96676a9bacedbfb74786d37121439",
+    "archive_sha256": "97392f3371baada01d75f539f8e52f17c6a96676a9bacedbfb74786d37121439",
+    "name": "installed-codex-observation-0.143.0-1"
+  },
+  "scope": "Read-only actual retained source/data discrimination, not a new runtime/CI invocation."
+}

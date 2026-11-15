@@ -1,0 +1,178 @@
+{
+  "schema": "bounded-security-verification-review/1",
+  "reviewer": "crypto_evidence_review",
+  "orientation": "read-only",
+  "verdict": "PASS",
+  "head": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+  "branch": "codex/state-contracts-python-lookups",
+  "candidate": "candidate-v1:4d2de6cc9cb0e7d4478f5c036f121ecd01190c01e1f68ac8472915fb6c04a2cc",
+  "staged_patch_sha256": "5b7f6ed380f6c25b365467c1c27478a276bf7990c6576deaac15edb8d3896f71",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "sha256": "5947a5ed0bd45dbe344c498f0b74ac6f6a0f4e8eba9fb3363e09c95227229595",
+      "bytes": 61396,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+      "bytes": 48849,
+      "physical_equals_index": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "170d72fc68993c1ffaedcf1050c89995baed8bbdc39f285abb319ad6e877de31",
+      "bytes": 215375,
+      "physical_equals_index": true
+    }
+  ],
+  "active_findings": [],
+  "resolved_findings": [
+    {
+      "severity": "MEDIUM",
+      "id": "PY-LOOKUP-ROOT-CASE",
+      "original_candidate": "candidate-v1:1445065902e8272f735597c7ca2f90f4cb94e0789189defcba0b3d23c1533cae",
+      "file": ".github/scripts/major_readiness.py",
+      "description": "Literal subtree inventory omitted Windows case-colliding aliases of the import root or its ancestors, allowing unchanged positive bytes/name list to remain APPLICABLE.",
+      "remediation": "Before recursive inventory, validate the complete Windows root path through existing canonical _lookup_present; preserve recursive final-root type checks.",
+      "resolution": "Inspected exact final guard. New independently authored focused test proves current UNKNOWN, strict current refusal and original authentication refusal for both root and ancestor collisions; valid original control passes.",
+      "actual_original_RED": {
+        "named_methods": 1,
+        "assertion_failures": 6,
+        "seconds": 7.640685300000769
+      },
+      "status": "RESOLVED_IN_FINAL_CANDIDATE"
+    }
+  ],
+  "security_checks": [
+    "Approved SHA-256 domain-separated namespace identity only; Git object IDs remain lookup identity, not prohibited integrity algorithms.",
+    "Closed profile declarations with owning positive .py input, safe literal roots, supported path ordering and bounded inventories. All recursive names/modes/kinds including trees participate; observed source content remains separately pinned.",
+    "Windows ASCII/collision checks cover every root/ancestor via canonical lookup and all descendant names; unsupported trees, symlinks/gitlinks, non-ASCII and case collisions cannot qualify.",
+    "Original inventory/membership failure refuses recorded authentication; candidate inability is UNKNOWN. Candidate namespace change is STALE and never rewrites historical recorded progress.",
+    "Typed go-module-v1 requirement retained for native compiler/read scope. Name-only Python membership cannot substitute for Go content membership; original host lookup handling remains.",
+    "No credentials, remote mutation/network, dependency/runtime addition, authorization expansion, native execution or producer eligibility change in this increment."
+  ],
+  "verification": {
+    "scope": ".github/scripts/major_readiness.py and its existing integration tests",
+    "new_tests": [
+      "IntegrationIntegrityTest.test_python_namespace_cannot_substitute_for_go_membership_and_legacy_host_stays",
+      "IntegrationIntegrityTest.test_python_namespace_inventory_failure_is_unknown_or_original_refusal",
+      "IntegrationIntegrityTest.test_python_namespace_refuses_unowned_shapes_and_unsafe_windows_inventory",
+      "IntegrationIntegrityTest.test_python_namespace_tracks_shadow_forms_modes_and_removal_not_unread_bytes",
+      "IntegrationIntegrityTest.test_python_namespace_windows_scope_root_and_ancestor_collisions_refuse"
+    ],
+    "five_final_named_methods": {
+      "result": "PASSED",
+      "seconds": 29.859
+    },
+    "nine_legacy_named_methods": {
+      "result": "PASSED",
+      "seconds": 14.695,
+      "reuse_basis": "Untouched Go/host declaration and lookup obligations; final guard is restricted to the new Python namespace profile."
+    },
+    "original_class_methods": {
+      "count": 46,
+      "all_AST_unchanged": true
+    },
+    "guard_mutation_evidence": "Missing profile implementation causes authored four-method RED; absence of root-path guard causes focused six-assertion RED; final exact methods pass. No synthetic RED or percentage inference.",
+    "reviewer_execution": "None; inspected source, AST structure and retained actual test receipts only.",
+    "overall_boundary": "Scoped local PASS; final current staged integrity belongs to Root and exact-head hosted checks remain required before merge."
+  },
+  "coverage": {
+    "profile": "No-tooling exemption for named Python surface",
+    "scope": ".github/scripts/*.py",
+    "stage": 2,
+    "required_numeric_metrics": [],
+    "unmeasured": [
+      "lines",
+      "branches",
+      "statements"
+    ],
+    "critical_path_evidence": "Covered by real inert Git fixtures, positive/negative boundary assertions and focused actual RED-to-GREEN root safeguard regression.",
+    "status": "PASS_SCOPED_LOCAL_NO_TOOLING_EXEMPTION",
+    "citation": "CTX-TECH-STACK#FACT-005, exact current knowledge record; NOTE-005 confirms same coverage passage.",
+    "exact_quote": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface."
+  },
+  "policy": {
+    "complete_records_reused": 32,
+    "source_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "knowledge_scope": "Current complete security constraints/notes previously fully read, unchanged source verified now."
+  },
+  "receipts": [
+    {
+      "name": "author",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-tests\\delivery.json",
+      "sha256": "4af9386c8a118df902138ed3ff07ef531420e52faa717c18f8a327eea2f5ff67",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "red",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-tests\\red-result.json",
+      "sha256": "4d2206647222a731e688a07b1e37a0c615db9fe9968463ca9885d2cea20775b7",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "root_green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-namespace-green.log",
+      "sha256": "1969c0e25dfe44365cfee0a9306333fcd1318ddbea0bac71d3ea07dcd9ed0982",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "root_legacy",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-namespace-legacy.log",
+      "sha256": "87aefbe68d9db5b1238598701403e024c65e037a4ae3aa7c22ab0877c2b8d611",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "staged_integrity",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-source-index-integrity.json",
+      "sha256": "c21d07a7e20ccc2373ea12b0da08a278d8d19b219d932eb83603b0bcb5e608de",
+      "scope_note": "Previous initial-stage complete integrity result; not claimed as final-stage proof."
+    },
+    {
+      "name": "ancestor_red",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\delivery.json",
+      "sha256": "314353f22726e9204e9ed3dde7b598e7945194fa83e2845f7799c932b5264505",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "final_green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-namespace-final-green.log",
+      "sha256": "0c10c4d7e1d1d7a0f68dc8587a23c65e835686072409b6a0cba5af5499f2cd23",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "coverage_policy",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+      "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4",
+      "scope_note": "Actual retained receipt consumed."
+    },
+    {
+      "name": "python-lookup-peer-input.txt",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-peer-input.txt",
+      "sha256": "c11c279a3f1cb8b2e1eebee6f511c525e038af19f4492112bd72afb31e48e52e"
+    },
+    {
+      "name": "python-lookup-peer-context.json",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-peer-context.json",
+      "sha256": "4bb12f6e030816cbd305913d86533c35aeb279feb7d0e9c4b1151c88dfbe5102"
+    },
+    {
+      "name": "current-complete-security-policy.json",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+      "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+    },
+    {
+      "name": "python-lookup-coverage-records.json",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+      "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4"
+    }
+  ],
+  "limits": [
+    "No program-row evidence admitted and no SDK/Pi/runtime/full-suite review replay.",
+    "PASS is exact three-file local source review, not final program completion, parent1098/main merge, installed-host or publication qualification.",
+    "Namespace profile authenticates declared immutable Git membership; runtime producer still owns truthful loaded-source, physical lookup and tool-environment capture."
+  ],
+  "utc": "2026-11-15T15:07:23.994827+00:00"
+}
