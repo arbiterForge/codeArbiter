@@ -1,0 +1,41 @@
+{
+  "format": "finite-qualification-development-receipts/1",
+  "controller_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+  "receipts": [
+    {
+      "kind": "native_whole_clause",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-native-map-whole-clause-successor-215bow0q/delivery.json",
+      "sha256": "0cab3be966db099b3b761ebf808e7943e116135b82b07c99daa329aa842b1d3b",
+      "bytes": 5192
+    },
+    {
+      "kind": "native_owning_green",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native16-owning-green.json",
+      "sha256": "d4a349fe5ba3293a98b94ca312176ba19f4a6a96ea79d5cc1c1a60c734eaabbd",
+      "bytes": 1507
+    },
+    {
+      "kind": "browser_three_green",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-site-drawer-three-chrome-pinned-9_4bufn1/delivery.json",
+      "sha256": "84a2057f6d62c6d6d45c7f8ee14f784eaaa3bc9d83958cb0279cfec1c94ab9ec",
+      "bytes": 6435
+    },
+    {
+      "kind": "browser_fixture_launch_failure",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-site-drawer-three-e064-final-run-9x3ds7u9/delivery.json",
+      "sha256": "b1d18cb79b176b84c13c1284a685270bf87c7270ec63916826c48f51407bfb0c",
+      "bytes": 3545
+    },
+    {
+      "kind": "source60",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source60-current-e064-v5qrfuc6\\delivery.json",
+      "sha256": "71ac787c14f0dfd1a83e5b14639b14582673ee332a6841d1e31d8f435c074f5d",
+      "bytes": 3913
+    }
+  ],
+  "limits": [
+    "Development/test evidence only; these references create no formal disposition or hosted/installed qualification.",
+    "Original private setup failures retained; actual browser bodies first ran successfully with explicit existing Chrome path.",
+    "No dependency install, site build, native execution, real provider/model/parent acceptance or publication."
+  ]
+}

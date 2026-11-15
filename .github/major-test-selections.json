@@ -8,9 +8,10 @@
       "observation": "native-module",
       "proof_kind": "native-module",
       "selectors": [
-        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
         "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
-        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel"
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress"
       ],
       "cells": [
         "disposition:transitions:N09:04"
@@ -227,6 +228,267 @@
         "installed:native:darwin:arm64"
       ],
       "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-contract-findings-n-f06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue"
+      ],
+      "cells": [
+        "disposition:findings:N-F06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:findings:N-F06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-machines-n39",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:machines:N39"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:machines:N39. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n01-06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N01:06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N01:06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-07",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:07"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:07. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-08",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:08"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:08. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n12-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDecisionRemainsAUserChoiceNotAToolResult",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving"
+      ],
+      "cells": [
+        "disposition:transitions:N12:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N12:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n14-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport"
+      ],
+      "cells": [
+        "disposition:transitions:N14:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N14:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n14-03",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport"
+      ],
+      "cells": [
+        "disposition:transitions:N14:03"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N14:03. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n29-07",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue"
+      ],
+      "cells": [
+        "disposition:transitions:N29:07"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N29:07. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n36-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject"
+      ],
+      "cells": [
+        "disposition:transitions:N36:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N36:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n36-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject"
+      ],
+      "cells": [
+        "disposition:transitions:N36:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N36:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-03",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:03"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:03. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
     }
   ]
 }

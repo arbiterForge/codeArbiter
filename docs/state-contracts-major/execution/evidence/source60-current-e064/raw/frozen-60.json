@@ -1,0 +1,711 @@
+[
+  {
+    "cell": "disposition:findings:C-F03",
+    "group": "G06",
+    "criterion": {
+      "title": "Release-skill pre-tag proof is effectively a required gate despite ADR 40 retaining it as advisory",
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+    "old_scope": "Only accepted policy/source agreement and conditional current required pre-tag execution/CI rejection contract; not runtime qualification or sealed ADR delivery."
+  },
+  {
+    "cell": "disposition:transitions:C15:04",
+    "group": "G06",
+    "criterion": {
+      "event": "--run-pre-tag in required CI",
+      "guard": "all declared pre-tag commands exit zero within timeout",
+      "effects": "Run declared commands in restricted environment; ci-passed explicitly requires this job success.",
+      "failure_retry": "Any pre-tag nonzero raises CandidateError and blocks required CI."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+    "old_scope": "Only accepted policy/source agreement and conditional current required pre-tag execution/CI rejection contract; not runtime qualification or sealed ADR delivery."
+  },
+  {
+    "cell": "disposition:machines:S48",
+    "group": "G07",
+    "criterion": {},
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:01",
+    "group": "G07",
+    "criterion": {
+      "event": "create source volume",
+      "guard": "safe name/source/mount policy",
+      "effects": "Create labeled volume before clone/build operation try block.",
+      "failure_retry": "An uncertain volume-create result before the try has no compensation path."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:02",
+    "group": "G07",
+    "criterion": {
+      "event": "clone source",
+      "guard": "source clone admitted",
+      "effects": "Start network-capable clone helper writing only managed source volume.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:03",
+    "group": "G07",
+    "criterion": {
+      "event": "clone finishes",
+      "guard": "Git clone success",
+      "effects": "Copy volume checkout into a newly named host temp directory for build analysis.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:04",
+    "group": "G07",
+    "criterion": {
+      "event": "build image",
+      "guard": "build helper returns image",
+      "effects": "Resolve dependency image/cache and build; remove temporary host checkout in finally.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:05",
+    "group": "G07",
+    "criterion": {
+      "event": "run sandbox",
+      "guard": "labels/workdir/env/mount plan valid",
+      "effects": "Start ordinary runtime container on offline network policy; source volume mounted at workspace.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:transitions:S48:08",
+    "group": "G07",
+    "criterion": {
+      "event": "caller abort",
+      "guard": "default clone/build lacks propagated AbortSignal",
+      "effects": "Cancellation reaches later Docker/runtime stages, but host clone/build may continue.",
+      "failure_retry": "Do not claim immediate whole-create cancellation from CLI abort alone."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+    "old_scope": "Exactly six previously PLANNED S48 clauses and finite whole-machine source acceptance. Full8 source contract mapping incorporates existing06/07 tested history without rewriting them. Actual5 and original44/cache facts remain separate original executions; no runtime/installed/scenario qualification inferred."
+  },
+  {
+    "cell": "disposition:machines:S77",
+    "group": "G09",
+    "criterion": {},
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:01",
+    "group": "G09",
+    "criterion": {
+      "event": "render root package",
+      "guard": "Pi host descriptor + nonempty version/license",
+      "effects": "Generate deterministic root scoped npm package metadata/files whitelist/engines/Pi extension and skill entrypoints.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:02",
+    "group": "G09",
+    "criterion": {
+      "event": "check/write",
+      "guard": "root bytes differ",
+      "effects": "Check reports mismatch; write regenerates root bytes from canonical nested values.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:03",
+    "group": "G09",
+    "criterion": {
+      "event": "release guard",
+      "guard": "no shipped Pi payload/root change; tools source-only excluded",
+      "effects": "Return pass without version demand; shipped extensions outside tools remain in scope.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:04",
+    "group": "G09",
+    "criterion": {
+      "event": "base invalid",
+      "guard": "ref cannot resolve",
+      "effects": "Stop rather than treat missing base as first release.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:05",
+    "group": "G09",
+    "criterion": {
+      "event": "base lacks Pi manifest",
+      "guard": "new Pi introduction",
+      "effects": "Require root version equality and exact current changelog heading; supported initial introduction path.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:06",
+    "group": "G09",
+    "criterion": {
+      "event": "base has Pi package",
+      "guard": "normal release",
+      "effects": "Require valid strict higher SemVer, regenerated root version change, changelog change and newly introduced exact version heading.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:07",
+    "group": "G09",
+    "criterion": {
+      "event": "all metadata guards pass",
+      "guard": "ca-pi-vVERSION tag absent",
+      "effects": "Return release metadata consistency pass.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:08",
+    "group": "G09",
+    "criterion": {
+      "event": "missing advance/headings/root change or existing tag",
+      "guard": "any guard fails",
+      "effects": "Return exit 1; no automatic bump/tag/publish.",
+      "failure_retry": ""
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:S77:09",
+    "group": "G09",
+    "criterion": {
+      "event": "bundle selected entrypoints",
+      "guard": "build deps available",
+      "effects": "Build parent extension, child helper, private approval and supervisor bundles from explicit sources.",
+      "failure_retry": "This audit reads TypeScript source; no equality rebuild against committed JS was run."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "old_scope": "Whole finite S77 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification."
+  },
+  {
+    "cell": "disposition:transitions:C05:02",
+    "group": "G24",
+    "criterion": {
+      "event": "child exits within deadline",
+      "guard": "process output available",
+      "effects": "Capture stdout/stderr and return code; print grouped outputs after collection.",
+      "failure_retry": "A zero exit alone is insufficient proof."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+    "old_scope": "Original finite conditional source clauses only, narrowed to actual concurrent-direct-child control cone; no execution or broader task/machine claim."
+  },
+  {
+    "cell": "disposition:transitions:C05:03",
+    "group": "G24",
+    "criterion": {
+      "event": "timeout expires",
+      "guard": "per-child timeout exceeded",
+      "effects": "Subprocess helper terminates the direct child and collects timeout diagnostic.",
+      "failure_retry": "Not a declared process-tree kill; timeout rejects the suite."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+    "old_scope": "Original finite conditional source clauses only, narrowed to actual concurrent-direct-child control cone; no execution or broader task/machine claim."
+  },
+  {
+    "cell": "disposition:transitions:C15:05",
+    "group": "G25",
+    "criterion": {
+      "event": "release workflow advisory pre-tag invocation",
+      "guard": "release preflight invokes same declared checks with warning fallback",
+      "effects": "Collect warning on failure while release job can continue.",
+      "failure_retry": "This does not undo the earlier required CI gate; ADR 40 advisory policy is not implemented consistently across both entry points."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+    "old_scope": "/root/packaging_site_tools: read-only authenticated ADR48 and finite current required-pre-tag guard reconciliation"
+  },
+  {
+    "cell": "disposition:transitions:C16:03",
+    "group": "G26",
+    "criterion": {
+      "event": "per-target eligible()",
+      "guard": "no previous stable tag, or version is newer, or own tag exists with unpublished release",
+      "effects": "Set target output true; filter optional manual target; siblings remain independent.",
+      "failure_retry": "Observation/parse error marks target false and contributes separate failure job while eligible siblings continue."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:01",
+    "group": "G26",
+    "criterion": {
+      "event": "verify inputs and observe remote plan",
+      "guard": "manifest/companion/changelog versions agree; CI cohort and source match; existing tag, if any, peels to exact source",
+      "effects": "Download same-run artifacts; verify hashes/cold matrix; select missing assets and create/present states.",
+      "failure_retry": "Duplicate release, spent tag or bad package rejects before additional publishing."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:02",
+    "group": "G26",
+    "criterion": {
+      "event": "create annotated tag",
+      "guard": "plan says create and exact source is bound",
+      "effects": "Create annotated version tag with changelog-derived release date and push.",
+      "failure_retry": "Push error may be indeterminate remote state; next attempt observes first. Never move an existing tag."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:03",
+    "group": "G26",
+    "criterion": {
+      "event": "read back and capture tag identity",
+      "guard": "remote peel equals exact intended source",
+      "effects": "Read tag and attempt exclusive identity receipt; retain artifact even on later failure.",
+      "failure_retry": "Mismatch fails; receipt is current observation, not automatically original-publication history."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:04",
+    "group": "G26",
+    "criterion": {
+      "event": "create draft release",
+      "guard": "no release exists for target tag",
+      "effects": "POST draft=true non-prerelease with extracted notes; existing draft/public release ID is reused.",
+      "failure_retry": "API failure leaves tag; rerun observes whether draft was created."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:05",
+    "group": "G26",
+    "criterion": {
+      "event": "upload package asset / read back",
+      "guard": "required package asset missing or already present",
+      "effects": "Upload only missing asset; download remote asset and verify exact SHA-256.",
+      "failure_retry": "Existing wrong bytes fail; no overwrite. Partial network failure resolved by fresh observation."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:06",
+    "group": "G26",
+    "criterion": {
+      "event": "publish distribution channel",
+      "guard": "qualified package and immutable distribution identity pass host publisher checks",
+      "effects": "Claude pushes immutable distribution and marketplace channel; Codex publishes immutable distribution then advances marketplace separately.",
+      "failure_retry": "Partial remote refs remain and are observed by subsequent helper invocation; host helper ledger details are separate."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:07",
+    "group": "G26",
+    "criterion": {
+      "event": "publish/read back npm",
+      "guard": "exact package and trusted source commit; integrity, signature and repository/workflow/source provenance verified",
+      "effects": "Publish exact tarball if absent; otherwise reuse exact version; verify public registry identity.",
+      "failure_retry": "An accepted npm version can remain while GitHub release is draft; no republish of different bytes."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:08",
+    "group": "G26",
+    "criterion": {
+      "event": "finish release",
+      "guard": "all preceding required target steps pass",
+      "effects": "PATCH draft=false when needed; read back public state and matching tag; output release-state=published.",
+      "failure_retry": "Public state is externally visible before final receipt upload. Readback failure may be indeterminate and requires observation."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:09",
+    "group": "G26",
+    "criterion": {
+      "event": "attach publication receipt",
+      "guard": "planner listed codearbiter-publication.json missing",
+      "effects": "Build metadata receipt and POST final JSON asset.",
+      "failure_retry": "Upload failure leaves a public incomplete release. Outer eligibility and per-job recheck then skip it, despite plan() seeing the missing asset."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:C17:11",
+    "group": "G26",
+    "criterion": {
+      "event": "rerun original failed job",
+      "guard": "target remains eligible and exact original source/artifacts retained",
+      "effects": "Remote-first planner avoids duplicate tag/asset/channel writes.",
+      "failure_retry": "Recovery is blocked for already-public incomplete state by C16; no automatic rollback of published effects exists."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+    "old_scope": "Eleven complete original healthy release edges accounted by current source-conformance. Exact changed portions are explicitly reviewed, not inferred from whole-file equality. Real24 current RT/helper/model cases, real50 owning suite/two actual Bash boundaries and original source-joined19 disposable-Git cases corroborate the review; no suite-count-only qualification. Known old public-complete/name-only bugs remain separatelyNOT_APPLICABLE."
+  },
+  {
+    "cell": "disposition:transitions:T01:01",
+    "group": "G28",
+    "criterion": {
+      "event": "load map and canonical host descriptors",
+      "guard": "known schema/lanes/scopes, unique check IDs and edge identities, nonempty edges and broad-lane declaration; only canonical core/hosts.json",
+      "effects": "Construct immutable descriptors and mapping objects.",
+      "failure_retry": "Invalid map or descriptor load returns a broad fallback through CLI handling, not reduced coverage."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "old_scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+  },
+  {
+    "cell": "disposition:transitions:T01:02",
+    "group": "G28",
+    "criterion": {
+      "event": "evaluate paths",
+      "guard": "all relative POSIX paths match explicit or descriptor-derived edges with known host checks",
+      "effects": "Deduplicate selected checks; report predicted_not_selected and matched paths.",
+      "failure_retry": "Descriptor rules use first matching rule and exact excludes; unknown path/host mapping cannot silently suppress checks."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "old_scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+  },
+  {
+    "cell": "disposition:transitions:T01:03",
+    "group": "G28",
+    "criterion": {
+      "event": "empty, invalid or unmapped changed path",
+      "guard": "at least one path cannot be classified",
+      "effects": "Select broad-lane only and leave predicted_not_selected empty.",
+      "failure_retry": "Never infer irrelevance under fallback."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "old_scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+  },
+  {
+    "cell": "disposition:transitions:T01:04",
+    "group": "G28",
+    "criterion": {
+      "event": "planner parsing/loading error",
+      "guard": "caught ImpactMapError/OSError/ValueError",
+      "effects": "Create built-in broad validation check and include error reason.",
+      "failure_retry": "Receipt filesystem write failure can still propagate; successful planner exit is not proof a job ran."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "old_scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+  },
+  {
+    "cell": "disposition:transitions:T01:05",
+    "group": "G28",
+    "criterion": {
+      "event": "write receipt",
+      "guard": "output and summary paths writable",
+      "effects": "Overwrite requested JSON output and append Markdown summary; return zero.",
+      "failure_retry": "Shadow-mode planner does not change current job if conditions or skip any existing CI job."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "old_scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result."
+  },
+  {
+    "cell": "disposition:transitions:SW01:02",
+    "group": "G29",
+    "criterion": {
+      "event": "inspect required driver sources",
+      "guard": "mount/run/network source files accessible at plugin root",
+      "effects": "Read actual mount, isolation and network seams before choosing operations.",
+      "failure_retry": "If files cannot be read, STOP and surface gap; source comments alone do not prove live container state."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:03",
+    "group": "G29",
+    "criterion": {
+      "event": "Docker admission",
+      "guard": "docker info returns nonzero",
+      "effects": "Report Docker unavailable and do not clone/build.",
+      "failure_retry": "Repair availability and retry admission; no guessed capability."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:04",
+    "group": "G29",
+    "criterion": {
+      "event": "nixpacks prerequisite evaluation",
+      "guard": "nixpacks absent",
+      "effects": "Command and skill prescribe STOP plus install hint.",
+      "failure_retry": "Conflicts with documented and implemented Node/Python fallback; SW-F01."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:05",
+    "group": "G29",
+    "criterion": {
+      "event": "missing source",
+      "guard": "create request has no URL/local path",
+      "effects": "Ask for the source; do not choose a repository on user\u2019s behalf.",
+      "failure_retry": "Continue only with named source."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:06",
+    "group": "G29",
+    "criterion": {
+      "event": "select ordinary policy",
+      "guard": "named source and reachable Docker; no user policy selected",
+      "effects": "Prescribe offline default; clone-then-cut or allowlist require named selection.",
+      "failure_retry": "Do not infer broader egress. Ordinary driver currently stays offline even for declared richer policy; SW-F05."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:07",
+    "group": "G29",
+    "criterion": {
+      "event": "select allowlist",
+      "guard": "explicit selection and user acknowledges experimental status",
+      "effects": "Label experimental each time and retain explicit acknowledgement requirement from skill.",
+      "failure_retry": "Without acknowledgement phase remains BLOCK. This is model-guided permission instruction, not proof runtime implements ordinary allowlist."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:08",
+    "group": "G29",
+    "criterion": {
+      "event": "--with-claude requested",
+      "guard": "explicit option; never ordinary default",
+      "effects": "Route to separate sandbox-claude-inside owner and its token/source separation rules.",
+      "failure_retry": "Do not combine token and untrusted-source volume or start credential path implicitly."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:09",
+    "group": "G29",
+    "criterion": {
+      "event": "clone/build instruction",
+      "guard": "phase 1 gates passed; no credential path bypass",
+      "effects": "Invoke createSandbox/build owner; require source volume at /work/repo and dependencies at /deps.",
+      "failure_retry": "No hand-rolled docker run or source-over-dependency mount; failed build blocks next phase."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:10",
+    "group": "G29",
+    "criterion": {
+      "event": "unchanged dependency hash",
+      "guard": "skill presumes stable repo/hash tag and existing image",
+      "effects": "Prescribe no rebuild and identical tag.",
+      "failure_retry": "Existing S49/SF08 shows create uses random temporary basename in tag; this is a documented promise, not current achieved cross-create reuse."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:11",
+    "group": "G29",
+    "criterion": {
+      "event": "start isolated run",
+      "guard": "driver runContainer and mount builder used; declared isolation set retained",
+      "effects": "Prescribe no bind/socket/privileged mode, non-root/read-only root/no-new-privileges/resource limits and labeled resources.",
+      "failure_retry": "Missing required isolation rejects run; this prose does not specify compensation after a failed inspect."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:12",
+    "group": "G29",
+    "criterion": {
+      "event": "docker inspect",
+      "guard": "no bind mount/socket and Privileged is false",
+      "effects": "Report sandbox ID and interaction commands.",
+      "failure_retry": "Any forbidden property is a non-overridable rejection described as a driver bug."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:13",
+    "group": "G29",
+    "criterion": {
+      "event": "shell/exec/copy target resolution",
+      "guard": "running ca.sandbox=1 container matching supplied ID exists",
+      "effects": "Select existing box; add no mount/socket/privilege.",
+      "failure_retry": "Absent or stopped box => STOP; no implicit creation."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:14",
+    "group": "G29",
+    "criterion": {
+      "event": "shell",
+      "guard": "non-root interactive shell at /work/repo",
+      "effects": "Attach shell without root elevation, writable-root remount or new resources.",
+      "failure_retry": "Interactive terminal limitations/failure are not further specified by prose."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:15",
+    "group": "G29",
+    "criterion": {
+      "event": "shell exit under command body",
+      "guard": "normal shell session closes",
+      "effects": "Return to host; sandbox-shell explicitly says box lives until sandbox-destroy.",
+      "failure_retry": "Contradicts lifecycle\u2019s session-close teardown trigger; do not silently choose either disposition."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:17",
+    "group": "G29",
+    "criterion": {
+      "event": "exec request",
+      "guard": "argv after --; existing running labeled box",
+      "effects": "Invoke execInSandbox and report real exitCode, separated stdout/stderr and truncated flag.",
+      "failure_retry": "Nonzero may not be collapsed into success. Runtime interruption/overflow containment is separately S52/SF09."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:18",
+    "group": "G29",
+    "criterion": {
+      "event": "copy-out request",
+      "guard": "container source and explicit host destination",
+      "effects": "Invoke cpOut/docker cp outward and report destination.",
+      "failure_retry": "Host-inbound copy/mount or writable host path for container is prohibited by instruction; no claim of transactional copy rollback."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:19",
+    "group": "G29",
+    "criterion": {
+      "event": "request elevation, host bind/socket or token/source co-mount",
+      "guard": "request would violate structural boundary",
+      "effects": "Prescribe refusal rather than changing isolation or routing around mount builder.",
+      "failure_retry": "Use allowed operation/source-only or token-only workflow; no override path provided."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:20",
+    "group": "G29",
+    "criterion": {
+      "event": "destroy specific ID",
+      "guard": "explicit single-box request",
+      "effects": "Route to destroySandbox for selected container and its named volume.",
+      "failure_retry": "Command also lists an unqualified prune step/global-empty invariant; runtime S53 distinguishes targets from unrelated objects. SW-F03."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:21",
+    "group": "G29",
+    "criterion": {
+      "event": "explicit --prune or no-ID invocation",
+      "guard": "sweep operation selected",
+      "effects": "Find and reclaim ca.sandbox=1 resources by label, never other objects.",
+      "failure_retry": "Do not infer this broad sweep from a different operation\u2019s failure or a request naming only one box."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:22",
+    "group": "G29",
+    "criterion": {
+      "event": "--keep-volume",
+      "guard": "explicit retention requested",
+      "effects": "Remove container while retaining selected volume and cached images.",
+      "failure_retry": "Retained selected volume is intentional; persistence choice does not authorize other leftover resources."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:23",
+    "group": "G29",
+    "criterion": {
+      "event": "removal/discovery/final verification failure",
+      "guard": "driver failure/remaining targeted object returned",
+      "effects": "Name leftovers, surface failure and nonzero outcome; do not stop remaining independent removal attempts.",
+      "failure_retry": "Retry/re-observe existing target identities; runtime S53 owns bounded details and verified absence."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  {
+    "cell": "disposition:transitions:SW01:24",
+    "group": "G29",
+    "criterion": {
+      "event": "observed absence and no removal errors",
+      "guard": "scope empty excluding explicit kept volumes/images",
+      "effects": "Report resources removed and intentional retained resources.",
+      "failure_retry": "Documentation\u2019s global-zero wording must be narrowed to selected scope for single-ID destroy; no automatic unrelated-box cleanup."
+    },
+    "original_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "old_scope": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  }
+]

@@ -400,5 +400,134 @@ class RetainedColdReportTest(unittest.TestCase):
                 owner.build_report(req, job_name="cold owning job", job_id=9,
                     selections=selection, observations={"cold":observed}, payloads=payloads)
 
+class CanonicalNativeWholeClauseMapTest(unittest.TestCase):
+    """Unit fixtures test declarations, never supply hosted qualification evidence."""
+
+    def native_case(self):
+        import hashlib
+        root = Path(owner.__file__).resolve().parents[2]
+        proof_bytes = (root / "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json").read_bytes()
+        self.assertEqual(hashlib.sha256(proof_bytes).hexdigest(),
+                         "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4")
+        proof = json.loads(proof_bytes)
+        groups = {group["id"]: group for group in proof["semantic_groups"]}
+        expected = {}
+        for group in groups.values():
+            for cell in group.get("transition_cells", group.get("disposition_ids", [])):
+                expected.setdefault(cell, set()).update(item["id"] for item in group["selectors"])
+        for override in proof["semantic_mapping"]:
+            expected[override["cell"]] = {item["id"] for item in override["original_named_results"]}
+        # Current D-PROGRESS tests are stronger than the retained dependent group.
+        expected["disposition:transitions:N09:04"].update(
+            "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+            for name in ("TestNT09TaskBlockPreservesDependentRecordedProgress",
+                         "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+                         "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel"))
+        for cell, composition in proof["machine_compositions"].items():
+            expected[cell] = set().union(*(expected["disposition:transitions:" + transition]
+                                          for transition in composition["transition_ids"]))
+        for cell, group_ids in proof["finding_groups"].items():
+            expected[cell] = {item["id"] for group_id in group_ids
+                              for item in groups[group_id]["selectors"]}
+        self.assertEqual(set(expected), set(proof["disposition_ids"]))
+        # Its positive export journey is mixed-schema, not these two Go CAS tests.
+        del expected["disposition:transitions:N27:03"]
+        supported = {'disposition:transitions:N02:06', 'disposition:transitions:N09:04', 'disposition:transitions:N39:02', 'disposition:transitions:N36:02', 'disposition:transitions:N39:03', 'disposition:transitions:N14:01', 'disposition:machines:N39', 'disposition:transitions:N12:02', 'disposition:transitions:N29:07', 'disposition:findings:N-F06', 'disposition:transitions:N14:03', 'disposition:transitions:N39:01', 'disposition:transitions:N02:08', 'disposition:transitions:N02:07', 'disposition:transitions:N36:01', 'disposition:transitions:N01:06'}
+        expected = {cell: selectors for cell, selectors in expected.items() if cell in supported}
+        self.assertEqual(set(expected), supported)
+        self.assertEqual(len(expected), 16)
+        selections = json.loads((root / ".github/major-test-selections.json").read_text())
+        policy = json.loads((root / ".github/major-qualification-policy.json").read_text())
+        job = "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>"
+        all_cells = set(expected) | set(policy["cell_job_bindings"]) | {
+            "disposition:transitions:N27:03", "task:NT-10"}
+        unresolved = {cell: "major qualification / native" for cell in all_cells}
+        cell_jobs = owner.readiness.bind_named_jobs(unresolved, policy)
+        ReportTest.setUp(self)
+        self.req.update(cells=sorted(expected), cell_jobs=cell_jobs)
+        selectors = set().union(*expected.values())
+        self.observation["tests"] = [{"id": selector, "result": "passed"} for selector in sorted(selectors)]
+        observations = {"native-module": self.observation}
+        payloads = {"ci20-native-tested-windows-2025": self.payload}
+        return expected, selections, job, observations, payloads
+
+    def test_canonical_native_map_uses_reconciled_per_cell_named_evidence(self):
+        expected, selections, job, observations, payloads = self.native_case()
+        # Call the maintained routing and emitter, not a reconstructed reporting model.
+        report = owner.build_report(self.req, job_name=job, job_id=9, selections=selections,
+                                    observations=observations, payloads=payloads)
+        self.assertEqual({row["cell"] for row in report["results"]}, set(expected),
+                         "canonical semantic/job map must cover exactly the complete 16 native cells")
+        declared = {cell for group in selections["groups"] if group["job"] == job for cell in group["cells"]}
+        self.assertEqual(declared, set(expected), "partial historical scopes cannot become extra whole-cell reports")
+        self.assertNotEqual(self.req["cell_jobs"]["disposition:transitions:N27:03"], job)
+        self.assertNotEqual(self.req["cell_jobs"]["task:NT-10"], job)
+        for cell, selectors in expected.items():
+            selected = [group for group in selections["groups"] if cell in group["cells"]]
+            with self.subTest(cell=cell):
+                self.assertEqual({selector for group in selected for selector in group["selectors"]}, selectors)
+                self.assertTrue(all(group["job"] == job and group["observation"] == "native-module"
+                                    and group["proof_kind"] == "native-module"
+                                    and group["payload_name"] == "ci20-native-tested-windows-2025"
+                                    for group in selected))
+                row = next(row for row in report["results"] if row["cell"] == cell)
+                self.assertEqual((row["selected_population"], row["executed_population"]),
+                                 (len(selectors), len(selectors)))
+
+    def test_canonical_native_map_refuses_incomplete_or_unbound_original_evidence(self):
+        expected, selections, job, observations, payloads = self.native_case()
+        chosen = ["TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+                  "TestNT01JournalOutcomeCodesStayDistinct", "TestSMARTSDecisionStrongRefusedWithCriticalUnknown"]
+        for name in chosen:
+            selector = next(selector for values in expected.values() for selector in values
+                            if selector.endswith(":" + name))
+            for failure in ("missing", "skipped", "failed", "repeated"):
+                broken = copy.deepcopy(observations)
+                tests = broken["native-module"]["tests"]
+                test = next(test for test in tests if test["id"] == selector)
+                if failure == "missing":
+                    tests.remove(test)
+                elif failure == "repeated":
+                    tests.append(dict(test))
+                else:
+                    test["result"] = failure
+                with self.subTest(selector=name, failure=failure), self.assertRaisesRegex(
+                        ValueError, "selected named test missing, repeated, skipped or failed"):
+                    owner.build_report(self.req, job_name=job, job_id=9, selections=selections,
+                                       observations=broken, payloads=payloads)
+        for failure in ("source", "payload"):
+            broken, consumed = copy.deepcopy(observations), copy.deepcopy(payloads)
+            if failure == "source":
+                broken["native-module"]["source_commit"] = "e" * 40
+            else:
+                consumed["ci20-native-tested-windows-2025"]["native_bindings"] = []
+            with self.subTest(failure=failure), self.assertRaises(ValueError):
+                owner.build_report(self.req, job_name=job, job_id=9, selections=selections,
+                                   observations=broken, payloads=consumed)
+
+
+    def test_canonical_map_cannot_erase_explicit_platform_or_behavior_limits(self):
+        root = Path(owner.__file__).resolve().parents[2]
+        transitions = json.loads((root / "docs/state-contracts-major/contracts/transition-coverage.json").read_text())["transitions"]
+        clause = next(row["baseline"] for row in transitions if row["transition_id"] == "N01:03")
+        # This exclusion follows the actual frozen effects plus compiled test source.
+        for branch in ("Windows", "Linux", "Darwin"):
+            self.assertIn(branch, clause["effects"])
+        windows_test = (root / "core/artifacts/internal/operations/read_only_windows_test.go").read_text()
+        self.assertTrue(windows_test.startswith("//go:build windows\n"))
+        self.assertIn('fault.Code(err) != "NO_LOCAL_STORE"', windows_test)
+        proof = json.loads((root / "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json").read_text())
+        limitation = next(row["limits"] for row in proof["semantic_mapping"] if row["cell"] == "disposition:transitions:N01:03")
+        self.assertIn("Linux no-metadata and Darwin lock-file behavior remain unexecuted/pending", limitation)
+        selections = json.loads((root / ".github/major-test-selections.json").read_text())
+        policy = json.loads((root / ".github/major-qualification-policy.json").read_text())
+        prohibited = {"disposition:transitions:N01:03", "disposition:transitions:N01:05",
+                      "disposition:transitions:N27:03", "disposition:transitions:N38:04",
+                      "disposition:transitions:N38:05", "disposition:machines:N14"}
+        job = "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>"
+        mapped = {cell for group in selections["groups"] if group["job"] == job for cell in group["cells"]}
+        self.assertFalse(mapped & prohibited, "scoped observations cannot discard frozen branch/behavior limits")
+        self.assertFalse({cell for cell in prohibited if policy["cell_job_bindings"].get(cell) == job})
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

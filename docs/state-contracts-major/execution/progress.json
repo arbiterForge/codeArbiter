@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "head": "21b76e3718a759723bb1b0294d6493f80a07ff71",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T21:54:26Z",
+  "recorded_at": "2026-11-15T23:30:56.471109+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -19,9 +19,9 @@
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-spinner-rollback",
+        "branch": "codex/state-contracts-qualification-coverage",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical source/index/progress writer for current observer repairs, finite proof admission and child delivery; other actors prepare private Temp proposals only."
+        "scope": "Sole canonical source/index/progress writer for finite qualification coverage, source60 admission and child delivery; other actors prepare private Temp proposals only."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -3778,6 +3778,12 @@
       "kind": "AFTER1112_TRUSTED_NORMAL_BB4_REFUSAL_AND_PENDING_LOCAL_REPAIRS",
       "source": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
       "detail": "PR1112 mergedbb4886 at20:30:40Z after92success/6skip and requiredgatePASS; threeOS transport controls read the same122716-byte log. Trusted normal43758478716 failed78success/12failure/7skip after transport advanced, so installed13/native133 remain ineligible. Local Codex observer/cold failure retention/Pi bytecode-policy and pre-refusal diagnostic repairs are pending source commit/review/delivery. HW05 source771 actual67/29 software captures propose31 narrow rows pending original-owner admission. Current cold YAML makes P02six STALE_AWAITING_FINAL_CAPTURE; no task promotion or fabricated counters."
+    },
+    {
+      "recorded_at": "2026-11-15T23:30:56.471109+00:00",
+      "kind": "AFTER1113_FINITE_QUALIFICATION_COVERAGE",
+      "source": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+      "detail": "PR1113 merged21b76 after92successful/6skipped exact-head checks and requiredgatePASS. Native report route coverage is extended to16 complete-clause Windows/amd64 cells with33 exact named selectors;24 owning report tests pass without native execution. Three new built-drawer tests and strict scoped TypeScript pass against the authenticated e064 Pages fixture using installed Chrome. Source60 renews59 PRESERVED and1 NOT_APPLICABLE dispositions at literal e064 after actual source inspection; statuses/history unchanged. Full staged original-owner admission is pending. Trusted normal43772302989 and real installed/native admission are separate; main/publication and user policy/human acceptance holds remain."
     }
   ],
   "scoped_blockers": [
@@ -3795,11 +3801,6 @@
       "id": "NORMAL-BB4-INSTALLED-OWNERS",
       "scope": "Trusted normal installed13/native133 qualification",
       "detail": "Run43758478716 at bb4886b9 is terminal FAILED:78success/12failure/7skip, including11 installed owners and required gate. Transport advanced. Codex nested observer TypeError is source-confirmed; cold internal cause, Pi changed member and Windows dirty entry remain UNKNOWN. Local repairs/diagnostics do not qualify the failed normal run."
-    },
-    {
-      "id": "P02-SIX-FINAL-COLD-YAML-CAPTURE",
-      "scope": "Only six current P02 software proof successors",
-      "detail": "STALE_AWAITING_FINAL_CAPTURE: existing117 positive inputs include .github/workflows/ci.yml, changed by current cold failure retention. Preserve051d proof/history. One original14-method capture is required after the final source commit. Spinner/Recovery inputs do not intersect current15 paths; no rerun of their captures is needed."
     }
   ],
   "unknown_outcomes": [
@@ -3836,11 +3837,11 @@
     }
   ],
   "next_actions": [
-    "Push the coherent child to major/state-contracts and watch all exact-head required checks, then merge under standing authority.",
-    "Authenticate the next successful trusted normal run and original installed/native reports before installed13/native133 renewal.",
-    "Retain actual user/model/parent/lifecycle acceptance, Pi HTTP policy and historical2df EOF holds. PR1098 main merge and publication remain unauthorized."
+    "Validate and independently review this finite qualification-coverage child, then deliver through exact-head hosted gates into major/state-contracts.",
+    "Authenticate original installed/native results only from a wholly successful trusted integration push; diagnose actual failures without blind retries.",
+    "Continue remaining software and user/parent/lifecycle acceptance; obtain the pending Pi HTTP policy choice. Keep1098 unmerged to main and publication held."
   ],
-  "delivery_state": "LOCAL_REPAIRS_AND82_FINITE_RECORDS_CURRENT_1086APP232STALE_PARENT1098_HELD",
+  "delivery_state": "PR1113_MERGED_NEXT_FINITE_QUALIFICATION_COVERAGE_LOCAL_GREEN_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4197,9 +4198,19 @@
       "scope": "Trusted normal installed-owner qualification",
       "detail": "Normal run43745054317 is terminal FAILED:78success/7skip/12fail (11 original installed owners plus required gate),69 artifact metadata records. Original job-log command exit1/httpnull/stderrSHA8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467; historical cause remains UNKNOWN. Isolated configured desktop gh succeeds against the same original log; this does not establish a permissions or timing cause. HTTP transport repair on the active child is not yet qualified.",
       "current_resolution": "Three-OS PR1112 control reads succeeded and original bb4 installed owners advanced past job-log transport. Historical 8ca underlying cause remains UNKNOWN; bb4 later-boundary failures are the current blocker."
+    },
+    {
+      "prior_blocker": {
+        "id": "P02-SIX-FINAL-COLD-YAML-CAPTURE",
+        "scope": "Only six current P02 software proof successors",
+        "detail": "STALE_AWAITING_FINAL_CAPTURE: existing117 positive inputs include .github/workflows/ci.yml, changed by current cold failure retention. Preserve051d proof/history. One original14-method capture is required after the final source commit. Spinner/Recovery inputs do not intersect current15 paths; no rerun of their captures is needed."
+      },
+      "resolution": "Actual14-method PASS at63d3cf92 and its six same-TESTED successors admitted in PR1113; current unchanged inputs remain applicable. No installed/task/runtime-host promotion.",
+      "proof_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+      "retained_at_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71"
     }
   ],
-  "head_semantics": "Last committed anchorfb6124 before this45-record and documentation correction. Production63d3/HW05 source771 unchanged. Next pushed head and exact-head CI are read from Git/provider; no new installed/native qualification inferred.",
+  "head_semantics": "Committed integration anchor after PR1113 true merge. This child extends finite qualification routes and maintained browser tests; no future commit identity or hosted/installed/task qualification is inferred.",
   "superseded_checkpoint_fields": [
     {
       "id": "before-job-log-transport-9f9cde6b",
@@ -4396,217 +4407,260 @@
         ]
       },
       "note": "Previous live fields are preserved as history. Current checkpoint distinguishes working-tree source, pending proof admission, and failed original normal qualification."
+    },
+    {
+      "source_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+      "superseded_live_checkpoint": {
+        "id": "after1112-observer-source63d3",
+        "last_committed_local_source_anchor": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+        "pending_source_commit": null,
+        "pending_source_note": "Repair committed63d3cf92; combined security/functional review PASS0findings, source hashes and receipts retained in evidence/installed-observer-repair/source-delivery.json.",
+        "active_branch": "codex/state-contracts-spinner-rollback",
+        "latest_delivered_child": {
+          "pr": 1112,
+          "head": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+          "state": "MERGED",
+          "merge_commit": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "merged_at": "2026-11-15T20:30:40Z",
+          "checks": {
+            "success": 92,
+            "skipped": 6,
+            "required_merge_readiness": "SUCCESS"
+          }
+        },
+        "parent": {
+          "pr": 1098,
+          "state": "OPEN",
+          "draft": true,
+          "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "main_merge": "HELD_FOR_USER_TESTING",
+          "publication_authorized": false
+        },
+        "transport_control": {
+          "scope": "Three OS Program integrity controls in PR1112; same completed Impact log",
+          "PASS": 3,
+          "bytes": 122716,
+          "log_sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+          "qualification": "Transport boundary observed; does not qualify all installed owners."
+        },
+        "normal_run": {
+          "run_id": 43758478716,
+          "attempt": 1,
+          "source_commit": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+          "event": "push",
+          "branch": "major/state-contracts",
+          "state": "TERMINAL_FAILED",
+          "jobs": {
+            "success": 78,
+            "skipped": 7,
+            "failure": 12
+          },
+          "failed_installed_owners": 11,
+          "failed_required_gates": 1,
+          "installed13_eligible": false,
+          "native133_eligible": false,
+          "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-bb4886-installed-watch-rvb30yfo\\terminal-failure-receipt.json",
+          "receipt_sha256": "4f6e9b5beb4d3170bba89b249ec00f7edaead63a45ebb6ec7dc0afdd18df4e56",
+          "boundary": "Original owners advanced beyond prior job-log failure; later original installed boundaries failed.",
+          "retained_receipt": "docs/state-contracts-major/execution/evidence/installed-observer-repair/normal-bb4-terminal-failure.json"
+        },
+        "current_repairs": {
+          "Codex": "Source-confirmed nested environment keyword TypeError; actual checker now uses transparent reentrant observation and records only one outer capability transaction. Local controls pass; installed success remains unproven.",
+          "cold": "Attempt-failure diagnostics retained; missing files do not mask primary failure; qualification success-only. Historic original internal cause remains UNKNOWN.",
+          "Pi": "Explicit-B launch corrects a demonstrated no-bytecode policy gap; new pre-refusal snapshots retain diagnostic distinctions. Historical changed member and dirty path remain UNKNOWN; no EOF cause or installed success inferred."
+        },
+        "local_source_checks": {
+          "codex-cold-owning-green": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\codex-cold-owning-green.json",
+            "sha256": "57a644d23cc79b9f376e900b8fe46fe72f79a9e9574fb3e9e9a8a1da0f7b840f",
+            "exit_code": 0,
+            "PASS": 42,
+            "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
+          },
+          "pi-diagnostic-owning-green": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-owning-green.json",
+            "sha256": "97fed83b0c29b08f0724b7b77cd553d1d3a835c9a44334494d5db178aa69ce12",
+            "exit_code": 0,
+            "PASS": 43,
+            "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
+          },
+          "cold-source-class-green": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\cold-source-class-green.json",
+            "sha256": "1646f05069b6b6ebdf01acb3160462783945a99dc88b275703098cca318f5e5d",
+            "exit_code": 0,
+            "PASS": 2,
+            "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
+          },
+          "pi-tests": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-tests.json",
+            "sha256": "e2d5a8f92dbaf51b6285bf8f2d4b603c7dbc3fc1e2e2dd8a0eb5ef48aa12675c",
+            "exit_code": 0,
+            "PASS": 53
+          },
+          "pi-target": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-target.json",
+            "sha256": "43c9361bfecfe97681524a1541094665f0e2b307969e941b7b7c497236c9b4d5",
+            "exit_code": 0,
+            "PASS": 1,
+            "unselected": 52
+          },
+          "pi-typecheck": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-typecheck.json",
+            "sha256": "f129c5a82ac6286784f1545c98d0bf6ee13f3b12faba2e296be3d5e9eff44198",
+            "exit_code": 0
+          },
+          "pi-build": {
+            "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-build.json",
+            "sha256": "5261ce9e10ef114b28262feeb5ea6e191ced11e4ee86749b2368db2dc787b0e8",
+            "exit_code": 0
+          }
+        },
+        "prospective_row_admission": {
+          "state": "ADMITTED_TO_STAGED_LEDGER_UNCHANGED_OWNER_PASS",
+          "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+          "rows": 31,
+          "machine_PLANNED_to_TESTED": 1,
+          "same_TESTED_statusline_edges_and_finding": 8,
+          "same_TESTED_WR_edges": 22,
+          "statusline_actual_PASS": 67,
+          "Recovery_actual_PASS": 29,
+          "proofs": [
+            {
+              "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+              "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
+            },
+            {
+              "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
+              "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
+            }
+          ],
+          "old_9c61": "Unadmitted observation may be retained as HISTORY only; it is not the current machine proof.",
+          "measured_integrity": {
+            "result": "PASSED",
+            "frozen": 105,
+            "records": 1318,
+            "applicability": {
+              "APPLICABLE": 1041,
+              "STALE": 277
+            },
+            "all37updated_records_currently_APPLICABLE": true,
+            "newly_stale_since771": 45,
+            "scope": "Full proof and ledger subject validated before final doc/status counter refresh. No proof/source/row/frozen bytes change in the refresh."
+          },
+          "limits": "Finite software fixtures only; no real user settings, installed old host, UI/model/lifecycle, whole HW05/HW27/Q01 or multiwriter-CAS claim.",
+          "additional_same_TESTED_P02": 6
+        },
+        "P02_six": {
+          "state": "STAGED_SAME_TESTED_SUCCESSORS_STRICT_OWNER_AND_CURRENT_APPLICABILITY_PASS",
+          "reason": "Current cold YAML intersects the existing117 positive inputs.",
+          "prior_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
+          "prior_sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
+          "planned_original_methods": 14,
+          "selected_records": 6,
+          "new_capture": {
+            "source_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
+            "PASS": 14,
+            "seconds": 6.297007000001031,
+            "proof_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
+            "proof_sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
+          },
+          "limits": "Preserve all prior source epochs and genuine failedf4dc capture. No P02 rerun in this document task."
+        },
+        "holds": [
+          "Historical2df Windows Pi natural EOF/OS exit cause remains unresolved; SDK instrumentation is not an application fix.",
+          "Pi HTTP policy still awaits the existing user decision.",
+          "Actual parent/user/model/lifecycle acceptance remains separate.",
+          "PR1098 main merge and publication remain held."
+        ],
+        "cleanup_authority": {
+          "merge_target": "major/state-contracts",
+          "main_parent_PR1098": "HOLD; never merge until user fully tests and explicitly releases hold",
+          "merged_local_branch_deletion": "standing user permission",
+          "merged_remote_program_child_branch_deletion": "standing user permission from call_14866a7287cb47648b85983b6f80884e reply: Allow this and future merged program child remotes",
+          "integration_branch_and_worktrees": "outside remote deletion grant",
+          "publication": "not authorized"
+        },
+        "history": "docs/state-contracts-major/execution/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
+        "new_child": {
+          "pr": 1113,
+          "observed_head": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+          "observed_state": "OPEN; source/code checks progressed, docs capture and archive-link failures corrected locally; next exact-head hosted checks pending"
+        },
+        "finite45_successors": {
+          "state": "STAGED_UNCHANGED_OWNER_AND_CURRENT_APPLICABILITY_PASS",
+          "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+          "Pi_source_conformance": {
+            "rows": 39,
+            "status": "PRESERVED",
+            "positive_inputs": 29,
+            "source_spans": 91,
+            "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
+            "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
+          },
+          "reader": {
+            "rows": 6,
+            "status": "TESTED",
+            "actual_PASS": 14,
+            "seconds": 7.585700199997518,
+            "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
+            "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
+          },
+          "all_old_active_refs_and_full_histories_retained": true,
+          "limits": "No new status promotion, whole-task/user/model/UI/host/installed/native/main/publication closure.",
+          "measured_integrity": {
+            "result": "PASSED",
+            "frozen": 105,
+            "records": 1318,
+            "applicability": {
+              "APPLICABLE": 1086,
+              "STALE": 232
+            },
+            "all82_selected_records_currently_APPLICABLE": true,
+            "actual_owner_seconds": 35.707,
+            "scope": "Complete staged proof/ledger subject; final doc-only measured-counter refresh leaves this subject unchanged."
+          }
+        }
+      },
+      "superseded_delivery_state": "LOCAL_REPAIRS_AND82_FINITE_RECORDS_CURRENT_1086APP232STALE_PARENT1098_HELD",
+      "reason": "PR1113 merged; current successor updates pending/observed state without deleting the predecessor checkpoint."
     }
   ],
   "live_checkpoint": {
-    "id": "after1112-observer-source63d3",
-    "last_committed_local_source_anchor": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
-    "pending_source_commit": null,
-    "pending_source_note": "Repair committed63d3cf92; combined security/functional review PASS0findings, source hashes and receipts retained in evidence/installed-observer-repair/source-delivery.json.",
-    "active_branch": "codex/state-contracts-spinner-rollback",
-    "latest_delivered_child": {
-      "pr": 1112,
-      "head": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
-      "state": "MERGED",
-      "merge_commit": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
-      "merged_at": "2026-11-15T20:30:40Z",
-      "checks": {
-        "success": 92,
-        "skipped": 6,
-        "required_merge_readiness": "SUCCESS"
-      }
+    "recorded_at": "2026-11-15T23:30:56.471109+00:00",
+    "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+    "merged_child_pr": 1113,
+    "merged_child_head": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+    "exact_child_checks": {
+      "success": 92,
+      "skipped": 6,
+      "required_merge_readiness": "PASS"
     },
-    "parent": {
-      "pr": 1098,
-      "state": "OPEN",
-      "draft": true,
-      "head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
-      "main_merge": "HELD_FOR_USER_TESTING",
-      "publication_authorized": false
+    "trusted_normal_run": 43772302989,
+    "trusted_normal_status": "PENDING_AUTHENTICATED_TERMINAL_RESULT",
+    "active_branch": "codex/state-contracts-qualification-coverage",
+    "local_native_report_tests": {
+      "passed": 24,
+      "mapped_cells": 16,
+      "selectors": 33,
+      "native_execution": false
     },
-    "transport_control": {
-      "scope": "Three OS Program integrity controls in PR1112; same completed Impact log",
-      "PASS": 3,
-      "bytes": 122716,
-      "log_sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
-      "qualification": "Transport boundary observed; does not qualify all installed owners."
+    "local_browser_tests": {
+      "passed": 3,
+      "built_fixture_source": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "controller_source": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+      "strict_typescript": "PASS",
+      "hosted_qualification": false
     },
-    "normal_run": {
-      "run_id": 43758478716,
-      "attempt": 1,
-      "source_commit": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
-      "event": "push",
-      "branch": "major/state-contracts",
-      "state": "TERMINAL_FAILED",
-      "jobs": {
-        "success": 78,
-        "skipped": 7,
-        "failure": 12
-      },
-      "failed_installed_owners": 11,
-      "failed_required_gates": 1,
-      "installed13_eligible": false,
-      "native133_eligible": false,
-      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-bb4886-installed-watch-rvb30yfo\\terminal-failure-receipt.json",
-      "receipt_sha256": "4f6e9b5beb4d3170bba89b249ec00f7edaead63a45ebb6ec7dc0afdd18df4e56",
-      "boundary": "Original owners advanced beyond prior job-log failure; later original installed boundaries failed.",
-      "retained_receipt": "docs/state-contracts-major/execution/evidence/installed-observer-repair/normal-bb4-terminal-failure.json"
+    "source_conformance_updates": {
+      "PRESERVED": 59,
+      "NOT_APPLICABLE": 1,
+      "statuses_unchanged": true,
+      "literal_source_anchor": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "staged_owner_validation": "PASSED_105_FROZEN_1318_ADVANCED_1146_APPLICABLE_172_STALE_0_UNKNOWN"
     },
-    "current_repairs": {
-      "Codex": "Source-confirmed nested environment keyword TypeError; actual checker now uses transparent reentrant observation and records only one outer capability transaction. Local controls pass; installed success remains unproven.",
-      "cold": "Attempt-failure diagnostics retained; missing files do not mask primary failure; qualification success-only. Historic original internal cause remains UNKNOWN.",
-      "Pi": "Explicit-B launch corrects a demonstrated no-bytecode policy gap; new pre-refusal snapshots retain diagnostic distinctions. Historical changed member and dirty path remain UNKNOWN; no EOF cause or installed success inferred."
-    },
-    "local_source_checks": {
-      "codex-cold-owning-green": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\codex-cold-owning-green.json",
-        "sha256": "57a644d23cc79b9f376e900b8fe46fe72f79a9e9574fb3e9e9a8a1da0f7b840f",
-        "exit_code": 0,
-        "PASS": 42,
-        "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
-      },
-      "pi-diagnostic-owning-green": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-owning-green.json",
-        "sha256": "97fed83b0c29b08f0724b7b77cd553d1d3a835c9a44334494d5db178aa69ce12",
-        "exit_code": 0,
-        "PASS": 43,
-        "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
-      },
-      "cold-source-class-green": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\cold-source-class-green.json",
-        "sha256": "1646f05069b6b6ebdf01acb3160462783945a99dc88b275703098cca318f5e5d",
-        "exit_code": 0,
-        "PASS": 2,
-        "scope": "local owning controls on recorded working-tree bytes, not hosted installed qualification"
-      },
-      "pi-tests": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-tests.json",
-        "sha256": "e2d5a8f92dbaf51b6285bf8f2d4b603c7dbc3fc1e2e2dd8a0eb5ef48aa12675c",
-        "exit_code": 0,
-        "PASS": 53
-      },
-      "pi-target": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-target.json",
-        "sha256": "43c9361bfecfe97681524a1541094665f0e2b307969e941b7b7c497236c9b4d5",
-        "exit_code": 0,
-        "PASS": 1,
-        "unselected": 52
-      },
-      "pi-typecheck": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-typecheck.json",
-        "sha256": "f129c5a82ac6286784f1545c98d0bf6ee13f3b12faba2e296be3d5e9eff44198",
-        "exit_code": 0
-      },
-      "pi-build": {
-        "ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-build.json",
-        "sha256": "5261ce9e10ef114b28262feeb5ea6e191ced11e4ee86749b2368db2dc787b0e8",
-        "exit_code": 0
-      }
-    },
-    "prospective_row_admission": {
-      "state": "ADMITTED_TO_STAGED_LEDGER_UNCHANGED_OWNER_PASS",
-      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
-      "rows": 31,
-      "machine_PLANNED_to_TESTED": 1,
-      "same_TESTED_statusline_edges_and_finding": 8,
-      "same_TESTED_WR_edges": 22,
-      "statusline_actual_PASS": 67,
-      "Recovery_actual_PASS": 29,
-      "proofs": [
-        {
-          "ref": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
-          "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193"
-        },
-        {
-          "ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/tested.json",
-          "sha256": "c275f64405a08ffa41f2f23e7d41dbb5b8ef984fbbddab4d728f3ec3e077d1db"
-        }
-      ],
-      "old_9c61": "Unadmitted observation may be retained as HISTORY only; it is not the current machine proof.",
-      "measured_integrity": {
-        "result": "PASSED",
-        "frozen": 105,
-        "records": 1318,
-        "applicability": {
-          "APPLICABLE": 1041,
-          "STALE": 277
-        },
-        "all37updated_records_currently_APPLICABLE": true,
-        "newly_stale_since771": 45,
-        "scope": "Full proof and ledger subject validated before final doc/status counter refresh. No proof/source/row/frozen bytes change in the refresh."
-      },
-      "limits": "Finite software fixtures only; no real user settings, installed old host, UI/model/lifecycle, whole HW05/HW27/Q01 or multiwriter-CAS claim.",
-      "additional_same_TESTED_P02": 6
-    },
-    "P02_six": {
-      "state": "STAGED_SAME_TESTED_SUCCESSORS_STRICT_OWNER_AND_CURRENT_APPLICABILITY_PASS",
-      "reason": "Current cold YAML intersects the existing117 positive inputs.",
-      "prior_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-051d16eb/tested.json",
-      "prior_sha256": "4f029a283bfa3dfa58027bee4690e62cba4d462658f2ec5a975bec8ced1c0097",
-      "planned_original_methods": 14,
-      "selected_records": 6,
-      "new_capture": {
-        "source_commit": "63d3cf9206e443090fa6cb5ffd8e8280c038fbc8",
-        "PASS": 14,
-        "seconds": 6.297007000001031,
-        "proof_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
-        "proof_sha256": "706f1fc63180f6572da9cc9a06e4f56a4ad32df6d7fb061e36c9b7eac1f1148f"
-      },
-      "limits": "Preserve all prior source epochs and genuine failedf4dc capture. No P02 rerun in this document task."
-    },
-    "holds": [
-      "Historical2df Windows Pi natural EOF/OS exit cause remains unresolved; SDK instrumentation is not an application fix.",
-      "Pi HTTP policy still awaits the existing user decision.",
-      "Actual parent/user/model/lifecycle acceptance remains separate.",
-      "PR1098 main merge and publication remain held."
-    ],
-    "cleanup_authority": {
-      "merge_target": "major/state-contracts",
-      "main_parent_PR1098": "HOLD; never merge until user fully tests and explicitly releases hold",
-      "merged_local_branch_deletion": "standing user permission",
-      "merged_remote_program_child_branch_deletion": "standing user permission from call_14866a7287cb47648b85983b6f80884e reply: Allow this and future merged program child remotes",
-      "integration_branch_and_worktrees": "outside remote deletion grant",
-      "publication": "not authorized"
-    },
-    "history": "docs/state-contracts-major/execution/CHECKPOINT-before-bb4-observer-repairs-77160413.md",
-    "new_child": {
-      "pr": 1113,
-      "observed_head": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
-      "observed_state": "OPEN; source/code checks progressed, docs capture and archive-link failures corrected locally; next exact-head hosted checks pending"
-    },
-    "finite45_successors": {
-      "state": "STAGED_UNCHANGED_OWNER_AND_CURRENT_APPLICABILITY_PASS",
-      "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
-      "Pi_source_conformance": {
-        "rows": 39,
-        "status": "PRESERVED",
-        "positive_inputs": 29,
-        "source_spans": 91,
-        "ref": "docs/state-contracts-major/execution/evidence/pi39-source-current-fb6124/source-conformance.json",
-        "sha256": "3559953db90d2703ab843198391056fdf0c603dbec776a21054df2d44282f882"
-      },
-      "reader": {
-        "rows": 6,
-        "status": "TESTED",
-        "actual_PASS": 14,
-        "seconds": 7.585700199997518,
-        "ref": "docs/state-contracts-major/execution/evidence/reader14-current-fb6124c4/tested.json",
-        "sha256": "178646896a9a696833582021f1b7e2bc061eb0d696c86933551cfe034917a170"
-      },
-      "all_old_active_refs_and_full_histories_retained": true,
-      "limits": "No new status promotion, whole-task/user/model/UI/host/installed/native/main/publication closure.",
-      "measured_integrity": {
-        "result": "PASSED",
-        "frozen": 105,
-        "records": 1318,
-        "applicability": {
-          "APPLICABLE": 1086,
-          "STALE": 232
-        },
-        "all82_selected_records_currently_APPLICABLE": true,
-        "actual_owner_seconds": 35.707,
-        "scope": "Complete staged proof/ledger subject; final doc-only measured-counter refresh leaves this subject unchanged."
-      }
-    }
+    "parent_pr": 1098,
+    "main_merge": "HELD_FOR_USER_TESTING",
+    "publication": "NOT_AUTHORIZED",
+    "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE"
   }
 }
