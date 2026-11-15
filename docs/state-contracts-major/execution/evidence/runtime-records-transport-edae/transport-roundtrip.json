@@ -1,0 +1,47 @@
+{
+  "format": "codearbiter-runtime-records-transport-roundtrip/1",
+  "classification_ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-qualification-runtime-hash-classification-dze8k670\\classification.json",
+  "classification_sha256": "73632b567887a7d3422c01c1f7fbda770285a6ef7eeb603a09eaac5a22bccab4",
+  "four_documents": [
+    {
+      "repo_path": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/run-start.json",
+      "expected_owned_WIP_sha256": "097c7bfb98221db249e27302a04c8350f7ae6945299c17e19db7e34adde8278a",
+      "new_sha256": "4f1a8b2723be28080c52d0c2b4007100aa8b9e2e92e77cf5dd89f4a614c3ac78",
+      "member": "runtime",
+      "records": 1905,
+      "exact_original_document_byte_restore": true,
+      "all_other_fields_equal": true
+    },
+    {
+      "repo_path": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/run-result.json",
+      "expected_owned_WIP_sha256": "4534ebdfa468e2a6d8d7d36da42b4ec1be37da2eb3a8cb8774fa3025193154e2",
+      "new_sha256": "25e83b3fa2b054d1f1c0297ed56a79030bff7300bdf0d795dd1385618b7fdcb3",
+      "member": "runtime_after",
+      "records": 1905,
+      "exact_original_document_byte_restore": true,
+      "all_other_fields_equal": true
+    },
+    {
+      "repo_path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/run-result.json",
+      "expected_owned_WIP_sha256": "9ab26787b72c2fc08e55379611126a0141d6ea7dac948b96b4404f41317e4f6f",
+      "new_sha256": "b066b6d7d1e8be1c89d2626d2dcfd4baae8d289639fbe68084231fd76392ab8d",
+      "member": "runtime_after",
+      "records": 1905,
+      "exact_original_document_byte_restore": true,
+      "all_other_fields_equal": true
+    },
+    {
+      "repo_path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/run-start.json",
+      "expected_owned_WIP_sha256": "f8c0a3433576879524409c8d150914b6d2e2d0ec70bacdd93b7ec65d6202635c",
+      "new_sha256": "6fbe816e25bf5878df1975945835bcfcfd46281d67b337034474f8f3acd610ba",
+      "member": "runtime",
+      "records": 1905,
+      "exact_original_document_byte_restore": true,
+      "all_other_fields_equal": true
+    }
+  ],
+  "four1905maps_identical": true,
+  "all_original_private_packets_unchanged": true,
+  "tests_reexecuted": 0,
+  "profile": "Each runtime or runtime_after object becomes ordered path/sha256 records. Remove serialization_profile and restore object in record order, then original pretty JSON encoding returns exact original bytes."
+}

@@ -1,0 +1,651 @@
+{
+  "schema": "codearbiter-disposition-cas/1",
+  "candidate": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "added_transitions",
+      "id": "P02:added-stale-history",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "P02:added-unknown-input",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "P02:added-original-tamper",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "P02:added-frozen-anchor",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "P02:added-origin-mix",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "P02:added-selected-gate",
+      "old_row_sha256": "7c8cabcbeea695a1a239a83732d9b5624ef0cb6a1d303bbd431b0fac07be688a",
+      "expected_before": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          }
+        ]
+      },
+      "proposed_row": {
+        "owner": "integration-architect",
+        "task_ids": [
+          "P-02",
+          "Q-02"
+        ],
+        "treatment": "INTRODUCED_INTEGRATION_INTEGRITY_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+            "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/integration-fixtures.json",
+            "sha256": "6a7094e0e31ce462bbf0c8392217edb53015ef26cbe0fa83ea2177f4bd404581",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "test",
+            "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/integration-fixtures.json",
+            "sha256": "00ec8121e96c323ea69cb65d32280fb3d03cd2b64621e60cfd8a6cb69bfa6b48",
+            "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+          },
+          {
+            "kind": "test",
+            "commit": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-case-aware-35/integration-fixtures.json",
+            "sha256": "24a5487aa0bfb107ca65ef67086e7d842d1726b51e21368b2514a99f45049ae8",
+            "ref_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+          },
+          {
+            "kind": "test",
+            "commit": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+            "ref": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+            "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+            "ref_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C05:01",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C05:04",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C05:05",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    }
+  ],
+  "limits": "Original committed edae expected rows unchanged. Only proposed active proof hashes rebound; source epochs, assertions, commands and history unchanged."
+}

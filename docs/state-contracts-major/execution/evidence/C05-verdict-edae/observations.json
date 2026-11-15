@@ -1,0 +1,458 @@
+{
+  "format": "C05-original-child-and-wrapper-observations/1",
+  "events": [
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\first.py",
+      "reported_code": 0,
+      "original_output": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\second.py",
+      "reported_code": 0,
+      "original_output": ".s\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK (skipped=1)\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\first.py",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\second.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\first.py (ok)\n..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK\r\n\n::endgroup::\n::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmp3ozm_kcs\\second.py (ok)\n.s\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK (skipped=1)\r\n\n::endgroup::\nconcurrent suites: 2 of 2 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\good.py",
+      "reported_code": 0,
+      "original_output": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py",
+      "reported_code": 1,
+      "original_output": "F\r\n======================================================================\r\nFAIL: test_one (__main__.T.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py\", line 5, in test_one\r\n    self.fail(\"deliberate\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^\r\nAssertionError: deliberate\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n",
+      "observed_Popen_returncode": 1
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\good.py",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\good.py (ok)\n..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.000s\r\n\r\nOK\r\n\n::endgroup::\n::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py (FAILED: exited 1, did not report OK for every unittest summary)\nF\r\n======================================================================\r\nFAIL: test_one (__main__.T.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py\", line 5, in test_one\r\n    self.fail(\"deliberate\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^\r\nAssertionError: deliberate\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpw3942uo1\\bad.py: exited 1, did not report OK for every unittest summary\nconcurrent suites: 1 of 2 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpxri7m_9p\\empty.py",
+      "reported_code": 5,
+      "original_output": "\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n",
+      "observed_Popen_returncode": 5
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpxri7m_9p\\empty.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpxri7m_9p\\empty.py (FAILED: exited 5, ran no tests, did not report OK for every unittest summary)\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpxri7m_9p\\empty.py: exited 5, ran no tests, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpzvltfy27\\silent.py",
+      "reported_code": 0,
+      "original_output": "no unittest here\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpzvltfy27\\silent.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpzvltfy27\\silent.py (FAILED: ran no tests, did not report OK for every unittest summary)\nno unittest here\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpzvltfy27\\silent.py: ran no tests, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\right.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\left.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\left.py",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\right.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\left.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nOK\r\n\n::endgroup::\n::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpo9i2gmkr\\right.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nOK\r\n\n::endgroup::\nconcurrent suites: 2 of 2 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpfaz_1vny\\hung.py",
+      "reported_code": -1,
+      "original_output": "\nsuite timed out and was terminated\n",
+      "observed_Popen_returncode": 1
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpfaz_1vny\\hung.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpfaz_1vny\\hung.py (FAILED: exited -1, ran no tests, did not report OK for every unittest summary)\n\nsuite timed out and was terminated\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpfaz_1vny\\hung.py: exited -1, ran no tests, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\wrapper.cmd",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "--interpreter-env",
+        "LOCKED_PY",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\n::endgroup::\nconcurrent suites: 1 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py",
+      "reported_code": 1,
+      "original_output": "F\r\n======================================================================\r\nFAIL: test_interpreter (__main__.T.test_interpreter)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py\", line 5, in test_interpreter\r\n    self.assertEqual(os.environ.get(\"PROBE_MARK\"), \"set\")\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: None != 'set'\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nFAILED (failures=1)\r\n",
+      "observed_Popen_returncode": 1
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py (FAILED: exited 1, did not report OK for every unittest summary)\nF\r\n======================================================================\r\nFAIL: test_interpreter (__main__.T.test_interpreter)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py\", line 5, in test_interpreter\r\n    self.assertEqual(os.environ.get(\"PROBE_MARK\"), \"set\")\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: None != 'set'\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nFAILED (failures=1)\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmphf5uv2oj\\probe.py: exited 1, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: name each suite script once\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpuzferpef\\real.py",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpuzferpef\\real.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: name each suite script once\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpuzferpef\\absent.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite scripts not found: ['C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-C05-verdict-qualification\\\\profile\\\\tmp\\\\tmpuzferpef\\\\absent.py']\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpuzferpef\\real.py",
+        "--interpreter-env"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: --interpreter-env needs a variable name\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "--interpreter-env",
+        "UNSET_INTERPRETER_FOR_TEST",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpuzferpef\\real.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: interpreter variable UNSET_INTERPRETER_FOR_TEST is unset\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nF\r\n======================================================================\r\nFAIL: test_one (__main__.Failing.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py\", line 8, in test_one\r\n    self.fail(\"deliberate child unittest failure\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: deliberate child unittest failure\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (FAILED: did not report OK for every unittest summary)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nF\r\n======================================================================\r\nFAIL: test_one (__main__.Failing.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py\", line 8, in test_one\r\n    self.fail(\"deliberate child unittest failure\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: deliberate child unittest failure\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py: did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": "F\r\n======================================================================\r\nFAIL: test_one (__main__.Failing.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py\", line 8, in test_one\r\n    self.fail(\"deliberate child unittest failure\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: deliberate child unittest failure\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (FAILED: did not report OK for every unittest summary)\nF\r\n======================================================================\r\nFAIL: test_one (__main__.Failing.test_one)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py\", line 8, in test_one\r\n    self.fail(\"deliberate child unittest failure\")\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: deliberate child unittest failure\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nFAILED (failures=1)\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py: did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": "\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (FAILED: ran no tests, did not report OK for every unittest summary)\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py: ran no tests, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 1,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (FAILED: ran no tests, did not report OK for every unittest summary)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.000s\r\n\r\nNO TESTS RAN\r\n\n::endgroup::\nconcurrent suites FAILED: C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py: ran no tests, did not report OK for every unittest summary\nconcurrent suites: 0 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n\n::endgroup::\nconcurrent suites: 1 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\ns\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK (skipped=1)\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\ns\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK (skipped=1)\r\n\n::endgroup::\nconcurrent suites: 1 of 1 passed\n"
+    },
+    {
+      "owner": "run",
+      "interpreter": "C:\\Python314\\python.exe",
+      "script": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py",
+      "reported_code": 0,
+      "original_output": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nx\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK (expected failures=1)\r\n",
+      "observed_Popen_returncode": 0
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py"
+      ],
+      "reported_code": 0,
+      "original_grouped_output": "::group::C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmpffiecvfv\\two-runs.py (ok)\n.\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nx\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK (expected failures=1)\r\n\n::endgroup::\nconcurrent suites: 1 of 1 passed\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite timeout must be finite and positive\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite timeout must be finite and positive\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite timeout must be finite and positive\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite timeout must be finite and positive\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite timeout must be finite and positive\n"
+    },
+    {
+      "owner": "main-return",
+      "argv": [
+        "--interpreter-env",
+        "C05_UNAVAILABLE_INTERPRETER",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\tmp\\tmppmzn_p7j\\preflight.py"
+      ],
+      "reported_code": 2,
+      "original_grouped_output": "concurrent suites: suite interpreters not available: ['C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-C05-verdict-qualification\\\\profile\\\\tmp\\\\tmppmzn_p7j\\\\unavailable-interpreter']\n"
+    }
+  ],
+  "interpreter_wrapper": [
+    {
+      "method": "test_the_named_interpreter_actually_runs_the_suite",
+      "fixtures": {
+        "wrapper.cmd": {
+          "sha256": "b5b49ce4d6e64f6d30fd8f1685f4277dbe55ae0bd2fd8c5fd33c504ef3973653",
+          "bytes": 54,
+          "original_utf8": "@set PROBE_MARK=set\r\r\n@\"C:\\Python314\\python.exe\" %*\r\r\n"
+        },
+        "probe.py": {
+          "sha256": "c832f2f811392b9d47f68b56a623d114170ddb623f52632d6254e068d07f6811",
+          "bytes": 202,
+          "original_utf8": "\r\nimport os, sys, unittest\r\nclass T(unittest.TestCase):\r\n    def test_interpreter(self):\r\n        self.assertEqual(os.environ.get(\"PROBE_MARK\"), \"set\")\r\nif __name__ == \"__main__\":\r\n    unittest.main()\r\n"
+        }
+      }
+    }
+  ],
+  "observer_errors": [],
+  "actual_named_results": [
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_every_passing_suite_is_reported_and_the_run_passes",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_one_failing_suite_fails_the_run_and_is_named",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_suite_that_runs_no_tests_fails",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_zero_exit_without_a_unittest_verdict_fails",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_suites_really_run_concurrently",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_hung_suite_is_terminated_and_fails_with_its_output",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_interpreter_env_applies_to_following_suites_only",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_the_named_interpreter_actually_runs_the_suite",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_invocations_are_refused_before_running_anything",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch",
+      "result": "PASSED"
+    }
+  ],
+  "actual_tests_run": 11,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "source_modules": {
+    "test": {
+      "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_run_concurrent_suites.py",
+      "sha256": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be"
+    },
+    "runner": {
+      "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\run_concurrent_suites.py",
+      "sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+  },
+  "runtime": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "isolated": 1,
+    "no_site": 1,
+    "private_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\pycache",
+    "sys_path": [
+      "C:\\Python314\\python314.zip",
+      "C:\\Python314\\DLLs",
+      "C:\\Python314\\Lib",
+      "C:\\Python314"
+    ]
+  },
+  "limits": "Original unittest methods/assertions unchanged; profile forwards no replacements. Child termination remains the runner direct-child contract, not a process-tree/native-rundown proof."
+}

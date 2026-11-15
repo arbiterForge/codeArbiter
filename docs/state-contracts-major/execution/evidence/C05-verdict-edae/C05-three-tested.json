@@ -1,0 +1,190 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "source_tree": "8c3ef1d80bbafe21f35db55bc53a76ab48d03bf8",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools actual committed C05 eleven-method Windows cohort with original real-child and interpreter-wrapper fixtures"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/run_concurrent_suites.py": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+    ".github/scripts/test_run_concurrent_suites.py": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "-X",
+        "pycache_prefix=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\pycache",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\observe-tests.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification",
+      "exit_code": 0,
+      "seconds": 4.222543700001552,
+      "selected_named_population": 11,
+      "selected_skipped": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/run-start.json",
+      "sha256": "6fbe816e25bf5878df1975945835bcfcfd46281d67b337034474f8f3acd610ba"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/run-result.json",
+      "sha256": "b066b6d7d1e8be1c89d2626d2dcfd4baae8d289639fbe68084231fd76392ab8d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/observations.json",
+      "sha256": "a0b22ee519ebb26d4954ed525e734b39fca5b04cf1ea461d3fa61d9bcef4a5b7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/original.stdout.log.base64.json",
+      "sha256": "2eab537dcee7a0e86548b36be898f397c5a6b0cfc233f6727a0149dca0e04ac7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/original.stderr.log",
+      "sha256": "f2534a5e0212361a22ba1685724cd2270952810785839be978868fc74a6f6278"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/selection.json",
+      "sha256": "53348242f8e4d6728d188042c72d8da2b64cccd855ef4e72fd7ebf80630f80d1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/execute.py",
+      "sha256": "0ba7c61eab5a7c82d6c2a74a6865a24765848f957d94c8e0b268dfefebe8cd20"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/observe-tests.py",
+      "sha256": "90edae4a32b7b6293640f56ac90201dc6c960992a99af5f594a79bf5a31ebd31"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:C05:01",
+    "disposition:transitions:C05:04",
+    "disposition:transitions:C05:05"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:C05:01",
+      "assertions": [
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_invocations_are_refused_before_running_anything",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_interpreter_env_applies_to_following_suites_only",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_the_named_interpreter_actually_runs_the_suite",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_suites_really_run_concurrently"
+      ],
+      "guard_effect_retry": "Unique/existing scripts and complete interpreter-env syntax; finite positive deadlines and all declared interpreter availability checked before pool/effects. Empty/duplicate/missing/dangling/unset arguments and6 deadline/unavailable vectors return2 before launch. Routing preserves declaration order; actual .cmd wrapper positive and ordinary negative plus real rendezvous establish selected bounded concurrent child launch. No automatic retry.",
+      "accepted_change": "Root repaired the previously missing timeout/interpreter preflight under Q01 before this execution. No claim that old baseline already enforced those checks."
+    },
+    {
+      "cell": "disposition:transitions:C05:04",
+      "assertions": [
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_suite_that_runs_no_tests_fails",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_zero_exit_without_a_unittest_verdict_fails",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_one_failing_suite_fails_the_run_and_is_named",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_every_passing_suite_is_reported_and_the_run_passes"
+      ],
+      "guard_effect_retry": "Actual child exit0 is insufficient. Seven real two-unittest-run children all exit0: pass/fail,fail/pass,empty/pass,pass/empty aggregate1; pass/pass,pass/skip,pass/expected aggregate0. Every positive count requires its following successful verdict. Real silent/empty/failing scripts refuse; no borrowed earlier OK or suite totals.",
+      "accepted_change": "Earlier OK plus last Ran no longer authorizes a later failed/empty run. Original failure-first,skip and expected-failure semantics retained."
+    },
+    {
+      "cell": "disposition:transitions:C05:05",
+      "assertions": [
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_every_passing_suite_is_reported_and_the_run_passes",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_one_failing_suite_fails_the_run_and_is_named",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_suites_really_run_concurrently",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_hung_suite_is_terminated_and_fails_with_its_output",
+        "test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary"
+      ],
+      "guard_effect_retry": "Actual good+skipped suites are grouped and2of2 returns0; good+bad still reports each result and1of2 returns1 with named failure. Rendezvous proves overlap and completion. Hung direct child is killed/reaped by existing owner, output retained, aggregate1. Collection precedes aggregate decision; explicit caller rerun only.",
+      "limits": "The timeout oracle covers only the source owner direct child. No process-tree, Job Object or native-rundown guarantee."
+    }
+  ],
+  "original_named_results": [
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_every_passing_suite_is_reported_and_the_run_passes",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_one_failing_suite_fails_the_run_and_is_named",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_suite_that_runs_no_tests_fails",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_zero_exit_without_a_unittest_verdict_fails",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_suites_really_run_concurrently",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_a_hung_suite_is_terminated_and_fails_with_its_output",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_interpreter_env_applies_to_following_suites_only",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_the_named_interpreter_actually_runs_the_suite",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_invocations_are_refused_before_running_anything",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch",
+      "result": "PASSED"
+    }
+  ],
+  "execution_context": {
+    "actual_start_git_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+    "actual_end_git_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+    "HEAD_index_source_runtime_stable": true,
+    "profile_before_imports": true,
+    "isolated_no_site_parent": true,
+    "runtime": {
+      "executable": "C:\\Python314\\python.exe",
+      "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+      "isolated": 1,
+      "no_site": 1,
+      "private_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\profile\\pycache",
+      "sys_path": [
+        "C:\\Python314\\python314.zip",
+        "C:\\Python314\\DLLs",
+        "C:\\Python314\\Lib",
+        "C:\\Python314"
+      ]
+    },
+    "source_import_boundary": "Explicit file spec for test; test imports runner via explicit HERE path. Stdlib-only remainder and private child fixture paths; no generic repository module-name lookup profile asserted."
+  },
+  "scope": "Finite actual admission/verdict/group-join software clauses01/04/05 only. Whole C05 machine, direct-child transition03 and prior source-preserved02 untouched.",
+  "limits": [
+    "Local11 existing named software methods only; no hosted run, installed package, provider/model, native/Go build, SDK/network/install or publication/task/machine qualification.",
+    "Exactly C05:01/04/05 proposed TESTED. MachineC05 remainsPLANNED; existing02/03 remainPRESERVED and unchanged. No suite-total or nearby-assertion promotion.",
+    "Parent Python is isolated/no-site and imports test+runner by literal file path. Tests and assertions are unchanged. Actual fixture children/wrapper run under original owner calls, credential-blind private cwd/profile; no full repository import namespace is inferred.",
+    "The actual .cmd wrapper/probe bytes, original child output and grouped returns are retained by read-only main/thread profiling before original teardown. No target function/process replacement by the evidence producer.",
+    "Hung fixture demonstrates direct-child timeout/termination only, never whole-tree containment or identity-safe OS rundown.",
+    "Runtime inventory is the existing bounded1905-file Python/Git support footprint captured beforeafter; no installation or global cache mutation. No performance budget/improvement claim from profiled elapsed time.",
+    "Prospective new metadata is not claimed committed. Root must perform final canonical copy/full P02 staged admission and commit gates."
+  ]
+}

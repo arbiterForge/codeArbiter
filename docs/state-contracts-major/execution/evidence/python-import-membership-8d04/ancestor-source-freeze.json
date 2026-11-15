@@ -1,0 +1,49 @@
+{
+  "format": "python-namespace-root-ancestor-test-freeze/1",
+  "context": "HEAD4a81 plus actual staged Python namespace implementation; physical and index bytes recorded explicitly, not relabeled committed4a81",
+  "preimages": {
+    "HEAD": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+    "epoch": "actual staged Python-profile implementation, not committed4a81 reader bytes",
+    "files": {
+      ".github/scripts/test_state_contracts_integration.py": {
+        "physical_sha256": "eba1fea02e93b90267aab1c0f23c35d3ff98044d2bd5c2a9c71e3ccbb1710698",
+        "HEAD_blob_sha256": "125a8930d86d0883b7687da0d2ed4ea757a69f30a1f91f4d098279d4fd5182e1",
+        "index_blob_sha256": "eba1fea02e93b90267aab1c0f23c35d3ff98044d2bd5c2a9c71e3ccbb1710698"
+      },
+      ".github/scripts/major_readiness.py": {
+        "physical_sha256": "5fd5d1763993d0aebea2dc8ee1980426f9bd3b2aaaa1ececa100fc677438994a",
+        "HEAD_blob_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+        "index_blob_sha256": "5fd5d1763993d0aebea2dc8ee1980426f9bd3b2aaaa1ececa100fc677438994a"
+      },
+      ".github/scripts/check_state_contracts_integration.py": {
+        "physical_sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+        "HEAD_blob_sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+        "index_blob_sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+      }
+    }
+  },
+  "apply_files": [
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+      "sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943"
+    }
+  ],
+  "new_name": "test_python_namespace_windows_scope_root_and_ancestor_collisions_refuse",
+  "all_existing_function_ASTs_unchanged": 61,
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-ancestor-test\\test-only.patch",
+    "sha256": "41b2a3b1d7042fa13db1687fbcdf6b8b47bf96b4e2b30a2d4fed24a39cf5422b",
+    "bytes": 3241
+  },
+  "actual_result": {
+    "named_tests": 1,
+    "assertion_failures": 6,
+    "seconds": 7.640685300000769,
+    "wrong_APPLICABLE": 2,
+    "missing_current_or_original_refusal": 4,
+    "setup_import_errors": 0,
+    "HEAD_index_source_stable": true
+  },
+  "scope": "Immutable Git root basename collision and ancestor collision, using existing fixture and index-only inert aliases. Valid original namespace controls passed; current UNKNOWN and strict/original refusal assertions genuinely failed. No production fix or broader runtime claim."
+}

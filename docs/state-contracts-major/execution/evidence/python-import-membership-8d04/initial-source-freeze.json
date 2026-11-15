@@ -1,0 +1,90 @@
+{
+  "format": "python-namespace-test-author-freeze/1",
+  "source_commit": "4a81d0f5bc91bf0a273ba12b004496a8f9d560af",
+  "preimages": {
+    ".github/scripts/test_state_contracts_integration.py": "125a8930d86d0883b7687da0d2ed4ea757a69f30a1f91f4d098279d4fd5182e1",
+    ".github/scripts/major_readiness.py": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+    ".github/scripts/check_state_contracts_integration.py": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309"
+  },
+  "apply_files": [
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-tests\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+      "sha256": "eba1fea02e93b90267aab1c0f23c35d3ff98044d2bd5c2a9c71e3ccbb1710698"
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-tests\\test-only.patch",
+    "sha256": "4543aef90eae45d82b3da65ca262212adf04cb5c875e2ccbce8c7490b9bdafb5"
+  },
+  "new_names": [
+    "test_python_namespace_tracks_shadow_forms_modes_and_removal_not_unread_bytes",
+    "test_python_namespace_inventory_failure_is_unknown_or_original_refusal",
+    "test_python_namespace_refuses_unowned_shapes_and_unsafe_windows_inventory",
+    "test_python_namespace_cannot_substitute_for_go_membership_and_legacy_host_stays"
+  ],
+  "original53functionASTs_unchanged": true,
+  "RED": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "-v",
+      "test_state_contracts_integration.IntegrationIntegrityTest.test_python_namespace_tracks_shadow_forms_modes_and_removal_not_unread_bytes",
+      "test_state_contracts_integration.IntegrationIntegrityTest.test_python_namespace_inventory_failure_is_unknown_or_original_refusal",
+      "test_state_contracts_integration.IntegrationIntegrityTest.test_python_namespace_refuses_unowned_shapes_and_unsafe_windows_inventory",
+      "test_state_contracts_integration.IntegrationIntegrityTest.test_python_namespace_cannot_substitute_for_go_membership_and_legacy_host_stays"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-namespace-tests",
+    "exit_code": 1,
+    "seconds": 10.602155300002778,
+    "named_methods": 4,
+    "unsupported_profile_errors": 9,
+    "setup_import_errors": 0,
+    "HEAD_index_sources_unchanged": true
+  },
+  "criteria_mapping": [
+    {
+      "name": "test_python_namespace_tracks_shadow_forms_modes_and_removal_not_unread_bytes",
+      "planned_oracles": [
+        "Valid original recursive namespace APPLICABLE",
+        "Unread existing-file bytes/size changes remain APPLICABLE",
+        "New .py/.pyd/.pyc/package, removal and mode change become STALE",
+        "Historical authentication retained; strict current authentication rejects drift"
+      ]
+    },
+    {
+      "name": "test_python_namespace_inventory_failure_is_unknown_or_original_refusal",
+      "planned_oracles": [
+        "Valid original namespace APPLICABLE",
+        "Current successful-history inventory failure UNKNOWN, not absent/pass",
+        "Failed original inventory refuses authentication"
+      ]
+    },
+    {
+      "name": "test_python_namespace_refuses_unowned_shapes_and_unsafe_windows_inventory",
+      "planned_oracles": [
+        "Valid original namespace APPLICABLE",
+        "Bad path/unowned directory/extra field/duplicate/order/forged digest refuse",
+        "Real immutable Git symlink/gitlink/case-collision/non-ASCII Windows inventory UNKNOWN; strict publication refuses"
+      ]
+    },
+    {
+      "name": "test_python_namespace_cannot_substitute_for_go_membership_and_legacy_host_stays",
+      "planned_oracles": [
+        "Existing Go membership + explicit Windows host absence remains APPLICABLE",
+        "Python namespace on core/artifacts authenticates history but cannot satisfy typed Go content membership; current UNKNOWN/strict refusal"
+      ]
+    }
+  ],
+  "digest_contract": "SHA256(b\"python-import-directory-v1\\n\" + compact UTF8 JSON sorted [relative_name,mode,kind]); recursive trees included, file bytes/sizes/object IDs excluded. Known inert fixture entries computed independently of any new production helper.",
+  "limits": [
+    "Tests only; expected RED is missing profile support, not a product fix or admitted proof.",
+    "After positive unsupported-profile refusal, later new-profile branches have not executed and are not claimed passed.",
+    "Legacy Go/host positive assertions ran before the fourth method reached Python-profile refusal.",
+    "No Gov/source/index/CI writes, production implementation, SDK/Pi/native/build/provider/install/network/API effects. Disposable private Git fixture commits only."
+  ]
+}

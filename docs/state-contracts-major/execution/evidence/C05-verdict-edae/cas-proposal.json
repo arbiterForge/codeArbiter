@@ -1,0 +1,152 @@
+{
+  "schema": "codearbiter-disposition-cas/1",
+  "candidate": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "transitions",
+      "id": "C05:01",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C05:04",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C05:05",
+      "old_row_sha256": "745dd638ab2108f50c667ab53c9e487731eb4a0c76d3ca80d8ad3b7f77401070",
+      "expected_before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+            "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+            "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+          }
+        ]
+      }
+    }
+  ],
+  "explicitly_unchanged": {
+    "machines:C05": {
+      "owner": "release-and-tooling",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "task_ids": [
+        "Q-01"
+      ],
+      "status": "PLANNED",
+      "evidence": []
+    },
+    "transitions:C05:02": {
+      "owner": "release-and-tooling",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "task_ids": [
+        "Q-01"
+      ],
+      "status": "PRESERVED",
+      "evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+          "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+          "sha256": "1c6366f58abc34737f3c1093657a0dc8012d8d833cbbb8de0e67b95e47c02651"
+        }
+      ],
+      "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Direct child stdout/stderr share an owned temporary log; after process completion bytes decode with replacement and return with actual code. Thread-pool results are collected before grouped output. Neither output-byte bound nor environment isolation is added by this source contract."
+    },
+    "transitions:C05:03": {
+      "owner": "release-and-tooling",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "task_ids": [
+        "Q-01"
+      ],
+      "status": "PRESERVED",
+      "evidence": [
+        {
+          "kind": "conformance-check",
+          "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+          "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+          "sha256": "1c6366f58abc34737f3c1093657a0dc8012d8d833cbbb8de0e67b95e47c02651"
+        }
+      ],
+      "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. TimeoutExpired kills only the direct Popen child, waits it and adds timeout diagnostic with code-1. No process-tree kill, descendant cleanup or bounded post-kill rundown is claimed; those explicit limits remain source-visible."
+    }
+  },
+  "limits": [
+    "Local11 existing named software methods only; no hosted run, installed package, provider/model, native/Go build, SDK/network/install or publication/task/machine qualification.",
+    "Exactly C05:01/04/05 proposed TESTED. MachineC05 remainsPLANNED; existing02/03 remainPRESERVED and unchanged. No suite-total or nearby-assertion promotion.",
+    "Parent Python is isolated/no-site and imports test+runner by literal file path. Tests and assertions are unchanged. Actual fixture children/wrapper run under original owner calls, credential-blind private cwd/profile; no full repository import namespace is inferred.",
+    "The actual .cmd wrapper/probe bytes, original child output and grouped returns are retained by read-only main/thread profiling before original teardown. No target function/process replacement by the evidence producer.",
+    "Hung fixture demonstrates direct-child timeout/termination only, never whole-tree containment or identity-safe OS rundown.",
+    "Runtime inventory is the existing bounded1905-file Python/Git support footprint captured beforeafter; no installation or global cache mutation. No performance budget/improvement claim from profiled elapsed time.",
+    "Prospective new metadata is not claimed committed. Root must perform final canonical copy/full P02 staged admission and commit gates."
+  ]
+}

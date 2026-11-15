@@ -1,0 +1,54 @@
+{
+  "format": "runtime-records-transport-prospective-strict-owner/1",
+  "candidate": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "owner_sha256": "5947a5ed0bd45dbe344c498f0b74ac6f6a0f4e8eba9fb3363e09c95227229595",
+  "results": [
+    {
+      "cell": "disposition:transitions:C05:01",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "all_frozen_owning_paths": [
+        ".github/scripts/run_concurrent_suites.py"
+      ],
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+          "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017",
+          "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C05:04",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "all_frozen_owning_paths": [
+        ".github/scripts/run_concurrent_suites.py"
+      ],
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+          "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017",
+          "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C05:05",
+      "state": "PASSED_PROSPECTIVE_STRICT_OWNER_VALIDATION",
+      "all_frozen_owning_paths": [
+        ".github/scripts/run_concurrent_suites.py"
+      ],
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json",
+          "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017",
+          "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+          "producer_class": "local-host"
+        }
+      ]
+    }
+  ],
+  "tests_rerun": 0,
+  "limits": "Unmodified maintained reader; original source/runtime/test epochs and scopes unchanged. Only retained future metadata/raw paths use explicit overlay. Root owns final staged full admission."
+}

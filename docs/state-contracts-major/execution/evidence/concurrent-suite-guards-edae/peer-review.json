@@ -1,0 +1,125 @@
+{
+  "schema": "bounded-independent-review/1",
+  "actor": "ci_repair_review",
+  "role": "Security and coverage",
+  "source_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "candidate": "candidate-v1:5a0d9e6edb306821709401f8cbb5e7c6859205218eb91f1e17c9e50d58bb3648",
+  "canonical_owner": "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\hooks\\security-pass.py:candidate_scan",
+  "patch_sha256": "23d71770380594201ed1ab16b3455a8767d16c2e8d452ea94cd931a85627d4cb",
+  "subjects": [
+    {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+      "bytes": 5039
+    },
+    {
+      "path": ".github/scripts/test_run_concurrent_suites.py",
+      "sha256": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be",
+      "bytes": 11451
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "4948022c70933a801a774b0c6b7742b000ebe3ac8aad18399e8061ffc0c6972c",
+      "bytes": 215542
+    }
+  ],
+  "gate_status": "PASS",
+  "findings": [],
+  "severity_counts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "blockers": 0,
+  "scope": "Final coherent three-path C05:01 and C05:04 increment only; earlier verdict pairing conclusions reused, new preflight reviewed.",
+  "affected_preflight_analysis": [
+    "math.isfinite plus positive comparison rejects NaN, both infinities, zero and negative deadlines before pool construction.",
+    "Availability is checked for every selected interpreter as a complete preflight before any ThreadPoolExecutor work; a missing interpreter causes return2 and no run.",
+    "parse remains the public pure routing owner; run, problems and child execution/environment/timeouts/cleanup remain unchanged relative to the previous scoped verdict review.",
+    "Inert negative interception explicitly records failure text and actual boundary invocation count; it never supplies passing test output or launches invalid-timeout children.",
+    "One accurate current changelog note covers both real repairs without version/publication changes."
+  ],
+  "retained_evidence": {
+    "verdict_original_RED": "Three actual assertion failures, one method/seven real-child cases0.450s; see prior receipt.",
+    "preflight_original_RED": "Six subcases all failed desired (2,0), actual (1,1); no real invalid child launched.",
+    "final_wrapped_GREEN": "Actual wrapper1of1PASS with underlying full11 testsPASS2.012s and all six preflight observations (2,0).",
+    "AST_preservation": {
+      "all_prior_14_class_methods": true,
+      "old_9_tests": true,
+      "prior_verdict_regression": true,
+      "parse_run_problems_unchanged_from_prior_review": true
+    },
+    "reviewer_test_reruns": 0
+  },
+  "coverage": {
+    "status": "PASS for scoped direct behavioral obligations; no-tooling exemption",
+    "surface": ".github/scripts/*.py",
+    "metrics": "Lines/branches/statements unmeasured; no numerical percentage claimed",
+    "exact_quote": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation.",
+    "source": "CTX-TECH-STACK#FACT-005/NOTE-005; installed maturity-coverage.md",
+    "critical_path": "Genuine original-source RED for each changed safeguard and retained outcome GREEN with accepted valid cases."
+  },
+  "security": {
+    "complete_policy_records": 32,
+    "cached_policy_unchanged_verified": true,
+    "operative_configuration_and_stage": "HTML context, stage2; operative security shim read",
+    "new_dependency_credentials_network_privilege_or_producer_eligibility": false,
+    "canonical_scan_crypto": false,
+    "canonical_scan_findings": []
+  },
+  "context": {
+    "fresh_input_consumed": true,
+    "admission": "ready",
+    "delivery": "deliver",
+    "optional_map_unavailable": "Advisory; no named critical source missing"
+  },
+  "receipts": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-verdict-peer-input.txt",
+      "sha256": "c3fab3f68b492618fa92d7ba0d0b6e70f7fc534678ab735964d6648da7da5b36"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-verdict-peer-context.json",
+      "sha256": "dda43bd3e8f0922dd46ec33bf73315be107b27a5d6f81a76f96dc6deab3eb5b0"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-final-wrapped-green.log",
+      "sha256": "2b660a02a2afa3edf4bf07941925e47217470e57cc5716bfeaa878ac81cb53db"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+      "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+      "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-independent-review-fipihmvv\\review.json",
+      "sha256": "8f8ece8631190dcc4e8362880c8f616dd9f847718fa1f7fedcf1fe47cb2ee9b8"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-independent-review-fipihmvv\\canonical-binding-addendum.json",
+      "sha256": "ef6c6f34885f6aaf1e42b928f373e10a598340bca8197cd10417a00b4f785df4"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\delivery.json",
+      "sha256": "a9589d2ac9bf54e64d5f49082fffe647423e370f4d6204d0e514b548a913e6b8"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\red-result.json",
+      "sha256": "d43e8cf7657c8980b062bce182aa41b63ee40c7eceff0fcffa9c28739967ce6b"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\original-red.stderr.log",
+      "sha256": "954b323ab52c3524277d3ccce21af5498944cfd858d969e7c4dd1234e7baa313"
+    }
+  ],
+  "limits": [
+    "Scope excludes SDK/reader changes; previous independent reviews reused, no repeated fleet.",
+    "No hosted exact-head CI, merge, publication, whole-program qualification or process-tree containment claim.",
+    "No Gov/index/Git/provider writes and no new tests executed by reviewer."
+  ],
+  "utc": "2026-11-15T15:23:19.100451+00:00"
+}
