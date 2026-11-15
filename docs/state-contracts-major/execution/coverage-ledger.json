@@ -21210,8 +21210,16 @@
     "HW-05",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/tested.json",
+     "sha256": "06fcb6afc4e948176fe56bc081dbd640afc4bc58207d33a1482bb12a1acef77e"
+    }
+   ],
+   "candidate_contract_note": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged."
   },
   "hooks:statusline-wiring:04": {
    "owner": "hooks-workflows",

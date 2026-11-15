@@ -1,0 +1,46 @@
+{
+  "run": 10,
+  "outcomes": [
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+      "outcome": "PASS"
+    }
+  ],
+  "success": true
+}
