@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "9542cd9b9e931647bbf4d7fd9693be3e0e6e2b8b",
+  "head": "553d07fefa2195ee1f137be2b452981a330ce54f",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T00:37:43.213996+00:00",
+  "recorded_at": "2026-11-15T01:10:03.054864+00:00",
   "active_writer": {
     "agent": "codex (integrator); Claude lanes handed over by B because Claude exhausted tokens",
     "since": "2026-11-13",
@@ -3817,12 +3817,12 @@
     }
   ],
   "next_actions": [
-    "Push the final coherent PR1108 source/evidence batch, observe its exact-head hosted gates, and merge into major/state-contracts under existing authority after required checks pass and named remote auto-deletion is authorized.",
+    "Commit the bounded CDB format repair and this coherent source-accounting batch, push once to1108, and observe its exact-head hosted SDK control and required gates before authorized integration.",
     "Observe the next actual trusted integration push promptly. Normal bbba run43649759117 failed before installed reports executed; earlier startup status is superseded, and no installed qualification is inferred.",
     "Continue remaining native and baseline qualification from authentic named observations and complete current dependency closures. Preserve stale original facts as history; no blanket source rebinding.",
     "Continue independent accepted work while the Pi HTTP policy choice and actual user/model/parent UI/lifecycle qualification remain open. Keep1098 draft and held from main; publication remains unauthorized."
   ],
-  "delivery_state": "CHILD1107_MERGED_NORMAL_CI_FAILED_CHILD1108_FINAL_SOURCE_COMMITTED_CI_PENDING",
+  "delivery_state": "CHILD1108_SDK_FORMAT_CONTROL_FAILED_BOUNDED_FIX_PREPARED",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4031,6 +4031,21 @@
         "Fixed CDB SDK is absent locally; actual native-stack capture remains pending on a hosted runner where the SDK is present.",
         "Five seconds bounds polling/output/waits; synchronous OS/filesystem calls are not universally cancellable.",
         "No Pi/Node root-cause repair, installed-cohort, actual user/model/parent UI, whole-task or publication completion."
+      ]
+    },
+    {
+      "id": "553d-sdk-control-failure-and-remaining-source-clauses",
+      "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "facts": [
+        "Exact553d Windows Pi Adapter contract run43659807673/job132646451284 failed only the new owned-Node SDK control: debugger status unrecognized rather than captured. Original rpc and rpc-observed partitions passed. No Pi application failure or successful capture inferred.",
+        "Confirmed diagnostic source gap: parser required frame indices while fixed kL command did not request them. Microsoft documents n for frame numbering. A bounded two-file Temp successor adds knL and safe numbered/unnumbered parsing; two regression failures preceded four pure passing controls. Strict real SDK captured/frames/tool hashes/Node survival assertions remain unchanged. Independent affected-scope security/coverage review PASS; actual SDK capture still pending.",
+        "Admit27 further source-only PRESERVED dispositions: native N01/N02/N36/N37/N01:02 plus16 packaging transitions and6 machines. Complete281 current inputs and seven proofs join actual immutable553d source and physical files; previous runtime/installed facts and all unselected rows remain unchanged.",
+        "Packaging S72 source aggregate reuses its already admitted candidate-preflight correction, with live_qualified=false and no authority created. DIST-M02/HW21/BUILD-G01/BUILD-G02 accepted semantics are explicit; no new policy decision or runtime promotion."
+      ],
+      "limits": [
+        "The source-format gap is confirmed from code/docs; actual raw CDB text was intentionally not retained, so its full observed format is not claimed.",
+        "No new runtime/native/Go/provider/build/installed or task qualification from these27 source-only rows. Native N03/N06/N27/N10 mismatch holds and the Pi HTTP decision remain separate.",
+        "Keep1098 draft and held from main; no publication authority."
       ]
     }
   ],

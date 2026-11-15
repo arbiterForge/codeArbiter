@@ -1728,8 +1728,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-next5-553d07fe/preserved.json",
+     "sha256": "fc93f73059f2a5551fc6b6a85b1b4a9626819e831fb17da36a5ef6cb8616f173"
+    }
+   ],
+   "candidate_contract_note": "All finite frozen guard/effect/retry clauses inspected at 553d07fefa2195ee1f137be2b452981a330ce54f with complete literal/physical Go closure and retained original observations. Source conformance only; no new/current runtime, task or installed qualification."
   },
   "N02": {
    "owner": "native",
@@ -1738,8 +1746,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-next5-553d07fe/preserved.json",
+     "sha256": "fc93f73059f2a5551fc6b6a85b1b4a9626819e831fb17da36a5ef6cb8616f173"
+    }
+   ],
+   "candidate_contract_note": "All finite frozen guard/effect/retry clauses inspected at 553d07fefa2195ee1f137be2b452981a330ce54f with complete literal/physical Go closure and retained original observations. Source conformance only; no new/current runtime, task or installed qualification."
   },
   "N03": {
    "owner": "native",
@@ -2795,8 +2811,16 @@
     "NT-06",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-next5-553d07fe/preserved.json",
+     "sha256": "fc93f73059f2a5551fc6b6a85b1b4a9626819e831fb17da36a5ef6cb8616f173"
+    }
+   ],
+   "candidate_contract_note": "All finite frozen guard/effect/retry clauses inspected at 553d07fefa2195ee1f137be2b452981a330ce54f with complete literal/physical Go closure and retained original observations. Source conformance only; no new/current runtime, task or installed qualification."
   },
   "N37": {
    "owner": "native",
@@ -2806,8 +2830,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-next5-553d07fe/preserved.json",
+     "sha256": "fc93f73059f2a5551fc6b6a85b1b4a9626819e831fb17da36a5ef6cb8616f173"
+    }
+   ],
+   "candidate_contract_note": "All finite frozen guard/effect/retry clauses inspected at 553d07fefa2195ee1f137be2b452981a330ce54f with complete literal/physical Go closure and retained original observations. Source conformance only; no new/current runtime, task or installed qualification."
   },
   "N38": {
    "owner": "native",
@@ -4785,8 +4817,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S72": {
    "owner": "packaging",
@@ -4797,8 +4837,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+     "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S73": {
    "owner": "packaging",
@@ -4807,8 +4855,16 @@
     "DIST-M02",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+     "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S74": {
    "owner": "packaging",
@@ -4840,8 +4896,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+     "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S76": {
    "owner": "packaging",
@@ -4850,8 +4914,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/sync-preserved.json",
+     "sha256": "d17ed13f530d1ddecc6c53ff28b7fe835b13db39ef098e5871f4d5eb39667d6d"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77": {
    "owner": "packaging",
@@ -4863,8 +4935,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "C01": {
    "owner": "release-and-tooling",
@@ -8828,8 +8908,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-next5-553d07fe/preserved.json",
+     "sha256": "fc93f73059f2a5551fc6b6a85b1b4a9626819e831fb17da36a5ef6cb8616f173"
+    }
+   ],
+   "candidate_contract_note": "All finite frozen guard/effect/retry clauses inspected at 553d07fefa2195ee1f137be2b452981a330ce54f with complete literal/physical Go closure and retained original observations. Source conformance only; no new/current runtime, task or installed qualification."
   },
   "N01:03": {
    "owner": "native",
@@ -33379,8 +33467,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S71:02": {
    "owner": "packaging",
@@ -33391,8 +33487,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S71:03": {
    "owner": "packaging",
@@ -33403,8 +33507,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S71:04": {
    "owner": "packaging",
@@ -33415,8 +33527,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S71:05": {
    "owner": "packaging",
@@ -33467,8 +33587,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+     "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S72:01": {
    "owner": "packaging",
@@ -33599,8 +33727,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+     "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S73:01": {
    "owner": "packaging",
@@ -33978,8 +34114,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+     "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S75:02": {
    "owner": "packaging",
@@ -34325,8 +34469,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:02": {
    "owner": "packaging",
@@ -34338,8 +34490,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:03": {
    "owner": "packaging",
@@ -34351,8 +34511,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:04": {
    "owner": "packaging",
@@ -34364,8 +34532,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:05": {
    "owner": "packaging",
@@ -34377,8 +34553,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:06": {
    "owner": "packaging",
@@ -34390,8 +34574,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:07": {
    "owner": "packaging",
@@ -34403,8 +34595,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:08": {
    "owner": "packaging",
@@ -34416,8 +34616,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "S77:09": {
    "owner": "packaging",
@@ -34429,8 +34637,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+     "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+    }
+   ],
+   "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
   },
   "C01:01": {
    "owner": "release-and-tooling",

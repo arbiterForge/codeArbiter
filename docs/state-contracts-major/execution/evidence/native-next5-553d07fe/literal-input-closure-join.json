@@ -1,0 +1,137 @@
+{
+  "schema": "codearbiter.literal-native-closure-join/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "retained_inventory": {
+    "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/module-and-test-addition-join.json",
+    "sha256": "bf73fb17d6c2906de1e2de942d05f97f28ee9043e6c1f58d2302b428a2448233"
+  },
+  "all245_literal_inputs_equal_retained_c2_inventory": true,
+  "all245_current_physical_inputs_equal_literal_source": true,
+  "complete_membership": {
+    "profile": "go-module-v1",
+    "root": "core/artifacts",
+    "path_order": "windows",
+    "sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+    "owner_path": ".github/scripts/_contextverificationlib.py",
+    "owner_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "calculation": "Exactunchangedowninghash_go_module_entries function AST, pure dataonly; immutable245GitentriesorderedPureWindowsPath. No Go compilation/execution or profilechange."
+  },
+  "module_counts": {
+    "all": 245,
+    "production_Go": 95,
+    "test_Go": 126,
+    "other": 24
+  },
+  "original_runtime_source": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "original_runtime_source_changed_module_paths": [
+    "core/artifacts/internal/operations/intentional_change_test.go"
+  ],
+  "change_is_retained_test_only_addition": {
+    "path": "core/artifacts/internal/operations/intentional_change_test.go",
+    "old_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b",
+    "current_sha256": "03885f8456f1a9b7e9db62fe70f880169a5fa362e05b6ba3bf45f30e1fe27061",
+    "added_imports": [
+      "maps",
+      "github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical",
+      "github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+    ],
+    "added_function_declarations": [
+      "receiptedReconcileFixture",
+      "receiptedReconcileSource",
+      "receiptedReconcileObservation",
+      "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence",
+      "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites"
+    ],
+    "all_original5_function_bodies_exactly_retained": [
+      "TestNT09TaskBlockPreservesDependentRecordedProgress",
+      "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+      "TestNT09LegacyStaleIsUnresolvedAndRetainsRawReason",
+      "TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+      "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel"
+    ],
+    "reconstructed_old_file_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b",
+    "reconstruction_equals_entire_old_file": true,
+    "no_new_global_init_or_variables": "Onlythethreeimports+contiguousfivefunctiondeclarationsareadded; everyotherbyte isold. No productionor existinghelper/testdeclaration changed."
+  },
+  "complete_bounded_owner_comparison_to_frozen_baseline": {
+    "core/artifacts/cmd/ca-artifact/main.go": {
+      "baseline_sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb",
+      "current_sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+    },
+    "core/artifacts/internal/authority/receipt.go": {
+      "baseline_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+      "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694"
+    },
+    "core/artifacts/internal/authority/reuse.go": {
+      "baseline_sha256": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5",
+      "current_sha256": "15df76cf2d0c7b5c02037d92fa04b66983a939280fb28ac5507c207eef4306c5"
+    },
+    "core/artifacts/internal/canonical/json.go": {
+      "baseline_sha256": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+      "current_sha256": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149"
+    },
+    "core/artifacts/internal/evidence/completion.go": {
+      "baseline_sha256": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8",
+      "current_sha256": "6f29e201a3060445bb635bf143bd1739f52b9855f4216b780e4f5fbc32d584f8"
+    },
+    "core/artifacts/internal/evidence/completion_workspace.go": {
+      "baseline_sha256": "ecbbab90eee7ce353c49de74d754b64f0dc5a3d36f4504bb51bcb3edd8919261",
+      "current_sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05"
+    },
+    "core/artifacts/internal/evidence/snapshot.go": {
+      "baseline_sha256": "872884e38974bb52b1726a9876d5f5320bfa27c364753e69e2f36b85e85e35cf",
+      "current_sha256": "57ee8711c04d053cdc8ced739c51b6848e4b87a5a61d5c9f03a985998b8748d7"
+    },
+    "core/artifacts/internal/fault/fault.go": {
+      "baseline_sha256": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452",
+      "current_sha256": "3c427ddcd4b6a5908e2af79d2921e2992191fa8ad27e26149fcc892fc9cd4452"
+    },
+    "core/artifacts/internal/observation/contract.go": {
+      "baseline_sha256": "20becd2c7475d016bcaca6870fa223e42fd4f9223160ca2e65baf3811b851b83",
+      "current_sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca"
+    },
+    "core/artifacts/internal/operations/engine.go": {
+      "baseline_sha256": "8bd1f8d22787cb3ef52f46380aa16ad8f17ff5d671bb80594cb5ce9487bae2b3",
+      "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+    },
+    "core/artifacts/internal/operations/protocol.go": {
+      "baseline_sha256": "dbc480ec22c9a34ab939e3c007c65c9f07a5e91c1facb6b85eafa1737a292005",
+      "current_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b"
+    },
+    "core/artifacts/internal/store/backends.go": {
+      "baseline_sha256": null,
+      "current_sha256": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6"
+    },
+    "core/artifacts/internal/store/fs_linux.go": {
+      "baseline_sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+      "current_sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf"
+    },
+    "core/artifacts/internal/store/fs_lock_darwin.go": {
+      "baseline_sha256": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+      "current_sha256": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56"
+    },
+    "core/artifacts/internal/store/fs_lock_windows.go": {
+      "baseline_sha256": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+      "current_sha256": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3"
+    },
+    "core/artifacts/internal/store/fs_other.go": {
+      "baseline_sha256": "d7a9d8722b9e05fc686f7c09cbb106b986b699cba18b02f820d9c667828af6bb",
+      "current_sha256": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687"
+    },
+    "core/artifacts/internal/store/fs_portable.go": {
+      "baseline_sha256": "1ed5f1fa32c5db4c6e3f6fb2901cd6df95005dada0ebc95c74775920b7c9c1b2",
+      "current_sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+    },
+    "core/artifacts/internal/store/memo.go": {
+      "baseline_sha256": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2",
+      "current_sha256": "4e9200cf7afbfb4a16920083c6ce8281f47142d8e09653f946b57ed4f38a28a2"
+    },
+    "core/artifacts/internal/store/transaction.go": {
+      "baseline_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+      "current_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef"
+    }
+  },
+  "bounded_N01_delta": "diff --git a/core/artifacts/internal/operations/engine.go b/core/artifacts/internal/operations/engine.go\nindex 391c7c28..a8551a09 100644\n--- a/core/artifacts/internal/operations/engine.go\n+++ b/core/artifacts/internal/operations/engine.go\n@@ -53,7 +53,9 @@ func sharedObservation(op string, r object) bool {\n // initStore creates the lock metadata this platform's reads require through\n // the ordinary writer lock, the same path a first mutation takes, and writes\n // nothing else. Linux locks the repository directory and reports present.\n-// Reads never initialize the store; a host calls this explicitly instead.\n+// Windows observations require existing metadata and a host calls this\n+// explicitly there. Darwin's ordinary shared-lock path may initialize its lock\n+// metadata; Linux needs none. Neither case changes canonical artifact content.\n func initStore(f *store.FS) (any, error) {\n \tpresent, e := f.LockMetadataPresent()\n \tif e != nil {\n@@ -85,7 +87,7 @@ func Run(root, op string, input object) (any, error) {\n \t\t_, contextContract := kind.Lookup(\"context\")\n \t\tcontextCodec, contextCodecFound := kind.Codecs()[\"context\"]\n \t\tcontextRegistered := contextContract && contextCodecFound && contextCodec.Optional && contextCodec.Representation == kind.Markdown\n-\t\treturn object{\"binary\": \"ca-artifact\", \"version\": \"0.1.0\", \"protocol\": Protocol, \"schema_version\": model.SchemaVersion, \"work_coordination_schema_version\": model.WorkCoordinationVersion, \"renderer\": render.Version, \"operations\": Names(), \"storage_backend\": store.Backend, \"repository_operations_available\": store.NativeWrites, \"platform\": runtime.GOOS + \"/\" + runtime.GOARCH, \"public_registrations_added\": int64(0), \"host_default_enabled\": true, \"repository_context\": object{\"source_present\": true, \"kind_registered\": contextRegistered, \"host_default_enabled\": true, \"qualification\": \"native-tested-package\", \"permission_model\": \"host-owned\", \"mutation_available\": store.NativeWrites && contextRegistered}, \"runtime_downloads\": false, \"threat_model\": \"cooperating workflow; not a sandbox against unrestricted same-user writes\"}, nil\n+\t\treturn object{\"binary\": \"ca-artifact\", \"version\": \"0.1.0\", \"protocol\": Protocol, \"schema_version\": model.SchemaVersion, \"work_coordination_schema_version\": model.WorkCoordinationVersion, \"retirement_schema_version\": model.RetirementVersion, \"progress_schema_version\": model.ProgressVersion, \"progress_projection_version\": \"recorded-progress/1\", \"renderer\": render.Version, \"operations\": Names(), \"operation_contract\": operationContract(), \"storage_backend\": store.Backend, \"repository_operations_available\": store.NativeWrites, \"platform\": runtime.GOOS + \"/\" + runtime.GOARCH, \"public_registrations_added\": int64(0), \"host_default_enabled\": true, \"repository_context\": object{\"source_present\": true, \"kind_registered\": contextRegistered, \"host_default_enabled\": true, \"qualification\": \"native-tested-package\", \"permission_model\": \"host-owned\", \"mutation_available\": store.NativeWrites && contextRegistered}, \"runtime_downloads\": false, \"threat_model\": \"cooperating workflow; not a sandbox against unrestricted same-user writes\"}, nil\n \t}\n \tif op == \"schema\" {\n \t\tswitch model.S(r[\"name\"]) {\ndiff --git a/core/artifacts/internal/store/fs_other.go b/core/artifacts/internal/store/fs_other.go\nindex 965be659..40f1f8b1 100644\n--- a/core/artifacts/internal/store/fs_other.go\n+++ b/core/artifacts/internal/store/fs_other.go\n@@ -24,7 +24,7 @@ const NativeWrites = false\n var Backend = \"unsupported-\" + runtime.GOOS\n \n func unsupported() error {\n-\treturn fault.New(\"UNSUPPORTED_PLATFORM\", \"repository operations require the tested Linux openat/flock storage backend; native Windows/macOS promotion is pending\")\n+\treturn fault.New(\"UNSUPPORTED_PLATFORM\", unsupportedPlatformMessage(runtime.GOOS))\n }\n func Open(root string) (*FS, error)                    { return nil, unsupported() }\n func (f *FS) Close() error                             { return nil }\ndiff --git a/core/artifacts/internal/store/fs_portable.go b/core/artifacts/internal/store/fs_portable.go\nindex 01cc3bea..1837a8ce 100644\n--- a/core/artifacts/internal/store/fs_portable.go\n+++ b/core/artifacts/internal/store/fs_portable.go\n@@ -40,10 +40,7 @@ type FS struct {\n \n const NativeWrites = true\n \n-var Backend = map[string]string{\n-\t\"darwin\":  \"darwin-osroot-flock\",\n-\t\"windows\": \"windows-osroot-lockfileex\",\n-}[runtime.GOOS]\n+var Backend = SupportedBackends[runtime.GOOS]\n \n func Open(root string) (*FS, error) {\n \ta, e := filepath.Abs(root)\n",
+  "delta_assessment": "N01 controlling admission/open/locking/replay/pending/cleanup code is unchanged; capabilities adds owned metadata, platform comments clarify real effects, portable backend lookup moves to declared table, unsupported platform diagnostic changes only prose. No blanket payload equality claim.",
+  "limits": "Static literal/physical source join. Original runtime events remain at their original epoch; no test re-execution or current runtime qualification follows from unchanged inputs."
+}
