@@ -1,0 +1,208 @@
+{
+  "schema": "codearbiter-reader-current-cas/1",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "actual_execution_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "findings",
+      "id": "C-F08",
+      "old_row_sha256": "80b4693d8a026eb0e2a8fc0cb53dae27a90e5860cf71260c0ad8fee66e1d5e04",
+      "proposed_row": {
+        "owner": null,
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "C36:added-prefetched-completion",
+      "old_row_sha256": "fbcf23af9c9a143f074eb9605a4bc62f7a65e287bcd4f5e878b905d977494870",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "C36:added-stdin-eof",
+      "old_row_sha256": "fbcf23af9c9a143f074eb9605a4bc62f7a65e287bcd4f5e878b905d977494870",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "C36:added-input-once",
+      "old_row_sha256": "fbcf23af9c9a143f074eb9605a4bc62f7a65e287bcd4f5e878b905d977494870",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "C36:added-input-timeout",
+      "old_row_sha256": "fbcf23af9c9a143f074eb9605a4bc62f7a65e287bcd4f5e878b905d977494870",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    },
+    {
+      "table": "added_transitions",
+      "id": "C36:added-cleanup-denied",
+      "old_row_sha256": "fbcf23af9c9a143f074eb9605a4bc62f7a65e287bcd4f5e878b905d977494870",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07"
+        ],
+        "treatment": "INTRODUCED_VERIFIER_CAPTURE_STATE",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+            "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b"
+          }
+        ]
+      }
+    }
+  ],
+  "counts": {
+    "existing_TESTED_successors": 6,
+    "new_rows": 0,
+    "new_status_promotions": 0
+  },
+  "metadata_ref_commit": null,
+  "unchanged_holds": {
+    "C36:02": "Full frozen clause includes pinned esbuild/Node, temporary production JS bundle, wrapperCount4 and startup measurement. Current selected reader controls do not observe those; no build allowed.",
+    "C36:03": "Full frozen clause requires100 timings, exact105 bridge/native calls and metric output. Reader completion bytes alone are insufficient; original warm historical mention lacked captured full closure. No new measurement or upgrade claimed."
+  },
+  "limits": [
+    "14 exact existing fixture methods; neither full23 module nor warm100 benchmark executed.",
+    "No Pi/Codex CLI, Node, esbuild, native/Go, provider, network, install, API or production build.",
+    "Cleanup statuses are the existing Windows process-group/taskkill owner, not Job Object/native rundown guarantees.",
+    "The generic grandchild test was excluded because its untyped Windows liveness helper is not needed or adopted as a stronger oracle.",
+    "Actual execution HEAD is108dc767 metadata successor, while all5 executable inputs literally equal2df/108dc/physical before/after. No execution epoch is silently relabeled.",
+    "The deterministic denied-signal control is not a real POSIX platform qualification.",
+    "No stronger identity-safe tree/native-rundown guarantee or whole R-07 completion is claimed."
+  ]
+}
