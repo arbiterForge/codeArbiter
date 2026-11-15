@@ -615,7 +615,7 @@ def _diagnostic_code(error):
                       "artifact ID/name/digest not finalized by claimed upload job"):
             return "UPLOAD_ATTRIBUTION_REJECTED"
         elif upload:
-            if text == "readiness observation failed: gh":
+            if text in ("readiness observation failed: gh", "readiness job log HTTP observation failed"):
                 return "UPLOAD_LOG_COMMAND_FAILED"
             if text in ("readiness observation timed out; containment=exited",
                         "readiness observation timed out; containment=terminated",

@@ -524,7 +524,7 @@ class UploadHTTPReasonProjectionTest(unittest.TestCase):
     def render(self, detail):
         from major_readiness import ReadinessError
         error = ReadinessError("upload attribution unavailable or malformed")
-        cause = ReadinessError("readiness observation failed: gh")
+        cause = ReadinessError("readiness job log HTTP observation failed")
         cause.command_diagnostic = detail
         error.__cause__ = cause
         return ColdCliDiagnosticTest().render_cli_error(error)
