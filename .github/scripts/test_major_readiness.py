@@ -948,5 +948,257 @@ class UploadLogDiagnosticTest(unittest.TestCase):
         self.assertIsNone(getattr(caught.exception, "command_diagnostic", None))
         self.assertNotIn("unit-private-diagnostic", repr(caught.exception))
 
+
+
+class UploadLogHTTPTransportTest(unittest.TestCase):
+    TOKEN_LABEL = "unit-environment-credential-label"
+
+    def setUp(self):
+        UploadAttributionTest.setUp(self)
+
+    def observe_upload(self, *, token=True, worker_output=None, worker_exit=0, worker_stderr=b"", artifact=None):
+        import os
+        selected = []
+        def launch(argv, **kwargs):
+            process = mock.Mock()
+            is_http = argv[0] == sys.executable
+            process.returncode = worker_exit if is_http else 1
+            process.communicate.return_value = ((self.logs if worker_output is None else worker_output), worker_stderr) if is_http else (b"", b"unit opaque gh refusal")
+            selected.append((list(argv), kwargs, process))
+            return process
+        environment = {key:value for key,value in os.environ.items()
+                       if key.upper() in {"SYSTEMROOT","WINDIR","TEMP","TMP"}}
+        environment["UNIT_OTHER_CREDENTIAL"] = "unit-unrelated-do-not-inherit"
+        if token:
+            environment["GH_TOKEN"] = self.TOKEN_LABEL
+        error = None
+        with mock.patch.dict(os.environ, environment, clear=True), mock.patch.object(owner, "start", side_effect=launch):
+            try:
+                owner.validate_upload(self.job, artifact or self.artifact, "Upload major qualification report")
+            except owner.ReadinessError as caught:
+                error = caught
+        return selected, error
+
+    def assert_http_worker(self, selected):
+        self.assertEqual(len(selected), 1, "one transport attempt, no failure fallback")
+        argv, kwargs, process = selected[0]
+        self.assertEqual(argv[:5], [sys.executable, "-I", "-S", "-B", "-c"], "environment-token job log must select the isolated HTTP worker")
+        self.assertGreaterEqual(len(argv), 7)
+        self.assertNotIn(self.TOKEN_LABEL, " ".join(argv))
+        self.assertEqual(kwargs.get("env", {}).get("GH_TOKEN"), self.TOKEN_LABEL)
+        self.assertNotIn("GITHUB_TOKEN", kwargs.get("env", {}))
+        self.assertNotIn("UNIT_OTHER_CREDENTIAL", kwargs.get("env", {}))
+        import os
+        worker_environment={key.upper():value for key,value in kwargs.get("env",{}).items()}
+        self.assertLessEqual(set(worker_environment),{"GH_TOKEN","SYSTEMROOT","WINDIR","TEMP","TMP"})
+        for key,value in os.environ.items():
+            if key.upper() in {"SYSTEMROOT","WINDIR","TEMP","TMP"}:
+                self.assertEqual(worker_environment.get(key.upper()),value)
+        process.communicate.assert_called_once_with(timeout=120)
+        return argv
+
+    def test_environment_token_reads_original_attribution_without_opaque_gh_client(self):
+        selected, error = self.observe_upload()
+        self.assertIsNone(error, "original valid uploader log must remain readable through environment-token HTTP even when inert gh refuses")
+        self.assert_http_worker(selected)
+
+    def test_no_token_selects_existing_gh_once_before_any_http_attempt(self):
+        selected, error = self.observe_upload(token=False)
+        self.assertIsInstance(error, owner.ReadinessError)
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0][0], ["gh", "api", "repos/arbiterForge/codeArbiter/actions/jobs/20/logs"])
+        selected[0][2].communicate.assert_called_once_with(timeout=120)
+
+    def test_http_failure_keeps_actual_exit_hash_status_and_reason_without_retry(self):
+        import hashlib
+        stderr = b'{"transport_reason":"http_error","http_status":403}\n'
+        selected, error = self.observe_upload(worker_exit=9, worker_stderr=stderr)
+        self.assertIsInstance(error, owner.ReadinessError)
+        self.assert_http_worker(selected)
+        detail = getattr(error.__cause__, "command_diagnostic", None)
+        self.assertEqual(detail, {"operation":"github-actions-job-log", "code":"UPLOAD_LOG_COMMAND_FAILED", "exit_code":9,
+            "http_status":403, "stderr_sha256":hashlib.sha256(stderr).hexdigest(), "transport_reason":"http_error"})
+        self.assertEqual(str(error), "upload attribution unavailable or malformed")
+        self.assertNotIn(self.TOKEN_LABEL, repr(error))
+
+    def test_malformed_worker_error_protocol_is_worker_failed_without_reflected_values(self):
+        import hashlib
+        for stderr in (b"unit-private-malformed", b'{"transport_reason":"http_error","http_status":403,"extra":"unit-private"}',
+                       b'{"transport_reason":"unit-private","http_status":403}', b'{"transport_reason":"http_error","http_status":true}'):
+            with self.subTest(stderr_digest=hashlib.sha256(stderr).hexdigest()):
+                selected,error=self.observe_upload(worker_exit=9,worker_stderr=stderr)
+                self.assert_http_worker(selected)
+                detail=getattr(error.__cause__,"command_diagnostic",None)
+                self.assertIs(type(detail),dict)
+                self.assertEqual(detail.get("transport_reason"),"worker_failed")
+                self.assertEqual(detail.get("http_status"),None)
+                self.assertEqual(detail.get("exit_code"),9)
+                self.assertEqual(detail.get("stderr_sha256"),hashlib.sha256(stderr).hexdigest())
+                self.assertNotIn("unit-private",json.dumps(detail))
+
+    def test_http_worker_keeps_120s_timeout_and_original_tree_cleanup(self):
+        import os
+        process=mock.Mock(returncode=None)
+        process.communicate.side_effect=[subprocess.TimeoutExpired("unit-worker",120),(b"",b"")]
+        with mock.patch.dict(os.environ,{"GH_TOKEN":self.TOKEN_LABEL},clear=True), \
+             mock.patch.object(owner,"start",return_value=process) as launch, \
+             mock.patch.object(owner,"terminate_tree",return_value="unconfirmed") as cleanup:
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.validate_upload(self.job,self.artifact,"Upload major qualification report")
+        self.assertEqual(launch.call_args.args[0][:5],[sys.executable,"-I","-S","-B","-c"])
+        self.assertEqual(process.communicate.call_args_list,[mock.call(timeout=120),mock.call(timeout=3)])
+        cleanup.assert_called_once_with(process)
+        self.assertIn("containment=unconfirmed",str(caught.exception.__cause__))
+
+    def test_token_does_not_change_non_job_log_api_transport(self):
+        import os
+        process=mock.Mock(returncode=0);process.communicate.return_value=(b"{}",b"")
+        with mock.patch.dict(os.environ,{"GH_TOKEN":self.TOKEN_LABEL},clear=True),mock.patch.object(owner,"start",return_value=process) as launch:
+            self.assertEqual(owner.api("actions/jobs/20"),{})
+        self.assertEqual(launch.call_args.args[0],["gh","api","repos/arbiterForge/codeArbiter/actions/jobs/20"])
+
+    def test_http_transport_never_relaxes_original_artifact_identity_predicates(self):
+        for change in ({"id":31}, {"digest":"sha256:"+"b"*64}, {"name":"different-artifact"}):
+            with self.subTest(changed=sorted(change)):
+                selected, error = self.observe_upload(artifact=dict(self.artifact, **change))
+                self.assert_http_worker(selected)
+                self.assertIsInstance(error, owner.ReadinessError)
+
+
+
+
+class UploadLogHTTPWorkerBoundaryTest(unittest.TestCase):
+    TOKEN_LABEL=UploadLogHTTPTransportTest.TOKEN_LABEL
+    setUp=UploadLogHTTPTransportTest.setUp
+    observe_upload=UploadLogHTTPTransportTest.observe_upload
+    assert_http_worker=UploadLogHTTPTransportTest.assert_http_worker
+    def worker_source(self):
+        selected, _ = self.observe_upload()
+        argv = self.assert_http_worker(selected)
+        self.assertIs(type(argv[5]), str)
+        self.assertNotIn(self.TOKEN_LABEL, argv[5])
+        return argv[5], argv[6:]
+
+    def execute_inert_worker(self, responses):
+        import contextlib
+        import email.message
+        import os
+        import socket
+        import ssl
+        import urllib.request
+        import urllib.response
+        source, arguments = self.worker_source()
+        calls, reads = [], []
+        class Body(io.BytesIO):
+            def read(self, count=-1):
+                reads.append(count)
+                return super().read(count)
+        class InertHTTPS(urllib.request.AbstractHTTPHandler):
+            def __init__(self, *args, **kwargs):
+                super().__init__()
+            def https_open(self, request):
+                calls.append({"url":request.full_url,
+                    "headers":{key.lower():value for key,value in request.header_items()}})
+                if len(calls) > len(responses):
+                    raise AssertionError("inert fixture exhausted; no external request allowed")
+                value=responses[len(calls)-1]
+                if isinstance(value, BaseException):
+                    raise value
+                code, headers, payload=value
+                message=email.message.Message()
+                for key, content in headers.items():
+                    message[key]=content
+                reply=urllib.response.addinfourl(Body(payload), message, request.full_url, code=code)
+                reply.msg="fixture"
+                return reply
+            https_request=urllib.request.AbstractHTTPHandler.do_request_
+        stdout_bytes, stderr_bytes=io.BytesIO(),io.BytesIO()
+        stdout=io.TextIOWrapper(stdout_bytes, encoding="utf-8", write_through=True)
+        stderr=io.TextIOWrapper(stderr_bytes, encoding="utf-8", write_through=True)
+        exit_code=0
+        with contextlib.ExitStack() as stack:
+            environment={key:value for key,value in os.environ.items()
+                         if key.upper() in {"SYSTEMROOT","WINDIR","TEMP","TMP"}}
+            environment["GH_TOKEN"]=self.TOKEN_LABEL
+            stack.enter_context(mock.patch.dict(os.environ,environment,clear=True))
+            stack.enter_context(mock.patch.object(sys,"argv",["-c",*arguments]))
+            stack.enter_context(mock.patch.object(sys,"stdout",stdout))
+            stack.enter_context(mock.patch.object(sys,"stderr",stderr))
+            stack.enter_context(mock.patch.object(urllib.request,"HTTPSHandler",InertHTTPS))
+            stack.enter_context(mock.patch.object(socket,"create_connection",side_effect=AssertionError("network forbidden")))
+            stack.enter_context(mock.patch.object(socket,"getaddrinfo",side_effect=AssertionError("DNS forbidden")))
+            try:
+                exec(compile(source,"<fixed-public-job-log-worker>","exec"),{"__name__":"__main__"})
+            except SystemExit as stopped:
+                exit_code=0 if stopped.code is None else stopped.code
+        stdout.flush();stderr.flush()
+        observed=(exit_code,stdout_bytes.getvalue(),stderr_bytes.getvalue(),calls,reads)
+        stdout.detach();stderr.detach()
+        self.assertIs(type(exit_code),int)
+        self.assertLessEqual(len(observed[2]),4096)
+        self.assertNotIn(self.TOKEN_LABEL.encode(),observed[2])
+        self.assertNotIn(b"unit-private",observed[2])
+        self.assertNotIn(b"https://",observed[2])
+        return observed
+
+    def reason(self, observed, expected, status=None):
+        code, stdout, stderr, _, _=observed
+        self.assertNotEqual(code,0)
+        self.assertEqual(stdout,b"")
+        self.assertEqual(json.loads(stderr),{"transport_reason":expected,"http_status":status})
+
+    def test_worker_follows_official_https_redirect_without_forwarding_authorization(self):
+        for target in ("https://unit.actions.githubusercontent.com/owned-log?unit-private=signed",
+                       "https://unit.blob.core.windows.net/owned-log?unit-private=signed"):
+            with self.subTest(storage=target.split('/')[2]):
+                observed=self.execute_inert_worker([(302,{"Location":target},b""),(200,{},self.logs)])
+                code, stdout, stderr, calls, reads=observed
+                self.assertEqual((code,stdout,stderr),(0,self.logs,b""))
+                self.assertEqual(len(calls),2)
+                self.assertEqual(calls[0]["url"],"https://api.github.com/repos/arbiterForge/codeArbiter/actions/jobs/20/logs")
+                self.assertIn(self.TOKEN_LABEL,calls[0]["headers"].get("authorization",""))
+                self.assertNotIn("authorization",calls[1]["headers"])
+                self.assertTrue(reads)
+
+    def test_worker_refuses_non_https_foreign_userinfo_and_suffix_confusion_redirects(self):
+        for target in ("http://unit.blob.core.windows.net/log", "https://foreign.invalid/log",
+                       "https://unit.blob.core.windows.net.foreign.invalid/log",
+                       "https://unit-private@api.github.com/log", "https://api.github.com:444/log"):
+            with self.subTest(kind=target.split(':',1)[0]):
+                observed=self.execute_inert_worker([(302,{"Location":target},b"")])
+                self.reason(observed,"redirect_refused")
+                self.assertEqual(len(observed[3]),1)
+
+    def test_worker_drops_authorization_even_on_api_redirect_and_bounds_redirect_chain(self):
+        target="https://api.github.com/repos/arbiterForge/codeArbiter/actions/jobs/20/logs?unit-private=redirect"
+        observed=self.execute_inert_worker([(302,{"Location":target},b""),(200,{},self.logs)])
+        self.assertEqual(observed[0],0);self.assertNotIn("authorization",observed[3][1]["headers"])
+        chain=[(302,{"Location":"https://unit.actions.githubusercontent.com/owned-"+str(i)},b"") for i in range(5)]
+        observed=self.execute_inert_worker(chain)
+        self.reason(observed,"redirect_limit");self.assertEqual(len(observed[3]),4)
+        self.assertTrue(all("authorization" not in call["headers"] for call in observed[3][1:]))
+
+    def test_worker_refuses_over_32mib_body_without_unbounded_read_or_partial_stdout(self):
+        bound=32*1024*1024
+        observed=self.execute_inert_worker([(200,{},b"x"*(bound+1))])
+        self.reason(observed,"body_limit")
+        self.assertTrue(observed[4])
+        self.assertTrue(all(type(n) is int and 0<n<=bound+1 for n in observed[4]))
+        self.assertLessEqual(sum(observed[4]),bound+1)
+
+    def test_worker_http_and_native_errors_have_only_closed_reason_status(self):
+        import socket
+        import ssl
+        import urllib.error
+        self.reason(self.execute_inert_worker([(403,{},b"unit-private-provider-body")]),"http_error",403)
+        for reason, error in (
+            ("dns_error",urllib.error.URLError(socket.gaierror(1,"unit-private-native-error"))),
+            ("tls_error",urllib.error.URLError(ssl.SSLError("unit-private-native-error"))),
+            ("timeout",urllib.error.URLError(TimeoutError("unit-private-native-error"))),
+            ("network_error",urllib.error.URLError("unit-private-native-error"))):
+            with self.subTest(reason=reason):
+                self.reason(self.execute_inert_worker([error]),reason)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -33,6 +33,91 @@ DIGEST = re.compile(r"[0-9a-f]{64}")
 MAX_ARCHIVE = 256 * 1024 * 1024
 UPLOAD_ACTION = 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
 TARGETS = frozenset(('ca', 'ca-codex', 'ca-pi', 'ca-sandbox'))
+TRANSPORT_REASONS = frozenset(('http_error', 'redirect_refused', 'redirect_limit',
+    'body_limit', 'network_error', 'invalid_request', 'worker_failed',
+    'tls_error', 'dns_error', 'timeout'))
+
+# Public, fixed source: credentials arrive only through the owned child's
+# explicit environment. The parent owns the whole-operation deadline, including
+# DNS, redirects and body reads, rather than relying on socket timeouts alone.
+JOB_LOG_WORKER = r'''
+import json, os, re, socket, ssl, sys
+import urllib.error, urllib.parse, urllib.request
+
+def fail(reason, status=None):
+    sys.stderr.write(json.dumps({"transport_reason": reason, "http_status": status}) + "\n")
+    raise SystemExit(1)
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, fp, code, message, headers, newurl):
+        return None
+
+def allowed(url):
+    try:
+        part = urllib.parse.urlsplit(url)
+        host = part.hostname or ""
+        return (part.scheme == "https" and part.port in (None, 443)
+            and not part.username and not part.password and not part.fragment
+            and "@" not in part.netloc and "\\" not in url
+            and not any(ord(c) <= 32 or ord(c) == 127 for c in url)
+            and (host in ("api.github.com", "github.com")
+                 or host.endswith(".actions.githubusercontent.com")
+                 or host.endswith(".blob.core.windows.net")))
+    except (ValueError, UnicodeError):
+        return False
+
+try:
+    token = os.environ.get("GH_TOKEN", "")
+    if (len(sys.argv) != 2 or not re.fullmatch(r"[1-9][0-9]{0,19}", sys.argv[1])
+            or not 0 < len(token) <= 4096
+            or not all(33 <= ord(c) <= 126 for c in token)):
+        fail("invalid_request")
+    url = "https://api.github.com/repos/arbiterForge/codeArbiter/actions/jobs/" + sys.argv[1] + "/logs"
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "codearbiter-readiness",
+               "X-GitHub-Api-Version": "2022-11-28", "Authorization": "Bearer " + token}
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+        urllib.request.HTTPSHandler(context=ssl.create_default_context()), NoRedirect())
+    for redirects in range(4):
+        try:
+            response = opener.open(urllib.request.Request(url, headers=headers), timeout=30)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            status = response.code
+            if status in (301, 302, 303, 307, 308):
+                if redirects == 3:
+                    fail("redirect_limit")
+                location = response.headers.get("Location")
+                if not location:
+                    fail("redirect_refused")
+                target = urllib.parse.urljoin(url, location)
+                if not allowed(target):
+                    fail("redirect_refused")
+                url = target
+                # Even same-origin redirects receive no inherited credentials.
+                headers = {"User-Agent": "codearbiter-readiness"}
+                continue
+            if status != 200:
+                fail("http_error", status if type(status) is int and 400 <= status <= 599 else None)
+            raw = response.read(32 * 1024 * 1024 + 1)
+            if len(raw) > 32 * 1024 * 1024:
+                fail("body_limit")
+        sys.stdout.buffer.write(raw)
+        break
+except urllib.error.URLError as error:
+    reason = error.reason
+    fail("tls_error" if isinstance(reason, ssl.SSLError) else
+         "dns_error" if isinstance(reason, socket.gaierror) else
+         "timeout" if isinstance(reason, TimeoutError) else "network_error")
+except ssl.SSLError:
+    fail("tls_error")
+except socket.gaierror:
+    fail("dns_error")
+except TimeoutError:
+    fail("timeout")
+except Exception:
+    fail("worker_failed")
+'''
 
 
 class ReadinessError(ValueError):
@@ -841,8 +926,55 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
 
 
 def api(path, binary=False):
+    match = re.fullmatch(r"actions/jobs/([1-9][0-9]{0,19})/logs", path)
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if binary and match and token:
+        return _job_log_http(match[1], token)
     raw = command(["gh", "api", "repos/" + REPOSITORY + "/" + path])
     return raw if binary else json.loads(raw)
+
+
+def _job_log_http(identity, token):
+    # Do not inherit unrelated credentials, provider settings or proxy headers.
+    environment = {key: os.environ[key] for key in
+        ("SystemRoot", "WINDIR", "TEMP", "TMP") if key in os.environ}
+    environment["GH_TOKEN"] = token
+    process = start([sys.executable, "-I", "-S", "-B", "-c", JOB_LOG_WORKER, identity],
+                    env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        stdout, stderr = process.communicate(timeout=120)
+    except subprocess.TimeoutExpired:
+        containment = terminate_tree(process)
+        try:
+            process.communicate(timeout=3)
+        except subprocess.TimeoutExpired:
+            pass
+        raise ReadinessError("readiness observation timed out; containment=" + containment) from None
+    if process.returncode != 0:
+        reason, status = "worker_failed", None
+        if type(stderr) is bytes and len(stderr) <= 4096:
+            try:
+                detail = json.loads(stderr)
+                if (type(detail) is dict and set(detail) == {"transport_reason", "http_status"}
+                        and type(detail["transport_reason"]) is str
+                        and detail["transport_reason"] in TRANSPORT_REASONS
+                        and (detail["http_status"] is None or type(detail["http_status"]) is int
+                             and 400 <= detail["http_status"] <= 599)):
+                    reason, status = detail["transport_reason"], detail["http_status"]
+            except (ValueError, UnicodeError):
+                pass
+        error = ReadinessError("readiness job log HTTP observation failed")
+        if (type(stderr) is bytes and type(process.returncode) is int
+                and -(1 << 31) <= process.returncode < (1 << 32)):
+            error.command_diagnostic = {
+                "operation": "github-actions-job-log", "code": "UPLOAD_LOG_COMMAND_FAILED",
+                "exit_code": process.returncode, "http_status": status,
+                "stderr_sha256": digest(stderr), "transport_reason": reason,
+            }
+        raise error
+    require(type(stdout) is bytes and len(stdout) <= 32 * 1024 * 1024,
+            "upload attribution log exceeds bound")
+    return stdout
 
 
 def artifact_bytes(artifact, req):

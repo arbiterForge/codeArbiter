@@ -575,7 +575,14 @@ def _command_diagnostic(error):
         seen.add(id(error))
         detail = BaseException.__getattribute__(error, "__dict__").get("command_diagnostic")
         if detail is not None:
-            if (type(detail) is dict and len(detail) == len(keys) and set(detail) == keys
+            if (type(detail) is dict and len(detail) in (len(keys), len(keys) + 1)
+                    and (set(detail) == keys
+                    or set(detail) == keys | {"transport_reason"}
+                    and type(detail["transport_reason"]) is str
+                    and detail["transport_reason"] in {
+                        "http_error", "redirect_refused", "redirect_limit", "body_limit",
+                        "network_error", "invalid_request", "worker_failed",
+                        "tls_error", "dns_error", "timeout"})
                     and type(detail["operation"]) is str
                     and detail["operation"] == "github-actions-job-log"
                     and type(detail["code"]) is str and detail["code"] == "UPLOAD_LOG_COMMAND_FAILED"
@@ -584,7 +591,7 @@ def _command_diagnostic(error):
                     and (detail["http_status"] is None
                          or type(detail["http_status"]) is int and 400 <= detail["http_status"] <= 599)
                     and type(detail["stderr_sha256"]) is str and DIGEST.fullmatch(detail["stderr_sha256"])):
-                return {key: detail[key] for key in sorted(keys)}
+                return {key: detail[key] for key in sorted(detail)}
             return None
         error = BaseException.__getattribute__(error, "__cause__")
     return None
