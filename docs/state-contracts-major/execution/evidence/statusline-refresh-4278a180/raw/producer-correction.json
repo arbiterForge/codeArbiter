@@ -1,0 +1,24 @@
+{
+  "predecessor": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-4278-i53yv_9p",
+  "classification": "INVALID_EVIDENCE: private loader passed full module prefix twice; nine original test bodies never ran",
+  "original_exit": {
+    "argv": [
+      "C:/Python314/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-4278-i53yv_9p\\run-selected.py",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-4278-i53yv_9p"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-4278-i53yv_9p",
+    "exit_code": 1,
+    "seconds": 0.44208949999301694,
+    "stdout_sha256": "1ccd697494da950701df7dce13054e9ea682c1dd3cd5e8a0a8085c3d7cfe80cf",
+    "stderr_sha256": "97c2655d1dbbbcbd46e73733ce538ed8f0cbf98953a0a6edc498ccf9f9133010"
+  },
+  "source_stable": true,
+  "correction": "Strip only the known test_wire_statusline. prefix when providing module argument. No source/test/assertion edits; original nine methods and new private preservation method unchanged.",
+  "original_driver_sha256": "d76d64556b328718ec5f29e9481b6cfee106d0e7cce2725bbe56ffe394638679",
+  "successor_driver_sha256": "7a1216fc2a35a4e0b414d8e7450140790e4fa9623d363c3fcb8e524984ebfc0c"
+}

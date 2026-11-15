@@ -21210,8 +21210,16 @@
     "HW-05",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/tested.json",
+     "sha256": "06fcb6afc4e948176fe56bc081dbd640afc4bc58207d33a1482bb12a1acef77e"
+    }
+   ],
+   "candidate_contract_note": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged."
   },
   "hooks:statusline-wiring:04": {
    "owner": "hooks-workflows",
@@ -21256,8 +21264,16 @@
     "HW-05",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
+     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0"
+    }
+   ],
+   "candidate_contract_note": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive."
   },
   "hooks:statusline-wiring:07": {
    "owner": "hooks-workflows",
@@ -21266,8 +21282,16 @@
     "HW-05",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+     "ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/tested.json",
+     "sha256": "7d1bbd174f77c8141eea1d67933a6a3116248bc988ceb8f97d716fff305538c0"
+    }
+   ],
+   "candidate_contract_note": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged."
   },
   "hooks:doctor:01": {
    "owner": "hooks-workflows",

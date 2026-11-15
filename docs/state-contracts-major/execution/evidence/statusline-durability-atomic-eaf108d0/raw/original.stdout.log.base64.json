@@ -1,0 +1,8 @@
+{
+  "format": "codearbiter-original-transcript-envelope/1",
+  "original_name": "original.stdout.log",
+  "decoded_sha256": "c4eebe6a9e2fe3d16852627643bfb4a502c5433105f1c02064fd44cd78fb7c7e",
+  "decoded_bytes": 425,
+  "encoding": "base64",
+  "data": "UkVGUkVTSEVEIHN0YWxlIGNvZGVBcmJpdGVyIHN0YXR1c2xpbmUgcGF0aCAtPiAicHl0aG9uIiAiQzpcVXNlcnNcYnJlbm5cQXBwRGF0YVxMb2NhbFxUZW1wXGNhLXNsMDYwNy01bDF4bWgyZ1xwcm9maWxlXHRtcFx0bXBvamY4dTdsNVwuY2xhdWRlXHBsdWdpbnNcY2FjaGVcY29kZWFyYml0ZXJcY2FcOS45LjlcaG9va3Ncc3RhdHVzbGluZS5weSINClJFRlJFU0hFRCBjb2RlQXJiaXRlciBzdGF0dXNsaW5lIHBhdGggLT4gInB5dGhvbiIgIkM6XFVzZXJzXGJyZW5uXEFwcERhdGFcTG9jYWxcVGVtcFxjYS1zbDA2MDctNWwxeG1oMmdccHJvZmlsZVx0bXBcdG1wYW5xNWdxOTZcLmNsYXVkZVxwbHVnaW5zXGNhY2hlXGNvZGVhcmJpdGVyXGNhXDkuOS45XGhvb2tzXHN0YXR1c2xpbmUucHkiDQpSRU1PVkVEIGNvZGVBcmJpdGVyIHN0YXR1c2xpbmUuDQo="
+}

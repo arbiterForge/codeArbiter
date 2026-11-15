@@ -1,0 +1,458 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+  "source_tree": "5f1b318b2ef3189cfae40c4f9eaef341a1980a51",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/ci_repair_review one combined38-outcome Windows local characterization at eaf108d0,35 unchanged existing methods plus3 private boundary observations"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+    "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca/hooks",
+      "path_order": "windows",
+      "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g",
+      "exit_code": 0,
+      "seconds": 0.7548007000004873,
+      "selected_named_population": 38,
+      "selected_skipped": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/capture.py",
+      "sha256": "7462320d7ad8d439fb7ae647a39527ab5aa5509980fa7a51c85b8f04065b5d5c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/run-selected.py",
+      "sha256": "2647bb54f58ad8611a05c00e4ebc1e536ea00317b6be8cbf92ba05540bf31174"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/selectors.json",
+      "sha256": "ad632906975c0c5be76cd913931a8ba2dd1167d9d51c311a11cd995422161952"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/run-start.json",
+      "sha256": "4fc5c6295dae47fdfae41b2fbad40e82ea7db2a7418a8417b23eb63762e87dc6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/process-exit.json",
+      "sha256": "4282f570cd30184f701810ca24b92c2009a8bbef5c05d0b95e93e42f9f242715"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/after-snapshot.json",
+      "sha256": "5d469d5de906cd41cb5cde9035151299403b0c219b2483e684791515fc9aa264"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/run-result.json",
+      "sha256": "0a8c150d21549c61c507ca055207b9c3760c864171d9411d4063104cca60e11d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/named-results.json",
+      "sha256": "136844151f2d40829c2d9340688445398d109b495de17f5209f33cf48ce1a95b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/capture-complete.json",
+      "sha256": "f77803352c266fb4fc2771c1ae40ca03fb9e0d9db9ee53ace39e555dd428d4b9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/private-controls.json",
+      "sha256": "f7bfce9ec4cc60e66d7d6e65816f327098eaf202d50947034f674e89060d0901"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/validated-selection.json",
+      "sha256": "befc8d7eb0639ace5b856c65551180be800cf4c0de68f586ece3f54a4c344c42"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/actual-imports-31388.json",
+      "sha256": "0d34c739fa473fd40d921552f24b43c538eded4717444077692a658399965670"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/original.stdout.log.base64.json",
+      "sha256": "1c7d77cb08f782eae82e102a5353840cc2d9e4df9dfe90fb7cca46a7fc3dd8ef"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/original.stderr.log.base64.json",
+      "sha256": "50b5f3a99d89469cc2bb489be00def51519824b09b78d76e39824124b01971ba"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:hooks:statusline-wiring:06",
+    "disposition:transitions:hooks:statusline-wiring:07"
+  ],
+  "original_named_results": [
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound",
+      "outcome": "PASS"
+    }
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:06",
+      "observed_named_cases": [
+        "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+        "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+        "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+        "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+        "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+        "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+        "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+        "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+        "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+        "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+        "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+        "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+        "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+        "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+        "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+        "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+        "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound"
+      ],
+      "assertion_scope": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive.",
+      "limits": [
+        "PermissionError is an explicit private module-open injection, not actual OS ACL qualification.",
+        "64 bound and4096 read limit are intentional durable fallbacks, not proof that arbitrary roots live forever."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:07",
+      "observed_named_cases": [
+        "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+        "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+        "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+        "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json"
+      ],
+      "assertion_scope": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged.",
+      "limits": [
+        "One save is observed for unique staging, not simultaneous writer success.",
+        "Frozen no-multi-writer-CAS residual is preserved; no lost-update immunity, fsync/power-loss/all-storage fault or whole settings concurrency claim."
+      ]
+    }
+  ],
+  "selected_assertion_body_sha256": {
+    "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches": "b2a3ae972a8fa1165398fb9b4a3cc3b717310347731a77c169e6b077149e874b",
+    "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches": "14a0b52b5ebb66b65beb47e3a0b30b08f0152b15f12613b5d806d996b849a9e9",
+    "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match": "2328d6904d4e6e31b4b4b42ef1877df82d7b26bfc9a2348e7909e6cfae5b3b2d",
+    "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match": "7d9de303fb22d873d3177726606d3c46b1ef46c04e290c05d39ef8b76e5c44fb",
+    "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment": "133567095ea4f81e24ea07dae4a97aa7c2a316cb702953d1b740f4c916c5bec3",
+    "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive": "0032925f5d2a3b344cf439d9d347507ee13e0b25743a73316025ab2ba58df1d3",
+    "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators": "1c73ba173a8f038e8e6b361179ced010d41e504e6e1a654d0b42abfbb8e05228",
+    "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises": "8afd6a045f76c9d287ea53eae9231c5e431d8d195dfeca6e50def104f8bda8de",
+    "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral": "4a822904ee27776de369f9d8fa135193709a6b8690caf04e62c2a767bcf2e0e9",
+    "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument": "6f26b2f6108110ed3af7ac4f812b9b762e24ed0519002c8a3f04586ae47272e8",
+    "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable": "1fda13ba28e2c6e7941414c8187df6ce826d29a39649cf940fe0fceb89784330",
+    "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable": "5f28d07ffadc519ba11c7ae42380993a3d7f363e99fbe98f6c1849885fc1d7cc",
+    "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable": "b49ab4fdfd0b8f448f103e031d85075f8171b59aac71800d2885d23f18398d74",
+    "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable": "7ede6098a38db3739430be85038e305b17763accecfcb52e58e8714608c7bce9",
+    "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins": "771b0ada3bc0a92f8e808df971aab80996636a8cca78c1986880e9bbb8b58e2d",
+    "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises": "a15b60ad9d9a7c10bd9585e8f27e5ad148761a6fb8a65b2296f825f249ba8eb5",
+    "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough": "52185365312b1af91a49e3320cfc1996b98edea7fe67abe4eccb587fb414615c",
+    "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough": "31ba157a4ef42625ed30d8071318adfd5f714679f5856588f484cb680efeebed",
+    "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable": "ad4c2b2028746674da42cd751e4f819c68510f024a6ccd77e817bb1b2e569e4a",
+    "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises": "9ed8efdd96b93a9b147a39871c7b5760ce4ba34458c70e5f1ea4404df3a91b28",
+    "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess": "c4e8cf55b4c93bf6f3dea9eb5a8bdaad6cc7de7173b94a7e52e68cd9a8598f2f",
+    "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json": "17082a483549fe98253f8e90589264a81e3378a92cd11ce1d1e68def79babd31",
+    "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json": "cf02695eefbd046f644af001e481668bbbe5bc1c59aa13cacbc89f1cef4a2800",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical": "189027f24c3525fda6cfb6ca1febfcfaabf905e0abecb4a1807342af72649d83",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path": "02df49cbbbdcc9b6666e8cbf63c43c6621d71df84b16612ba38f4eea2f0182a9",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals": "e3c1d08051262e8d295bcff1358e120c10da479166430b1544497b89b08763dc",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating": "64c7e6903865655c26b639b2dd92f01eab7694d62375299111512d452ebf943c",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment": "ac26370fd798a02dff01acbea05149f6b48d26292d0df080ebb8e8ed8788a1ef",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly": "377d74795d4bda47ded35788036ca708e59b910bb3d4bb15752036b227f87d6a",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical": "759ad34a31220180dae7bc3977322a3a7ac49ec36b90c13410df447550684e4d",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires": "5eedfe92299676d701c167e42b83be4531c9f23f61c68cb77e207d929ff0bf84",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked": "5b5cbe1d36f939f071f36162c8248281fd0377d8d32e74a57997cad5ae987f3d",
+    "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing": "76dec457ef0ac951d022a9a50a5599bc8017b55cee8759eb7248feb32dcb85f8",
+    "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name": "4cf38b8ef3497a86b4c4d138a5efee942f4d4f7fda2249e11761831104c920f6",
+    "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact": "3be297c1299e5c3266a33b270e601facecc283c7b913cbdcbdd56076ca596cee"
+  },
+  "source_clause_binding": {
+    "canonical_owners": [
+      "core/pysrc/wire-statusline.py",
+      "core/pysrc/_durabilitylib.py",
+      "core/pysrc/_hooklib.py"
+    ],
+    "executed_generated_copies": [
+      "plugins/ca/hooks/wire-statusline.py",
+      "plugins/ca/hooks/_durabilitylib.py",
+      "plugins/ca/hooks/_hooklib.py"
+    ],
+    "canonical_generated_byte_parity": true
+  },
+  "execution_context": {
+    "actual_start_git_commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+    "actual_end_git_commit": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+    "all_before_after_closure_equal": true,
+    "positive_inputs": 29,
+    "old14_positive_inputs_preserved": true,
+    "complete_typed_Git_namespaces": [
+      "core/pysrc",
+      "plugins/ca/hooks"
+    ],
+    "physical_namespaces": "All names/types/modes/file hashes before/after retained including existing cache/untracked entries; no blanket cache absence claimed.",
+    "structured_runtime_records": 1905,
+    "actual_repository_imports": {
+      "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+      "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+      "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+      "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+      "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+      "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+      "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+      "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+    },
+    "private_pycache_prefix_before_imports": true,
+    "no_user_site_before_imports": 1,
+    "owning_host_lookup": "plugins/ca/hooks/_host.py tracked positive input; no absent-input declaration.",
+    "additional_observed_inputs": "Actual imported/executed modules beyond original positives are bound to already captured full before/after physical hashes and literal source, not inferred retroactively from only final bytes.",
+    "validated_selection_ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/validated-selection.json",
+    "raw_ref": "docs/state-contracts-major/execution/evidence/statusline-durability-atomic-eaf108d0/raw/run-start.json"
+  },
+  "scope_limits": [
+    "Exactly two existing rows06/07 PLANNED\u2192TESTED proposed; no machine/task/finding/installed/release status.",
+    "Old03 and old10 spinner/uninstall cohorts reused unchanged and not executed here.",
+    "One capture only, all38 outcomes PASS/exit0/0.754801s; no retries or assertion/production/permanent test changes.",
+    "All fixture writes private; no real settings/HOME, ACL changes, provider, network, native/Go/build/install/UI/model or hosted/publication effects.",
+    "Preserve intentional uncertain-probe durable fallback and explicit frozen residual no-multi-writer-CAS race."
+  ]
+}

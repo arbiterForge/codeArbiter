@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sl0607-5l1xmh2g",
+  "exit_code": 0,
+  "seconds": 0.7548007000004873,
+  "stdout_sha256": "c4eebe6a9e2fe3d16852627643bfb4a502c5433105f1c02064fd44cd78fb7c7e",
+  "stderr_sha256": "2d8b87ade19cc9a8d1585e8ab1f380527d2dbdc600208c33f41ac9d9aa63bc35"
+}
