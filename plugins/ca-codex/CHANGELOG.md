@@ -18,6 +18,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Preserve newer user spinner choices during rollback and migrate legacy backup metadata without discarding its value.
 - Suppress repeated fallback workflow recovery notices after the host records the notice as delivered.
 - Inspect final check states after CI watching; cancelled checks and interrupted watches remain unverified.
 - Classify malformed provider JSON at the transport boundary without hiding programmer errors.

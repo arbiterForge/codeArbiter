@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Preserve newer user spinner choices during rollback by keeping backups outside the legacy reader's restoration key and migrating older metadata without discarding its value.
 - Read authenticated Actions job logs through a bounded isolated HTTPS worker when an explicit environment token is available; strip credentials on redirects and retain closed failure reasons.
 - Retain closed upload-log command diagnostics for installed qualification failures without exposing response text or changing artifact checks.
 - Deduplicate delivered recovery fallback notices within each session while retaining notices whose delivery has not been recorded.
