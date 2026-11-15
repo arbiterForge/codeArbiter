@@ -4299,13 +4299,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "evidence_history": [],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim."
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ],
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim."
   },
   "S39": {
    "owner": "hooks-workflows",
@@ -4739,8 +4747,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S70": {
    "owner": "packaging",
@@ -9001,12 +9017,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -9035,6 +9051,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -9682,12 +9705,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "approve checks actual Ready state, approved source/spec for plans, immutable loaded receipt subject and profile; rejects pair and SMARTS receipts, clones and appends approval, increments revision and saves through journal. No source path mints an event from caller labels. Partial original generic/pair tests do not establish every failure branch."
+   "candidate_contract_note": "approve checks actual Ready state, approved source/spec for plans, immutable loaded receipt subject and profile; rejects pair and SMARTS receipts, clones and appends approval, increments revision and saves through journal. No source path mints an event from caller labels. Partial original generic/pair tests do not establish every failure branch. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N05:02": {
    "owner": "native",
@@ -9701,12 +9733,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "Changes clones before applying the closed batch; symbol and structural/render errors return before engine.save. syncExecution retains surviving task state/evidence, approvals survive cloning; changed normative hash sets governance draft, revision advances. Request CAS and final save wrap the complete batch; no partial changed document is committed."
+   "candidate_contract_note": "Changes clones before applying the closed batch; symbol and structural/render errors return before engine.save. syncExecution retains surviving task state/evidence, approvals survive cloning; changed normative hash sets governance draft, revision advances. Request CAS and final save wrap the complete batch; no partial changed document is committed. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N05:03": {
    "owner": "native",
@@ -9720,12 +9761,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "rebrand clones the document, changes only presentation name/logo, validates bounded filesystem logo bytes/MIME via render.Logo, advances model revision, prepares and journals. Normative/governance/evidence state are untouched; no approval/authority evidence receipt is minted. Ordinary transaction history is separate. Original positive rebrand test is partial, so full row remains source-only."
+   "candidate_contract_note": "rebrand clones the document, changes only presentation name/logo, validates bounded filesystem logo bytes/MIME via render.Logo, advances model revision, prepares and journals. Normative/governance/evidence state are untouched; no approval/authority evidence receipt is minted. Ordinary transaction history is separate. Original positive rebrand test is partial, so full row remains source-only. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N05:04": {
    "owner": "native",
@@ -9757,12 +9807,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "record.add accepts only mutable collections (or criterion nested scenarios), reserves every prior/retired/newly observed identity, allocates a typed unused ID when absent, rejects reintroduction or kind change across the batch. Final symbol build and render validate before save; syncExecution adds only new task/prerequisite defaults, preserves survivors and increments revision. ID reuse and structural errors refuse the whole cloned batch."
+   "candidate_contract_note": "record.add accepts only mutable collections (or criterion nested scenarios), reserves every prior/retired/newly observed identity, allocates a typed unused ID when absent, rejects reintroduction or kind change across the batch. Final symbol build and render validate before save; syncExecution adds only new task/prerequisite defaults, preserves survivors and increments revision. ID reuse and structural errors refuse the whole cloned batch. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N06:02": {
    "owner": "native",
@@ -9922,12 +9981,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -9956,6 +10015,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -9993,12 +10059,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "Explicit draft_preview bind checks exact spec revision+model CAS, canonical same-slug identity and Ready spec/next plan. It clones current plan, updates current source digest, retains execution and historical approvals, sets governance draft and advances revision, then saves. Original history/progress positives exist; source guard/retry coverage is not inflated into complete executed branch coverage."
+   "candidate_contract_note": "Explicit draft_preview bind checks exact spec revision+model CAS, canonical same-slug identity and Ready spec/next plan. It clones current plan, updates current source digest, retains execution and historical approvals, sets governance draft and advances revision, then saves. Original history/progress positives exist; source guard/retry coverage is not inflated into complete executed branch coverage. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N08:02": {
    "owner": "native",
@@ -10012,12 +10087,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "Default bind requires actual structural spec validity, starts with draft_preview, switches to approved_source only when authority.Approved succeeds, and never demands a new receipt merely to bind. Clone preserves work/history; binding is validated and governance is draft, with revision/save after validation. No failed authority lookup is reinterpreted as approved."
+   "candidate_contract_note": "Default bind requires actual structural spec validity, starts with draft_preview, switches to approved_source only when authority.Approved succeeds, and never demands a new receipt merely to bind. Clone preserves work/history; binding is validated and governance is draft, with revision/save after validation. No failed authority lookup is reinterpreted as approved. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N08:03": {
    "owner": "native",
@@ -10382,12 +10466,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "verificationStatus requires plan kind, strict guards/prerequisite receipt assessment and current snapshot before projecting each task. All-accepted requires ACCEPTED plus AcceptedFresh and both no conflicting reports and no unassessed trimmed history. Every error propagates, and no progress/receipt is written. Current original lifecycle/conflict positives do not become an assertion that the full trimmed-history caller composition was executed."
+   "candidate_contract_note": "verificationStatus requires plan kind, strict guards/prerequisite receipt assessment and current snapshot before projecting each task. All-accepted requires ACCEPTED plus AcceptedFresh and both no conflicting reports and no unassessed trimmed history. Every error propagates, and no progress/receipt is written. Current original lifecycle/conflict positives do not become an assertion that the full trimmed-history caller composition was executed. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N11:01": {
    "owner": "native",
@@ -10703,9 +10796,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
    "evidence_history": [
@@ -10722,8 +10815,16 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
-   ]
+   ],
+   "candidate_contract_note": " Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim."
   },
   "N12:04": {
    "owner": "native",
@@ -11911,12 +12012,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
-     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native8-preserved.json",
+     "sha256": "c686275fa471c4c89a77ccf8d824cd3a49b54485f52cf2f0ac6b2f02bec25416"
     }
    ],
-   "candidate_contract_note": "resetMethodDependents expands the affected set through task/checkpoint/dependency fixed point, checks every affected state for IN_PROGRESS before mutation and returns ACTIVE_WORK. Then BLOCKED records remain byte-equivalent, other states become PENDING with invalidation reason, historical evidence refs stay and affected scope baselines are removed. Changes already cloned the document and smartsApply does not write new authority or commit before reset succeeds. Existing positive reset/blocked tests do not supply the missing direct ACTIVE_WORK oracle."
+   "candidate_contract_note": "resetMethodDependents expands the affected set through task/checkpoint/dependency fixed point, checks every affected state for IN_PROGRESS before mutation and returns ACTIVE_WORK. Then BLOCKED records remain byte-equivalent, other states become PENDING with invalidation reason, historical evidence refs stay and affected scope baselines are removed. Changes already cloned the document and smartsApply does not write new authority or commit before reset succeeds. Existing positive reset/blocked tests do not supply the missing direct ACTIVE_WORK oracle. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+     "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ]
   },
   "N20:01": {
    "owner": "native",
@@ -12009,12 +12119,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -12043,6 +12153,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -12889,12 +13006,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -12923,6 +13040,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -12936,12 +13060,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -12970,6 +13094,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -13000,12 +13131,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -13034,6 +13165,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -14923,9 +15061,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
    "evidence_history": [
@@ -14942,8 +15080,16 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
      "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
-   ]
+   ],
+   "candidate_contract_note": " Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim."
   },
   "N37:01": {
    "owner": "native",
@@ -15013,12 +15159,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -15047,6 +15193,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -15062,12 +15215,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -15096,6 +15249,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -15111,12 +15271,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
-   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+   "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -15145,6 +15305,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
      "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -15199,9 +15366,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
    "evidence_history": [
@@ -15218,8 +15385,16 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
      "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
-   ]
+   ],
+   "candidate_contract_note": " Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim."
   },
   "N38:03": {
    "owner": "native",
@@ -15232,9 +15407,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
-     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
-     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/native13-preserved.json",
+     "sha256": "42bd0df718733b07c458e2263eb0738a1ec9ab01e1a4651253fae230d88c13cf"
     }
    ],
    "evidence_history": [
@@ -15251,8 +15426,16 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
      "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
      "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+     "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
-   ]
+   ],
+   "candidate_contract_note": " Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim."
   },
   "N38:04": {
    "owner": "native",
@@ -28760,12 +28943,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim.",
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -28780,6 +28963,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
      "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -28793,12 +28983,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim.",
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -28813,6 +29003,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
      "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -28826,12 +29023,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim.",
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -28846,6 +29043,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
      "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -28859,13 +29063,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/target-failure-tested.json",
-     "sha256": "8534ee45ab9088243cc844d37dba2e433cb32d93c699c6a3de00b07a24f9a4de"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-current-native-c2cf0a18/target-failure-tested.json",
+     "sha256": "5ea044ccac53bb85c83577662b5a05b92912e87e0c4f16bf1353ae7e1e58e7df"
     }
    ],
-   "evidence_history": [],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim."
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/target-failure-tested.json",
+     "sha256": "8534ee45ab9088243cc844d37dba2e433cb32d93c699c6a3de00b07a24f9a4de",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+    }
+   ],
+   "candidate_contract_note": "ActualcurrentC2 threeexistingmethods PASSusingauthenticatedoriginalf797Windowsnativeinput; completepositiveinputs/modulemembership/Windows_hostabsence+copiedpayloadidentity before/after retained. ExactAPI/nativeREVISION_CONFLICT/identityREMOTE_BINDING_UNVERIFIED targetfailure/pending/independenttarget/retry/no-resend oracles. Earlierfacts/history unchanged; no build/liveprovider/installed/user/wholeprogramme claim."
   },
   "S38:05": {
    "owner": "hooks-workflows",
@@ -28877,12 +29089,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim.",
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -28897,6 +29109,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
      "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -28910,12 +29129,12 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
-     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+     "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f"
     }
    ],
-   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim.",
+   "candidate_contract_note": "Finite S38 acceptance: all six guard/effect/retry clauses accounted for; target-local native/identity runtime gap closed. Earlier6/7 outcomes remain original executions joined through unchanged77 method ASTs and270 ordinary helper/native inputs; no all79 rerun, installed/live/provider/model/publication claim. Current-sourceonly successor: intentional_change_test.go gained3imports/3newhelpers/2newtests; alloriginaltestbodies andnativeproductionfiles unchanged. Originalreviews/rawfacts/epochs retained; no currentruntimeclaim.",
    "evidence_history": [
     {
      "kind": "conformance-check",
@@ -28930,6 +29149,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-conformance.json",
      "sha256": "15e029d5e9095905bf1f11e4cb19a2555ec92b13d1219634d67baa9257b2fed7",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+     "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4",
+     "ref_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
     }
    ]
   },
@@ -32889,8 +33115,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S69:02": {
    "owner": "packaging",
@@ -32901,8 +33135,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S69:03": {
    "owner": "packaging",
@@ -32913,8 +33155,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S69:04": {
    "owner": "packaging",
@@ -32925,8 +33175,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S69:05": {
    "owner": "packaging",
@@ -32937,8 +33195,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S69:06": {
    "owner": "packaging",
@@ -32949,8 +33215,16 @@
     "PI-D07",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+     "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53"
+    }
+   ],
+   "candidate_contract_note": "Complete finite promotion-stage conditional source contract only; no authentic artifact/runtime/installed/task qualification."
   },
   "S70:01": {
    "owner": "packaging",
@@ -33719,8 +33993,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/preserved.json",
+     "sha256": "414fd768537556f6fd18fb4f2c0d219980aef7b3878cef9437fd47ac3f48d938"
+    }
+   ],
+   "candidate_contract_note": "The shared closed declaration rejects old literal, missing decision/evidence, wrong floor and extra key; the actual named test observes every negative and owner-rendered major/1.0/named-route/exact-release wording. The generator retains exact parent shape/clock/target/version guards. Accepted HW21/BUILDG02 correction, not old literal preservation."
   },
   "S75:03": {
    "owner": "packaging",
@@ -33734,8 +34016,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/preserved.json",
+     "sha256": "414fd768537556f6fd18fb4f2c0d219980aef7b3878cef9437fd47ac3f48d938"
+    }
+   ],
+   "candidate_contract_note": "check_all reads and compares expected files plus owned orphans, with no publication call; pending generation and invalid targets refuse. main returns0 only for empty drift. Named synthetic write/check and repeat-zero controls pass. This is complete finite source conformance, not production generated-corpus equality."
   },
   "S75:04": {
    "owner": "packaging",
@@ -33749,8 +34039,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/preserved.json",
+     "sha256": "414fd768537556f6fd18fb4f2c0d219980aef7b3878cef9437fd47ac3f48d938"
+    }
+   ],
+   "candidate_contract_note": "The checker appends every expected missing/different path and owned orphan, with canonical templates remaining owner. main returns1 for nonempty drift. Actual synthetic modified/missing/orphan controls identify all three paths. No check-side mutation exists in current owner."
   },
   "S75:05": {
    "owner": "packaging",
@@ -33795,8 +34093,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/preserved.json",
+     "sha256": "414fd768537556f6fd18fb4f2c0d219980aef7b3878cef9437fd47ac3f48d938"
+    }
+   ],
+   "candidate_contract_note": "Successful publisher returns unique changed/deleted path count, closes stage and removes marker; write_all returns that count and main succeeds. Original named tests observe orphan removal, positive initial count and repeat0. I/O failures remain distinct rollback/unusable outcomes."
   },
   "S75:07": {
    "owner": "packaging",
@@ -33810,8 +34116,16 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+     "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/preserved.json",
+     "sha256": "414fd768537556f6fd18fb4f2c0d219980aef7b3878cef9437fd47ac3f48d938"
+    }
+   ],
+   "candidate_contract_note": "write_all only collects updates/removals while rendering and validating every host, then calls publish_files once after the loop. Actual late second-host SurfaceError preserves first host old bytes. main catches source/descriptor errors and returns2 by inspected source; that exact invalid-source CLI path was not run here. BUILDG01 explicitly supersedes earlier writes."
   },
   "S75:08": {
    "owner": "packaging",

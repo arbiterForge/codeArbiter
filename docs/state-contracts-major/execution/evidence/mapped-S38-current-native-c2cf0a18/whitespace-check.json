@@ -1,0 +1,46 @@
+{
+  "command": [
+    "git",
+    "-c",
+    "core.autocrlf=false",
+    "-c",
+    "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+    "diff",
+    "--no-index",
+    "--check",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-log-envelope-empty-reference",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-runtime-c2cf0a18-log-envelope"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "",
+  "result": "PASS: no whitespace diagnostics; no-index exit1 means files differ from empty directory",
+  "maintained_repo_path_whitespace_attribute": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+  "original_log_negative_control": {
+    "command": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+      "diff",
+      "--no-index",
+      "--check",
+      "/dev/null",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-runtime-c2cf0a18\\delivery-candidate\\raw\\original-input-job-log.log"
+    ],
+    "exit_code": 3,
+    "exact_original_trailing_space_lines": [
+      703,
+      707,
+      710,
+      712,
+      714,
+      716,
+      718,
+      820,
+      869
+    ]
+  },
+  "scope": "Exact maintained artifact-data path rule (git check-attr confirms CR-at-EOL allowed; text unset), no rules changed. Original log still fails all9 whitespace lines. Root retains exact staged diff --check responsibility."
+}

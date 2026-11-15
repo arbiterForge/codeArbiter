@@ -1,3 +1,18 @@
+# Current delivery checkpoint (2026-11-15 UTC)
+
+PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. PR #1098 remains draft and held from main for Brennon's testing. Publication is not authorized.
+
+- Active child: #1108, branch `codex/state-contracts-native-reconcile`. Its predecessor `a7ca0738` passed 92 checks with six skipped, including required merge-readiness; CI43655359437 and docs43655359325 succeeded. Later diagnostic source `9542cd9b` and the current evidence batch require their own hosted head checks before merge.
+- The bbba normal integration run43649759117 FAILED during Impact selection: an environment value containing 1,910 paths and 148,885 bytes prevented bash from starting. No installed-report qualification ran. Source a7 fixes path transport through event files and Git output; 15 focused checks and independent review passed. Earlier running-state notes below are historical.
+- Source9542 adds bounded failure-only Windows process observation after the original RPC timeout record, retaining its failed result and cleanup. Eight diagnostic/projection checks plus one upload guard passed locally on stable current inputs. The snapshot exit-race regression failed before correction and passed afterward; independent security/coverage review has no open findings.
+- Local CDB is absent. A hosted runner with the fixed SDK must demonstrate real captured frames and survival of an inert owned Node. The intermittent Pi timeout cause remains unresolved; no native/OS exit is inferred from its JavaScript marker.
+- Forty additional bounded evidence updates retain 27 source-preservation records, account for 12 accepted packaging clauses and replace S38:04's runtime binding with an actual three-test observation using the authenticated tested native candidate. No local Go build or fabricated past closure. Original evidence/history remain.
+- Maintained integrity passes 105 frozen intake files and 1,282 advanced records: 1,000 current and 282 stale, with no UNKNOWN dependency result. These are finite dispositions; they do not complete the program, installed cohorts or user/model/parent UI/lifecycle acceptance. Pi endpoint policy is still awaiting the user decision.
+- Next: push the coherent source/evidence batch, watch its exact-head hosted checks, then integrate #1108 only when green. Merge authority into `major/state-contracts` stands; named remote auto-deletion of #1108's branch still requires permission. Never merge #1098 to main or publish.
+- Gov remains `C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter`; common Git is `D:/projects/codeArbiter/.git`, reached through the repaired C:/Users/brenn/projects junction. Preserve primary, author and acceptance worktrees, unrelated dirty state, local artifacts and audit/recovery records. Never reopen the original handoff ZIP.
+
+## Preserved checkpoint history
+
 # Current delivery checkpoint (2026-11-14)
 
 PR #1107 is merged into `major/state-contracts` as `bbba165ce513d5977ba11de7dd44d294658b67ca`. Its exact head22a passed 92 checks including required merge-readiness; six checks skipped. Both merge parents and identical source tree were verified. The named remote branch deletion was authorized and confirmed. PR #1098 remains draft and held from main for Brennon testing; publication is not authorized.

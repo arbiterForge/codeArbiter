@@ -1,0 +1,134 @@
+{
+  "schema": "codearbiter.finite-packaging-source-inspection/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "records": [
+    {
+      "transition_id": "S75:02",
+      "frozen_row_sha256": "9cf6400d799fbfbffcd2e62f49e062cbd51cd42cc83462ad21f66698b02fb34d",
+      "assessment": "The shared closed declaration rejects old literal, missing decision/evidence, wrong floor and extra key; the actual named test observes every negative and owner-rendered major/1.0/named-route/exact-release wording. The generator retains exact parent shape/clock/target/version guards. Accepted HW21/BUILDG02 correction, not old literal preservation.",
+      "accepted_change_basis": "S75:02",
+      "original_named_corroboration": [
+        {
+          "id": "test_build_surface.CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 1
+        }
+      ]
+    },
+    {
+      "transition_id": "S75:07",
+      "frozen_row_sha256": "3ccdd19ae038b0835426796b424cfb71550f652558951cced9cd65ac83e6b423",
+      "assessment": "write_all only collects updates/removals while rendering and validating every host, then calls publish_files once after the loop. Actual late second-host SurfaceError preserves first host old bytes. main catches source/descriptor errors and returns2 by inspected source; that exact invalid-source CLI path was not run here. BUILDG01 explicitly supersedes earlier writes.",
+      "accepted_change_basis": "S75:07",
+      "original_named_corroboration": [
+        {
+          "id": "test_generated_output.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 2
+        }
+      ]
+    },
+    {
+      "transition_id": "S75:03",
+      "frozen_row_sha256": "d17398d0e3ee5e3db665afcc17e602687c4097d4b7f2a56234d0f768969048ad",
+      "assessment": "check_all reads and compares expected files plus owned orphans, with no publication call; pending generation and invalid targets refuse. main returns0 only for empty drift. Named synthetic write/check and repeat-zero controls pass. This is complete finite source conformance, not production generated-corpus equality.",
+      "accepted_change_basis": null,
+      "original_named_corroboration": [
+        {
+          "id": "test_build_surface.WriteAndCheckTest.test_write_then_check_green_then_idempotent",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 3
+        },
+        {
+          "id": "test_build_surface.WriteAndCheckTest.test_main_check_exit_codes",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 6
+        }
+      ]
+    },
+    {
+      "transition_id": "S75:04",
+      "frozen_row_sha256": "a2387cf43b55d81e42195d5512bf3b04f577a84dc73a931195e4011a0a4f397d",
+      "assessment": "The checker appends every expected missing/different path and owned orphan, with canonical templates remaining owner. main returns1 for nonempty drift. Actual synthetic modified/missing/orphan controls identify all three paths. No check-side mutation exists in current owner.",
+      "accepted_change_basis": null,
+      "original_named_corroboration": [
+        {
+          "id": "test_build_surface.WriteAndCheckTest.test_check_flags_modified_missing_and_orphan",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 4
+        }
+      ]
+    },
+    {
+      "transition_id": "S75:06",
+      "frozen_row_sha256": "ffb24330257cc73e2bbf7fddf671fe28f889504aaacdefd4fe249a0945f74400",
+      "assessment": "Successful publisher returns unique changed/deleted path count, closes stage and removes marker; write_all returns that count and main succeeds. Original named tests observe orphan removal, positive initial count and repeat0. I/O failures remain distinct rollback/unusable outcomes.",
+      "accepted_change_basis": null,
+      "original_named_corroboration": [
+        {
+          "id": "test_build_surface.WriteAndCheckTest.test_write_removes_orphans",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 5
+        },
+        {
+          "id": "test_build_surface.WriteAndCheckTest.test_write_then_check_green_then_idempotent",
+          "observed_outcome": "PASSED",
+          "occurrences": 1,
+          "stdout_or_stderr_line_1based": 3
+        }
+      ]
+    }
+  ],
+  "source_spans": {
+    "tools/build-surface.py": {
+      "_validate_compatibility_policy": [
+        466,
+        521
+      ],
+      "check_all": [
+        1239,
+        1266
+      ],
+      "write_all": [
+        1272,
+        1295
+      ],
+      "main": [
+        1298,
+        1343
+      ]
+    },
+    "tools/command_compatibility.py": {
+      "validate_removal_policy": [
+        14,
+        18
+      ],
+      "removal_policy_text": [
+        21,
+        32
+      ]
+    },
+    "tools/owned_output.py": {
+      "assert_complete": [
+        14,
+        17
+      ],
+      "validate_targets": [
+        20,
+        23
+      ],
+      "publish_files": [
+        56,
+        120
+      ]
+    }
+  },
+  "historical_review": "Prior publisher-b7a75 raw nine-case record is retained with its original165-input exposure, but declared watch.md input now differs; no relabelled current result. New six named original methods execute only the selected synthetic owner boundaries.",
+  "unselected": "S75:01 and machineS75 stay open; S75:05/:08 existing TESTED history/status untouched. No aggregate from nearby assertions."
+}

@@ -1,0 +1,1906 @@
+{
+  "schema": "codearbiter.native21-hooks6-finite-source-conformance/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "rows": [
+    {
+      "id": "S38",
+      "section": "machines",
+      "original_complete_clause_mapping": {
+        "schema": "codearbiter.S38-finite-six-clause-acceptance/1",
+        "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "rows": [
+          {
+            "id": "S38:01",
+            "literal_clause": {
+              "event": "sync all",
+              "guard": "current map/config",
+              "to": "per-target processing",
+              "effects": "Process issue and project effects independently; choose resume/reconcile/send/observe according to each target state.",
+              "failure_retry": "",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "mapped work",
+              "transition_id": "S38:01"
+            },
+            "result": "PRESERVED",
+            "guard_effect_retry": "Current enabled map/generation is required; issue/project targets are evaluated separately using desired/status/effect ownership to select resume, observation or sender.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "sync_mapped",
+                "start": 1083,
+                "end": 1138,
+                "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+              },
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "_resume_mapped",
+                "start": 1054,
+                "end": 1080,
+                "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+          },
+          {
+            "id": "S38:02",
+            "literal_clause": {
+              "event": "binding incomplete",
+              "guard": "required identity missing",
+              "to": "waiting binding",
+              "effects": "Return waiting reason; do not invent remote target.",
+              "failure_retry": "",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "target",
+              "transition_id": "S38:02"
+            },
+            "result": "PRESERVED",
+            "guard_effect_retry": "Waiting binding/reconciliation attempts resume; still-unavailable/mismatched/nonpending effect returns the actual status rather than inventing remote identity.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "sync_mapped",
+                "start": 1083,
+                "end": 1138,
+                "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+              },
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "_resume_mapped",
+                "start": 1054,
+                "end": 1080,
+                "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+          },
+          {
+            "id": "S38:03",
+            "literal_clause": {
+              "event": "mapped resume",
+              "guard": "prior claim exists",
+              "to": "reconcile needed",
+              "effects": "Dispatch target-specific observation/replay policy instead of generic resend.",
+              "failure_retry": "",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "target unknown",
+              "transition_id": "S38:03"
+            },
+            "result": "PRESERVED",
+            "guard_effect_retry": "Resume uses saved transition/revision and target-specific observation policy; it does not perform a generic blind resend.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "sync_mapped",
+                "start": 1083,
+                "end": 1138,
+                "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+              },
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "_resume_mapped",
+                "start": 1054,
+                "end": 1080,
+                "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+          },
+          {
+            "id": "S38:04",
+            "literal_clause": {
+              "event": "failure",
+              "guard": "API/native/identity error",
+              "to": "failed target with others continuing",
+              "effects": "Collect target error and continue independent targets; no distributed rollback.",
+              "failure_retry": "",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "one target",
+              "transition_id": "S38:04"
+            },
+            "result": "TESTED",
+            "guard_effect_retry": "Current mapping owns each target; typed WorkSyncError/ArtifactError and expected URL/timeout failures are collected per target. Remote JSON parser errors now normalize to typed INVALID_REMOTE_RESPONSE before claim; postclaim ambiguity remains OUTCOME_UNKNOWN, and independent target processing continues. The genuine native stale-hash claim now returns REVISION_CONFLICT and a wrong remote work marker returns REMOTE_BINDING_UNVERIFIED. Both leave exact issue intent pending, continue one independent Project update, then explicit retry sends the issue once without repeating Project. Expected API/JSON failures and postclaim uncertainty/no resend remain covered by retained executed controls.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "sync_mapped",
+                "start": 1083,
+                "end": 1138,
+                "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+              },
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "_resume_mapped",
+                "start": 1054,
+                "end": 1080,
+                "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+              },
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "_remote_json",
+                "start": 99,
+                "end": 104,
+                "span_sha256": "98a5dc2d41780ef83c78e9a5a39ceec106ae8f788c906f40cbd280f5ffbb07e4"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim.",
+            "executed_controls": [
+              "GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+              "GithubWorkTest.test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+              "GithubWorkTest.test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target",
+              "TransportResponseJSONTest",
+              "GithubWorkTest.test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+              "GithubWorkTest.test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend",
+              "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+              "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+              "test_mapped_preclaim_programmer_error_is_not_swallowed",
+              "test_mapped_partial_issue_success_does_not_repeat_when_project_fails",
+              "test_mapped_issue_noop_reads_remote_and_repeated_sync_detects_drift",
+              "test_mapped_project_noop_reads_remote_and_repeated_sync_detects_drift",
+              "test_transport_refuses_unlisted_token_destinations"
+            ]
+          },
+          {
+            "id": "S38:05",
+            "literal_clause": {
+              "event": "aggregate",
+              "guard": "all requested complete, others not_requested",
+              "to": "complete",
+              "effects": "ok=true only if required targets complete; otherwise partial outcome retained.",
+              "failure_retry": "",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "all targets",
+              "transition_id": "S38:05"
+            },
+            "result": "PRESERVED",
+            "guard_effect_retry": "Aggregate ok requires every requested target synchronized, with omitted targets explicitly not_requested; partial actual statuses remain.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "sync_mapped",
+                "start": 1083,
+                "end": 1138,
+                "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+          },
+          {
+            "id": "S38:06",
+            "literal_clause": {
+              "event": "observe PR",
+              "guard": "GET PR/files/head identity verifies exact work intent",
+              "to": "PR observed",
+              "effects": "Record open/closed/merged observation through native state.",
+              "failure_retry": "A merged PR observation does not automatically mark local work done; transition policy remains elsewhere.",
+              "source": [
+                {
+                  "path": "core/pysrc/_workgithub.py",
+                  "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+                  "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+                  "lines": "1046-1279"
+                }
+              ],
+              "from": "any work",
+              "transition_id": "S38:06"
+            },
+            "result": "PRESERVED",
+            "guard_effect_retry": "Exact PR repository/number/url/head and bounded file listing identify the selected work; head model must name that work artifact and project. Native observe-delivery uses current local revision/hash and records open/closed/merged without marking local work done. This preserves the baseline work-identity guard; it does not invent equality of every normative title/intent field.",
+            "witnesses": [
+              {
+                "path": "core/pysrc/_workgithub.py",
+                "symbol": "observe_pull",
+                "start": 1224,
+                "end": 1293,
+                "span_sha256": "7b962f9ab1d10ba4388a2218d1d1985ccf207e11c6f7a4e89592aa42e61b3f28"
+              }
+            ],
+            "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+          }
+        ],
+        "holds": [],
+        "input_join": {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/input-join.json",
+          "sha256": "379fddb4c8c3e5c9358672254d5085d0529e104b84c7be343161c9c922b590eb"
+        },
+        "machine_acceptance": {
+          "id": "S38",
+          "result": "PRESERVED",
+          "reason": "All six preserved source clauses have explicit guard/effect/retry accounting; the only prior specific target-local native/identity runtime gap is now closed by genuine passing tests. Meaningful controlled API/parser/native/identity/partial-success/no-resend checks supplement full reasoned source review.",
+          "global_authority": "Initial map/work failures cannot enter target sends. Every sender rechecks owning repository/work/config/native authority. The tested native conflict is deliberately target-local after valid admission, not a license to bypass shared-store or global identity failure.",
+          "limits": [
+            "Not all79 tests rerun.",
+            "No universal interleavings, live GitHub effects/publication, model consent, installed package or platform cohort qualification.",
+            "No whole HW-27/program completion inferred."
+          ]
+        }
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "S38:01",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "S38:01",
+        "literal_clause": {
+          "event": "sync all",
+          "guard": "current map/config",
+          "to": "per-target processing",
+          "effects": "Process issue and project effects independently; choose resume/reconcile/send/observe according to each target state.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "core/pysrc/_workgithub.py",
+              "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+              "lines": "1046-1279"
+            }
+          ],
+          "from": "mapped work",
+          "transition_id": "S38:01"
+        },
+        "result": "PRESERVED",
+        "guard_effect_retry": "Current enabled map/generation is required; issue/project targets are evaluated separately using desired/status/effect ownership to select resume, observation or sender.",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped",
+            "start": 1083,
+            "end": 1138,
+            "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+          },
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "_resume_mapped",
+            "start": 1054,
+            "end": 1080,
+            "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+          }
+        ],
+        "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "S38:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "S38:02",
+        "literal_clause": {
+          "event": "binding incomplete",
+          "guard": "required identity missing",
+          "to": "waiting binding",
+          "effects": "Return waiting reason; do not invent remote target.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "core/pysrc/_workgithub.py",
+              "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+              "lines": "1046-1279"
+            }
+          ],
+          "from": "target",
+          "transition_id": "S38:02"
+        },
+        "result": "PRESERVED",
+        "guard_effect_retry": "Waiting binding/reconciliation attempts resume; still-unavailable/mismatched/nonpending effect returns the actual status rather than inventing remote identity.",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped",
+            "start": 1083,
+            "end": 1138,
+            "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+          },
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "_resume_mapped",
+            "start": 1054,
+            "end": 1080,
+            "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+          }
+        ],
+        "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "S38:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "S38:03",
+        "literal_clause": {
+          "event": "mapped resume",
+          "guard": "prior claim exists",
+          "to": "reconcile needed",
+          "effects": "Dispatch target-specific observation/replay policy instead of generic resend.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "core/pysrc/_workgithub.py",
+              "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+              "lines": "1046-1279"
+            }
+          ],
+          "from": "target unknown",
+          "transition_id": "S38:03"
+        },
+        "result": "PRESERVED",
+        "guard_effect_retry": "Resume uses saved transition/revision and target-specific observation policy; it does not perform a generic blind resend.",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped",
+            "start": 1083,
+            "end": 1138,
+            "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+          },
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "_resume_mapped",
+            "start": 1054,
+            "end": 1080,
+            "span_sha256": "69b7670d095d94e1afc7804972372a250b533fc71d2c072d61dcccb6be257df8"
+          }
+        ],
+        "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "S38:05",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "S38:05",
+        "literal_clause": {
+          "event": "aggregate",
+          "guard": "all requested complete, others not_requested",
+          "to": "complete",
+          "effects": "ok=true only if required targets complete; otherwise partial outcome retained.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "core/pysrc/_workgithub.py",
+              "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+              "lines": "1046-1279"
+            }
+          ],
+          "from": "all targets",
+          "transition_id": "S38:05"
+        },
+        "result": "PRESERVED",
+        "guard_effect_retry": "Aggregate ok requires every requested target synchronized, with omitted targets explicitly not_requested; partial actual statuses remain.",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync_mapped",
+            "start": 1083,
+            "end": 1138,
+            "span_sha256": "03c9c8b82a13a5fab8d1ea783f7900caaf3264be80dd14e185c2f70fe6723b7d"
+          }
+        ],
+        "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "S38:06",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "S38:06",
+        "literal_clause": {
+          "event": "observe PR",
+          "guard": "GET PR/files/head identity verifies exact work intent",
+          "to": "PR observed",
+          "effects": "Record open/closed/merged observation through native state.",
+          "failure_retry": "A merged PR observation does not automatically mark local work done; transition policy remains elsewhere.",
+          "source": [
+            {
+              "path": "core/pysrc/_workgithub.py",
+              "symbol": "sync_mapped, _resume_mapped, _verify_synchronized_mapped, observe_pull",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+              "lines": "1046-1279"
+            }
+          ],
+          "from": "any work",
+          "transition_id": "S38:06"
+        },
+        "result": "PRESERVED",
+        "guard_effect_retry": "Exact PR repository/number/url/head and bounded file listing identify the selected work; head model must name that work artifact and project. Native observe-delivery uses current local revision/hash and records open/closed/merged without marking local work done. This preserves the baseline work-identity guard; it does not invent equality of every normative title/intent field.",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "observe_pull",
+            "start": 1224,
+            "end": 1293,
+            "span_sha256": "7b962f9ab1d10ba4388a2218d1d1985ccf207e11c6f7a4e89592aa42e61b3f28"
+          }
+        ],
+        "scope": "Finite full guard/effect/retry accounting for the preserved baseline owner, combining current source inspection and named controlled runtime facts. No universal interleavings or installed/live-provider claim."
+      },
+      "current_source_assessment": "AllPythonproduction/helpers/testcallbacks andallnativeproduction/existingtestbodies remainunchanged; fullsixsourcecontractaccounting remainsvalid atcurrentcode. Newmodulehasadditionaltestdeclarations; original3/6/7controlledfacts remainhistoricalat theiroriginalepochs, notcurrentmoduleexecution.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+        "ref": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+        "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+      },
+      "current_runtime_limit": "S38nativefixture/modulecurrentruntimeUNKNOWN untilfreshactualauthenticatedresult. S38:04TESTED andall126TESTED stale rows untouched. WholeS38PRESERVED isfinite sourceconformance only; no newGitHubsend/nativebuild/liveorinstalledclaim."
+    },
+    {
+      "id": "N01:07",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N01:07",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "locked",
+          "from": "locked",
+          "event": "return or error",
+          "guard": "deferred cleanup",
+          "to": "released",
+          "effects": "Unlock and close filesystem; discard per-operation memo.",
+          "failure_retry": "No daemon or persistent in-memory coordinator.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/engine.go",
+              "symbol": "Run",
+              "lines": [
+                76
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+            }
+          ],
+          "transition_id": "N01:07"
+        },
+        "contract_sha256": "e1f039e228cff857abe2af57d4343107e2e47d9f10ded49288ddafd515f809e9",
+        "inspected_guard_effect_retry": [
+          "Run returns immediately if opening the filesystem fails. After successful open it registers defer f.Close before every later return; after successful lock it registers defer unlock. Go defer order releases the lock before closing the filesystem on ordinary return/error or recoverable stack unwinding.",
+          "Store.Open creates a new FS and newMemo for that handle. The Engine is allocated within Run with that FS; production openStore is the store.Open function. No daemon/global memo is assigned. Memo lifetime is scoped to the per-call handle reachability, not an explicit memory wipe claim.",
+          "Native init-store has its own immediate unlock and is still covered by deferred filesystem close. Failure before a lock is acquired has no acquired unlock obligation."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 78,
+            "symbol_or_anchor": "func Run(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/store/fs_portable.go",
+            "line": 45,
+            "symbol_or_anchor": "func Open(",
+            "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+          },
+          {
+            "path": "core/artifacts/internal/store/fs_portable.go",
+            "line": 72,
+            "symbol_or_anchor": "func (f *FS) Close(",
+            "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [
+          "Go defer semantics apply; process termination/os.Exit and uncooperative filesystem attacks are outside this return/error contract."
+        ],
+        "runtime_limits": [
+          "Existing runtime tests exercise successful return and subsequent operations, lock exclusion/retry and bounded per-operation reuse; no named test directly observes every deferred close on every error branch."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N07:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N07:02",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "resolved",
+          "from": "resolved",
+          "event": "record.update status=open",
+          "guard": "valid closed schema",
+          "to": "open",
+          "effects": "Retain explicit unresolved state; blocking decision causes Ready failure.",
+          "failure_retry": "No specialized irreversible transition policy: generic apply permits reopening. Deferred is a criterion disposition or decomposition question state, not a spec open-decision status.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/validate.go",
+              "symbol": "Ready",
+              "lines": [
+                437
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+            }
+          ],
+          "transition_id": "N07:02"
+        },
+        "contract_sha256": "7473e3a029df1772daf36662aa867ff03517ea8fa4876e677b2e670927c2adf9",
+        "inspected_guard_effect_retry": [
+          "Generic record.update clones the document, finds the active symbol, keeps its immutable ID, and writes supplied fields before structural validation. It contains no irreversible open-decision transition rule.",
+          "The closed open_decision schema allows exactly open/resolved status. Generic apply can therefore move resolved to open if all record fields remain valid. Prepare performs Structural, not Ready; saving an explicitly unresolved draft remains possible.",
+          "Ready separately emits OPEN_BLOCKER whenever blocking is true and status is not resolved. The update changes semantic content/revision; invalid structure is rejected before save."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "line": 208,
+            "symbol_or_anchor": "func Changes(",
+            "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+          },
+          {
+            "path": "core/artifacts/internal/render/render.go",
+            "line": 50,
+            "symbol_or_anchor": "func Prepare(",
+            "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+          },
+          {
+            "path": "core/artifacts/internal/validate/validate.go",
+            "line": 450,
+            "symbol_or_anchor": "func Ready(",
+            "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 482,
+            "symbol_or_anchor": "func (e *Engine) save(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/schema/common.schema.json",
+            "line": 461,
+            "symbol_or_anchor": "\"open_decision\":",
+            "sha256": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "No existing named assertion found for the complete resolved→open→Ready OPEN_BLOCKER sequence or invalid status preserving the original document. Static schema/control-flow conformance supports the baseline; no runtime test result is invented."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N12:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N12:03",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "legacy satisfied, no ordinary observation",
+          "from": "legacy satisfied, no ordinary observation",
+          "event": "ordinary assessment",
+          "guard": "historical receipt not live assessed here",
+          "to": "unknown / legacy_receipt_unassessed",
+          "effects": "Report recorded legacy flag separately.",
+          "failure_retry": "Never silently promote old satisfied flag into fresh observed fact.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation.go",
+              "symbol": "recordPrerequisite",
+              "lines": [
+                17
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/prerequisite_observation.go"
+            }
+          ],
+          "transition_id": "N12:03"
+        },
+        "contract_sha256": "d3891d9ea86c1a642e07289b5782d40e76c3fb366b46fcb8513f714ddf72c640",
+        "inspected_guard_effect_retry": [
+          "outcome, provenance initialized unknown, none.",
+          "Only matching ordinary observation can assign outcome.",
+          "else-if legacy prerequisite state equals satisfied assigns provenance legacy_receipt_unassessed, leaving outcome unknown.",
+          "Return exposes recorded_state independently and literal evidence_assessed false."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/model/assistive.go",
+            "sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+            "line": 83,
+            "symbol_or_anchor": "PrerequisiteAssessment"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [
+          "Structural admitted plan supplies execution/prerequisites as defined; this is read projection, no fresh legacy receipt validity assertion."
+        ],
+        "runtime_limits": [
+          "No original named assertion sets legacy satisfied with no observation; proposed PRESERVED relies on the exact source branch, not another test outcome."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N20:04",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N20:04",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "completed delivery",
+          "from": "completed delivery",
+          "event": "CheckTicket",
+          "guard": "exact current context selection and full delivery offset",
+          "to": "valid or stale ticket",
+          "effects": "Validate retained ticket only.",
+          "failure_retry": "No production call sites currently consume CheckTicket; ordinary task-start ignores historical ticket.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/read/read.go",
+              "symbol": "CheckTicket",
+              "lines": [
+                383
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+            }
+          ],
+          "transition_id": "N20:04"
+        },
+        "contract_sha256": "2e97e5fdd04d72aece81043c7c856d8d472ff4ef7f0f36a384cb09a232bdda11",
+        "inspected_guard_effect_retry": [
+          "CheckTicket loads the retained content-addressed receipt, checks purpose=context plus exact artifact/task symbol, computes current Context and compares vector_sha256, manifest_sha256 and full delivered offset=len(items). It returns the appropriate error without changing task progress.",
+          "The current production Go call graph has no CheckTicket consumer: the only calls outside its definition are two Linux-only direct tests. Ordinary task-start routes to recordWork and does not consult historical CheckTicket.",
+          "Retained ticket validation does not grant authority or start work. Changed selection/manifest/offset refuses; no private context-key is used."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/read/read.go",
+            "line": 383,
+            "symbol_or_anchor": "func CheckTicket(",
+            "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39"
+          },
+          {
+            "path": "core/artifacts/internal/store/infrastructure.go",
+            "line": 193,
+            "symbol_or_anchor": "func (f *FS) ContextToken(",
+            "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 78,
+            "symbol_or_anchor": "func Run(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "line": 252,
+            "symbol_or_anchor": "func (e *Engine) progress(",
+            "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "Both existing selectors are Linux-build-only and absent from the actual Windows475 population. They cover invented/forged receipt rejection and content-addressing; no named positive CheckTicket or stale vector/manifest/partial-offset matrix was found."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N25:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N25:02",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "question open/deferred",
+          "from": "question open/deferred",
+          "event": "record.update status answered",
+          "guard": "question type; nonblank answer",
+          "to": "answered",
+          "effects": "Persist answer and semantic revision.",
+          "failure_retry": "Answered without answer rejects; no requirement that a specific actor event occurred.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/knowledge.go",
+              "symbol": "knowledgeStructure",
+              "lines": [
+                13
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+            }
+          ],
+          "transition_id": "N25:02"
+        },
+        "contract_sha256": "ae8c2502945c5fbb5e29e9f9d25e681e72028f5b066d292f26851fdbd41f15de",
+        "inspected_guard_effect_retry": [
+          "Question is a decomposition record type. The closed schema permits open,answered,deferred statuses; knowledgeStructure requires status exactly for question records.",
+          "Changing question status to answered requires nonblank answer. Structural validation happens before native save; an answered-without-answer update therefore cannot publish a new canonical revision.",
+          "A valid generic update persists the answer and revision via the common transactional save; no user/event receipt is required by this generic record contract."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "line": 208,
+            "symbol_or_anchor": "func Changes(",
+            "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+          },
+          {
+            "path": "core/artifacts/internal/render/render.go",
+            "line": 50,
+            "symbol_or_anchor": "func Prepare(",
+            "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+          },
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "line": 13,
+            "symbol_or_anchor": "func knowledgeStructure(",
+            "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 482,
+            "symbol_or_anchor": "func (e *Engine) save(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/schema/decomposition.schema.json",
+            "line": 207,
+            "symbol_or_anchor": "\"promotion\":",
+            "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "No direct existing named answer/nonblank/refusal-preserves-revision assertion found. Source conformance is limited to the closed shape, validator predicate and pre-save ordering."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N25:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N25:03",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "answered/open",
+          "from": "answered/open",
+          "event": "record.update status open/deferred",
+          "guard": "valid closed schema",
+          "to": "open/deferred",
+          "effects": "Permit reopening/defer; no irreversible policy encoded.",
+          "failure_retry": "Only question records may carry status/answer.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/knowledge.go",
+              "symbol": "knowledgeStructure",
+              "lines": [
+                13
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+            }
+          ],
+          "transition_id": "N25:03"
+        },
+        "contract_sha256": "db30f5c2aa3165a5df4dfa3cd7d43886661ce39fe2457f0de57b27241487295e",
+        "inspected_guard_effect_retry": [
+          "The same closed decomposition record schema allows open and deferred. record.update has no irreversible answered-state rule, so an answered/open question can reopen or defer if the resulting record remains structurally valid.",
+          "knowledgeStructure rejects status or answer on non-question records. Generic update retains immutable identity and saves one new semantic revision only after Structural passes.",
+          "Ready does not reinterpret decomposition question status as artifact authority. Retained answer text may remain when reopening; no additional actor/event requirement is introduced."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "line": 208,
+            "symbol_or_anchor": "func Changes(",
+            "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+          },
+          {
+            "path": "core/artifacts/internal/render/render.go",
+            "line": 50,
+            "symbol_or_anchor": "func Prepare(",
+            "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+          },
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "line": 13,
+            "symbol_or_anchor": "func knowledgeStructure(",
+            "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 482,
+            "symbol_or_anchor": "func (e *Engine) save(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/schema/decomposition.schema.json",
+            "line": 207,
+            "symbol_or_anchor": "\"promotion\":",
+            "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "No direct named answered→open/deferred matrix or non-question status/answer refusal sequence found. The relevant enum/type/control-flow are source-conformant."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N25:05",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N25:05",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "work_item unpromoted",
+          "from": "work_item unpromoted",
+          "event": "record.update promotion",
+          "guard": "work_item type; exact board_id or work_id + origin shape",
+          "to": "promoted reference",
+          "effects": "Store reference only; native generic apply does not itself create linked work.",
+          "failure_retry": "Cross-store promotion reconciliation belongs to Python caller; shape alone does not prove target exists.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/knowledge.go",
+              "symbol": "knowledgeStructure",
+              "lines": [
+                13
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+            }
+          ],
+          "transition_id": "N25:05"
+        },
+        "contract_sha256": "40258cb1cf712fe447b8afa5e5d9c800f30115d850cecdfca3fc48e339dfac97",
+        "inspected_guard_effect_retry": [
+          "Promotion is permitted only on work_item records. The closed promotion shape is null or exactly one origin+board_id or origin+WORK-[A-F0-9]{32} work_id form; malformed or non-work-item promotion fails Structural before save.",
+          "Generic record.update stores a back-reference through ordinary save. It does not invoke work-create or verify that the cross-store target exists. Cross-store retry/reconciliation is a caller responsibility.",
+          "The existing candidate-is-not-published test confirms saving an unpromoted candidate changes neither the legacy board nor promotion field; Python promotion adapters separately own actual work creation and idempotent repair."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "line": 208,
+            "symbol_or_anchor": "func Changes(",
+            "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+          },
+          {
+            "path": "core/artifacts/internal/render/render.go",
+            "line": 50,
+            "symbol_or_anchor": "func Prepare(",
+            "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+          },
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "line": 13,
+            "symbol_or_anchor": "func knowledgeStructure(",
+            "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "line": 482,
+            "symbol_or_anchor": "func (e *Engine) save(",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+          },
+          {
+            "path": "core/artifacts/internal/schema/decomposition.schema.json",
+            "line": 207,
+            "symbol_or_anchor": "\"promotion\":",
+            "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "Candidate nonpublication is an actual Windows named pass. No native named promotion shape/type matrix or arbitrary syntactically valid but nonexistent target probe was found.",
+          "Existing Python KnowledgeCLITest promotion tests exercise caller repair/work creation, not a substitute for every native generic-promotion rejection clause."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N36:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N36:03",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "any memo state",
+          "from": "any memo state",
+          "event": "operation closes FS",
+          "guard": "deferred close",
+          "to": "discarded",
+          "effects": "No cross-operation trust/cache survives.",
+          "failure_retry": "Completion normalized cache only valid if no intervening output/catalog write in same operation.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/evidence/completion_workspace.go",
+              "symbol": "completionWorkspaceKey",
+              "lines": [
+                92
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+            }
+          ],
+          "transition_id": "N36:03"
+        },
+        "contract_sha256": "868a16961af8d696263e052134f45aa4a662edd3b71991fabd5c9a2c3da843fd",
+        "inspected_guard_effect_retry": [
+          "Each Run calls openStore and defers Close; Open allocates a fresh newMemo per FS and no Run handle escapes. completionWorkspaceKey is explicitly an operation-memo key; normalized reuse is conditional on no intervening catalog/output write, not automatically invalidated by every arbitrary caller. Reusing completion consumers operate before publication. No daemon/global cross-operation trust cache exists."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "line": 78,
+            "symbol_or_anchor": null
+          },
+          {
+            "path": "core/artifacts/internal/store/fs_portable.go",
+            "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+            "line": 24,
+            "symbol_or_anchor": null
+          },
+          {
+            "path": "core/artifacts/internal/evidence/completion_workspace.go",
+            "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+            "line": null,
+            "symbol_or_anchor": "completionWorkspaceKey"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "Operation ownership/lifetime source contract only; Close does not promise synchronous erasure of an externally retained FS pointer. No timing/memory-retention or cross-process runtime claim."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N37:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N37:02",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "durable result",
+          "from": "durable result",
+          "event": "encode bounded response",
+          "guard": "encoded payload fits budget",
+          "to": "response encoded",
+          "effects": "Build JSON stdout result.",
+          "failure_retry": "RESPONSE_TOO_LARGE after Run may occur after side effect; do not infer no commit from error.",
+          "source": [
+            {
+              "path": "core/artifacts/cmd/ca-artifact/main.go",
+              "symbol": "main",
+              "lines": [
+                16
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+            }
+          ],
+          "transition_id": "N37:02"
+        },
+        "contract_sha256": "dd6c60ea86518dd6e79aedf0f4b5398bcf4eeeae66fec094d2ae26d146fac08a",
+        "inspected_guard_effect_retry": [
+          "CLI calls operations.Run before serializing the success envelope. It marshals that envelope, selects default65536 or a present request budget, and rejects encoded length+newline above the limit with RESPONSE_TOO_LARGE.",
+          "The size check precedes stdout success write but follows Run. Therefore its error does not establish rollback or absence of a completed mutation. Recovery/operation identity remains authoritative for uncertain acknowledgement.",
+          "Native source is unchanged for this wrapper; the one CLI named test only proves a JSON public fault and matching unknown-operation exit classification."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "line": 17,
+            "symbol_or_anchor": "func run(",
+            "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "No named runtime fixture covers a successful Run whose final encoded envelope exceeds the wrapper budget, especially after a mutation. Source ordering establishes the limited no-rollback contract, not a local execution observation."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N37:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N37:03",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "response encoded",
+          "from": "response encoded",
+          "event": "stdout write",
+          "guard": "write succeeds",
+          "to": "ack delivered",
+          "effects": "Caller observes result.",
+          "failure_retry": "Write failure exits5; same operation ID/recovery state is authority for uncertain acknowledgement.",
+          "source": [
+            {
+              "path": "core/artifacts/cmd/ca-artifact/main.go",
+              "symbol": "main",
+              "lines": [
+                16
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+            }
+          ],
+          "transition_id": "N37:03"
+        },
+        "contract_sha256": "0c010126b1f8bcf757fdceed874ff95c2bb7fd26bed9daf7a5ba3c5938c91399",
+        "inspected_guard_effect_retry": [
+          "After passing encoding/budget checks, CLI writes the success JSON plus newline once. A returned stdout write error yields exit5; successful writes proceed to ordinary exit0 or validation exit2 as applicable.",
+          "There is no rollback on acknowledgement write failure. Run may already have committed; the caller must inspect/retry the same operation ID according to native recovery state.",
+          "The public-fault helper has a separate best-effort write; it is not the successful acknowledgement branch being preserved here."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "line": 17,
+            "symbol_or_anchor": "func run(",
+            "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [
+          "io.Writer follows its interface contract; this branch guarantees handling a returned write error, not an independently proven arbitrary writer implementation."
+        ],
+        "runtime_limits": [
+          "No direct named stdout-write-error/exit5 assertion found. Existing actual JSON-fault test does not exercise successful-envelope write failure."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N37:04",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N37:04",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "operation running",
+          "from": "operation running",
+          "event": "panic",
+          "guard": "recover handler",
+          "to": "error acknowledgement",
+          "effects": "Return INTERNAL_ERROR with recovery inspection advice.",
+          "failure_retry": "No rollback claim; transaction state controls safe retry.",
+          "source": [
+            {
+              "path": "core/artifacts/cmd/ca-artifact/main.go",
+              "symbol": "main",
+              "lines": [
+                16
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+            }
+          ],
+          "transition_id": "N37:04"
+        },
+        "contract_sha256": "c4d8aa232fafc96b5f78906a24c9458c0d44a61d017b8f6be1e7f81efebfd22a",
+        "inspected_guard_effect_retry": [
+          "CLI installs a deferred recover handler before argument/request/Run processing. A recoverable panic is converted to INTERNAL_ERROR with explicit no-completion/recovery-inspection advice and the public fault exit class.",
+          "The handler never claims transaction rollback. Canonical recovery state remains the source of safe retry truth after a possible effect.",
+          "A failure/panic inside the reporting writers themselves is not promised as a second independently recoverable failure by this source contract."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "line": 17,
+            "symbol_or_anchor": "func run(",
+            "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [
+          "A recoverable Go panic and functioning diagnostic writers are required; fatal runtime/process termination and a second panic in reporting are excluded."
+        ],
+        "runtime_limits": [
+          "No direct named injected panic→INTERNAL_ERROR/recovery-advice assertion found; the ordinary public fault named pass is only partial output-shape evidence."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N38:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N38:02",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "any fact/constraint status",
+          "from": "any fact/constraint status",
+          "event": "propose typed claim",
+          "guard": "closed state vocabulary; evidence refs and valid source/consumer paths",
+          "to": "requested proposed/inferred/observed or existing_applicable/observed_upstream/proposed_adoption",
+          "effects": "Retain declared meaning distinct from source revalidation and permission.",
+          "failure_retry": "No automatic promotion to approved policy.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/contextdocument/contract.go",
+              "symbol": "validateEntry",
+              "lines": [
+                177
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/contextdocument/contract.go"
+            }
+          ],
+          "transition_id": "N38:02"
+        },
+        "contract_sha256": "3d5d3ee1d38a9ee77aee600a83a163833beb76dbd8567c15df3c21533f9d0218",
+        "inspected_guard_effect_retry": [
+          "validateEntry closes kind-specific key sets; fact state only observed/inferred/proposed and constraint-reference status only existing_applicable/observed_upstream/proposed_adoption. refs and relative scope validation precede return. No route grants approval from declared status."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/contextdocument/contract.go",
+            "sha256": "62d24a2193b7a68a659c3f3beaa8d09b34ac03d165e781aae20939d8ad2ca84a",
+            "line": 177,
+            "symbol_or_anchor": null
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "Finite source-contract conformance only; no assertion all state variants or authenticity/source revalidation executed."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N38:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "cell": "disposition:transitions:N38:03",
+        "proposed_status": "PRESERVED",
+        "frozen_clause": {
+          "from_state": "provenance claim",
+          "from": "provenance claim",
+          "event": "propose semantic review",
+          "guard": "closed unreviewed/reviewed/identity_acknowledged shape; reviewed requires reference",
+          "to": "declared review state",
+          "effects": "Retain reference and provenance; apply independently reacquires source bytes/membership.",
+          "failure_retry": "A review label is not authenticated review authority.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/contextdocument/operations.go",
+              "symbol": "parseProvenanceV2",
+              "lines": [
+                199
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/contextdocument/operations.go"
+            }
+          ],
+          "transition_id": "N38:03"
+        },
+        "contract_sha256": "fc9c6554394b2c0df08b9bdc6ec9d40976f28dd10eba321d7f141e062905594c",
+        "inspected_guard_effect_retry": [
+          "parseProvenanceV2 requires exact claim/review keys; state only unreviewed/reviewed/identity_acknowledged; reviewed requires safe nonempty reference. ApplyOrdinary separately calls ValidateCurrentEvidence before mutation; reference label is not authority."
+        ],
+        "current_source_witnesses": [
+          {
+            "path": "core/artifacts/internal/contextdocument/operations.go",
+            "sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f",
+            "line": 199,
+            "symbol_or_anchor": null
+          },
+          {
+            "path": "core/artifacts/internal/contextdocument/operations.go",
+            "sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f",
+            "line": null,
+            "symbol_or_anchor": "ApplyOrdinary"
+          }
+        ],
+        "observed_assertions": [],
+        "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+        "assumptions": [],
+        "runtime_limits": [
+          "Finite source clause preserved; no independent review authentication, model quality or runtime matrix of all semantic-review state variants."
+        ]
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+        "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+        "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N05:01",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N05:01",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "67cfced28be74465c75aaad482fb8ddda4d3534f73dd8e843dc9402f9b5edefa",
+        "full_guard_effect_retry": {
+          "from_state": "draft or approved",
+          "from": "draft or approved",
+          "event": "approve",
+          "guard": "Ready + current exact approval receipt; plan bound approved_source to approved spec; allowed authority profile",
+          "to": "approved",
+          "effects": "Append approval, increment revision, render and journal artifact.",
+          "failure_retry": "Generic approve refuses sprint_pair/SMARTS profiles; invalid/stale receipt never changes state.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/lifecycle.go",
+              "symbol": "approve",
+              "lines": [
+                42
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+            }
+          ],
+          "transition_id": "N05:01"
+        },
+        "assessment": "approve checks actual Ready state, approved source/spec for plans, immutable loaded receipt subject and profile; rejects pair and SMARTS receipts, clones and appends approval, increments revision and saves through journal. No source path mints an event from caller labels. Partial original generic/pair tests do not establish every failure branch.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "approve",
+            "start": 42,
+            "end": 87,
+            "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+            "span_sha256": "cc7fb824b7ed4e355b25af4f4b7613a82df6d69beb6bd1b0a438455152b8e23e"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N05:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N05:02",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "55ddb1ac9ca3485ac3ea3b72fe9f9297edf17c9e685dff92e20cb8a38f074bfa",
+        "full_guard_effect_retry": {
+          "from_state": "approved",
+          "from": "approved",
+          "event": "normative apply",
+          "guard": "valid closed changes alter normative hash",
+          "to": "draft",
+          "effects": "Keep historical approvals; revision advances; surviving execution progress preserved.",
+          "failure_retry": "CAS and structural errors refuse whole batch.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/mutations.go",
+              "symbol": "Changes",
+              "lines": [
+                208
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+            }
+          ],
+          "transition_id": "N05:02"
+        },
+        "assessment": "Changes clones before applying the closed batch; symbol and structural/render errors return before engine.save. syncExecution retains surviving task state/evidence, approvals survive cloning; changed normative hash sets governance draft, revision advances. Request CAS and final save wrap the complete batch; no partial changed document is committed.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "Changes",
+            "start": 208,
+            "end": 410,
+            "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+            "span_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be"
+          },
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "syncExecution",
+            "start": 90,
+            "end": 130,
+            "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+            "span_sha256": "e837b93c3a01cd01629fe17afa9a758f5eafaa41d51b7030e54c0857c97bc24b"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "start": 414,
+            "end": 427,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "eca83fe41db723dbfb0c2cac59425c4c579f69fab2b1e1e790a528ba8db2b029"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "save",
+            "start": 482,
+            "end": 500,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N05:03",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N05:03",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "789b9a5e2cbfe7ac9d1ccdac1ea5b6d5365ee58896a7e8521ed27a6409595059",
+        "full_guard_effect_retry": {
+          "from_state": "any",
+          "from": "any",
+          "event": "rebrand / presentation change",
+          "guard": "valid bounded logo/name",
+          "to": "same governance",
+          "effects": "Increment model revision/hash only; normative identity unchanged.",
+          "failure_retry": "No approval or receipt fabricated.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/engine.go",
+              "symbol": "Run",
+              "lines": [
+                76
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+            }
+          ],
+          "transition_id": "N05:03"
+        },
+        "assessment": "rebrand clones the document, changes only presentation name/logo, validates bounded filesystem logo bytes/MIME via render.Logo, advances model revision, prepares and journals. Normative/governance/evidence state are untouched; no approval/authority evidence receipt is minted. Ordinary transaction history is separate. Original positive rebrand test is partial, so full row remains source-only.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "start": 428,
+            "end": 455,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "775c37eeac363cdca90be5513c9208b17b1b9b70ae938910af52f2ed3956186c"
+          },
+          {
+            "path": "core/artifacts/internal/render/brand.go",
+            "symbol": "Logo",
+            "start": 31,
+            "end": 53,
+            "file_sha256": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2",
+            "span_sha256": "f632e2069789e7415e7defbf278cd0907aa17d7416c403adf257546df2f6b11e"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "save",
+            "start": 482,
+            "end": 500,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N06:01",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N06:01",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "2d1827a1d0483e26dd6bb6a3e49865e652a129891f41f0ce04da711dfe5e7ed2",
+        "full_guard_effect_retry": {
+          "from_state": "never allocated",
+          "from": "never allocated",
+          "event": "record.add",
+          "guard": "valid collection; ID never active/retired/allocated in same batch",
+          "to": "active",
+          "effects": "Add stable record; sync execution for new tasks/prerequisites; increment revision.",
+          "failure_retry": "ID reuse rejected; whole batch atomic.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/mutations.go",
+              "symbol": "Changes",
+              "lines": [
+                208
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+            }
+          ],
+          "transition_id": "N06:01"
+        },
+        "assessment": "record.add accepts only mutable collections (or criterion nested scenarios), reserves every prior/retired/newly observed identity, allocates a typed unused ID when absent, rejects reintroduction or kind change across the batch. Final symbol build and render validate before save; syncExecution adds only new task/prerequisite defaults, preserves survivors and increments revision. ID reuse and structural errors refuse the whole cloned batch.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "Changes",
+            "start": 208,
+            "end": 410,
+            "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+            "span_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be"
+          },
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "syncExecution",
+            "start": 90,
+            "end": 130,
+            "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+            "span_sha256": "e837b93c3a01cd01629fe17afa9a758f5eafaa41d51b7030e54c0857c97bc24b"
+          },
+          {
+            "path": "core/artifacts/internal/operations/mutations.go",
+            "symbol": "nextRecordID",
+            "start": 131,
+            "end": 138,
+            "file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+            "span_sha256": "c6c3fa21763ba893810cabc51286ec303553012bcf4f246e906d341ea0f51c4f"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "save",
+            "start": 482,
+            "end": 500,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N08:01",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N08:01",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "8cc56302561ad9395c5ca83925487c3d5880c10718067c5964d1327ed83bc227",
+        "full_guard_effect_retry": {
+          "from_state": "any valid binding",
+          "from": "any valid binding",
+          "event": "plan-bind draft_preview",
+          "guard": "same-slug Ready pair; exact spec_expected CAS when explicit draft mode",
+          "to": "draft_preview current",
+          "effects": "Bind current spec digest; preserve execution/history; plan governance remains/resets draft, revision advances.",
+          "failure_retry": "Concurrent source change or invalid pair refuses; no source approval invented.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/lifecycle.go",
+              "symbol": "bind",
+              "lines": [
+                88
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+            }
+          ],
+          "transition_id": "N08:01"
+        },
+        "assessment": "Explicit draft_preview bind checks exact spec revision+model CAS, canonical same-slug identity and Ready spec/next plan. It clones current plan, updates current source digest, retains execution and historical approvals, sets governance draft and advances revision, then saves. Original history/progress positives exist; source guard/retry coverage is not inflated into complete executed branch coverage.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "bind",
+            "start": 88,
+            "end": 153,
+            "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+            "span_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3"
+          },
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "save",
+            "start": 482,
+            "end": 500,
+            "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+            "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N08:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N08:02",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "32228d7930ca0b5d931dbab73bdae5f1eed6b036786d99bed5ec7d998719b22b",
+        "full_guard_effect_retry": {
+          "from_state": "any valid binding",
+          "from": "any valid binding",
+          "event": "plan-bind default",
+          "guard": "valid current spec; actual authority assessed",
+          "to": "approved_source current or draft_preview current",
+          "effects": "Choose approved_source only when genuine source approval valid; preserve work state.",
+          "failure_retry": "No approval receipt required just to rebind ordinary plan.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/lifecycle.go",
+              "symbol": "bind",
+              "lines": [
+                88
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+            }
+          ],
+          "transition_id": "N08:02"
+        },
+        "assessment": "Default bind requires actual structural spec validity, starts with draft_preview, switches to approved_source only when authority.Approved succeeds, and never demands a new receipt merely to bind. Clone preserves work/history; binding is validated and governance is draft, with revision/save after validation. No failed authority lookup is reinterpreted as approved.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "bind",
+            "start": 88,
+            "end": 153,
+            "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+            "span_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N10:05",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N10:05",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "90fb1af92dd6f08f5b73eb525dd0303ea5b4f08f72599b172aa46b3aecdd91e3",
+        "full_guard_effect_retry": {
+          "from_state": "any plan task states",
+          "from": "any plan task states",
+          "event": "verification-status",
+          "guard": "strict guards+prereqs+snapshot",
+          "to": "unchanged",
+          "effects": "Project all_accepted_and_current only when every task ACCEPTED, fresh, no conflicting checks or unassessed trimmed history.",
+          "failure_retry": "May fail due to approval, stale source, infrastructure or missing evidence; never treats DONE/REVIEW as verification.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/lifecycle.go",
+              "symbol": "verificationStatus",
+              "lines": [
+                207
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+            }
+          ],
+          "transition_id": "N10:05"
+        },
+        "assessment": "verificationStatus requires plan kind, strict guards/prerequisite receipt assessment and current snapshot before projecting each task. All-accepted requires ACCEPTED plus AcceptedFresh and both no conflicting reports and no unassessed trimmed history. Every error propagates, and no progress/receipt is written. Current original lifecycle/conflict positives do not become an assertion that the full trimmed-history caller composition was executed.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "verificationStatus",
+            "start": 207,
+            "end": 237,
+            "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+            "span_sha256": "5c6e3bab793fb969184488c4075e68432dc754f0ac7ab35b3d6eeadb1307c0f4"
+          },
+          {
+            "path": "core/artifacts/internal/operations/lifecycle.go",
+            "symbol": "prerequisites",
+            "start": 157,
+            "end": 182,
+            "file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+            "span_sha256": "ff91e16750886b2c3161befe2919914fcb6cf86754d7028f03f564d1b57ef45f"
+          },
+          {
+            "path": "core/artifacts/internal/operations/task_check.go",
+            "symbol": "checkConflictsAssessed",
+            "start": 189,
+            "end": 265,
+            "file_sha256": "8403342ab4529d290d5ddf3069a0936d9b9c3f04cca6b0afe0a19e2a93c75ba6",
+            "span_sha256": "582711de4ae288a80c6f389c7488487c6212affa33c68da49968b2d6f74d07c4"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    },
+    {
+      "id": "N19:02",
+      "section": "transitions",
+      "original_complete_clause_mapping": {
+        "id": "N19:02",
+        "status_proposed": "PRESERVED",
+        "frozen_contract_sha256": "fc806c9c40b8e4d08cd6f00e7f7ef5d1b8245d8d1ccc30a85ee464304a90d611",
+        "full_guard_effect_retry": {
+          "from_state": "affected task closure",
+          "from": "affected task closure",
+          "event": "resetMethodDependents",
+          "guard": "no affected IN_PROGRESS task",
+          "to": "PENDING except BLOCKED preserved",
+          "effects": "Clear affected scope baselines; preserve blocked stops and evidence refs.",
+          "failure_retry": "ACTIVE_WORK rejects whole method mutation if any affected work active.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/sprint.go",
+              "symbol": "resetMethodDependents",
+              "lines": [
+                258
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/sprint.go"
+            }
+          ],
+          "transition_id": "N19:02"
+        },
+        "assessment": "resetMethodDependents expands the affected set through task/checkpoint/dependency fixed point, checks every affected state for IN_PROGRESS before mutation and returns ACTIVE_WORK. Then BLOCKED records remain byte-equivalent, other states become PENDING with invalidation reason, historical evidence refs stay and affected scope baselines are removed. Changes already cloned the document and smartsApply does not write new authority or commit before reset succeeds. Existing positive reset/blocked tests do not supply the missing direct ACTIVE_WORK oracle.",
+        "source_witnesses": [
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "resetMethodDependents",
+            "start": 258,
+            "end": 308,
+            "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+            "span_sha256": "7f59d81346f79766b467b76022f28f1d53fa894ea5141d0dec4610c352d28bb9"
+          },
+          {
+            "path": "core/artifacts/internal/operations/sprint.go",
+            "symbol": "smartsApply",
+            "start": 309,
+            "end": 421,
+            "file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+            "span_sha256": "3dfec670004d231bce6308cb2da9dba2d9ad7533c652f54b59089aa7940fcde8"
+          }
+        ],
+        "actual_original_named_results": [],
+        "source_only_limit": "PRESERVED means source guard/effect/retry inspection only; no complete executed-row claim."
+      },
+      "current_source_assessment": "Fulloriginalguard/effect/retry mappingremainsvalid: allitsproductionfilewitnessesarecurrentbyteexact. Solemoduledelta isadditionaltestfunctiondeclarations/imports; oldsource/testhelpers unchanged. No newlive/runtimeassertion.",
+      "prior_evidence": {
+        "kind": "conformance-check",
+        "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+        "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/source-preserved.json",
+        "sha256": "79ec7b4eae683baa7ef4bfd08942fd41dec65fd0790a2f17f5b99b42e9a40636"
+      },
+      "current_test_readset_limit": "Completeoriginalinputs/profile retained; currentruntime applicability notinferredfrom preservedproductionbody. Originalmissingnamedruntimecontrols remainmissing."
+    }
+  ],
+  "all27_complete_prior_clauses_rechecked": true,
+  "source_bug_or_narrative_mismatch_found": false,
+  "scope": "OnlysourcePRESERVED renewals atsamefull originalguard/effect/retry readsets. Priorreviewtext/epochs/rawfacts retainedwithnewcompletecurrentinput/source/testaddition joins. No freshbroadreview/test/build.",
+  "global_limits": [
+    "No Go/Pythonproducttests/nativebuild/API/provider/installed/CI/fleet invocation.",
+    "Currentmoduleimport/testpopulation change isacknowledged,not erased ortreatedasnewtestPASS.",
+    "Native27doesnotcompleteallnativeprogramme/tasks.",
+    "S38runtimeUNKNOWN preserved; exactauthentic original3/6/7facts donotqualify currentcompilemembership."
+  ],
+  "join": {
+    "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/input-and-causal-readset-join.json",
+    "sha256": "3ef67fb78185ef1e54b10d6c110c2eac5fce37d0d78c5b4c3f2f0d4718773f4f"
+  }
+}
