@@ -26,6 +26,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Reject invalid suite deadlines and unavailable interpreters before launch, and contradictory or zero-test unittest summaries even when the child exits successfully.
 - Track Python import-directory membership so shadow modules invalidate evidence while unread file content changes remain outside the declared scope.
 - Capture bounded Windows timeout stack projections through the typed SDK engine, verifying process identity, policy and detachment before reporting captured frames.
 - Retain bounded Windows process state and private stack projections after Pi RPC timeouts without changing the failed result or cleanup.
