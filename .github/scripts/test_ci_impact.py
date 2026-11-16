@@ -5453,6 +5453,74 @@ class SuiteEntrypointTest(unittest.TestCase):
         self.assertIsNotNone(self.ENTRY.search('if __name__ == "__main__":\n    unittest.main()\n'))
 
 
+class SdkFooterSourceWorkflowTests(unittest.TestCase):
+    def assert_sdk_route(self,ci):
+        jobs=workflow_jobs(ci);job=jobs["ca-pi-checks"]
+        self.assertIn('name: "[CHECK] | [PI  ] | Host-independent adapter contract"',job)
+        self.assertIn('runs-on: ubuntu-latest',job)
+        self.assertIn('      contents: read\n      actions: read',job)
+        self.assertNotIn('strategy:',job)
+        self.assertEqual(job.count('pi_host_locks.py install --version'),1)
+        suite=re.search(r'(?ms)^      - name: Test release package contract\n(?P<body>.*?)(?=^      - |\Z)',job)
+        self.assertIsNotNone(suite)
+        body=suite.group('body')
+        self.assertNotIn('if:',body);self.assertNotIn('continue-on-error',body)
+        self.assertNotIn('||',body);self.assertNotIn('--rpc-commands',body)
+        self.assertNotIn('--platform-partition',body)
+        self.assertIn('working-directory: .',body)
+        self.assertIn('run: >-',body)
+        command=' '.join(line.strip() for line in body.split('run: >-',1)[1].splitlines() if line.strip())
+        self.assertEqual(command,'python -B .github/scripts/major_qualification_report.py observe-python '
+          '--repo . --source-profile pi-sdk-footer-v1 '
+          '--source-payload "${{ runner.temp }}/pi-sdk-source-inputs" '
+          '--output "${{ runner.temp }}/pi-sdk-python-observation.json" -- .github/scripts/test_pi_package.py')
+        self.assertEqual(job.count('-- .github/scripts/test_pi_package.py'),1)
+        self.assertNotIn('run: python .github/scripts/test_pi_package.py\n',job)
+        prepare=job.index('name: Prepare Pi SDK footer source-test inputs')
+        execute=job.index('name: Test release package contract')
+        upload=job.index('name: Upload Pi SDK footer source-test inputs')
+        emit=job.index('name: Emit original Pi SDK footer source qualification report')
+        self.assertLess(prepare,execute);self.assertLess(execute,upload);self.assertLess(upload,emit)
+        self.assertIn("steps.pi_sdk_source_prepare.outcome == 'success'",job[upload:emit])
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9',job[upload:emit])
+        self.assertIn('include-hidden-files: true',job[upload:emit]);self.assertIn('overwrite: false',job[upload:emit])
+        emitter=job[emit:]
+        for token in ("github.event_name == 'push'","github.ref == 'refs/heads/main'",
+                      "github.ref == 'refs/heads/major/state-contracts'","hashFiles('.github/integration-candidate.json') != ''",
+                      "steps.pi_sdk_observed.outcome == 'success'","steps.pi_sdk_source_upload.outcome == 'success'"):
+            self.assertIn(token,emitter)
+        self.assertEqual(job.count('GH_TOKEN:'),1);self.assertNotIn('GH_TOKEN:',job[:emit])
+        self.assertIn('GH_TOKEN: ${{ github.token }}',emitter)
+        self.assertIn('run: python .github/scripts/test_pi_package.py --rpc-commands',jobs['ca-pi-tools'])
+        self.assertIn('--pi-version ${{ matrix.pi-version }}',jobs['ca-pi-tools'])
+
+    def test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles(self):
+        ci=CI_WORKFLOW.read_text(encoding='utf-8');self.assert_sdk_route(ci)
+        mutations=[
+            ('observe-python','observe-vitest'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py --rpc-commands'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py || true'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py\n          python .github/scripts/test_pi_package.py'),
+            ('      - name: Test release package contract\n','      - name: Test release package contract\n        if: false\n'),
+            ('      - name: Test release package contract\n','      - name: Test release package contract\n        continue-on-error: true\n'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/not-the-owner.py'),
+            ('name: Prepare Pi SDK footer source-test inputs','name: Missing source preparation'),
+            ('name: Upload Pi SDK footer source-test inputs','name: Unknown uploader'),
+            ('name: Emit original Pi SDK footer source qualification report','name: Unknown emitter'),
+        ]
+        # Mutate only the owning job, leaving coincident predicates in other jobs irrelevant.
+        start=ci.index('  ca-pi-checks:\n');end=ci.index('  ca-pi-tools:\n',start)
+        for before,after in mutations:
+            job=ci[start:end];self.assertIn(before,job)
+            broken=ci[:start]+job.replace(before,after,1)+ci[end:]
+            with self.subTest(mutation=before),self.assertRaises((AssertionError,ValueError)):
+                self.assert_sdk_route(broken)
+        for before,after in (("github.event_name == 'push'","github.event_name == 'pull_request'"),
+                             ('GH_TOKEN: ${{ github.token }}','OTHER_TOKEN: ${{ github.token }}')):
+            job=ci[start:end];broken=ci[:start]+job.replace(before,after,1)+ci[end:]
+            with self.subTest(mutation=before),self.assertRaises(AssertionError):self.assert_sdk_route(broken)
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
         raise SystemExit(run_debug_suite(Path(sys.argv[2])))

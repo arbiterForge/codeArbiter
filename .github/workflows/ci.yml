@@ -2629,6 +2629,9 @@ jobs:
     # `needs:` block AND its `required_results` string. One without the other
     # silently drops the verdict; test_ci_impact.py asserts the two agree.
     needs: changes
+    permissions:
+      contents: read
+      actions: read
     if: needs.changes.outputs.ca-pi == 'true'
     runs-on: ubuntu-latest
     # Issue #399. Observed p95 for the equivalent ubuntu matrix cell is ~135s
@@ -2746,9 +2749,62 @@ jobs:
             git --no-pager diff -- plugins/ca-pi/extensions plugins/ca-pi/helpers
             exit 1
           fi
-      - name: Test release package contract
+      - name: Prepare Pi SDK footer source-test inputs
+        id: pi_sdk_source_prepare
         working-directory: .
-        run: python .github/scripts/test_pi_package.py
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile pi-sdk-footer-v1
+          --job-name "[CHECK] | [PI  ] | Host-independent adapter contract"
+          --output "${{ runner.temp }}/pi-sdk-source-inputs"
+
+      - name: Test release package contract
+        id: pi_sdk_observed
+        working-directory: .
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile pi-sdk-footer-v1
+          --source-payload "${{ runner.temp }}/pi-sdk-source-inputs"
+          --output "${{ runner.temp }}/pi-sdk-python-observation.json"
+          -- .github/scripts/test_pi_package.py
+
+      - name: Upload Pi SDK footer source-test inputs
+        id: pi_sdk_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && steps.pi_sdk_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # existing pin unchanged
+        with:
+          name: major-source-inputs-pi-sdk-footer
+          path: ${{ runner.temp }}/pi-sdk-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+
+      - name: Emit original Pi SDK footer source qualification report
+        id: pi_sdk_emit
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.pi_sdk_observed.outcome == 'success' && steps.pi_sdk_source_upload.outcome == 'success' }}
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "$RUNNER_TEMP/pi-sdk-qualification.json" \
+            --job-name "[CHECK] | [PI  ] | Host-independent adapter contract" \
+            --observation "pi-sdk-footer=$RUNNER_TEMP/pi-sdk-python-observation.json" \
+            --payload-root "major-source-inputs-pi-sdk-footer=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"pi-sdk-qualification.json").read_text(encoding="utf-8")); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+
+      - name: Upload major qualification report
+        if: steps.pi_sdk_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # existing pin unchanged
+        with:
+          name: ${{ steps.pi_sdk_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/pi-sdk-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Verify reviewed Pi host dependency graph
         working-directory: .
         run: python .github/scripts/test_pi_host_locks.py

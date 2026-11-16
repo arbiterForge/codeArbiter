@@ -4958,38 +4958,58 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T07:13:59.378986+00:00",
-    "controller_anchor": "2f65fda443816d84b0ee4283f9fc237df728b663",
-    "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
-    "delivery_pr": 1114,
-    "original_ci_run": 43819766055,
-    "original_docs_run": 43819766067,
-    "last_exact_pr_head_result": "ORIGINAL_FAILURES_RETAINED_WHOLE_WORKFLOWS_NOT_QUALIFIED",
-    "followup": "Shared exact audit identities, generated bundles, source-aware workflow readers, maintained Atlas pin and portable inert mapped-profile fixtures. Local affected checks are separate from next-head CI.",
-    "current_staged_integrity": "PASSED_MEASURED_16_FILE_TREE_BEFORE_REPORTING_ONLY_EDIT",
+    "recorded_at": "2026-11-16T08:52:32.433783+00:00",
+    "controller_anchor": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "delivery_pr": null,
+    "previous_child": {
+      "pr": 1114,
+      "state": "MERGED",
+      "exact_head": "25b6747e52f5591d55901ace71706200d646461d",
+      "ci_run": 43824929648,
+      "docs_run": 43824929589,
+      "checks": {
+        "successful": 92,
+        "expected_skipped": 8,
+        "failed": 0
+      }
+    },
+    "original_ci_run": 43829498560,
+    "original_docs_run": 43829498531,
+    "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
+    "followup": "Safe Docs refusal/input retention, actual native progress/history/advisory reporting controls, complete finite native recipes, actual owned Sandbox effects and portable supported-SDK footer component wiring.",
+    "current_staged_integrity": "PASSED_MEASURED_93_PATH_TREE_BEFORE_REPORTING_ONLY_EDIT",
     "source_or_status_renewal": false,
-    "ordinary_selection_groups": 49,
-    "ordinary_selection_cells": 50,
-    "native_component_recipes": 8,
-    "remaining_native_runtime_unmapped": 110,
-    "remaining_software_original_unmapped": 5,
-    "private_future_work": "Two actual Docker home/offline effect passes retained; corrected copy-only fixture separate. Four new N09 methods and S75 exact-obsolete-contract source proposal remain private, unadmitted.",
-    "observations": "evidence/ci-contract-precision-development.json",
+    "ordinary_selection_groups": 53,
+    "ordinary_selection_cells": 54,
+    "native_component_recipes": 19,
+    "remaining_native_runtime_unmapped": 99,
+    "remaining_software_original_unmapped": 1,
+    "whole_baseline_planned": {
+      "findings": 49,
+      "machines": 183,
+      "transitions": 610,
+      "total": 842,
+      "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
+    },
+    "private_future_work": "S75 exact obsolete guarded-contract proposal and two debug finding proof proposals remain unadmitted. Remaining UI/model/human/current-source proof work stays open.",
+    "observations": "evidence/remaining-effects-development/index.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+    "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
     "staged_integrity_observation": {
-      "actual_branch_head": "2f65fda443816d84b0ee4283f9fc237df728b663",
-      "verification_fixture_commit": "5a4b96bf537e4bdc5c08ed225a2060f624bfb943",
-      "candidate": "candidate-v1:412111cd25b1b8bc831daf1e12d5b04bff2e75586217aba5b8bbc483e29e8ef9",
+      "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+      "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
       "result": "PASSED",
       "frozen": 105,
       "records": 1318,
       "applicability": {
-        "APPLICABLE": 566,
-        "STALE": 752
+        "APPLICABLE": 523,
+        "STALE": 795
       },
-      "seconds": 39.93,
+      "seconds": 41.125,
       "source_ref_moved": false
     }
   },
@@ -5174,6 +5194,46 @@
       "software48_current_applicability": {
         "APPLICABLE": 9,
         "STALE": 39
+      }
+    },
+    {
+      "superseded_at": "2026-11-16T08:52:32.433460+00:00",
+      "reason": "PR1114 merged at27d; continuing actual original integration failures and remaining effects, no task/status renewal.",
+      "checkpoint": {
+        "recorded_at": "2026-11-16T07:13:59.378986+00:00",
+        "controller_anchor": "2f65fda443816d84b0ee4283f9fc237df728b663",
+        "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+        "delivery_pr": 1114,
+        "original_ci_run": 43819766055,
+        "original_docs_run": 43819766067,
+        "last_exact_pr_head_result": "ORIGINAL_FAILURES_RETAINED_WHOLE_WORKFLOWS_NOT_QUALIFIED",
+        "followup": "Shared exact audit identities, generated bundles, source-aware workflow readers, maintained Atlas pin and portable inert mapped-profile fixtures. Local affected checks are separate from next-head CI.",
+        "current_staged_integrity": "PASSED_MEASURED_16_FILE_TREE_BEFORE_REPORTING_ONLY_EDIT",
+        "source_or_status_renewal": false,
+        "ordinary_selection_groups": 49,
+        "ordinary_selection_cells": 50,
+        "native_component_recipes": 8,
+        "remaining_native_runtime_unmapped": 110,
+        "remaining_software_original_unmapped": 5,
+        "private_future_work": "Two actual Docker home/offline effect passes retained; corrected copy-only fixture separate. Four new N09 methods and S75 exact-obsolete-contract source proposal remain private, unadmitted.",
+        "observations": "evidence/ci-contract-precision-development.json",
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+        "staged_integrity_observation": {
+          "actual_branch_head": "2f65fda443816d84b0ee4283f9fc237df728b663",
+          "verification_fixture_commit": "5a4b96bf537e4bdc5c08ed225a2060f624bfb943",
+          "candidate": "candidate-v1:412111cd25b1b8bc831daf1e12d5b04bff2e75586217aba5b8bbc483e29e8ef9",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 566,
+            "STALE": 752
+          },
+          "seconds": 39.93,
+          "source_ref_moved": false
+        }
       }
     }
   ]

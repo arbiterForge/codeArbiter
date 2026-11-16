@@ -242,6 +242,11 @@ _FAILURE_AUDIT_SITE_EVENTS = {
     "process-guard": {"process-escape"}, "library-guard": {"native-library"},
     "process-probe": {"subprocess"}, "binary-guard": {"subprocess"},
     "verifier-guard": {"subprocess"}, "launch-guard": {"subprocess"},
+    "windows-command-refusal": {"subprocess"},
+    "resolved-git-refusal": {"subprocess"},
+    "resolved-python-refusal": {"subprocess"},
+    "resolved-native-refusal": {"subprocess"},
+    "resolved-other-refusal": {"subprocess"},
     "event-entry": _FAILURE_AUDIT_EVENTS - {"none"},
 }
 
@@ -509,6 +514,22 @@ def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
     return False
 
 
+def _resolved_launch_refusal_site(launched: Path, *, binary: Path, python: Path) -> str:
+    """Classify an already refused target; never confer launch permission.
+
+    Only fixed categories cross the diagnostic boundary. No basename, path,
+    argv, environment or exception text is retained, and no new I/O occurs.
+    """
+    name = launched.name.casefold()
+    if name in {"git", "git.exe"}:
+        return "resolved-git-refusal"
+    if name in {"python", "python.exe", "python3", "python3.exe", python.name.casefold()}:
+        return "resolved-python-refusal"
+    if name in {"ca-artifact", "ca-artifact.exe", binary.name.casefold()}:
+        return "resolved-native-refusal"
+    return "resolved-other-refusal"
+
+
 def enforce_runtime_event(
     event: str,
     details: tuple,
@@ -571,7 +592,7 @@ def enforce_runtime_event(
             ):
                 raise RuntimeError("verifier child launch escaped its constrained environment")
             return
-        _audit_site = "launch-guard"
+        _audit_site = "windows-command-refusal"
         raise RuntimeError("installed-host verification blocked an unreviewed process")
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
@@ -610,7 +631,7 @@ def enforce_runtime_event(
         ):
             raise RuntimeError("verifier child launch escaped its constrained environment")
         return
-    _audit_site = "launch-guard"
+    _audit_site = _resolved_launch_refusal_site(launched, binary=binary, python=python)
     raise RuntimeError("installed-host verification blocked an unreviewed process")
 
 

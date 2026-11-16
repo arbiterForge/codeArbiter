@@ -1,0 +1,14 @@
+{
+  "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+  "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
+  "result": "PASSED",
+  "frozen": 105,
+  "records": 1318,
+  "applicability": {
+    "APPLICABLE": 523,
+    "STALE": 795
+  },
+  "seconds": 41.125,
+  "source_ref_moved": false
+}

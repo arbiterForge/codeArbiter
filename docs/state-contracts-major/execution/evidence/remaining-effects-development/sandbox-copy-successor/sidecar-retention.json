@@ -1,0 +1,12 @@
+{
+  "pointers": [
+    {
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-run-lq82qixk\\profile\\temp\\ca-sbx-copy-layer-CtXLsj-copy-result.json",
+      "retained": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-run-lq82qixk\\copy-result-private.json",
+      "sha256": "dec976329461e5e2a583740e2ad1c01d66efe3805d3217262049218ca7c73ece",
+      "bytes": 622
+    }
+  ],
+  "stage": "Raw outcome/after-snapshot already sealed; sidecar retained before test interpretation",
+  "privacy": "Full unknown text base64 remains private; no decoded text printed."
+}

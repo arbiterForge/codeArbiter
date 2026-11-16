@@ -1,0 +1,91 @@
+{
+  "schema": "private-native-progress-unit-delivery/1",
+  "state": "FROZEN_READY_FOR_ROOT",
+  "route": "ca-sprint / existing test-change feature",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_epoch": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+  "subject": {
+    "path": "core/artifacts/internal/operations/ordinary_progress_contract_test.go",
+    "preimage_sha256": null,
+    "candidate_sha256": "a13be6d70fc07166e8f4dd9a71264b6c0f48c8eb535f4ec19fd6c879abab5469",
+    "bytes": 11354,
+    "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-progress-assertions-g2075f7l\\candidate\\core\\artifacts\\internal\\operations\\ordinary_progress_contract_test.go"
+  },
+  "patch_sha256": "3a1381c2831348a990861bb7477c433894c34b18cf266f82e0b0c2fd84cb195c",
+  "checks": {
+    "original_authorized_four_group_capture": {
+      "record": "focused.json",
+      "summary": "focused-summary.json",
+      "exit_code": 1,
+      "duration_seconds": 11.536559100000886,
+      "actual_top_level": "three PASS; one invalid setup at empty checkpoint creation",
+      "qualification": false
+    },
+    "corrected_scope_only": {
+      "record": "scope-successor.json",
+      "summary": "scope-successor-summary.json",
+      "exit_code": 0,
+      "duration_seconds": 2.622760800004471,
+      "top_level": 1,
+      "terminal_subcases": 5,
+      "skips": 0
+    },
+    "initial_failure_classification": "INVALID_FIXTURE_SETUP, not product RED. Real schema minItems rejects empty checkpoint; initial source/raw preserved. Root authorized exactly one corrected scope name, other three never repeated.",
+    "final_first_three_function_bodies_equal_original_passing_capture": true,
+    "all_original_module_files_unchanged": true,
+    "original_module_files": 247,
+    "Gov_owned_module_preimages_still_equal": true,
+    "gofmt": true,
+    "patch_reverse_check": 0,
+    "gitleaks": {
+      "exit_code": 0,
+      "findings": 0,
+      "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    }
+  },
+  "runtime": {
+    "go_version": "go1.27.1 windows/amd64 (previous verified identity reused)",
+    "go_executable_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+    "same_as_verified_renderer_task": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+    "execution": "Two narrowly authorized private offline operations unit invocations: four new names once, then only corrected scope name once. Actual argv/cwd/environment/time/outcomes/source-before-after in named records.",
+    "network": "GOPROXYoff/GOSUMDBoff/GOTOOLCHAINlocal/GOENVoff/GOWORKoff; no new dependencies; standard library only.",
+    "credentials": "Explicit private OS/toolchain/path/temp/profile environment; no inherited GH/GitHub/provider credentials, no real user HOME/settings."
+  },
+  "policy": {
+    "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "records": 32,
+    "reuse": "unchanged full previously consumed policy/context"
+  },
+  "recipes": {
+    "file": "recipe-fragments.json",
+    "sha256": "0a2f371d8ab62531c0495114261c9818119956c8ed02bf1224d9fb341f43914f",
+    "cells": [
+      "N09:01",
+      "N09:02",
+      "N09:03",
+      "N09:05"
+    ],
+    "platforms": [
+      "darwin/amd64",
+      "darwin/arm64",
+      "linux/amd64",
+      "linux/arm64",
+      "windows/amd64",
+      "windows/arm64"
+    ],
+    "native16_and_native8": "unchanged; fragments only, no config mutation"
+  },
+  "witnesses": {
+    "file": "clause-witnesses.json",
+    "sha256": "675f97e6f8a006fd3cafd4b0226df1c97e8c033e100fba0cd2cc66e2a6eb4f3b"
+  },
+  "limits": [
+    "Only one additive Go unit test file. No application behavior change, new policy or decision, obsolete destructive STALE expectation, genuine production RED or bug fix claim.",
+    "Two historical refs are synthetic unassessed history values; no receipt files, approvals or authenticated proofs were manufactured. Public engine readbacks retain evidence_assessed/checks_are_verified false. Existing genuine native receipt-owner synthetic controls remain separately required for ACCEPTED preservation.",
+    "Final source consists of three unchanged passing test bodies plus corrected scope body. No claim that all final four ran together after correction. All original test bodies and production bytes remain exact.",
+    "No Go full package/module suite, native CLI/helper/conformance/installer/SDK/Node/model/provider/real-host replay, network/install/build-artifact or qualification renewal. Executing the focused Go unit binary is the task-specific authorized exception.",
+    "No current same-source hosted six-platform/installed/task/scenario/human qualification. New Go test membership changes future native source fingerprint; old native observations are not refreshed here.",
+    "No Gov/index/ref/ledger/proof/status/marker mutations. Root owns integration and future actual hosted/test/evidence phases. Parent1098 main/publication remains held.",
+    "No coverage instrumentation or mutant invocations: only the two explicitly authorized unit commands. New assertions cover meaningful state/ownership/CAS/replay/refusal/no-write boundaries rather than implementation mirroring."
+  ]
+}

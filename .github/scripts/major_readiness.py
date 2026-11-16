@@ -1305,6 +1305,10 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") == "major-source-inputs-pi-sdk-footer":
+                        require(job.get("name") == "[CHECK] | [PI  ] | Host-independent adapter contract",
+                                "SDK source-test payload original owner differs")
+                        validate_upload(job, payload, "Upload Pi SDK footer source-test inputs")
                     elif payload.get("name") == "major-source-inputs-mapped-work-windows":
                         require(job.get("name") == "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
                                 "mapped source-test payload original owner differs")

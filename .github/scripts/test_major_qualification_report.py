@@ -1762,7 +1762,8 @@ class VitestSourceProducerTests(unittest.TestCase):
                     if failure == "dirty": bad["source_stable"] = False
                     if failure == "nonzero": bad["exit_code"] = 1
                     if failure == "other-cell":
-                        selected["cells"] = required["cells"] = ["disposition:transitions:S51:01"]
+                        # S51:01/02 and S52:06 have explicit finite routes; 03 remains outside both profiles.
+                        selected["cells"] = required["cells"] = ["disposition:transitions:S51:03"]
                         required["cell_jobs"] = {required["cells"][0]: f["spec"]["job"]}
                     with self.subTest(failure=failure), self.assertRaises(ValueError): build(bad, consumed, selected, required)
 
@@ -2418,6 +2419,439 @@ class MappedNativeConsumerWorkflowTests(unittest.TestCase):
             self.assertIn(old,text)
             with self.subTest(old=old):
                 with self.assertRaises(AssertionError):self.check_workflow(text.replace(old,new))
+
+
+class SandboxOwnedEffectsRoutingTests(unittest.TestCase):
+    """Pure admission/map controls, never Docker/Vitest runtime qualification."""
+    EXPECTED = {'disposition:transitions:S51:01': ['vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --token, because '
+                                    'argv is world-readable',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract passes the token from the '
+                                    'ENVIRONMENT, not from argv',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract exits with the usage code '
+                                    'when the token is absent, and says where it comes from',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses requires both the image '
+                                    'and the home volume',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --source-volume '
+                                    'before a container can exist',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME '
+                                    '(no host bind of ~/.claude), so state persists',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) THROWS when the '
+                                    'token volume would be co-mounted with an untrusted-code run',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] prepares a credential-blind owned home and retains '
+                                    'its bytes across restart',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses accepts the minimal '
+                                    'invocation and defaults to the guaranteed posture',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses refuses an unknown flag '
+                                    'rather than ignoring it',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses refuses any other egress '
+                                    'posture, naming why',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) requires a '
+                                    'non-empty image, token, and home volume'],
+ 'disposition:transitions:S51:02': ['vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardening parity with run.ts (architecture-002) carries every shared '
+                                    'hardening flag the ordinary sandbox emits',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) passes only the token name in '
+                                    'argv, never the reusable value',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) NEVER passes --privileged and '
+                                    'NEVER mounts the docker socket',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) defaults egress to offline (the '
+                                    'hard default — Spike B caveat)',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) REFUSES an '
+                                    'arbitrary wide-open network policy (no escaping the hard default)',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:#377 - a '
+                                    'token-bearing box never runs NET_ADMIN without its firewall supplies '
+                                    'the token only to the Docker run process environment',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] runs the real Claude builder offline with scoped '
+                                    'dummy env and effective hardening',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract passes the token from the '
+                                    'ENVIRONMENT, not from argv',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract exits with the usage code '
+                                    'when the token is absent, and says where it comes from',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --source-volume '
+                                    'before a container can exist',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] prepares a credential-blind owned home and retains '
+                                    'its bytes across restart'],
+ 'disposition:transitions:S52:06': ['vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) assembles `cp <id>:<containerPath> <hostDest>` in the '
+                                    'pull direction',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) never produces the reverse direction (host source '
+                                    'before container dest)',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) refuses an empty container id, container path, or '
+                                    'host dest',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) throws (via the mount '
+                                    'chokepoint) on a -v host:container bind copy-in',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) throws on an explicit '
+                                    'type=bind copy-in spec',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) the rejection comes from '
+                                    'mounts.ts (cp does not hand-roll its own check)',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] retains real partial docker cp bytes after '
+                                    'cancellation without rollback metadata',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:cpOut [docker] — pulls a '
+                                    'file from /work to the host (AC-10) copies /work/<f> out to a host dest '
+                                    'with identical bytes']}
+    JOB = "[CHECK] | [SBX ] | Sandbox driver contract"
+
+    def _assert_canonical_groups(self, groups):
+        self.assertEqual(len(groups), 3)
+        self.assertEqual({cell for group in groups for cell in group["cells"]}, set(self.EXPECTED))
+        for group in groups:
+            self.assertEqual(len(group["cells"]), 1)
+            cell = group["cells"][0]
+            self.assertEqual(group["job"], self.JOB)
+            self.assertEqual(group["payload_name"], "major-source-inputs-sandbox-driver")
+            self.assertEqual(group["observation"], "sandbox-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(len(group["selectors"]), len(set(group["selectors"])))
+            self.assertEqual(set(group["selectors"]), set(self.EXPECTED[cell]))
+
+    def _groups(self):
+        groups = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        selected = [copy.deepcopy(group) for group in groups if set(group["cells"]) & set(self.EXPECTED)]
+        self._assert_canonical_groups(selected)
+        return selected
+
+    def test_canonical_three_cells_require_complete_guard_and_real_effect_unions(self):
+        groups = self._groups()
+        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"],
+                         frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"})
+        self.assertEqual(owner.TS_PROFILE_CELLS["pi-tools-v1"], frozenset(
+            "disposition:transitions:pi-qualification:disposable-home:" + number
+            for number in ("01", "02", "03")))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        for cell in self.EXPECTED:
+            self.assertEqual(policy["cell_job_bindings"][cell], self.JOB)
+        for index, group in enumerate(groups):
+            for selector in group["selectors"]:
+                # Removing any guard OR real-effect selector is a semantic map
+                # regression, even if all remaining runtime names would pass.
+                bad = copy.deepcopy(groups); bad[index]["selectors"].remove(selector)
+                with self.subTest(cell=group["cells"][0], missing=selector), self.assertRaises(AssertionError):
+                    self._assert_canonical_groups(bad)
+        self.assertFalse(any("installed:" in cell or cell.startswith("task:") or ":machines:" in cell
+                             for group in groups for cell in group["cells"]))
+
+    def test_all_named_guards_and_effects_must_pass_under_original_bound_source_profile(self):
+        groups = self._groups()
+        with vitest_source_fixture("sandbox-tools-v1") as fixture:
+            payload = VitestSourceProducerTests.authenticate(self, fixture)
+            selectors = sorted({name for group in groups for name in group["selectors"]})
+            # Inert data seams for the pure reader. These are deliberately not
+            # observations from the actual Docker fixture or a live CI job.
+            observed = {"format": owner.OBSERVATION, **fixture["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": fixture["command"], "exit_code": 0,
+                "tests": [{"id": name, "result": "passed"} for name in selectors],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": "sandbox-tools-v1",
+                    "payload_name": fixture["spec"]["payload"],
+                    "manifest_sha256": owner.readiness.digest((fixture["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+            req = {**fixture["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                   "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            def build(observation=observed, consumed=payload, selected=groups, required=req):
+                return owner.build_report(required, job_name=self.JOB, job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": selected},
+                    observations={"sandbox-tools": observation},
+                    payloads={fixture["spec"]["payload"]: consumed})
+            result = build()
+            self.assertEqual({row["cell"] for row in result["results"]}, set(self.EXPECTED))
+            for selector in selectors:
+                for state in ("missing", "skipped", "failed", "duplicate"):
+                    changed = copy.deepcopy(observed)
+                    row = next(row for row in changed["tests"] if row["id"] == selector)
+                    if state == "missing": changed["tests"].remove(row)
+                    elif state == "duplicate": changed["tests"].append(dict(row))
+                    else: row["result"] = state
+                    with self.subTest(selector=selector, state=state), self.assertRaises(ValueError): build(changed)
+            for failure in ("source", "run", "unstable", "exit", "producer", "profile", "manifest", "uploader", "role"):
+                changed, consumed, selected = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups)
+                if failure == "source": changed["source_commit"] = "f" * 40
+                if failure == "run": changed["ci_run_id"] = 8
+                if failure == "unstable": changed["source_stable"] = False
+                if failure == "exit": changed["exit_code"] = 1
+                if failure == "producer": changed["producer"] = "claimed-docker-pass"
+                if failure == "profile": changed["source_input_binding"]["profile"] = "unknown-sandbox-profile"
+                if failure == "manifest": consumed["source_manifest_sha256"] = "0" * 64
+                if failure == "uploader": consumed["source_upload_job_id"] = True
+                if failure == "role": selected[0]["payload_name"] = "foreign-native-archive"
+                with self.subTest(failure=failure), self.assertRaises(ValueError): build(changed, consumed, selected)
+            for cell in ("disposition:transitions:S51:03", "disposition:machines:S51", "task:SBX-D04", "installed:sandbox:linux"):
+                changed = copy.deepcopy(groups[0]); changed["cells"] = [cell]
+                required = {**req, "cells": [cell], "cell_jobs": {cell: self.JOB}}
+                with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=[changed], required=required)
+
+SDK_PYTHON_FIXTURE_PATHS = frozenset(('.github/fixtures/pi-hosts/1.5.0/.npmrc',
+ '.github/fixtures/pi-hosts/1.5.0/package-lock.json',
+ '.github/fixtures/pi-hosts/1.5.0/package.json',
+ '.github/fixtures/pi-hosts/1.5.0/review.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/pi_cli_resolver.py',
+ '.github/scripts/pi_host_locks.py',
+ '.github/scripts/test_pi_package.py',
+ '.github/scripts/test_pi_platform_contract.py',
+ '.github/workflows/ci.yml',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca-pi/tools/src/activation.ts',
+ 'plugins/ca-pi/tools/src/activity.ts',
+ 'plugins/ca-pi/tools/src/approval-dialog.ts',
+ 'plugins/ca-pi/tools/src/approval-entry.ts',
+ 'plugins/ca-pi/tools/src/attestation.ts',
+ 'plugins/ca-pi/tools/src/audit-sink.ts',
+ 'plugins/ca-pi/tools/src/background-jobs.ts',
+ 'plugins/ca-pi/tools/src/bridge.ts',
+ 'plugins/ca-pi/tools/src/child-env.ts',
+ 'plugins/ca-pi/tools/src/child-extension.ts',
+ 'plugins/ca-pi/tools/src/command-ownership.ts',
+ 'plugins/ca-pi/tools/src/commands.ts',
+ 'plugins/ca-pi/tools/src/compaction.ts',
+ 'plugins/ca-pi/tools/src/compatibility.ts',
+ 'plugins/ca-pi/tools/src/contracts.ts',
+ 'plugins/ca-pi/tools/src/delegated-executor.ts',
+ 'plugins/ca-pi/tools/src/delegation-client.ts',
+ 'plugins/ca-pi/tools/src/delegation-contract.ts',
+ 'plugins/ca-pi/tools/src/delegation-journal.ts',
+ 'plugins/ca-pi/tools/src/delegation-session.ts',
+ 'plugins/ca-pi/tools/src/dispatch.ts',
+ 'plugins/ca-pi/tools/src/doctor.ts',
+ 'plugins/ca-pi/tools/src/extension.ts',
+ 'plugins/ca-pi/tools/src/farm.ts',
+ 'plugins/ca-pi/tools/src/footer-state.ts',
+ 'plugins/ca-pi/tools/src/footer.ts',
+ 'plugins/ca-pi/tools/src/git-facts.ts',
+ 'plugins/ca-pi/tools/src/inference-broker.ts',
+ 'plugins/ca-pi/tools/src/native-background.ts',
+ 'plugins/ca-pi/tools/src/native-plan.ts',
+ 'plugins/ca-pi/tools/src/notices.ts',
+ 'plugins/ca-pi/tools/src/parent-delegation.ts',
+ 'plugins/ca-pi/tools/src/path-boundary.ts',
+ 'plugins/ca-pi/tools/src/pi-api.d.ts',
+ 'plugins/ca-pi/tools/src/plan-mode.ts',
+ 'plugins/ca-pi/tools/src/policy.ts',
+ 'plugins/ca-pi/tools/src/process-tree.ts',
+ 'plugins/ca-pi/tools/src/redaction.ts',
+ 'plugins/ca-pi/tools/src/roles.ts',
+ 'plugins/ca-pi/tools/src/runner.ts',
+ 'plugins/ca-pi/tools/src/runtime-resolver.ts',
+ 'plugins/ca-pi/tools/src/session-identity.ts',
+ 'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+ 'plugins/ca-pi/tools/src/sidebar-data.ts',
+ 'plugins/ca-pi/tools/src/sidebar-manager.ts',
+ 'plugins/ca-pi/tools/src/sidebar.ts',
+ 'plugins/ca-pi/tools/src/status.ts',
+ 'plugins/ca-pi/tools/src/tool-guard.ts',
+ 'plugins/ca-pi/tools/src/windows-supervisor.ts',
+ 'plugins/ca/tools/redactor.ts'))
+
+
+@contextmanager
+def sdk_python_source_fixture():
+    """Real private Git/source transport, inert Python only; never SDK qualification."""
+    with tempfile.TemporaryDirectory(prefix="ca-sdk-python-profile-") as temporary:
+        base=Path(temporary).resolve(); repo=base/"repo";repo.mkdir()
+        # The closed path set is maintained production data, not a fixture override.
+        paths = getattr(owner,"SDK_SOURCE_PATHS",SDK_PYTHON_FIXTURE_PATHS)
+        for relative in paths:
+            target=repo/relative;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((Path(os.environ.get("CA_SDK_CANONICAL_ROOT", owner.ROOT))/relative).read_bytes())
+        counter=base/"counter"
+        method="test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement"
+        # Explicitly synthetic observer control: this method name is not evidence of SDK execution.
+        program=("import unittest,pathlib\nclass PiPackageTests(unittest.TestCase):\n"
+                 f" def {method}(self):\n"
+                 f"  p=pathlib.Path({str(counter)!r});p.write_text(p.read_text()+'x' if p.exists() else 'x')\n"
+                 "if __name__=='__main__':unittest.main()\n")
+        (repo/".github/scripts/test_pi_package.py").write_text(program,encoding="utf-8",newline="\n")
+        git=shutil.which("git");assert git
+        environment={key:value for key,value in os.environ.items() if key.upper() in ("SYSTEMROOT","WINDIR","SYSTEMDRIVE","COMSPEC","PATHEXT")}
+        environment.update(PATH=os.pathsep.join([str(Path(git).parent),str(Path(sys.executable).parent)]),
+                           HOME=str(base),USERPROFILE=str(base),GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM="1",
+                           GIT_AUTHOR_NAME="fixture",GIT_AUTHOR_EMAIL="fixture@invalid",GIT_COMMITTER_NAME="fixture",GIT_COMMITTER_EMAIL="fixture@invalid",
+                           GITHUB_RUN_ID="7",PYTHONDONTWRITEBYTECODE="1")
+        with mock.patch.dict(os.environ,environment,clear=True):
+            for arguments in (["init"],["config","core.autocrlf","false"],["add","."],["-c","commit.gpgsign=false","commit","-qm","SDK source fixture"]):
+                phase="init" if arguments[0] in ("init","config") else "index" if arguments[0]=="add" else "commit"
+                run_git_phase([git,"-C",str(repo),*arguments],phase=phase,trace_dir=base)
+            staged=base/"staged"
+            yield {"base":base,"repo":repo,"staged":staged,"counter":counter,
+                   "profile":"pi-sdk-footer-v1","job":"[CHECK] | [PI  ] | Host-independent adapter contract",
+                   "payload":"major-source-inputs-pi-sdk-footer","cell":"disposition:transitions:S18:07"}
+
+
+class SdkPythonSourceProfileTests(unittest.TestCase):
+    def prepare(self,f):
+        return owner.prepare_source_payload(f["repo"],f["staged"],f["job"],f["profile"])
+
+    def original(self,f):
+        output=f["base"]/"observed.json"
+        self.assertEqual(owner.observe_python(f["repo"],".github/scripts/test_pi_package.py",[],output,
+                         f["staged"],profile=f["profile"]),0)
+        return owner.load_json(output)
+
+    def authenticate(self,f,job=None,mutate=None):
+        files={p.relative_to(f["staged"]).as_posix():p.read_bytes() for p in f["staged"].rglob("*") if p.is_file()}
+        if mutate:mutate(files)
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:
+            for name,value in files.items():archive.writestr(name,value)
+        identity=owner.source_identity(f["repo"],f["profile"])
+        req={**identity,"ci_run_id":7,"cells":[f["cell"]],"cell_jobs":{f["cell"]:f["job"]}}
+        job=job if job is not None else {"id":9,"name":f["job"],"status":"in_progress","conclusion":None,
+             "steps":[{"name":"Upload Pi SDK footer source-test inputs","status":"completed","conclusion":"success"}]}
+        with mock.patch.object(owner.readiness,"artifact_bytes",return_value=raw.getvalue()) as archive_read, \
+             mock.patch.object(owner.readiness,"validate_upload",side_effect=AssertionError("active own job log is unavailable")) as own_log:
+            payload=owner.authenticated_payload({"id":8,"name":f["payload"]},req,f["repo"],source_job=job)
+            archive_read.assert_called_once();own_log.assert_not_called()
+        return req,payload
+
+    def selection(self,f,observed):
+        return {"schema":owner.SELECTIONS,"groups":[{"id":"sdk","job":f["job"],"payload_name":f["payload"],
+          "observation":"sdk","proof_kind":"source-test","selectors":[observed["tests"][0]["id"]],"cells":[f["cell"]],
+          "scope":"Pure synthetic source-observer admission test; no actual SDK claim"}]}
+
+    def build(self,f,observed,selection=None):
+        req,payload=self.authenticate(f)
+        selection=selection or self.selection(f,observed)
+        req.update(cells=selection["groups"][0]["cells"],cell_jobs={cell:f["job"] for cell in selection["groups"][0]["cells"]})
+        return owner.build_report(req,job_name=f["job"],job_id=9,selections=selection,
+                                  observations={"sdk":observed},payloads={f["payload"]:payload})
+
+    def test_public_closed_sdk_profile_observes_one_original_python_invocation(self):
+        with sdk_python_source_fixture() as f:
+            try:self.prepare(f)
+            except ValueError as error:self.fail("Existing owning source transport refuses the finite SDK Python profile: "+str(error))
+            observed=self.original(f)
+            self.assertEqual(f["counter"].read_text(encoding="utf-8"),"x")
+            self.assertEqual(observed["producer"],"python-test-result-observer")
+            self.assertEqual(observed["source_input_binding"]["profile"],f["profile"])
+            self.assertEqual(observed["tests"],[{"id":"python:.github/scripts/test_pi_package.py:__main__.PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement","result":"passed"}])
+            report=self.build(f,observed)
+            self.assertEqual([row["cell"] for row in report["results"]],[f["cell"]])
+            self.assertEqual(report["results"][0]["executed_population"],1)
+
+    def test_sdk_original_script_arguments_and_unknown_profile_refuse_before_effect(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f)
+            for script,arguments,profile in ((".github/scripts/pi_cli_resolver.py",[],f["profile"]),
+                (".github/scripts/test_pi_package.py",["--rpc-commands"],f["profile"]),
+                (".github/scripts/test_pi_package.py",["PiPackageTests.test_one"],f["profile"]),
+                (".github/scripts/test_pi_package.py",[],"pi-sdk-footer-other")):
+                with self.subTest(script=script,arguments=arguments,profile=profile),self.assertRaises(ValueError):
+                    owner.observe_python(f["repo"],script,arguments,f["base"]/"not-created.json",f["staged"],profile=profile)
+            self.assertFalse(f["counter"].exists())
+            self.assertFalse((f["base"]/"not-created.json").exists())
+
+    def test_sdk_one_cell_cap_and_python_identity_refuse_skip_duplicate_and_relabel(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f);observed=self.original(f);selection=self.selection(f,observed)
+            for cell in ("disposition:transitions:S18:06","disposition:machines:S18","task:PI-D07","installed:pi:linux:1.5.0"):
+                bad=copy.deepcopy(selection);bad["groups"][0]["cells"]=[cell]
+                with self.subTest(cell=cell),self.assertRaises(ValueError):self.build(f,observed,bad)
+            for failure in ("skipped","failed","missing","duplicate","vitest","arguments","source","run"):
+                bad=copy.deepcopy(observed)
+                if failure=="missing":bad["tests"]=[]
+                elif failure=="duplicate":bad["tests"]*=2
+                elif failure=="vitest":bad["producer"]="vitest-json-observer"
+                elif failure=="arguments":bad["argv"].append("--rpc-commands")
+                elif failure=="source":bad["source_commit"]="e"*40
+                elif failure=="run":bad["ci_run_id"]=8
+                else:bad["tests"][0]["result"]=failure
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.build(f,bad,selection)
+
+    def test_completed_prior_upload_is_required_but_active_own_job_log_is_not(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f);self.authenticate(f)
+            original={"id":9,"name":f["job"],"status":"in_progress","conclusion":None,
+                      "steps":[{"name":"Upload Pi SDK footer source-test inputs","status":"completed","conclusion":"success"}]}
+            for failure in ("no-step","failed-step","active-step","wrong-job","completed-own-job","wrong-source","extra-member"):
+                job=copy.deepcopy(original)
+                if failure=="no-step":job["steps"]=[]
+                elif failure=="failed-step":job["steps"][0]["conclusion"]="failure"
+                elif failure=="active-step":job["steps"][0]["status"]="in_progress"
+                elif failure=="wrong-job":job["name"]="another job"
+                elif failure=="completed-own-job":job["status"]="completed"
+                def mutate(files):
+                    if failure=="wrong-source":
+                        value=json.loads(files[owner.SOURCE_MANIFEST]);value["source_commit"]="e"*40
+                        files[owner.SOURCE_MANIFEST]=json.dumps(value).encode()
+                    elif failure=="extra-member":files["unexpected.json"]=b"{}"
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.authenticate(f,job,mutate)
+
+    def test_sdk_source_namespace_and_dirty_inputs_never_become_stable(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f)
+            unknown=f["repo"]/"plugins/ca-pi/tools/src/untracked-shadow.ts";unknown.write_text("export {};",encoding="utf-8")
+            with self.assertRaises(ValueError):owner.source_input_snapshot(f["repo"],f["profile"])
+            self.assertEqual(unknown.read_text(encoding="utf-8"),"export {};")
+            unknown.unlink()
+            member=f["repo"]/"plugins/ca-pi/tools/src/status.ts";member.write_bytes(member.read_bytes()+b"\n// changed\n")
+            with self.assertRaises(ValueError):owner.source_input_snapshot(f["repo"],f["profile"])
+            self.assertFalse(f["counter"].exists())
+
+    def test_final_reader_requires_original_sdk_upload_exact_owner_and_completed_job(self):
+        cell="disposition:transitions:S18:07";job_name="[CHECK] | [PI  ] | Host-independent adapter contract"
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("source-member",b"inert")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":"major-source-inputs-pi-sdk-footer"};artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":job_name,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],"cell_jobs":{cell:job_name},"required_artifact_names":[source["name"]]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in ("source_commit","source_tree","ci_run_id")},"job_id":9,
+          "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+          "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python",".github/scripts/test_pi_package.py"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[mock.call(job,artifact,"Upload major qualification report"),
+                mock.call(job,source,"Upload Pi SDK footer source-test inputs")])
+            for failure in ("wrong-owner","in-progress","upload-refused"):
+                modified=copy.deepcopy(jobs);requirements=copy.deepcopy(req)
+                attribution.side_effect=None
+                if failure=="wrong-owner":
+                    modified[0]["name"]="other";requirements["cell_jobs"][cell]="other"
+                elif failure=="in-progress":modified[0].update(status="in_progress",conclusion=None)
+                else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
+                with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(requirements,[source,artifact],modified)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

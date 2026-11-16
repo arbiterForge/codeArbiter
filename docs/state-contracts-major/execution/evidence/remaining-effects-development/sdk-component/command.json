@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\capture.py",
+    "--worker"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524",
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "ComSpec": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\appdata",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\localappdata",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\xdg",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\cache",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\temp",
+    "TMPDIR": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\temp",
+    "PI_CODING_AGENT_DIR": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\agent",
+    "PYTHONPYCACHEPREFIX": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\pycache",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PATH": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;C:\\Python314;C:\\Program Files\\Git\\cmd;C:\\WINDOWS/System32",
+    "JITI_CACHE_DIR": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\jiti",
+    "CA_PI_FOOTER_CONFIG": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\config.json",
+    "NO_COLOR": "1",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "nul",
+    "GIT_TERMINAL_PROMPT": "0"
+  },
+  "scope": "one Python owning method and one guarded Node child; private fixture only"
+}

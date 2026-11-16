@@ -1,5 +1,6 @@
 """Closed Docs authority: same source, distinct real run, original Pages bytes."""
 import copy
+import contextlib
 import io
 import json
 import tarfile
@@ -8,6 +9,7 @@ import zipfile
 import os
 import pathlib
 import tempfile
+import subprocess
 from unittest import mock
 import major_readiness as owner
 
@@ -19,6 +21,112 @@ END = '2026-11-15T12:00:10Z'
 
 
 class DocsAuthorityTests(unittest.TestCase):
+    def test_emit_refusal_retains_safe_location_without_exception_contents(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-refusal-') as folder:
+            root = pathlib.Path(folder).resolve()
+            output = root / 'qualification.json'
+            canary = 'PRIVATE_EXCEPTION_CONTENT_DO_NOT_RETAIN'
+            stderr = io.StringIO()
+            with mock.patch.object(self.docs.reports, 'validate_emitter_environment',
+                                   side_effect=ValueError(canary)), contextlib.redirect_stderr(stderr):
+                result = self.docs.main(['emit', '--repo', str(root),
+                                         '--observation', str(root / 'observation.json'),
+                                         '--output', str(output)])
+            self.assertEqual(result, 1)
+            self.assertFalse(output.exists())
+            diagnostic = root / 'qualification.json.refusal.json'
+            self.assertTrue(diagnostic.is_file(), 'refused emitter lost its diagnostic')
+            raw = diagnostic.read_text(encoding='utf-8')
+            record = json.loads(raw)
+            self.assertEqual(record['format'], 'codearbiter-docs-refusal/1')
+            self.assertFalse(record['qualified'])
+            self.assertEqual(record['phase'], 'environment')
+            self.assertEqual(record['location']['module'], 'site_playwright_observation.py')
+            self.assertGreater(record['location']['line'], 0)
+            self.assertLess(len(raw), 1024)
+            self.assertNotIn(canary, raw + stderr.getvalue())
+
+    def test_emit_refusal_never_overwrites_existing_diagnostic_or_masks_failure(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-retained-refusal-') as folder:
+            root = pathlib.Path(folder).resolve()
+            output = root / 'qualification.json'
+            diagnostic = root / 'qualification.json.refusal.json'
+            diagnostic.write_bytes(b'previous original refusal\n')
+            with mock.patch.object(self.docs.reports, 'validate_emitter_environment',
+                                   side_effect=ValueError('private')), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(self.docs.main(['emit', '--repo', str(root),
+                    '--observation', str(root / 'observation.json'), '--output', str(output)]), 1)
+            self.assertEqual(diagnostic.read_bytes(), b'previous original refusal\n')
+            self.assertFalse(output.exists())
+
+    def test_refusal_location_identifies_actual_guard_instead_of_shared_raise(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-guard-location-') as folder:
+            root = pathlib.Path(folder).resolve()
+            with mock.patch.object(self.docs.reports, 'validate_emitter_environment',
+                    side_effect=lambda: self.docs.validate_observation({}, self.req)), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(self.docs.main(['emit', '--repo', str(root),
+                    '--observation', str(root / 'observation.json'),
+                    '--output', str(root / 'qualification.json')]), 1)
+            record = json.loads((root / 'qualification.json.refusal.json').read_bytes())
+            self.assertEqual(record['location'], {
+                'module': 'site_playwright_observation.py',
+                'line': self.docs.validate_observation.__code__.co_firstlineno + 1})
+
+    def test_emit_refusal_does_not_write_through_owned_directory_alias(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-refusal-alias-') as folder:
+            root = pathlib.Path(folder).resolve()
+            target = root / 'target'
+            target.mkdir()
+            alias = root / 'alias'
+            if os.name == 'nt':
+                # Use an owned junction without requiring symlink privileges.
+                completed = subprocess.run(['cmd.exe', '/d', '/c', 'mklink', '/J', str(alias), str(target)],
+                                           capture_output=True, timeout=10)
+                self.assertEqual(completed.returncode, 0, 'owned junction setup failed')
+            else:
+                alias.symlink_to(target, target_is_directory=True)
+            with mock.patch.object(self.docs.reports, 'validate_emitter_environment',
+                    side_effect=ValueError('private')), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(self.docs.main(['emit', '--repo', str(root),
+                    '--observation', str(root / 'observation.json'),
+                    '--output', str(alias / 'qualification.json')]), 1)
+            self.assertEqual(list(target.iterdir()), [])
+
+    def test_refusal_location_identifies_json_predicate_instead_of_valueerror_raise(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-json-guard-') as folder:
+            root = pathlib.Path(folder).resolve()
+            canary = 'PRIVATE_DUPLICATE_KEY'
+            def duplicate():
+                return json.loads('{"' + canary + '":1,"' + canary + '":2}',
+                                  object_pairs_hook=self.docs.reports.unique)
+            stderr = io.StringIO()
+            with mock.patch.object(self.docs.reports, 'validate_emitter_environment',
+                                   side_effect=duplicate), contextlib.redirect_stderr(stderr):
+                self.assertEqual(self.docs.main(['emit', '--repo', str(root),
+                    '--observation', str(root / 'observation.json'),
+                    '--output', str(root / 'qualification.json')]), 1)
+            raw = (root / 'qualification.json.refusal.json').read_text()
+            self.assertEqual(json.loads(raw)['location'], {
+                'module': 'major_qualification_report.py',
+                'line': self.docs.reports.unique.__code__.co_firstlineno + 3})
+            self.assertNotIn(canary, raw + stderr.getvalue())
+
+    def test_workflow_retains_original_observation_after_report_refusal(self):
+        root = pathlib.Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/docs.yml').read_text()
+        self.assertIn('      - name: Retain Docs qualification diagnostics\n', workflow)
+        step = workflow.split('      - name: Retain Docs qualification diagnostics\n', 1)[1].split('\n      - name:', 1)[0]
+        self.assertIn("!cancelled() && steps.browser-gate.outcome == 'success'", step)
+        self.assertIn("steps.program-mode.outputs.active == 'true'", step)
+        self.assertIn("github.event_name == 'push'", step)
+        self.assertIn('["refs/heads/main","refs/heads/major/state-contracts"]', step)
+        self.assertIn('name: site-qualification-diagnostics', step)
+        self.assertIn('${{ runner.temp }}/docs-browser-observation.json', step)
+        self.assertIn('${{ runner.temp }}/docs-qualification.json.refusal.json', step)
+        self.assertIn('overwrite: false', step)
+        self.assertNotIn('GH_TOKEN:', step)
+
     def setUp(self):
         self.req = {'source_commit': 'a' * 40, 'source_tree': 'b' * 40,
                     'ci_run_id': 7, 'task_ids': ['Q-02'], 'required_artifact_names': [],

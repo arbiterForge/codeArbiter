@@ -1,5 +1,6 @@
 """Closed native composition unit fixtures: no Go/helper/provider execution."""
 import copy, io, json, unittest, zipfile
+from pathlib import Path
 from unittest import mock
 import major_readiness as readiness
 import major_qualification_report as reports
@@ -152,6 +153,419 @@ RECIPES = {'disposition:findings:N-F05': {'darwin/amd64': ['go:github.com/arbite
  'disposition:transitions:N24:02': {'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs',
                                                       'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRewritesIncomingEditReferences',
                                                       'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRefusesTheSameRecordChangedTwice']}}
+
+
+# Independent exact expected scope for the five supported current-contract cells.
+# The original eight-cell fixture below remains intact.
+PROGRESS_ASSERTION_NAMES = {'disposition:transitions:N09:01': ['TestAssistiveDraftWorkNeedsNoApprovalOrContextTicket',
+                                    'TestAssistiveWorkDoesNotSnapshotUnrelatedSource',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/ACCEPTED',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/BLOCKED',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/DONE',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/IN_PROGRESS',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/REVIEW',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/STALE',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/absent-and-retired',
+                                    'TestN09StartLiveStateCASAndReplayBoundaries/live-pending-cas-replay'],
+ 'disposition:transitions:N09:02': ['TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/ACCEPTED',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/BLOCKED',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/DONE',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/PENDING',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/STALE',
+                                    'TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals/in-progress-and-review-repeat',
+                                    'TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit'],
+ 'disposition:transitions:N09:03': ['TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent',
+                                    'TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/BLOCKED',
+                                    'TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/ACCEPTED-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/ACCEPTED-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/ACCEPTED-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/BLOCKED-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/BLOCKED-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/BLOCKED-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/DONE-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/DONE-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/DONE-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/IN_PROGRESS-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/IN_PROGRESS-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/IN_PROGRESS-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/PENDING-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/PENDING-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/PENDING-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/REVIEW-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/REVIEW-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/REVIEW-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/STALE-to-BLOCKED',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/STALE-to-PENDING',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/STALE-to-REVIEW',
+                                    'TestN09OrdinaryReconcileAllLabelsTargetsAndHistory/closed-target-and-reason'],
+ 'disposition:transitions:N09:05': ['TestAssistiveScopeCanFinishWithoutReviewPermissionOrTestClaim',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/BLOCKED',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/PENDING',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/STALE',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/done-with-new-operation-id',
+                                    'TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/missing-empty-retired-reason',
+                                    'TestNT01TaskLabelBasesAreDistinct',
+                                    'TestNT01TaskLabelBasesAreDistinct/ordinary',
+                                    'TestNT01TaskLabelBasesAreDistinct/receipted'],
+ 'disposition:transitions:N11:03': ['TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent',
+                                    'TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/BLOCKED',
+                                    'TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/PENDING',
+                                    'TestDependencyInvalidationPreservesIndependentStops',
+                                    'TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops',
+                                    'TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/ancestor-block',
+                                    'TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-blocked',
+                                    'TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-pending',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/ACCEPTED',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/BLOCKED',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/DONE',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/IN_PROGRESS',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/PENDING',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/REVIEW',
+                                    'TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/STALE',
+                                    'TestNT09LegacyStaleIsUnresolvedAndRetainsRawReason',
+                                    'TestNT09PreservedProgressKeepsDependencyReadinessIndependent',
+                                    'TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence',
+                                    'TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED',
+                                    'TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING',
+                                    'TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject',
+                                    'TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target',
+                                    'TestNT09TaskBlockPreservesDependentRecordedProgress']}
+PROGRESS_EXPECTED = {cell: {platform: [
+    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:' + name
+    for name in required] for platform in (
+        'darwin/amd64', 'darwin/arm64', 'linux/amd64', 'linux/arm64', 'windows/amd64', 'windows/arm64')}
+    for cell, required in PROGRESS_ASSERTION_NAMES.items()}
+
+FINDING_EXPECTED = {'disposition:findings:N-F02': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed'],
+                                'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed'],
+                                'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed'],
+                                'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed'],
+                                'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed'],
+                                'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed']},
+ 'disposition:findings:N-F07': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects'],
+                                'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects'],
+                                'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects'],
+                                'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects'],
+                                'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects'],
+                                'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots',
+                                                  'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadModeMetadataEffects']}}
+
+
+BOUNDARY_EXPECTED = {'disposition:transitions:N01:01': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract'],
+                                    'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract'],
+                                    'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract'],
+                                    'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract'],
+                                    'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract'],
+                                    'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/capabilities',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/schema',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-operation',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/unknown-field',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN01AdmissionHasNoRepositoryEffects/wrong-protocol',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract']},
+ 'disposition:transitions:N13:01': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295'],
+                                    'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295'],
+                                    'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295'],
+                                    'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295'],
+                                    'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295'],
+                                    'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/pass',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/fail',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/skip',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13CallerReportBindsOperationTimeAndSubjects/unknown',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-2147483648',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/-15',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/256',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/3221225477',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes/4294967295']},
+ 'disposition:transitions:N13:02': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits'],
+                                    'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits'],
+                                    'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits'],
+                                    'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits'],
+                                    'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits'],
+                                    'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13TrimRetainsActualJournalBeforeImage',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits']},
+ 'disposition:transitions:N13:03': {'darwin/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability'],
+                                    'darwin/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability'],
+                                    'linux/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability'],
+                                    'linux/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability'],
+                                    'windows/amd64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability'],
+                                    'windows/arm64': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed',
+                                                      'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability']}}
+
 
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
@@ -451,6 +865,106 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                     {'schema':'codearbiter-major-readiness/4','runtime':{'schema':'unknown'}}):
             with self.assertRaises(readiness.ReadinessError):readiness.runtime_record(bad)
 
+    def _select_progress_contracts(self):
+        self.req['native_compositions']=copy.deepcopy(PROGRESS_EXPECTED)
+        self.req['cells']=[self.runtime,*sorted(PROGRESS_EXPECTED)]
+        self.req['cell_jobs']={self.runtime:'Runtime fixture',
+            **dict.fromkeys(PROGRESS_EXPECTED,'major qualification / native')}
+        for platform in self.raw:
+            selectors=sorted({name for recipe in PROGRESS_EXPECTED.values() for name in recipe[platform]})
+            def extend(files):
+                raw=json.loads(files['native-tests.json'])
+                identities=[name.split(':',2)[1:] for name in selectors]
+                parents=sorted({(package,test.split('/',1)[0]) for package,test in identities})
+                raw['selected']=[{'package':package,'test':test} for package,test in parents]
+                raw['observed']=[{**row,'result':'pass'} for row in raw['selected']]
+                raw['subtests']=[{'package':package,'test':test,'result':'pass'}
+                    for package,test in identities if '/' in test]
+                files['native-tests.json']=json.dumps(raw).encode()
+                stamp=json.loads(files['ci20-native-tested.json'])
+                files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
+            self.rewrite(platform,extend)
+
+    def test_current_progress_recipes_keep_all_original_routes_and_complete_required_children(self):
+        import major_native_observation as native
+        self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
+        self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
+        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED))
+        self._select_progress_contracts()
+        record=self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
+        for row in record['native']['results']:
+            self.assertEqual({c['platform']:c['selectors'] for c in row['components']},PROGRESS_EXPECTED[row['cell']])
+        self.assertEqual(self.verify(record)['state'],'PREPUBLICATION_READY')
+
+    def test_progress_parent_pass_cannot_replace_required_child_or_platform_observations(self):
+        import major_native_observation as native
+        self._select_progress_contracts()
+        initial=(copy.deepcopy(self.artifacts),dict(self.data))
+        for cell,recipe in PROGRESS_EXPECTED.items():
+            changed=copy.deepcopy(self.req)
+            changed['native_compositions'][cell].pop('darwin/arm64')
+            with self.subTest(cell=cell,missing='required platform'), self.assertRaises(readiness.ReadinessError):
+                native.runtime_requirements(changed)
+            # Each of the five recipes has actual named matrix children. Keep
+            # every parent PASS and all archive/stamp/source metadata coherent.
+            selected=next(name for name in recipe['windows/amd64'] if '/' in name.split(':',2)[2])
+            package,test=selected.split(':',2)[1:]
+            for mode in ('missing','skip'):
+                self.artifacts,self.data=copy.deepcopy(initial)
+                def change(files):
+                    raw=json.loads(files['native-tests.json'])
+                    match=lambda row:row['package']==package and row['test']==test
+                    self.assertEqual(sum(map(match,raw['subtests'])),1)
+                    if mode=='missing':raw['subtests']=[row for row in raw['subtests'] if not match(row)]
+                    else:
+                        next(row for row in raw['subtests'] if match(row))['result']='skip'
+                    files['native-tests.json']=json.dumps(raw).encode()
+                    stamp=json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
+                self.rewrite('windows/amd64',change)
+                with self.subTest(cell=cell,child=mode), self.assertRaises(readiness.ReadinessError):self.produce()
+
+    def test_n11_current_contract_requires_nonempty_history_control_and_every_event_child(self):
+        import major_native_observation as native
+        cell='disposition:transitions:N11:03'
+        try:
+            selected=native.selected_recipes([cell])
+        except readiness.ReadinessError as error:
+            self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
+        self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
+        policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
+        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED))
+        parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
+        children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
+        for platform,required in selected[cell].items():
+            self.assertIn(parent,required)
+            self.assertIn('go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09LegacyStaleIsUnresolvedAndRetainsRawReason',required)
+            for child in children:self.assertIn(child,required)
+        self._select_progress_contracts()
+        record=self.produce()
+        result=next(row for row in record['native']['results'] if row['cell']==cell)
+        self.assertEqual({row['platform']:row['selectors'] for row in result['components']},PROGRESS_EXPECTED[cell])
+        self.assertEqual(self.verify(record)['state'],'PREPUBLICATION_READY')
+        initial=(copy.deepcopy(self.artifacts),dict(self.data))
+        for child in children:
+            package,test=child.split(':',2)[1:]
+            for mode in ('missing','skip'):
+                self.artifacts,self.data=copy.deepcopy(initial)
+                def change(files):
+                    raw=json.loads(files['native-tests.json'])
+                    match=lambda row:row['package']==package and row['test']==test
+                    self.assertEqual(sum(map(match,raw['subtests'])),1)
+                    if mode=='missing':raw['subtests']=[row for row in raw['subtests'] if not match(row)]
+                    else:next(row for row in raw['subtests'] if match(row))['result']='skip'
+                    files['native-tests.json']=json.dumps(raw).encode()
+                    stamp=json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
+                self.rewrite('windows/amd64',change)
+                with self.subTest(child=child,mode=mode),self.assertRaisesRegex(readiness.ReadinessError,
+                    'native composite (selected assertion missing|required child skipped)'):
+                    self.produce()
+
     def test_same_run_source_consumer_alias_requires_original_component_authority(self):
         import major_native_observation as native
         with mock.patch.object(readiness,'api',side_effect=self.api):
@@ -495,3 +1009,57 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
         self.rewrite('windows/amd64',mutate)
         with self.assertRaisesRegex(ValueError,'native and module-tested'):self.produce()
+
+    def test_complete_finding_routes_require_actual_named_results_on_every_platform(self):
+        import major_native_observation as native
+        self.assertEqual(native.selected_recipes(sorted(FINDING_EXPECTED)), FINDING_EXPECTED)
+        with mock.patch.dict(globals(), PROGRESS_EXPECTED=FINDING_EXPECTED):
+            self._select_progress_contracts()
+        record=self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(FINDING_EXPECTED))
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+        initial=(copy.deepcopy(self.artifacts), dict(self.data))
+        for cell, recipe in FINDING_EXPECTED.items():
+            for platform, names in recipe.items():
+                self.assertEqual(set(recipe), set(self.raw))
+                package,test=names[-1].split(':',2)[1:]
+                self.artifacts,self.data=copy.deepcopy(initial)
+                def change(files):
+                    raw=json.loads(files['native-tests.json'])
+                    found=[row for row in raw['observed'] if row['package']==package and row['test']==test]
+                    self.assertEqual(len(found),1)
+                    found[0]['result']='skip'
+                    files['native-tests.json']=json.dumps(raw).encode()
+                    stamp=json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
+                self.rewrite(platform,change)
+                with self.subTest(cell=cell,platform=platform), self.assertRaises(readiness.ReadinessError):
+                    self.produce()
+
+    def test_boundary_contracts_require_named_effect_controls_on_every_platform(self):
+        import major_native_observation as native
+        self.assertEqual(native.selected_recipes(sorted(BOUNDARY_EXPECTED)), BOUNDARY_EXPECTED)
+        with mock.patch.dict(globals(), PROGRESS_EXPECTED=BOUNDARY_EXPECTED):
+            self._select_progress_contracts()
+        record=self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(BOUNDARY_EXPECTED))
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+        initial=(copy.deepcopy(self.artifacts), dict(self.data))
+        for cell,recipe in BOUNDARY_EXPECTED.items():
+            for platform,names in recipe.items():
+                self.assertEqual(set(recipe), set(self.raw))
+                selected=next((name for name in names if '/' in name.split(':',2)[2]), names[0])
+                package,test=selected.split(':',2)[1:]
+                self.artifacts,self.data=copy.deepcopy(initial)
+                def change(files):
+                    raw=json.loads(files['native-tests.json'])
+                    population=raw['subtests'] if '/' in test else raw['observed']
+                    found=[row for row in population if row['package']==package and row['test']==test]
+                    self.assertEqual(len(found), 1)
+                    found[0]['result']='skip'
+                    files['native-tests.json']=json.dumps(raw).encode()
+                    stamp=json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
+                self.rewrite(platform,change)
+                with self.subTest(cell=cell,platform=platform), self.assertRaises(readiness.ReadinessError):
+                    self.produce()

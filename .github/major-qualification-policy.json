@@ -69,16 +69,31 @@
     "disposition:transitions:C33:01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:machines:C33": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:transitions:S75:05": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
-    "disposition:transitions:S38:04": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>"
+    "disposition:transitions:S38:04": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+    "disposition:transitions:S51:01": "[CHECK] | [SBX ] | Sandbox driver contract",
+    "disposition:transitions:S51:02": "[CHECK] | [SBX ] | Sandbox driver contract",
+    "disposition:transitions:S52:06": "[CHECK] | [SBX ] | Sandbox driver contract",
+    "disposition:transitions:S18:07": "[CHECK] | [PI  ] | Host-independent adapter contract"
   },
   "native_composite_cells": [
     "disposition:findings:N-F05",
     "disposition:transitions:N08:03",
+    "disposition:transitions:N09:01",
+    "disposition:transitions:N09:02",
+    "disposition:transitions:N09:03",
+    "disposition:transitions:N09:05",
     "disposition:transitions:N10:02",
+    "disposition:transitions:N11:03",
     "disposition:transitions:N13:04",
     "disposition:transitions:N18:01",
     "disposition:transitions:N18:02",
     "disposition:transitions:N19:01",
-    "disposition:transitions:N24:02"
+    "disposition:transitions:N24:02",
+    "disposition:findings:N-F02",
+    "disposition:findings:N-F07",
+    "disposition:transitions:N01:01",
+    "disposition:transitions:N13:01",
+    "disposition:transitions:N13:02",
+    "disposition:transitions:N13:03"
   ]
 }

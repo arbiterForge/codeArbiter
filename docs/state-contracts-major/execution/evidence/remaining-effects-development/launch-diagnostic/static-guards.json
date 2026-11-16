@@ -1,0 +1,18 @@
+{
+  "guard_AST_identical_after_only_diagnostic_assignment_removal": true,
+  "unchanged_existing_source_functions": 40,
+  "all_59_old_tests_preserved_except_one_expected_diagnostic_site_literal": true,
+  "old_changed_test": "test_unknown_process_network_and_process_escape_still_refuse",
+  "old_expected_site": "launch-guard",
+  "new_expected_site": "resolved-other-refusal",
+  "new_pure_test": "RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",
+  "source_compile": true,
+  "test_compile": true,
+  "canonical_before_after_equal": {
+    ".github/scripts/test_artifact_installed_host.py": "1e6bd6d4de5bbc37fe116b5d95ef010b65de7831d5ef55bb99fbc3d9008f6595",
+    ".github/scripts/test_artifact_package.py": "5d1ed3a9efe9eb54be5a819268812fbe09473e1e955cf5df37706ff4683fda50"
+  },
+  "complete_policy_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+  "policy_reused_unchanged": true,
+  "no_application_runtime_or_real_audit_hook": true
+}

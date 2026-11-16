@@ -106,7 +106,7 @@ def ordinary_native_read_lock(repo):
 def source_identity(repo, profile=None):
     status = git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z")
     outputs = _pi_output_members(repo) if profile == "pi-tools-v1" else set()
-    require(profile is None or profile == SOURCE_PROFILE or profile in TS_PROFILE_PATHS, "unknown source identity profile")
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
     clean = all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
                 or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.split("\0"))
     return {"source_commit": git(repo, "rev-parse", "HEAD"),
@@ -497,13 +497,128 @@ TS_PROFILE_PAYLOADS = {"pi-tools-v1": "major-source-inputs-pi-windows-coverage",
                        "sandbox-tools-v1": "major-source-inputs-sandbox-driver"}
 TS_PROFILE_UPLOADS = {"pi-tools-v1": "Upload Pi source-test inputs", "sandbox-tools-v1": "Upload Sandbox source-test inputs"}
 TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualification:disposable-home:" + number for number in ("01", "02", "03")),
-                    "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",))}
+                    "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",
+                        "disposition:transitions:S51:01", "disposition:transitions:S51:02",
+                        "disposition:transitions:S52:06"))}
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
+
+
+SDK_SOURCE_PROFILE = "pi-sdk-footer-v1"
+SDK_SOURCE_JOB = "[CHECK] | [PI  ] | Host-independent adapter contract"
+SDK_SOURCE_PAYLOAD = "major-source-inputs-pi-sdk-footer"
+SDK_SOURCE_UPLOAD = "Upload Pi SDK footer source-test inputs"
+SDK_SOURCE_CELLS = frozenset(("disposition:transitions:S18:07",))
+SDK_SOURCE_SCRIPT = ".github/scripts/test_pi_package.py"
+SDK_SOURCE_PATHS = frozenset(('.github/fixtures/pi-hosts/1.5.0/.npmrc',
+ '.github/fixtures/pi-hosts/1.5.0/package-lock.json',
+ '.github/fixtures/pi-hosts/1.5.0/package.json',
+ '.github/fixtures/pi-hosts/1.5.0/review.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/pi_cli_resolver.py',
+ '.github/scripts/pi_host_locks.py',
+ '.github/scripts/test_pi_package.py',
+ '.github/scripts/test_pi_platform_contract.py',
+ '.github/workflows/ci.yml',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca-pi/tools/src/activation.ts',
+ 'plugins/ca-pi/tools/src/activity.ts',
+ 'plugins/ca-pi/tools/src/approval-dialog.ts',
+ 'plugins/ca-pi/tools/src/approval-entry.ts',
+ 'plugins/ca-pi/tools/src/attestation.ts',
+ 'plugins/ca-pi/tools/src/audit-sink.ts',
+ 'plugins/ca-pi/tools/src/background-jobs.ts',
+ 'plugins/ca-pi/tools/src/bridge.ts',
+ 'plugins/ca-pi/tools/src/child-env.ts',
+ 'plugins/ca-pi/tools/src/child-extension.ts',
+ 'plugins/ca-pi/tools/src/command-ownership.ts',
+ 'plugins/ca-pi/tools/src/commands.ts',
+ 'plugins/ca-pi/tools/src/compaction.ts',
+ 'plugins/ca-pi/tools/src/compatibility.ts',
+ 'plugins/ca-pi/tools/src/contracts.ts',
+ 'plugins/ca-pi/tools/src/delegated-executor.ts',
+ 'plugins/ca-pi/tools/src/delegation-client.ts',
+ 'plugins/ca-pi/tools/src/delegation-contract.ts',
+ 'plugins/ca-pi/tools/src/delegation-journal.ts',
+ 'plugins/ca-pi/tools/src/delegation-session.ts',
+ 'plugins/ca-pi/tools/src/dispatch.ts',
+ 'plugins/ca-pi/tools/src/doctor.ts',
+ 'plugins/ca-pi/tools/src/extension.ts',
+ 'plugins/ca-pi/tools/src/farm.ts',
+ 'plugins/ca-pi/tools/src/footer-state.ts',
+ 'plugins/ca-pi/tools/src/footer.ts',
+ 'plugins/ca-pi/tools/src/git-facts.ts',
+ 'plugins/ca-pi/tools/src/inference-broker.ts',
+ 'plugins/ca-pi/tools/src/native-background.ts',
+ 'plugins/ca-pi/tools/src/native-plan.ts',
+ 'plugins/ca-pi/tools/src/notices.ts',
+ 'plugins/ca-pi/tools/src/parent-delegation.ts',
+ 'plugins/ca-pi/tools/src/path-boundary.ts',
+ 'plugins/ca-pi/tools/src/pi-api.d.ts',
+ 'plugins/ca-pi/tools/src/plan-mode.ts',
+ 'plugins/ca-pi/tools/src/policy.ts',
+ 'plugins/ca-pi/tools/src/process-tree.ts',
+ 'plugins/ca-pi/tools/src/redaction.ts',
+ 'plugins/ca-pi/tools/src/roles.ts',
+ 'plugins/ca-pi/tools/src/runner.ts',
+ 'plugins/ca-pi/tools/src/runtime-resolver.ts',
+ 'plugins/ca-pi/tools/src/session-identity.ts',
+ 'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+ 'plugins/ca-pi/tools/src/sidebar-data.ts',
+ 'plugins/ca-pi/tools/src/sidebar-manager.ts',
+ 'plugins/ca-pi/tools/src/sidebar.ts',
+ 'plugins/ca-pi/tools/src/status.ts',
+ 'plugins/ca-pi/tools/src/tool-guard.ts',
+ 'plugins/ca-pi/tools/src/windows-supervisor.ts',
+ 'plugins/ca/tools/redactor.ts'))
+
+
+def _sdk_source_members(repo):
+    """The fixed SDK source namespace cannot acquire an unbound sibling/import."""
+    root = Path(repo) / "plugins/ca-pi/tools/src"
+    found, pending, count = set(), [root], 0
+    while pending:
+        folder = pending.pop(); count += 1
+        info = folder.lstat()
+        require(count <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "SDK source namespace is unsafe or unbounded")
+        for path in folder.iterdir():
+            info = path.lstat()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "SDK source namespace contains a link")
+            if stat.S_ISDIR(info.st_mode): pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode), "SDK source namespace contains nonregular data")
+                found.add(path.relative_to(repo).as_posix())
+                require(len(found) <= 2048, "SDK source namespace exceeds bound")
+    require(found == {name for name in SDK_SOURCE_PATHS if name.startswith("plugins/ca-pi/tools/src/")},
+            "SDK source physical membership differs")
+
+
+def _sdk_python_command(argv):
+    require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv)
+            and (argv[1].replace("\\", "/") == SDK_SOURCE_SCRIPT
+                 or argv[1].replace("\\", "/").endswith("/" + SDK_SOURCE_SCRIPT)),
+            "SDK source observation requires the original unfiltered Python command")
 
 
 def source_profile(profile=SOURCE_PROFILE):
     if profile == SOURCE_PROFILE:
         return {"paths": SOURCE_PATHS, "job": SOURCE_JOB, "payload": SOURCE_PAYLOAD, "upload": SOURCE_UPLOAD}
+    if profile == SDK_SOURCE_PROFILE:
+        return {"paths": SDK_SOURCE_PATHS, "job": SDK_SOURCE_JOB, "payload": SDK_SOURCE_PAYLOAD, "upload": SDK_SOURCE_UPLOAD}
     require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
     return {"paths": TS_PROFILE_PATHS[profile], "job": TS_PROFILE_JOBS[profile],
             "payload": TS_PROFILE_PAYLOADS[profile], "upload": TS_PROFILE_UPLOADS[profile], "root": TS_PROFILE_ROOTS[profile]}
@@ -603,7 +718,7 @@ def _source_root_members(repo):
 def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
-    require(type(relative) is str and (relative in SOURCE_PATHS
+    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS
             or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
     require(type(expected) is bytes and type(actual) is bytes
@@ -627,6 +742,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     identity = source_identity(repo, profile)
     require(identity["clean"], "source payload checkout is not clean")
     if profile == SOURCE_PROFILE: _source_root_members(repo)
+    elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
     entries = []
@@ -666,7 +782,7 @@ def validate_source_manifest(record, req, job_name, members):
     paths = spec["paths"]
     fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
     require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
-            and record["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
+            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
             and job_name == record["producer_job_name"] == spec["job"]
             and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
             and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
@@ -757,12 +873,15 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     binding = observed.get("source_input_binding")
     spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
     require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
-            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS)
+            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS)
             and binding["payload_name"] == spec["payload"]
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
             "source test payload binding missing or differs")
-    if binding["profile"] != SOURCE_PROFILE:
+    if binding["profile"] == SDK_SOURCE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
+        _sdk_python_command(observed.get("argv"))
+    elif binding["profile"] != SOURCE_PROFILE:
         require(observed.get("producer") == "vitest-json-observer", "TS source profile requires original Vitest observer")
     record = payload.get("documents", {}).get(SOURCE_MANIFEST)
     validate_source_manifest(record, req, job_name, payload.get("members", []))
@@ -770,15 +889,21 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
             == binding["manifest_sha256"], "source test manifest digest differs")
 
 
-def observe_python(repo, script, arguments, output, source_payload=None):
+def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
     relative = script.relative_to(repo).as_posix()
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
-    before = source_identity(repo)
-    source_binding = source_observation_binding(repo, source_payload, before) if source_payload else None
+    source_profile(profile)
+    if profile == SDK_SOURCE_PROFILE:
+        require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
+                "SDK source profile requires its original unfiltered Python entry point and payload")
+    else:
+        require(profile == SOURCE_PROFILE, "Python observer requires a closed Python source profile")
+    before = source_identity(repo, profile)
+    source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
@@ -831,11 +956,11 @@ def observe_python(repo, script, arguments, output, source_payload=None):
         sys.argv[:] = original_argv
         sys.path[:] = original_path
         os.chdir(original_cwd)
-    after = source_identity(repo)
+    after = source_identity(repo, profile)
     stable = before == after and before["clean"]
     if source_payload:
         try:
-            stable = stable and source_observation_binding(repo, source_payload, after) == source_binding
+            stable = stable and source_observation_binding(repo, source_payload, after, profile) == source_binding
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
             stable = False
     document = {"format": OBSERVATION, **before,
@@ -1311,6 +1436,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
                 if profile == SOURCE_PROFILE:
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
+                elif profile == SDK_SOURCE_PROFILE:
+                    require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
                 else:
                     require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
                 admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
@@ -1461,7 +1588,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)
@@ -1475,7 +1602,7 @@ def main(argv=None):
             return 0
         if args.operation == "observe-python":
             require(args.arguments, "Python entry point required")
-            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload)
+            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload, args.source_profile)
         if args.operation == "observe-vitest":
             return observe_vitest(args.repo, args.arguments, args.raw_results, args.output, args.execution_cwd, args.source_payload)
         if args.operation == "admit-go":
@@ -1524,7 +1651,7 @@ def main(argv=None):
                 require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
             else:
                 payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
-                    if name in (SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
+                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

@@ -1483,6 +1483,323 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 
 class PiPackageTests(unittest.TestCase):
+    def test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement(self):
+        """Real supported SDK owner/render component; no CLI, agent or model turn."""
+        import stat
+        node, cli = live_pi_cli()
+        cli = cli.resolve(strict=True)
+
+        def manifest_at(directory, name, version=None):
+            manifest = directory / "package.json"
+            info = manifest.lstat()
+            self.assertTrue(stat.S_ISREG(info.st_mode) and not manifest.is_symlink())
+            self.assertLessEqual(info.st_size, 64 * 1024)
+            value = read_json(manifest)
+            self.assertEqual(value.get("name"), name)
+            if version is not None:
+                self.assertEqual(value.get("version"), version)
+            return value
+
+        roots = []
+        for directory in list(cli.parents)[:4]:
+            manifest = directory / "package.json"
+            if manifest.is_file() and read_json(manifest).get("name") == "@earendil-works/pi-coding-agent":
+                roots.append(directory)
+        self.assertEqual(len(roots), 1, "one installed supported SDK adjacent to the admitted launcher required")
+        sdk = roots[0]
+        manifest_at(sdk, "@earendil-works/pi-coding-agent", "1.5.0")
+        node_modules = sdk.parent.parent
+        self.assertEqual(node_modules.name, "node_modules")
+        prefix = node_modules.parent
+        reviewed = REPO / ".github/fixtures/pi-hosts/1.5.0"
+        self.assertEqual((prefix / "package-lock.json").read_bytes(), (reviewed / "package-lock.json").read_bytes())
+
+        def dependency(name, version):
+            candidates = [sdk / "node_modules" / name, node_modules / name]
+            matches = [p.resolve(strict=True) for p in candidates if (p / "package.json").is_file()]
+            self.assertEqual(len(set(matches)), 1, "one reviewed SDK dependency location required")
+            result = matches[0]
+            self.assertTrue(result.is_relative_to(node_modules.resolve()))
+            manifest_at(result, name, version)
+            return result
+
+        tui = dependency("@earendil-works/pi-tui", "1.5.0")
+        jiti = dependency("jiti", "2.7.0")
+        node = Path(node).resolve(strict=True)
+
+        def installed_inventory():
+            entries = []
+            for directory, folders, files in os.walk(node_modules, followlinks=False):
+                for name in sorted(folders + files):
+                    item = Path(directory) / name
+                    info = item.lstat()
+                    relative = item.relative_to(node_modules).as_posix()
+                    self.assertFalse(getattr(info, "st_file_attributes", 0) & 0x400,
+                                     "SDK reparse entry refused")
+                    if item.is_symlink():
+                        # npm's POSIX .bin aliases are data, never invoked by this probe.
+                        self.assertEqual(item.parent, node_modules / ".bin")
+                        self.assertTrue(item.resolve(strict=True).is_relative_to(node_modules.resolve()))
+                        self.assertTrue(item.resolve(strict=True).is_file())
+                        entries.append({"path": relative, "kind": "bin-symlink", "target": os.readlink(item)})
+                    elif stat.S_ISDIR(info.st_mode):
+                        entries.append({"path": relative, "kind": "directory"})
+                    else:
+                        self.assertTrue(stat.S_ISREG(info.st_mode))
+                        self.assertLessEqual(info.st_size, 256 * 1024 * 1024)
+                        entries.append({"path": relative, "kind": "file",
+                                        "sha256": hashlib.sha256(item.read_bytes()).hexdigest()})
+                    self.assertLessEqual(len(entries), 32768)
+            return sorted(entries, key=lambda row: row["path"])
+
+        before = installed_inventory()
+        node_hash = hashlib.sha256(node.read_bytes()).hexdigest()
+        source_paths = (
+            "plugins/ca-pi/tools/src/audit-sink.ts", "plugins/ca-pi/tools/src/bridge.ts",
+            "plugins/ca-pi/tools/src/footer-state.ts", "plugins/ca-pi/tools/src/footer.ts",
+            "plugins/ca-pi/tools/src/path-boundary.ts", "plugins/ca-pi/tools/src/redaction.ts",
+            "plugins/ca-pi/tools/src/status.ts", "plugins/ca/tools/redactor.ts",
+        )
+        source_before = {p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}
+        with tempfile.TemporaryDirectory(prefix="ca-pi-footer-sdk-") as raw:
+            profile = Path(raw).resolve(strict=True)
+            for name in ("appdata", "localappdata", "xdg", "cache", "temp", "jiti", "agent", "work", "result"):
+                (profile / name).mkdir()
+            output = profile / "result"
+            configuration = output / "config.json"
+            config = {"repo": str(REPO), "sdk": str(sdk), "tui": str(tui), "jiti": str(jiti),
+                      "profile": str(profile), "cwd": str(profile / "work"), "output": str(output)}
+            configuration.write_text(json.dumps(config), encoding="utf-8")
+            environment = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT")
+                           if key in os.environ}
+            environment.update(HOME=str(profile), USERPROFILE=str(profile), APPDATA=str(profile / "appdata"),
+                               LOCALAPPDATA=str(profile / "localappdata"), XDG_CONFIG_HOME=str(profile / "xdg"),
+                               XDG_CACHE_HOME=str(profile / "cache"), TEMP=str(profile / "temp"),
+                               TMP=str(profile / "temp"), TMPDIR=str(profile / "temp"),
+                               PI_CODING_AGENT_DIR=str(profile / "agent"), JITI_CACHE_DIR=str(profile / "jiti"),
+                               NO_COLOR="1", PATH=str(node.parent), CA_PI_FOOTER_CONFIG=str(configuration))
+            script = output / "footer-probe.mjs"
+            script.write_text(r'''import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath, pathToFileURL} from 'node:url';
+import {createRequire, registerHooks, syncBuiltinESMExports} from 'node:module';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import childProcess from 'node:child_process';
+import net from 'node:net';
+import tls from 'node:tls';
+import http from 'node:http';
+import https from 'node:https';
+import dns from 'node:dns';
+import workerThreads from 'node:worker_threads';
+
+const config = JSON.parse(fs.readFileSync(process.env.CA_PI_FOOTER_CONFIG, 'utf8'));
+const output = config.output;
+const originalRead = fs.readFileSync.bind(fs);
+const originalWrite = fs.writeFileSync.bind(fs);
+const digest = value => createHash('sha256').update(value).digest('hex');
+const report = {format:'codearbiter.pi-footer-sdk-component/1', stage:'guards', phases:[],
+  peripheralAttempts:[], modules:[], sourceReads:[], cleanup:{}, result:'RUNNING'};
+const loaded = new Set();
+const sourceReads = new Map();
+let terminal, mode, lifecycle, deferredLifecycle, jiti, theme;
+const persist = () => originalWrite(path.join(output,'sdk-observation.json'),JSON.stringify(report,null,2)+'\n');
+function forbidden(operation) {
+  return function () {
+    report.peripheralAttempts.push(operation);
+    persist();
+    throw new Error('forbidden peripheral operation: '+operation);
+  };
+}
+for (const key of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])
+  childProcess[key]=forbidden('child_process.'+key);
+net.Socket.prototype.connect=forbidden('net.Socket.connect');
+net.Server.prototype.listen=forbidden('net.Server.listen');
+net.connect=forbidden('net.connect'); net.createConnection=forbidden('net.createConnection');
+tls.connect=forbidden('tls.connect');
+for (const [name, module] of [['http',http],['https',https]])
+  for (const key of ['request','get']) module[key]=forbidden(name+'.'+key);
+for (const key of ['lookup','resolve','resolve4','resolve6','reverse']) {
+  dns[key]=forbidden('dns.'+key);
+  if (key in dns.promises) dns.promises[key]=forbidden('dns.promises.'+key);
+}
+globalThis.fetch=forbidden('fetch');
+globalThis.WebSocket=forbidden('WebSocket');
+process.dlopen=forbidden('process.dlopen');
+workerThreads.Worker=forbidden('Worker');
+syncBuiltinESMExports();
+function noteRead(filename, data) {
+  if (typeof filename==='number') return;
+  try {
+    const p = filename instanceof URL ? fileURLToPath(filename) : String(filename);
+    if (/\.(?:[cm]?js|ts|json)$/.test(p)) sourceReads.set(path.resolve(p),digest(data));
+  } catch { /* The original file operation still determines its own outcome. */ }
+}
+fs.readFileSync=function(filename,...args) {
+  const data=originalRead(filename,...args); noteRead(filename,data); return data;
+};
+const promiseRead=fs.promises.readFile.bind(fs.promises);
+fs.promises.readFile=async function(filename,...args) {
+  const data=await promiseRead(filename,...args); noteRead(filename,data); return data;
+};
+syncBuiltinESMExports();
+registerHooks({
+  resolve(specifier,context,next) { const result=next(specifier,context); loaded.add(result.url); return result; },
+  load(url,context,next) { const result=next(url,context); loaded.add(url); return result; }
+});
+class ByteTerminal {
+  columns=120; rows=40; kittyProtocolActive=false; started=false; stopped=false; chunks=[]; bytes=0;
+  start(input,resize) { this.started=true; this.input=input; this.resize=resize; }
+  stop() { this.stopped=true; this.input=undefined; this.resize=undefined; }
+  async drainInput() {}
+  write(value) { this.bytes+=Buffer.byteLength(value); assert(this.bytes<=262144,'terminal capture cap'); this.chunks.push(value); }
+  moveBy() {} hideCursor() {} showCursor() {} clearLine() {} clearFromCursor() {} clearScreen() {}
+  setTitle() {} setProgress() {} setProgramStatus() {} restoreOnExit() {}
+}
+function phase(name) {
+  const lines=mode.footerContainer.render(120);
+  const before=terminal.chunks.length;
+  mode.renderer.renderNow(true);
+  const frame=terminal.chunks.slice(before).join('');
+  const readback={name, callbackCount:mode.footerDataProvider.branchChangeCallbacks.size,
+    isNative:mode.footerContainer.children.length===1 && mode.footerContainer.children[0]===mode.footer,
+    custom:mode.customFooter!==undefined, health:lifecycle?.health(), lines, frame};
+  report.phases.push(readback); persist(); return readback;
+}
+try {
+  report.stage='imports'; persist();
+  const sdk=config.sdk;
+  const imp=relative=>import(pathToFileURL(path.join(sdk,relative)).href);
+  const {InteractiveMode}=await imp('dist/modes/interactive/interactive-mode.js');
+  const {SettingsManager}=await imp('dist/core/settings-manager.js');
+  const {SessionManager}=await imp('dist/core/session-manager.js');
+  theme=await imp('dist/modes/interactive/theme/theme.js');
+  const tui=await import(pathToFileURL(path.join(config.tui,'dist/index.js')).href);
+  const {createJiti}=await import(pathToFileURL(path.join(config.jiti,'lib/jiti.mjs')).href);
+  jiti=createJiti(import.meta.url,{fsCache:path.join(config.profile,'jiti'),moduleCache:true});
+  const {PiFooterLifecycle}=await jiti.import(path.join(config.repo,'plugins/ca-pi/tools/src/status.ts'));
+  const manager=SessionManager.inMemory(config.cwd);
+  const settings=SettingsManager.inMemory({theme:'dark'});
+  const session={settingsManager:settings,sessionManager:manager,state:{},autoCompactionEnabled:false,
+    resourceLoader:{getThemes:()=>({themes:[]})},getContextUsage:()=>({tokens:0,contextWindow:0,percent:null})};
+  const registrations={};
+  const runtimeHost={session,setBeforeSessionInvalidate:fn=>{registrations.invalidate=fn;},
+    setRebindSession:fn=>{registrations.rebind=fn;}};
+  terminal=new ByteTerminal(); report.stage='constructor'; persist();
+  mode=new InteractiveMode(runtimeHost,{terminal,tuiMode:'inline',initialThemeSetting:'dark'});
+  assert(mode.renderer instanceof tui.TuiMainScreen);
+  assert.equal(mode.footer.constructor.name,'FooterComponent');
+  assert.equal(mode.footerDataProvider.constructor.name,'FooterDataProvider');
+  mode.renderer.addChild(mode.footerContainer);
+  mode.renderer.start();
+  const baselineCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+  report.baselineCallbacks=baselineCallbacks;
+  const metrics={visibleWidth:tui.visibleWidth,truncateToWidth:tui.truncateToWidth};
+  const parent={getSessionName:()=>manager.getSessionName(),getThinkingLevel:()=> 'off'};
+  const noBridge=new Proxy({}, {get:()=>forbidden('bridge')});
+  lifecycle=new PiFooterLifecycle(parent,noBridge,async()=>metrics);
+  const context=()=>({cwd:config.cwd,hasUI:true,mode:'tui',ui:mode.createExtensionUIContext(),
+    sessionManager:manager,isProjectTrusted:()=>false});
+  const a=context(), b=context(); assert.notEqual(a.ui,b.ui);
+  report.stage='owned-disposal';
+  const nativeLines=phase('native-before').lines;
+  lifecycle.dispose(); assert.equal(mode.footerContainer.children[0],mode.footer);
+  await lifecycle.start(a);
+  const owned=phase('owned');
+  assert.equal(owned.callbackCount,baselineCallbacks+1); assert(owned.custom); assert(!owned.isNative);
+  assert(owned.lines.join('\n').includes('╭')); assert(owned.frame.includes('╭'));
+  lifecycle.dispose();
+  const restored=phase('owned-disposed');
+  assert.equal(restored.callbackCount,baselineCallbacks); assert(restored.isNative); assert(!restored.custom);
+  assert.deepEqual(restored.lines,nativeLines); assert.equal(lifecycle.currentTui(),undefined);
+  assert.deepEqual(lifecycle.health(),{expected:false,initialized:false});
+  lifecycle.dispose(); const repeated=phase('repeat-disposed'); assert.deepEqual(repeated.lines,nativeLines);
+  assert.equal(repeated.callbackCount,baselineCallbacks);
+  report.stage='foreign-replacement';
+  await lifecycle.start(b);
+  const foreign=new tui.Text('other extension footer',0,0);
+  b.ui.setFooter(()=>foreign);
+  const foreignBefore=phase('foreign-installed');
+  assert.equal(mode.customFooter,foreign); assert.equal(foreignBefore.callbackCount,baselineCallbacks);
+  lifecycle.dispose(); const foreignAfter=phase('foreign-preserved');
+  assert.equal(mode.customFooter,foreign); assert.deepEqual(foreignAfter.lines,foreignBefore.lines);
+  assert(foreignAfter.frame.includes('other extension footer'));
+  report.stage='stale-generation';
+  for (const [name,next] of [['same-context',a],['distinct-context',b]]) {
+    await lifecycle.start(a); const old=mode.customFooter;
+    await lifecycle.start(next); const current=mode.customFooter;
+    assert.notEqual(old,current); old.dispose(); old.dispose();
+    const retained=phase(name+'-stale-disposed');
+    assert.equal(mode.customFooter,current); assert.equal(retained.callbackCount,baselineCallbacks+1);
+    assert.deepEqual(lifecycle.health(),{expected:true,initialized:true});
+    lifecycle.dispose(); current.dispose();
+    const final=phase(name+'-current-disposed');
+    assert(final.isNative); assert.equal(final.callbackCount,baselineCallbacks); assert.deepEqual(final.lines,nativeLines);
+  }
+  report.stage='deferred-metrics';
+  let resolveMetrics;
+  deferredLifecycle=new PiFooterLifecycle(parent,noBridge,()=>new Promise(resolve=>{resolveMetrics=resolve;}));
+  const pending=deferredLifecycle.start(context());
+  deferredLifecycle.dispose(); resolveMetrics(metrics); await pending;
+  const deferred=phase('deferred-disposed');
+  assert(deferred.isNative); assert.equal(deferred.callbackCount,baselineCallbacks);
+  assert.deepEqual(deferred.lines,nativeLines);
+  assert.deepEqual(deferredLifecycle.health(),{expected:false,initialized:false});
+  assert.equal(report.peripheralAttempts.length,0,'caught forbidden peripheral attempt');
+  report.result='PASSED';
+} catch (error) {
+  report.result='FAILED'; report.error={name:error?.name,message:String(error?.message),stack:String(error?.stack)};
+  process.exitCode=1;
+} finally {
+  try {
+    deferredLifecycle?.dispose(); lifecycle?.dispose();
+    if (mode) {
+      mode.setExtensionFooter(undefined);
+      report.cleanup.callbackCountBeforeProviderDispose=mode.footerDataProvider.branchChangeCallbacks.size;
+      mode.footerDataProvider.dispose(); mode.themeController.dispose(); theme?.stopThemeWatcher();
+      mode.renderer.stop();
+      report.cleanup.providerDisposed=mode.footerDataProvider.disposed;
+      report.cleanup.remainingCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+      report.cleanup.terminalStopped=terminal.stopped;
+      report.cleanup.rendererStopped=mode.renderer.stopped;
+    }
+    if(terminal) originalWrite(path.join(output,'terminal-capture.json'),JSON.stringify({encoding:'base64',
+      bytes:terminal.bytes,data:Buffer.from(terminal.chunks.join('')).toString('base64')})+'\n');
+  } catch(error) { report.cleanup.error={name:error?.name,message:String(error?.message)}; report.result='FAILED'; process.exitCode=1; }
+  const require=createRequire(import.meta.url);
+  for(const key of Object.keys(require.cache)) loaded.add(pathToFileURL(key).href);
+  if(jiti) for(const key of Object.keys(jiti.cache)) loaded.add(pathToFileURL(key).href);
+  report.modules=[...loaded].sort().map(url=>{
+    if(!url.startsWith('file:')) return {url};
+    const filename=fileURLToPath(url);
+    try{return {url,sha256:digest(originalRead(filename))};}catch{return {url,unreadable:true};}
+  });
+  report.sourceReads=[...sourceReads].sort(([a],[b])=>a.localeCompare(b)).map(([p,sha256])=>({path:p,sha256}));
+  if(report.peripheralAttempts.length) {report.result='FAILED';process.exitCode=1;}
+  report.stageAtCompletion=report.stage; persist();
+}
+''', encoding="utf-8", newline="\n")
+            started = time.monotonic()
+            done = subprocess.run([str(node), str(script)], cwd=profile / "work", env=environment,
+                                  capture_output=True, timeout=30, check=False)
+            # Preserve original outcomes before assertions, even if the SDK refused setup.
+            (output / "node.stdout.bin").write_bytes(done.stdout)
+            (output / "node.stderr.bin").write_bytes(done.stderr)
+            (output / "outcome.json").write_text(json.dumps({"returncode": done.returncode,
+                "elapsed_seconds": time.monotonic() - started, "argv": [str(node), str(script)]}), encoding="utf-8")
+            self.assertEqual(installed_inventory(), before)
+            self.assertEqual(hashlib.sha256(node.read_bytes()).hexdigest(), node_hash)
+            self.assertEqual({p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}, source_before)
+            self.assertEqual(done.returncode, 0, "real SDK footer component probe failed")
+            observed = read_json(output / "sdk-observation.json")
+            self.assertEqual(observed["result"], "PASSED")
+            self.assertEqual(observed["peripheralAttempts"], [])
+            self.assertEqual(len(observed["phases"]), 11)
+            self.assertTrue(observed["cleanup"]["terminalStopped"])
+            self.assertTrue(observed["cleanup"]["rendererStopped"])
+            self.assertTrue(observed["cleanup"]["providerDisposed"])
+            self.assertEqual(observed["cleanup"]["remainingCallbacks"], 0)
+
     def test_rpc_native_shutdown_stack_projection_is_closed_and_bounded(self):
         import _windows_dbgeng as sdk
         self.assertEqual(sdk.project_frame(b"NODE", 0x1010, 0x1000, True),

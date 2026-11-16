@@ -1,0 +1,24 @@
+F
+======================================================================
+FAIL: test_refusal_location_identifies_json_predicate_instead_of_valueerror_raise (test_site_playwright_observation.DocsAuthorityTests.test_refusal_location_identifies_json_predicate_instead_of_valueerror_raise)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_site_playwright_observation.py", line 110, in test_refusal_location_identifies_json_predicate_instead_of_valueerror_raise
+    self.assertEqual(json.loads(raw)['location'], {
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'module': 'major_qualification_report.py',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'line': self.docs.reports.unique.__code__.co_firstlineno + 3})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'module': 'major_qualification_report.py', 'line': 46} != {'module': 'major_qualification_report.py', 'line': 52}
+- {'line': 46, 'module': 'major_qualification_report.py'}
+?          ^^
+
++ {'line': 52, 'module': 'major_qualification_report.py'}
+?          ^^
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.030s
+
+FAILED (failures=1)
