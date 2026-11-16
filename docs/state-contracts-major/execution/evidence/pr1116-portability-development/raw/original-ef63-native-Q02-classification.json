@@ -1,0 +1,65 @@
+[
+  {
+    "job_id": 133680466851,
+    "python_setup": [
+      "3.14.7"
+    ],
+    "known_runtime_flags": {
+      "runtime file bound exceeded": false,
+      "linked runtime inventory entry": true,
+      "runtime byte bound exceeded": false
+    },
+    "Go_failed_names": [
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-0",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-30",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-31",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-32"
+    ],
+    "summary": [],
+    "closed_errors": []
+  },
+  {
+    "job_id": 133680467059,
+    "python_setup": [
+      "3.14.10"
+    ],
+    "known_runtime_flags": {
+      "runtime file bound exceeded": false,
+      "linked runtime inventory entry": true,
+      "runtime byte bound exceeded": false
+    },
+    "Go_failed_names": [
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-0",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-30",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-31",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-32"
+    ],
+    "summary": [],
+    "closed_errors": []
+  },
+  {
+    "job_id": 133680466949,
+    "python_setup": [
+      "3.15.2"
+    ],
+    "known_runtime_flags": {
+      "runtime file bound exceeded": false,
+      "linked runtime inventory entry": false,
+      "runtime byte bound exceeded": false
+    },
+    "Go_failed_names": [],
+    "summary": [
+      "Ran 728 tests in 49.337s",
+      "FAIL: test_pi_publish_refuses_a_different_workflow_commit (__main__.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit)",
+      "FAIL: test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes (__main__.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes)",
+      "FAIL: test_missing_receipt_is_uploaded_once_and_replay_only_reads (__main__.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads)",
+      "FAIL: test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite (__main__.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite)",
+      "FAIL: test_uploaded_receipt_with_lost_response_is_observed_before_retry (__main__.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry)",
+      "Ran 50 tests in 0.032s",
+      "FAILED (failures=5)"
+    ],
+    "closed_errors": []
+  }
+]

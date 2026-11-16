@@ -1,0 +1,11 @@
+{
+  "controller_source_repo": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "published_old_archive": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw15-retained-rollback-2c0fd13010\\published-old\\codearbiter-ca-codex-0.26.9.tar.gz",
+  "git_executable": "C:/Program Files/Git/cmd/git.exe",
+  "cohort_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\M-release-packages\\artifact-package-cohort.json",
+  "release_package_stage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\M-promoted-stage",
+  "trusted_source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "trusted_workflow": ".github/workflows/ci.yml",
+  "trusted_workflow_run": "43960617519",
+  "promotion_receipt_sha256": "46a89e3ca12ffada1b44848c2d229c30a19c9103a89329fbf10e8324063a3c11"
+}

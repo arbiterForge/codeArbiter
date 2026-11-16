@@ -1,0 +1,4 @@
+2026-11-16T21:48:10.3635404Z ##[group]Run python .github/scripts/pi_benchmark.py --samples 100
+2026-11-16T21:48:10.5525664Z {"platform":"linux","host":"claude","sampleCount":100,"startupMs":34.51253,"coreP50Ms":0.025087,"adapterP50Ms":0.011572,"adapterP95Ms":0.015279}
+2026-11-16T21:48:10.5527841Z {"platform":"linux","host":"codex","sampleCount":100,"startupMs":1.113877,"coreP50Ms":0.025608,"adapterP50Ms":0.011772,"adapterP95Ms":0.020458}
+2026-11-16T21:48:10.5532598Z {"platform":"linux","host":"pi","sampleCount":100,"startupMs":29.064419,"coreP50Ms":0.019016,"adapterP50Ms":0.04254999999999853,"adapterP95Ms":0.1332000000000022}

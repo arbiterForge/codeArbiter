@@ -1,0 +1,2 @@
+actual_git=C:\Program Files\Git\mingw64\bin\git.EXE
+expected_bash_exists=True

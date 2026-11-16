@@ -25,6 +25,12 @@ OBSERVER = '.github/scripts/npm_binding_observation.py'
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 SOURCE_FILE_LIMIT = 64 << 20
 IDENTITY_FILE_LIMIT = 512 << 20  # existing bounded tool-identity owner ceiling
+RUNTIME_FILE_LIMIT = 32768
+RUNTIME_DIRECTORY_LIMIT = 2048
+RUNTIME_ENTRY_LIMIT = 65536
+RUNTIME_BYTE_LIMIT = 512 << 20
+SIDECAR_JSON_LIMIT = 16 << 20
+LINK_TARGET_LIMIT = 4096
 EVIDENCE_PARENTS = ('TestCompletionAdmitsActualProducerLaunchBindingCounts',
                     'TestCompletionLaunchFileBoundMatchesContract',
                     'TestCompletionWorkspaceRejectsIdentityAndCommandSubstitution')
@@ -97,6 +103,22 @@ def source_snapshot(repo):
     return result
 
 
+def link_identity(path):
+    """Inert link text/identity only: never open or traverse its target."""
+    path = Path(path)
+    before = path.lstat()
+    require(stat.S_ISLNK(before.st_mode), 'runtime link changed kind')
+    target = os.readlink(path)
+    require(isinstance(target, str) and 0 < len(target.encode('utf8')) <= LINK_TARGET_LIMIT
+            and '\x00' not in target, 'runtime link target exceeds bound')
+    after = path.lstat()
+    identity = lambda row: (row.st_dev, row.st_ino, row.st_mode, row.st_size, row.st_mtime_ns)
+    require(identity(before) == identity(after) and target == os.readlink(path)
+            and identity(before) == identity(path.lstat()), 'runtime link changed during read')
+    return {'target': target, 'identity': {'device': before.st_dev, 'inode': before.st_ino,
+            'mode': before.st_mode, 'bytes': before.st_size, 'mtime_ns': before.st_mtime_ns}}
+
+
 def runtime_snapshot():
     # Bound the actual interpreter, standard-library and extension lookup roots.
     # -I/-S and the private empty pycache prefix exclude user/site bytecode.
@@ -114,34 +136,76 @@ def runtime_snapshot():
         path = Path(directory) / library
         if path.is_file():
             paths['python-library'] = path.resolve(strict=True)
-    directories = {}
+    directories, links, population = {}, {}, 0
     for label, root in roots.items():
         pending = [root]
         while pending:
             directory = pending.pop()
-            require(len(directories) < 1024, 'runtime directory bound exceeded')
+            require(len(directories) < RUNTIME_DIRECTORY_LIMIT,
+                    f'runtime directory bound exceeded: observed={len(directories)+1} limit={RUNTIME_DIRECTORY_LIMIT}')
             entries = sorted(directory.iterdir(), key=lambda p: p.name)
             key = label + '/' + directory.relative_to(root).as_posix()
             directories[key] = [p.name for p in entries]
+            population += len(entries)
+            require(population <= RUNTIME_ENTRY_LIMIT,
+                    f'runtime directory population exceeds bound: observed={population} limit={RUNTIME_ENTRY_LIMIT}')
             for path in entries:
                 if path.name == 'site-packages':
                     continue  # -S; never admitted as an imported runtime module.
-                require(not path.is_symlink() and not getattr(path.lstat(), 'st_file_attributes', 0) & 0x400,
-                        'linked runtime inventory entry')
-                if path.is_dir():
+                entry = path.lstat()
+                coordinate = label + '/' + path.relative_to(root).as_posix()
+                if stat.S_ISLNK(entry.st_mode):
+                    links[coordinate] = link_identity(path)
+                elif getattr(entry, 'st_file_attributes', 0) & 0x400:
+                    raise ValueError('unsupported runtime reparse entry: coordinate_sha256=' +
+                                     hashlib.sha256(coordinate.encode('utf8')).hexdigest())
+                elif stat.S_ISDIR(entry.st_mode):
                     pending.append(path)
-                elif path.is_file():
-                    paths[label + '/' + path.relative_to(root).as_posix()] = path
+                elif stat.S_ISREG(entry.st_mode):
+                    paths[coordinate] = path
                 else:
-                    raise ValueError('nonregular runtime inventory entry')
-                require(len(paths) <= 8192, 'runtime file bound exceeded')
-    files = {label: file_identity(path) for label, path in sorted(paths.items())}
-    require(sum(x['bytes'] for x in files.values()) <= 512 << 20, 'runtime byte bound exceeded')
+                    raise ValueError('nonregular runtime inventory entry: coordinate_sha256=' +
+                                     hashlib.sha256(coordinate.encode('utf8')).hexdigest())
+                observed = len(paths) + len(links)
+                require(observed <= RUNTIME_FILE_LIMIT,
+                        f'runtime file bound exceeded: observed={observed} limit={RUNTIME_FILE_LIMIT}')
+    files, total = {}, 0
+    for label, path in sorted(paths.items()):
+        expected = path.lstat().st_size
+        require(0 <= expected and total + expected <= RUNTIME_BYTE_LIMIT,
+                f'runtime byte bound exceeded: observed={total+expected} limit={RUNTIME_BYTE_LIMIT}')
+        identity = file_identity(path, min(IDENTITY_FILE_LIMIT, RUNTIME_BYTE_LIMIT-total))
+        total += identity['bytes']
+        files[label] = identity
     return {'version': list(sys.version_info[:3]), 'implementation': sys.implementation.name,
             'sys_platform': sys.platform, 'isolated': sys.flags.isolated,
             'no_site': sys.flags.no_site, 'no_user_site': sys.flags.no_user_site,
             'dont_write_bytecode': bool(sys.dont_write_bytecode), 'files': files,
-            'directories': directories}, paths
+            'directories': directories, 'links': links}, paths
+
+
+def consumed_imports(repo, source_inputs, runtime_paths):
+    imports = []
+    by_runtime = {path: label for label, path in runtime_paths.items()}
+    for name, module in sorted(sys.modules.copy().items()):
+        spec = getattr(module, '__spec__', None)
+        origin = getattr(spec, 'origin', None)
+        if origin in ('built-in', 'frozen'):
+            imports.append({'name': name, 'kind': origin, 'path': None})
+            continue
+        path = getattr(module, '__file__', None)
+        if not path:
+            continue
+        path = Path(path).resolve(strict=True)
+        if path.is_relative_to(repo):
+            relative = path.relative_to(repo).as_posix()
+            require(relative in source_inputs, 'import outside declared source profile')
+            imports.append({'name': name, 'kind': 'source', 'path': relative})
+        else:
+            require(path in by_runtime, 'import outside captured Python runtime')
+            imports.append({'name': name, 'kind': 'runtime', 'path': by_runtime[path]})
+    require(len(imports) <= 512, 'import population exceeds bound')
+    return imports
 
 
 def observe(repo, root, count, platform, output):
@@ -173,26 +237,7 @@ def observe(repo, root, count, platform, output):
                 {'commands': [{'definition': definition, 'definition_sha256': 'a'*64}]}, {})
         finally:
             sys.pycache_prefix = previous
-    imports = []
-    by_runtime = {path: label for label, path in runtime_paths.items()}
-    for name, module in sorted(sys.modules.copy().items()):
-        spec = getattr(module, '__spec__', None)
-        origin = getattr(spec, 'origin', None)
-        if origin in ('built-in', 'frozen'):
-            imports.append({'name': name, 'kind': origin, 'path': None})
-            continue
-        path = getattr(module, '__file__', None)
-        if not path:
-            continue
-        path = Path(path).resolve(strict=True)
-        if path.is_relative_to(repo):
-            relative = path.relative_to(repo).as_posix()
-            require(relative in before, 'import outside declared source profile')
-            imports.append({'name': name, 'kind': 'source', 'path': relative})
-        else:
-            require(path in by_runtime, 'import outside captured Python runtime')
-            imports.append({'name': name, 'kind': 'runtime', 'path': by_runtime[path]})
-    require(len(imports) <= 512, 'import population exceeds bound')
+    imports = consumed_imports(repo, before, runtime_paths)
     launch = []
     require(isinstance(bindings, list) and len(bindings) == 1, 'one original binding required')
     for row in bindings[0]['launch_files']:
@@ -209,8 +254,7 @@ def observe(repo, root, count, platform, output):
               'runtime_before': runtime_before, 'runtime_after': runtime_after,
               'bindings_sha256': hashlib.sha256(json.dumps(bindings, sort_keys=True, separators=(',',':')).encode()).hexdigest(),
               'launch_files': launch}
-    encoded = (json.dumps(record, sort_keys=True, separators=(',',':')) + '\n').encode()
-    require(len(encoded) <= 4 << 20, 'binding sidecar exceeds bound')
+    encoded = encode_record(record)
     require((output.stat().st_dev, output.stat().st_ino) == (output_identity.st_dev, output_identity.st_ino)
             and output.resolve(strict=True) == output, 'owned sidecar directory changed')
     path = output / f'workspaces-{count}.json'
@@ -218,6 +262,13 @@ def observe(repo, root, count, platform, output):
     with os.fdopen(fd, 'wb') as stream:
         stream.write(encoded)
     return bindings
+
+
+def encode_record(record):
+    encoded = (json.dumps(record, sort_keys=True, separators=(',',':')) + '\n').encode()
+    require(len(encoded) <= SIDECAR_JSON_LIMIT,
+            f'binding sidecar exceeds bound: observed={len(encoded)} limit={SIDECAR_JSON_LIMIT}')
+    return encoded
 
 
 def selectors(platform=None):
@@ -291,7 +342,7 @@ def validate(record, req, platform, count):
             'npm binding consumed Python source differs')
     runtime = record['runtime_before']
     require(isinstance(runtime, dict) and set(runtime) == {'version','implementation','sys_platform','isolated',
-            'no_site','no_user_site','dont_write_bytecode','files','directories'}
+            'no_site','no_user_site','dont_write_bytecode','files','directories','links'}
             and runtime == record['runtime_after'] and isinstance(runtime['version'], list)
             and len(runtime['version']) == 3 and all(type(n) is int and n >= 0 for n in runtime['version'])
             and runtime['version'][:2] == [3,14] and runtime['implementation'] == 'cpython'
@@ -299,8 +350,8 @@ def validate(record, req, platform, count):
             and all(type(runtime[k]) is int and runtime[k] == 1 for k in ('isolated','no_site','no_user_site'))
             and runtime['dont_write_bytecode'] is True, 'npm binding Python runtime differs')
     files = runtime['files']
-    require(isinstance(files, dict) and 'interpreter' in files and 0 < len(files) <= 8192
-            and isinstance(runtime['directories'], dict) and len(runtime['directories']) <= 1024,
+    require(isinstance(files, dict) and 'interpreter' in files and 0 < len(files) <= RUNTIME_FILE_LIMIT
+            and isinstance(runtime['directories'], dict) and len(runtime['directories']) <= RUNTIME_DIRECTORY_LIMIT,
             'npm binding runtime inventory unavailable')
     for label, row in files.items():
         require(isinstance(label, str) and 0 < len(label.encode('utf8')) <= 4096
@@ -308,7 +359,7 @@ def validate(record, req, platform, count):
         require(isinstance(row, dict) and set(row) == {'bytes','sha256'} and type(row['bytes']) is int
                 and 0 <= row['bytes'] <= IDENTITY_FILE_LIMIT and isinstance(row['sha256'],str) and HEX.fullmatch(row['sha256']),
                 'invalid runtime file identity')
-    require(sum(x['bytes'] for x in files.values()) <= 512 << 20, 'runtime identity bytes exceed bound')
+    require(sum(x['bytes'] for x in files.values()) <= RUNTIME_BYTE_LIMIT, 'runtime identity bytes exceed bound')
     population = 0
     for label, names in runtime['directories'].items():
         require(isinstance(label,str) and 0 < len(label.encode('utf8')) <= 4096
@@ -316,7 +367,21 @@ def validate(record, req, platform, count):
                     and n not in ('.','..') and '/' not in n and '\\' not in n for n in names)
                 and names == sorted(set(names)), 'invalid runtime directory population')
         population += len(names)
-    require(population <= 16384, 'runtime directory population exceeds bound')
+    require(population <= RUNTIME_ENTRY_LIMIT, 'runtime directory population exceeds bound')
+    links = runtime['links']
+    require(isinstance(links,dict) and len(files) + len(links) <= RUNTIME_FILE_LIMIT
+            and not set(links).intersection(files), 'invalid runtime link population')
+    for label, row in links.items():
+        require(isinstance(label,str) and label.startswith(('stdlib/','extensions/'))
+                and len(label.encode('utf8')) <= 4096 and not any(p in ('','..') for p in label.split('/'))
+                and isinstance(row,dict) and set(row)=={'target','identity'}
+                and isinstance(row['target'],str) and 0 < len(row['target'].encode('utf8')) <= LINK_TARGET_LIMIT
+                and '\x00' not in row['target'], 'invalid inert runtime link')
+        identity = row['identity']
+        require(isinstance(identity,dict) and set(identity)=={'device','inode','mode','bytes','mtime_ns'}
+                and all(type(v) is int and abs(v) < (1 << 128) for v in identity.values())
+                and all(identity[k] >= 0 for k in ('device','inode','mode','bytes'))
+                and stat.S_ISLNK(identity['mode']), 'invalid inert runtime link identity')
     require(isinstance(record['imports'], list) and 0 < len(record['imports']) <= 512, 'missing consumed imports')
     names = set(); source_imports = set()
     for row in record['imports']:

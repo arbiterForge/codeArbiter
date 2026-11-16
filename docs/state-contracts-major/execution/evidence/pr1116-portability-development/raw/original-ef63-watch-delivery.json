@@ -1,0 +1,64 @@
+{
+  "state": "TERMINAL_BLOCK",
+  "PR": 1116,
+  "head": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "event": "pull_request",
+  "attempt": 1,
+  "CI": {
+    "id": 43976088053,
+    "conclusion": "failure"
+  },
+  "Docs": {
+    "id": 43976087894,
+    "conclusion": "success"
+  },
+  "checks": {
+    "pass": 62,
+    "fail": 10,
+    "skip": 13
+  },
+  "required_merge_readiness": "failure",
+  "terminal_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\terminal-receipt.json",
+    "sha256": "f366ce9a8e3840dcd39cebe683d39cb1ff41c2402dfaaeb211ced2ca4e71b3f2"
+  },
+  "failure_table": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failure-table.json",
+    "sha256": "447757824c43a575427d5768fe8eb05cf9a47b9d4d77557744bdca9efc3eedb9"
+  },
+  "all_failed_job_metadata": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\all-terminal-failed-jobs.json",
+    "sha256": "58ec53526274b2670a2cd12fd0038e40b7d7bdb53021bab610445de722e0e1c2"
+  },
+  "closed_first_failure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\first-failure-closed-handoff.json",
+    "sha256": "aad74f30e79630ae18d9c251547092ed3845782f24d10c423b5244a6e94c30a0"
+  },
+  "closed_additional_failure_details": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\additional-closed-errors.json",
+    "sha256": "854532740bd66cab871ae648d0febb8e361ab020deb6c2e5aea8346ce20fed15"
+  },
+  "native_Q02_classifications": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\final-failure-classification.json",
+    "sha256": "06f63eeed868ee6cdcf40551c50548e3c83513737a1a5b0f0e372bbf124527c6"
+  },
+  "Q02_original_git_coordinate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\q02-release-git-path-availability.json",
+    "sha256": "f5c1988b29430f0c1b564676ad6bdbd81c073f508d235be7cdcd66bdb717432b"
+  },
+  "sole_foreground_session": {
+    "session_id": 1194,
+    "exit_code": 1,
+    "finished": true
+  },
+  "author_portable_fix_separate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\delivery.json",
+    "sha256": "633f297fdcd9116b1f4dc23e3ac3bdde772fced9b9eba27270fc33302180b6ea"
+  },
+  "limits": [
+    "No rerun/cancel/merge/delete/Git/index/ref/source/marker or provider mutations.",
+    "No PR or partial-run installed/native/task qualification.",
+    "Four failed-job causes remain unclassified from metadata only; no assumptions about their logs.",
+    "Original Mac coordinates/fullUbuntu runtime count and selected in-test WindowsGit path remain UNKNOWN."
+  ]
+}

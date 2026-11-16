@@ -1,0 +1,57 @@
+{
+  "child.mjs": {
+    "kind": "file",
+    "bytes": 5081,
+    "sha256": "16816dffc9c5bbcf79c498e75fc28df74a9d07319c31eded3e195cc8c347beda"
+  },
+  "fake-operator-home": {
+    "kind": "directory"
+  },
+  "fake-operator-home/.pi": {
+    "kind": "directory"
+  },
+  "fake-operator-home/.pi/agent": {
+    "kind": "directory"
+  },
+  "fake-operator-home/.pi/agent/auth.json": {
+    "kind": "file",
+    "bytes": 60,
+    "sha256": "de92ca38da685991178a060752929e4e71a2d972646bdb531da6d607a92bb533"
+  },
+  "package.json": {
+    "kind": "file",
+    "bytes": 34,
+    "sha256": "fa3ac709eef338aac9353079681f7636474fc8b05f2d750fdfa796b834510e2b"
+  },
+  "plan.json": {
+    "kind": "file",
+    "bytes": 2233,
+    "sha256": "6cf6adee568ce5361d8735d396fb1b7a776b7a360644599cc1cf8dddc5171220"
+  },
+  "source": {
+    "kind": "directory"
+  },
+  "source/setup-disposable-home.ts": {
+    "kind": "file",
+    "bytes": 2729,
+    "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+  },
+  "stderr.log": {
+    "kind": "file",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout.log": {
+    "kind": "file",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "supervisor.py": {
+    "kind": "file",
+    "bytes": 9803,
+    "sha256": "4e79fe096f590591598f4e1d1182fc58f1139bb8a31da239aa3a9f544d4892aa"
+  },
+  "tmp": {
+    "kind": "directory"
+  }
+}

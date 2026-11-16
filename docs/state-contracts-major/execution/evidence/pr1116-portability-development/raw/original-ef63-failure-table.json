@@ -1,0 +1,136 @@
+[
+  {
+    "job_id": 133680466851,
+    "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Build native qualified candidate"
+    ],
+    "observed_closed_cause": "linked runtime entry refusal; CPython3.14.7 actual4-workspace Go producer",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failed-job-133680466851.log",
+      "sha256": "df76e4ff38f0f5eb830af429ae2c2b98c6672ba6f7fbe8339eb0d5c5af8716dc",
+      "bytes": 104200
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133680466920,
+    "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Test original Python npm binding identities and admission"
+    ],
+    "observed_closed_cause": "runtime file count8192 refusal; CPython3.15.2",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\011-first-failed-job-log.stdout",
+      "sha256": "2c2d5c5ab6908452fcd6bcb28be7e13a72e4371ba56ea3c4f24cfd33f0359704",
+      "bytes": 197407
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133680466949,
+    "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Observe original Q02 publication guard tests"
+    ],
+    "observed_closed_cause": "five original release tests require real Bash; computed Git/Bash path unretained",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failed-job-133680466949.log",
+      "sha256": "d017435fc9d056841e61039ffdce5e6fe317c6fb55d50835448f20266e26b01c",
+      "bytes": 276610
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133680467038,
+    "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Test original Python npm binding identities and admission"
+    ],
+    "observed_closed_cause": "linked runtime entry refusal; CPython3.15.2",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failed-job-133680467038.log",
+      "sha256": "969f199fe3e36947b36bef7fe610d1a914102dd340627ecd536d5262cc108ef8",
+      "bytes": 197634
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133680467059,
+    "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Build native qualified candidate"
+    ],
+    "observed_closed_cause": "linked runtime entry refusal; CPython3.14.10 actual4-workspace Go producer",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failed-job-133680467059.log",
+      "sha256": "04ecb42a6ea6bf8c7c6cb4079c800f752c331df49fdda7e33dbefc591e30dbc5",
+      "bytes": 103355
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133680467063,
+    "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Test partial-program integrity and historical applicability"
+    ],
+    "observed_closed_cause": null,
+    "original_log": null,
+    "log_status": "not_downloaded; no inferred cause"
+  },
+  {
+    "job_id": 133680467129,
+    "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Test partial-program integrity and historical applicability"
+    ],
+    "observed_closed_cause": null,
+    "original_log": null,
+    "log_status": "not_downloaded; no inferred cause"
+  },
+  {
+    "job_id": 133680467148,
+    "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Test partial-program integrity and historical applicability"
+    ],
+    "observed_closed_cause": "old exact Hook guard literal lacks3 Q02 success predicates",
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\failed-job-133680467148.log",
+      "sha256": "a1b735ef55bd73fca44e993f19f97d51da59fb375ae8b110d6766c1b43e8a454",
+      "bytes": 930374
+    },
+    "log_status": "retained_original"
+  },
+  {
+    "job_id": 133690299089,
+    "name": "[CHECK] | [CORE] | Structured artifact qualification",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Require every native verification stage to have passed"
+    ],
+    "observed_closed_cause": null,
+    "original_log": null,
+    "log_status": "not_downloaded; no inferred cause"
+  },
+  {
+    "job_id": 133690422666,
+    "name": "[GATE ] | [REPO] | Merge readiness",
+    "conclusion": "failure",
+    "failed_steps": [
+      "Require every required job to have succeeded or been skipped"
+    ],
+    "observed_closed_cause": null,
+    "original_log": null,
+    "log_status": "not_downloaded; no inferred cause"
+  }
+]

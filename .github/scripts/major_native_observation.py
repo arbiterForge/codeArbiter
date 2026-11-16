@@ -1257,7 +1257,7 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
             observed = []
             with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
                 for count in launch.COUNTS:
-                    raw = _document(zipped, f'workspaces-{count}.json', 4 << 20)
+                    raw = _document(zipped, f'workspaces-{count}.json', launch.SIDECAR_JSON_LIMIT)
                     launch.validate(raw, {**req, 'run_attempt': run['run_attempt']}, platform, count)
                     observed.append({'workspace_count': count,
                         'record_sha256': owner.digest(zipped.read(f'workspaces-{count}.json')),

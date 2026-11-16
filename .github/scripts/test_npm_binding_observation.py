@@ -100,7 +100,7 @@ class AdmissionTests(unittest.TestCase):
         runtime={'version':[3,14,1],'implementation':'cpython',
             'sys_platform':{'windows':'win32','linux':'linux','darwin':'darwin'}[platform.split('/')[0]],
             'isolated':1,'no_site':1,'no_user_site':1,'dont_write_bytecode':True,
-            'files':{'interpreter':{'bytes':1,'sha256':'d'*64}},'directories':{'stdlib/.':[]}}
+            'files':{'interpreter':{'bytes':1,'sha256':'d'*64}},'directories':{'stdlib/.':[]},'links':{}}
         roles=['declared-executable','npm-manifest']+['npm-workspace-manifest']*count
         if platform.startswith('windows/'):
             roles+=['node-runtime','npm-cli']+(['npm-prefix'] if count else [])
@@ -231,6 +231,49 @@ class AdmissionTests(unittest.TestCase):
             else:changed['launch_files'][0]['bytes']=launch.IDENTITY_FILE_LIMIT+1
             with self.assertRaises(ValueError):launch.validate(changed,req,'windows/amd64',32)
 
+    def test_runtime_population_directory_entries_bytes_and_version_overflows_refuse(self):
+        cases=('files','directories','entries','bytes','version','links')
+        for case in cases:
+            value=self.raw('windows/amd64',0);runtime=value['runtime_before']
+            if case=='files':runtime['files'].update({f'stdlib/f{i}.py':{'bytes':0,'sha256':'e'*64}
+                                                     for i in range(launch.RUNTIME_FILE_LIMIT)})
+            elif case=='directories':runtime['directories']={f'stdlib/d{i}':[] for i in range(launch.RUNTIME_DIRECTORY_LIMIT+1)}
+            elif case=='entries':runtime['directories']={'stdlib/.':sorted(f'f{i}' for i in range(launch.RUNTIME_ENTRY_LIMIT+1))}
+            elif case=='bytes':runtime['files']={name:{'bytes':300<<20,'sha256':'e'*64} for name in ('interpreter','stdlib/large.py')}
+            elif case=='version':runtime['version']=[3,15,2]
+            else:runtime['links']={'stdlib/link.py':{'target':'../outside.py','identity':{'device':1,'inode':1,'mode':0,'bytes':1,'mtime_ns':1}}}
+            value['runtime_after']=copy.deepcopy(runtime)
+            with self.subTest(case=case),self.assertRaises(ValueError):
+                launch.validate(value,{**self.f.req,'run_attempt':1},'windows/amd64',0)
+        value=self.raw('windows/amd64',0)
+        value['runtime_before']['links']={'stdlib/link.py':{'target':'inside.py','identity':{'device':1,'inode':1,'mode':0o120777,'bytes':9,'mtime_ns':1}}}
+        value['runtime_after']=copy.deepcopy(value['runtime_before'])
+        launch.validate(value,{**self.f.req,'run_attempt':1},'windows/amd64',0)
+        value['runtime_after']['links']['stdlib/link.py']['target']='other.py'
+        with self.assertRaises(ValueError):launch.validate(value,{**self.f.req,'run_attempt':1},'windows/amd64',0)
+
+    def test_large_sidecar_uses_same_document_budget_through_original_archive_consumer(self):
+        value=self.raw('linux/amd64',0);runtime=value['runtime_before']
+        names=['owned_'+('x'*80)+str(i)+'.py' for i in range(12000)]
+        runtime['files'].update({'stdlib/'+name:{'bytes':0,'sha256':'e'*64} for name in names})
+        runtime['directories']={'stdlib/.':sorted(names)}
+        value['runtime_after']=copy.deepcopy(runtime)
+        encoded=launch.encode_record(value)
+        self.assertGreater(len(encoded),4<<20)
+        self.assertLessEqual(len(encoded),launch.SIDECAR_JSON_LIMIT)
+        self.mutate_sidecar('linux/amd64',lambda files:files.update({'workspaces-0.json':encoded}))
+        record=self.f.produce()
+        self.assertEqual(self.f.verify(record)['state'],'PREPUBLICATION_READY')
+        import io,zipfile
+        oversized=io.BytesIO()
+        with zipfile.ZipFile(oversized,'w') as archive:
+            archive.writestr('workspaces-0.json',b'x'*(launch.SIDECAR_JSON_LIMIT+1))
+        with zipfile.ZipFile(io.BytesIO(oversized.getvalue())) as archive:
+            with self.assertRaisesRegex(readiness.ReadinessError,'native input document exceeds bound'):
+                native._document(archive,'workspaces-0.json',launch.SIDECAR_JSON_LIMIT)
+        with self.assertRaisesRegex(ValueError,'binding sidecar exceeds bound'):
+            launch.encode_record({'padding':'x'*launch.SIDECAR_JSON_LIMIT})
+
     def test_selected_actual_parents_exist_on_every_required_platform(self):
         recipes={'task:'+task:{p:launch.selectors(p) for p in binding.PLATFORMS} for task in launch.TASKS}
         self.assertEqual(existing._native_recipe_source_errors(ROOT / "core/artifacts",recipes),[])
@@ -286,6 +329,106 @@ class IdentityLimitTests(unittest.TestCase):
                 with self.assertRaises(ValueError):launch.file_identity(path)
             with mock.patch.object(launch.os,'open',side_effect=lambda *a,**k: (_ for _ in ()).throw(OSError('closed'))):
                 with self.assertRaises(OSError):launch.file_identity(path)
+
+
+class RuntimePortabilityTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.owned=tempfile.TemporaryDirectory(prefix='ca-owned-runtime-8193-')
+        cls.base=Path(cls.owned.name).resolve()
+        cls.full=cls.base/'full';(cls.full/'stdlib').mkdir(parents=True)
+        (cls.full/'owned-python.exe').write_bytes(b'inert owned identity')
+        for index in range(8192):(cls.full/'stdlib'/f'f{index:05d}.py').touch()
+
+    @classmethod
+    def tearDownClass(cls):cls.owned.cleanup()
+
+    def runtime(self,root):
+        from contextlib import ExitStack
+        stack=ExitStack()
+        stack.enter_context(mock.patch.object(launch.sysconfig,'get_path',return_value=str(root/'stdlib')))
+        stack.enter_context(mock.patch.object(launch.sysconfig,'get_config_var',return_value=None))
+        stack.enter_context(mock.patch.object(launch.sys,'base_prefix',str(root)))
+        stack.enter_context(mock.patch.object(launch.sys,'executable',str(root/'owned-python.exe')))
+        return stack
+
+    def test_actual_owned_8193_regular_file_inventory_is_complete(self):
+        with self.runtime(self.full):snapshot,paths=launch.runtime_snapshot()
+        self.assertEqual(len(snapshot['files']),8193)
+        self.assertEqual(len(paths),8193)
+        self.assertEqual(sum(row['bytes'] for row in snapshot['files'].values()),len(b'inert owned identity'))
+        self.assertIn('stdlib/f08191.py',snapshot['files'])
+
+    def linked(self):
+        root=self.base/'linked';stdlib=root/'stdlib';stdlib.mkdir(parents=True,exist_ok=True)
+        (root/'owned-python.exe').write_bytes(b'inert owned identity')
+        (stdlib/'inside.py').write_bytes(b'inside')
+        (root/'outside.py').write_bytes(b'outside')
+        (root/'outside-dir').mkdir(exist_ok=True)
+        (root/'outside-dir/hidden.py').write_bytes(b'never traversed')
+        for name,target,is_directory in [('internal-link.py','inside.py',False),
+            ('external-link.py','../outside.py',False),('directory-link','../outside-dir',True),
+            ('dangling-link.py','absent.py',False)]:
+            path=stdlib/name
+            if not path.is_symlink():os.symlink(target,path,target_is_directory=is_directory)
+        return root
+
+    def test_actual_owned_links_are_inert_and_never_traversed(self):
+        root=self.linked()
+        with self.runtime(root):snapshot,paths=launch.runtime_snapshot()
+        self.assertEqual(set(snapshot['links']),{'stdlib/internal-link.py','stdlib/external-link.py',
+            'stdlib/directory-link','stdlib/dangling-link.py'})
+        self.assertEqual(set(snapshot['files']),{'interpreter','stdlib/inside.py'})
+        self.assertEqual(snapshot['links']['stdlib/external-link.py']['target'],'../outside.py')
+        self.assertNotIn('hidden.py',' '.join(snapshot['files']))
+        self.assertNotIn(root/'outside.py',paths.values())
+
+
+    def test_snapshot_budget_stops_before_hashing_an_over_budget_file(self):
+        path=self.full/'stdlib/f00000.py';path.write_bytes(b'x'*40)
+        try:
+            with self.runtime(self.full),mock.patch.object(launch,'RUNTIME_BYTE_LIMIT',20), \
+                 mock.patch.object(launch,'file_identity',wraps=launch.file_identity) as hashed:
+                with self.assertRaisesRegex(ValueError,'runtime byte bound exceeded: observed=60 limit=20'):
+                    launch.runtime_snapshot()
+                self.assertEqual(hashed.call_count,1)
+                self.assertEqual(hashed.call_args.args[1],20)
+        finally:path.write_bytes(b'')
+        with self.runtime(self.full),mock.patch.object(launch,'RUNTIME_FILE_LIMIT',8192):
+            with self.assertRaisesRegex(ValueError,'runtime file bound exceeded: observed=8193 limit=8192'):
+                launch.runtime_snapshot()
+        with self.runtime(self.full),mock.patch.object(launch,'RUNTIME_DIRECTORY_LIMIT',0):
+            with self.assertRaisesRegex(ValueError,'runtime directory bound exceeded'):
+                launch.runtime_snapshot()
+        with self.runtime(self.full),mock.patch.object(launch,'RUNTIME_ENTRY_LIMIT',8191):
+            with self.assertRaisesRegex(ValueError,'runtime directory population exceeds bound'):
+                launch.runtime_snapshot()
+
+    def test_inert_link_change_and_unrecorded_consumed_imports_are_refused(self):
+        root=self.linked();link=root/'stdlib/internal-link.py';original=launch.os.readlink;first=True
+        def mutate(path):
+            nonlocal first
+            target=original(path)
+            if first:
+                first=False;link.unlink();os.symlink('../outside.py',link)
+            return target
+        try:
+            with mock.patch.object(launch.os,'readlink',side_effect=mutate):
+                with self.assertRaisesRegex(ValueError,'runtime link changed during read'):launch.link_identity(link)
+        finally:
+            link.unlink();os.symlink('inside.py',link)
+        with self.runtime(root):snapshot,paths=launch.runtime_snapshot()
+        from types import SimpleNamespace
+        module=SimpleNamespace(__spec__=None,__file__=str(link))
+        with mock.patch.object(launch.sys,'modules',{'owned_alias':module}):
+            self.assertEqual(launch.consumed_imports(self.base/'repo',{},paths),
+                [{'name':'owned_alias','kind':'runtime','path':'stdlib/inside.py'}])
+        for name in ('external-link.py','dangling-link.py'):
+            module=SimpleNamespace(__spec__=None,__file__=str(root/'stdlib'/name))
+            with mock.patch.object(launch.sys,'modules',{'unrecorded':module}):
+                with self.subTest(name=name),self.assertRaises((ValueError,OSError)):
+                    launch.consumed_imports(self.base/'repo',{},paths)
+
 
 
 if __name__ == '__main__':

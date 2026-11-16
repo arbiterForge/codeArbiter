@@ -93,6 +93,17 @@ useDefault = true
 
 [[allowlists]]
 description = """
+Public SHA-256 of the 76 JSON.stringify(DUMMY_AUTH) bytes defined in
+plugins/ca-pi/tools/test/setup-disposable-home.ts, retained as dummy_auth_sha256
+in docs/state-contracts-major/execution/evidence/hw26-owned-abrupt-ef63f8c3/evidence-proposal.json.
+It hashes the source's fixed dummy-disposable-home-not-a-credential fixture;
+no credential input or access authority is involved. Only this exact complete
+digest value is exempted. Every file and all other values remain scanned.
+"""
+regexes = ['''\Af4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143\z''']
+
+[[allowlists]]
+description = """
 Canonical secret-detection corpus literals (architecture-001), which live in
 plugins/ca/hooks/secret-detection-corpus.json and are inlined as test input by
 .github/scripts/test_hooklib.py, plugins/ca/tools/farm.unit.test.ts, and the

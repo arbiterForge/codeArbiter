@@ -1,0 +1,158 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite all-clause site-machine source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "site/scripts/capture-hook-proof.ts": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+    "site/scripts/capture/fixture.ts": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+    "site/scripts/capture/harness.ts": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+    "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "site/scripts/capture/py-runner.py": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+    "site/scripts/capture/run.ts": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+    "site/scripts/capture/targets.ts": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+    "site/scripts/capture/verify.ts": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+  },
+  "disposition_ids": [
+    "disposition:machines:S66"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S66-inspection.json",
+      "sha256": "9e08ddf412ef9ceb509e1fe1a2bff598cd8675a4b14e0497ce07f8a8c35570b5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+      "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+    }
+  ],
+  "scope": "Eight-clause SOURCE-ONLY capture validation/failure/disposal-control conformance. Disposal is invoked with bounded retries; successful physical cleanup and actual target/media/runtime freshness are not observed.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S66",
+      "frozen_row_sha256": "a4b457718ce0a0624becf58e2056f0240220b2dc2a876f07989ae7979b259d37",
+      "assessment": "Eight-clause SOURCE-ONLY capture validation/failure/disposal-control conformance. Disposal is invoked with bounded retries; successful physical cleanup and actual target/media/runtime freshness are not observed.",
+      "clauses": [
+        "disposition:transitions:S66:01",
+        "disposition:transitions:S66:02",
+        "disposition:transitions:S66:03",
+        "disposition:transitions:S66:04",
+        "disposition:transitions:S66:05",
+        "disposition:transitions:S66:06",
+        "disposition:transitions:S66:07",
+        "disposition:transitions:S66:08"
+      ],
+      "witnesses": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "start": 1,
+          "end": 62,
+          "file_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "start": 1,
+          "end": 8463,
+          "file_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "start": 1,
+          "end": 6291,
+          "file_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "start": 1,
+          "end": 75131,
+          "file_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/surfaces-tasks.json",
+          "start": 1,
+          "end": 2613,
+          "file_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "start": 1,
+          "end": 368,
+          "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "start": 1,
+          "end": 147,
+          "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 1,
+          "end": 191,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "start": 1,
+          "end": 119,
+          "file_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/py-runner.py",
+          "start": 1,
+          "end": 93,
+          "file_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 1,
+          "end": 40,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/targets.ts",
+          "start": 1,
+          "end": 67,
+          "file_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 1,
+          "end": 155,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "role": "cited owner/callee or frozen governing contract"
+        }
+      ],
+      "limits": [
+        "All existing edge rows, statuses, runtime proof references and epochs remain unchanged.",
+        "Reasoned source-only conformance includes explicitly named accepted changes/corrections; no fresh executed observation."
+      ]
+    }
+  ],
+  "limits": [
+    "No Q-01/task/scenario completion, installed/platform/model/user/browser/assistive/clipboard/print acceptance, publication or main readiness.",
+    "No whole-site atomicity, general filesystem cleanup guarantee, or arbitrary dynamic corpus admission.",
+    "Six existing unsupported analytical descriptions and four BUILD-G01 retired intermediates remain in their original NOT_APPLICABLE records; no new N/A or waiver."
+  ]
+}

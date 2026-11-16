@@ -1,0 +1,6 @@
+test_published_downgrade_and_fresh_reinstall_preserve_pending_state (__main__.main.<locals>.RetainedLifecycle.test_published_downgrade_and_fresh_reinstall_preserve_pending_state) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 19.002s
+
+OK

@@ -1,0 +1,98 @@
+{
+  "source_epoch": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "subjects": [
+    {
+      "path": ".github/scripts/npm_binding_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts\\npm_binding_observation.py",
+      "preimage_sha256": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+      "sha256": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+      "bytes": 24383
+    },
+    {
+      "path": ".github/scripts/test_npm_binding_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts\\test_npm_binding_observation.py",
+      "preimage_sha256": "53713ae085613051fd47acdf62b45a32aea7d5e3281fd1fab141c6c5dfa7ebfb",
+      "sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+      "bytes": 26997
+    },
+    {
+      "path": ".github/scripts/major_native_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts\\major_native_observation.py",
+      "preimage_sha256": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e",
+      "sha256": "8966db335dd225490a1404e80ff24936333585402ac055ac9742e11c648434a6",
+      "bytes": 185114
+    },
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+      "preimage_sha256": "6eb9f2e3e622cb6740065d2a4c3dd3b6d6c36a66502c7b05d7dc5bf76bebc919",
+      "sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+      "bytes": 53090
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\proposal.patch",
+    "sha256": "1d8d6c1e5fb02295ab4ca8486ed72a0cdc77bbc473261f4298ca358d5e2801fe"
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\filemap.json",
+    "sha256": "0ac45ceeb8d4b2eb82886325f287f835d94a648fb50bc2bd1d3c2922c3701e4d"
+  },
+  "static_guards": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\static-guards.json",
+    "sha256": "0acec1f0ffa63f6c270e68362bce53466a8accb3e0075aa2bcba2df57bdf3227"
+  },
+  "scope": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\scope.md",
+    "sha256": "26da4e497173692c76f8669b0dfc1fc4b20e93eeb460f4819bc4419e3b561355"
+  },
+  "proper_two_target_RED": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\new-target-red.json",
+    "sha256": "c08e36980fdbff9d511028d102539bfdade7f37a06d09b3ee3f279ae07ecdd28"
+  },
+  "proper_two_target_RED_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\new-target-red.stderr",
+    "sha256": "396fd0dd1a9a3d3311561e87818be239c2e40f48cb63831f57c5d849fbc15dc9"
+  },
+  "affected18_GREEN": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\npm-affected-green.json",
+    "sha256": "436c0ce87ec87c0fb7a0c4113fd06d88bd23f939c1fbfb6117724b61fa370b83"
+  },
+  "affected18_GREEN_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\npm-affected-green.stderr",
+    "sha256": "d84cc70dfb5a6f6db466fbba5ea73c835ef9014a191db24a26cbbae63af420da"
+  },
+  "initial_combined_controller_setup_failure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\affected-green-attempt1.json",
+    "sha256": "966e9a836498e88c2ec545ecfc1c6113066255d50471a378872b7e59c65a1a8b"
+  },
+  "initial_setup_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\affected-green-attempt1.stderr",
+    "sha256": "6045029c2e2e1197969271caf9ebd2b12624ba995bc87c1557fff43428e5aa20"
+  },
+  "actual_tests": {
+    "PASS": 18,
+    "SKIP": 0,
+    "FAIL": 0,
+    "unittest_seconds": 13.388,
+    "outer_seconds": 13.570165900018765,
+    "Windows_original_method": "PENDING_ROOT_ACTUAL_CHECKOUT"
+  },
+  "actual_owned_positive_footprint": {
+    "regular_files": 8193,
+    "regular_identity_bytes": 20,
+    "inert_links": 4
+  },
+  "watch_terminal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\terminal-receipt.json",
+    "sha256": "f366ce9a8e3840dcd39cebe683d39cb1ff41c2402dfaaeb211ced2ca4e71b3f2"
+  },
+  "closed_original_failure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-ef63f8-watch-owned\\first-failure-closed-handoff.json",
+    "sha256": "aad74f30e79630ae18d9c251547092ed3845782f24d10c423b5244a6e94c30a0"
+  },
+  "canonical_writes": false,
+  "qualification": false,
+  "original_hosted_Mac_link_coordinate": "UNKNOWN",
+  "original_Ubuntu_full_population": "UNKNOWN beyond8192"
+}

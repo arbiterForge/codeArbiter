@@ -30,6 +30,70 @@ RELEASE_JOBS = {"release-ca": "ca", "release-codex": "ca-codex",
                 "release-pi": "ca-pi", "release-sandbox": "ca-sandbox"}
 
 
+def git_for_windows_bash(git: str | None) -> Path | None:
+    """Find the same installation's Bash for Git's normal Windows entrypoints."""
+    if not git or not Path(git).is_absolute():
+        return None
+    try:
+        executable = Path(git).resolve(strict=True)
+    except OSError:
+        return None
+    if executable.name.casefold() != "git.exe":
+        return None
+    parent = executable.parent
+    if parent.name.casefold() == "cmd":
+        installation = parent.parent
+    elif parent.name.casefold() == "bin":
+        installation = parent.parent
+        if installation.name.casefold() in ("mingw32", "mingw64"):
+            installation = installation.parent
+    else:
+        return None
+    for directory in ("bin", "usr/bin"):
+        candidate = installation / directory / "bash.exe"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def real_bash() -> Path | None:
+    if os.name == "nt":
+        return git_for_windows_bash(shutil.which("git"))
+    executable = shutil.which("bash")
+    return Path(executable) if executable else None
+
+
+class BashDiscoveryTest(unittest.TestCase):
+    def test_git_entrypoints_share_the_same_installations_bash(self):
+        with tempfile.TemporaryDirectory() as raw:
+            installation = Path(raw) / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            for relative in ("cmd/git.exe", "bin/git.exe", "mingw64/bin/git.exe", "mingw32/bin/git.exe"):
+                git = installation / relative
+                git.parent.mkdir(parents=True, exist_ok=True)
+                git.write_bytes(b"inert Git entrypoint; never executed")
+                with self.subTest(entrypoint=relative):
+                    self.assertEqual(git_for_windows_bash(str(git)), bash)
+
+    def test_missing_or_unknown_installations_cannot_select_an_unrelated_bash(self):
+        self.assertIsNone(git_for_windows_bash(None))
+        self.assertIsNone(git_for_windows_bash("git.exe"))
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            unknown = root / "unrelated/git.exe"
+            unknown.parent.mkdir()
+            unknown.write_bytes(b"inert unknown entrypoint")
+            (root / "bin").mkdir()
+            (root / "bin/bash.exe").write_bytes(b"unrelated; never selected")
+            self.assertIsNone(git_for_windows_bash(str(unknown)))
+            known = root / "Git/cmd/git.exe"
+            known.parent.mkdir(parents=True)
+            known.write_bytes(b"inert known entrypoint without Bash")
+            self.assertIsNone(git_for_windows_bash(str(known)))
+
+
 def release_text() -> str:
     return RELEASE.read_text(encoding="utf-8")
 
@@ -312,12 +376,7 @@ class ConsumerSafetyGateTest(unittest.TestCase):
             script = "\n".join(
                 line[8:] for line in run.splitlines()[1:] if line.startswith("        ")
             )
-        if os.name == "nt":
-            git = shutil.which("git")
-            self.assertIsNotNone(git, "Git for Windows is required")
-            bash = Path(git).resolve().parents[1] / "bin" / "bash.exe"
-        else:
-            bash = shutil.which("bash")
+        bash = real_bash()
         self.assertTrue(bash and Path(bash).is_file(), "bash is required")
         script = "npm_mock() { printf '__NPM_CALLED__\\n'; }\n" + script
         base_env = {**os.environ, "NPM_CLI": "npm_mock", "TARBALL": "unused.tgz",
@@ -535,13 +594,8 @@ class ReceiptShellBoundaryTest(unittest.TestCase):
         self.scratch = tempfile.TemporaryDirectory()
         self.addCleanup(self.scratch.cleanup)
         self.root = Path(self.scratch.name)
-        if os.name == "nt":
-            git = shutil.which("git")
-            self.assertTrue(git, "Git for Windows is required")
-            self.bash = Path(git).resolve().parents[1] / "bin/bash.exe"
-        else:
-            self.bash = Path(shutil.which("bash") or "/missing-bash")
-        self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+        self.bash = real_bash()
+        self.assertTrue(self.bash and self.bash.is_file(), "real Bash is required; do not skip qualification")
 
     def fixture(self, host):
         root = self.root / host
