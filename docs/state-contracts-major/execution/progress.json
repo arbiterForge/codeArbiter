@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+  "head": "89a2d43b573681b993353609fc24956ccb175f7d",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T19:36:17.812720+00:00",
+  "recorded_at": "2026-11-16T19:54:53.282074+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3885,12 +3885,12 @@
     }
   ],
   "next_actions": [
-    "Finish final affected source/security review and original-owner intent/integrity checks for Native40 and the confirmed Windows OS-discovery framework repair; push one coherent corrected head.",
+    "Finish final affected checks/review for the two OS-identity source-consumer corrections; push the tested corrective source, then require entire exact-head CI/Docs and every selected check before child merge.",
     "Require entire fresh exact-head CI/Docs and every check. Retain the original0eb executed WindowsARM refusal and unknown original target; local regression success does not qualify hosted execution.",
     "After green child checks, true-merge into major/state-contracts under standing authority, then require separate complete normal integration qualification. Hold1098 from main and publication.",
     "Continue remaining native aggregates and baseline reconciliation:839 PLANNED accounting rows, unchanged ledger and runtime/task proof epochs; retain client/installed/human/model/stable-source acceptance boundaries."
   ],
-  "delivery_state": "PR1115_NATIVE40_AND_WINDOWS_OS_IDENTITY_REPAIR_LOCALLY_OBSERVED_FINAL_CHECKS_PENDING_PARENT1098_HELD",
+  "delivery_state": "PR1115_OS_IDENTITY_CONSUMER_CORRECTIONS_LOCALLY_OBSERVED_FINAL_CHECKS_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4233,6 +4233,26 @@
         "Continue remaining native aggregates and original baseline reconciliation:839 PLANNED accounting rows after three source-only dispositions; no runtime or task epoch renewed. Retain remaining client/installed/human/model and stable-source acceptance boundaries."
       ],
       "original_hosted_target": "UNKNOWN",
+      "runtime_epoch_renewal": false
+    },
+    {
+      "source": "89a2d43b573681b993353609fc24956ccb175f7d",
+      "scope": "Three actual OS-identity consumer issues locally corrected; original Pi native exit cause remains UNKNOWN",
+      "observation": {
+        "path": "evidence/pr1115-os-identity-consumer-followup.json",
+        "sha256": "ddb65036537b61cd926baed723335450d72ba13552714784492496e1366c4da1"
+      },
+      "previous_exact_pr_observation": {
+        "head": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+        "ci_run": 43931636706,
+        "docs_run": 43931636476,
+        "docs_conclusion": "success",
+        "ci_conclusion": "failure",
+        "all_checks_terminal": true,
+        "primary_job": 133533780565,
+        "primary_boundary": "Executed commit-proof subprocess audit refusal; actual requested executable/argv and initiating mechanism UNKNOWN; not a child timeout.",
+        "framework_discriminator": "LOCAL_ADJACENT_DEFECT_CONFIRMED_AND_REPAIRED; ORIGINAL_HOSTED_TARGET_UNKNOWN"
+      },
       "runtime_epoch_renewal": false
     }
   ],
@@ -5005,7 +5025,7 @@
   ],
   "live_checkpoint": {
     "recorded_at": "2026-11-16T19:27:35.290127+00:00",
-    "controller_anchor": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+    "controller_anchor": "89a2d43b573681b993353609fc24956ccb175f7d",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
     "delivery_pr": 1115,
     "previous_child": {
@@ -5023,8 +5043,8 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Native40 three new exact routes and separate N19 guard characterization adopted. Confirmed local Windows version-discovery shell hazard repaired in shared bridge; original hosted target UNKNOWN. Final checks and fresh entire child CI/Docs remain required.",
-    "current_staged_integrity": "PENDING_FINAL_NATIVE40_AND_OS_IDENTITY_CANDIDATE",
+    "followup": "Three consumer corrections locally checked: exact registry/all-eight-suite source guard, two real identical scaffolder captures and two stale authoring OS mocks with unchanged assertions. Original Pi Windows native-exit timeout remains UNKNOWN; no Pi fix claimed. Final checks and fresh entire child CI/Docs remain required.",
+    "current_staged_integrity": "PENDING_FINAL_OS_IDENTITY_CONSUMER_CORRECTIONS",
     "source_or_status_renewal": false,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
@@ -5106,15 +5126,18 @@
     },
     "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
     "active_pr_observation": {
-      "head": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
-      "ci_run": 43931636706,
-      "docs_run": 43931636476,
-      "docs_conclusion": "success",
-      "ci_conclusion": "failure",
-      "all_checks_terminal": true,
-      "primary_job": 133533780565,
-      "primary_boundary": "Executed commit-proof subprocess audit refusal; actual requested executable/argv and initiating mechanism UNKNOWN; not a child timeout.",
-      "framework_discriminator": "LOCAL_ADJACENT_DEFECT_CONFIRMED_AND_REPAIRED; ORIGINAL_HOSTED_TARGET_UNKNOWN"
+      "head": "89a2d43b573681b993353609fc24956ccb175f7d",
+      "ci_run": 43942315243,
+      "docs_run": 43942314954,
+      "whole_terminal_observation": "Pending sole pinned watcher",
+      "observed_failed_docs_jobs": [
+        133562780746,
+        133562781340
+      ],
+      "known_suite_registry_delta": "61 actual vs60 registered; local repair tested",
+      "parent1098_to_main": "HELD",
+      "observed_native_failure": "LinuxARM conformance confirms registry drift plus stale authoring OS mocks; both locally corrected.",
+      "unresolved_pi_native_exit": "OriginalWindowsPi job133563089708 parent timeout after NodeJS reallyExit entry; kernel completion/cause UNKNOWN."
     },
     "runtime_evidence_epoch_renewal": false,
     "task_status_renewal": false,
@@ -5137,6 +5160,10 @@
     "framework_repair": {
       "path": "evidence/pr1115-windows-os-identity-repair.json",
       "sha256": "bf8fa24fe5d8e0377e1d83c372ccc0341a81a405c5df1964673ec422ef78e6e7"
+    },
+    "consumer_followup": {
+      "path": "evidence/pr1115-os-identity-consumer-followup.json",
+      "sha256": "ddb65036537b61cd926baed723335450d72ba13552714784492496e1366c4da1"
     }
   },
   "checkpoint_history": [

@@ -216,6 +216,7 @@ EXPECTED_SUITES = {
         "test_dispatcher_does_not_downgrade_after_html_and_binding_deleted",
     },
     "test_artifact_package.py": {
+        "test_installed_native_windows_selection_needs_no_version_shell",
         "test_darwin_stage_keeps_exact_hash_and_mode_guards_with_inert_bytes",
         "test_unknown_process_network_and_process_escape_still_refuse",
         "test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",

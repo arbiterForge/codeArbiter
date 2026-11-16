@@ -4596,6 +4596,17 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "test_work_adopt.py", "test_work_github.py",
         }
         self.assertEqual(set(suites), expected)
+        for script, registered in suites.items():
+            with self.subTest(suite=script):
+                suite_tree = ast.parse((REPO_ROOT / ".github/scripts" / script).read_text(encoding="utf-8"))
+                declared = [
+                    method.name
+                    for case in suite_tree.body if isinstance(case, ast.ClassDef)
+                    for method in case.body
+                    if isinstance(method, ast.FunctionDef) and method.name.startswith("test_")
+                ]
+                self.assertEqual(len(declared), len(set(declared)), f"duplicate source test in {script}")
+                self.assertEqual(set(declared), registered, f"stale suite membership in {script}")
         self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
         self.assertIn("[sys.executable, str(REPO / \".github/scripts\" / script)]", source)
         candidate_suite_invocation_contract(source)

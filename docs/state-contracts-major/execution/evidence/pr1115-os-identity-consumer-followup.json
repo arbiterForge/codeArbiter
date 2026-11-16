@@ -1,0 +1,162 @@
+{
+  "schema": "codearbiter-local-development-observation/1",
+  "source_parent": "89a2d43b573681b993353609fc24956ccb175f7d",
+  "scope": "Correct three missed source consumers after the shared bridge OS-identity repair: exact test manifest, actual generated teaching capture and an authoring test OS seam. Preserve prior review receipts and later blocking observations.",
+  "late_review_finding": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-89a2d43b-watch-f52ofhz9\\late-conformance-membership-finding.json",
+    "sha256": "3da69d59593f1b508bf20180d01e1b4a03c309ecd6e51ed54316625c015d513e",
+    "original_package_methods": 61,
+    "registered_methods": 60,
+    "sole_missing": "test_installed_native_windows_selection_needs_no_version_shell"
+  },
+  "manifest_repair": "Register exactly the new existing package method. Extend the existing CI contract to compare all eight suite registries with their declared test methods and reject duplicate source names; retain exact runtime output membership and duplicate refusal unchanged.",
+  "regression": {
+    "red": {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/test_ci_impact.py",
+        "ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution"
+      ],
+      "exit_code": 1,
+      "seconds": 0.2411423999874387,
+      "test_sha256": "84d578f610f8b63a34b5a9ef434ce8b61742b628c7e6bb42886d994da735315a",
+      "manifest_sha256": "dbe6b5dedf7266b2c59f39aca6aca6aa35705b5831ab87e4f930c55a70811af0"
+    },
+    "green": {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/test_ci_impact.py",
+        "ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2729078000120353,
+      "test_sha256": "84d578f610f8b63a34b5a9ef434ce8b61742b628c7e6bb42886d994da735315a",
+      "manifest_sha256": "06a9e05cb73801f2fc5b87b0b6793a659c0be2374512722676ba0b3a22ac1103"
+    },
+    "same_test_bytes": true,
+    "red_stderr_sha256": "8d76151210beefe3cf25ac611ee7a129d979047b0c697c93ea371c2fec2dad8c",
+    "green_stderr_sha256": "f04de527a1b9948ee597f39b353cde3133b6b1967fa1a678aabf9789d5d3fdbf",
+    "scope": "One pure existing CI contract method; all eight source-name registries, no native or package execution."
+  },
+  "original_docs_failures": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-89a2d43b-watch-f52ofhz9\\docs-first-failures.json",
+    "sha256": "92993d4440acadbc47da1065bfd2b621ca674f13f07172bb5ba717207a0bad3d",
+    "jobs": [
+      133562780746,
+      133562781340
+    ],
+    "failure": "Both original jobs refused the stale context-scaffold-frontmatter source binding after plugins/ca/hooks/_artifactlib.py changed. This does not claim the whole CI run is terminal."
+  },
+  "capture_refresh": {
+    "owner": "site/scripts/capture/harness.ts runCapture with the existing context-scaffold-frontmatter target",
+    "actual_runs": 2,
+    "byte_identical": true,
+    "capture_sha256": "584d65c4550a81234b7a44bf141894edbbe4b122dab94896be6a3f2c5a0fb723",
+    "observation": {
+      "owner": "runCapture(CAPTURE_TARGETS[context-scaffold-frontmatter])",
+      "actual_runs": 2,
+      "byte_identical": true,
+      "sha256": "584d65c4550a81234b7a44bf141894edbbe4b122dab94896be6a3f2c5a0fb723",
+      "exit_code": 0,
+      "sources": 17,
+      "output": "---\narbiter: enabled\nstage: 1\ncontext-format: html\n---",
+      "scope": "Actual shipped scaffolder in fresh isolated disposable fixtures; no coding host, model, native binary or user acceptance simulated."
+    },
+    "actual_command": {
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-refresh-os-identity-context-capture.mts",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-89-context-capture-swgsoguw\\results"
+      ],
+      "timeout": 150,
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "tsx_cli_sha256": "5d5b2a9f9cf4d6a8b44326b676417e00b42ad04037ed173b7af82ea8146a4fc0",
+      "owning_wrapper_sha256": "50cc020d8bd8e6377feaf339329b0068b87371fb88c1866e2d747e8a9598c4f9",
+      "capture_preimage_sha256": "29b62a0dbdfc18b38e32435d7bba7b351d49d32baf119e872f2d4eeb2f3288b5",
+      "retained_setup_failure": "ca-89-context-capture-vb3dd62t/result.json; invalid Windows ESM import before target execution"
+    },
+    "result": {
+      "output": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-89-context-capture-swgsoguw",
+      "exit_code": 0,
+      "seconds": 1.343653300020378
+    },
+    "comparison": "Fresh outputs and all other fields are unchanged; the sole changed source is the repaired bridge, observed through the actual loaded-module recorder. This is not a manual hash restamp.",
+    "freshness_check": "Actual owning verify.ts passed all four committed captures.",
+    "retained_setup_failure": "ca-89-context-capture-vb3dd62t: Root wrapper used an invalid Windows ESM path; failed before target execution. Corrected file URL imports in the wrapper; no product regression claimed from this setup failure."
+  },
+  "qualification": false,
+  "runtime_or_task_proof_epoch_renewal": false,
+  "next": "Final affected checks/review, corrective child source push, entire exact-head CI/Docs and successful trusted normal qualification remain required. Parent1098/main/publication held.",
+  "authoring_os_seam": {
+    "original_hosted_job": 133569011400,
+    "original_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-89a2d43b-watch-f52ofhz9\\failed-job-133569011400.log",
+    "original_log_sha256": "88e24b9a8588b4c8882d2289ca2495fda7db93133f2edd9bf050767d23a24262",
+    "original_child": "test_artifact_authoring.py:59 tests, one failure in HostWorkflowAdmissionTest.test_admission_checks_the_platform_specific_hook_command",
+    "cause": "The test patched platform.system while production now reads sys.platform, so its intended Windows resource-refusal branch instead used real Linux.",
+    "repair": "Change only two mocks to sys.platform win32/linux. Preserve resource, missing, live-host, no-write and ordinary HTML assertions; no authoring policy change.",
+    "local_baseline_windows": {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-c",
+        "import sys, pathlib, importlib.util, unittest; p=pathlib.Path(\".github/scripts/test_artifact_authoring.py\").resolve(); s=importlib.util.spec_from_file_location(\"owned_admission_contract\",p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); t=m.HostWorkflowAdmissionTest(\"test_admission_checks_the_platform_specific_hook_command\"); r=unittest.TextTestRunner(verbosity=2).run(t); sys.exit(not r.wasSuccessful())"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3704544000211172,
+      "test_source_sha256": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+      "scope": "Existing real HostWorkflowAdmissionTest case including setUp/cleanup, direct TestCase execution; unrelated module native-build fixture is unused and not executed."
+    },
+    "local_baseline_windows_limit": "Actual Windows case passed. Its filename was chosen before execution; this PASS is not called a target RED.",
+    "local_linux_identity_red": {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-c",
+        "import sys,pathlib,importlib.util,unittest\nfrom unittest import mock\np=pathlib.Path(\".github/scripts/test_artifact_authoring.py\").resolve();s=importlib.util.spec_from_file_location(\"owned_admission_contract\",p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)\nt=m.HostWorkflowAdmissionTest(\"test_admission_checks_the_platform_specific_hook_command\")\nwith mock.patch.object(m._artifactlib.sys,\"platform\",\"linux\"):\n r=unittest.TextTestRunner(verbosity=2).run(t)\nsys.exit(not r.wasSuccessful())"
+      ],
+      "exit_code": 1,
+      "seconds": 0.35558609999134205,
+      "test_source_sha256": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+      "scope": "Existing real testcase/fixture on Windows with interpreter OS label linux seam only; native filesystem stays Windows, no module build fixture/native execution."
+    },
+    "local_linux_identity_green": {
+      "command": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-c",
+        "import sys,pathlib,importlib.util,unittest\nfrom unittest import mock\np=pathlib.Path(\".github/scripts/test_artifact_authoring.py\").resolve();s=importlib.util.spec_from_file_location(\"owned_admission_contract\",p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)\nt=m.HostWorkflowAdmissionTest(\"test_admission_checks_the_platform_specific_hook_command\")\nwith mock.patch.object(m._artifactlib.sys,\"platform\",\"linux\"):\n r=unittest.TextTestRunner(verbosity=2).run(t)\nsys.exit(not r.wasSuccessful())"
+      ],
+      "exit_code": 0,
+      "seconds": 0.35071150001022033,
+      "test_source_sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+      "all_existing_assertions_unchanged": 240,
+      "source_preimage_sha256": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+      "scope": "Existing real testcase/fixture on Windows with interpreter OS label linux seam only; native filesystem stays Windows, no module build fixture/native execution."
+    },
+    "assertion_AST_preservation": 240,
+    "limit": "Windows filesystem with Linux interpreter-label seam, not actual Linux or full59-suite/native qualification."
+  },
+  "known_unresolved_pi_exit": {
+    "original_job": 133563089708,
+    "original_test": "test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary",
+    "observed": "Parent wait timed out after Node22.19.0 reported exitCode0 and reallyExitCallEntered=true; JS entry does not prove kernel process death.",
+    "underlying_cause": "UNKNOWN",
+    "original_log_sha256": "8c0795214948bc0d51ec0a9be1afba81916d56286c7758c4373d29c4b7fc0190",
+    "diagnostic_artifact": 14264926979,
+    "artifact_expected_sha256": "647e25fc900236c6e53c11bd7fec38f633ffec677689c260cf8ef6237720e50f",
+    "claim": "No Pi/native-exit causal fix, timeout relaxation or successful kernel termination asserted by this consumer correction."
+  }
+}
