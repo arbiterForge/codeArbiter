@@ -116,8 +116,8 @@
     },
     {
       "path": "core/pysrc/_artifactlib.py",
-      "blob": "4ebc16010335c0288a65ff8721068717d4212d78",
-      "summary": "The canonical release-manifest contract is shared by producers and consumers, including optional qualification metadata. A declaration never substitutes for matching payload digests, executable format and native-tested qualification.",
+      "blob": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+      "summary": "The canonical release-manifest contract is shared by producers and consumers, including optional qualification metadata. A declaration never substitutes for matching payload digests, executable format and native-tested qualification. Re-reviewed f-capability, b-profile and k-doctor against the committed bridge at 970518e7: OS-specific hook registration, native selection and request dispatch use interpreter OS identity, avoiding Windows version-discovery shells. Native architecture, unsupported-platform refusal, executable identity and launch bounds remain. This is source review, not installed-host qualification.",
       "nodes": [
         "f-capability",
         "b-profile",

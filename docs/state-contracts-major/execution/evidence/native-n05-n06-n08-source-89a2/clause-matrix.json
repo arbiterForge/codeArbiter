@@ -1,0 +1,1006 @@
+[
+  {
+    "row_id": "N05:01",
+    "frozen_baseline": {
+      "from_state": "draft or approved",
+      "from": "draft or approved",
+      "event": "approve",
+      "guard": "Ready + current exact approval receipt; plan bound approved_source to approved spec; allowed authority profile",
+      "to": "approved",
+      "effects": "Append approval, increment revision, render and journal artifact.",
+      "failure_retry": "Generic approve refuses sprint_pair/SMARTS profiles; invalid/stale receipt never changes state.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "approve",
+          "lines": [
+            42
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        }
+      ],
+      "transition_id": "N05:01"
+    },
+    "guard": "approve resolves the actual spec for a plan, requires approved_source and authority.Approved on that spec, then validate.Ready and authority.Load/Subject for the exact artifact norm/ID/approval. The closed event/profile loader verifies actual retained chain rather than caller labels.",
+    "effects": "Clone current document, set governance approved, append ApprovalRecord (old approvals retained), revision+1, render.Prepare then engine.save -> checked journal Commit.",
+    "failure_retry": "sprint_pair and smarts_workflow expressly refuse the generic path. Invalid, unavailable or stale loaded subject returns before clone/save; Run checks exact plan revision AND model CAS and same-ID replay first.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "approve",
+        "line": 42,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "cc7fb824b7ed4e355b25af4f4b7613a82df6d69beb6bd1b0a438455152b8e23e",
+        "baseline_declaration_sha256": "cc7fb824b7ed4e355b25af4f4b7613a82df6d69beb6bd1b0a438455152b8e23e",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "guards",
+        "line": 14,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "baseline_declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Load",
+        "line": 255,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "05bdf133a09418ab16c39604dc0922fafedda46f093d7498d81651b188e1eba9",
+        "baseline_declaration_sha256": "05bdf133a09418ab16c39604dc0922fafedda46f093d7498d81651b188e1eba9",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Subject",
+        "line": 292,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "6b7c77e4e60123e34fe00a212774564a848d202c225624f6e2a5cfe6c06f1777",
+        "baseline_declaration_sha256": "6b7c77e4e60123e34fe00a212774564a848d202c225624f6e2a5cfe6c06f1777",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Approved",
+        "line": 336,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "baseline_declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "ApprovalRecord",
+        "line": 359,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "63ea19b73f960b7fe60a31bd23897e0b6649e1294f76dacbf0da3b45b683fca3",
+        "baseline_declaration_sha256": "63ea19b73f960b7fe60a31bd23897e0b6649e1294f76dacbf0da3b45b683fca3",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "Run",
+        "line": 78,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f",
+        "baseline_declaration_sha256": "92a19eaf5fce9e6f8f18d7eab777115ff77084aee85aa392f84b62a25f4619ef",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Ready",
+        "line": 450,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "baseline_declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "34a76ffe109d40576dfde5ca4e5a3a8c24f9aaf661d2de68df7a6120bbd55ade",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N05:02",
+    "frozen_baseline": {
+      "from_state": "approved",
+      "from": "approved",
+      "event": "normative apply",
+      "guard": "valid closed changes alter normative hash",
+      "to": "draft",
+      "effects": "Keep historical approvals; revision advances; surviving execution progress preserved.",
+      "failure_retry": "CAS and structural errors refuse whole batch.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        }
+      ],
+      "transition_id": "N05:02"
+    },
+    "guard": "Closed changesType and CheckRequest reject unrecognized request shapes; Changes clones and applies only typed mutations. Normative hash change is assessed on fully prepared model.",
+    "effects": "syncExecution retains live surviving task/prerequisite state/evidence, clone retains approval history, revision+1; changed NormHash sets governance draft and re-prepares. RequiredVersion preserves newer feature labels, not a rollback to0.3.2.",
+    "failure_retry": "CAS happens before Changes; duplicate/kind/references/schema/structural failures return before engine.save. Full cloned batch becomes one journaled artifact save only after successful Prepare.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "Changes",
+        "line": 208,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be",
+        "baseline_declaration_sha256": "aafde71e7e8475f17c1ded1a34ad304f32fc3bf8570cb00edb93f46e75e83193",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "syncExecution",
+        "line": 90,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "baseline_declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "Run",
+        "line": 78,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f",
+        "baseline_declaration_sha256": "92a19eaf5fce9e6f8f18d7eab777115ff77084aee85aa392f84b62a25f4619ef",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/model/assistive.go",
+        "symbol": "RequiredVersion",
+        "line": 300,
+        "current_sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+        "declaration_sha256": "ce687e87967cac702a5db26d0304b12d57f816659683dbbefd5868dd1c184bf6",
+        "baseline_declaration_sha256": null,
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/render/render.go",
+        "symbol": "Prepare",
+        "line": 50,
+        "current_sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+        "declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "baseline_declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "05cd0d0e7c68903bfe3d72dbad37873952a3aa406958d75b41ea26e7423931a9",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N05:03",
+    "frozen_baseline": {
+      "from_state": "any",
+      "from": "any",
+      "event": "rebrand / presentation change",
+      "guard": "valid bounded logo/name",
+      "to": "same governance",
+      "effects": "Increment model revision/hash only; normative identity unchanged.",
+      "failure_retry": "No approval or receipt fabricated.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "Run",
+          "lines": [
+            76
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+        }
+      ],
+      "transition_id": "N05:03"
+    },
+    "guard": "rebrand is a CAS mutation. Name is1..120 chars and MIME is a closed SVG/PNG/JPEG enum. Local logo read is capped256KiB; Logo validates bounded raster dimensions or static SVG (no external resource/script/entity/style/event).",
+    "effects": "Clone changes only presentation name/logo metadata, advances revision and model hash, then Prepare/save. Normative projection and governance/approval history are not assigned by rebrand.",
+    "failure_retry": "No capture/approval event or authority receipt is minted. Invalid brand/path/content or Prepare/Commit failure remains refusal; original operation replay identity is owned by Run/store.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/protocol.go",
+        "symbol": "RequestSchema",
+        "line": 66,
+        "current_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "declaration_sha256": "72e8a72bbc1e10b1f28d1ea76c9265ddf23469dfb2b18c2ca5d0c0d5341004e6",
+        "baseline_declaration_sha256": "72e8a72bbc1e10b1f28d1ea76c9265ddf23469dfb2b18c2ca5d0c0d5341004e6",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "Run",
+        "line": 78,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f",
+        "baseline_declaration_sha256": "92a19eaf5fce9e6f8f18d7eab777115ff77084aee85aa392f84b62a25f4619ef",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/render/brand.go",
+        "symbol": "Logo",
+        "line": 31,
+        "current_sha256": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2",
+        "declaration_sha256": "f632e2069789e7415e7defbf278cd0907aa17d7416c403adf257546df2f6b11e",
+        "baseline_declaration_sha256": "f632e2069789e7415e7defbf278cd0907aa17d7416c403adf257546df2f6b11e",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/render/brand.go",
+        "symbol": "svg",
+        "line": 77,
+        "current_sha256": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2",
+        "declaration_sha256": "33075234bdc56844852c44e85010e0f39ce5d13a415c622cc26cf9732ae5fdc2",
+        "baseline_declaration_sha256": "33075234bdc56844852c44e85010e0f39ce5d13a415c622cc26cf9732ae5fdc2",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/model/artifact.go",
+        "symbol": "NormativeProjection",
+        "line": 115,
+        "current_sha256": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e",
+        "declaration_sha256": "e8614c80b92387e14cf1178406f1f5f305d2536dd9f12441ab72a318eafef833",
+        "baseline_declaration_sha256": "e8614c80b92387e14cf1178406f1f5f305d2536dd9f12441ab72a318eafef833",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/model/artifact.go",
+        "symbol": "Digests",
+        "line": 122,
+        "current_sha256": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e",
+        "declaration_sha256": "bf8e9a908742ce6e6476ad3ea0509da72e363eab6f551aa364d93d6d3b6c7037",
+        "baseline_declaration_sha256": "bf8e9a908742ce6e6476ad3ea0509da72e363eab6f551aa364d93d6d3b6c7037",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "ae6bc75cdd434c651720b6c6b1ffa0cc3c186181bc2f98a0ac528fea8a6890ea",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N05:04",
+    "frozen_baseline": {
+      "from_state": "approved",
+      "from": "approved",
+      "event": "approval chain unavailable or subject changes",
+      "guard": "on authority inspection",
+      "to": "approved but evidence stale/unverified",
+      "effects": "Expose derived authority status without rewriting stored progress.",
+      "failure_retry": "Strict authority consumers reject; ordinary progress can remain available.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/authority/receipt.go",
+          "symbol": "Approved",
+          "lines": [
+            336
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/authority/receipt.go"
+        }
+      ],
+      "transition_id": "N05:04"
+    },
+    "guard": "Approved requires stored approved state plus an approval record matching exact artifact and current NormHash; it reloads and verifies source hash, authority kind and Subject.",
+    "effects": "Status derives authority_verified and diagnostic from Approved without mutation; old stored approved state, progress, receipts and reasons remain intact.",
+    "failure_retry": "Strict guards reject absent/mismatched/current-unverified chain. Ordinary eligible/recordWork inspect structural/progress state without approval-chain authority, do not manufacture current verification.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Approved",
+        "line": 336,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "baseline_declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Status",
+        "line": 362,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "6ed866500984fc5a10613a8a944d453f70d799f51980282c7a51383c01292d5b",
+        "baseline_declaration_sha256": "6ed866500984fc5a10613a8a944d453f70d799f51980282c7a51383c01292d5b",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Load",
+        "line": 255,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "05bdf133a09418ab16c39604dc0922fafedda46f093d7498d81651b188e1eba9",
+        "baseline_declaration_sha256": "05bdf133a09418ab16c39604dc0922fafedda46f093d7498d81651b188e1eba9",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "guards",
+        "line": 14,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "baseline_declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "symbol": "eligible",
+        "line": 51,
+        "current_sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+        "declaration_sha256": "a6791c57b7777a77e7906e3fac944216bb29cf99d8666e93db775227eeac88a7",
+        "baseline_declaration_sha256": "60a4330652cc8fe083acd3142899d41c6fcaa28358174f8b2cfa2e6257eab811",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "symbol": "recordWork",
+        "line": 153,
+        "current_sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+        "declaration_sha256": "57a26dac0e4df444b2f08d736ca708dc39d4dfd4baf0902470d36a75557aadb3",
+        "baseline_declaration_sha256": "57a26dac0e4df444b2f08d736ca708dc39d4dfd4baf0902470d36a75557aadb3",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "96b704bc5c84ec55ea1423a5e88bd3df9682d0c748ad792c5818ab8768f46d7e",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N06:01",
+    "frozen_baseline": {
+      "from_state": "never allocated",
+      "from": "never allocated",
+      "event": "record.add",
+      "guard": "valid collection; ID never active/retired/allocated in same batch",
+      "to": "active",
+      "effects": "Add stable record; sync execution for new tasks/prerequisites; increment revision.",
+      "failure_retry": "ID reuse rejected; whole batch atomic.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        }
+      ],
+      "transition_id": "N06:01"
+    },
+    "guard": "Mutable collection map or criterion/scenario nested owner only; symbol.Build detects invalid/duplicate/max IDs, reserved/observed maps retain all pre-existing/tombstone/new nested IDs throughout batch; allocated IDs skip them.",
+    "effects": "Add real stable record to cloned normative collection; syncExecution initializes only newly live task/prerequisite defaults and retains survivors; one revision/Prepare/save.",
+    "failure_retry": "Reintroduction and ID/kind change refuse across intermediate indexes as well as final state. No partial batch is saved on error.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "Changes",
+        "line": 208,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be",
+        "baseline_declaration_sha256": "aafde71e7e8475f17c1ded1a34ad304f32fc3bf8570cb00edb93f46e75e83193",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "syncExecution",
+        "line": 90,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "baseline_declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "nextRecordID",
+        "line": 131,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "c6c3fa21763ba893810cabc51286ec303553012bcf4f246e906d341ea0f51c4f",
+        "baseline_declaration_sha256": "c6c3fa21763ba893810cabc51286ec303553012bcf4f246e906d341ea0f51c4f",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "nextID",
+        "line": 148,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "e093ea80cc9e53c1f6a9c1360ed0f6f363a7f95ee1a4ff8f4731d6bf0dce269a",
+        "baseline_declaration_sha256": "e093ea80cc9e53c1f6a9c1360ed0f6f363a7f95ee1a4ff8f4731d6bf0dce269a",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/symbol/index.go",
+        "symbol": "Build",
+        "line": 27,
+        "current_sha256": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792",
+        "declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "baseline_declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "Run",
+        "line": 78,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f",
+        "baseline_declaration_sha256": "92a19eaf5fce9e6f8f18d7eab777115ff77084aee85aa392f84b62a25f4619ef",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "35f1755cb4e4a033f7c9423703528b1f8b8f34cca8e287a27f72efd076be38c2",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N06:02",
+    "frozen_baseline": {
+      "from_state": "active",
+      "from": "active",
+      "event": "record.update / reorder",
+      "guard": "same immutable ID/kind; exact permitted fields or permutation",
+      "to": "active",
+      "effects": "Change fields/order; semantic validation then one journaled artifact save.",
+      "failure_retry": "Kind/ID edits, dangling references or invalid reorder refuse.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        }
+      ],
+      "transition_id": "N06:02"
+    },
+    "guard": "record.update finds active immutable ID and forbids id assignment; interim/final indexes refuse kind/retirement changes. record.reorder accepts mutable symbol collection and an exact one-of-each existing-ID permutation.",
+    "effects": "Only cloned record fields/collection order change; schema and structural validation including active references occurs in render.Prepare before one journaled save.",
+    "failure_retry": "Absent/retired ID, kind drift, missing/duplicate/foreign permutation and dangling reference return before save. Tombstone read-only/closed model constraints remain.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "Changes",
+        "line": 208,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be",
+        "baseline_declaration_sha256": "aafde71e7e8475f17c1ded1a34ad304f32fc3bf8570cb00edb93f46e75e83193",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/symbol/index.go",
+        "symbol": "Build",
+        "line": 27,
+        "current_sha256": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792",
+        "declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "baseline_declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Structural",
+        "line": 97,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "881fb58cef97c43d756690b59b7359646e266f33129c97bf409f3d9dd128ff22",
+        "baseline_declaration_sha256": "c30ac5daec9ca727bf60e715365be6eb7150129c4e603b0c2d11a874d89da86c",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/render/render.go",
+        "symbol": "Prepare",
+        "line": 50,
+        "current_sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+        "declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "baseline_declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "TESTED",
+    "edge_row_sha256": "c1f7e3226ac8238fd9af713c218f467fa515fb39a78aa9a8637e53ca1c5f6eaf",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N06:03",
+    "frozen_baseline": {
+      "from_state": "active",
+      "from": "active",
+      "event": "record.retire / remove nested addressed record",
+      "guard": "reason supplied; references remain valid; no conflicting orphan execution state",
+      "to": "retired",
+      "effects": "Remove live record; append immutable tombstone with retiring revision/replacement.",
+      "failure_retry": "Missing reason, tombstone editing, invalid replacement or dangling links refuse. Retiring tasks with check history currently fails due to N-F10.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        }
+      ],
+      "transition_id": "N06:03"
+    },
+    "guard": "record.retire requires active non-singleton owner, reason and structurally valid replacement/references. Every removed descendant needs explicit reason; original kind is captured from the actual pre-removal symbol index.",
+    "effects": "Append immutable tombstone with exact ID, next revision, reason/replacement and original_kind. Version0.3.4 permits correctly typed historical task checks/checkpoint baselines; live execution/scheduling uses only active records. History is retained rather than deleted to avoid ORPHAN_STATE.",
+    "failure_retry": "Reason/immutable tombstone/replacement/dangling-reference guards persist. Frozen last sentence that checked-task retirement fails due to N-F10 is explicitly superseded by accepted NT-05 and maintained N06:03/N-F10 candidate_contract_note; no literal equality with that old bug is claimed.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "Changes",
+        "line": 208,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be",
+        "baseline_declaration_sha256": "aafde71e7e8475f17c1ded1a34ad304f32fc3bf8570cb00edb93f46e75e83193",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "RemoveRecord",
+        "line": 179,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "fa8b898667edfec9414af8b753528291c4381b54c40eab65338c2a48ef8a69f6",
+        "baseline_declaration_sha256": "fa8b898667edfec9414af8b753528291c4381b54c40eab65338c2a48ef8a69f6",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "syncExecution",
+        "line": 90,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "baseline_declaration_sha256": "ab2e05877a4b6ac7b2ae9a4a5521d9375cf8a357cc0df1a7cedce14cb52273ba",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/model/assistive.go",
+        "symbol": "HasTypedRetirement",
+        "line": 285,
+        "current_sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+        "declaration_sha256": "4fae64451b701cd5ef8947097fa6e95fc15204c50adb2d35d663521223ec4e9d",
+        "baseline_declaration_sha256": null,
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/model/assistive.go",
+        "symbol": "RequiredVersion",
+        "line": 300,
+        "current_sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+        "declaration_sha256": "ce687e87967cac702a5db26d0304b12d57f816659683dbbefd5868dd1c184bf6",
+        "baseline_declaration_sha256": null,
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/model/artifact.go",
+        "symbol": "Check",
+        "line": 70,
+        "current_sha256": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e",
+        "declaration_sha256": "0f694a1f973df4401d6ba6492ee652d4ef0f6cc780162213c738ff571ed018ff",
+        "baseline_declaration_sha256": "5a48ae5610b536416cbaec804f5506346a0ed7231a4735e7d99fa9c08f5ebf38",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "retiredAs",
+        "line": 244,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "9a7430122f0bb15b6191a40d10170827d204348f5e8688a13e67e2fd33858787",
+        "baseline_declaration_sha256": null,
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "retirableKind",
+        "line": 619,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "316a6abe35b1568b2b3564959ba45f5b56e200361b504d800595cee9d926da14",
+        "baseline_declaration_sha256": null,
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "planStructure",
+        "line": 249,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "1c0e3f426d435fb0c8de3b2586754b507ef56d74f86c269085837c8896d7a0d4",
+        "baseline_declaration_sha256": "e0aca9478e17622dec19447f7ab1b9bc8bc8bd0f0dc5e3b92db12d46a2cf1936",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Structural",
+        "line": 97,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "881fb58cef97c43d756690b59b7359646e266f33129c97bf409f3d9dd128ff22",
+        "baseline_declaration_sha256": "c30ac5daec9ca727bf60e715365be6eb7150129c4e603b0c2d11a874d89da86c",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/render/render.go",
+        "symbol": "Prepare",
+        "line": 50,
+        "current_sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+        "declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "baseline_declaration_sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_ACCEPTED_NT05_CHANGED_CONTRACT",
+    "authorized_change": "NT-05 typed retirement and retained historical execution ownership; existing N06:03 TESTED proof/history remains unmodified, not renewed by this source review.",
+    "existing_edge_status": "TESTED",
+    "edge_row_sha256": "3ce218fc9a9257c8bfde2c050f7197a35e6698c11a4ebc84621f12fb0f64a8e1",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N06:04",
+    "frozen_baseline": {
+      "from_state": "retired",
+      "from": "retired",
+      "event": "add/update retired ID",
+      "guard": "any attempt",
+      "to": "retired",
+      "effects": "Reject resurrection or rewriting historical identity.",
+      "failure_retry": "New logical record must use new ID.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "symbol": "Changes",
+          "lines": [
+            208
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+        }
+      ],
+      "transition_id": "N06:04"
+    },
+    "guard": "Symbol.Build indexes retired IDs alongside active IDs; Changes reserves them and rejects record.add reuse, update/retire of retired records, or kind/retired-status changes.",
+    "effects": "Tombstone cannot be removed/replaced to resurrect a logical identity. New logical record must use a genuinely unallocated ID.",
+    "failure_retry": "IMMUTABLE_ID/IMMUTABLE_TOMBSTONE/DUPLICATE_ID/SYMBOL_NOT_FOUND are errors before save. Typed original_kind only extends retained history ownership, never authorizes identity reuse.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "symbol": "Changes",
+        "line": 208,
+        "current_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "declaration_sha256": "b23702268ecdfe962ec0c9fcf778a7fd760bca3f90d917bf707123d8cd4999be",
+        "baseline_declaration_sha256": "aafde71e7e8475f17c1ded1a34ad304f32fc3bf8570cb00edb93f46e75e83193",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/symbol/index.go",
+        "symbol": "Build",
+        "line": 27,
+        "current_sha256": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792",
+        "declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "baseline_declaration_sha256": "d5c23c79bc1346eca229aa5657120a10f248e5594cd3396177f607f2ef51ca18",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "TESTED",
+    "edge_row_sha256": "c1f7e3226ac8238fd9af713c218f467fa515fb39a78aa9a8637e53ca1c5f6eaf",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N08:01",
+    "frozen_baseline": {
+      "from_state": "any valid binding",
+      "from": "any valid binding",
+      "event": "plan-bind draft_preview",
+      "guard": "same-slug Ready pair; exact spec_expected CAS when explicit draft mode",
+      "to": "draft_preview current",
+      "effects": "Bind current spec digest; preserve execution/history; plan governance remains/resets draft, revision advances.",
+      "failure_retry": "Concurrent source change or invalid pair refuses; no source approval invented.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "lines": [
+            88
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        }
+      ],
+      "transition_id": "N08:01"
+    },
+    "guard": "Explicit draft_preview shape requires spec_expected revision and model hash. bind resolves actual spec, exact same-slug canonical existing pair, Ready source; after Changes/clone it requires Ready next plan/binding.",
+    "effects": "Set current spec ID/NormHash and draft_preview, set governance draft, revision+1, Prepare/save; clone preserves surviving work/history and approvals. No source approval is created.",
+    "failure_retry": "Source CAS/pair/kind/Ready/binding failure refuses before save. Optional supplied changes still go through full Changes validation; original plan CAS and journal replay remain.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "bind",
+        "line": 88,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3",
+        "baseline_declaration_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/protocol.go",
+        "symbol": "RequestSchema",
+        "line": 66,
+        "current_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "declaration_sha256": "72e8a72bbc1e10b1f28d1ea76c9265ddf23469dfb2b18c2ca5d0c0d5341004e6",
+        "baseline_declaration_sha256": "72e8a72bbc1e10b1f28d1ea76c9265ddf23469dfb2b18c2ca5d0c0d5341004e6",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Ready",
+        "line": 450,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "baseline_declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Binding",
+        "line": 557,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "baseline_declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "Run",
+        "line": 78,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f",
+        "baseline_declaration_sha256": "92a19eaf5fce9e6f8f18d7eab777115ff77084aee85aa392f84b62a25f4619ef",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "symbol": "save",
+        "line": 482,
+        "current_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "baseline_declaration_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "79bd960d208afa58c2fe41d3d700dc1b695914336eb5db16562e09d6f1ed8545",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N08:02",
+    "frozen_baseline": {
+      "from_state": "any valid binding",
+      "from": "any valid binding",
+      "event": "plan-bind default",
+      "guard": "valid current spec; actual authority assessed",
+      "to": "approved_source current or draft_preview current",
+      "effects": "Choose approved_source only when genuine source approval valid; preserve work state.",
+      "failure_retry": "No approval receipt required just to rebind ordinary plan.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "lines": [
+            88
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        }
+      ],
+      "transition_id": "N08:02"
+    },
+    "guard": "Default bind requires actual spec structural validity and valid resulting Binding, not a fresh approval to perform ordinary maintenance. It independently assesses authority.Approved on the selected source.",
+    "effects": "Default mode begins draft_preview and becomes approved_source only after genuine exact current source approval succeeds; current source digest is recorded and existing work/history retained.",
+    "failure_retry": "Failed authority lookup cannot become approved_source, and is not a reason to require a new grant merely for ordinary bind. No silent source approval, progress reset or stop clearing.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "bind",
+        "line": 88,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3",
+        "baseline_declaration_sha256": "827c8f1ef48069edfb17202942f48681b448f02bc4a2370f7176b134495158b3",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/authority/receipt.go",
+        "symbol": "Approved",
+        "line": 336,
+        "current_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "baseline_declaration_sha256": "9acf89daf3ceb63173e25c8bef287b4696a7e0c4a0148f5b5157acdcfd55257c",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Structural",
+        "line": 97,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "881fb58cef97c43d756690b59b7359646e266f33129c97bf409f3d9dd128ff22",
+        "baseline_declaration_sha256": "c30ac5daec9ca727bf60e715365be6eb7150129c4e603b0c2d11a874d89da86c",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Binding",
+        "line": 557,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "baseline_declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "PRESERVED",
+    "edge_row_sha256": "a31dea4f5ce59a3c760250e716f1ac611978263f133f7e9841d69d97fc8cd87e",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  },
+  {
+    "row_id": "N08:03",
+    "frozen_baseline": {
+      "from_state": "current",
+      "from": "current",
+      "event": "source normative change",
+      "guard": "later read or strict consume",
+      "to": "binding stale",
+      "effects": "Advisory consumers report binding_current=false; strict Ready/authority consumers reject.",
+      "failure_retry": "Task-start and ordinary reporting do not silently rebind or auto-clear stop.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "bind",
+          "lines": [
+            88
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        }
+      ],
+      "transition_id": "N08:03"
+    },
+    "guard": "Normative source changes yield a different model.NormHash; eligible and taskContext compare actual selected spec hash against the stored bound hash without changing the binding.",
+    "effects": "Advisory eligible/task context report binding_current=false with recorded progress and reasons intact; validate.Binding/Ready and strict guards reject stale exact binding.",
+    "failure_retry": "recordWork task-start changes only a genuinely PENDING task and never rebinds source or clears an existing stop. Ordinary advice is not strict evidence; strict consumption remains separate.",
+    "witnesses": [
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "symbol": "eligible",
+        "line": 51,
+        "current_sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+        "declaration_sha256": "a6791c57b7777a77e7906e3fac944216bb29cf99d8666e93db775227eeac88a7",
+        "baseline_declaration_sha256": "60a4330652cc8fe083acd3142899d41c6fcaa28358174f8b2cfa2e6257eab811",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "symbol": "recordWork",
+        "line": 153,
+        "current_sha256": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+        "declaration_sha256": "57a26dac0e4df444b2f08d736ca708dc39d4dfd4baf0902470d36a75557aadb3",
+        "baseline_declaration_sha256": "57a26dac0e4df444b2f08d736ca708dc39d4dfd4baf0902470d36a75557aadb3",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/task_context.go",
+        "symbol": "taskContext",
+        "line": 15,
+        "current_sha256": "fdb69363794e066bb18174346f0ed7cbe9c09cd85b99c6bf23480d6ea281fb3c",
+        "declaration_sha256": "ba0076109439ce0bc7bf7aa1b227a1c784b4bbc9b5483033ea44a4fca14d798c",
+        "baseline_declaration_sha256": "0b1ad87bbec94248f5d093140d07e4b3616ba703b7c596948f6cfa50ba7c3185",
+        "literal_declaration_equal_baseline": false
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Binding",
+        "line": 557,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "baseline_declaration_sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "symbol": "Ready",
+        "line": 450,
+        "current_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "baseline_declaration_sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "symbol": "guards",
+        "line": 14,
+        "current_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "baseline_declaration_sha256": "e7708265d78f714cb5ce4796efb13df262af6fccda925416259a4a4d949c93dc",
+        "literal_declaration_equal_baseline": true
+      },
+      {
+        "path": "core/artifacts/internal/model/artifact.go",
+        "symbol": "NormHash",
+        "line": 107,
+        "current_sha256": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e",
+        "declaration_sha256": "76b51cd77de29698dbdc9de3cb5f4e16fb4f21c065c354740460d6e91486904c",
+        "baseline_declaration_sha256": "76b51cd77de29698dbdc9de3cb5f4e16fb4f21c065c354740460d6e91486904c",
+        "literal_declaration_equal_baseline": true
+      }
+    ],
+    "source_assessment": "SUPPORTED_SOURCE_CONFORMANCE",
+    "authorized_change": null,
+    "existing_edge_status": "TESTED",
+    "edge_row_sha256": "0c1da428bd16e13a5ee4496bd147a21d6e4912fc98a28594e840c60c83138bec",
+    "existing_edge_untouched": true,
+    "runtime_observed_in_this_task": false
+  }
+]

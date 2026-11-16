@@ -1,0 +1,81 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+  "kind": "conformance-check",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Codex /root/packaging_site_tools full11 N05/N06/N08 source guard/effect/retry inspection"
+  },
+  "disposition_ids": [
+    "disposition:machines:N05",
+    "disposition:machines:N06",
+    "disposition:machines:N08"
+  ],
+  "result": "PRESERVED",
+  "inputs": {
+    "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+    "core/artifacts/internal/canonical/json.go": "820e6731db4af2495aaba7f8a0aa5e0ada68fead05a932461fbfb2e9a8d27149",
+    "core/artifacts/internal/kind/contracts.go": "c96ef2079b31d639e8b50008900e360743a1933d2c839d6c56524953e55b0e71",
+    "core/artifacts/internal/model/artifact.go": "b59394d6a08cccf8ec2ee91607d72f86debf0c209892bc79c8a24c62d74d275e",
+    "core/artifacts/internal/model/assistive.go": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+    "core/artifacts/internal/observation/completion.go": "697e2c5e3232ea95c53b6dcb42d09595917d518578f9333423bcc3763b0aa204",
+    "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+    "core/artifacts/internal/observation/runner_contract.go": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+    "core/artifacts/internal/observation/sprint.go": "c668b0aef7322fa26f067e48650200c2ab3a502df4f2e3ed505d9e8718f1c3b1",
+    "core/artifacts/internal/operations/assistive.go": "9c656bb8de821554cbda80010b047772c2978b8eeb5b1dd0780f0e14ad66c80c",
+    "core/artifacts/internal/operations/descriptors.go": "0bcda8cffe06761b871bf1dc28bbeda8a5af269e5deac0904cb179262510d321",
+    "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+    "core/artifacts/internal/operations/lifecycle.go": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+    "core/artifacts/internal/operations/mutations.go": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+    "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+    "core/artifacts/internal/operations/task_context.go": "fdb69363794e066bb18174346f0ed7cbe9c09cd85b99c6bf23480d6ea281fb3c",
+    "core/artifacts/internal/render/assets/artifact.css": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405",
+    "core/artifacts/internal/render/assets/logo.svg": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+    "core/artifacts/internal/render/brand.go": "2201d839e67bbe849865188645e228a5a591bcfdc05dd702f9692add5d90abe2",
+    "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+    "core/artifacts/internal/repository/catalog.go": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+    "core/artifacts/internal/schema/common.schema.json": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee",
+    "core/artifacts/internal/schema/decomposition.schema.json": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b",
+    "core/artifacts/internal/schema/knowledge.schema.json": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+    "core/artifacts/internal/schema/plan.schema.json": "1c866b7fa9a2b9434bf0c7d8f488348a5539120a1d5fd2d77c9a2235673a2226",
+    "core/artifacts/internal/schema/schema.go": "36d8e21be54453ea1277101c75e49b24c1a751b88e1411db71b4bf71a41d28b4",
+    "core/artifacts/internal/schema/spec.schema.json": "3f7f3e4b6161cad885d4b5e5df0e7c1f51351ec272ece89d558bdf5cd13f6210",
+    "core/artifacts/internal/store/backends.go": "c3554304c35fca3b3295ac05e0ac3b9573f5a66aaff7529a88142199133efce6",
+    "core/artifacts/internal/store/entryname.go": "8d2e0119683904d1871df1cdda0a61c229befe835d37a981e0a2c650bb5b325f",
+    "core/artifacts/internal/store/fs_linux.go": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+    "core/artifacts/internal/store/fs_lock_darwin.go": "2cc3cebe9164e42cb0357a4796d2a13d1b1ead6d1a013c4788ff104293593c56",
+    "core/artifacts/internal/store/fs_lock_windows.go": "47bcfbc25de803e2a41cd597ad18b883e0c7e23131f93e933fd0e5dc89d567f3",
+    "core/artifacts/internal/store/fs_other.go": "53e139f5a1dd2c0874137f0b9eadbe976fbba8237e87931ef4df57d2bc004687",
+    "core/artifacts/internal/store/fs_portable.go": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+    "core/artifacts/internal/store/infrastructure.go": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+    "core/artifacts/internal/store/openflags_darwin.go": "67ab8b96f70df181bdfe07a810cedf122a7cbbc2b32fbeb3a13909fdc92f9faa",
+    "core/artifacts/internal/store/openflags_windows.go": "a6fe3a7f8f4b07110b01b7e71778c7b6a49062de377b40610e71f23feb98d169",
+    "core/artifacts/internal/store/transaction.go": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+    "core/artifacts/internal/symbol/index.go": "bffa5d9db042067b8b4b3fd1046eb9273ce09106271e42c78421d60c86360792",
+    "core/artifacts/internal/validate/validate.go": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/assessment.md",
+      "sha256": "f04cf64ecf4c384827401eccec5d72b832e9e1f18f8edd3c35dc91244c5c9096"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/clause-matrix.json",
+      "sha256": "beb0a26d8b88a4fdf61710a99127c0af0861d6843c0e94d684183d831e02720d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/source-joins.json",
+      "sha256": "c8fc5a819415c458b3db6c3ef1f6ea100496be17fc06328504d67be18613f1ba"
+    }
+  ],
+  "scope": "All11 finite source clauses of N05/N06/N08 under maintained accepted contracts. N06:03 explicitly includes the existing authorized NT-05 typed-retirement exception to historical N-F10 failure prose; no literal whole-file/bug equality claim.",
+  "limits": [
+    "Source-only proposal; independent review and original strict owner admission remain future work. No validator/admission executed here.",
+    "No existing11 edge states/refs/history, runtime epochs, native recipe count or task/platform/installed/client/user/model acceptance is renewed.",
+    "N06 current accepted-change fragment may be withheld independently if a distinct changed-contract machine representation is required; original frozen/history remains."
+  ],
+  "membership_note": "Non-executed finite source conformance with explicit production/frozen inputs; not a whole-Go execution footprint."
+}

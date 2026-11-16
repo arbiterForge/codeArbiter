@@ -1,0 +1,15 @@
+# N05/N06/N08 finite source conformance at89a2
+
+All11 complete guard/effect/retry clauses were inspected against fd7 and current89a2 source, including changed callees. This is source conformance, not an execution or current native/platform/host/user/model qualification.
+
+N05 (4clauses): exact Ready/current approval profile, closed clone-before-mutation, history-preserving draft reset, bounded static rebranding and non-mutating derived authority status remain. approve and authority receipt owner retain their original body/bytes; current schema, journal and ordinary-progress changes preserve these boundaries.
+
+N06 (4clauses): stable ID allocation/reservation, active-only field changes, exact reordering, atomic structural validation, mandatory retirement reason/replacement and immutable/no-reuse tombstones remain. One named historical behavior changed: N06:03's old N-F10 checked-task ORPHAN_STATE failure was intentionally repaired by accepted NT-05. Current writer records original_kind from the pre-removal index and labels0.3.4; validation accepts only typed history ownership. Retained task checks/scope baselines are not live scheduling or current proof. The existing N06:03 and N-F10 ledger notes already state this accepted change; their original TESTED records and all histories remain untouched. Proposed whole-machine source preservation refers to the accepted current contract, expressly not literal preservation of the old bug.
+
+N08 (3clauses): explicit draft refresh requires exact source CAS/same-slug Ready pair; default maintenance selects approved_source only after real current approval; stale source becomes advisory binding_current=false and strict rejection, with no automatic rebind or stop clearing. The bind declaration is literally unchanged from fd7; transitive semantic validation/version/ordinary progress were inspected separately.
+
+Shared transaction boundary: closed request+exact artifact CAS, cloned candidate model/structural validation before save, one checked journal transaction, pending recovery and same-ID replay remain source-backed. Durable uncertainty remains COMMIT_OUTCOME_UNKNOWN and requires reconciliation; this assessment does not promise rollback on every I/O failure or prove OS crash behavior.
+
+No missing software behavior was found within these finite current clauses. NT-05 exact-client migration/legacy ambiguity acceptance, NT-09 full semantic sequences, NT-11 actual corrected reviewer attempts and NT-12 integrated platform/installed/user/model acceptance remain separate. No tests, probes, validators, providers, network or canonical edits occurred.
+
+PRESERVED is proposed only as source-conformance status for the three previously PLANNED machines. It does not reinterpret any existing TESTED edge/proof as source evidence; all11 existing edge rows are retained exactly. N06's fragment carries the explicit existing NT-05 exception. If the receiving owner requires a distinct changed-contract machine representation, leave N06 PLANNED and use only N05/N08; no enum is forced and no new decision is inferred.

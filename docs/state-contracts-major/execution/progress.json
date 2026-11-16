@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "89a2d43b573681b993353609fc24956ccb175f7d",
+  "head": "970518e787c13f82d688a79a55b683ed60225752",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T19:54:53.282074+00:00",
+  "recorded_at": "2026-11-16T20:31:16.204300+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3885,12 +3885,12 @@
     }
   ],
   "next_actions": [
-    "Finish final affected checks/review for the two OS-identity source-consumer corrections; push the tested corrective source, then require entire exact-head CI/Docs and every selected check before child merge.",
+    "Finish final original-owner authentication and affected source review for Atlas and the three finite source dispositions, run the complete declared generator on the final candidate, then push the coherent source and require full exact-head CI/Docs.",
     "Require entire fresh exact-head CI/Docs and every check. Retain the original0eb executed WindowsARM refusal and unknown original target; local regression success does not qualify hosted execution.",
     "After green child checks, true-merge into major/state-contracts under standing authority, then require separate complete normal integration qualification. Hold1098 from main and publication.",
-    "Continue remaining native aggregates and baseline reconciliation:839 PLANNED accounting rows, unchanged ledger and runtime/task proof epochs; retain client/installed/human/model/stable-source acceptance boundaries."
+    "Continue remaining native aggregate/baseline reconciliation:836 PLANNED accounting rows after six finite source-only machine dispositions; no runtime/task proof epoch renewed. Retain client/installed/human/model and stable-source acceptance boundaries."
   ],
-  "delivery_state": "PR1115_OS_IDENTITY_CONSUMER_CORRECTIONS_LOCALLY_OBSERVED_FINAL_CHECKS_PENDING_PARENT1098_HELD",
+  "delivery_state": "PR1115_ATLAS_AND_THREE_FINITE_SOURCE_DISPOSITIONS_LOCALLY_OBSERVED_FINAL_CHECKS_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4252,6 +4252,32 @@
         "primary_job": 133533780565,
         "primary_boundary": "Executed commit-proof subprocess audit refusal; actual requested executable/argv and initiating mechanism UNKNOWN; not a child timeout.",
         "framework_discriminator": "LOCAL_ADJACENT_DEFECT_CONFIRMED_AND_REPAIRED; ORIGINAL_HOSTED_TARGET_UNKNOWN"
+      },
+      "runtime_epoch_renewal": false
+    },
+    {
+      "source": "970518e787c13f82d688a79a55b683ed60225752",
+      "scope": "Reviewed Atlas source dependency and three finite source conformance dispositions",
+      "observation": {
+        "path": "evidence/pr1115-atlas-native-source-followup.json",
+        "sha256": "7797701fa8668f78946073200976b7be2e073afe95100322b459a4d7b678e0ef"
+      },
+      "previous_live_source_disposition": {
+        "machines": [
+          "N18",
+          "N19",
+          "N25"
+        ],
+        "result": "PRESERVED",
+        "scope": "Nine complete finite source clauses;33 explicit production/frozen inputs unchanged at2137. All9 edge history and runtime proof epochs unchanged.",
+        "runtime_epoch_renewal": false
+      },
+      "previous_baseline_planned": {
+        "findings": 49,
+        "machines": 180,
+        "transitions": 610,
+        "total": 839,
+        "meaning": "Accounting obligations, not839 confirmed missing features."
       },
       "runtime_epoch_renewal": false
     }
@@ -5025,7 +5051,7 @@
   ],
   "live_checkpoint": {
     "recorded_at": "2026-11-16T19:27:35.290127+00:00",
-    "controller_anchor": "89a2d43b573681b993353609fc24956ccb175f7d",
+    "controller_anchor": "970518e787c13f82d688a79a55b683ed60225752",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
     "delivery_pr": 1115,
     "previous_child": {
@@ -5043,22 +5069,22 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Three consumer corrections locally checked: exact registry/all-eight-suite source guard, two real identical scaffolder captures and two stale authoring OS mocks with unchanged assertions. Original Pi Windows native-exit timeout remains UNKNOWN; no Pi fix claimed. Final checks and fresh entire child CI/Docs remain required.",
-    "current_staged_integrity": "PENDING_FINAL_OS_IDENTITY_CONSUMER_CORRECTIONS",
-    "source_or_status_renewal": false,
+    "followup": "Atlas bridge dependency intentionally re-reviewed and rebound; full declared generator and158 existing Atlas tests pass. Three complete Native source-only contracts adopted with explicit N06 accepted exception. Final source authentication/complete child and normal integration CI remain required; old Pi native-exit cause UNKNOWN.",
+    "current_staged_integrity": "PENDING_FINAL_ATLAS_AND_THREE_SOURCE_CONFORMANCE_CANDIDATE",
+    "source_or_status_renewal": true,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
     "native_component_recipes": 40,
     "remaining_software_original_unmapped": 0,
     "whole_baseline_planned": {
       "findings": 49,
-      "machines": 180,
+      "machines": 177,
       "transitions": 610,
-      "total": 839,
-      "meaning": "Accounting obligations, not839 confirmed missing features."
+      "total": 836,
+      "meaning": "Accounting obligations, not836 confirmed missing software behaviors."
     },
     "private_future_work": "Separate framework process-admission discriminator/repair; final affected checks and full child CI/Docs; successful trusted normal qualification; native aggregates and remaining installed/client/human/model/lifecycle acceptance. Exact histories retained; no runtime/status promotion.",
-    "observations": "evidence/pr1115-native40-development.json",
+    "observations": "evidence/pr1115-atlas-native-source-followup.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_AND_SHIPPED_SOURCE_DOCS_RUNTIME_QUALIFICATION_PENDING",
@@ -5082,12 +5108,12 @@
     "original_pr_docs_run": 43931636476,
     "source_disposition_change": {
       "machines": [
-        "N18",
-        "N19",
-        "N25"
+        "N05",
+        "N06",
+        "N08"
       ],
       "result": "PRESERVED",
-      "scope": "Nine complete finite source clauses;33 explicit production/frozen inputs unchanged at2137. All9 edge history and runtime proof epochs unchanged.",
+      "scope": "Finite43-input source review of11 current accepted clauses; N06 names the existing NT-05 exception. All11 existing edge rows and every runtime proof remain unchanged.",
       "runtime_epoch_renewal": false
     },
     "last_exact_pr_head_counts": {
@@ -5126,18 +5152,16 @@
     },
     "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
     "active_pr_observation": {
-      "head": "89a2d43b573681b993353609fc24956ccb175f7d",
-      "ci_run": 43942315243,
-      "docs_run": 43942314954,
+      "head": "970518e787c13f82d688a79a55b683ed60225752",
+      "ci_run": 43946909497,
+      "docs_run": 43946909486,
       "whole_terminal_observation": "Pending sole pinned watcher",
       "observed_failed_docs_jobs": [
-        133562780746,
-        133562781340
+        133578893605,
+        133578894054
       ],
-      "known_suite_registry_delta": "61 actual vs60 registered; local repair tested",
-      "parent1098_to_main": "HELD",
-      "observed_native_failure": "LinuxARM conformance confirms registry drift plus stale authoring OS mocks; both locally corrected.",
-      "unresolved_pi_native_exit": "OriginalWindowsPi job133563089708 parent timeout after NodeJS reallyExit entry; kernel completion/cause UNKNOWN."
+      "failure": "Reviewed Atlas source pin stale after actual bridge change; local complete generator now passes.",
+      "pi_windows_job": "PASS in970; original89 kernel/native-exit cause remains UNKNOWN."
     },
     "runtime_evidence_epoch_renewal": false,
     "task_status_renewal": false,

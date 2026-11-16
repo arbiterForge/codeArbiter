@@ -1,0 +1,36 @@
+{
+  "verdict": "PASS",
+  "findings": [],
+  "scope": "Finite SOURCE_ONLY N05/N06/N08 current accepted conformance, not runtime or qualification/admission.",
+  "proposal_delivery_sha256": "275ae55099c83b53ee13b4b2908c8be20e3aef26cd1015657e884dd2f00bcd2c",
+  "proof_sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+  "matrix_sha256": "beb0a26d8b88a4fdf61710a99127c0af0861d6843c0e94d684183d831e02720d",
+  "source_joins_sha256": "c8fc5a819415c458b3db6c3ef1f6ea100496be17fc06328504d67be18613f1ba",
+  "machine_fragments_sha256": "11e504fbd3d7fe0175e035b9335a257649b4257e04670aa438f69c295d77524a",
+  "source_epoch": "89a2d43b573681b993353609fc24956ccb175f7d",
+  "current_epoch": "970518e787c13f82d688a79a55b683ed60225752",
+  "input_count": 43,
+  "all_89_970_physical_inputs_equal": true,
+  "input_bindings_sha256": "07d8eff4e65b77a3f5d8f184b8495961e3fb8f734cc917597b11b0504a202e1c",
+  "clause_bindings": {
+    "N05:01": "5dbae7ac80cfd5d37dc12cd14fe8219690e913acf51827bec0330e91e32a0dbb",
+    "N05:02": "7541c03a6ee7d222441d519122a59fff5b94a02ab57fc45c439ad99e5c544806",
+    "N05:03": "c7fe0de2883d71a0cdd7b7582d91903d1c4b281d8bdbf583801973e30f35d18f",
+    "N05:04": "3e1896c24c871cd4603f8347d126fa0b9a6e95ef7b3b13aa307dd5cf44b69507",
+    "N06:01": "70edbc989ac60982b13225c95e4aa3d3414316870b16960302d1fdd592158b53",
+    "N06:02": "f2f7cccf3b0f2f983e9a434515d2fe865348ccdffc4862c2d79d8e9cb7a4185c",
+    "N06:03": "c8daf6b10814e0a4bae502dfae030d223714f3636019a4e7524b4bcb3c58b63b",
+    "N06:04": "b9a9593aaf6ccd762037ead3bb5e30bb5850db304647a2b2a6fb3cfa654963ed",
+    "N08:01": "8eb3948d21391a97fcc143ba7e0654b2f07dcef400b699f585ee6b57053a8442",
+    "N08:02": "6f32c30fc2bef0eaae7a29d491f125175ba1de17f7370184771a8064258a8fd6",
+    "N08:03": "930214b7b350102c4ab93e54d55621ad54311bc19c1e23ca8395ba659f483a89"
+  },
+  "N06_semantics": "Named existing accepted NT05 typed-retirement exception. Currentmachine required_disposition expressly permits named authorized change; strict owner accepts conformance-check/source-conformance/PRESERVED without claiming executed PASSED. Oldcheckedtask ORPHAN_STATE bug is explicitly NOT preserved; all11edge rows/history remain identical.",
+  "owner_semantic_source_sha256": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+  "unexecuted_limits": [
+    "No strict validator/admission or runtime/tests/API/native executed by reviewer.",
+    "No runtime/module/platform/installed/task/model/user or Native41 closure.",
+    "Root must perform original strict prospective admission before canonical status change."
+  ],
+  "canonical_writes": false
+}
