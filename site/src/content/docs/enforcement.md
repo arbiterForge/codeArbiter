@@ -133,6 +133,11 @@ process spawned to do author or reviewer work cannot escalate itself into reposi
 or farm access. Ordinary child/subagent environments never receive `FARM_API_KEY` or other
 governance secrets; that key is scoped to the trusted parent only.
 
+Dispatched children require HTTPS for provider and model endpoints. HTTP is allowed only for
+literal `127.0.0.1`; `localhost`, private network addresses and alternate numeric host forms do
+not qualify. Update an external HTTP `baseUrl` to HTTPS before dispatch. Redirects to HTTP
+outside that loopback exception are refused too.
+
 Run `/ca-doctor` to verify this is actually live: it inspects the active package path, command
 ownership, Python/core/bridge health, child fingerprint, and the H-03 wrapper self-test. Its
 module-identity check proves self-consistency between the operator-launched Pi CLI, imported module,

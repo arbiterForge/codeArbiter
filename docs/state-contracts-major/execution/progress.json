@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "head": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T15:03:43.696196+00:00",
+  "recorded_at": "2026-11-16T18:15:34.846040+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -582,7 +582,7 @@
         "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files."
       ],
       "tested": [
-        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32\u21924/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
+        "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32→4/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
       ],
       "remaining": [
         "CurrentPOSIX0/30/31/32 producer/platform and historicalprofile matrix are owned by affected hosted/native qualification. Refreshed full native input binding requires newtestsource currentbuild; native owner running it. Do not mark all HOOK-F04 platform qualification complete from this Windows pass."
@@ -1629,7 +1629,7 @@
       "owner": "sandbox",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "source": "Observed active program implementation/qualification failure,2026-11-13",
-      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9RED\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
+      "detail": "HIGH host-write exposure in upstreamstaticAssets is blocked before host generation: reject default project configs/existing outputs, select only reviewed Node/Python providers.9REDÃ¢â€ â€™GREEN,53affectedPASS/3Docker skips; independent affected reviewPASS. No arbitrary config/provider or actual Docker/WSL qualification.",
       "current_detail": "Profile2 adds bounded Go/nonworkspaceRust alongside explicitNode/Python with pinned runtime stages and material-input cache binding. AlloriginalfourDockerfixtures retained;123localPASS7DockerSKIP, realhostedpending."
     },
     {
@@ -1759,7 +1759,7 @@
       "owner": "hooks-workflows",
       "status": "DONE",
       "source": "1e06da1b6483591350b090c8eed4a6f37f277d55",
-      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED\u2192GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
+      "detail": "Actual6a Windowsisolation job132311178288 exceeded the unchanged3-second ordinary large-context bound on both hookentrypoints underPY3.15.2. LocalPY3.14 didnot reproduce wallfailure, but shared scanner derived40008unused identities and allocated importwindows at everytoken. Lazyactual-finding identities and sameNAME/from-prefix guard preserve ordered findings/digests/fullcandidate binding across18source+diff vectors. DeterministicworkRED→GREEN and all40owningtestsPASS/202inputsstable; original39cases and3s bound unchanged. Independent security/crypto/coveragePASS. Hosted timing remains pending.",
       "current_detail": "Actual exact6083 hosted Windows isolation job132323671933 succeeded, including unchanged ordinary3s admission criterion. This closes only the scanner work-allocation defect; whole run failed independently."
     },
     {
@@ -3699,7 +3699,7 @@
       "recorded_at": "2026-11-14T07:31:05.349374+00:00",
       "kind": "COLD_CLOSED_DIAGNOSTIC_EXTENSION",
       "source_epoch": "ce3 source export + explicit Temp-author diagnostic overlay; current a0 owning preimages match",
-      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED\u219214focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
+      "detail": "Fixed host/builtin family/subtype/audit event-site-depth symbols replace an opaque unknown-only record when supported. Unknown custom properties cannot escape the public emission fallback; arbitrary error text/paths/argv/environment/audit payloads remain excluded. Genuine feature/privacy RED→14focusedPASS, exactguard/admission AST parity and strictlegacyv1/v2 decoder controls retained; independentcomplete+narrow privacy reviews pass. Source and10-case closedregistry registered; underlyingWindowsARM cold commit-proof cause remainsUNKNOWN. No native/full56/package acceptance claimed.",
       "source_freeze_sha256": "3fd16b4172357349752fec4ddaf3b683eafe90a704764367d3604b77ae5b532c",
       "proof_impact": "Fifteen current channel TESTED rows bind changed tools/build-host-packages.py. Their old execution epochs remain retained; current applicability must be inspected after commit and renewed only from actual owning execution."
     },
@@ -3849,11 +3849,6 @@
       "id": "NORMAL21B_ADMISSION_QUALIFICATION",
       "scope": "Only installed13/native133 whole-run admission",
       "detail": "Trusted21b normal failed82/8/7. Local matching admission mechanisms repaired and tested, but final source and exact-head hosted required checks plus a genuinely successful trusted normal run remain required. No blind unchanged retry."
-    },
-    {
-      "id": "PR1114_INSTALLED_AUDIT_RECURSION",
-      "scope": "Exact-head required CI before child merge",
-      "detail": "Original10087 WindowsARM64 conformance failed; actualbounded matchingregression and minimalconstant fix pass locally. Corrected finalhead and its requiredhosted checks remainpending; originalOSprobe was not retained."
     }
   ],
   "unknown_outcomes": [
@@ -3890,12 +3885,12 @@
     }
   ],
   "next_actions": [
-    "Complete exact staged source/security review and original-owner intent/integrity checks for transport, portable native controls and real Sandbox acceptance tests; push one coherent corrective head.",
-    "Require the entire fresh exact-head CI and Docs plus every check; preserve original failed runs and investigate actual failures without blind retries.",
-    "After green child checks, true-merge into major/state-contracts under standing authority, then require separate full normal integration qualification. Hold1098 from main and publication.",
-    "Continue actual remaining kernel recovery/caller effects and842baseline accounting reconciliation; retain installed/human/model and final source-evidence renewal boundaries."
+    "Finish final staged source/security review and original-owner intent/integrity checks for Native37, public readiness/receipt effects, Pi cleanup and three finite source-conformance records; push one coherent head.",
+    "Require entire fresh exact-head CI/Docs and every check. Preserve original five unacquired macOS ARM jobs; investigate new executed failures without speculative runner changes or blind retries.",
+    "After green child checks, true-merge into major/state-contracts under standing authority, then require separate complete normal integration qualification. Hold1098 from main and publication.",
+    "Continue remaining native aggregates and original baseline reconciliation:839 PLANNED accounting rows after three source-only dispositions; no runtime or task epoch renewed. Retain remaining client/installed/human/model and stable-source acceptance boundaries."
   ],
-  "delivery_state": "PR1115_FE04_BUDGET_AND_SHIPPED_BUNDLE_REPAIR_LOCALLY_GREEN_FRESH_CI_PENDING_PARENT1098_HELD",
+  "delivery_state": "PR1115_NATIVE37_AND_SOURCE_CONFORMANCE_LOCALLY_OBSERVED_FINAL_CANDIDATE_CI_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4035,7 +4030,7 @@
       "previous_recorded_at": "2026-11-14T16:32:37.449405+00:00",
       "facts": [
         "Nativeinstalled6 reports nowbind matchingauthenticated finalcold consumers; source-native-module cannot substitute. FinalLF41purecontrols include6matching/30wrongplatform refusals.",
-        "Sandboxlatecreatecancellation and retainedphysicalCID gaps fixed with actualpreciseRED\u21923then5controlledGREEN; cause/unknowncleanup and scopeddeletion unchanged. ShippedCLI rebuilt with cache/create/CID changes.",
+        "Sandboxlatecreatecancellation and retainedphysicalCID gaps fixed with actualpreciseRED→3then5controlledGREEN; cause/unknowncleanup and scopeddeletion unchanged. ShippedCLI rebuilt with cache/create/CID changes.",
         "Watch13compatibility andSite4versionliteral ownercontrols pass; exactexternalGHCLI version categorized without changing currentproduct version gate.",
         "FiniteS48 all8sourceclauses accounted:6transitions+1machine nowPRESERVED. Existing06/07 testedrefs/history unchanged; actualDocker/installed/wholecontainment notclaimed.",
         "NewPi oneclosedboolean termination-call-entry observation:11scopedcontrols/3plainNodecases, all72oldtestASTs retained, actual75testsmodulecollectedonce. Markerdoesnotprovenative/OStermination or resolve b015 cause."
@@ -4262,6 +4257,15 @@
       "resolution": "Actual14-method PASS at63d3cf92 and its six same-TESTED successors admitted in PR1113; current unchanged inputs remain applicable. No installed/task/runtime-host promotion.",
       "proof_ref": "docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json",
       "retained_at_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71"
+    },
+    {
+      "superseded_at": "2026-11-16T18:16:49.763253+00:00",
+      "original": {
+        "id": "PR1114_INSTALLED_AUDIT_RECURSION",
+        "scope": "Exact-head required CI before child merge",
+        "detail": "Original10087 WindowsARM64 conformance failed; actualbounded matchingregression and minimalconstant fix pass locally. Corrected finalhead and its requiredhosted checks remainpending; originalOSprobe was not retained."
+      },
+      "reason": "PR1114 exact head25b6747e passed whole CI43824929648 and Docs43824929589 (92success/8skip) and true-merged at27d38a2d. Its pending-child gate is settled. Separate failed normal integration43829498560/43829498531 and final program acceptance remain unresolved."
     }
   ],
   "head_semantics": "Last committed controller/source anchor before this journal/diagnostics cohort. Original observations retain immutable epochs; physical overlays have separate exact hashes. Final committed source and hosted outcomes come from Git/provider.",
@@ -4968,8 +4972,8 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T15:03:43.696196+00:00",
-    "controller_anchor": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+    "recorded_at": "2026-11-16T18:15:34.846040+00:00",
+    "controller_anchor": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
     "delivery_pr": 1115,
     "previous_child": {
@@ -4987,26 +4991,25 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Originalfe04 CI exposed stale25 budget consumer expectations and unregenerated shipped Pi parent. Exact45 readers now48PASS; unchanged owning build/repeat all4outputs byte-equal, only parent regenerated. Complete fresh CI/Docs remains required.",
-    "current_staged_integrity": "PENDING_FINAL_FE04_CONSUMER_BUNDLE_REPAIR",
+    "followup": "Native37 adds8 exact composition routes with actual journal/readiness/receipt oracles and Pi cleanup controls. Three complete finite source contracts are PRESERVED; runtime/installed acceptance remains open.",
+    "current_staged_integrity": "PENDING_FINAL_NATIVE37_CANDIDATE",
     "source_or_status_renewal": true,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
-    "native_component_recipes": 29,
-    "remaining_native_runtime_unmapped": 89,
+    "native_component_recipes": 37,
     "remaining_software_original_unmapped": 0,
     "whole_baseline_planned": {
       "findings": 49,
-      "machines": 183,
+      "machines": 180,
       "transitions": 610,
-      "total": 842,
-      "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
+      "total": 839,
+      "meaning": "Accounting obligations, not839 confirmed missing features."
     },
-    "private_future_work": "N02:05 legacy caller fallback, N03:01/02 Recover own acknowledgement/cleanup effects, machine aggregates and final installed/human/model acceptance remain held. Native29 control success does not qualify runtime.",
-    "observations": "evidence/pr1115-fe04-consumer-bundle-repair.json",
+    "private_future_work": "Native aggregates and remaining original baseline rows; stable-source current applicability, supported-platform/client/installed/human/model acceptance. Existing edge states and runtime proof epochs remain unchanged.",
+    "observations": "evidence/pr1115-native-readiness-receipt-development.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
-    "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_LOCALLY_TRANSPORT_QUALIFICATION_PENDING",
+    "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_AND_SHIPPED_SOURCE_DOCS_RUNTIME_QUALIFICATION_PENDING",
     "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
     "staged_integrity_observation": {
       "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
@@ -5022,20 +5025,24 @@
       "seconds": 41.125,
       "source_ref_moved": false
     },
-    "last_exact_pr_head_result": "D218_WHOLE_CI_FAILURE_WINDOWS_JOB_BUDGET_AND_MACOS_ARM_RUNNER_ACQUISITION_DOCS_SUCCESS",
-    "original_pr_ci_run": 43895115379,
-    "original_pr_docs_run": 43895115603,
+    "last_exact_pr_head_result": "2137_WHOLE_CI_FAILURE_FIVE_UNACQUIRED_MACOS_ARM_JOBS_THREE_DOWNSTREAM_GATES_DOCS_SUCCESS",
+    "original_pr_ci_run": 43918576875,
+    "original_pr_docs_run": 43918576889,
     "source_disposition_change": {
-      "cell": "disposition:transitions:S75:08",
-      "result": "NOT_APPLICABLE",
-      "scope": "Only obsolete direct-write/no-transaction/no-rollback guarded tuple. Original history and four applicable runtime/recovery obligations retained.",
+      "machines": [
+        "N18",
+        "N19",
+        "N25"
+      ],
+      "result": "PRESERVED",
+      "scope": "Nine complete finite source clauses;33 explicit production/frozen inputs unchanged at2137. All9 edge history and runtime proof epochs unchanged.",
       "runtime_epoch_renewal": false
     },
     "last_exact_pr_head_counts": {
-      "successful": 80,
-      "failed": 2,
-      "cancelled": 2,
-      "skipped": 11
+      "successful": 64,
+      "failed": 3,
+      "cancelled": 5,
+      "skipped": 13
     },
     "native_local_validation": {
       "parents": 52,
@@ -5047,7 +5054,7 @@
       "changed_helper_statements": "12/12",
       "qualification_renewal": false
     },
-    "staged_integrity_observation_scope": "Previous retained cohort, not this in-flight source tree.",
+    "staged_integrity_observation_scope": "Historical observation retained above; does not cover this new staged candidate.",
     "collector_local_validation": {
       "pure_methods": 12,
       "actual_inert_control": 1,
@@ -5067,14 +5074,21 @@
     },
     "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
     "active_pr_observation": {
-      "head": "fe04c04971bad4799240309f94f89637849a0c5f",
-      "ci_run": 43912541989,
-      "docs_run": 43912541965,
+      "head": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+      "ci_run": 43918576875,
+      "docs_run": 43918576889,
       "docs_conclusion": "success",
-      "ci_at_recording": "ORIGINAL_REQUIRED_FAILURES_PRESENT_WHOLE_CI_IN_PROGRESS",
-      "known_primary_causes": 2,
-      "recorded_at": "2026-11-16T17:19:54.359341+00:00",
-      "note": "Earlier last_exact_pr_head fields retain the last completed d218 observation; this active attempt is distinct."
+      "ci_conclusion": "failure",
+      "all_checks_terminal": true,
+      "five_primary_cancellations": "runner_id0/steps[] with explicit macOS ARM capacity annotations",
+      "executed_product_assertion_failure_observed": false
+    },
+    "runtime_evidence_epoch_renewal": false,
+    "task_status_renewal": false,
+    "previous_native_unmapped_inventory": {
+      "cohort": "Native29",
+      "count": 89,
+      "scope": "Historical finite advanced runtime inventory; not recomputed by subtracting newly planned/source-only rows."
     }
   },
   "checkpoint_history": [
@@ -5399,6 +5413,120 @@
           "platform_identity_vectors": 48,
           "platform_omission_vectors": 30,
           "qualification_renewal": false
+        }
+      }
+    },
+    {
+      "superseded_at": "2026-11-16T18:15:34.846040+00:00",
+      "reason": "Retain prior consumer/bundle repair checkpoint; original2137 failed only after five unacquired macOS ARM jobs. Add exact native readiness/receipt characterization and finite source-conformance records without runtime/task promotion.",
+      "checkpoint": {
+        "recorded_at": "2026-11-16T15:03:43.696196+00:00",
+        "controller_anchor": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+        "delivery_pr": 1115,
+        "previous_child": {
+          "pr": 1114,
+          "state": "MERGED",
+          "exact_head": "25b6747e52f5591d55901ace71706200d646461d",
+          "ci_run": 43824929648,
+          "docs_run": 43824929589,
+          "checks": {
+            "successful": 92,
+            "expected_skipped": 8,
+            "failed": 0
+          }
+        },
+        "original_ci_run": 43829498560,
+        "original_docs_run": 43829498531,
+        "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
+        "followup": "Originalfe04 CI exposed stale25 budget consumer expectations and unregenerated shipped Pi parent. Exact45 readers now48PASS; unchanged owning build/repeat all4outputs byte-equal, only parent regenerated. Complete fresh CI/Docs remains required.",
+        "current_staged_integrity": "PENDING_FINAL_FE04_CONSUMER_BUNDLE_REPAIR",
+        "source_or_status_renewal": true,
+        "ordinary_selection_groups": 53,
+        "ordinary_selection_cells": 54,
+        "native_component_recipes": 29,
+        "remaining_native_runtime_unmapped": 89,
+        "remaining_software_original_unmapped": 0,
+        "whole_baseline_planned": {
+          "findings": 49,
+          "machines": 183,
+          "transitions": 610,
+          "total": 842,
+          "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
+        },
+        "private_future_work": "N02:05 legacy caller fallback, N03:01/02 Recover own acknowledgement/cleanup effects, machine aggregates and final installed/human/model acceptance remain held. Native29 control success does not qualify runtime.",
+        "observations": "evidence/pr1115-fe04-consumer-bundle-repair.json",
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_LOCALLY_TRANSPORT_QUALIFICATION_PENDING",
+        "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
+        "staged_integrity_observation": {
+          "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+          "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+          "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 523,
+            "STALE": 795
+          },
+          "seconds": 41.125,
+          "source_ref_moved": false
+        },
+        "last_exact_pr_head_result": "D218_WHOLE_CI_FAILURE_WINDOWS_JOB_BUDGET_AND_MACOS_ARM_RUNNER_ACQUISITION_DOCS_SUCCESS",
+        "original_pr_ci_run": 43895115379,
+        "original_pr_docs_run": 43895115603,
+        "source_disposition_change": {
+          "cell": "disposition:transitions:S75:08",
+          "result": "NOT_APPLICABLE",
+          "scope": "Only obsolete direct-write/no-transaction/no-rollback guarded tuple. Original history and four applicable runtime/recovery obligations retained.",
+          "runtime_epoch_renewal": false
+        },
+        "last_exact_pr_head_counts": {
+          "successful": 80,
+          "failed": 2,
+          "cancelled": 2,
+          "skipped": 11
+        },
+        "native_local_validation": {
+          "parents": 52,
+          "terminal_outcomes": 203,
+          "failed": 0,
+          "skipped": 0,
+          "host": "Windows",
+          "statement_coverage_percent": 71.14035087719299,
+          "changed_helper_statements": "12/12",
+          "qualification_renewal": false
+        },
+        "staged_integrity_observation_scope": "Previous retained cohort, not this in-flight source tree.",
+        "collector_local_validation": {
+          "pure_methods": 12,
+          "actual_inert_control": 1,
+          "actual_profile": "inbox-v1",
+          "actual_current_instruction_frames": 83,
+          "actual_threads": 12,
+          "detach_verified": true,
+          "Pi_Node22_cause": "UNKNOWN",
+          "qualification_renewal": false
+        },
+        "routing_local_validation": {
+          "focused_methods": 8,
+          "mandatory_missing_or_skip_vectors": 236,
+          "platform_identity_vectors": 48,
+          "platform_omission_vectors": 30,
+          "qualification_renewal": false
+        },
+        "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
+        "active_pr_observation": {
+          "head": "fe04c04971bad4799240309f94f89637849a0c5f",
+          "ci_run": 43912541989,
+          "docs_run": 43912541965,
+          "docs_conclusion": "success",
+          "ci_at_recording": "ORIGINAL_REQUIRED_FAILURES_PRESENT_WHOLE_CI_IN_PROGRESS",
+          "known_primary_causes": 2,
+          "recorded_at": "2026-11-16T17:19:54.359341+00:00",
+          "note": "Earlier last_exact_pr_head fields retain the last completed d218 observation; this active attempt is distinct."
         }
       }
     }

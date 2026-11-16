@@ -839,6 +839,158 @@ KERNEL_SCHEMA_EXPECTED = {cell: {platform: list(required) for platform in
                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkRetryPreservesLaterEdit']}.items()}
 
 
+KERNEL_REMAINDER_EXPECTED = {cell: {platform: sorted(set(required) |
+    ({'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReviewLegacyJournalRemainsReadable'} if cell == 'disposition:transitions:N02:05' and platform.startswith('linux/') else set()))
+    for platform in ('darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64')}
+    for cell, required in {'disposition:transitions:N02:05': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN02ResultlessReplayRequiresRefreshWithoutInventingIdentity',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN02ResultlessReplayRequiresRefreshWithoutInventingIdentity/codearbiter.transaction/0.1.0',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN02ResultlessReplayRequiresRefreshWithoutInventingIdentity/codearbiter.transaction/0.2.0',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReviewRetryPreservesMutationResult',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkRetryPreservesLaterEdit',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome'],
+ 'disposition:transitions:N03:01': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRecoveryPreservesLaterBoardEdit',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/after-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/before-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/during-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryOwnAcknowledgementFailureAndSameModeRetry',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryOwnAcknowledgementFailureAndSameModeRetry/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-backup',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-stage',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/third-digest',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained/complete-changed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained/complete-verified',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-journal/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-journal/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-0/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-stage-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-stage-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-complete/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-complete/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-journal/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-journal/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-0/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-stage-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-stage-0/rollback'],
+ 'disposition:transitions:N03:02': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRecoveryPreservesLaterBoardEdit',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/after-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/before-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash/during-journal-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryOwnAcknowledgementFailureAndSameModeRetry',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryOwnAcknowledgementFailureAndSameModeRetry/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-backup',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-stage',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/third-digest',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03TerminalRecoveryReplayPreservesBytes/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained/rollback-changed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained/rollback-verified',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-journal/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-journal/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-0/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-replace-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-stage-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery/after-stage-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-complete/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-complete/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-journal/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-journal/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-0/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-1/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-replace-1/rollback',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-stage-0/complete',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery/after-stage-0/rollback']}.items()}
+
+
+READINESS_RECEIPT_EXPECTED = {cell: {platform: list(required)
+    for platform in ('darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64')}
+    for cell, required in {'disposition:transitions:N07:01': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness'],
+ 'disposition:transitions:N07:03': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness'],
+ 'disposition:transitions:N07:04': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding'],
+ 'disposition:transitions:N10:03': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale'],
+ 'disposition:transitions:N12:04': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory']}.items()}
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -1161,7 +1313,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED))
+        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED))
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -1206,7 +1358,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED))
+        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1364,8 +1516,8 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         except readiness.ReadinessError as error:
             self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
         self.assertEqual(selected, CLI_EXPECTED)
-        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
-        self.assertEqual(len(expected), 29)
+        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED}
+        self.assertEqual(len(expected), 37)
         self.assertEqual(native.RECIPES, expected)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         cells = policy['native_composite_cells']
@@ -1445,14 +1597,14 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             {'N02:01': 40, 'N02:02': 27, 'N02:03': 31, 'N02:04': 17, 'N03:03': 3})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 29)
+        self.assertEqual(len(policy['native_composite_cells']), 37)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(JOURNAL_EXPECTED).intersection(policy['cell_job_bindings']))
-        for held in ('disposition:transitions:N02:05', 'disposition:transitions:N03:01', 'disposition:transitions:N03:02'):
+        for held in ('disposition:machines:N02', 'disposition:machines:N03', 'disposition:machines:N04'):
             self.assertNotIn(held, policy['native_composite_cells'])
             with self.subTest(held=held), self.assertRaises(readiness.ReadinessError):
                 native.selected_recipes([held])
@@ -1546,15 +1698,14 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(counts, {'N03:04': 5, 'N03:05': 83, 'N04:02': 11, 'N04:03': 13})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 29)
+        self.assertEqual(len(policy['native_composite_cells']), 37)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(KERNEL_SCHEMA_EXPECTED).intersection(policy['cell_job_bindings']))
-        for held in ('disposition:transitions:N02:05', 'disposition:transitions:N03:01',
-                     'disposition:transitions:N03:02', 'disposition:machines:N02',
+        for held in ('disposition:machines:N02',
                      'disposition:machines:N03', 'disposition:machines:N04'):
             self.assertNotIn(held, policy['native_composite_cells'])
             with self.subTest(held=held), self.assertRaises(readiness.ReadinessError):
@@ -1661,6 +1812,202 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                         readiness.ReadinessError, 'recipe differs'):
                     native.runtime_requirements(changed)
 
+
+
+    def test_kernel_remainder_three_full_rows_keep_sorted_thirty_two_authority(self):
+        import major_native_observation as native
+        try:
+            selected = native.selected_recipes(sorted(KERNEL_REMAINDER_EXPECTED))
+        except readiness.ReadinessError as error:
+            self.fail('Completed caller replay and recovery effects have no canonical route: ' + str(error))
+        self.assertEqual(selected, KERNEL_REMAINDER_EXPECTED)
+        old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED,
+               **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
+        self.assertEqual(len(old), 29)
+        self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
+        self.assertEqual(native.RECIPES, {**old, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
+        self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
+        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
+        self.assertFalse(set(KERNEL_REMAINDER_EXPECTED).intersection(policy['cell_job_bindings']))
+        for held in ('disposition:machines:N02', 'disposition:machines:N03', 'disposition:machines:N04'):
+            self.assertNotIn(held, policy['native_composite_cells'])
+            with self.subTest(held=held), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes([held])
+        self._select_cli_contracts(KERNEL_REMAINDER_EXPECTED)
+        record = self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(KERNEL_REMAINDER_EXPECTED))
+        self.assertEqual(len(record['native']['components']), 6)
+        for row in record['native']['results']:
+            self.assertEqual({part['platform']: part['selectors'] for part in row['components']}, KERNEL_REMAINDER_EXPECTED[row['cell']])
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+
+    def test_kernel_remainder_each_required_parent_child_and_complement_must_pass(self):
+        self._select_cli_contracts(KERNEL_REMAINDER_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), dict(self.data))
+        for cell, recipe in KERNEL_REMAINDER_EXPECTED.items():
+            for platform, selector in [('windows/amd64', name) for name in recipe['windows/amd64']] + [('linux/amd64', name) for name in recipe['linux/amd64'] if name not in recipe['windows/amd64']]:
+                package, test = selector.split(':', 2)[1:]
+                for mode in ('missing', 'skip'):
+                    self.artifacts, self.data = copy.deepcopy(initial)
+                    def change(files):
+                        raw = json.loads(files['native-tests.json'])
+                        if '/' in test:
+                            parent = test.split('/', 1)[0]
+                            self.assertEqual([row['result'] for row in raw['observed']
+                                if row['package'] == package and row['test'] == parent], ['pass'])
+                        population = raw['subtests'] if '/' in test else raw['observed']
+                        found = [row for row in population if row['package'] == package and row['test'] == test]
+                        self.assertEqual(len(found), 1)
+                        if mode == 'missing':
+                            population.remove(found[0])
+                            if '/' not in test:
+                                raw['selected'] = [row for row in raw['selected']
+                                    if not (row['package'] == package and row['test'] == test)]
+                                raw['subtests'] = [row for row in raw['subtests']
+                                    if not (row['package'] == package and row['test'].startswith(test + '/'))]
+                        else:
+                            found[0]['result'] = 'skip'
+                        files['native-tests.json'] = json.dumps(raw).encode()
+                        stamp = json.loads(files['ci20-native-tested.json'])
+                        files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                    self.rewrite(platform, change)
+                    with self.subTest(cell=cell, platform=platform, selector=test, outcome=mode), self.assertRaisesRegex(
+                            readiness.ReadinessError, 'selected assertion|child'):
+                        self.produce()
+
+    def test_kernel_remainder_all_platforms_and_original_source_authorities_are_required(self):
+        import major_native_observation as native
+        self._select_cli_contracts(KERNEL_REMAINDER_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), copy.deepcopy(self.jobs), dict(self.data), dict(self.job_artifacts))
+        for platform in sorted(self.raw):
+            for reason in ('archive', 'component', 'source', 'run', 'attempt', 'platform', 'upload', 'forged uploader'):
+                self.artifacts, self.jobs, self.data, self.job_artifacts = copy.deepcopy(initial)
+                runner = {value: key for key, value in binding_owner.RUNNERS.items()}[platform]
+                artifact = next(item for item in self.artifacts if item['name'] == 'ci20-native-tested-' + runner)
+                job = next(item for item in self.jobs if item['name'].endswith('<' + platform + '>'))
+                if reason == 'archive':
+                    self.artifacts.remove(artifact)
+                elif reason == 'component':
+                    job['name'] = job['name'].replace(platform, 'unknown/unknown')
+                elif reason == 'upload':
+                    job['steps'][0]['conclusion'] = 'skipped'
+                elif reason == 'forged uploader':
+                    self.job_artifacts[job['id']] = 30
+                else:
+                    key, value = {'source': ('source_commit', 'e' * 40), 'run': ('run_id', '8'),
+                        'attempt': ('run_attempt', '2'), 'platform': ('platform', 'unknown/unknown')}[reason]
+                    self.rewrite(platform, lambda files: self.json_edit(files, 'ci20-native-tested.json',
+                        lambda stamp: stamp.update(**{key: value})))
+                with self.subTest(platform=platform, reason=reason), self.assertRaises(
+                        (readiness.ReadinessError, ValueError)):
+                    self.produce()
+        for cell in KERNEL_REMAINDER_EXPECTED:
+            for platform in sorted(self.raw):
+                changed = copy.deepcopy(self.req)
+                changed['native_compositions'][cell].pop(platform)
+                with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'recipe differs'):
+                    native.runtime_requirements(changed)
+
+
+
+    def test_readiness_receipt_five_full_rows_preserve_thirty_two_routes_and_native16(self):
+        import major_native_observation as native
+        try:
+            selected = native.selected_recipes(sorted(READINESS_RECEIPT_EXPECTED))
+        except readiness.ReadinessError as error:
+            self.fail('Characterized readiness and receipt rows have no canonical route: ' + str(error))
+        self.assertEqual(selected, READINESS_RECEIPT_EXPECTED)
+        old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED,
+               **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED}
+        self.assertEqual(len(old), 32)
+        self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
+        self.assertEqual(native.RECIPES, {**old, **READINESS_RECEIPT_EXPECTED})
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
+        self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
+        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
+        self.assertFalse(set(READINESS_RECEIPT_EXPECTED).intersection(policy['cell_job_bindings']))
+        for held in ('disposition:machines:N07', 'disposition:machines:N10', 'disposition:machines:N12'):
+            with self.subTest(whole_machine=held), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes([held])
+        self._select_cli_contracts(READINESS_RECEIPT_EXPECTED)
+        record = self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(READINESS_RECEIPT_EXPECTED))
+        self.assertEqual(len(record['native']['components']), 6)
+        for row in record['native']['results']:
+            self.assertEqual({part['platform']: part['selectors'] for part in row['components']}, READINESS_RECEIPT_EXPECTED[row['cell']])
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+
+    def test_readiness_receipt_all_required_parents_children_and_companions_must_pass(self):
+        self._select_cli_contracts(READINESS_RECEIPT_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), dict(self.data))
+        for cell, recipe in READINESS_RECEIPT_EXPECTED.items():
+            for selector in recipe['windows/amd64']:
+                package, test = selector.split(':', 2)[1:]
+                for mode in ('missing', 'skip'):
+                    self.artifacts, self.data = copy.deepcopy(initial)
+                    def change(files):
+                        raw = json.loads(files['native-tests.json'])
+                        if '/' in test:
+                            parent = test.split('/', 1)[0]
+                            self.assertEqual([row['result'] for row in raw['observed']
+                                if row['package'] == package and row['test'] == parent], ['pass'])
+                        population = raw['subtests'] if '/' in test else raw['observed']
+                        found = [row for row in population if row['package'] == package and row['test'] == test]
+                        self.assertEqual(len(found), 1)
+                        if mode == 'missing':
+                            population.remove(found[0])
+                            if '/' not in test:
+                                raw['selected'] = [row for row in raw['selected']
+                                    if not (row['package'] == package and row['test'] == test)]
+                                raw['subtests'] = [row for row in raw['subtests']
+                                    if not (row['package'] == package and row['test'].startswith(test + '/'))]
+                        else:
+                            found[0]['result'] = 'skip'
+                        files['native-tests.json'] = json.dumps(raw).encode()
+                        stamp = json.loads(files['ci20-native-tested.json'])
+                        files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                    self.rewrite('windows/amd64', change)
+                    with self.subTest(cell=cell, selector=test, outcome=mode), self.assertRaisesRegex(
+                            readiness.ReadinessError, 'selected assertion|child'):
+                        self.produce()
+
+    def test_readiness_receipt_all_six_original_platform_authorities_remain_mandatory(self):
+        import major_native_observation as native
+        self._select_cli_contracts(READINESS_RECEIPT_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), copy.deepcopy(self.jobs), dict(self.data), dict(self.job_artifacts))
+        for platform in sorted(self.raw):
+            for reason in ('archive', 'component', 'source', 'run', 'attempt', 'platform', 'upload', 'forged uploader'):
+                self.artifacts, self.jobs, self.data, self.job_artifacts = copy.deepcopy(initial)
+                runner = {value: key for key, value in binding_owner.RUNNERS.items()}[platform]
+                artifact = next(item for item in self.artifacts if item['name'] == 'ci20-native-tested-' + runner)
+                job = next(item for item in self.jobs if item['name'].endswith('<' + platform + '>'))
+                if reason == 'archive':
+                    self.artifacts.remove(artifact)
+                elif reason == 'component':
+                    job['name'] = job['name'].replace(platform, 'unknown/unknown')
+                elif reason == 'upload':
+                    job['steps'][0]['conclusion'] = 'skipped'
+                elif reason == 'forged uploader':
+                    self.job_artifacts[job['id']] = 30
+                else:
+                    key, value = {'source': ('source_commit', 'e' * 40), 'run': ('run_id', '8'),
+                        'attempt': ('run_attempt', '2'), 'platform': ('platform', 'unknown/unknown')}[reason]
+                    self.rewrite(platform, lambda files: self.json_edit(files, 'ci20-native-tested.json',
+                        lambda stamp: stamp.update(**{key: value})))
+                with self.subTest(platform=platform, reason=reason), self.assertRaises(
+                        (readiness.ReadinessError, ValueError)):
+                    self.produce()
+        for cell in READINESS_RECEIPT_EXPECTED:
+            for platform in sorted(self.raw):
+                changed = copy.deepcopy(self.req)
+                changed['native_compositions'][cell].pop(platform)
+                with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'recipe differs'):
+                    native.runtime_requirements(changed)
 
 
 # This finite source check is tied to the native builder's Go1.27 gc/CGO0
@@ -1809,3 +2156,64 @@ class NativeRecipeSourceMembershipTests(unittest.TestCase):
             name = 'go:github.com/arbiterForge/codeArbiter/core/artifacts/.:TestOwned'
             recipe = {'inert': {'linux/amd64': [name], 'windows/amd64': [name]}}
             self.assertEqual(_native_recipe_source_errors(root, recipe), [{'cell': 'inert', 'platform': 'windows/amd64', 'parent': 'TestOwned', 'owners': []}])
+
+    def test_remainder_future_go_inputs_own_the_new_required_parents_on_all_platforms(self):
+        root = Path(__file__).resolve().parents[2] / 'core/artifacts'
+        inputs = ('internal/operations/legacy_replay_contract_test.go', 'internal/store/recovery_effect_contract_test.go')
+        parents = {'TestN02ResultlessReplayRequiresRefreshWithoutInventingIdentity',
+                   'TestN03RecoveryOwnAcknowledgementFailureAndSameModeRetry',
+                   'TestN03VerifiedUnusedStagesCleanedAndChangedStagesRetained'}
+        recipes = {cell: {platform: [selector for selector in names if selector.split(':', 2)[2].split('/')[0] in parents]
+                          for platform, names in recipe.items()} for cell, recipe in KERNEL_REMAINDER_EXPECTED.items()}
+        self.assertEqual(_native_recipe_source_errors(root, recipes), [])
+        with tempfile.TemporaryDirectory(prefix='remainder-owned-go-membership-') as directory:
+            owned = Path(directory)
+            for relative in inputs:
+                original = root / relative
+                self.assertTrue(original.is_file() and not original.is_symlink())
+                target = owned / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(original.read_bytes())
+            self.assertEqual(_native_recipe_source_errors(owned, recipes), [])
+            for relative in inputs:
+                target = owned / relative
+                body = target.read_bytes()
+                target.unlink()
+                errors = _native_recipe_source_errors(owned, recipes)
+                self.assertTrue(errors)
+                self.assertEqual({row['platform'] for row in errors}, set(_NATIVE_PLATFORMS))
+                self.assertTrue(all(not row['owners'] for row in errors))
+                target.write_bytes(body)
+
+    def test_new_readiness_receipt_inputs_really_own_all_required_platform_parents(self):
+        root = Path(__file__).resolve().parents[2] / 'core/artifacts'
+        inputs = ('internal/operations/readiness_decision_contract_test.go',
+                  'internal/operations/native_recipe_portable_contract_test.go')
+        new_parents = {'TestN07DecisionResolutionChangesReadinessWithoutApproving',
+            'TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing',
+            'TestN07ActiveNotApplicableAndMandatoryDispositionRefuse',
+            'TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory',
+            'TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites',
+            'TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory',
+            'TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions'}
+        recipes = {cell: {platform: [selector for selector in names if selector.split(':', 2)[2].split('/')[0] in new_parents]
+                          for platform, names in recipe.items()} for cell, recipe in READINESS_RECEIPT_EXPECTED.items()}
+        self.assertEqual(_native_recipe_source_errors(root, READINESS_RECEIPT_EXPECTED), [])
+        with tempfile.TemporaryDirectory(prefix='readiness-receipt-source-') as directory:
+            owned = Path(directory)
+            for relative in inputs:
+                original = root / relative
+                self.assertTrue(original.is_file() and not original.is_symlink())
+                target = owned / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(original.read_bytes())
+            self.assertEqual(_native_recipe_source_errors(owned, recipes), [])
+            for relative in inputs:
+                target = owned / relative
+                body = target.read_bytes()
+                target.unlink()
+                errors = _native_recipe_source_errors(owned, recipes)
+                self.assertTrue(errors)
+                self.assertEqual({row['platform'] for row in errors}, set(_NATIVE_PLATFORMS))
+                self.assertTrue(all(not row['owners'] for row in errors))
+                target.write_bytes(body)

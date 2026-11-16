@@ -2266,8 +2266,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N19": {
    "owner": "native",
@@ -2275,8 +2283,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N20": {
    "owner": "native",
@@ -2512,8 +2528,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N26": {
    "owner": "native",

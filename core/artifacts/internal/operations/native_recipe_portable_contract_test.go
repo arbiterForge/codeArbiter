@@ -9,6 +9,7 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -461,5 +462,284 @@ func TestReviewRetryPreservesMutationResult(t *testing.T) {
 	}
 	if _, ok := second["transaction"]; !ok {
 		t.Error("retry changed response shape: transaction field absent")
+	}
+}
+
+// N10:03 and N12:04 use the real public operations and existing observed
+// fixture capture. Every authority event here is explicitly synthetic; these
+// tests do not grant actual user/host authority or execute stored commands.
+func receiptTransitionRequest(h *harness, fields object) object {
+	h.t.Helper()
+	d := h.doc("PLAN-EXAMPLE")
+	fields["artifact_id"], fields["operation_id"] = d.ID(), h.next()
+	fields["expected"] = object{"revision": d.Revision(), "model_sha256": d.Hash()}
+	return fields
+}
+
+func receiptTransitionSource(t *testing.T, h *harness, record, kind string, payload object, authorityKind string) object {
+	t.Helper()
+	d := h.doc("PLAN-EXAMPLE")
+	text := "Synthetic isolated receipt-transition fixture, not actual user approval: " + h.next()
+	context := h.run("evidence-context", object{"artifact_id": d.ID(), "activity": kind, "record_id": record, "prompt_sha256": canonical.BytesHash([]byte(text))})
+	verdict := "reconciled"
+	if kind == "prerequisite" {
+		verdict = "satisfied"
+	}
+	return observedSourceForContextFixture(t, h.root,
+		object{"artifact_id": d.ID(), "normative_sha256": d.NormHash(), "record_id": record},
+		kind, authorityKind, verdict, text, payload, context)
+}
+
+func receiptTransitionCapture(t *testing.T, h *harness, record, kind string, payload object) string {
+	t.Helper()
+	source := receiptTransitionSource(t, h, record, kind, payload, "user_workflow")
+	return model.S(h.run("capture-observation", source)["receipt"])
+}
+
+func receiptTransitionRefuse(t *testing.T, h *harness, op string, request object, code string) {
+	t.Helper()
+	before := readModeTree(t, h.root)
+	if _, err := h.request(op, request); fault.Code(err) != code {
+		t.Fatalf("%s: expected %s without effects, got %v", op, code, err)
+	}
+	if !maps.Equal(before, readModeTree(t, h.root)) {
+		t.Fatal("refused receipt operation changed owned source, canonical data or retained artifacts")
+	}
+}
+
+func TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory(t *testing.T) {
+	for _, initial := range []string{"missing", "stale"} {
+		t.Run(initial, func(t *testing.T) {
+			h := newHarness(t)
+			h.createPair()
+			h.approvePair()
+			if initial == "stale" {
+				h.start("T-001")
+				h.review("T-001")
+				h.start("T-002")
+				h.review("T-002")
+				// A real ordinary plan edit makes the old scope baseline stale;
+				// a fresh synthetic approval restores only artifact authority.
+				h.mut("apply", "PLAN-EXAMPLE", object{"changes": []any{object{"op": "record.update", "symbol": "T-003", "fields": object{"steps": model.List("A revised independent method.")}}}})
+				p := h.doc("PLAN-EXAMPLE")
+				h.mut("approve", p.ID(), object{"receipt": h.receipt(p, p.ID(), "approval", object{})})
+			}
+			before := h.doc("PLAN-EXAMPLE")
+			oldBase := model.M(model.M(model.M(before.Data["execution"])["scopes"])["CP-01"])
+			if initial == "missing" && oldBase != nil || initial == "stale" && (oldBase == nil || oldBase["plan_sha256"] == before.NormHash()) {
+				t.Fatal("fixture did not reach the named missing/stale baseline boundary")
+			}
+			input := h.input()
+			receipt := receiptTransitionCapture(t, h, "CP-01", "reconciliation", object{"input_sha256": input, "assessment": "Synthetic scope reconciliation of the exact current input."})
+			retained := descriptorEffectSnapshot(t, h.root)
+			request := receiptTransitionRequest(h, object{"scope": "CP-01", "receipt": receipt})
+			staleWriter := receiptTransitionRequest(h, object{"scope": "CP-01", "receipt": receipt})
+			h.run("scope-reconcile", request)
+			after := h.doc(before.ID())
+			base := model.M(model.M(model.M(after.Data["execution"])["scopes"])["CP-01"])
+			if !equalValue(base, object{"base_input_sha256": input, "plan_sha256": before.NormHash()}) || after.Revision() != before.Revision()+1 {
+				t.Fatalf("scope baseline was not replaced with the exact current identity: %v", base)
+			}
+			for _, id := range []string{"T-001", "T-002"} {
+				want, err := canonical.Clone(state(before, id))
+				if err != nil {
+					t.Fatal(err)
+				}
+				want["evidence_refs"] = model.List(append(model.Strings(state(before, id)["evidence_refs"]), receipt)...)
+				if !equalValue(want, state(after, id)) {
+					t.Fatalf("scope member %s lost progress/history or the selected receipt", id)
+				}
+			}
+			if !equalValue(before.Norm(), after.Norm()) || !equalValue(state(before, "T-003"), state(after, "T-003")) ||
+				!equalValue(model.M(model.M(before.Data["execution"])["scopes"])["CP-02"], model.M(model.M(after.Data["execution"])["scopes"])["CP-02"]) {
+				t.Fatal("scope reconciliation changed requirements or a different scope/member")
+			}
+			currentFiles := descriptorEffectSnapshot(t, h.root)
+			for path, hash := range retained {
+				if strings.HasPrefix(path, ".artifacts/") && currentFiles[path] != hash {
+					t.Fatalf("scope reconciliation rewrote or removed retained evidence %s", path)
+				}
+			}
+			settled := readModeTree(t, h.root)
+			h.run("scope-reconcile", request)
+			if !maps.Equal(settled, readModeTree(t, h.root)) {
+				t.Fatal("exact replay duplicated a member receipt or journal effect")
+			}
+			receiptTransitionRefuse(t, h, "scope-reconcile", staleWriter, "REVISION_CONFLICT")
+		})
+	}
+}
+
+func TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites(t *testing.T) {
+	for _, mismatch := range []string{"subject", "input", "definition", "changed-source", "empty-assessment", "authority"} {
+		t.Run(mismatch, func(t *testing.T) {
+			h := newHarness(t)
+			h.createPair()
+			h.approvePair()
+			subject := "CP-01"
+			if mismatch == "subject" {
+				subject = "CP-02"
+			}
+			payload := object{"input_sha256": h.input(), "assessment": "Synthetic current-scope assessment."}
+			if mismatch == "empty-assessment" {
+				payload["assessment"] = ""
+			}
+			authorityKind := "user_workflow"
+			if mismatch == "authority" {
+				authorityKind = "review_workflow"
+			}
+			source := receiptTransitionSource(t, h, subject, "reconciliation", payload, authorityKind)
+			if mismatch == "empty-assessment" || mismatch == "authority" {
+				code := "OBSERVATION_UNVERIFIED"
+				if mismatch == "authority" {
+					code = "AUTHORITY_UNVERIFIED"
+				}
+				receiptTransitionRefuse(t, h, "capture-observation", source, code)
+				return
+			}
+			receipt := model.S(h.run("capture-observation", source)["receipt"])
+			if mismatch == "input" {
+				writeFixture(t, h.root, "src/stage1.go", []byte("Changed after the current scope reply.\n"))
+			}
+			if mismatch == "definition" {
+				h.mut("apply", "PLAN-EXAMPLE", object{"changes": []any{object{"op": "record.update", "symbol": "CP-01", "fields": object{"exit": "A newly specified scope exit."}}}})
+				p := h.doc("PLAN-EXAMPLE")
+				h.mut("approve", p.ID(), object{"receipt": h.receipt(p, p.ID(), "approval", object{})})
+			}
+			code := "STALE_EVIDENCE"
+			if mismatch == "changed-source" {
+				// Preserve the original content-addressed name: the actual input
+				// inventory must refuse changed authority bytes, not silently bless it.
+				writeFixture(t, h.root, model.S(source["source_ref"]), []byte("{}"))
+				code = "INVALID_OUTPUT"
+			}
+			receiptTransitionRefuse(t, h, "scope-reconcile", receiptTransitionRequest(h, object{"scope": "CP-01", "receipt": receipt}), code)
+		})
+	}
+}
+
+func receiptTransitionPrerequisiteFixture(t *testing.T) (*harness, *assistiveFixture) {
+	t.Helper()
+	h := newHarness(t)
+	h.createPair()
+	f := &assistiveFixture{t: t, root: h.root}
+	addScopedPrerequisite(f, "fact")
+	h.approvePair()
+	return h, f
+}
+
+func TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory(t *testing.T) {
+	h, f := receiptTransitionPrerequisiteFixture(t)
+	var priorReceipt string
+	var priorBytes []byte
+	for _, outcome := range []string{"unsatisfied", "unknown"} {
+		f.mutate("prerequisite", prerequisiteReport(outcome, "tool_result"))
+		before := h.doc("PLAN-EXAMPLE")
+		if model.M(model.M(before.Data["execution"])["prerequisite_observations"])["GATE-LOCAL"] == nil {
+			t.Fatal("fixture did not contain the ordinary observation to replace")
+		}
+		receiptTransitionRefuse(t, h, "verification-status", object{"artifact_id": before.ID()}, "AUTHORITY_UNVERIFIED")
+		receipt := receiptTransitionCapture(t, h, "GATE-LOCAL", "prerequisite", object{"prerequisite": before.Symbols.ByID["GATE-LOCAL"].Value})
+		request := receiptTransitionRequest(h, object{"prerequisite": "GATE-LOCAL", "receipt": receipt})
+		stale := receiptTransitionRequest(h, object{"prerequisite": "GATE-LOCAL", "receipt": receipt})
+		h.run("prerequisite", request)
+		after := h.doc(before.ID())
+		ex := model.M(after.Data["execution"])
+		want := append(model.Strings(model.M(model.M(before.Data["execution"])["prerequisite_evidence"])["GATE-LOCAL"]), receipt)
+		if _, present := model.M(ex["prerequisite_observations"])["GATE-LOCAL"]; present ||
+			model.M(ex["prerequisites"])["GATE-LOCAL"] != "satisfied" ||
+			!equalValue(model.M(ex["prerequisite_evidence"])["GATE-LOCAL"], model.List(want...)) {
+			t.Fatal("receipted prerequisite did not delete only the observation, satisfy, and append exact retained history")
+		}
+		if !equalValue(before.Norm(), after.Norm()) || !equalValue(model.M(before.Data["execution"])["tasks"], ex["tasks"]) ||
+			!equalValue(model.M(before.Data["execution"])["scopes"], ex["scopes"]) || after.Revision() != before.Revision()+1 {
+			t.Fatal("prerequisite changed requirements, independent work, scope proof or revision incorrectly")
+		}
+		if priorReceipt != "" {
+			currentBytes, err := os.ReadFile(filepath.Join(h.root, filepath.FromSlash(priorReceipt)))
+			if err != nil || string(currentBytes) != string(priorBytes) {
+				t.Fatal("replacement rewrote or removed the previous receipt")
+			}
+		}
+		priorReceipt = receipt
+		var err error
+		priorBytes, err = os.ReadFile(filepath.Join(h.root, filepath.FromSlash(receipt)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		status := h.run("verification-status", object{"artifact_id": after.ID()})
+		if status["all_accepted_and_current"] != false {
+			t.Fatal("one prerequisite receipt became a whole-plan verification claim")
+		}
+		settled := readModeTree(t, h.root)
+		h.run("prerequisite", request)
+		if !maps.Equal(settled, readModeTree(t, h.root)) {
+			t.Fatal("prerequisite replay appended the receipt twice or wrote another effect")
+		}
+		receiptTransitionRefuse(t, h, "prerequisite", stale, "REVISION_CONFLICT")
+	}
+}
+
+func TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions(t *testing.T) {
+	for _, mismatch := range []string{"subject", "definition", "changed-source", "authority", "missing-receipt-structural-refusal", "stale-consumer-receipt"} {
+		t.Run(mismatch, func(t *testing.T) {
+			h, f := receiptTransitionPrerequisiteFixture(t)
+			if mismatch == "missing-receipt-structural-refusal" {
+				// An incomplete historical claim must be refused by the writer;
+				// do not serialize invalid canonical bytes to reach a later consumer.
+				before := readModeTree(t, h.root)
+				d := h.doc("PLAN-EXAMPLE")
+				model.M(model.M(d.Data["execution"])["prerequisites"])["GATE-LOCAL"] = "satisfied"
+				d.Data["revision"] = d.Revision() + 1
+				if _, err := render.Prepare(d.Data); fault.Code(err) != "MISSING_EVIDENCE" {
+					t.Fatalf("satisfied flag without receipt bypassed the structural writer guard: %v", err)
+				}
+				if !maps.Equal(before, readModeTree(t, h.root)) {
+					t.Fatal("structural receipt refusal changed the owned tree")
+				}
+				return
+			}
+			if mismatch == "subject" {
+				f.mutate("apply", object{"changes": []any{object{"op": "record.add", "collection": "prerequisites", "record": object{
+					"id": "GATE-OTHER", "title": "Other local service", "kind": "fact", "requirement": "A separate bounded fact.", "task_refs": model.List("T-002"), "source_refs": empty(),
+				}}}})
+				p := h.doc("PLAN-EXAMPLE")
+				h.mut("approve", p.ID(), object{"receipt": h.receipt(p, p.ID(), "approval", object{})})
+			}
+			f.mutate("prerequisite", prerequisiteReport("unknown", "tool_result"))
+			subject := "GATE-LOCAL"
+			if mismatch == "subject" {
+				subject = "GATE-OTHER"
+			}
+			d := h.doc("PLAN-EXAMPLE")
+			authorityKind := "user_workflow"
+			if mismatch == "authority" {
+				authorityKind = "review_workflow"
+			}
+			source := receiptTransitionSource(t, h, subject, "prerequisite", object{"prerequisite": d.Symbols.ByID[subject].Value}, authorityKind)
+			if mismatch == "authority" {
+				receiptTransitionRefuse(t, h, "capture-observation", source, "AUTHORITY_UNVERIFIED")
+				return
+			}
+			receipt := model.S(h.run("capture-observation", source)["receipt"])
+			if mismatch == "stale-consumer-receipt" {
+				h.run("prerequisite", receiptTransitionRequest(h, object{"prerequisite": "GATE-LOCAL", "receipt": receipt}))
+			}
+			if mismatch == "definition" || mismatch == "stale-consumer-receipt" {
+				f.mutate("apply", object{"changes": []any{object{"op": "record.update", "symbol": "GATE-LOCAL", "fields": object{"requirement": "A changed prerequisite definition."}}}})
+				p := h.doc("PLAN-EXAMPLE")
+				h.mut("approve", p.ID(), object{"receipt": h.receipt(p, p.ID(), "approval", object{})})
+			}
+			if mismatch == "stale-consumer-receipt" {
+				receiptTransitionRefuse(t, h, "verification-status", object{"artifact_id": "PLAN-EXAMPLE"}, "STALE_EVIDENCE")
+				return
+			}
+			code := "STALE_EVIDENCE"
+			if mismatch == "changed-source" {
+				writeFixture(t, h.root, model.S(source["source_ref"]), []byte("{}"))
+				code = "INVALID_OUTPUT"
+			}
+			receiptTransitionRefuse(t, h, "prerequisite", receiptTransitionRequest(h, object{"prerequisite": "GATE-LOCAL", "receipt": receipt}), code)
+		})
 	}
 }

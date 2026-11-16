@@ -1,0 +1,1230 @@
+{
+  "schema": "codearbiter-local-development-observation/1",
+  "source_parent": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+  "scope": "Native exact named-test composition, public readiness/receipt and journal effects, Pi cleanup characterization and finite source conformance. No publication or whole-program qualification.",
+  "prior_original_whole_ci": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\terminal-disposition.json",
+    "sha256": "49e070604f40353747868b04a8ed9267c2b4095a25af7e3c3deb1d1c4a1f7309",
+    "record": {
+      "schema": "exact-pr-watch-terminal-disposition/1",
+      "recorded_at": "2026-11-16T17:58:32.487374+00:00",
+      "verdict": "BLOCK",
+      "expected_head": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+      "observed_head": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+      "ci": {
+        "id": 43918576875,
+        "head_sha": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/ci.yml",
+        "head_branch": "codex/state-contracts-remaining-qualification"
+      },
+      "docs": {
+        "id": 43918576889,
+        "head_sha": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "path": ".github/workflows/docs.yml",
+        "head_branch": "codex/state-contracts-remaining-qualification"
+      },
+      "counts": {
+        "SKIPPED": 13,
+        "FAILURE": 3,
+        "SUCCESS": 64,
+        "CANCELLED": 5
+      },
+      "all_checks_terminal": true,
+      "required_gate": "FAILURE",
+      "primary_infrastructure": [
+        {
+          "job": 133479534372,
+          "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "steps": [],
+          "cause": "Original provider annotations: hosted runner never acquired; macOSarm64 capacity constraints. No product test/child deadline ran.",
+          "annotations": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133479534372.annotations.json",
+          "sha256": "548eb8ed78bb4c6567895cfa11d5edf44fe74342cedbe642a1cec922bd3073ba",
+          "job_log_transport": "HTTP404 once,215B transport response retained; not a job log."
+        },
+        {
+          "job": 133479534580,
+          "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "steps": [],
+          "cause": "Original provider annotations: hosted runner never acquired; macOSarm64 capacity constraints. No product test/child deadline ran.",
+          "annotations": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133479534580.annotations.json",
+          "sha256": "548eb8ed78bb4c6567895cfa11d5edf44fe74342cedbe642a1cec922bd3073ba",
+          "job_log_transport": "HTTP404 once,215B transport response retained; not a job log."
+        },
+        {
+          "job": 133479534731,
+          "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "steps": [],
+          "cause": "Original provider annotations: hosted runner never acquired; macOSarm64 capacity constraints. No product test/child deadline ran.",
+          "annotations": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133479534731.annotations.json",
+          "sha256": "548eb8ed78bb4c6567895cfa11d5edf44fe74342cedbe642a1cec922bd3073ba",
+          "job_log_transport": "HTTP404 once,215B transport response retained; not a job log."
+        },
+        {
+          "job": 133479535073,
+          "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest · runtime: Pi 1.5.0>",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "steps": [],
+          "cause": "Original provider annotations: hosted runner never acquired; macOSarm64 capacity constraints. No product test/child deadline ran.",
+          "annotations": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133479535073.annotations.json",
+          "sha256": "548eb8ed78bb4c6567895cfa11d5edf44fe74342cedbe642a1cec922bd3073ba",
+          "job_log_transport": "HTTP404 once,215B transport response retained; not a job log."
+        },
+        {
+          "job": 133479535120,
+          "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest · partition: all>",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "steps": [],
+          "cause": "Original provider annotations: hosted runner never acquired; macOSarm64 capacity constraints. No product test/child deadline ran.",
+          "annotations": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133479535120.annotations.json",
+          "sha256": "548eb8ed78bb4c6567895cfa11d5edf44fe74342cedbe642a1cec922bd3073ba",
+          "job_log_transport": "HTTP404 once,215B transport response retained; not a job log."
+        }
+      ],
+      "executed_product_assertion_failures_observed": [],
+      "downstream": [
+        {
+          "job": 133493587428,
+          "name": "[CHECK] | [CORE] | Native Go statement coverage",
+          "failed_steps": [
+            "Require successful native execution on every platform",
+            "Preserve the statement coverage verdict"
+          ],
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133493587428.log",
+          "log_sha256": "1755de91cba01166c13aeb7d68381e4bcfe84dd8ddbea154b662523f6ee35408"
+        },
+        {
+          "job": 133496588111,
+          "name": "[CHECK] | [CORE] | Structured artifact qualification",
+          "failed_steps": [
+            "Require every native verification stage to have passed"
+          ],
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133496588111.log",
+          "log_sha256": "958010398901185b3c9ef1a9d938ac11e4af7d4c32b28f947384abbfbbd937b5"
+        },
+        {
+          "job": 133496816554,
+          "name": "[GATE ] | [REPO] | Merge readiness",
+          "failed_steps": [
+            "Require every required job to have succeeded or been skipped"
+          ],
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\failed-job-133496816554.log",
+          "log_sha256": "3891d1353690661b5e2847fce7d1df4fc7b8e680815da4f4fa582a21262b3702"
+        }
+      ],
+      "repaired_fe04_owners": "Pi host-independent/shipped-bundle guard, all3Program integrity and acquired HookUbuntu/Windows partitions passed; missing MacHook did not execute. Earlier original consumer failures remain preserved separately.",
+      "program_log_transport_controls": {
+        "verdict": "PASS",
+        "controls": [
+          {
+            "job": 133479534837,
+            "os": "ubuntu-latest",
+            "job_id": 133479336554,
+            "bytes": 252776,
+            "sha256": "5ee65ea47aff7869f5133492058f99ce265b2b1e6d51adeece5098f74714f68c",
+            "state": "READ"
+          },
+          {
+            "job": 133479534940,
+            "os": "windows-latest",
+            "job_id": 133479336554,
+            "bytes": 252776,
+            "sha256": "5ee65ea47aff7869f5133492058f99ce265b2b1e6d51adeece5098f74714f68c",
+            "state": "READ"
+          },
+          {
+            "job": 133479534977,
+            "os": "macos-latest",
+            "job_id": 133479336554,
+            "bytes": 252776,
+            "sha256": "5ee65ea47aff7869f5133492058f99ce265b2b1e6d51adeece5098f74714f68c",
+            "state": "READ"
+          }
+        ]
+      },
+      "typescript_coverage": [
+        {
+          "job": 133484760008,
+          "tree": "plugins/ca-pi/tools",
+          "host_count": 2,
+          "status": "COMPLETE_SUPPORTED_HOST_UNION",
+          "required_metrics": [
+            "lines",
+            "branches"
+          ],
+          "threshold": 70,
+          "metrics": [
+            {
+              "metric": "statements",
+              "percent": 81.92,
+              "covered": 7171,
+              "total": 8753
+            },
+            {
+              "metric": "branches",
+              "percent": 81.96,
+              "covered": 6505,
+              "total": 7936
+            },
+            {
+              "metric": "functions",
+              "percent": 84.94,
+              "covered": 1145,
+              "total": 1348
+            },
+            {
+              "metric": "lines",
+              "percent": 86.95,
+              "covered": 6095,
+              "total": 7009
+            }
+          ],
+          "log_sha256": "ec00fe4d4ec11a68922307ef627f50dacd088c76a9585a8d669b5d8ad9030fbd"
+        },
+        {
+          "job": 133485216968,
+          "tree": "plugins/ca/tools",
+          "host_count": 2,
+          "status": "COMPLETE_SUPPORTED_HOST_UNION",
+          "required_metrics": [
+            "lines",
+            "branches"
+          ],
+          "threshold": 70,
+          "metrics": [
+            {
+              "metric": "statements",
+              "percent": 73.37,
+              "covered": 1684,
+              "total": 2295
+            },
+            {
+              "metric": "branches",
+              "percent": 74.15,
+              "covered": 1406,
+              "total": 1896
+            },
+            {
+              "metric": "functions",
+              "percent": 67.3,
+              "covered": 212,
+              "total": 315
+            },
+            {
+              "metric": "lines",
+              "percent": 74.94,
+              "covered": 1433,
+              "total": 1912
+            }
+          ],
+          "log_sha256": "80b868d80b792860b2ae362b35ea90811e5e6d83a4667016b102039622d16a9a"
+        }
+      ],
+      "native_coverage": {
+        "status": "INCOMPLETE_REQUIRED_NATIVE_JOB_FAILURE",
+        "job": 133493587428,
+        "conclusion": "failure",
+        "metric": "statements",
+        "statements": null,
+        "not_measured": [
+          "lines",
+          "branches"
+        ],
+        "expected_platforms": [
+          "darwin/amd64",
+          "darwin/arm64",
+          "linux/amd64",
+          "linux/arm64",
+          "windows/amd64",
+          "windows/arm64"
+        ]
+      },
+      "native_original_host_results": [
+        {
+          "job": 133479534369,
+          "platform": "darwin/amd64",
+          "source_sha256": "03007dc6ae690f93898d89f3f6a0e3da09e9cb1cf8303c2c78098025cbf9f0e7",
+          "status": "COLLECTED_INDIVIDUAL_ONLY"
+        },
+        {
+          "job": 133479534372,
+          "platform": "darwin/arm64",
+          "conclusion": "cancelled",
+          "status": "NO_SUCCESSFUL_ORIGINAL_REPORT"
+        },
+        {
+          "job": 133479534428,
+          "platform": "linux/amd64",
+          "source_sha256": "03007dc6ae690f93898d89f3f6a0e3da09e9cb1cf8303c2c78098025cbf9f0e7",
+          "status": "COLLECTED_INDIVIDUAL_ONLY"
+        },
+        {
+          "job": 133479534654,
+          "platform": "linux/arm64",
+          "source_sha256": "03007dc6ae690f93898d89f3f6a0e3da09e9cb1cf8303c2c78098025cbf9f0e7",
+          "status": "COLLECTED_INDIVIDUAL_ONLY"
+        },
+        {
+          "job": 133479534593,
+          "platform": "windows/amd64",
+          "source_sha256": "03007dc6ae690f93898d89f3f6a0e3da09e9cb1cf8303c2c78098025cbf9f0e7",
+          "status": "COLLECTED_INDIVIDUAL_ONLY"
+        },
+        {
+          "job": 133479534518,
+          "platform": "windows/arm64",
+          "source_sha256": "03007dc6ae690f93898d89f3f6a0e3da09e9cb1cf8303c2c78098025cbf9f0e7",
+          "status": "COLLECTED_INDIVIDUAL_ONLY"
+        }
+      ],
+      "terminal_receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\terminal-receipt.json",
+        "sha256": "12df42985898424f802c608d78bed15893ee10f6089ee115aef9060565648c6f"
+      },
+      "audit": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-2137136d-watch-bvnlbf_e\\final-summary.json",
+        "sha256": "946cf7fd312c8deaf1fb0cada15dcc801514a181c79118edeba3d3167845b1e7",
+        "original_log_reads": 16
+      },
+      "qualification": false,
+      "effects": "One original watcher naturally exited1. No rerun/retry/cancel/merge/source/index/ref/marker writes, runtime probes or native ZIP acquisitions.",
+      "limits": [
+        "Five missing execution jobs cannot be replaced by old success, runner labels, individual pass or unchanged source.",
+        "Native required all-six statement coverage INCOMPLETE; no fabricated numeric result.",
+        "Complete fresh wholeCI/Docs/allchecks remains mandatory; parent1098 draft/main/publication held."
+      ]
+    }
+  },
+  "checks": {
+    "kernel_replay_recovery": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-run-cvqf1y5_\\delivery.json",
+      "sha256": "070dfa3303416045ba2e58dcf5c2f12c797da7d6a2ff3e023d3c0455e53c2d82",
+      "record": {
+        "kind": "ACTUAL_THREE_KERNEL_GAP_CHARACTERIZATION",
+        "source_epoch": "fe04c04971bad4799240309f94f89637849a0c5f",
+        "subjects": [
+          {
+            "path": "core/artifacts/internal/operations/legacy_replay_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "27022c9ce77d22b36f3fc171a1a7b24c252059005e269083c3a8f1e8318f91e9",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-run-cvqf1y5_\\candidate\\core\\artifacts\\internal\\operations\\legacy_replay_contract_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/store/recovery_effect_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "05f137c00d6bbf6d12c58b63f591c33efb879532c7040470d0992ee75e9371c8",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-run-cvqf1y5_\\candidate\\core\\artifacts\\internal\\store\\recovery_effect_contract_test.go"
+          }
+        ],
+        "parents": 3,
+        "children": 8,
+        "outcomes": 11,
+        "exit_code": 0,
+        "duration_seconds": 6.109886000020197,
+        "original_draft": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-draft-3wg27k_d\\delivery.json",
+        "existing_product_and_tests_unchanged": true,
+        "canonical_writes": false,
+        "qualification": false,
+        "source_runtime_original_cache_stable": true,
+        "files": {
+          "actual-command.json": "afa290b70b1d337b9d07717f7d171f7de2e954f475db9cb50e2974fa22111211",
+          "actual.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "actual.stdout": "f46d11083e3dd3e93e5a0085eff1e1f031c76c847957f1c65b5c3313233ffd8b",
+          "after.json": "0030c69f4ada2c432b47d6f0ec0db156d4cc0532ddd274e4ff31dbc364e7d6d8",
+          "comment-cleanup.json": "d4f052332d9e297d4db6c10892a65099689a623366710c7d4bbbef96e7b40c39",
+          "compiler-trace.json": "ebd1f98fd8881f4d1be9aca43bf04b5d9765ec8a0c8b183977bef5d66cd13f7c",
+          "controller.json": "e2840e6501e9bd1d117d2b00e346b2e9007bc2b876bdf2c0a7206e87104cf251",
+          "format.json": "f5443ff13b80cca4c7ef3ca62d19e578fa95f0f170e2cc3d632d82e3cbb4d3d0",
+          "literal-source-joins.json": "496765e75cc16ed97f0d5a208e02ffa462c97bc37ddd811f3aa7f15b3d6effb2",
+          "named-outcomes.json": "a6efaa731e2ed77d7b114688d383eb09b5b1840dead4d0a72cdddd767c619000",
+          "original-cache-before.json": "74d118843b529f4dd71b8bed82660d1f0dcc709ada3df57b476ba1125d643b34",
+          "private-source-before.json": "ebcce5b73b1927c989d3a11b5a008ca3a11165504f207f64c7f2b451b6c5fb5f",
+          "source-before.json": "7a9d2bba48f6b7ae84697357e87acf1e7ae52aa52144fc997b40b45769988536",
+          "stability.json": "857cfd7595336a0d44cb042b09c4b9ca14d5619d64e0b803587eb296cef8e712",
+          "tested-proposal.patch": "28541d3e4aa512adde189249130cd60376bfc8f3dff59f7349e0839f07a04ccd",
+          "tool-runtime-before.json": "2744be5da6b838fb18943d54a3f7e07366358d466c584e4b38c047dc78d802c8"
+        }
+      }
+    },
+    "readiness_decisions": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n07-characterization-run-6rrz3gyc\\delivery.json",
+      "sha256": "0aa9e5707eb8383ec59af7d9d6e3cdafedd3cdf69881e8f400988e34c2c911e6",
+      "record": {
+        "kind": "ACTUAL_PRIVATE_N07_THREE_PARENT_CHARACTERIZATION",
+        "source_epoch": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "created_at": "2026-11-16T18:05:35.464818+00:00",
+        "result": "PASS",
+        "subject": {
+          "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+          "preimage_sha256": null,
+          "candidate_sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff",
+          "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n07-characterization-run-6rrz3gyc\\candidate\\core\\artifacts\\internal\\operations\\readiness_decision_contract_test.go"
+        },
+        "tested_patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n07-characterization-run-6rrz3gyc\\tested-proposal.patch",
+          "sha256": "d89cb6cd3162a9a0b2789e4890b25d1936bdf3e217160c5d7e2316bedfd4a8e5"
+        },
+        "actual": {
+          "argv": [
+            "C:/Program Files/Go/bin/go.exe",
+            "test",
+            "-json",
+            "-x",
+            "./internal/operations",
+            "-run=^TestN07(DecisionResolutionChangesReadinessWithoutApproving|ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing|ActiveNotApplicableAndMandatoryDispositionRefuse)$",
+            "-count=1",
+            "-timeout=90s",
+            "-failfast"
+          ],
+          "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n07-characterization-run-6rrz3gyc\\candidate\\core\\artifacts",
+          "started_at": "2026-11-16T18:03:57.979745+00:00",
+          "pid": 73564,
+          "exit_code": 0,
+          "seconds": 5.8365141999966,
+          "timed_out": false,
+          "output_limit_exceeded": false,
+          "containment": "exited",
+          "reader_errors": [],
+          "readers_finished": true,
+          "streams": {
+            "stdout": {
+              "bytes": 376780,
+              "sha256": "05170802bad1a70bd92fee6347ceaa7f813778ebff7858e55a6f9f0d4e2b9ed7"
+            },
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "parents": 3,
+        "children": 12,
+        "outcomes": 15,
+        "failures": 0,
+        "skips": 0,
+        "invocations": {
+          "gofmt": 1,
+          "go_test": 1
+        },
+        "source_closure": {
+          "complete_tracked_module_files": 256,
+          "all_existing_module_bytes_preserved": true,
+          "test_only_overlay": "One additional original-ci-agent test file, gofmt only.",
+          "actual_supporting_path": "core/artifacts/internal/testutil/fixtures.go",
+          "all9_literal_bindings_verified": true,
+          "immutable2137_archive_filemap_captured": true
+        },
+        "tools": {
+          "version": "go1.27.1",
+          "pinned_existing_runtime_file_count": 12032,
+          "scope": "Exact approved prior runtime map: Go/gofmt/compiler tools, VERSION and recorded GOROOT files. Every captured file rehashed before/after; no claim about unrecorded files.",
+          "go_exe_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+          "gofmt_exe_sha256": "ab730b8446c0c2369be901f263fb7433ea0d2d053d3a3584ca543aaff3b667cc"
+        },
+        "cache": {
+          "source": "C:/Users/brenn/AppData/Local/Temp/ca-native29-portability-validation-726d8b84/gocache",
+          "original_files": 1850,
+          "source_copy_exact_before_execution": true,
+          "original_unchanged": true,
+          "private_cache_added": 140,
+          "private_cache_modified": 0,
+          "private_cache_removed": 0
+        },
+        "stability": {
+          "private_module_unchanged": true,
+          "canonical_module_unchanged": true,
+          "tool_and_GOROOT_unchanged": true,
+          "original_cache_unchanged": true,
+          "original_source_head_unchanged": true
+        },
+        "limits": [
+          "Private WindowsAMD64 in-process unit characterization only, not all-six/native/installed qualification.",
+          "Initial PASS characterizes existing real Run/apply/validate outcomes; no invented regression RED or product fix.",
+          "No approval receipt, declared verification process, provider, native helper, network or canonical/index/ref/route/proof/status mutation.",
+          "Source module/tool/cache before-after closure is recorded; private cache writes by Go are expected and remain isolated."
+        ],
+        "authorship": {
+          "test_source": "Original ci-agent draft, no body correction by executor; gofmt only.",
+          "execution_controller": "/root/crypto_evidence_review",
+          "later_review_disclosure": "Executor may independently inspect other unchanged-author source; disclose execution of N07. No claim that executing N07 is independent peer authorship review of its own controller."
+        },
+        "files": {
+          "_boundedproc.py": {
+            "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+            "bytes": 12673
+          },
+          "canonical-module-after.json": {
+            "sha256": "0ca4332f8a1ea2f393835abd5aaa80a0eed03cd7ec1c10a97766b65282a63f67",
+            "bytes": 28772
+          },
+          "canonical-module-before.json": {
+            "sha256": "0ca4332f8a1ea2f393835abd5aaa80a0eed03cd7ec1c10a97766b65282a63f67",
+            "bytes": 28772
+          },
+          "compiler-trace.json": {
+            "sha256": "12fd5d8f727e2f17eb8008f9132813a7be1f971a5815f0e9bac17ef326dfa564",
+            "bytes": 366574
+          },
+          "controller.py": {
+            "sha256": "e5a744262de59a608d7f9eb745c2f84ed18c9bb21fe78b52799fabd1143a01e8",
+            "bytes": 10508
+          },
+          "environment.json": {
+            "sha256": "e787527f7df2e62f3d340be773677bab638e37d24695e8c2a8c54eb347f0a729",
+            "bytes": 1774
+          },
+          "execution-start.json": {
+            "sha256": "70b6b6e520492d4069f4a59042df9513ac36236b77a2c2a85bbef74ab27ea7f0",
+            "bytes": 414
+          },
+          "go-result.json": {
+            "sha256": "d94c42347c1e34929b1debb349fd14da1016de33a145b228f421cbdfa3a8cb3b",
+            "bytes": 1034
+          },
+          "go.stderr": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          "go.stdout": {
+            "sha256": "05170802bad1a70bd92fee6347ceaa7f813778ebff7858e55a6f9f0d4e2b9ed7",
+            "bytes": 376780
+          },
+          "gofmt-result.json": {
+            "sha256": "87a40cdbf0a519459200ab424ee1621d0f1db46881f77b858326b8160ea77326",
+            "bytes": 921
+          },
+          "gofmt.stderr": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          "gofmt.stdout": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          "input-bindings.json": {
+            "sha256": "946ed7d87c03a8dfb553ea3fb2439351f33282e700199e23594c79b4d55dce96",
+            "bytes": 1506
+          },
+          "module-after-test.json": {
+            "sha256": "23c0e22dba499970cfb2c8d07388295a078887b3197b4c202c22eedefdaaf9db",
+            "bytes": 39766
+          },
+          "module-before-test.json": {
+            "sha256": "23c0e22dba499970cfb2c8d07388295a078887b3197b4c202c22eedefdaaf9db",
+            "bytes": 39766
+          },
+          "module-preimage.json": {
+            "sha256": "c0f4b2ba49492b1b39105c7e3ac32f3980743b4da21580fb9cdac5a26074bb6f",
+            "bytes": 39593
+          },
+          "named-outcomes.json": {
+            "sha256": "88d03593c3ef4d93202a8d370132ced5917307ca9c450ba41eaa770b52294861",
+            "bytes": 3542
+          },
+          "original-cache-after.json": {
+            "sha256": "28e18c85db39f437c860dcf32cf030eedde410dd85e139ac1ec7588b35ee5f6f",
+            "bytes": 342711
+          },
+          "original-cache-before.json": {
+            "sha256": "28e18c85db39f437c860dcf32cf030eedde410dd85e139ac1ec7588b35ee5f6f",
+            "bytes": 342711
+          },
+          "private-cache-after.json": {
+            "sha256": "afb6164cbfc401e855ad2bf582244480dc8036e6829f447e5a882e6a73e9737f",
+            "bytes": 368682
+          },
+          "stability.json": {
+            "sha256": "1c04148e40d3f08aec5dd78c79243fd6b6d086dc299514a2b5ff8fff2721f5a9",
+            "bytes": 199
+          },
+          "summary.json": {
+            "sha256": "7eb96b7f2e82b940cbccdc913f9fd06b83f10835c3116a20a4c49430e704402a",
+            "bytes": 2071
+          },
+          "tested-proposal.patch": {
+            "sha256": "d89cb6cd3162a9a0b2789e4890b25d1936bdf3e217160c5d7e2316bedfd4a8e5",
+            "bytes": 11393
+          },
+          "tools-goroot-after.json": {
+            "sha256": "8d408cb77106b17016b451c8b98ba5b568577b9d6004311a8ad2bfa1a7e277ce",
+            "bytes": 1739679
+          },
+          "tools-goroot-before.json": {
+            "sha256": "8d408cb77106b17016b451c8b98ba5b568577b9d6004311a8ad2bfa1a7e277ce",
+            "bytes": 1739679
+          },
+          "candidate/core/artifacts/internal/operations/readiness_decision_contract_test.go": {
+            "sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff",
+            "bytes": 10653
+          }
+        },
+        "canonical_writes": false,
+        "qualification": false
+      }
+    },
+    "receipt_transitions": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-receipt-transitions-fixture-successor-2137\\delivery-tested.json",
+      "sha256": "cd81cfad68cbaa86c7b24877c22e999830792888b46274a4e3ce34e8aa4a21f3",
+      "record": {
+        "format": "private-native-receipt-transition-characterization/1",
+        "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "scope": "WindowsAMD64 local public-engine fixture characterization; explicitly synthetic observed authority, not real user/host approval.",
+        "rows": [
+          "N10:03",
+          "N12:04"
+        ],
+        "status": "PASS_WITH_FIRST_FIXTURE_SETUP_LIMITATION_RETAINED",
+        "actual": {
+          "parents_passed": 4,
+          "children_passed": 14,
+          "failed": 0,
+          "skipped": 0,
+          "test_exit_code": 0,
+          "outer_elapsed_seconds": 12.542619100015145,
+          "package_elapsed_seconds": 9.107,
+          "test_invocations_in_successor": 1,
+          "gofmt_invocations_in_successor": 1,
+          "stdout_bytes": 21699,
+          "stderr_bytes": 0
+        },
+        "methods": [
+          "TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+          "TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+          "TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+          "TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions"
+        ],
+        "subject": {
+          "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+          "preimage_sha256": "09cb7230704085f7733b9f8d4cdce822547a90886ff3a50785da1f10c798bc6e",
+          "formatted_tested_sha256": "4692f963b84ac7d564c8e2986c8694fb4b6624d2d577f66d2d24d478cf2ca158",
+          "copy_from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-receipt-transitions-fixture-successor-2137\\formatted-tested.go"
+        },
+        "tested_patch_sha256": "a1411badca14c07d23b0de23354ebdf8a79c5809a8108c81573e50aefc271727",
+        "correction_patch_sha256": "7d145181ca61c920a69ee74ac35087466ae2e8571ed929edd9691ea61e2870ea",
+        "predecessor": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-receipt-transitions-run-2137\\delivery.json",
+          "sha256": "5e1a20f9eeafdc00c4e45396c763c9ed226281a9ea262c4a27f0a988fb0aed7a",
+          "actual_parent_pass": 3,
+          "actual_parent_fail": 1,
+          "actual_child_pass": 13,
+          "actual_child_fail": 1,
+          "interpretation": "Initial missing-consumer-receipt fixture failed at structural render.Prepare with MISSING_EVIDENCE before consumer. No product bug/RED claimed. All original raw outcomes remain immutable."
+        },
+        "successor_change": "Only that case now asserts exact structural refusal and unchanged owned tree, then returns without serializing invalid data. Other thirteen child assertions unchanged.",
+        "stability": {
+          "module_stable": true,
+          "goroot_stable": true,
+          "source_cache_stable": true,
+          "private_source_stable_during_test": true,
+          "boundedproc_stable": true,
+          "module_files": 256,
+          "goroot_files": 15639,
+          "cache_source_files": 1527
+        },
+        "context_consumed": {
+          "input": "C:/Users/brenn/AppData/Local/Temp/ca-host-observer-integration-root/native-receipt-transition-bounded-characterization-input.txt",
+          "sha256": "9a6286e5580dcb5297cdc58669e6e28f0b8e733dff17d99e58ea0a653b935a3a",
+          "successor_authority": "Root follow-up explicitly authorized precise structural refusal correction and one same-bounds four-method successor."
+        },
+        "files": {
+          "filemap.json": "e1e9aa5d59f2cfaa4590d2917d2a35c86ba66686c5c908e2ce4683e0a5a68f4c",
+          "tested-source-freeze.json": "2e19a15a8ddcfb86b2e0d094b8b1efd1782126d3fb6327950d7cd534ae35c5a7",
+          "named-outcomes.json": "476ada3914f7f0bfb85a4b65571909207d11d3bfb43f4f77d7f98759302f590a"
+        },
+        "limits": [
+          "No production source change, ledger/route/proof/status admission, or canonical/Git/index/ref write.",
+          "Tests use actual public Run/capture/receipt owners with explicitly synthetic fixtures. Stored verification commands are not executed.",
+          "No SDK/provider/model/subject CLI/Docker/network/install; no all-platform/installed/native-helper or whole-machine/task qualification.",
+          "All copied module bytes and whole GOROOT/source-cache bytes were hashed before/after; no complete OS loaded-module or syscall audit is claimed.",
+          "Characterization of missing receipt is the actual stronger structural writer boundary, not a consumer call on invalid canonical bytes."
+        ]
+      }
+    },
+    "pi_cleanup": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\delivery.json",
+      "sha256": "fa500553f52a8037923bbb59f68b00331f28b57401e7246628a07b0bb451432c",
+      "record": {
+        "format": "private-pi-cleanup-characterization/1",
+        "state": "TARGET_OWNERS_TSC_GREEN",
+        "base_source_commit": "fe04c04971bad4799240309f94f89637849a0c5f",
+        "apply_files": [
+          {
+            "path": "plugins/ca-pi/tools/test/child-env.test.ts",
+            "preimage_sha256": "7f32b5a1779ed63e952910fd1ac0039a70f51ee2923585c8037bff22f35b0cee",
+            "candidate_sha256": "b52b9dce44a6068805ebbf06c8e6e2a76a64f39e9de2226b111858c779545c35",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\apply_files\\plugins\\ca-pi\\tools\\test\\child-env.test.ts"
+          },
+          {
+            "path": "plugins/ca-pi/tools/test/inference-broker.test.ts",
+            "preimage_sha256": "1a1664a7c27175a3251b4b500ed480feb9a79d9cb9e84ccac3876959c9c76725",
+            "candidate_sha256": "f8add2940e48be6f9979dc9445a4418564dcee4ec7ce533cacc135573261668d",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\apply_files\\plugins\\ca-pi\\tools\\test\\inference-broker.test.ts"
+          }
+        ],
+        "production_inputs": [
+          {
+            "path": "plugins/ca-pi/tools/src/child-env.ts",
+            "sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+            "sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4"
+          }
+        ],
+        "checks": [
+          {
+            "command": "target",
+            "exit_code": 0,
+            "elapsed_seconds": 0.6423730000096839,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stdout.log": 9665,
+              "stderr.log": 0
+            },
+            "passed_tests": 4,
+            "excluded_tests": 60,
+            "source_runtime_stable": true,
+            "private_changed_paths": [
+              "plugins/ca-pi/tools/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json"
+            ],
+            "private_added_paths": []
+          },
+          {
+            "command": "owners",
+            "exit_code": 0,
+            "elapsed_seconds": 1.6647211999807041,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stderr.log": 0,
+              "stdout.log": 9913
+            },
+            "passed_tests": 64,
+            "excluded_tests": 0,
+            "source_runtime_stable": true,
+            "private_changed_paths": [
+              "plugins/ca-pi/tools/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json"
+            ],
+            "private_added_paths": []
+          },
+          {
+            "command": "tsc",
+            "exit_code": 0,
+            "elapsed_seconds": 2.003896399983205,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stderr.log": 0,
+              "stdout.log": 0
+            },
+            "passed_tests": null,
+            "excluded_tests": 0,
+            "source_runtime_stable": true,
+            "private_changed_paths": [],
+            "private_added_paths": []
+          }
+        ],
+        "files": [
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\make-controller.py",
+            "sha256": "77ed29b94c1afabaf5d86cbc0c6c80dff04308dc5c36c9ccb2c3c9a6e6b40d2b",
+            "bytes": 2228
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\execute.py",
+            "sha256": "c513d124ec3dbdfa7d86a8c67551076fc3d07231f444fe18dd638ba6f9c4b487",
+            "bytes": 9257
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\guard.cjs",
+            "sha256": "ce1448d5a68755293dcb6b0ed49a1695890ec1c7952f3ef5bd3dcc1451cc6ed1",
+            "bytes": 2909
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\seal.py",
+            "sha256": "bbe1c40f6069b718ee5d3667526b8dba0ac05f58f6f86292937d8ac295577a87",
+            "bytes": 5384
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tested-two.patch",
+            "sha256": "f223c9240d647d5debc8d4605a58e558b3209f61fa1af06058f158784edb60d6",
+            "bytes": 9418
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\summary.json",
+            "sha256": "31745cacb32777ccfb4c81971da801762a8dad35aaea545767bfe69cdf6caa3d",
+            "bytes": 5028
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\source-freeze.json",
+            "sha256": "6423a71b45259741df95e5bfa651f2b8f9379af6360748bdbaf3018660e8c42b",
+            "bytes": 1391
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\before.json",
+            "sha256": "fb9232bf6c1842dbb7b1a71fe704b53ccfaca5aec03f4a5b55797f6c5fb14cdc",
+            "bytes": 468147
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\after.json",
+            "sha256": "82373cc5d046711a741a1ba1c4ab7b6ff61323e115c44c90d17e18e5ad2c6538",
+            "bytes": 443232
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\result.json",
+            "sha256": "f2a168155ba38916a071587a78db1409fce3c0016e7a0afca8424fbedc40a8ee",
+            "bytes": 201
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\validation.json",
+            "sha256": "8eef549f35b8c4c30d14946f5f08fc657f2477fd86c6f3856351885f3e2eb663",
+            "bytes": 2048
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\stdout.log",
+            "sha256": "db3252d9c41f7a2efb1703f17f0e35d99968a64aec42079f585e806b208b6d77",
+            "bytes": 9665
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\vitest-results.json",
+            "sha256": "8c0bd904dc0c95125dfe5b81b4f729515986bc11a3633cf819a970ebb591cb81",
+            "bytes": 23229
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\target\\guard\\guard-71768.json",
+            "sha256": "69f3a07bf25fc08d586afe6ca31e832d4e294219ecb2b3e97fa946c5aa50ac36",
+            "bytes": 195
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\before.json",
+            "sha256": "80d192c389ca18b523f3fcf5f3579f6fa31452f74b306fc492efc9f19de04111",
+            "bytes": 467713
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\after.json",
+            "sha256": "c98772ba13f321be0f8a032812a38e5acfb9f4bc2f408adc57189a6ffdc2f674",
+            "bytes": 443232
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\result.json",
+            "sha256": "4aa70386d9a15c39539bff24cbef29892140db77eb79052cbdfdf386d78be5bd",
+            "bytes": 201
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\validation.json",
+            "sha256": "5e55b9ec502478e82b0643a3c11ee77c03618f9fd0b8491d9912cb13dcd65022",
+            "bytes": 24106
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\stdout.log",
+            "sha256": "0b98b47265e7d49c09d49613ff069ba261ffb3dcc975f2c6dba4574021bf2cfb",
+            "bytes": 9913
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\vitest-results.json",
+            "sha256": "f65b68761cf2ae7da1731be564700b8943f785896478920c3213396ad47603eb",
+            "bytes": 24894
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\owners\\guard\\guard-53540.json",
+            "sha256": "1f7cc57fff29bf5f1e3f9f52df15dcde71cfb74ee0ad8ccc287333a32e138b6b",
+            "bytes": 195
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\before.json",
+            "sha256": "cf835818dde4a3cc26d36cd75757e9def34bda578c87d998af16e6ad345455f9",
+            "bytes": 467260
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\after.json",
+            "sha256": "c98772ba13f321be0f8a032812a38e5acfb9f4bc2f408adc57189a6ffdc2f674",
+            "bytes": 443232
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\result.json",
+            "sha256": "f7c68bc43a66938a4294660ecff476c2cba656ca84ff2f71c68e2f51c6534390",
+            "bytes": 194
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\validation.json",
+            "sha256": "1324214e242fab60b1b3e4084b0f240ace5f271de2041d50f58e27e4c03d8d01",
+            "bytes": 396
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-characterization-fe04\\tsc\\guard\\guard-54236.json",
+            "sha256": "35c7e4f8cc40498fd76f6aaf61595c7ff98ab3480af6322af32799f5eb4dffb9",
+            "bytes": 94
+          }
+        ],
+        "draft_receipt": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-env-cleanup-next-draft\\delivery.json",
+          "sha256": "15a18c557f6fc37a3863f81b2c63e4557a9e2cc36e5ee2df9e42565eb2f1b3db"
+        },
+        "canonical_writes": false,
+        "status_or_profile_changes": false,
+        "actor_input": {
+          "path": "C:/Users/brenn/AppData/Local/Temp/ca-host-observer-integration-root/pi-cleanup-characterization-input.txt",
+          "sha256": "aee5211c4c56ce712d299dfa8ad950dc8ef1754c1a4e611d5f35715e9afecf09",
+          "consumed_complete": true
+        }
+      }
+    },
+    "native37_composition": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-unit-pair-7yssuc9a\\delivery.json",
+      "sha256": "80c1fbb519424b67a8b98f55ac396cdfd39856ce9d840353cf4b586103e29cd7",
+      "record": {
+        "kind": "ACTUAL_NATIVE37_PURE_PAIR",
+        "source_epoch": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "subjects": [
+          {
+            "path": ".github/scripts/major_native_observation.py",
+            "preimage_sha256": "123ac5d41c0bfb2c8e114e5f617bed64bc8b272ab7774feaf08bbbe3be44c639",
+            "base32_sha256": "95c27bbc02d3fd6a7d7cb1204529663f3ac31c7ad5625afb33fb3bbb182813fd",
+            "candidate_sha256": "0e518f68eeb9ae08948ac7d0be065c585e434fd86da4fc0d1ab127d12e849a7f",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-unit-pair-7yssuc9a\\green\\.github\\scripts\\major_native_observation.py"
+          },
+          {
+            "path": ".github/scripts/test_major_native_observation.py",
+            "preimage_sha256": "a8563276a43f3e84adb0fafef65aa7ba310f537e0942c7d72fb60cba9cf2b876",
+            "base32_sha256": "2116efcf9ede21ddd8e073279da5379f0a7fa2e0f253eee225f309b60529a6f7",
+            "candidate_sha256": "57058aae5e7954081d92a77c758f757e3ab749f039fb1c0007d17264b6b81fe5",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-unit-pair-7yssuc9a\\green\\.github\\scripts\\test_major_native_observation.py"
+          },
+          {
+            "path": ".github/major-qualification-policy.json",
+            "preimage_sha256": "0e8b55a166e3569ecfe5e53a6c3f09d2e7686665ee2517e14f328b3714b62268",
+            "base32_sha256": "2693b5c688d44f74cf5b71ac462f144492c85fb065cd5172ec527e6142d93979",
+            "candidate_sha256": "642bde4f2b0afdaf70376f1c5281c76670b49dee1d285361f813554101dd2dd9",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-unit-pair-7yssuc9a\\green\\.github\\major-qualification-policy.json"
+          }
+        ],
+        "proper_missing_route_RED": true,
+        "GREEN_methods": 11,
+        "skips": 0,
+        "go_source_overlay": [
+          {
+            "path": "core/artifacts/internal/operations/legacy_replay_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "27022c9ce77d22b36f3fc171a1a7b24c252059005e269083c3a8f1e8318f91e9",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-run-cvqf1y5_\\candidate\\core\\artifacts\\internal\\operations\\legacy_replay_contract_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/store/recovery_effect_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "05f137c00d6bbf6d12c58b63f591c33efb879532c7040470d0992ee75e9371c8",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-kernel-remainder-run-cvqf1y5_\\candidate\\core\\artifacts\\internal\\store\\recovery_effect_contract_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n07-characterization-run-6rrz3gyc\\candidate\\core\\artifacts\\internal\\operations\\readiness_decision_contract_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+            "preimage_sha256": "09cb7230704085f7733b9f8d4cdce822547a90886ff3a50785da1f10c798bc6e",
+            "candidate_sha256": "4692f963b84ac7d564c8e2986c8694fb4b6624d2d577f66d2d24d478cf2ca158",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-receipt-transitions-fixture-successor-2137\\formatted-tested.go"
+          }
+        ],
+        "actual_Go_execution": false,
+        "canonical_writes": false,
+        "qualification": false,
+        "runtime_private_seven_owned_subjects_stable": true,
+        "files": {
+          "canonical-before.json": "d1d95134a2f632776b14da48449ac059d306a5476c44718b3a94c7cdc499604c",
+          "controller.json": "744dfa9ced4646d604fa453cd6f8470a29730fced5b76692fa0bf6cfbe6db9c2",
+          "explicit-overlays.json": "89377e707e97cc88ba8fa9a1e7d56963c16b3b8029cf8afce0416a46a20fef58",
+          "green-actual-command.json": "e657ff532f7528900c2d1763d1bb2cec3c9eff2353ae9576f2e6525546703ea5",
+          "green-after.json": "acc5e59a0b978a62a287b94a21fd24bf12c404df301ba5d240f9a319d2137dd1",
+          "green-names.json": "4c1e664092a5ab3e6a037c16e73ba90552f4883e5e3735e65faf1517fe613243",
+          "green-result.json": "17e7afc6141872f117c6dcb0eb1c0214420199d07ebf5a21bf9baadf9911c0a5",
+          "green.stderr": "bec352d9bd09286076cd831cf9f59a25073c531437106cb1ff3d4e21f23ae8e9",
+          "green.stdout": "2c5697deb2fd0893176f05e4be31cf04baf172ee516a9b48fcf65517bbbe7c60",
+          "literal-source-manifest.json": "b86170777be9c604db0ff7dccf3da51c26bb30cc34a0d93563e52359c03fd7b8",
+          "private-source-before.json": "d5a7a4115be7d238933ed642075e5ce97f097f7a18febe47a55600b24e425ab8",
+          "red-actual-command.json": "1f029c3f9118792c1078f608e0c64bf64bcf61dda5dc83ac8572d4541d3fc0ae",
+          "red-after.json": "acc5e59a0b978a62a287b94a21fd24bf12c404df301ba5d240f9a319d2137dd1",
+          "red-classification.json": "e4aa9192a6280f29ef86c547d217d0396f32be4d7875406dc74d6bcbb1806884",
+          "red-names.json": "9bed22650d6bc74abc1a193477335031c31293a5b724f90643e723534a70936e",
+          "red-result.json": "db5ec12bd4876d06a74ae5f3f8a1cc612f50d01b8161dac5d2c85bfba13e9209",
+          "red.stderr": "b1a4405ff44af54c0e1c7a69477df3f43a31eecd882ea784c2a30b3e737048a7",
+          "red.stdout": "3f71ff973ce3d75726ebf5c2c2455b6ce891e180b7bba67dcb4c71e55b66e77f",
+          "run-owned.py": "ab8b9a6037be3be2417836c62f96eedd80f5ab5dc796149cc3c082889ff6e674",
+          "runtime-before.json": "fcb84a2ef392b911e1022da743796f8dd756c91eddc5ff21e5833a80c13959e0",
+          "tested-proposal.patch": "dbd592d3b190900d8eb37a99112920cc75a83453cd49e244803422be0c436752"
+        }
+      }
+    },
+    "composed_go_vet": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-composed-vet-2137\\delivery.json",
+      "sha256": "58778608be1120de3a73904674805ad0d88d825148401952e141e44047eba726",
+      "record": {
+        "format": "private-native-composed-vet/1",
+        "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "source_representation": "Immutable2137 full256module/assets plus four exact tested overlays; three are new, resulting259file composition. Not a falsely committed test epoch.",
+        "adoption_sha256": "bf181e407cae96ca9016238112d2a75620ca5515f70a9daee46e4157cc134e5f",
+        "overlays": [
+          {
+            "path": "core/artifacts/internal/operations/legacy_replay_contract_test.go",
+            "sha256": "27022c9ce77d22b36f3fc171a1a7b24c252059005e269083c3a8f1e8318f91e9"
+          },
+          {
+            "path": "core/artifacts/internal/store/recovery_effect_contract_test.go",
+            "sha256": "05f137c00d6bbf6d12c58b63f591c33efb879532c7040470d0992ee75e9371c8"
+          },
+          {
+            "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+            "sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff"
+          },
+          {
+            "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+            "sha256": "4692f963b84ac7d564c8e2986c8694fb4b6624d2d577f66d2d24d478cf2ca158"
+          }
+        ],
+        "result": {
+          "argv": [
+            "C:\\Program Files\\Go\\bin\\go.exe",
+            "vet",
+            "-buildvcs=false",
+            "./internal/operations",
+            "./internal/store"
+          ],
+          "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native37-composed-vet-2137\\candidate\\core\\artifacts",
+          "exit_code": 0,
+          "elapsed_seconds": 2.8305265000090003,
+          "timeout_seconds": 90,
+          "timed_out": false,
+          "overflowed": false,
+          "containment": "exited",
+          "setup_error": null,
+          "streams": {
+            "stdout": {
+              "bytes": 0,
+              "retained_bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "bytes": 0,
+              "retained_bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "stability": {
+          "composed_canonical_source_stable": true,
+          "goroot_stable": true,
+          "source_cache_stable": true,
+          "private_source_stable_during_vet": true,
+          "boundedproc_stable": true,
+          "original_module_files": 256,
+          "composed_module_files": 259,
+          "goroot_files": 15639,
+          "cache_source_files": 1669
+        },
+        "test_invocations": 0,
+        "gofmt_invocations": 0,
+        "vet_invocations": 1,
+        "input_packet_sha256": "098641a83bcf95680e279d549ff97e3a6eadd95317062ed53bf7b6e849de6865",
+        "filemap_sha256": "5034965ec3c70026e2dd51fe67d15f0de715ddb8a7f63595780aa981cbb1b858",
+        "canonical_writes": false,
+        "limits": [
+          "Local WindowsAMD64 lint for only the two owning packages; no platform/installed/user/host/model qualification.",
+          "Original passing characterization tests were not repeated. No provider/network/install/SDK/native helper/declared command execution.",
+          "Full listed source/tool/original-cache bytes were compared before and after; no complete OS-loaded-module/system-call attestation."
+        ]
+      }
+    },
+    "pi_cleanup_fixture_finalization": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-refusal-fix-2137\\delivery.json",
+      "sha256": "d05978fcd96f739875457b987b5eca008dcc03a37fe1cf4c58802809acb52588",
+      "record": {
+        "format": "private-pi-cleanup-fixture-fix/1",
+        "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+        "source_representation": "Literal2137 production/current parent bundle + exact two carried test overlays; only this test gets a private successor.",
+        "apply_files": [
+          {
+            "path": "plugins/ca-pi/tools/test/child-env.test.ts",
+            "preimage_sha256": "b52b9dce44a6068805ebbf06c8e6e2a76a64f39e9de2226b111858c779545c35",
+            "candidate_sha256": "66e89b3b67af07f91e2e74a68f0e6160d7d75b3acc6cee022a0d8d8e1cc90bff",
+            "copy_from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-cleanup-refusal-fix-2137\\apply_files\\plugins\\ca-pi\\tools\\test\\child-env.test.ts"
+          }
+        ],
+        "patch_sha256": "38f3d9ed457e3bb3f1fb826a24c3b1b4a9200177f27b89f05680faa175f1af55",
+        "target_red_patch_sha256": "8b05ebeef6d291245df9b0f04f334187bf3ff6abec671d9ef4c7720f99100389",
+        "actual": {
+          "red": {
+            "exit_code": 1,
+            "elapsed_seconds": 0.47520970000186935,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "containment": "exited",
+            "stream_bytes": {
+              "stdout": 4848,
+              "stderr": 1075
+            }
+          },
+          "green": {
+            "exit_code": 0,
+            "elapsed_seconds": 0.4731481999915559,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "containment": "exited",
+            "stream_bytes": {
+              "stdout": 4770,
+              "stderr": 0
+            }
+          },
+          "tsc": {
+            "exit_code": 0,
+            "elapsed_seconds": 1.9005361000017729,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "containment": "exited",
+            "stream_bytes": {
+              "stdout": 0,
+              "stderr": 0
+            }
+          }
+        },
+        "selected_test": "Task 6 child environment cleanup reports root refusal after real file removal and retains observable child state",
+        "test_counts": {
+          "red": {
+            "executed": 1,
+            "failed": 1,
+            "file_pending": 30
+          },
+          "green": {
+            "executed": 1,
+            "passed": 1,
+            "file_pending": 30
+          },
+          "TSC_test_bodies": 0
+        },
+        "meaningful_red": "Only added post-finally root ENOENT assertion; original removal-refusal/retained-marker/no-echo/options assertions passed before stat resolved instead of rejecting.",
+        "minimal_fix": "Local boolean gates only injected EBUSY; finally disables it and awaits real prepared.cleanup without swallowing error; nested finally removes separate operator fixture root. Final ENOENT assertion identical RED/GREEN.",
+        "cleanup": {
+          "red": "Actual owned root/member hashes retained before removing only exact validated private red/tmp childroot. No broad/global cleanup.",
+          "green": "Actual final stat(root) rejected ENOENT; no childroot remained in private temp."
+        },
+        "stability": {
+          "canonical_source_files": 370,
+          "canonical_dependency_files": 1421,
+          "lock_matching_packages": 68,
+          "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+          "all_three_phase_joins_pass": true
+        },
+        "setup_history": "Two zero-Node local import refusals retained; an inline controller-writer quoting failure initially prevented the explicit sibling-loader correction. Corrected controller uses pinned common.py via spec_from_file_location under -I -S -B, no sys.path/cwd fallback.",
+        "prior_receipt": {
+          "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-cleanup-characterization-fe04/delivery.json",
+          "limit": "Original target4/full64/TSC facts retained, but did not prove final root absence in the affected refusal case."
+        },
+        "files": {
+          "filemap.json": "fa435f9c7a5603a91d9f84a41cd0931cffdbb49b671537f9ac2c01141e2f76b6",
+          "guard-observations.json": "f0dadd0bc615c91e062d3fa7c7fb84fd3da31edc8f0a88ca83f24f4db9c3261b"
+        },
+        "limits": [
+          "Test fixture repair only; production application bytes unchanged. No canonical/index/ref/route/proof/status/marker writes.",
+          "Exactly one actual RED and one actual GREEN case plus one owning TSC; no64-case or complete-file replay.",
+          "No SDK/provider/model/subject/native/Go/network/install or global config effect; parent audit limitations explicitly retained.",
+          "Other original test assertions retained unchanged; this is not a whole-program or installed qualification."
+        ]
+      }
+    }
+  },
+  "routing": {
+    "native_component_recipes": 37,
+    "prior_recipes": 29,
+    "new_cells": [
+      "N02:05",
+      "N03:01",
+      "N03:02",
+      "N07:01",
+      "N07:03",
+      "N07:04",
+      "N10:03",
+      "N12:04"
+    ],
+    "native16_selection": "unchanged",
+    "required_platforms": [
+      "darwin/amd64",
+      "darwin/arm64",
+      "linux/amd64",
+      "linux/arm64",
+      "windows/amd64",
+      "windows/arm64"
+    ],
+    "qualified_runtime_rows": 0
+  },
+  "source_conformance": {
+    "machines": [
+      "N18",
+      "N19",
+      "N25"
+    ],
+    "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+    "result": "PRESERVED",
+    "clauses": 9,
+    "explicit_input_files": 33,
+    "proof": "evidence/native-source-conformance-2137/proof.json",
+    "historical_edge_rows": "all9 unchanged",
+    "runtime_or_task_epoch_renewal": false,
+    "strict_authentication": "Final staged owner validation required; observation does not claim executed native proof."
+  },
+  "baseline_planned": {
+    "findings": 49,
+    "machines": 180,
+    "transitions": 610,
+    "total": 839,
+    "meaning": "Accounting obligations, not confirmed missing features."
+  },
+  "retained_limitations": [
+    "N10/N12 first missing-receipt fixture failed at render.Prepare before the intended consumer. Only this case was corrected to assert actual earlier MISSING_EVIDENCE and no writes; original failure is retained. No product regression RED is claimed.",
+    "Pi cleanup verifies actual owned file effects and passed retry options. The injected root EBUSY is a controlled I/O failure, not proof of five real operating-system retries.",
+    "Development tests use their recorded immutable source and explicit test overlays. These are local Windows observations, not six-platform/installed/host/model/user acceptance.",
+    "Current macOS ARM cancellations have no runner or steps and explicit capacity annotations. No demonstrated source scheduling defect; no label, timeout, platform or coverage relaxation is introduced.",
+    "Fresh complete exact-head child CI/Docs, separate successful normal integration, stable-source evidence applicability, remaining runtime/client/model/user acceptance and final user testing remain required.",
+    "After the original64 Pi owners passed, Root source review found that the injected permanent EBUSY outlived the final cleanup of its test fixture. A final-root-absence assertion failed once for the actual leaked owned directory, then passed unchanged after disabling only the injected obstruction in finally and invoking real prepared.cleanup. All original refusal assertions remain; current owning TypeScript passes. Other63 tests were unchanged and not replayed. Setup-only isolated-controller import refusals are retained separately; they are not regression REDs."
+  ],
+  "authority": {
+    "child_integration_merges": "standing permission after complete checks",
+    "parent1098_to_main": "HELD_FOR_USER_TESTING",
+    "publication": "NOT_AUTHORIZED"
+  }
+}

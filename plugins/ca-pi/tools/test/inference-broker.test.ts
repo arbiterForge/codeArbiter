@@ -365,6 +365,11 @@ describe("#455 loopback inference broker", () => {
     await broker.close();
     await expect(fetch(`${baseUrl}/chat/completions`, { method: "POST", body: "{}" })).rejects.toThrow();
     await expect(broker.close()).resolves.toBeUndefined();
+    const { InferenceBrokerError } = await loadImplementation();
+    expect(() => broker.authorize({
+      nonce: NONCE_A, baseUrl: "https://api.example/v1", credential: PLANTED_UPSTREAM_LITERAL,
+      containsSensitiveValue: containsPlantedValue,
+    })).toThrow(InferenceBrokerError);
   });
 
   test("refuses an upstream authority that is not a bare credential-free endpoint", async () => {
