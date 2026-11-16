@@ -1,0 +1,105 @@
+{
+  "format": "private-inert-attribution-attempt/1",
+  "state": "SETUP_AUDIT_REFUSAL_NO_SUBJECT_LAUNCH",
+  "actual_unit": {
+    "selected": 1,
+    "passed": 0,
+    "errors": 1,
+    "unit_seconds": 0.003
+  },
+  "actual_native_capability": "NOT_OBSERVED",
+  "capture_calls": [],
+  "launch_roles": [],
+  "closed_observer_errors": [
+    "forbidden-subprocess.Popen"
+  ],
+  "original_outcome": {
+    "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x",
+    "outcome": {
+      "exit_code": 1,
+      "elapsed_seconds": 0.4332620000059251,
+      "timed_out": false,
+      "output_limited": false,
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "retained_bytes": 0,
+          "limited": false
+        },
+        "stderr": {
+          "observed_bytes": 1985,
+          "retained_bytes": 1985,
+          "limited": false
+        }
+      },
+      "reader_threads_exited": true,
+      "forced_containment": null
+    },
+    "physical_stable": true,
+    "material_stable": true,
+    "runtime_stable": true,
+    "node_stable": true,
+    "runtime_files": 10795
+  },
+  "diagnosis": "Windows subprocess audit args are the already quoted string; private allow guard expected a list/tuple. Audit rejection preceded CreateProcess.",
+  "proposed_private_correction": "Compare exact commandline to subprocess.list2cmdline of the two already approved fixed forms, with owned cwd and minimal child-env guards. No generic command parser, fallback, source/test/assertion/deadline change or runtime repeat.",
+  "filemap": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\observe.py",
+      "sha256": "f06769d459a8724ec0a6673fad952bf2e492e56d879f7b7ff65cf48f3e7e70d2",
+      "bytes": 3490
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\run.py",
+      "sha256": "6513664a5dda955628e158ecaedabe4f93dd04fcf0ada237b9c0a9912b02aae9",
+      "bytes": 5980
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\latest.json",
+      "sha256": "9b6f6a2f7a1ba28884d9db69e0fea86effafef1ad175ce6bddac8faae5b7902f",
+      "bytes": 689
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\after.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\before.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\config.json",
+      "sha256": "0c912705ffc234eec2b465b2cc7d9181972e6c0cef0b1d74907f66ad5d543250",
+      "bytes": 477
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\execution.json",
+      "sha256": "f6277f55d6ed48fa920f6401671181589d5cebcd9807506eb167eea853b1050b",
+      "bytes": 1232
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\observation.json",
+      "sha256": "db0a538e0b29e602699c0fb81ddeb3b2b081bb02a64eafefc63f14ad8e7d3477",
+      "bytes": 31362
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\outcome.json",
+      "sha256": "3f65432f0c7756159333dc4da87568058ab8718b1efe9ca4e8ac14a72ac31093",
+      "bytes": 399
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\stderr.log",
+      "sha256": "ecb8b3c2d4c5523a64aa8ac8354ab2fabc4b9be49d9d5ed692a29893f44b515a",
+      "bytes": 1985
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\actual-once-rtdn3q6x\\stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "subject_or_debugger_launched": false,
+  "canonical_writes": false
+}

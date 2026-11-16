@@ -1,0 +1,171 @@
+{
+  "returncode": 0,
+  "duration_seconds": 3.687298400007421,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "containment": "exited",
+  "stability": {
+    "root_module": true,
+    "private_module": true,
+    "tool_and_GOROOT_source": true,
+    "sealed_cache_origin": true,
+    "red_cache_origin_unchanged": true
+  },
+  "terminal_outcomes": [
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/invalid-id",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/zero-edits",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/too-many",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/duplicate",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/case-alias",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-overlap",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-reversed",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-case-folded",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/unsafe-path",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/nil-before-after",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/oversized-after",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/before-mismatch",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/valid-prefix-lookalike",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/exact-512",
+      "Elapsed": 1.2
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/prepublication-cleanup",
+      "Elapsed": 0.03
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup",
+      "Elapsed": 1.27
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02PreparedTargetCASRefusesConcurrentBytes",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03TerminalRecoveryReplayPreservesBytes/complete",
+      "Elapsed": 0.03
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03TerminalRecoveryReplayPreservesBytes/rollback",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03TerminalRecoveryReplayPreservesBytes",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/third-digest",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-stage",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-backup",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence",
+      "Elapsed": 0.05
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/pending",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/recover",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/new-write",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN03UnreadableFinalJournalNeverBecomesClean",
+      "Elapsed": 0.02
+    }
+  ],
+  "bounded_failure_projection": [],
+  "selected_parents": [
+    "TestN02CommitAdmissionAndPrepublicationCleanup",
+    "TestN02PreparedTargetCASRefusesConcurrentBytes",
+    "TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome",
+    "TestN03TerminalRecoveryReplayPreservesBytes",
+    "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence",
+    "TestN03UnreadableFinalJournalNeverBecomesClean"
+  ],
+  "scope": "Actual local Windows Go unit, selected parent/slash outcomes only. -failfast means unexecuted remainder stays unobserved; no qualification/status/route change."
+}

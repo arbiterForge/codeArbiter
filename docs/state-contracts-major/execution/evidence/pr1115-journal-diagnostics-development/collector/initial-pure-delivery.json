@@ -1,0 +1,147 @@
+{
+  "format": "private-collector-pure-results/1",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "original_draft_delivery_sha256": "fa1c22276657a8f23189c413130d858d7586dbefcaf136f28638454f0956d1aa",
+  "executions": [
+    {
+      "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg",
+      "outcome": {
+        "mode": "red",
+        "exit_code": 1,
+        "elapsed_seconds": 0.504571900004521,
+        "timed_out": false,
+        "output_limited": false,
+        "streams": {
+          "stdout": {
+            "observed_bytes": 0,
+            "retained_bytes": 0,
+            "limited": false
+          },
+          "stderr": {
+            "observed_bytes": 5017,
+            "retained_bytes": 5017,
+            "limited": false
+          }
+        },
+        "reader_threads_exited": true
+      },
+      "physical_stable": true,
+      "material_stable": true,
+      "runtime_stable": true,
+      "runtime_files": 10795
+    },
+    {
+      "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus",
+      "outcome": {
+        "mode": "candidate",
+        "exit_code": 1,
+        "elapsed_seconds": 0.5699908999959007,
+        "timed_out": false,
+        "output_limited": false,
+        "streams": {
+          "stdout": {
+            "observed_bytes": 0,
+            "retained_bytes": 0,
+            "limited": false
+          },
+          "stderr": {
+            "observed_bytes": 3097,
+            "retained_bytes": 3097,
+            "limited": false
+          }
+        },
+        "reader_threads_exited": true
+      },
+      "physical_stable": true,
+      "material_stable": true,
+      "runtime_stable": true,
+      "runtime_files": 10795
+    }
+  ],
+  "target_red": {
+    "methods": 1,
+    "subcase_failures": 4,
+    "cause": "Missing diagnostic field in original real collector unavailable result.",
+    "unit_seconds": 0.02
+  },
+  "candidate": {
+    "methods": 12,
+    "passed": 11,
+    "failed": 1,
+    "skipped": 0,
+    "unit_seconds": 0.091,
+    "failure_selector": "DebuggerInboxTests.test_worker_fixed_phase_distinguishes_provider_policy_and_stack_failure",
+    "source_diagnosis": "Injected owner lacks IdentityDeadline attribute while raising the real owner class. Production actual owner defines it.",
+    "smallest_future_correction": "Add IdentityDeadline=native.IdentityDeadline to fake owner only; retain all assertions and production bytes.",
+    "retried": false
+  },
+  "no_subject_or_debugger_execution": true,
+  "no_peripheral_attempts": true,
+  "canonical_writes": false,
+  "filemap": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\observe.py",
+      "sha256": "c2ae8da7f4e87c883cdc71e6a63494b88378871c1720d8a0c4e68ca6a3d9733c"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\run.py",
+      "sha256": "582b502e9693d22baca6ecd82a7d9db6f61a2ff0e50f91e9ac8dd49347b34fd2"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\after.json",
+      "sha256": "74ebcbdb0f7ef0dacb2cf7c90f90c4bf9f961f4a50870c2914d40cf990df2645"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\before.json",
+      "sha256": "0fd9d7233d1ed32deb07f7dd4ef2b5cff587cad71f16806d6a82ec33d70e3268"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\config.json",
+      "sha256": "8b93ad7bf3cac610ed199e4ec93f70cba2f80665ff9d61bfa1aeee8f13e6b9e7"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\modules.json",
+      "sha256": "8396bc89963e04e68e86e601f52018ce1a03c72e80e4bded988d3e925ea519d6"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\outcome.json",
+      "sha256": "480ef1838ce81e9c76062fc61e3f2f91763573bdc797a2c7d59bdd018f195c0d"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\stderr.log",
+      "sha256": "34651b43c4da62cc2875c3840791a8c39134a730dcb7753281ec0b46b9755e4a"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\after.json",
+      "sha256": "e6a93f526a5328b7d9feb12c46aaeb9de60cfb6c5f8c2e7921802d595712b095"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\before.json",
+      "sha256": "7d120b8320ad66e63365d4d6bc82aac4a6adfb5fd602280e3cb6aa3ec72439c7"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\config.json",
+      "sha256": "ccc7dbcc102f844e2d577a2262572f3a58304e0da1380b9f51bc9f49b20c2e5f"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\modules.json",
+      "sha256": "146e4e096d3391035670bfcea6c6c3de3b62684dc5573b450348f2c226920cd0"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\outcome.json",
+      "sha256": "07795b432329524989056eb884c26c69e1ad3e708312c2c64cad12c329452c3e"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\stderr.log",
+      "sha256": "149bdd55db5acdae4ea44cb5e23a155e67fb114880ec9331d878f3830dea3597"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

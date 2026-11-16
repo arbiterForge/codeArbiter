@@ -12,6 +12,9 @@ MAX_TRACE_BYTES = 256 * 1024
 MAX_LINES = 256
 MAX_EVENTS = 32
 MAX_NOTE_BYTES = 8192
+# These commands prepare owned source fixtures, rather than measure a product
+# latency contract. Hosted Windows indexing has exceeded the old 15s allowance.
+FIXTURE_GIT_TIMEOUT_SECONDS = 60
 EVENTS = frozenset(("version", "start", "cmd_ancestry", "cmd_name", "cmd_mode",
     "child_start", "child_exit", "region_enter", "region_leave", "data", "data_json",
     "exit", "atexit", "error", "signal", "exec"))
@@ -141,7 +144,7 @@ def _failure_note(error, phase, started, trace, owner):
 
 
 def run_git_phase(argv, *, phase, trace_dir):
-    """Preserve the exact original invocation, failure and15s deadline; no retry."""
+    """Run one owned fixture command with a bounded setup allowance; no retry."""
     phase = phase if phase in ("init", "index", "commit") else "unknown"
     trace, started, environment = None, None, None
     try:
@@ -151,7 +154,8 @@ def run_git_phase(argv, *, phase, trace_dir):
     except Exception:
         pass  # Diagnostics cannot prevent the original fixture command.
     try:
-        return subprocess.run(argv, check=True, capture_output=True, timeout=15, env=environment)
+        return subprocess.run(argv, check=True, capture_output=True,
+                              timeout=FIXTURE_GIT_TIMEOUT_SECONDS, env=environment)
     except Exception as error:
         try:
             error.add_note(_failure_note(error, phase, started, trace, trace_dir))

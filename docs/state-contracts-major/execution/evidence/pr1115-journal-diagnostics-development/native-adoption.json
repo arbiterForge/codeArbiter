@@ -1,0 +1,12 @@
+{
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "subjects": {
+    "core/artifacts/internal/store/transaction.go": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+    "core/artifacts/internal/store/journal_contract_boundary_test.go": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+    "core/artifacts/internal/store/journal_contract_denial_unix_test.go": "b86ae151a3a826c21fa70a415d1089525a5652889d144df9b36fce28f4847cef",
+    "core/artifacts/internal/store/journal_contract_denial_windows_test.go": "63414ff54ccba5ee28580f81d0d88a616c3205267e78e305804560b15968c8a1"
+  },
+  "actual_red": "ca-native-journal-six-run-cb2b3f32",
+  "actual_green": "ca-native-journal-overlap-fix-0296fc9a",
+  "canonical_overlay_adopted": true
+}

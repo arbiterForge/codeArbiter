@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+  "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T06:26:42.557612+00:00",
+  "recorded_at": "2026-11-16T15:03:43.696196+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -21,7 +21,7 @@
         "assigned_agent": "/root",
         "branch": "codex/state-contracts-observer-admission",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical source/index/progress writer for observer admission repairs and final PR1114 delivery; other actors use private Temp candidates."
+        "scope": "Sole canonical source/index/progress writer for PR1115 journal admission, fixture budget, typed native diagnostics and scoped source disposition; other actors use private Temp."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -3881,11 +3881,11 @@
     }
   ],
   "next_actions": [
-    "Finish one affected union review, commit code and context rebaseline, then push once and follow exact-head hosted CI.",
-    "Complete independent typed source-disposition derivation and remaining bounded software routes; preserve real host/Docker/human/model effects and user choices.",
-    "After final source freeze, renew only owner-measured stale evidence through original controllers; obtain complete trusted integration qualification and user testing before any main/publication promotion."
+    "Complete exact staged source review and original-owner integrity/intent checks, then push this one coherent journal/Native25/diagnostics cohort and follow complete fresh CI/Docs; no unchanged retry.",
+    "Commit reviewed journal/fixture/diagnostics cohort, follow full fresh child CI/Docs, merge all-green only into integration, then obtain a separate successful trusted integration run.",
+    "Reconcile remaining native/software acceptance and renew only original-owner measurements after final source freeze. Main/publication held for user testing; Pi HTTP policy awaits user choice."
   ],
-  "delivery_state": "PR1114_F65_WHOLE_CI_DOCS_BLOCKED_LOCAL_NATIVE_SOURCE_COMPOSITION_READY_FOR_AFFECTED_REVIEW_PARENT1098_HELD",
+  "delivery_state": "PR1115_LOCAL_JOURNAL_FIX_NATIVE25_COLLECTOR_CAPTURE_GREEN_FINAL_SOURCE_REVIEW_AND_FRESH_CI_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3909,7 +3909,7 @@
       "source": ".github/workflows/ci.yml current concurrency contract; current Root-scoped correction, 2026-11-15."
     }
   ],
-  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1114",
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1115",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -4254,7 +4254,7 @@
       "retained_at_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71"
     }
   ],
-  "head_semantics": "Last committed controller/source anchor10087 before this final proposed batch. Changed source/test bytes have actual hash-bound local checks; final committed source/head and hosted checks are read from Git/provider. Historical no-native wording is explicitly corrected.",
+  "head_semantics": "Last committed controller/source anchor before this journal/diagnostics cohort. Original observations retain immutable epochs; physical overlays have separate exact hashes. Final committed source and hosted outcomes come from Git/provider.",
   "superseded_checkpoint_fields": [
     {
       "id": "before-job-log-transport-9f9cde6b",
@@ -4958,8 +4958,8 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T08:52:32.433783+00:00",
-    "controller_anchor": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+    "recorded_at": "2026-11-16T15:03:43.696196+00:00",
+    "controller_anchor": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
     "delivery_pr": 1115,
     "previous_child": {
@@ -4977,13 +4977,13 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Safe Docs refusal/input retention, actual native progress/history/advisory reporting controls, complete finite native recipes, actual owned Sandbox effects and portable supported-SDK footer component wiring.",
-    "current_staged_integrity": "PENDING_CORRECTIVE_TREE_HOSTED_VALIDATION",
-    "source_or_status_renewal": false,
+    "followup": "Journal overlap guard, Native25 authority routes, source-fixture60s setup and typed native failure attribution are locally validated. Actual inert Node24 native capture passed; hosted Pi/Node22 mechanism remains UNKNOWN.",
+    "current_staged_integrity": "PENDING_FINAL_JOURNAL_DIAGNOSTIC_COHORT",
+    "source_or_status_renewal": true,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
-    "native_component_recipes": 19,
-    "remaining_native_runtime_unmapped": 99,
+    "native_component_recipes": 25,
+    "remaining_native_runtime_unmapped": 93,
     "remaining_software_original_unmapped": 1,
     "whole_baseline_planned": {
       "findings": 49,
@@ -4992,8 +4992,8 @@
       "total": 842,
       "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
     },
-    "private_future_work": "S75 exact obsolete guarded-contract proposal and two debug finding proof proposals remain unadmitted. Remaining UI/model/human/current-source proof work stays open.",
-    "observations": "evidence/pr1115-corrective-development/index.json",
+    "private_future_work": "N03:04 diagnostic distinction and N03:05 unsafe embeddedpath/Unix privilege gaps held. Two debug finding proofs and UI/model/human acceptance remain unadmitted. S75 source-only N/A does not renew runtime evidence.",
+    "observations": "evidence/pr1115-journal-diagnostics-development/index.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
@@ -5012,9 +5012,48 @@
       "seconds": 41.125,
       "source_ref_moved": false
     },
-    "last_exact_pr_head_result": "FOUR_PRIMARY_CI_FAILURE_CLASSES_RETAINED_CORRECTIVE_SOURCE_PREPARED",
-    "original_pr_ci_run": 43837681879,
-    "original_pr_docs_run": 43837682005
+    "last_exact_pr_head_result": "WHOLE_CI_FAILURE_TWO_PRIMARY_WINDOWS_FAILURES_DOCS_SUCCESS",
+    "original_pr_ci_run": 43881612076,
+    "original_pr_docs_run": 43881612131,
+    "source_disposition_change": {
+      "cell": "disposition:transitions:S75:08",
+      "result": "NOT_APPLICABLE",
+      "scope": "Only obsolete direct-write/no-transaction/no-rollback guarded tuple. Original history and four applicable runtime/recovery obligations retained.",
+      "runtime_epoch_renewal": false
+    },
+    "last_exact_pr_head_counts": {
+      "successful": 89,
+      "failed": 3,
+      "skipped": 8
+    },
+    "native_local_validation": {
+      "parents": 52,
+      "terminal_outcomes": 203,
+      "failed": 0,
+      "skipped": 0,
+      "host": "Windows",
+      "statement_coverage_percent": 71.14035087719299,
+      "changed_helper_statements": "12/12",
+      "qualification_renewal": false
+    },
+    "staged_integrity_observation_scope": "Previous retained cohort, not this in-flight source tree.",
+    "collector_local_validation": {
+      "pure_methods": 12,
+      "actual_inert_control": 1,
+      "actual_profile": "inbox-v1",
+      "actual_current_instruction_frames": 83,
+      "actual_threads": 12,
+      "detach_verified": true,
+      "Pi_Node22_cause": "UNKNOWN",
+      "qualification_renewal": false
+    },
+    "routing_local_validation": {
+      "focused_methods": 8,
+      "mandatory_missing_or_skip_vectors": 236,
+      "platform_identity_vectors": 48,
+      "platform_omission_vectors": 30,
+      "qualification_renewal": false
+    }
   },
   "checkpoint_history": [
     {

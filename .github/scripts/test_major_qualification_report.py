@@ -1507,7 +1507,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
         self.assertIs(caught.exception,problem)
         self.assertEqual(len(calls),2)
         self.assertEqual(calls[-1][0][-2:],["add","."])
-        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+        self.assertTrue(all(options["timeout"]==60 and options["check"] and options["capture_output"] for _,options in calls))
         notes=getattr(problem,"__notes__",[])
         self.assertTrue(notes,"fixture Git timeout lost the closed phase diagnostic before cleanup")
         note=next(item for item in notes if item.startswith("Fixture Git diagnostic: "))
@@ -1534,7 +1534,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
                 self.assertTrue(owner.source_identity(fixture["repo"])["clean"])
         self.assertEqual(len(calls),3)
         self.assertEqual([argv[-2:] for argv,_ in calls[:2]],[["init","-q"],["add","."]])
-        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+        self.assertTrue(all(options["timeout"]==60 and options["check"] and options["capture_output"] for _,options in calls))
 
     def test_projection_drops_unsafe_fields_and_rejects_malformed_nonfinite_data(self):
         import _git_fixture_diagnostics as diagnostics
@@ -1607,7 +1607,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
                     diagnostics.run_git_phase(["git","add","."],phase="index",trace_dir=directory)
                 self.assertIs(caught.exception,problem)
                 run.assert_called_once()
-                self.assertEqual(run.call_args.kwargs["timeout"],15)
+                self.assertEqual(run.call_args.kwargs["timeout"],60)
                 self.assertEqual(dict(os.environ),before)
                 self.assertNotIn("CANARY","\n".join(getattr(problem,"__notes__",[])))
 

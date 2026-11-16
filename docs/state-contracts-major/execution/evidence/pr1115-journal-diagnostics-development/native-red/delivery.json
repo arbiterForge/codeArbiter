@@ -1,0 +1,44 @@
+{
+  "kind": "ACTUAL_OFFLINE_GO_RED_HANDOFF",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "files": {
+    "actual-result.json": "f0dff680d95af621721736d559e034d28db00599bcb402be97759c07cdb19931",
+    "actual.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual.stdout.jsonl": "346069ac7a3c69e6781be296d2bc31276dd4fe234513a606ffdba46a7ca1b218",
+    "after.json": "4f303bba1da9b8b242dd15f061219894eb1619cb273afb0686d1d0c32801a5f4",
+    "authorization-delta.json": "79e98b1517ea05a4043d6596d89f52e83fa85c106bbe520f0b3805bf2f6153c9",
+    "before.json": "4f303bba1da9b8b242dd15f061219894eb1619cb273afb0686d1d0c32801a5f4",
+    "causal-handoff.json": "d1168bbf7fc9d11a3d7770a239f5e859e32e03dc1a4ed1a8dc9aa687136ec0b1",
+    "controller.json": "476b4101520ac0618d786bb61b24daaa84f624edc818abef0f17cfdfc708aa7a",
+    "environment.json": "689eadc868d59bc1ad530a84fcd38d27dad0ccfb38a94b4e360d8a3fdaa149a9",
+    "execution-start.json": "0a5e7f94dcdc2152ea5c2a969204b55fc9e09841677745b98967c0eb6801cc8b",
+    "format-record.json": "7e591c6e946479e6d196a6d6792ad7db6fbb26364b57b18ec4929b4b3a16ae44",
+    "gofmt.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gofmt.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run_once.py": "f83602be5e42f6fccc701771a3eb5d1645edea6de29bcbff056c6ba25cf757ea",
+    "seal.py": "34c42a700f052c66142678280b66d8a31761cd918455a4450ed9888cb52ee1ff",
+    "stability.json": "71c882abb123c98215b44d7d327f7be3496f4deec36341cccb2f10e098b009db",
+    "summary.json": "381ab47466f78bd3ca5a319a529d910270700964a2844d45b7d717a4e6f309db"
+  },
+  "formatted_test_subjects": [
+    {
+      "path": "core/artifacts/internal/store/journal_contract_boundary_test.go",
+      "sha256": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+      "bytes": 14284
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_unix_test.go",
+      "sha256": "b86ae151a3a826c21fa70a415d1089525a5652889d144df9b36fce28f4847cef",
+      "bytes": 806
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_windows_test.go",
+      "sha256": "63414ff54ccba5ee28580f81d0d88a616c3205267e78e305804560b15968c8a1",
+      "bytes": 1289
+    }
+  ],
+  "actual_go_invocations": 1,
+  "stopped_no_repeat": true,
+  "canonical_writes": false,
+  "qualification": false
+}

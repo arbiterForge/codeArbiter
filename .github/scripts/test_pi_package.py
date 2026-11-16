@@ -2122,12 +2122,17 @@ try {
                         self.assertEqual(set(thread), {"frames"})
                         self.assertLessEqual(len(thread["frames"]), 24)
                         for frame in thread["frames"]:
-                            self.assertEqual(set(frame), {"module", "returnOffset"})
+                            self.assertEqual(set(frame), {"module", "returnOffset", "instructionModule", "instructionOffset"})
                             self.assertIn(frame["module"], native.MODULES | {"Other"})
                             self.assertTrue(frame["returnOffset"] is None or
                                             type(frame["returnOffset"]) is int and 0 <= frame["returnOffset"] < 2**64)
+                            self.assertIn(frame["instructionModule"], native.MODULES | {"Other"})
+                            self.assertTrue(frame["instructionOffset"] is None or
+                                            type(frame["instructionOffset"]) is int and 0 <= frame["instructionOffset"] < 2**64)
                     if report["status"] == "captured":
                         self.assertTrue(any(row["frames"] for row in report["threads"]))
+                        self.assertTrue(any(frame["instructionModule"] != "Other"
+                            for row in report["threads"] for frame in row["frames"]))
                     # Closed status only; never raw debugger text/symbols/paths.
                     print("owned-node-native-debugger-status=" + report["status"])
                     self.assertIsNone(process.poll(), "debugger quit must preserve the owned Node")
@@ -5341,6 +5346,181 @@ def platform_package_suites():
 
 
 class DebuggerInboxTests(unittest.TestCase):
+    def test_collector_provider_attribution_distinguishes_missing_refused_and_deadline(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            selected = root / "cdb.exe"
+            kernel = SimpleNamespace()
+            original_digest = native._digest
+            for failure in ("missing", "refused", "deadline", "os-error"):
+                with self.subTest(failure=failure):
+                    if selected.exists():
+                        if selected.is_dir(): selected.rmdir()
+                        else: selected.unlink()
+                    if failure == "refused": selected.mkdir()
+                    elif failure in ("deadline", "os-error"): selected.write_bytes(b"inert, never loaded")
+                    def digest(path, deadline):
+                        if failure == "os-error": raise OSError("PrivateFixtureValue")
+                        return original_digest(path, deadline)
+                    with mock.patch.object(native, "CDB", selected), \
+                         mock.patch.object(native, "DEFAULT_CDB", selected), \
+                         mock.patch.object(native, "_digest", side_effect=digest), \
+                         mock.patch.object(native, "_system_directory") as inbox, \
+                         mock.patch.object(native.subprocess, "Popen") as launch:
+                        actual = native._debugger(33, kernel,
+                            time.monotonic() - 1 if failure == "deadline" else time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], "unavailable")
+                    self.assertIn("diagnostic", actual)
+                    self.assertEqual(actual["diagnostic"]["phase"], "provider-hash-cdb")
+                    self.assertEqual(actual["diagnostic"]["failure"], failure)
+                    self.assertIsNone(actual["profile"])
+                    self.assertIsNone(actual["worker"])
+                    self.assertTrue(0 <= actual["diagnostic"]["elapsedMs"] <= 2**31 - 1)
+                    self.assertTrue(0 <= actual["diagnostic"]["remainingMs"] <= 5000)
+                    if failure == "deadline": self.assertEqual(actual["diagnostic"]["remainingMs"], 0)
+                    inbox.assert_not_called()
+                    launch.assert_not_called()
+                    self.assertNotIn(str(root), json.dumps(actual))
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+
+    def test_current_instruction_projection_uses_actual_stack_frame_offsets(self):
+        import _windows_dbgeng as sdk
+        engine = object.__new__(sdk.Engine)
+        large = False
+        def call(name, index, types, *args):
+            if (name, index) == ("systems", 9):
+                sdk.C.cast(args[0], sdk.C.POINTER(sdk.U32)).contents.value = 16 if large else 1
+            elif (name, index) == ("systems", 11):
+                for index in range(args[1]): args[2][index] = index + 7
+            elif (name, index) == ("control", 31):
+                for index in range(24 if large else 1):
+                    args[3][index].InstructionOffset = 0x1011
+                    args[3][index].ReturnOffset = 0x2022
+                sdk.C.cast(args[5], sdk.C.POINTER(sdk.U32)).contents.value = 24 if large else 1
+            else:
+                self.assertEqual((name, index), ("systems", 6))
+            return 0
+        engine.call = call
+        engine.frame = lambda address: sdk.project_frame(
+            b"node" if address == 0x2022 else b"kernelbase", address,
+            0x2000 if address == 0x2022 else 0x1000, True)
+        actual, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertFalse(truncated)
+        self.assertEqual(actual, [{"frames": [{"module": "node", "returnOffset": 0x22,
+            "instructionModule": "kernelbase", "instructionOffset": 0x11}]}])
+        legacy, _ = engine.threads(time.monotonic() + 5)
+        self.assertEqual(legacy, [{"frames": [{"module": "node", "returnOffset": 0x22}]}])
+        large = True
+        capped, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertTrue(truncated)
+        self.assertLessEqual(len(capped), 16)
+        self.assertTrue(all(len(row["frames"]) <= 24 for row in capped))
+        self.assertLessEqual(len(json.dumps(capped, separators=(",", ":")).encode()), sdk.MAX_JSON - 2048)
+
+    @staticmethod
+    def _attribution_worker_result():
+        import _windows_dbgeng as sdk
+        return {"schemaVersion": 3, "profile": "inbox-v1", "status": "captured",
+            "threads": [{"frames": [{"module": "node", "returnOffset": 16,
+                "instructionModule": "kernelbase", "instructionOffset": 32}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True, "policy": sdk.POLICY,
+            "detached": True, "hresult": 0, "phase": "detach", "elapsedMs": 4}
+
+    def test_worker_v3_attribution_and_legacy_readers_remain_closed(self):
+        import _windows_dbgeng as sdk
+        good = self._attribution_worker_result()
+        self.assertEqual(sdk.decode_result(json.dumps(good).encode(), 33, 44,
+                                         profile="inbox-v1", version=3), good)
+        legacy = copy.deepcopy(good)
+        for key in ("phase", "elapsedMs"): legacy.pop(key)
+        for frame in legacy["threads"][0]["frames"]:
+            frame.pop("instructionModule"); frame.pop("instructionOffset")
+        legacy["schemaVersion"] = 2
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1"), legacy)
+        self.assertIsNone(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1", version=3))
+        legacy.pop("profile"); legacy["schemaVersion"] = 1
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44), legacy)
+        mutations = []
+        for key, value in (("phase", "PrivateFixtureValue"), ("elapsedMs", True),
+                           ("elapsedMs", 2**31), ("unexpected", "PrivateFixtureValue"),
+                           ("policy", sdk.POLICY | sdk.ALLOW_NETWORK), ("detached", False)):
+            mutations.append({**good, key: value})
+        for key, value in (("instructionModule", "PrivateFixtureValue"), ("instructionOffset", True),
+                           ("instructionOffset", 2**64), ("unexpected", "PrivateFixtureValue")):
+            changed = copy.deepcopy(good)
+            changed["threads"][0]["frames"][0][key] = value
+            mutations.append(changed)
+        unknown = copy.deepcopy(good)
+        unknown["threads"][0]["frames"][0].update(instructionModule="Other", instructionOffset=None)
+        self.assertEqual(sdk.decode_result(json.dumps(unknown).encode(), 33, 44), unknown)
+        unknown["threads"][0]["frames"][0]["instructionOffset"] = 1
+        mutations.append(unknown)
+        for changed in mutations:
+            with self.subTest(changed_keys=list(changed)):
+                self.assertIsNone(sdk.decode_result(json.dumps(changed).encode(), 33, 44, profile="inbox-v1", version=3))
+
+    def test_parent_preserves_validated_worker_failure_and_detach_fields(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            for detached in (True, False):
+                with self.subTest(detached=detached):
+                    good = {**self._attribution_worker_result(), "status": "engine_failed" if detached else "cleanup_unknown",
+                            "threads": [], "hresult": 0x80004005, "phase": "attach", "detached": detached}
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                        _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                           side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                             {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                         mock.patch.object(native, "_collect", return_value=("captured", json.dumps(good).encode())):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], good["status"])
+                    self.assertEqual(actual["worker"], {key: good[key] for key in
+                        ("bound", "attached", "detached", "hresult", "policy", "phase", "elapsedMs")})
+                    self.assertEqual(actual["diagnostic"]["failure"], "engine" if detached else "cleanup")
+                    self.assertEqual(actual["threads"], [])
+                    self.assertEqual(launch.call_count, 1)
+                    self.assertNotIn(str(root), json.dumps(actual))
+
+    def test_worker_fixed_phase_distinguishes_provider_policy_and_stack_failure(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        root = Path("inert-profile")
+        request = {"schemaVersion": 3, "profile": "inbox-v1", "handle": 77, "pid": 33,
+            "created": 44, "image": "inert-node.exe", "sdk": str(root),
+            "hashes": {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]},
+            "deadline": time.monotonic() + 5}
+        kernel = SimpleNamespace(snapshot=lambda handle: {"pid": 33, "created": 44,
+            "state": "running", "image": request["image"]}, close=mock.Mock())
+        owner = SimpleNamespace(IdentityDeadline=native.IdentityDeadline, WindowsKernel=lambda: kernel, _regular=lambda path, **kwargs: path,
+                                _bound_tool_profile=lambda *args: root)
+        for failure in ("provider-bind", "policy", "stack"):
+            owner._bound_tool_profile = mock.Mock(side_effect=native.IdentityDeadline("PrivateFixtureValue")) if failure == "provider-bind" else lambda *args: root
+            backend = SimpleNamespace(policy=lambda: sdk.ALLOW_NETWORK if failure == "policy" else sdk.POLICY,
+                check=sdk.Engine.check, call=mock.Mock(return_value=0),
+                threads=mock.Mock(side_effect=sdk.EngineFailure(0x80004005)), close=lambda: True)
+            actual = sdk.run(request, owner, engine_factory=lambda path: backend)
+            self.assertEqual(actual["status"], "deadline" if failure == "provider-bind" else "engine_failed")
+            self.assertEqual(actual["phase"], failure)
+            self.assertEqual(actual["detached"], failure != "provider-bind")
+            self.assertEqual(actual["hresult"], None if failure == "provider-bind" else 0x80070005 if failure == "policy" else 0x80004005)
+            self.assertIsNotNone(sdk.decode_result(json.dumps(actual).encode(), 33, 44, profile="inbox-v1", version=3))
+            self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+            if failure != "stack": backend.threads.assert_not_called()
+            else: backend.threads.assert_called_once_with(mock.ANY, include_instruction=True)
+
     def test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb(self):
         import _windows_rpc_timeout as native
         import _windows_dbgeng as sdk
@@ -5372,8 +5552,11 @@ class DebuggerInboxTests(unittest.TestCase):
                     return sdk.POLICY
                 def call(self, *args):
                     return 0
-                def threads(self, deadline):
-                    return [{"frames": [{"module": "node", "returnOffset": 16}]}], False
+                def threads(self, deadline, *, include_instruction=False):
+                    row = {"module": "node", "returnOffset": 16}
+                    if include_instruction:
+                        row.update(instructionModule="kernelbase", instructionOffset=32)
+                    return [{"frames": [row]}], False
                 def close(self):
                     return True
             self_test = self
@@ -5607,15 +5790,18 @@ class DebuggerInboxTests(unittest.TestCase):
             root = Path(directory).resolve()
             collector_temp = tempfile.TemporaryDirectory
             hashes = {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]}
-            good = {"schemaVersion": 2, "profile": "inbox-v1", "status": "captured", "threads": [{"frames": [
-                {"module": "node", "returnOffset": 16}]}], "truncated": False,
-                "pid": 33, "created": 44, "bound": True, "attached": True,
-                "policy": sdk.POLICY, "detached": True, "hresult": 0}
-            legacy = {k: v for k, v in good.items() if k != "profile"}
+            good = self._attribution_worker_result()
+            previous = copy.deepcopy(good)
+            previous.pop("phase"); previous.pop("elapsedMs")
+            previous["schemaVersion"] = 2
+            for frame in previous["threads"][0]["frames"]:
+                frame.pop("instructionModule"); frame.pop("instructionOffset")
+            legacy = {k: v for k, v in previous.items() if k != "profile"}
             legacy["schemaVersion"] = 1
             vectors = (("captured", json.dumps(good).encode(), "captured"),
                        ("captured", json.dumps({**good, "profile": "sdk-v1"}).encode(), "transport_failed"),
                        ("captured", json.dumps(legacy).encode(), "transport_failed"),
+                       ("captured", json.dumps(previous).encode(), "transport_failed"),
                        ("captured", b"PrivateFixtureValue", "transport_failed"),
                        ("deadline", b"PrivateFixtureValue", "deadline"),
                        ("output_limit", b"PrivateFixtureValue", "output_limit"))

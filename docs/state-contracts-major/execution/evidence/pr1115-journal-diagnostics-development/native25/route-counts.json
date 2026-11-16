@@ -1,0 +1,13 @@
+{
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "native_composite_recipes": 25,
+  "advanced_native_records": 134,
+  "routed": 41,
+  "unmapped": 93,
+  "unmapped_by_kind": {
+    "transitions": 72,
+    "machines": 15,
+    "findings": 6
+  },
+  "qualification": false
+}

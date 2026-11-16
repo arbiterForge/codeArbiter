@@ -16,7 +16,10 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
-- Bound Git fixture commands and give worktree cleanup checks an explicit integration-test budget.
+- Reject ancestor/descendant transaction targets before staging and during journal validation; preserve valid disjoint path prefixes.
+- Require full original six-platform parent and child evidence for five additional journal/recovery routes, preserving all earlier native selections.
+- Retain bounded native-debugger setup phases, validated failure/detach fields and stopped-instruction offsets without exposing raw debugger data.
+- Give owned source-fixture Git commands a bounded 60-second setup allowance and worktree cleanup checks an explicit integration-test budget.
 - Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
 
 - Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
