@@ -20,6 +20,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
+
 - Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
 
 - Disable Python helper bytecode before package imports, including isolated interpreter launches.
