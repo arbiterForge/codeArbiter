@@ -1,0 +1,119 @@
+{
+  "schema": "codearbiter.major.canonical-report-contract-repair/1",
+  "recorded_at": "2026-11-16T22:58:19.991653+00:00",
+  "basis_commit": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
+  "source_subjects": {
+    ".github/scripts/major_qualification_report.py": {
+      "preimage_sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+      "sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+      "bytes": 139525
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "preimage_sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+      "sha256": "06d3be8d73964a7870f162456ac63a1af0ceb4d8a8375fc80487887a242017e4",
+      "bytes": 252474
+    },
+    ".github/workflows/ci.yml": {
+      "preimage_sha256": "860e6cd9a5bdc0d42060bdb61ce605d36a4495a5fcfec0f1a7ae528b66577dba",
+      "sha256": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+      "bytes": 275520
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "preimage_sha256": "84d578f610f8b63a34b5a9ef434ce8b61742b628c7e6bb42886d994da735315a",
+      "sha256": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+      "bytes": 328129
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "preimage_sha256": "4d45dc269bc529dbf7c2c52f84e93b31ecb2cddb96a7997968ec2b45ece2e063",
+      "sha256": "983e848b9234ffbaf2b7c797b2f734514583d3f34768dbc014eab5d561363daf",
+      "bytes": 43511
+    }
+  },
+  "cause": "Three original CI generic report writers emitted noncanonical archive member names. Existing singleton reader correctly requires qualification.json; original Pi SDK archive contains pi-sdk-qualification.json.",
+  "repair": "Canonical emit/readback/upload path in three producers; emit-only basename rejection. Hook exact-role templates recognize declared Q02 observations and HW04 command, retaining all 75 prior ordered commands and guards.",
+  "observations": [
+    {
+      "path": "raw/filename-controls-green.json",
+      "sha256": "46ba961331ad666fa0d70295d5553831b796544658509d13123fe3732da842a0",
+      "bytes": 1991
+    },
+    {
+      "path": "raw/filename-controls-green.stderr",
+      "sha256": "191fa8b0d27073443694349d1885182cf8f50dc0f32533bff767832e78221832",
+      "bytes": 3634
+    },
+    {
+      "path": "raw/filename-delivery.json",
+      "sha256": "a6b11380fce0b261fa39aa3b80a2dc49310c8c0c7c0bd638e3aad162d6455b3b",
+      "bytes": 5827
+    },
+    {
+      "path": "raw/filename-target-red.json",
+      "sha256": "329b1744317072c8748a526a823851dccf506940a399bc7281785f189a006e2f",
+      "bytes": 1146
+    },
+    {
+      "path": "raw/filename-target-red.stderr",
+      "sha256": "9193897cf712da9639d09bfea705174cafd92f784d348bcf61c576063bf9fecf",
+      "bytes": 5264
+    },
+    {
+      "path": "raw/hook-reader-delivery.json",
+      "sha256": "6414de0096fd649da4b768a5e23fd9bdac466bd85f1443972df71b82de2847af",
+      "bytes": 2837
+    },
+    {
+      "path": "raw/normal-M-terminal.json",
+      "sha256": "47b55d0c7f4620ccde38c69cf77d0361d9146914abc0e785d8e1cbf6da52caf2",
+      "bytes": 1548149
+    },
+    {
+      "path": "raw/ordered-command-inventory.json",
+      "sha256": "23d8c3abbcc35e9fc9fe92e2f1530d23f7268b3e9c7f3d9bb33a3d949beca5da",
+      "bytes": 9826
+    },
+    {
+      "path": "raw/root-composed-48-result.json",
+      "sha256": "27f9be5b8a9163af6806bd4b1611da576e8c608fdb37faea0f5f0f9f9be48231",
+      "bytes": 2175
+    },
+    {
+      "path": "raw/root-composed-48.stderr",
+      "sha256": "3c32de1196d65e309d733ab3e8a37e4233f7e6d32b33532aa80887189e183773",
+      "bytes": 7430
+    }
+  ],
+  "actual_checks": {
+    "proper_target_red_methods": 2,
+    "proper_target_red_assertion_failures": 4,
+    "setup_failure_not_product_red": true,
+    "intermediate_controls": "4 new methods and SDK exact role PASS; SDK delegate ERROR identified Q02 exact-hook template mismatch, retained.",
+    "final_composed_controls": {
+      "passed": 48,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.183
+    }
+  },
+  "normal_M": {
+    "commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+    "CI": {
+      "run_id": 43960617519,
+      "conclusion": "success"
+    },
+    "Docs": {
+      "run_id": 43960617323,
+      "conclusion": "failure"
+    },
+    "whole_verdict": "BLOCK"
+  },
+  "limits": [
+    "No old archive renamed, repacked or admitted. New original producer runs required.",
+    "Local pure controls do not execute hosted jobs, native Go->Python->npm or actual 54 Q02 owner tests.",
+    "Full exact-head hosted CI and Docs remain required; PR1098 held from main; publication unauthorized."
+  ],
+  "reader_sha256_unchanged": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+  "task_promotion": false,
+  "runtime_epoch_renewal": false,
+  "program_qualification": false
+}

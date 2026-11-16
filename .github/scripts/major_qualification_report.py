@@ -2432,6 +2432,7 @@ def main(argv=None):
             tree = git(args.repo, "rev-parse", binding["source_commit"] + "^{tree}")
             new_output(args.output, admit_go(load_json(args.observation[0]), binding, tree))
             return 0
+        require(args.output.name == "qualification.json", "emit output must be named qualification.json")
         validate_emitter_environment()
         source, run_id = os.environ["GITHUB_SHA"], int(os.environ["GITHUB_RUN_ID"])
         profile = next((p for p, job in TS_PROFILE_JOBS.items() if job == args.job_name), None)

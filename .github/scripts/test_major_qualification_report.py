@@ -2497,7 +2497,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
             return {**component,'native_binding':{**component['native_binding'],
                     'module_sha256':req_arg['native_module_sha256']['windows']}}
         native_module.authenticate_component=mock.Mock(side_effect=authenticated)
-        emitted=private/'emitted.json'
+        emitted=private/'qualification.json'
         with mock.patch.dict(sys.modules,{'major_native_observation':native_module}), \
              mock.patch.dict(os.environ,GITHUB_SHA=before['source_commit'],GITHUB_RUN_ID='7'), \
              mock.patch.object(owner,'ROOT',self.root),mock.patch.object(owner,'validate_emitter_environment'), \
@@ -3226,6 +3226,87 @@ class Q02ReadinessSourceProfileTests(unittest.TestCase):
         groups=[g for g in maps["groups"] if "task:Q-02" in g["cells"]]
         self.assertEqual({x for g in groups for x in g["selectors"]},set(owner.Q02_REQUIRED_SELECTORS))
         self.assertEqual({g["payload_name"] for g in groups},{owner.Q02_SOURCE_PAYLOAD})
+
+
+class QualificationOutputFilenameTests(unittest.TestCase):
+    """Real emit CLI/file writer and unchanged singleton archive reader."""
+
+    def emit(self, base, name):
+        fixture=ReportTest();fixture.setUp()
+        repo=base/'repo';(repo/'.github').mkdir(parents=True,exist_ok=True)
+        (repo/'.github/major-test-selections.json').write_text(json.dumps(fixture.map),encoding='utf8')
+        observation=base/'native.json';observation.write_text(json.dumps(fixture.observation),encoding='utf8')
+        output=base/name
+        job={'name':'owning native job','id':9,'status':'in_progress'}
+        env={'GITHUB_ACTIONS':'true','GITHUB_REPOSITORY':owner.readiness.REPOSITORY,
+             'GITHUB_REF':'refs/heads/major/state-contracts','GITHUB_EVENT_NAME':'push',
+             'GITHUB_SHA':fixture.req['source_commit'],'GITHUB_RUN_ID':'7'}
+        with mock.patch.dict(os.environ,env),mock.patch.object(owner,'source_identity',return_value={
+                'source_commit':fixture.req['source_commit'],'source_tree':'b'*40,'clean':True}), \
+             mock.patch.object(owner.readiness,'collect',return_value=(fixture.req,None,
+                 [{'name':'candidate','id':8}],[job])) as collect, \
+             mock.patch.object(owner,'authenticated_payload',return_value=fixture.payload) as payload, \
+             mock.patch('sys.stderr',new=io.StringIO()):
+            result=owner.main(['emit','--repo',str(repo),'--output',str(output),
+                '--job-name',job['name'],'--observation','native='+str(observation),
+                '--payload-root','candidate='+str(base)])
+        return result,output,fixture,collect.call_count,payload.call_count
+
+    def test_emit_refuses_noncanonical_report_names_before_metadata_or_write(self):
+        for name in ('pi-qualification.json','sandbox-qualification.json','pi-sdk-qualification.json'):
+            with self.subTest(name=name),tempfile.TemporaryDirectory(prefix='ca-report-name-') as raw:
+                code,path,_,collect,payload=self.emit(Path(raw).resolve(),name)
+                self.assertEqual(code,1,'a valid emitter must refuse an archive basename its reader cannot consume')
+                self.assertFalse(path.exists())
+                self.assertEqual((collect,payload),(0,0))
+
+    def test_canonical_emit_archive_roundtrips_unchanged_exact_filename_reader(self):
+        with tempfile.TemporaryDirectory(prefix='ca-report-canonical-') as raw:
+            code,path,fixture,collect,payload=self.emit(Path(raw).resolve(),'qualification.json')
+            self.assertEqual((code,collect,payload),(0,1,1))
+            self.assertEqual(owner.load_json(path),fixture.build())
+            archive=io.BytesIO()
+            with zipfile.ZipFile(archive,'w') as zipped:zipped.writestr(path.name,path.read_bytes())
+            with mock.patch.object(owner.readiness,'artifact_bytes',return_value=archive.getvalue()):
+                self.assertEqual(owner.readiness.read_artifact_json({'id':8},fixture.req,'qualification.json'),fixture.build())
+            wrong=io.BytesIO()
+            with zipfile.ZipFile(wrong,'w') as zipped:zipped.writestr('pi-sdk-qualification.json',path.read_bytes())
+            with mock.patch.object(owner.readiness,'artifact_bytes',return_value=wrong.getvalue()):
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.read_artifact_json({'id':8},fixture.req,'qualification.json')
+
+    def test_original_non_emit_operations_keep_arbitrary_output_filenames(self):
+        with tempfile.TemporaryDirectory(prefix='ca-other-output-') as raw:
+            base=Path(raw).resolve()
+            with mock.patch.object(owner,'prepare_source_payload') as prepare, \
+                 mock.patch.object(owner,'observe_python',return_value=0) as python, \
+                 mock.patch.object(owner,'observe_vitest',return_value=0) as vitest, \
+                 mock.patch.object(owner,'validate_emitter_environment') as emitter:
+                self.assertEqual(owner.main(['prepare-source','--output',str(base/'inputs')]),0)
+                self.assertEqual(owner.main(['observe-python','--output',str(base/'observed.json'),'entry.py']),0)
+                self.assertEqual(owner.main(['observe-vitest','--output',str(base/'vitest.json')]),0)
+                prepare.assert_called_once();python.assert_called_once();vitest.assert_called_once();emitter.assert_not_called()
+            with mock.patch.object(owner,'load_json',return_value={'source_commit':'a'*40}), \
+                 mock.patch.object(owner,'git',return_value='b'*40), \
+                 mock.patch.object(owner,'admit_go',return_value={'fixture':'inert'}), \
+                 mock.patch.object(owner,'validate_emitter_environment') as emitter:
+                self.assertEqual(owner.main(['admit-go','--output',str(base/'go.json'),
+                    '--observation','raw.json','--native-binding','stamp.json']),0)
+                self.assertEqual(json.loads((base/'go.json').read_bytes()),{'fixture':'inert'})
+                self.assertTrue((base/'go.json').is_file());emitter.assert_not_called()
+
+    def test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name(self):
+        import re
+        source=(Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        blocks=re.split(r'(?m)^      - ',source)
+        emitters=[block for block in blocks if re.search(r'python(?: -B)? \.github/scripts/major_qualification_report\.py emit\b',block)]
+        self.assertGreaterEqual(len(emitters),7)
+        for block in emitters:
+            output=re.search(r'--output\s+"([^"]+)"',block)
+            self.assertIsNotNone(output)
+            self.assertEqual(output.group(1).rsplit('/',1)[-1],'qualification.json',block.splitlines()[0])
+        for legacy in ('pi-qualification.json','sandbox-qualification.json','pi-sdk-qualification.json'):
+            self.assertNotIn(legacy,source)
 
 
 if __name__ == "__main__":

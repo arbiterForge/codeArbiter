@@ -2244,17 +2244,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python -B .github/scripts/major_qualification_report.py emit \
-            --repo . --output "$RUNNER_TEMP/pi-qualification.json" \
+            --repo . --output "$RUNNER_TEMP/qualification.json" \
             --job-name "Coverage union (Pi)  <os: windows-latest>" \
             --observation "pi-tools=$RUNNER_TEMP/pi-vitest-observation.json" \
             --payload-root "major-source-inputs-pi-windows-coverage=${{ github.workspace }}"
-          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"pi-qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
       - name: Upload major qualification report
         if: steps.pi_qualification_emit.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ steps.pi_qualification_emit.outputs.artifact_name }}
-          path: ${{ runner.temp }}/pi-qualification.json
+          path: ${{ runner.temp }}/qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -2600,17 +2600,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python -B .github/scripts/major_qualification_report.py emit \
-            --repo . --output "$RUNNER_TEMP/sandbox-qualification.json" \
+            --repo . --output "$RUNNER_TEMP/qualification.json" \
             --job-name "[CHECK] | [SBX ] | Sandbox driver contract" \
             --observation "sandbox-tools=$RUNNER_TEMP/sandbox-vitest-observation.json" \
             --payload-root "major-source-inputs-sandbox-driver=${{ github.workspace }}"
-          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"sandbox-qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
       - name: Upload major qualification report
         if: steps.sandbox_qualification_emit.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ steps.sandbox_qualification_emit.outputs.artifact_name }}
-          path: ${{ runner.temp }}/sandbox-qualification.json
+          path: ${{ runner.temp }}/qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -2799,18 +2799,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python -B .github/scripts/major_qualification_report.py emit \
-            --repo . --output "$RUNNER_TEMP/pi-sdk-qualification.json" \
+            --repo . --output "$RUNNER_TEMP/qualification.json" \
             --job-name "[CHECK] | [PI  ] | Host-independent adapter contract" \
             --observation "pi-sdk-footer=$RUNNER_TEMP/pi-sdk-python-observation.json" \
             --payload-root "major-source-inputs-pi-sdk-footer=${{ github.workspace }}"
-          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"pi-sdk-qualification.json").read_text(encoding="utf-8")); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text(encoding="utf-8")); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
 
       - name: Upload major qualification report
         if: steps.pi_sdk_emit.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # existing pin unchanged
         with:
           name: ${{ steps.pi_sdk_emit.outputs.artifact_name }}
-          path: ${{ runner.temp }}/pi-sdk-qualification.json
+          path: ${{ runner.temp }}/qualification.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
