@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+  "head": "10087c10259df0ea2662329b0c06396cf7e7cb97",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T23:58:47.952363+00:00",
+  "recorded_at": "2026-11-16T01:01:24.271014+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3790,6 +3790,18 @@
       "kind": "NORMAL21B_ADMISSION_FAILURE_AND_LOCAL_FRAMEWORK_REPAIRS",
       "source": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
       "detail": "Original trusted normal43772302989 failed82/8/7 with7 installed-owner refusals before cold execution. Private Git fixture reproduces clean CRLF checkout becoming dirty after global config isolation; pre-materialization job text policy admits literal LF and preserves -text CRLF/real-edit refusal. Actual owned symlinks reproduce both runtime alias failures; resolve-once/hash-canonical repair passes unchanged guards. Classifier exact-source history regression RED then25PASS; merged admission owning suite40PASS0skip. Hosted exact failedpath/config remain unknown; final1114 head/CI and current-source applicability pending. No task/installed/native qualification."
+    },
+    {
+      "recorded_at": "2026-11-16T01:01:24.271014+00:00",
+      "kind": "FINAL1114_AUDIT_SOURCE_REPORT_COMPONENT_BATCH",
+      "source": "10087c10259df0ea2662329b0c06396cf7e7cb97",
+      "detail": "First10087 exactPRrun terminalBLOCK81success/3fail/9skip; primaryWindowsARM64 realauditRecursionError. Matching actualaudit-child targetRED precedes constant-platform repair and3pureGREEN controls, no newnative subjectlaunch. Add authenticated176-input sourcepayload/report routing for6completePythoncells withtokenlessprepare/observe, phase-correctAPI/read separation andoriginalexecutiononce;39ordinaryreport+88compatibilityPASS. Fourcomponent additions have59intended fullfilePASS,17incidentalpure cases separately retained,2typechecksPASS. All4working-source pretagtargetsPASS. No ledger/status/task/installed/native/user/publication promotion; final review/stagedsourcecounts/exact-headCI remainpending."
+    },
+    {
+      "recorded_at": "2026-11-16T01:01:24.271014+00:00",
+      "kind": "ERRATUM_24_REPORT_SUITE_NATIVE_FIXTURE_SCOPE",
+      "source": "10087c10259df0ea2662329b0c06396cf7e7cb97",
+      "detail": "Prior AFTER1113_FINITE_QUALIFICATION_COVERAGE wording withoutnativeexecution and the superseded native_execution:false snapshot were overbroad. The actual24PASS/80.236s owning module includes its existing build_installation/ArtifactClient native-read fixture. Raw outcomes and sealed receipts remainunchanged. Native16/installed eligibility was never granted. Current39ordinary producer methods explicitly exclude that one unchanged native case."
     }
   ],
   "scoped_blockers": [
@@ -3812,6 +3824,11 @@
       "id": "NORMAL21B_ADMISSION_QUALIFICATION",
       "scope": "Only installed13/native133 whole-run admission",
       "detail": "Trusted21b normal failed82/8/7. Local matching admission mechanisms repaired and tested, but final source and exact-head hosted required checks plus a genuinely successful trusted normal run remain required. No blind unchanged retry."
+    },
+    {
+      "id": "PR1114_INSTALLED_AUDIT_RECURSION",
+      "scope": "Exact-head required CI before child merge",
+      "detail": "Original10087 WindowsARM64 conformance failed; actualbounded matchingregression and minimalconstant fix pass locally. Corrected finalhead and its requiredhosted checks remainpending; originalOSprobe was not retained."
     }
   ],
   "unknown_outcomes": [
@@ -3848,11 +3865,11 @@
     }
   ],
   "next_actions": [
-    "Finish one affected-scope independent review and current staged integrity of admission repairs; fast-forward PR1114 with final scope and require its exact-head hosted gate.",
-    "After authorized child merge, observe one new trusted integration push and authenticate original installed reports; diagnose any actual remaining failure.",
-    "Continue missing software assertions/report producers and actual user/parent/lifecycle acceptance. Keep Pi HTTP decision pending,1098 held from main, and publication unauthorized."
+    "Finish one combined affected review and staged integrity for the final source-report/component/audit batch, commit and push final1114head, then require its exact-head hosted gate.",
+    "Merge authorized child into major/state-contracts only on green; authenticate one genuinely successful trusted normal run before installed/native disposition admission.",
+    "Finish remaining software report coverage and stable-source proof renewals plus actual user/parent/lifecycle acceptance. Keep Pi HTTP choice pending,1098 held from main, publication unauthorized."
   ],
-  "delivery_state": "LOCAL_ADMISSION_REPAIRS_GREEN_FINAL1114_HEAD_AND_TRUSTED_NORMAL_PENDING_PARENT1098_HELD",
+  "delivery_state": "FINAL1114_SOURCE_REPORT_COMPONENT_AUDIT_BATCH_LOCALLY_GREEN_REVIEW_AND_EXACT_HOSTED_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4221,7 +4238,7 @@
       "retained_at_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71"
     }
   ],
-  "head_semantics": "Last committed anchor ae4 before these admission repairs. Native/site/source60 first-child validation remains historical evidence; final current applicability is measured separately after changed source. No future commit identity or installed success inferred.",
+  "head_semantics": "Last committed controller/source anchor10087 before this final proposed batch. Changed source/test bytes have actual hash-bound local checks; final committed source/head and hosted checks are read from Git/provider. Historical no-native wording is explicitly corrected.",
   "superseded_checkpoint_fields": [
     {
       "id": "before-job-log-transport-9f9cde6b",
@@ -4677,25 +4694,57 @@
       },
       "superseded_delivery_state": "PR1113_MERGED_NEXT_FINITE_QUALIFICATION_COVERAGE_LOCAL_GREEN_PARENT1098_HELD",
       "reason": "Trusted normal21b terminal failure and actual admission repair supersede the first1114 pending snapshot."
+    },
+    {
+      "source_commit": "10087c10259df0ea2662329b0c06396cf7e7cb97",
+      "superseded_live_checkpoint": {
+        "recorded_at": "2026-11-15T23:58:47.952363+00:00",
+        "source_anchor": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+        "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+        "delivery_pr": 1114,
+        "trusted_normal_run": 43772302989,
+        "trusted_normal_result": "FAILED_82_SUCCESS_8_FAILURE_7_SKIPPED",
+        "failed_owning_jobs": 7,
+        "all_six_cold_commands": "NOT_STARTED_ADMISSION_REFUSAL",
+        "individual_success_limits": "Both Codex versions, PiLinux/Darwin, Sandbox Docker and all6 native builders passed individually; failed whole run admits neither installed13 nor native133.",
+        "local_admission_tests": 40,
+        "local_classifier_tests": 25,
+        "current_staged_integrity": "PASSED_105_FROZEN_1318_ADVANCED_1080_APPLICABLE_238_STALE_0_UNKNOWN",
+        "finite_native_and_browser_implementation": "Existing ae4 native16/24 tests and browser3/TSC unchanged; previous source60 applicability is historical after source changes.",
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+        "source_freshness_note": "The six changed admission paths stale66 previously-current source bindings (source60 plusP02six); no actual test failure or status promotion. Final stable-source renewal remains required, without repeated interim captures."
+      },
+      "superseded_delivery_state": "LOCAL_ADMISSION_REPAIRS_GREEN_FINAL1114_HEAD_AND_TRUSTED_NORMAL_PENDING_PARENT1098_HELD",
+      "reason": "Actual10087 WindowsARM64 audit failure and final source-report/component batch supersede this predecessor snapshot."
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-15T23:58:47.952363+00:00",
-    "source_anchor": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+    "recorded_at": "2026-11-16T01:01:24.271014+00:00",
+    "controller_anchor": "10087c10259df0ea2662329b0c06396cf7e7cb97",
     "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
     "delivery_pr": 1114,
-    "trusted_normal_run": 43772302989,
-    "trusted_normal_result": "FAILED_82_SUCCESS_8_FAILURE_7_SKIPPED",
-    "failed_owning_jobs": 7,
-    "all_six_cold_commands": "NOT_STARTED_ADMISSION_REFUSAL",
-    "individual_success_limits": "Both Codex versions, PiLinux/Darwin, Sandbox Docker and all6 native builders passed individually; failed whole run admits neither installed13 nor native133.",
-    "local_admission_tests": 40,
-    "local_classifier_tests": 25,
-    "current_staged_integrity": "PASSED_105_FROZEN_1318_ADVANCED_1080_APPLICABLE_238_STALE_0_UNKNOWN",
-    "finite_native_and_browser_implementation": "Existing ae4 native16/24 tests and browser3/TSC unchanged; previous source60 applicability is historical after source changes.",
+    "last_exact_pr_head_result": "10087_TERMINAL_BLOCK_81_SUCCESS_3_FAILURE_9_SKIP",
+    "last_pr_primary_failure": "WindowsARM64 installed audit RecursionError subprocess/process-probe/deep",
+    "audit_pure_methods": 3,
+    "source_report_ordinary_methods": 39,
+    "source_report_native_method_excluded": 1,
+    "compatibility_methods": 88,
+    "component_fullfile_intended_methods": 59,
+    "incidental_pure_sibling_methods": 17,
+    "typecheck_projects": 2,
+    "working_source_pre_tag_targets": 4,
+    "generated_git_copies": "98x3 parity PASS",
+    "source_test_report_cells": 6,
+    "source_input_profile_paths": 176,
+    "native_report_cells": 16,
+    "installed_groups": "UNCHANGED",
+    "current_staged_integrity": "PASSED_105_FROZEN_1318_ADVANCED_846_APPLICABLE_472_STALE_0_UNKNOWN",
+    "native_fixture_scope_correction": "Earlier24reportPASS included existingownednative build/read fixture; no native/installed qualification. Old narrative/snapshot false values are historical overbroad statements, superseded by this explicit correction.",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
-    "source_freshness_note": "The six changed admission paths stale66 previously-current source bindings (source60 plusP02six); no actual test failure or status promotion. Final stable-source renewal remains required, without repeated interim captures."
+    "freshness_note": "Additive shared Git module changes broaden raw source hash drift; original statuses remain unchanged. Stable-source renewals remain required, with no test failure inferred from STALE."
   }
 }

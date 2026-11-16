@@ -489,6 +489,94 @@
         "disposition:transitions:N39:03"
       ],
       "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:03. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "software-added_transitions-S75-added-rolled-back",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-rolled-back"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-stage-failed",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-stage-failed"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-unusable",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-unusable"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-writer-refused",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-writer-refused"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-transitions-C33-02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong"
+      ],
+      "cells": [
+        "disposition:transitions:C33:02"
+      ],
+      "scope": "Wrong declared owner path and wrong recorded SHA both refuse; perturbation of the real artifact forces proof_current=true so the hash branch is reached. Current check() is read-only and returns a stale diagnostic instead of generating an exercise. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-transitions-C33-03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise"
+      ],
+      "cells": [
+        "disposition:transitions:C33:03"
+      ],
+      "scope": "The exact three full-prose direct-owner paths are derived and public composed wrappers excluded; historical cross-host hash metadata remains bound to its own named exercise. This qualifies mechanical proof scope bookkeeping only, not any agent exercise. No installed-host, actual agent exercise, platform expansion or whole-task claim."
     }
   ]
 }

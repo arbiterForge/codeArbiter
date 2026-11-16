@@ -2899,8 +2899,17 @@ jobs:
     # Windows contracts passed in19m47s and then exhausted20m while all prior
     # steps passed; allow bounded setup/runner variance only for that cell.
     timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}
+    permissions:
+      contents: read
+      actions: read
+    # Exact source inputs are materialized before credential-blind local reads.
     env:
       ARTIFACT_TEST_INSTALLATION: ${{ github.workspace }}/../hooks-native
+      GIT_CONFIG_COUNT: '2'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+      GIT_CONFIG_KEY_1: core.eol
+      GIT_CONFIG_VALUE_1: lf
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -3025,9 +3034,26 @@ jobs:
       - name: Test shared native manifest contract
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_artifact_manifest_contract.py
+      - name: Prepare Python source-test inputs
+        id: python_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --output "${{ runner.temp }}/python-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Test interrupted output publication
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         run: python .github/scripts/test_generated_output.py
+      - name: Observe original interrupted output publication tests
+        id: python_publisher_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
+          --output "${{ runner.temp }}/python-publisher-observation.json"
+          -- .github/scripts/test_generated_output.py
       - name: Test authenticated major readiness admission and refusal
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_major_readiness.py
@@ -3231,7 +3257,7 @@ jobs:
         # needing a change there.
         run: python .github/scripts/test_consumer_smoke.py
       - name: Run the T-79 skill-proof-freshness guard's own unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # issue #563, AC-6.8: check_skill_proof_fresh.py is the pre-tag
         # freshness gate this campaign's completion bar depends on so the
         # T-78 agent-judgment exercise cannot silently rot behind a later
@@ -3242,6 +3268,61 @@ jobs:
         # is its own guard: every named failure cause, plus the live repo's
         # own currently-stale artifact failing for exactly that reason.
         run: python .github/scripts/test_check_skill_proof_fresh.py
+      - name: Observe original skill-proof freshness tests
+        id: python_proof_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
+          --output "${{ runner.temp }}/python-proof-observation.json"
+          -- .github/scripts/test_check_skill_proof_fresh.py
+      - name: Upload Python source-test inputs
+        id: python_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-windows-contracts
+          path: ${{ runner.temp }}/python-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original Python source-test observations
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: python-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/python-*-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original Python source qualification report
+        id: python_qualification_emit
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "${{ runner.temp }}/qualification.json" \
+            --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
+            --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
+            --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
+            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.python_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.python_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
       - name: Run the unit tests for CI's own machinery
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # These suites existed and ran on NOTHING. Each one guards a script

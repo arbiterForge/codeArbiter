@@ -3,7 +3,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { buildChildEnv } from "../src/child-env.ts";
 import { createFarmPreviewTool } from "../src/farm.ts";
 import { installParent, installPiFarmPreview } from "../src/extension.ts";
@@ -525,5 +525,104 @@ describe("#464 - the suite runs against a disposable operator home", () => {
     const parentEnv = { ...process.env };
     expect(parentEnv.HOME).toBe(disposable);
     expect(parentEnv.PI_CODING_AGENT_DIR!.startsWith(disposable!)).toBe(true);
+  });
+});
+
+// Qualification of the actual setup module's synchronous boundary. Filesystem
+// effects are inert ports; the existing worker already owns its disposable HOME.
+describe("disposable-home setup failure and exit boundaries", () => {
+  const homeKeys = ["HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "PI_CODING_AGENT_DIR", "CODEARBITER_TEST_DISPOSABLE_HOME"] as const;
+
+  async function setupCase(phase: "mkdtemp" | "mkdir" | "write" | "success") {
+    const saved = new Map(homeKeys.map((key) => [key, process.env[key]]));
+    const root = resolve(tmpdir(), `ca-pi-operator-home-inert-${phase}`);
+    const failure = new Error(`controlled-${phase}`);
+    const exits: Array<() => void> = [];
+    const io = {
+      mkdtempSync: vi.fn(() => root),
+      mkdirSync: vi.fn(),
+      writeFileSync: vi.fn(),
+      rmSync: vi.fn(),
+      readFileSync: vi.fn(() => { throw new Error("unexpected auth read"); }),
+    };
+    if (phase === "mkdtemp") io.mkdtempSync.mockImplementation(() => { throw failure; });
+    if (phase === "mkdir") io.mkdirSync.mockImplementation(() => { throw failure; });
+    if (phase === "write") io.writeFileSync.mockImplementation(() => { throw failure; });
+    const originalOn = process.on;
+    const on = vi.spyOn(process, "on").mockImplementation(((event: string | symbol, listener: () => void) => {
+      if (event === "exit") { exits.push(listener); return process; }
+      return Reflect.apply(originalOn, process, [event, listener]);
+    }) as typeof process.on);
+    vi.resetModules();
+    vi.doMock("node:fs", () => io);
+    try {
+      if (phase === "success") await import("./setup-disposable-home.ts");
+      else await expect(import("./setup-disposable-home.ts")).rejects.toBe(failure);
+      return { root, failure, exits, io, saved };
+    } catch (error) {
+      for (const [key, value] of saved) {
+        if (value === undefined) delete process.env[key]; else process.env[key] = value;
+      }
+      throw error;
+    } finally {
+      on.mockRestore();
+      vi.doUnmock("node:fs");
+      vi.resetModules();
+    }
+  }
+
+  function restoreHome(saved: Map<typeof homeKeys[number], string | undefined>) {
+    for (const [key, value] of saved) {
+      if (value === undefined) delete process.env[key]; else process.env[key] = value;
+    }
+  }
+
+  test("creation failure propagates before auth, redirection and exit registration", async () => {
+    for (const phase of ["mkdtemp", "mkdir"] as const) {
+      const state = await setupCase(phase);
+      try {
+        expect(state.io.writeFileSync).not.toHaveBeenCalled();
+        expect(state.io.rmSync).not.toHaveBeenCalled();
+        expect(state.io.readFileSync).not.toHaveBeenCalled();
+        expect(state.exits).toHaveLength(0);
+        for (const [key, value] of state.saved) expect(process.env[key]).toBe(value);
+        expect(state.io.mkdirSync).toHaveBeenCalledTimes(phase === "mkdir" ? 1 : 0);
+      } finally { restoreHome(state.saved); }
+    }
+  });
+
+  test("dummy-auth write failure retains the partial root without redirecting or reading operator auth", async () => {
+    const state = await setupCase("write");
+    try {
+      expect(state.io.mkdirSync).toHaveBeenCalledWith(resolve(state.root, ".pi", "agent"), { recursive: true });
+      expect(state.io.writeFileSync).toHaveBeenCalledWith(
+        resolve(state.root, ".pi", "agent", "auth.json"),
+        JSON.stringify({ openai: { type: "api_key", key: "dummy-disposable-home-not-a-credential" } }), "utf8");
+      expect(state.io.readFileSync).not.toHaveBeenCalled();
+      expect(state.io.rmSync).not.toHaveBeenCalled();
+      expect(state.exits).toHaveLength(0);
+      for (const [key, value] of state.saved) expect(process.env[key]).toBe(value);
+    } finally { restoreHome(state.saved); }
+  });
+
+  test("successful setup registers owned exit cleanup and never restores the test-process environment", async () => {
+    const state = await setupCase("success");
+    try {
+      expect(state.exits).toHaveLength(1);
+      expect(process.env.HOME).toBe(state.root);
+      expect(process.env.USERPROFILE).toBe(state.root);
+      expect(process.env.HOMEDRIVE).toBeUndefined();
+      expect(process.env.HOMEPATH).toBeUndefined();
+      expect(process.env.PI_CODING_AGENT_DIR).toBe(resolve(state.root, ".pi", "agent"));
+      expect(process.env.CODEARBITER_TEST_DISPOSABLE_HOME).toBe(state.root);
+      state.io.rmSync.mockImplementation(() => { throw new Error("controlled cleanup failure"); });
+      expect(() => state.exits[0]!()).not.toThrow();
+      expect(state.io.rmSync).toHaveBeenCalledWith(state.root, { recursive: true, force: true });
+      expect(state.io.readFileSync).not.toHaveBeenCalled();
+      expect(process.env.HOME).toBe(state.root);
+      expect(process.env.USERPROFILE).toBe(state.root);
+      expect(process.env.PI_CODING_AGENT_DIR).toBe(resolve(state.root, ".pi", "agent"));
+      expect(process.env.CODEARBITER_TEST_DISPOSABLE_HOME).toBe(state.root);
+    } finally { restoreHome(state.saved); }
   });
 });

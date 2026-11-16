@@ -18,6 +18,7 @@
  * (AC-10); create/destroy/prune map to their lifecycle verbs (AC-01/AC-11).
  */
 import { describe, it, expect, vi } from "vitest";
+import { fileURLToPath } from "node:url";
 import { parseCli, runCli, CliError, type Handlers } from "./cli.ts";
 
 // --------------------------------------------------------------------------
@@ -295,5 +296,67 @@ describe("runCli — dispatch to modules (AC-01/09/10/11)", () => {
     (h.cp as any).mockReturnValueOnce({ code: 1, stdout: "", stderr: "no such file" });
     const code = await runCli(["cp", "abc:/work/missing", "./x"], h);
     expect(code).toBe(1);
+  });
+});
+
+// Execute the actual direct-entry block through its existing imported module
+// ports. This characterizes wiring only, never a Docker process or container.
+describe("CLI direct-entry signal wiring", () => {
+  it("installs SIGINT before one valid dispatch and forwards cancellation through the original entry", async () => {
+    const oldArgv = process.argv;
+    const sigints: Array<() => void> = [];
+    const exits: number[] = [];
+    const calls: Array<{ id: string; argv: string[]; signal: AbortSignal | undefined }> = [];
+    let finish: ((value: { exitCode: number }) => void) | undefined;
+    const originalOn = process.on;
+    const on = vi.spyOn(process, "on").mockImplementation(((event: string | symbol, listener: () => void) => {
+      if (event === "SIGINT") { sigints.push(listener); return process; }
+      return Reflect.apply(originalOn, process, [event, listener]);
+    }) as typeof process.on);
+    const exit = vi.spyOn(process, "exit").mockImplementation(((code?: string | number | null) => {
+      exits.push(Number(code)); return undefined as never;
+    }) as typeof process.exit);
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    vi.resetModules();
+    const unexpectedEffect = vi.fn(() => { throw new Error("unexpected nonselected operation"); });
+    vi.doMock("./create.ts", () => ({ createSandbox: unexpectedEffect }));
+    vi.doMock("./destroy.ts", () => ({ destroySandbox: unexpectedEffect, prune: unexpectedEffect,
+      teardownIncomplete: unexpectedEffect, formatTeardownDiagnostic: unexpectedEffect }));
+    vi.doMock("./cp.ts", () => ({ cpOut: unexpectedEffect }));
+    vi.doMock("./docker.ts", () => ({ DOCKER_ENV: {} }));
+    vi.doMock("node:child_process", () => ({ spawnSync: unexpectedEffect }));
+    vi.doMock("./registry.ts", () => ({ resolveContainerId: vi.fn(async () => "owned-fixture-container") }));
+    vi.doMock("./exec.ts", () => ({ execInSandbox: vi.fn((id: string, argv: string[], options: { signal?: AbortSignal }) => {
+      // Registration ordering is an actual effect readback from the entry.
+      expect(sigints).toHaveLength(1);
+      calls.push({ id, argv, signal: options.signal });
+      return new Promise<{ exitCode: number }>((resolve) => { finish = resolve; });
+    }) }));
+    try {
+      process.argv = [oldArgv[0]!, fileURLToPath(new URL("./cli.ts", import.meta.url)), "exec", "fixture-id", "--", "true"];
+      await import("./cli.ts");
+      await vi.waitFor(() => expect(calls).toHaveLength(1), { timeout: 500 });
+      expect(calls[0]!.id).toBe("owned-fixture-container");
+      expect(calls[0]!.argv).toEqual(["true"]);
+      expect(calls[0]!.signal).toBeInstanceOf(AbortSignal);
+      expect(calls[0]!.signal!.aborted).toBe(false);
+      expect(exits).toEqual([]);
+      sigints[0]!();
+      expect(calls[0]!.signal!.aborted).toBe(true);
+      expect(calls).toHaveLength(1);
+      expect(exits).toEqual([]);
+      finish!({ exitCode: 7 });
+      await vi.waitFor(() => expect(exits).toEqual([130]), { timeout: 500 });
+      expect(calls).toHaveLength(1);
+      expect(unexpectedEffect).not.toHaveBeenCalled();
+    } finally {
+      finish?.({ exitCode: 7 });
+      process.argv = oldArgv;
+      on.mockRestore(); exit.mockRestore(); stdout.mockRestore(); stderr.mockRestore();
+      for (const module of ["./registry.ts", "./exec.ts", "./create.ts", "./destroy.ts", "./cp.ts", "./docker.ts", "node:child_process"])
+        vi.doUnmock(module);
+      vi.resetModules();
+    }
   });
 });

@@ -79,11 +79,9 @@ class ReportTest(unittest.TestCase):
                    for h in hosts for name in files] + [{"path": "artifact-promotion.json", "sha256": "e" * 64}]
         self.assertEqual(len(members), 22)
         self.req.update(cells=cells, cell_jobs={cell: "owning native job" for cell in cells})
-        self.map["groups"][0].update(cells=cells, proof_kind="source-test")
-        self.observation.update(proof_kind="source-test", producer="python-test-result-observer", argv=[
-            "C:/Python314/python.exe", ".github/scripts/major_qualification_report.py", "observe-python", "--repo",
-            "C:/Users/runner/work/codeArbiter/codeArbiter", "--output",
-            "C:/Users/runner/AppData/Local/Temp/hooks-observation.json", "--", ".github/scripts/test_adr_lifecycle.py"])
+        self.map["groups"][0].update(cells=cells, proof_kind="native-module")
+        self.observation.update(proof_kind="native-module", producer="go-named-ci20-join",
+            argv=["C:/Python314/python.exe", "tools/go_test_parallel.py", "--module", "core/artifacts"])
         self.payload["members"] = members
         result = self.build()
         encoded = json.dumps(result, indent=2).encode()
@@ -528,6 +526,420 @@ class CanonicalNativeWholeClauseMapTest(unittest.TestCase):
         mapped = {cell for group in selections["groups"] if group["job"] == job for cell in group["cells"]}
         self.assertFalse(mapped & prohibited, "scoped observations cannot discard frozen branch/behavior limits")
         self.assertFalse({cell for cell in prohibited if policy["cell_job_bindings"].get(cell) == job})
+
+
+class SourcePayloadAdmissionTest(unittest.TestCase):
+    def test_source_test_cannot_qualify_from_unbound_native_archive(self):
+        ReportTest.setUp(self)
+        self.map["groups"][0]["proof_kind"] = "source-test"
+        self.observation.update(proof_kind="source-test", producer="python-test-result-observer")
+        with self.assertRaisesRegex(ValueError, "source.*(binding|payload|manifest)"):
+            owner.build_report(self.req, job_name="owning native job", job_id=9,
+                selections=self.map, observations={"native":self.observation}, payloads={"candidate":self.payload})
+
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def source_payload_fixture():
+    """Real private Git/source files; no native/provider/runtime qualification."""
+    with tempfile.TemporaryDirectory(prefix="ca-source-payload-") as temporary:
+        base = Path(temporary).resolve(); repo = base / "repo"; repo.mkdir()
+        for relative in owner.SOURCE_PATHS:
+            target = repo / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((owner.ROOT / relative).read_bytes())
+        counters = {}
+        for relative in (".github/scripts/test_check_skill_proof_fresh.py", ".github/scripts/test_generated_output.py"):
+            counter = base / (Path(relative).stem + ".count")
+            child_counter = base / (Path(relative).stem + ".child-count")
+            child = ("import unittest,pathlib\nclass Child(unittest.TestCase):\n"
+                     f" def test_child(self): pathlib.Path({str(child_counter)!r}).write_text('x')\n"
+                     "unittest.main()\n")
+            text = ("import unittest,pathlib,subprocess,sys\nclass Parent(unittest.TestCase):\n"
+                    " def test_owned(self):\n"
+                    f"  p=pathlib.Path({str(counter)!r});p.write_text(p.read_text()+'x' if p.exists() else 'x')\n"
+                    f"  self.assertEqual(subprocess.run([sys.executable,'-I','-S','-B','-c',{child!r}],capture_output=True).returncode,0)\n"
+                    "if __name__=='__main__': unittest.main()\n")
+            (repo / relative).write_text(text, encoding="utf8", newline="\n")
+            counters[relative] = (counter, child_counter)
+        (repo / ".gitignore").write_text("core/surface/ignored-extra\n", newline="\n")
+        git = shutil.which("git")
+        if git is None: raise AssertionError("Git required for source fixture")
+        env = {k:v for k,v in os.environ.items() if k.upper() in {"SYSTEMROOT","WINDIR","SYSTEMDRIVE","COMSPEC","PATHEXT"}}
+        env.update(PATH=os.pathsep.join([str(Path(git).parent),str(Path(sys.executable).parent)]),
+                   HOME=str(base),USERPROFILE=str(base),GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM="1",
+                   GIT_TERMINAL_PROMPT="0",GITHUB_RUN_ID="7",PYTHONDONTWRITEBYTECODE="1",PYTHONNOUSERSITE="1")
+        with mock.patch.dict(os.environ, env, clear=True):
+            for arguments in (("init","-q"),("add","."),("-c","user.name=fixture","-c","user.email=fixture@example.invalid",
+                              "-c","commit.gpgsign=false","commit","-qm","source payload fixture")):
+                subprocess.run([git,"-C",str(repo),*arguments],check=True,capture_output=True,timeout=15)
+            staged = base / "inputs"
+            manifest = owner.prepare_source_payload(repo, staged, owner.SOURCE_JOB)
+            identity = owner.source_identity(repo)
+            binding = owner.source_observation_binding(repo, staged, identity)
+            req = {**identity,"ci_run_id":7,"cells":["disposition:transitions:C33:02"],
+                   "cell_jobs":{"disposition:transitions:C33:02":owner.SOURCE_JOB}}
+            def archive(mutate=None):
+                files = {path.relative_to(staged).as_posix():path.read_bytes() for path in staged.rglob("*") if path.is_file()}
+                if mutate is not None: mutate(files)
+                output = io.BytesIO()
+                with zipfile.ZipFile(output,"w") as zipped:
+                    for relative,value in sorted(files.items()): zipped.writestr(relative,value)
+                return output.getvalue()
+            def authenticate(raw=None, source_job=None):
+                with mock.patch.object(owner.readiness,"artifact_bytes",return_value=archive() if raw is None else raw), \
+                     mock.patch.object(owner.readiness,"validate_upload") as attribution:
+                    payload = owner.authenticated_payload({"id":8,"name":owner.SOURCE_PAYLOAD},req,repo,
+                        source_job={"id":9,"name":owner.SOURCE_JOB,"status":"in_progress","conclusion":None,
+                            "steps":[{"name":owner.SOURCE_UPLOAD,"status":"completed","conclusion":"success"}]}
+                        if source_job is None else source_job)
+                    attribution.assert_not_called()
+                    return payload
+            yield {"base":base,"repo":repo,"staged":staged,"manifest":manifest,"binding":binding,
+                   "req":req,"archive":archive,"authenticate":authenticate,"counters":counters}
+
+
+class BoundSourcePayloadTests(unittest.TestCase):
+    def test_running_source_producer_never_reads_its_own_unavailable_job_log(self):
+        with source_payload_fixture() as fixture:
+            job={"id":9,"name":owner.SOURCE_JOB,"status":"in_progress","conclusion":None,
+                 "steps":[{"name":owner.SOURCE_UPLOAD,"status":"completed","conclusion":"success"}]}
+            with mock.patch.object(owner.readiness,"artifact_bytes",return_value=fixture["archive"]()), \
+                 mock.patch.object(owner.readiness,"validate_upload",side_effect=AssertionError("own job log unavailable")) as final_attribution:
+                payload=owner.authenticated_payload({"id":8,"name":owner.SOURCE_PAYLOAD},fixture["req"],fixture["repo"],source_job=job)
+                self.assertEqual(payload["source_upload_job_id"],9)
+                final_attribution.assert_not_called()
+                for state in ("missing","failed","running","wrong-job","completed-job"):
+                    bad=copy.deepcopy(job)
+                    if state=="missing":bad["steps"]=[]
+                    elif state=="failed":bad["steps"][0]["conclusion"]="failure"
+                    elif state=="running":bad["steps"][0]["status"]="in_progress"
+                    elif state=="wrong-job":bad["name"]="other"
+                    else:bad["status"]="completed"
+                    with self.subTest(state=state),self.assertRaises(ValueError):
+                        owner.authenticated_payload({"id":8,"name":owner.SOURCE_PAYLOAD},fixture["req"],fixture["repo"],source_job=bad)
+
+    def test_final_readiness_authenticates_both_original_source_and_report_uploads(self):
+        cell="disposition:transitions:C33:02";raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("owned-input",b"source")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":owner.SOURCE_PAYLOAD};report_artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":owner.SOURCE_JOB,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],
+             "cell_jobs":{cell:owner.SOURCE_JOB},"required_artifact_names":[owner.SOURCE_PAYLOAD]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in
+            ("source_commit","source_tree","ci_run_id")},"job_id":9,
+            "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+            "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python","owning.py"],"exit_code":0}],
+                "selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,report_artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[
+                mock.call(job,report_artifact,"Upload major qualification report"),
+                mock.call(job,source,owner.SOURCE_UPLOAD)])
+            def refuse_input(_job,_artifact,step):
+                if step==owner.SOURCE_UPLOAD:raise owner.readiness.ReadinessError("input uploader refused")
+            attribution.side_effect=refuse_input
+            with self.assertRaises(owner.readiness.ReadinessError):
+                owner.readiness.produce(req,[source,report_artifact],jobs)
+            attribution.side_effect=None
+            for status in ("in_progress","failure"):
+                bad={**job,"conclusion":status}
+                with self.subTest(status=status),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(req,[source,report_artifact],[bad,jobs[1]])
+
+    def synthetic_case(self, fixture):
+        observed = {"format":owner.OBSERVATION,**owner.source_identity(fixture["repo"]),"ci_run_id":7,
+            "source_stable":True,"proof_kind":"source-test","producer":"python-test-result-observer",
+            "argv":[sys.executable,".github/scripts/test_check_skill_proof_fresh.py"],"exit_code":0,
+            "source_input_binding":fixture["binding"],
+            "tests":[{"id":"python:.github/scripts/test_check_skill_proof_fresh.py:__main__.Parent.test_owned","result":"passed"}]}
+        group={"id":"source","job":owner.SOURCE_JOB,"payload_name":owner.SOURCE_PAYLOAD,
+            "observation":"source","proof_kind":"source-test","selectors":[observed["tests"][0]["id"]],
+            "cells":fixture["req"]["cells"],"scope":"Synthetic software admission fixture only"}
+        return observed,{"schema":owner.SELECTIONS,"groups":[group]}
+
+    def build(self, fixture, observed, selection, payload):
+        return owner.build_report(fixture["req"],job_name=owner.SOURCE_JOB,job_id=9,selections=selection,
+                                  observations={"source":observed},payloads={owner.SOURCE_PAYLOAD:payload})
+
+    def test_bound_original_entrypoints_execute_once_and_never_infer_child_test_ids(self):
+        with source_payload_fixture() as fixture:
+            before = owner.source_input_snapshot(fixture["repo"])
+            for relative,counters in fixture["counters"].items():
+                output = fixture["base"] / (Path(relative).stem + ".observation.json")
+                self.assertEqual(owner.observe_python(fixture["repo"],relative,[],output,fixture["staged"]),0)
+                result=owner.load_json(output)
+                self.assertEqual(result["tests"],[{"id":"python:"+relative+":__main__.Parent.test_owned","result":"passed"}])
+                self.assertEqual(result["source_input_binding"],fixture["binding"])
+                self.assertTrue(result["source_stable"])
+                self.assertEqual([path.read_text() for path in counters],["x","x"])
+            self.assertEqual(owner.source_input_snapshot(fixture["repo"]),before)
+            observed,selection=self.synthetic_case(fixture)
+            report=self.build(fixture,observed,selection,fixture["authenticate"]())
+            self.assertEqual(len(report["results"]),1)
+            self.assertEqual(report["results"][0]["executed_population"],1)
+
+    def test_source_binding_and_manifest_identity_fail_closed(self):
+        with source_payload_fixture() as fixture:
+            observed,selection=self.synthetic_case(fixture);payload=fixture["authenticate"]()
+            for failure in ("binding-absent","profile","role","manifest-digest","uploader","source","tree","run","extra-key","member","oversize"):
+                bad,chosen,consumed=copy.deepcopy(observed),copy.deepcopy(selection),copy.deepcopy(payload)
+                manifest=consumed["documents"][owner.SOURCE_MANIFEST]
+                if failure=="binding-absent":del bad["source_input_binding"]
+                elif failure=="profile":bad["source_input_binding"]["profile"]="foreign"
+                elif failure=="role":chosen["groups"][0]["payload_name"]="unrelated-native"
+                elif failure=="manifest-digest":consumed["source_manifest_sha256"]="0"*64
+                elif failure=="uploader":consumed["source_upload_job_id"]=True
+                elif failure in ("source","tree"):manifest["source_commit" if failure=="source" else "source_tree"]="e"*40
+                elif failure=="run":manifest["ci_run_id"]=True
+                elif failure=="extra-key":manifest["claim_passed"]=True
+                elif failure=="member":manifest["members"][0]["path"]=".git/config"
+                else:manifest["members"][0]["bytes"]=8*1024*1024+1
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.build(fixture,bad,chosen,consumed)
+            for state in ("skipped","failed","missing","repeated"):
+                bad=copy.deepcopy(observed)
+                if state=="missing":bad["tests"]=[]
+                elif state=="repeated":bad["tests"].append(dict(bad["tests"][0]))
+                else:bad["tests"][0]["result"]=state
+                with self.subTest(state=state),self.assertRaises(ValueError):self.build(fixture,bad,selection,payload)
+
+    def test_authenticated_archive_requires_exact_input_bytes_profile_and_original_upload(self):
+        with source_payload_fixture() as fixture:
+            def bad_manifest(files,field,value):
+                document=json.loads(files[owner.SOURCE_MANIFEST]);document[field]=value
+                files[owner.SOURCE_MANIFEST]=json.dumps(document).encode()
+            for failure in ("changed","extra","missing","profile","source","duplicate-json","no-uploader"):
+                def mutate(files):
+                    first=sorted(owner.SOURCE_PATHS)[0]
+                    if failure=="changed":files[first]+=b"changed"
+                    elif failure=="extra":files["foreign-secret-name"]=b"inert"
+                    elif failure=="missing":del files[first]
+                    elif failure=="profile":bad_manifest(files,"profile","foreign")
+                    elif failure=="source":bad_manifest(files,"source_commit","e"*40)
+                    elif failure=="duplicate-json":files[owner.SOURCE_MANIFEST]=b'{"format":"x","format":"y"}'
+                raw=fixture["archive"](mutate)
+                with self.subTest(failure=failure),self.assertRaises(ValueError):
+                    fixture["authenticate"](raw,{} if failure=="no-uploader" else None)
+            with mock.patch.object(owner.readiness,"artifact_bytes",return_value=fixture["archive"]()):
+                with self.assertRaises(ValueError):
+                    owner.authenticated_payload({"id":8,"name":owner.SOURCE_PAYLOAD},fixture["req"],fixture["repo"],
+                        source_job={"id":9,"name":owner.SOURCE_JOB,"status":"in_progress","conclusion":None,"steps":[]})
+
+    def test_actual_source_membership_and_staged_bytes_drift_refuse_without_rewriting(self):
+        with source_payload_fixture() as fixture:
+            repo,staged=fixture["repo"],fixture["staged"]
+            with self.assertRaises(ValueError):owner.prepare_source_payload(repo,staged,owner.SOURCE_JOB)
+            extra=repo/"core/surface/ignored-extra";extra.write_bytes(b"unobserved source")
+            with self.assertRaises(ValueError):owner.source_input_snapshot(repo)
+            self.assertEqual(extra.read_bytes(),b"unobserved source");extra.unlink()
+            first=sorted(owner.SOURCE_PATHS)[0];path=staged/first;original=path.read_bytes();path.write_bytes(original+b"changed")
+            with self.assertRaises(ValueError):owner.source_observation_binding(repo,staged,owner.source_identity(repo))
+            self.assertEqual(path.read_bytes(),original+b"changed");path.write_bytes(original)
+            (staged/"foreign").mkdir()
+            with self.assertRaises(ValueError):owner.source_observation_binding(repo,staged,owner.source_identity(repo))
+
+    def test_source_reparse_metadata_refuses_before_file_open(self):
+        from types import SimpleNamespace
+        with source_payload_fixture() as fixture:
+            relative=sorted(owner.SOURCE_PATHS)[0];target=fixture["repo"]/relative;original=Path.lstat
+            def reparse(path,*args,**kwargs):
+                info=original(path,*args,**kwargs)
+                if path==target:
+                    return SimpleNamespace(st_mode=info.st_mode,st_nlink=info.st_nlink,st_size=info.st_size,
+                        st_dev=info.st_dev,st_ino=info.st_ino,st_file_attributes=owner.stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                return info
+            with mock.patch.object(Path,"lstat",reparse),mock.patch.object(owner.os,"open") as opening:
+                with self.assertRaisesRegex(ValueError,"link/reparse"):owner._source_file(fixture["repo"],relative)
+                opening.assert_not_called()
+
+    def test_six_source_cells_keep_exact_selectors_and_single_original_ci_executions(self):
+        from test_ci_impact import workflow_jobs
+        selection=json.loads((owner.ROOT/".github/major-test-selections.json").read_text())
+        policy=json.loads((owner.ROOT/".github/major-qualification-policy.json").read_text())
+        source=[group for group in selection["groups"] if group["proof_kind"]=="source-test"]
+        expected={"disposition:transitions:C33:02","disposition:transitions:C33:03",*
+            ("disposition:added_transitions:S75:"+name for name in
+             ("added-stage-failed","added-rolled-back","added-unusable","added-writer-refused"))}
+        self.assertEqual({cell for group in source for cell in group["cells"]},expected)
+        exact_selectors = {'disposition:added_transitions:S75:added-rolled-back': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges'},
+         'disposition:added_transitions:S75:added-stage-failed': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set'},
+         'disposition:added_transitions:S75:added-unusable': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal'},
+         'disposition:added_transitions:S75:added-writer-refused': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker'},
+         'disposition:transitions:C33:02': {'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch',
+                                            'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload',
+                                            'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong'},
+         'disposition:transitions:C33:03': {'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise',
+                                            'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof',
+                                            'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo'}}
+        for group in source:
+            self.assertEqual((group["job"],group["payload_name"]),(owner.SOURCE_JOB,owner.SOURCE_PAYLOAD))
+            for cell in group["cells"]: self.assertEqual(set(group["selectors"]), exact_selectors[cell])
+            for cell in group["cells"]:self.assertEqual(policy["cell_job_bindings"][cell],owner.SOURCE_JOB)
+        hooks=workflow_jobs((owner.ROOT/".github/workflows/ci.yml").read_text())["hooks"]
+        self.assertEqual(hooks.count('id: python_source_prepare'),1)
+        self.assertEqual(hooks.count('id: python_publisher_observed'),1)
+        self.assertEqual(hooks.count('id: python_proof_observed'),1)
+        for entry in ("test_generated_output.py","test_check_skill_proof_fresh.py"):
+            self.assertEqual(hooks.count('-- .github/scripts/'+entry),1)
+            self.assertEqual(hooks.count('run: python .github/scripts/'+entry),1)
+        self.assertLess(hooks.index('id: python_source_prepare'),hooks.index('id: python_publisher_observed'))
+        self.assertLess(hooks.index('id: python_proof_observed'),hooks.index('id: python_source_upload'))
+        self.assertIn('include-hidden-files: true',hooks)
+        emit=hooks.split('id: python_qualification_emit',1)[1].split('- name: Upload major qualification report',1)[0]
+        for condition in ("github.event_name == 'push'","github.ref == 'refs/heads/main'",
+                          "github.ref == 'refs/heads/major/state-contracts'",'GH_TOKEN: ${{ github.token }}',
+                          '--payload-root "'+owner.SOURCE_PAYLOAD+'=${{ github.workspace }}"',
+                          '--output "${{ runner.temp }}/qualification.json"'):
+            self.assertIn(condition,emit)
+        self.assertIn('path: ${{ runner.temp }}/qualification.json',hooks)
+        before_emit=hooks.split('- name: Emit original Python source qualification report',1)[0]
+        self.assertNotIn('GH_TOKEN:',before_emit)
+        self.assertNotIn('GITHUB_TOKEN:',before_emit)
+
+
+
+
+class LocalReadGitEnvironmentTests(unittest.TestCase):
+    def test_readiness_local_git_cannot_inherit_parent_metadata_credentials(self):
+        from types import SimpleNamespace
+        process=SimpleNamespace(returncode=0,communicate=lambda **kwargs:(b"head\n",b""))
+        with mock.patch.dict(os.environ,{"GH_TOKEN":"inert-metadata-canary","GITHUB_TOKEN":"inert-other-canary","UNRELATED_SECRET":"inert-secret"}), \
+             mock.patch.object(owner.readiness,"start",return_value=process) as start:
+            owner.readiness.command(["git","rev-parse","HEAD"])
+            child=start.call_args.kwargs.get("env",dict(os.environ))
+            self.assertFalse(any(k.upper() in {"GH_TOKEN","GITHUB_TOKEN","UNRELATED_SECRET"} for k in child),
+                             "local Git inherited credential fields")
+            self.assertEqual(os.environ["GH_TOKEN"],"inert-metadata-canary")
+            start.reset_mock()
+            owner.readiness.command(["gh","api","repos/arbiterForge/codeArbiter/actions/runs/7"])
+            metadata=start.call_args.kwargs.get("env",dict(os.environ))
+            self.assertEqual(metadata["GH_TOKEN"],"inert-metadata-canary")
+
+    def test_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env(self):
+        import _gitexec
+        values={"GH_TOKEN":"inert-metadata-canary","GITHUB_TOKEN":"inert-other-canary","UNRELATED_SECRET":"inert-secret",
+                "GIT_DIR":"foreign-git","GIT_WORK_TREE":"foreign-tree","GIT_INDEX_FILE":"selected-index",
+                "GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"http.extraheader","GIT_CONFIG_VALUE_0":"inert-carrier",
+                "GIT_CONFIG_GLOBAL":"protected-global-file","GIT_CONFIG_SYSTEM":"protected-system-file",
+                "GIT_CONFIG_NOSYSTEM":"1","HOME":"private-profile","LANG":"C.UTF-8"}
+        with mock.patch.dict(os.environ,values):
+            original=dict(os.environ);blind=_gitexec.local_read_git_env()
+            for key in values:
+                if key in {"GIT_CONFIG_GLOBAL","GIT_CONFIG_SYSTEM","GIT_CONFIG_NOSYSTEM","HOME","LANG"}:
+                    self.assertEqual(blind[key],values[key])
+                else:self.assertNotIn(key,blind)
+            self.assertEqual(blind["GIT_TERMINAL_PROMPT"],"0")
+            self.assertEqual(_gitexec.local_read_git_env(preserve_index=True)["GIT_INDEX_FILE"],"selected-index")
+            default=_gitexec.root_bound_git_env()
+            self.assertEqual(default["GH_TOKEN"],values["GH_TOKEN"])
+            self.assertEqual(default["GIT_CONFIG_VALUE_0"],values["GIT_CONFIG_VALUE_0"])
+            self.assertNotIn("GIT_DIR",default)
+            self.assertEqual(dict(os.environ),original)
+
+    def test_local_git_keeps_protected_file_config_and_only_explicit_alternate_index(self):
+        import _gitexec
+        with tempfile.TemporaryDirectory(prefix="ca-local-git-env-") as directory:
+            base=Path(directory);repo=base/"repo";repo.mkdir();config=base/"protected.gitconfig"
+            config.write_text("[safe]\n    directory = /owned-fixture\n",newline="\n")
+            with mock.patch.dict(os.environ,{"GH_TOKEN":"inert-metadata-canary","GIT_CONFIG_GLOBAL":str(config),
+                    "GIT_CONFIG_NOSYSTEM":"1","GIT_CONFIG_COUNT":"1","GIT_CONFIG_KEY_0":"http.extraheader",
+                    "GIT_CONFIG_VALUE_0":"inert-config-carrier"}):
+                env=_gitexec.local_read_git_env()
+                def git(*args,environment=env):
+                    return subprocess.run(["git","-C",str(repo),*args],env=environment,check=True,
+                                          capture_output=True,timeout=15).stdout
+                self.assertEqual(git("config","--global","--get","safe.directory").strip(),b"/owned-fixture")
+                git("init","-q");(repo/"one").write_bytes(b"one");git("add","one")
+                git("-c","user.name=fixture","-c","user.email=fixture@example.invalid","-c","commit.gpgsign=false","commit","-qm","index fixture")
+                alternate=base/"alternate-index";alternate.write_bytes((repo/".git/index").read_bytes())
+                (repo/"two").write_bytes(b"two");other={**env,"GIT_INDEX_FILE":str(alternate)}
+                git("add","two",environment=other)
+                with mock.patch.dict(os.environ,{"GIT_INDEX_FILE":str(alternate),"GIT_DIR":"foreign-root"}):
+                    self.assertEqual(git("ls-files",environment=_gitexec.local_read_git_env()),b"one\n")
+                    self.assertEqual(git("ls-files",environment=_gitexec.local_read_git_env(preserve_index=True)),b"one\ntwo\n")
+                self.assertEqual(os.environ["GH_TOKEN"],"inert-metadata-canary")
+
+    def test_report_and_immutable_reader_pass_blind_local_environment(self):
+        from types import SimpleNamespace
+        import _immutable_git_blobs as transport
+        with mock.patch.dict(os.environ,{"GH_TOKEN":"inert-metadata-canary","GITHUB_TOKEN":"inert-other-canary"}):
+            original=dict(os.environ)
+            with mock.patch.object(owner.subprocess,"run",return_value=SimpleNamespace(stdout=b"head\n")) as run:
+                owner.git(Path.cwd(),"rev-parse","HEAD")
+                self.assertFalse(any(k.upper() in {"GH_TOKEN","GITHUB_TOKEN"} for k in run.call_args.kwargs["env"]))
+            with mock.patch.object(transport,"start",return_value=SimpleNamespace()) as start, \
+                 mock.patch.object(transport.threading,"Thread") as thread:
+                reader=transport.Reader(Path.cwd());reader._start()
+                child=start.call_args.kwargs["env"]
+                self.assertFalse(any(k.upper() in {"GH_TOKEN","GITHUB_TOKEN"} for k in child))
+                self.assertNotIn("GIT_INDEX_FILE",child)
+                self.assertEqual(child["GIT_TERMINAL_PROMPT"],"0")
+                thread.return_value.start.assert_called_once()
+            self.assertEqual(dict(os.environ),original)
+
+    def test_readiness_git_role_cannot_be_used_for_network_or_mutating_commands(self):
+        with mock.patch.object(owner.readiness,"start") as start:
+            for arguments in (["git","fetch","origin"],["git","push","origin"],["git","checkout","--force"],
+                              ["git","-c","http.extraheader=inert-carrier","rev-parse","HEAD"]):
+                with self.subTest(operation=arguments[1]),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.command(arguments)
+            start.assert_not_called()
+
+    def test_only_owned_adr_child_receives_the_blind_python_environment(self):
+        process=SimpleNamespace(returncode=0,communicate=lambda **kwargs:(b"valid\n",b""))
+        checker=str(Path(owner.readiness.__file__).with_name("check_adr_lifecycle.py"))
+        arguments=[sys.executable,checker,"--root","owned-root","--current-ref","a"*40]
+        with mock.patch.dict(os.environ,{"GH_TOKEN":"inert-metadata-canary","GITHUB_TOKEN":"inert-other-canary",
+                "PYTHONPATH":"foreign-imports","PYTHONSTARTUP":"foreign-startup"}), \
+             mock.patch.object(owner.readiness,"start",return_value=process) as start:
+            original=dict(os.environ)
+            self.assertEqual(owner.readiness.command(arguments,local_adr=True),b"valid\n")
+            self.assertEqual(start.call_args.args[0],arguments)
+            child=start.call_args.kwargs["env"]
+            for key in ("GH_TOKEN","GITHUB_TOKEN","PYTHONPATH","PYTHONSTARTUP"):
+                self.assertNotIn(key,child)
+            self.assertEqual({key:child[key] for key in
+                ("PYTHONNOUSERSITE","PYTHONDONTWRITEBYTECODE","PYTHONIOENCODING")},
+                {"PYTHONNOUSERSITE":"1","PYTHONDONTWRITEBYTECODE":"1","PYTHONIOENCODING":"utf-8"})
+            start.reset_mock()
+            for unowned in ([sys.executable,"foreign/check_adr_lifecycle.py"],
+                            [sys.executable,"-c","pass"],
+                            [sys.executable,"-I",checker],
+                            ["foreign-python",checker]):
+                with self.subTest(command=unowned[1]),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.command(unowned,local_adr=True)
+            start.assert_not_called()
+            for operation in ("rev-parse","cat-file","merge-base","ls-tree"):
+                owner.readiness.command(["git",operation,"HEAD"])
+                self.assertNotIn("GH_TOKEN",start.call_args.kwargs["env"])
+            self.assertEqual(dict(os.environ),original)
+
+    def test_actual_owned_adr_child_reads_a_private_committed_ledger(self):
+        import _gitexec
+        with tempfile.TemporaryDirectory(prefix="ca-local-adr-read-") as directory:
+            repo=Path(directory);decisions=repo/".codearbiter/decisions";decisions.mkdir(parents=True)
+            (decisions/"adr-lifecycle.jsonl").write_bytes(b"")
+            env=_gitexec.local_read_git_env()
+            def git(*args):
+                return subprocess.run(["git","-C",str(repo),*args],env=env,check=True,
+                                      capture_output=True,timeout=15).stdout
+            git("init","-q");git("add",".codearbiter/decisions/adr-lifecycle.jsonl")
+            git("-c","user.name=fixture","-c","user.email=fixture@example.invalid",
+                "-c","commit.gpgsign=false","commit","-qm","private ADR read fixture")
+            checker=str(Path(owner.readiness.__file__).with_name("check_adr_lifecycle.py"))
+            arguments=[sys.executable,checker,"--root",str(repo),"--current-ref","HEAD"]
+            with mock.patch.dict(os.environ,{"GH_TOKEN":"inert-metadata-canary","GITHUB_TOKEN":"inert-other-canary"}):
+                output=owner.readiness.command(arguments,repo,local_adr=True)
+                self.assertIn(b"ADR lifecycle bindings valid",output)
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.command(arguments[:-1]+["0"*40],repo,local_adr=True)
+            self.assertFalse(list(repo.rglob("__pycache__")))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

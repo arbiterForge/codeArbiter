@@ -23,6 +23,7 @@ from _boundedproc import start, terminate_tree
 from _contextverificationlib import hash_go_module_entries, VerificationError
 from contextlib import contextmanager
 import _immutable_git_blobs
+from _gitexec import local_read_git_env
 
 REPOSITORY = "arbiterForge/codeArbiter"
 PROGRAM = "codearbiter-major-state-contracts"
@@ -32,6 +33,8 @@ SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
 MAX_ARCHIVE = 256 * 1024 * 1024
 UPLOAD_ACTION = 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+SOURCE_INPUT_PAYLOAD = 'major-source-inputs-hooks-windows-contracts'
+SOURCE_INPUT_UPLOAD = 'Upload Python source-test inputs'
 TARGETS = frozenset(('ca', 'ca-codex', 'ca-pi', 'ca-sandbox'))
 TRANSPORT_REASONS = frozenset(('http_error', 'redirect_refused', 'redirect_limit',
     'body_limit', 'network_error', 'invalid_request', 'worker_failed',
@@ -133,8 +136,22 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def command(argv, cwd=None):
-    process = start(argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def command(argv, cwd=None, *, local_adr=False):
+    options = {"cwd": cwd, "stdout": subprocess.PIPE, "stderr": subprocess.PIPE}
+    if local_adr:
+        require(len(argv) >= 2 and argv[0] == sys.executable
+                and argv[1] == str(Path(__file__).with_name("check_adr_lifecycle.py")),
+                "readiness local ADR role refuses unowned Python command")
+        options["env"] = {**local_read_git_env(), "PYTHONNOUSERSITE": "1",
+                          "PYTHONDONTWRITEBYTECODE": "1", "PYTHONIOENCODING": "utf-8"}
+    if argv and PureWindowsPath(argv[0]).name.lower() in ("git", "git.exe"):
+        arguments = list(argv[1:])
+        while arguments and arguments[0] in ("--no-lazy-fetch", "--no-replace-objects"):
+            arguments.pop(0)
+        require(arguments and arguments[0] in ("rev-parse", "cat-file", "merge-base", "ls-tree"),
+                "readiness local Git role refuses unsupported operation")
+        options["env"] = local_read_git_env()
+    process = start(argv, **options)
     try:
         stdout, stderr = process.communicate(timeout=120)
     except subprocess.TimeoutExpired:
@@ -772,7 +789,7 @@ def _requirements(repo, source, run_id):
     # Accepted lifecycle identities are validated by the existing immutable owner,
     # not inferred from an accepted label inside this record.
     command([sys.executable, str(Path(__file__).with_name("check_adr_lifecycle.py")),
-             "--root", str(repo), "--current-ref", source], repo)
+             "--root", str(repo), "--current-ref", source], repo, local_adr=True)
     ledger_bytes = blob(repo, source, ".codearbiter/decisions/adr-lifecycle.jsonl")
     targets = candidate_marker(load(source, '.github/integration-candidate.json'))
     prefixes = {"ca": "v", "ca-codex": "ca-codex-v", "ca-pi": "ca-pi-v", "ca-sandbox": "ca-sandbox-v"}
@@ -1136,6 +1153,8 @@ def produce(req, artifacts, jobs):
                 require(payload_id in by_id, "qualification payload artifact missing")
                 if payload_id not in payloads:
                     payload = by_id[payload_id]
+                    if payload.get("name") == SOURCE_INPUT_PAYLOAD:
+                        validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
                     content = artifact_bytes(payload, req)
                     payloads[payload_id] = {"artifact_id": payload_id,
                         "archive_sha256": digest(content), "members": members(content)}

@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Retain authenticated source-input artifacts and original named Python test observations for six bounded software qualification cells; keep final trusted-run readiness separate.
+
 - Separate recorded work progress from derived dependency readiness and independently verified checks; retain stable identities, journals, user stops and later edits across supported schema upgrades.
 - Reconcile interrupted workflow and farm effects through their owning receipts; preserve primary failures when staging cleanup also fails and bound recovery reads before consuming content.
 - Deliver current mode, context, task discovery and corrected-review resubmission through shared canonical helpers and generated host surfaces.
@@ -25,6 +27,8 @@ predate the plugin rewrite and are grouped by date.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
 ### Fixed
+
+- Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
 
 - Keep installed-host observers transparent to nested Git calls, preserve failed cold-check diagnostics, and disable Pi helper bytecode before package imports.
 - Preserve newer user spinner choices during rollback by keeping backups outside the legacy reader's restoration key and migrating older metadata without discarding its value.

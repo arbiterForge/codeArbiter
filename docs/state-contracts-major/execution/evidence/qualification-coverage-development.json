@@ -36,6 +36,17 @@
   "limits": [
     "Development/test evidence only; these references create no formal disposition or hosted/installed qualification.",
     "Original private setup failures retained; actual browser bodies first ran successfully with explicit existing Chrome path.",
-    "No dependency install, site build, native execution, real provider/model/parent acceptance or publication."
-  ]
+    "No dependency install, site build, real provider/model/parent acceptance or publication. The report suite includes the existing owned native-read fixture, described in the explicit scope correction."
+  ],
+  "scope_correction": {
+    "prior_blanket_no_native_execution_statement": "OVERBROAD",
+    "actual_test": "ActualPythonObserverTest.test_actual_native_read_creates_only_owned_lock_without_invalidating_source",
+    "actual_execution_head": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+    "actual_outcome": "The24-method successful report suite includes build_installation plus an ArtifactClient identity read on an owned fixture. No native16/installed/platform/task qualification follows.",
+    "source_refs": [
+      ".github/scripts/test_major_qualification_report.py",
+      ".github/scripts/test_artifact_authoring.py"
+    ],
+    "retention": "Original raw24PASS and earlier sealed reviews remain unchanged. The current private source-producer run excludes this unchanged native method and reports39 ordinary tests separately."
+  }
 }

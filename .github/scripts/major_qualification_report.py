@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 from contextlib import ExitStack
 import hashlib
+import io
+import zipfile
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -27,6 +29,7 @@ from unittest import mock
 import major_readiness as readiness
 import ci20_native_binding as native_binding_owner
 from _boundedproc import start as start_process, terminate_tree
+from _gitexec import local_read_git_env
 
 ROOT = Path(__file__).resolve().parents[2]
 OBSERVATION = "codearbiter.major-test-observation/1"
@@ -67,15 +70,11 @@ def new_output(path, document):
         stream.write("\n")
 
 
-def git(repo, *args):
-    env = dict(os.environ)
-    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
-                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
-                 "GIT_GRAFT_FILE", "GIT_REPLACE_REF_BASE", "GIT_SHALLOW_FILE"):
-        env.pop(name, None)
+def git(repo, *args, raw=False, input=None):
+    env = local_read_git_env()
     result = subprocess.run(["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args],
-                            env=env, capture_output=True, timeout=30, check=True)
-    return result.stdout.decode("utf-8").strip()
+                            env=env, input=input, capture_output=True, timeout=30, check=True)
+    return result.stdout if raw else result.stdout.decode("utf-8").strip()
 
 
 def ordinary_native_read_lock(repo):
@@ -110,7 +109,375 @@ def source_identity(repo):
             "clean": clean}
 
 
-def observe_python(repo, script, arguments, output):
+SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/check_skill_proof_fresh.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/test_check_skill_proof_fresh.py',
+ '.github/scripts/test_generated_output.py',
+ 'core/artifact-release-manifest.json',
+ 'core/hosts.json',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/surface/COMMANDS.md',
+ 'core/surface/README.md',
+ 'core/surface/SPRINT.md',
+ 'core/surface/agents/INDEX.md',
+ 'core/surface/agents/architecture-drift-reviewer.md',
+ 'core/surface/agents/auth-crypto-reviewer.md',
+ 'core/surface/agents/authority-reviewer.md',
+ 'core/surface/agents/backend-author.md',
+ 'core/surface/agents/checkpoint-aggregator.md',
+ 'core/surface/agents/coverage-auditor.md',
+ 'core/surface/agents/decision-challenger.md',
+ 'core/surface/agents/dependency-reviewer.md',
+ 'core/surface/agents/design-quality-reviewer.md',
+ 'core/surface/agents/finding-triage.md',
+ 'core/surface/agents/frontend-author.md',
+ 'core/surface/agents/grader.md',
+ 'core/surface/agents/infra-author.md',
+ 'core/surface/agents/map-deps.md',
+ 'core/surface/agents/map-structure.md',
+ 'core/surface/agents/migration-reviewer.md',
+ 'core/surface/agents/scout.md',
+ 'core/surface/agents/security-reviewer.md',
+ 'core/surface/agents/tribunal-lens-reviewer.md',
+ 'core/surface/agents/verdict-aggregator.md',
+ 'core/surface/arbiter.md',
+ 'core/surface/command-routes.json',
+ 'core/surface/commands/add-dep.md',
+ 'core/surface/commands/adr-status.md',
+ 'core/surface/commands/adr.md',
+ 'core/surface/commands/audit.md',
+ 'core/surface/commands/checkpoint.md',
+ 'core/surface/commands/chore.md',
+ 'core/surface/commands/cleanup.md',
+ 'core/surface/commands/commit.md',
+ 'core/surface/commands/conflict.md',
+ 'core/surface/commands/context-check.md',
+ 'core/surface/commands/create-context.md',
+ 'core/surface/commands/debug.md',
+ 'core/surface/commands/decompose.md',
+ 'core/surface/commands/doctor.md',
+ 'core/surface/commands/feature.md',
+ 'core/surface/commands/fix.md',
+ 'core/surface/commands/init.md',
+ 'core/surface/commands/override.md',
+ 'core/surface/commands/pr.md',
+ 'core/surface/commands/prune.md',
+ 'core/surface/commands/reconcile.md',
+ 'core/surface/commands/refactor.md',
+ 'core/surface/commands/release.md',
+ 'core/surface/commands/review.md',
+ 'core/surface/commands/spike.md',
+ 'core/surface/commands/sprint.md',
+ 'core/surface/commands/standup.md',
+ 'core/surface/commands/status.md',
+ 'core/surface/commands/statusline.md',
+ 'core/surface/commands/task.md',
+ 'core/surface/commands/threat-model.md',
+ 'core/surface/commands/tribunal.md',
+ 'core/surface/commands/watch.md',
+ 'core/surface/includes/anti-slop-design/INDEX.md',
+ 'core/surface/includes/anti-slop-design/color.md',
+ 'core/surface/includes/anti-slop-design/core.md',
+ 'core/surface/includes/anti-slop-design/images.md',
+ 'core/surface/includes/anti-slop-design/layout.md',
+ 'core/surface/includes/anti-slop-design/medium-cli.md',
+ 'core/surface/includes/anti-slop-design/medium-dataviz.md',
+ 'core/surface/includes/anti-slop-design/medium-diagram.md',
+ 'core/surface/includes/anti-slop-design/medium-documents.md',
+ 'core/surface/includes/anti-slop-design/medium-slides.md',
+ 'core/surface/includes/anti-slop-design/medium-web.md',
+ 'core/surface/includes/anti-slop-design/typography.md',
+ 'core/surface/includes/artifacts-attestation.md',
+ 'core/surface/includes/artifacts.md',
+ 'core/surface/includes/author-tdd-workflow.md',
+ 'core/surface/includes/codex-host-notes.md',
+ 'core/surface/includes/command-compatibility.md',
+ 'core/surface/includes/compaction-charter.md',
+ 'core/surface/includes/cut-docs.md',
+ 'core/surface/includes/dangerous-mode.md',
+ 'core/surface/includes/farm.md',
+ 'core/surface/includes/fresh-verification.md',
+ 'core/surface/includes/harvest.md',
+ 'core/surface/includes/helper-invocation.md',
+ 'core/surface/includes/knowledge.md',
+ 'core/surface/includes/maturity-coverage.md',
+ 'core/surface/includes/ops-mode.md',
+ 'core/surface/includes/pi-host-notes.md',
+ 'core/surface/includes/redirect.md',
+ 'core/surface/includes/reference-map.md',
+ 'core/surface/includes/review-matrix.md',
+ 'core/surface/includes/reviewer-contract.md',
+ 'core/surface/includes/routing-table.md',
+ 'core/surface/includes/safety-core.md',
+ 'core/surface/includes/security-gate-record.md',
+ 'core/surface/includes/smarts/core.md',
+ 'core/surface/includes/smarts/decision-log-format.md',
+ 'core/surface/includes/smarts/lenses.md',
+ 'core/surface/includes/sprint-authority.md',
+ 'core/surface/includes/verification-boundary.md',
+ 'core/surface/skills/INDEX.md',
+ 'core/surface/skills/brainstorming/SKILL.md',
+ 'core/surface/skills/commit-gate/SKILL.md',
+ 'core/surface/skills/context-check/SKILL.md',
+ 'core/surface/skills/context-creation/SKILL.md',
+ 'core/surface/skills/context-creation/references/markdown-format.md',
+ 'core/surface/skills/crypto-compliance/SKILL.md',
+ 'core/surface/skills/debug/SKILL.md',
+ 'core/surface/skills/debug/references/debug-handoff.schema.json',
+ 'core/surface/skills/debug/references/handoff.md',
+ 'core/surface/skills/debug/references/minimal-unresolved.json',
+ 'core/surface/skills/debug/references/preparation.md',
+ 'core/surface/skills/decision-lifecycle/SKILL.md',
+ 'core/surface/skills/decision-lifecycle/references/adr-template.md',
+ 'core/surface/skills/decision-lifecycle/references/authoring.md',
+ 'core/surface/skills/decision-variance/SKILL.md',
+ 'core/surface/skills/decision-variance/references/analysis.md',
+ 'core/surface/skills/decompose/SKILL.md',
+ 'core/surface/skills/decompose/references/markdown-format.md',
+ 'core/surface/skills/dispatching-parallel-agents/SKILL.md',
+ 'core/surface/skills/executing-plans/SKILL.md',
+ 'core/surface/skills/finishing-a-development-branch/SKILL.md',
+ 'core/surface/skills/post-merge-cleanup/SKILL.md',
+ 'core/surface/skills/refactor/SKILL.md',
+ 'core/surface/skills/release/SKILL.md',
+ 'core/surface/skills/secret-handling/SKILL.md',
+ 'core/surface/skills/security-architecture/SKILL.md',
+ 'core/surface/skills/subagent-driven-development/SKILL.md',
+ 'core/surface/skills/subagent-driven-development/references/farm-dispatch.md',
+ 'core/surface/skills/tdd/SKILL.md',
+ 'core/surface/skills/tribunal/SKILL.md',
+ 'core/surface/skills/tribunal/references/ai-markers.md',
+ 'core/surface/skills/tribunal/references/cost-and-models.md',
+ 'core/surface/skills/tribunal/references/finding-record.md',
+ 'core/surface/skills/tribunal/references/issue-filing.md',
+ 'core/surface/skills/tribunal/references/lenses/appsec.md',
+ 'core/surface/skills/tribunal/references/lenses/architecture.md',
+ 'core/surface/skills/tribunal/references/lenses/change-closure.md',
+ 'core/surface/skills/tribunal/references/lenses/coverage.md',
+ 'core/surface/skills/tribunal/references/lenses/infra.md',
+ 'core/surface/skills/tribunal/references/lenses/migration.md',
+ 'core/surface/skills/tribunal/references/lenses/observability.md',
+ 'core/surface/skills/tribunal/references/lenses/performance.md',
+ 'core/surface/skills/tribunal/references/lenses/reliability.md',
+ 'core/surface/skills/tribunal/references/lenses/secrets-supply.md',
+ 'core/surface/skills/tribunal/references/lenses/semantic-contract.md',
+ 'core/surface/skills/tribunal/references/lenses/test-fidelity.md',
+ 'core/surface/skills/tribunal/references/lenses/typesafety.md',
+ 'core/surface/skills/tribunal/references/report.md',
+ 'core/surface/skills/tribunal/references/review-risk.md',
+ 'core/surface/skills/tribunal/references/schemas.md',
+ 'core/surface/skills/tribunal/references/telemetry.md',
+ 'core/surface/skills/tribunal/references/triage.md',
+ 'core/surface/skills/tribunal/references/verification-quality.md',
+ 'core/surface/skills/using-git-worktrees/SKILL.md',
+ 'core/surface/skills/writing-plans/SKILL.md',
+ 'core/surface/skills/writing-plans/references/farm-plan.md',
+ 'plugins/ca/skills/release/SKILL.md',
+ 'tools/build-artifact-manifest-contract.py',
+ 'tools/build-surface.py',
+ 'tools/command_compatibility.py',
+ 'tools/host_descriptors.py',
+ 'tools/owned_output.py'))
+
+SOURCE_PROFILE = "hooks-proof-publisher-v1"
+SOURCE_MANIFEST = "source-test-inputs.json"
+SOURCE_FORMAT = "codearbiter.source-test-input-payload/1"
+SOURCE_BINDING = "codearbiter.source-test-input-binding/1"
+SOURCE_PAYLOAD = readiness.SOURCE_INPUT_PAYLOAD
+SOURCE_JOB = "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+SOURCE_UPLOAD = readiness.SOURCE_INPUT_UPLOAD
+
+
+def _source_file(repo, relative):
+    require(relative in SOURCE_PATHS, "source payload path outside fixed profile")
+    path = Path(repo)
+    for component in PurePosixPath(relative).parts:
+        path = path / component
+        info = path.lstat()
+        require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "source payload link/reparse input")
+        if path != Path(repo) / relative:
+            require(stat.S_ISDIR(info.st_mode), "source payload ancestor is not a directory")
+    require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and info.st_size <= 8 * 1024 * 1024,
+            "source payload input is not bounded regular data")
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(descriptor, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        require((opened.st_dev, opened.st_ino) == (info.st_dev, info.st_ino)
+                and stat.S_ISREG(opened.st_mode), "source payload input changed before read")
+        value = stream.read(8 * 1024 * 1024 + 1)
+        after = os.fstat(stream.fileno())
+    require(len(value) <= 8 * 1024 * 1024 and (opened.st_size, opened.st_mtime_ns) == (after.st_size, after.st_mtime_ns),
+            "source payload input changed during read")
+    return value
+
+
+def _source_root_members(repo):
+    found, pending, directories = set(), [Path(repo) / "core/surface"], 0
+    while pending:
+        folder = pending.pop(); directories += 1
+        info = folder.lstat()
+        require(directories <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "source payload root is unsafe or unbounded")
+        for path in folder.iterdir():
+            info = path.lstat()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "source payload membership contains a link")
+            if stat.S_ISDIR(info.st_mode): pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode), "source payload membership is not regular")
+                found.add(path.relative_to(repo).as_posix())
+                require(len(found) <= 2048, "source payload membership exceeds bound")
+    require(found == {p for p in SOURCE_PATHS if p.startswith("core/surface/")},
+            "source payload physical membership differs")
+
+
+def source_input_snapshot(repo):
+    repo = Path(repo).resolve(strict=True)
+    identity = source_identity(repo)
+    require(identity["clean"], "source payload checkout is not clean")
+    _source_root_members(repo)
+    rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(SOURCE_PATHS), raw=True)
+    entries = []
+    for row in rows.split(b"\0"):
+        if not row: continue
+        header, relative = row.split(b"\t", 1)
+        mode, kind, blob = header.decode("ascii").split()
+        relative = relative.decode("utf-8")
+        require(relative in SOURCE_PATHS and kind == "blob" and mode in ("100644", "100755")
+                and readiness.SHA.fullmatch(blob), "source payload immutable member invalid")
+        entries.append((relative, mode, blob))
+    require(len(entries) == len(SOURCE_PATHS) and len({p for p, _, _ in entries}) == len(SOURCE_PATHS),
+            "source payload immutable membership differs")
+    batch = git(repo, "cat-file", "--batch", raw=True,
+                input="".join(blob + "\n" for _, _, blob in entries).encode("ascii"))
+    require(len(batch) <= 64 * 1024 * 1024, "source payload byte bound exceeded")
+    cursor, members, total = 0, [], 0
+    for relative, mode, expected in entries:
+        end = batch.index(b"\n", cursor)
+        blob, kind, size = batch[cursor:end].decode("ascii").split()
+        size = int(size); cursor = end + 1
+        require(blob == expected and kind == "blob" and 0 <= size <= 8 * 1024 * 1024, "source payload blob invalid")
+        value = batch[cursor:cursor + size]; cursor += size
+        require(batch[cursor:cursor + 1] == b"\n", "source payload blob truncated"); cursor += 1
+        require(_source_file(repo, relative) == value, "source payload physical bytes differ from Git")
+        total += size
+        require(total <= 64 * 1024 * 1024, "source payload total exceeds bound")
+        members.append({"path": relative, "sha256": readiness.digest(value), "bytes": size, "git_mode": mode})
+    require(cursor == len(batch), "source payload has trailing blob data")
+    return {**identity, "members": sorted(members, key=lambda item: item["path"])}
+
+
+def validate_source_manifest(record, req, job_name, members):
+    fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
+    require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
+            and record["profile"] == SOURCE_PROFILE and record["workflow"] == ".github/workflows/ci.yml"
+            and job_name == record["producer_job_name"] == SOURCE_JOB
+            and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
+            and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
+            and type(record["ci_run_id"]) is int and record["ci_run_id"] == req["ci_run_id"] > 0,
+            "source payload manifest identity differs")
+    rows = record["members"]
+    require(isinstance(rows, list) and len(rows) == len(SOURCE_PATHS), "source payload manifest population differs")
+    require(all(isinstance(row, dict) and set(row) == {"path", "sha256", "bytes", "git_mode"}
+                and type(row["path"]) is str and row["path"] in SOURCE_PATHS
+                and type(row["sha256"]) is str and readiness.DIGEST.fullmatch(row["sha256"])
+                and type(row["bytes"]) is int and 0 <= row["bytes"] <= 8 * 1024 * 1024
+                and row["git_mode"] in ("100644", "100755") for row in rows), "source payload manifest member invalid")
+    require([row["path"] for row in rows] == sorted(SOURCE_PATHS)
+            and sum(row["bytes"] for row in rows) <= 64 * 1024 * 1024, "source payload manifest membership differs")
+    expected = {row["path"]: row["sha256"] for row in rows}
+    actual = {row["path"]: row["sha256"] for row in members}
+    require(len(actual) == len(members) and set(actual) == SOURCE_PATHS | {SOURCE_MANIFEST}
+            and all(actual[path] == value for path, value in expected.items()), "source payload archive membership differs")
+    return record
+
+
+def prepare_source_payload(repo, output, job_name):
+    require(job_name == SOURCE_JOB, "source payload owner differs")
+    repo = Path(repo).resolve(strict=True); output = Path(output).absolute()
+    output = output.parent.resolve(strict=True) / output.name
+    require(not output.exists() and not output.is_symlink() and not output.is_relative_to(repo),
+            "new external source payload directory required")
+    before = source_input_snapshot(repo)
+    output.mkdir()
+    for row in before["members"]:
+        value = _source_file(repo, row["path"])
+        require(readiness.digest(value) == row["sha256"], "source payload changed before staging")
+        target = output / row["path"]; target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as stream: stream.write(value)
+    record = {"format": SOURCE_FORMAT, "profile": SOURCE_PROFILE,
+        "source_commit": before["source_commit"], "source_tree": before["source_tree"],
+        "workflow": ".github/workflows/ci.yml", "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0")),
+        "producer_job_name": job_name, "members": before["members"]}
+    require(record["ci_run_id"] > 0 and source_input_snapshot(repo) == before, "source payload staging source changed")
+    new_output(output / SOURCE_MANIFEST, record)
+    return record
+
+
+def source_observation_binding(repo, staged, identity):
+    staged = Path(staged)
+    info = staged.lstat()
+    require(stat.S_ISDIR(info.st_mode) and not staged.is_symlink()
+            and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "source payload stage is not an ordinary directory")
+    staged = staged.resolve(strict=True)
+    require(not staged.is_relative_to(Path(repo).resolve()), "source payload must be outside source")
+    record = load_json(staged / SOURCE_MANIFEST)
+    snapshot = source_input_snapshot(repo)
+    require(all(snapshot[key] == identity[key] for key in ("source_commit", "source_tree", "clean")),
+            "source payload observation source changed")
+    members = [{"path": row["path"], "sha256": row["sha256"]} for row in snapshot["members"]]
+    raw = (staged / SOURCE_MANIFEST).read_bytes()
+    require(len(raw) <= 1024 * 1024, "source payload manifest exceeds bound")
+    members.append({"path": SOURCE_MANIFEST, "sha256": readiness.digest(raw)})
+    validate_source_manifest(record, {**identity, "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0"))}, SOURCE_JOB, members)
+    require(record["members"] == snapshot["members"], "source payload observation members changed")
+    actual, pending = set(), [staged]
+    permitted = SOURCE_PATHS | {SOURCE_MANIFEST}
+    parents = {parent.as_posix() for name in permitted for parent in PurePosixPath(name).parents if parent.as_posix() != "."}
+    while pending:
+        folder = pending.pop()
+        for path in folder.iterdir():
+            info = path.lstat(); name = path.relative_to(staged).as_posix()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "source payload stage contains a link")
+            if stat.S_ISDIR(info.st_mode):
+                require(name in parents, "source payload stage has a foreign directory")
+                pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode) and name in permitted, "source payload stage has a foreign member")
+                actual.add(name)
+    require(actual == SOURCE_PATHS | {SOURCE_MANIFEST}, "source payload stage contains extra/missing files")
+    for row in record["members"]:
+        require(readiness.digest(_source_file(staged, row["path"])) == row["sha256"], "source payload staged bytes differ")
+    return {"format": SOURCE_BINDING, "profile": SOURCE_PROFILE,
+            "payload_name": SOURCE_PAYLOAD, "manifest_sha256": readiness.digest(raw)}
+
+
+def admit_source_observation(observed, payload, req, job_name, job_id):
+    binding = observed.get("source_input_binding")
+    require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
+            and binding["format"] == SOURCE_BINDING and binding["profile"] == SOURCE_PROFILE
+            and binding["payload_name"] == SOURCE_PAYLOAD
+            and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
+            and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
+            "source test payload binding missing or differs")
+    record = payload.get("documents", {}).get(SOURCE_MANIFEST)
+    validate_source_manifest(record, req, job_name, payload.get("members", []))
+    require(next(row["sha256"] for row in payload["members"] if row["path"] == SOURCE_MANIFEST)
+            == binding["manifest_sha256"], "source test manifest digest differs")
+
+
+def observe_python(repo, script, arguments, output, source_payload=None):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
@@ -118,6 +485,7 @@ def observe_python(repo, script, arguments, output):
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
     before = source_identity(repo)
+    source_binding = source_observation_binding(repo, source_payload, before) if source_payload else None
     rows, active = [], {}
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
@@ -171,13 +539,21 @@ def observe_python(repo, script, arguments, output):
         sys.path[:] = original_path
         os.chdir(original_cwd)
     after = source_identity(repo)
-    new_output(output, {"format": OBSERVATION, **before,
-                       "source_stable": before == after and before["clean"],
+    stable = before == after and before["clean"]
+    if source_payload:
+        try:
+            stable = stable and source_observation_binding(repo, source_payload, after) == source_binding
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+            stable = False
+    document = {"format": OBSERVATION, **before,
+                       "source_stable": stable,
                        "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0")),
                        "proof_kind": "source-test", "producer": "python-test-result-observer",
                        "argv": [sys.executable, str(script), *arguments],
-                       "exit_code": code, "tests": rows})
-    return code
+                       "exit_code": code, "tests": rows}
+    if source_binding is not None: document["source_input_binding"] = source_binding
+    new_output(output, document)
+    return code if not source_payload or stable else 1
 
 
 def admit_go(record, binding, source_tree):
@@ -367,6 +743,9 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
             else:
                 require(observed.get("producer") in producers.get(group["proof_kind"], ()),
                         "no qualified observer for this proof kind")
+            if group["proof_kind"] == "source-test":
+                require(group["payload_name"] == SOURCE_PAYLOAD, "source test payload binding role differs")
+                admit_source_observation(observed, payloads.get(SOURCE_PAYLOAD, {}), req, job_name, job_id)
             if group["proof_kind"] == "native-module":
                 native_bindings.append(observed.get("native_binding"))
             key = group["observation"]
@@ -424,12 +803,39 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
             "payloads": [retained_payloads[i] for i in sorted(retained_payloads)]}
 
 
-def authenticated_payload(metadata, req, consumed_root):
+def authenticated_payload(metadata, req, consumed_root, source_job=None):
     archive = readiness.artifact_bytes(metadata, req)
     members = readiness.members(archive)
     root = Path(consumed_root).resolve(strict=True)
     native_bindings, documents = [], {}
+    source_manifest_sha256 = None
+    if any(member["path"] == SOURCE_MANIFEST for member in members):
+        require(isinstance(source_job, dict) and type(source_job.get("id")) is int
+                and source_job["id"] > 0 and source_job.get("name") == SOURCE_JOB
+                and source_job.get("status") == "in_progress" and source_job.get("conclusion") is None,
+                "source payload original uploader job missing")
+        # The owning job is still running, so its completed job log does not
+        # exist yet. Bind producer-time identity to its completed upload step;
+        # final readiness authenticates both uploader logs independently.
+        upload_steps = [step for step in source_job.get("steps", []) if step.get("name") == SOURCE_UPLOAD]
+        require(metadata.get("name") == SOURCE_PAYLOAD and len(upload_steps) == 1
+                and upload_steps[0].get("status") == "completed"
+                and upload_steps[0].get("conclusion") == "success", "source payload upload step did not complete")
+        with zipfile.ZipFile(io.BytesIO(archive)) as source_archive:
+            require(source_archive.getinfo(SOURCE_MANIFEST).file_size <= 1024 * 1024,
+                    "source payload manifest exceeds bound")
+            raw = source_archive.read(SOURCE_MANIFEST)
+        manifest = json.loads(raw, object_pairs_hook=unique)
+        validate_source_manifest(manifest, req, source_job["name"], members)
+        snapshot = source_input_snapshot(root)
+        require(snapshot["source_commit"] == req["source_commit"] and snapshot["source_tree"] == req["source_tree"]
+                and snapshot["members"] == manifest["members"], "source payload actual consumed source differs")
+        documents[SOURCE_MANIFEST] = manifest
+        source_manifest_sha256 = readiness.digest(raw)
     for member in members:
+        if member["path"] == SOURCE_MANIFEST:
+            continue  # Validated archive metadata, never claimed as executed input.
+
         path = root
         for part in PurePosixPath(member["path"]).parts:
             path = path / part
@@ -450,8 +856,11 @@ def authenticated_payload(metadata, req, consumed_root):
             require(binding.get("format") == native_binding_owner.FORMAT,
                     "consumed native stamp has the wrong format")
             native_bindings.append(binding)
-    return {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
+    result = {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
             "members": members, "native_bindings": native_bindings, "documents": documents}
+    if source_manifest_sha256 is not None:
+        result.update(source_manifest_sha256=source_manifest_sha256, source_upload_job_id=source_job["id"])
+    return result
 
 
 def validate_emitter_environment():
@@ -463,10 +872,11 @@ def validate_emitter_environment():
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("observe-python", "observe-vitest", "admit-go", "emit"))
+    parser.add_argument("operation", choices=("prepare-source", "observe-python", "observe-vitest", "admit-go", "emit"))
     parser.add_argument("--repo", type=Path, default=ROOT)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
+    parser.add_argument("--source-payload", type=Path)
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--job-name")
@@ -474,9 +884,12 @@ def main(argv=None):
     parser.add_argument("arguments", nargs="*")
     args = parser.parse_args(argv)
     try:
+        if args.operation == "prepare-source":
+            prepare_source_payload(args.repo, args.output, args.job_name)
+            return 0
         if args.operation == "observe-python":
             require(args.arguments, "Python entry point required")
-            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output)
+            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload)
         if args.operation == "observe-vitest":
             return observe_vitest(args.repo, args.arguments, args.raw_results, args.output)
         if args.operation == "admit-go":
@@ -503,7 +916,7 @@ def main(argv=None):
             require(name not in payloads, "duplicate payload identity")
             found = [a for a in artifacts if a["name"] == name]
             require(len(found) == 1, "original consumed artifact missing or ambiguous")
-            payloads[name] = authenticated_payload(found[0], req, path)
+            payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0] if name == SOURCE_PAYLOAD else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

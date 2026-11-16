@@ -48,6 +48,12 @@
     "disposition:transitions:N36:02": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
     "disposition:transitions:N39:01": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
     "disposition:transitions:N39:02": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
-    "disposition:transitions:N39:03": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>"
+    "disposition:transitions:N39:03": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+    "disposition:transitions:C33:02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:transitions:C33:03": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:added_transitions:S75:added-stage-failed": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:added_transitions:S75:added-rolled-back": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:added_transitions:S75:added-unusable": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:added_transitions:S75:added-writer-refused": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
   }
 }
