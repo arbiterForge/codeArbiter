@@ -9,7 +9,8 @@
  * shared primitive; `module-structure.test.ts` proves there is no second implementation for
  * those cases to miss.
  */
-import { link, lstat, mkdir, mkdtemp, open, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import { link, mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import { constants } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 
@@ -19,6 +20,11 @@ import { BridgeClient } from "../src/bridge.ts";
 import { appendPiCompactionAudit } from "../src/compaction.ts";
 import { appendDispatchAudit } from "../src/dispatch.ts";
 import { appendBackgroundJobAudit, appendPermissionAudit } from "../src/tool-guard.ts";
+import { NODE_AUDIT_SINK_IO } from "../src/audit-sink.ts";
+
+const { lstat } = NODE_AUDIT_SINK_IO;
+const open = async (path: string, flags: number | "a", mode?: number) =>
+  await NODE_AUDIT_SINK_IO.open(path, flags === "a" ? constants.O_WRONLY | constants.O_APPEND : flags, mode);
 
 const temporaryRoots: string[] = [];
 

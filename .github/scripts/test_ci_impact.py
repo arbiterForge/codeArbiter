@@ -193,6 +193,154 @@ def reviewed_vitest_source_event_guards(block: str, job_id: str) -> set[str]:
     return {predicate}
 
 
+def reviewed_mapped_work_event_guards(block: str) -> set[str]:
+    """Only named mapped-input/report steps may omit merge-group execution.
+
+    The actual original conformance invocation stays unconditional and unique;
+    moving or copying one producer predicate onto it never earns an exemption.
+    """
+    if not block.startswith('  artifact-native-bridges:'):
+        raise ValueError('unknown mapped-work source-report owner')
+    push = ("matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' "
+            "&& (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') "
+            "&& hashFiles('.github/integration-candidate.json') != ''")
+    expected = {
+        'Prepare mapped-work source-test inputs': push,
+        'Upload mapped-work source-test inputs': push + " && steps.mapped_work_source_prepare.outcome == 'success'",
+        'Emit original mapped-work source qualification report': (
+            "${{ !cancelled() && " + push + " && steps.mapped_work_original.outcome == 'success' "
+            "&& steps.mapped_work_source_upload.outcome == 'success' }}"),
+    }
+    steps = re.split(r'(?m)^      - name: ', block)[1:]
+    conditions = re.findall(r'(?m)^\s+if: ([^\n]+)$', block)
+    for name, predicate in expected.items():
+        found = [step for step in steps if step.splitlines()[0] == name]
+        if (len(found) != 1 or re.findall(r'(?m)^        if: ([^\n]+)$', found[0]) != [predicate]
+                or conditions.count(predicate) != 1 or 'continue-on-error:' in found[0]):
+            raise ValueError('mapped-work producer predicate missing, changed, reused or suppressed')
+    original = [step for step in steps if step.splitlines()[0] ==
+                'Test host-owned bridges, reply capture and cross-kind conformance']
+    required = [
+        '.github/scripts/test_artifact_approval_adapter.py',
+        '.github/scripts/test_artifact_prerequisite_adapter.py',
+        '.github/scripts/test_artifact_reconciliation_adapter.py',
+        '.github/scripts/test_replylib.py', '.github/scripts/test_literal_python_reads.py',
+        '--interpreter-env', 'ARTIFACT_CONFORMANCE_PYTHON',
+        '.github/scripts/test_artifact_conformance.py',
+    ]
+    if (len(original) != 1 or re.search(r'(?m)^        if:', original[0])
+            or 'continue-on-error:' in original[0] or bridge_suite_arguments(block) != required
+            or block.count('test_artifact_conformance.py') != 1):
+        raise ValueError('original mapped conformance invocation is conditional, changed or repeated')
+    return set(expected.values())
+
+
+def candidate_suite_invocation_contract(source: str) -> None:
+    """Read the actual once-only command/environment flow, never a spelling hint."""
+    def require(condition, message):
+        if not condition:
+            raise ValueError(message)
+    def same(node, expression):
+        return ast.dump(node, include_attributes=False) == ast.dump(
+            ast.parse(expression, mode='eval').body, include_attributes=False)
+    def named_assignment(node, name):
+        return (isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name) and node.targets[0].id == name)
+    methods = [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.FunctionDef)
+               and node.name == 'test_adversarial_native_candidate_suites_run_as_one_snapshot']
+    require(len(methods) == 1, 'one owning candidate-suite method required')
+    method = methods[0]
+    environments = [node for node in ast.walk(method) if named_assignment(node, 'environment')]
+    require(len(environments) == 1 and same(environments[0].value,
+        'dict(os.environ, ARTIFACT_TEST_INSTALLATION=str(INSTALLATION))'), 'candidate installation environment changed')
+    children = [node for node in method.body if isinstance(node, ast.FunctionDef) and node.name == 'run']
+    require(len(children) == 1, 'one original per-suite child runner required')
+    child = children[0]
+    require([type(node) for node in child.body] == [ast.Expr, ast.Assign, ast.Assign, ast.If, ast.Try],
+            'candidate child dispatch structure changed')
+    command, invocation, selected, attempted = child.body[1:]
+    require(named_assignment(command, 'command') and same(command.value,
+        '[sys.executable, str(REPO / ".github/scripts" / script)]'), 'original candidate argv changed')
+    require(named_assignment(invocation, 'invocation') and same(invocation.value,
+        'nullcontext((command, environment))'), 'unobserved suites must retain original environment')
+    expected_if = ast.parse('''if script == "test_work_github.py" and ("MAJOR_MAPPED_WORK_SOURCE" in environment or "MAJOR_MAPPED_WORK_OBSERVATION" in environment):
+    from mapped_work_observation import conformance_invocation
+    invocation = conformance_invocation(REPO, script, sys.executable, environment)
+''').body[0]
+    require(ast.dump(selected, include_attributes=False) == ast.dump(expected_if, include_attributes=False),
+            'mapped observer must occupy only its exact opt-in original child slot')
+    require(len(attempted.body) == 1 and isinstance(attempted.body[0], ast.With),
+            'candidate child must run inside its selected invocation context')
+    entered = attempted.body[0]
+    require(len(entered.items) == 1 and same(entered.items[0].context_expr, 'invocation')
+            and isinstance(entered.items[0].optional_vars, ast.Tuple)
+            and [item.id if isinstance(item, ast.Name) else None
+                 for item in entered.items[0].optional_vars.elts] == ['command', 'child_environment']
+            and len(entered.body) == 1
+            and isinstance(entered.body[0], ast.Return), 'selected command/environment must be forwarded together')
+    require(same(entered.body[0].value,
+        'subprocess.run(command, cwd=REPO, env=child_environment, capture_output=True, text=True, '
+        'encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS)'),
+        'candidate process argv/environment/deadline/result contract changed')
+    calls = [node for node in ast.walk(method) if isinstance(node, ast.Call)
+             and isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+             and node.func.value.id == 'subprocess' and node.func.attr == 'run']
+    require(len(calls) == 1, 'candidate suite process must be launched exactly once')
+    require(len(attempted.handlers) == 1 and same(attempted.handlers[0].type, 'subprocess.TimeoutExpired')
+            and attempted.handlers[0].name == 'expired', 'candidate timeout must remain a closed failure')
+    returns = [node.value for node in ast.walk(attempted.handlers[0]) if isinstance(node, ast.Return)]
+    require(len(returns) == 1 and isinstance(returns[0], ast.Call)
+            and same(returns[0].func, 'subprocess.CompletedProcess') and len(returns[0].args) == 4
+            and same(returns[0].args[0], 'command') and same(returns[0].args[1], '-1'),
+            'candidate timeout cannot become successful completion')
+
+
+class MappedConformanceReaderControls(unittest.TestCase):
+    def test_mapped_producer_roles_cannot_gate_or_change_the_original_suite(self):
+        block = workflow_jobs(CI_WORKFLOW.read_text(encoding='utf-8'))['artifact-native-bridges']
+        guards = reviewed_mapped_work_event_guards(block)
+        self.assertEqual(len(guards), 3)
+        prepare = next(x for x in guards if x.startswith('matrix.') and 'steps.' not in x)
+        original = '      - name: Test host-owned bridges, reply capture and cross-kind conformance\n'
+        mutations = {
+            'wrong owner': block.replace('  artifact-native-bridges:', '  unreviewed-job:', 1),
+            'wrong platform': block.replace("if: " + prepare, "if: " + prepare.replace("windows/amd64", "linux/amd64"), 1),
+            'wrong event': block.replace("github.event_name == 'push'", "github.event_name == 'pull_request'", 1),
+            'lost source success': block.replace(" && steps.mapped_work_source_prepare.outcome == 'success'", '', 1),
+            'renamed producer': block.replace('Prepare mapped-work source-test inputs', 'Unreviewed preparation', 1),
+            'reused producer predicate': block + '\n      - name: Foreign test\n        if: ' + prepare + '\n        run: python test.py\n',
+            'gated original': block.replace(original, original + '        if: false\n', 1),
+            'gated original with reviewed predicate': block.replace(original, original + '        if: ' + prepare + '\n', 1),
+            'suppressed original': block.replace(original, original + '        continue-on-error: true\n', 1),
+            'missing original suite': block.replace('          .github/scripts/test_artifact_conformance.py\n', '', 1),
+            'duplicated original suite': block + '\n      - name: Duplicate\n        run: python .github/scripts/test_artifact_conformance.py\n',
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label):
+                self.assertNotEqual(changed, block)
+                with self.assertRaises(ValueError): reviewed_mapped_work_event_guards(changed)
+
+    def test_candidate_child_reader_preserves_environment_slot_deadline_and_refusal(self):
+        source = (REPO_ROOT / '.github/scripts/test_artifact_conformance.py').read_text(encoding='utf-8')
+        candidate_suite_invocation_contract(source)
+        mutations = {
+            'wrong installed candidate': source.replace('ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)', 'ARTIFACT_TEST_INSTALLATION="foreign"', 1),
+            'lost default environment': source.replace('nullcontext((command, environment))', 'nullcontext((command, {}))', 1),
+            'wrong original interpreter': source.replace('[sys.executable, str(REPO / ".github/scripts" / script)]', '["python", str(REPO / ".github/scripts" / script)]', 1),
+            'widened observer script': source.replace('if script == "test_work_github.py" and', 'if script != "test_work_github.py" and', 1),
+            'unmatched observer trigger': source.replace('or "MAJOR_MAPPED_WORK_OBSERVATION" in environment', 'and "MAJOR_MAPPED_WORK_OBSERVATION" in environment', 1),
+            'wrong observer environment': source.replace('conformance_invocation(REPO, script, sys.executable, environment)', 'conformance_invocation(REPO, script, sys.executable, os.environ)', 1),
+            'lost private child environment': source.replace('env=child_environment', 'env=environment', 1),
+            'suppressed command failure': source.replace('command, cwd=REPO, env=child_environment', 'command, cwd=REPO, env=os.environ', 1),
+            'unbounded child': source.replace('timeout=SUITE_TIMEOUT_SECONDS', 'timeout=None', 1),
+            'successful timeout': source.replace('command, -1, partial[0]', 'command, 0, partial[0]', 1),
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label):
+                self.assertNotEqual(changed, source)
+                with self.assertRaises(ValueError): candidate_suite_invocation_contract(changed)
+
+
 def checkout_fetch_depth(job: str) -> str | None:
     """Return the checkout step's structured ``with.fetch-depth`` value.
 
@@ -2909,6 +3057,7 @@ class WorkflowContractTest(unittest.TestCase):
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
             vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools") else set()
+            mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
@@ -2921,7 +3070,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards or condition in source_guards or condition in vitest_guards:
+                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
@@ -4395,7 +4544,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         self.assertEqual(set(suites), expected)
         self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
         self.assertIn("[sys.executable, str(REPO / \".github/scripts\" / script)]", source)
-        self.assertIn("env=environment", source)
+        candidate_suite_invocation_contract(source)
         self.assertIn("ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)", source)
         self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
         for script in expected:

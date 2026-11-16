@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
+
 - Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
 
 - Carry authenticated preserved and inapplicable source outcomes alongside required runtime qualification; add bounded C33 and publisher observations.

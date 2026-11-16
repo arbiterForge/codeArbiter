@@ -1,5 +1,5 @@
-import { link, lstat, mkdir, mkdtemp, open, readFile, realpath, rm, utimes, writeFile } from "node:fs/promises";
-import { readFileSync, realpathSync } from "node:fs";
+import { link, mkdir, mkdtemp, readFile, realpath, rm, utimes, writeFile } from "node:fs/promises";
+import { constants, readFileSync, realpathSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -9,6 +9,13 @@ import { createFarmPreviewTool } from "../src/farm.ts";
 import { installParent, installPiFarmPreview } from "../src/extension.ts";
 import { appendPermissionAudit, appendPermissionAuditWithIo, guardUnknownTools } from "../src/tool-guard.ts";
 import type { BridgePort, ExtensionContextPort, ParentPiPort, ToolCategory, ToolDefinitionPort } from "../src/contracts.ts";
+import { NODE_AUDIT_SINK_IO } from "../src/audit-sink.ts";
+
+// Inject the same exact-identity ports used by the production sink. Numeric
+// default Stats can lose Windows file IDs before the race reaches the owner.
+const { lstat } = NODE_AUDIT_SINK_IO;
+const open = async (path: string, flags: number | "a", mode?: number) =>
+  await NODE_AUDIT_SINK_IO.open(path, flags === "a" ? constants.O_WRONLY | constants.O_APPEND : flags, mode);
 
 type ToolCallHandler = (event: Record<string, unknown>) => unknown;
 

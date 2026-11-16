@@ -20,6 +20,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Preserve exact audit file and directory identities on Windows; refuse rounded numeric IDs before any audit append.
+
 - Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
 
 - Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.

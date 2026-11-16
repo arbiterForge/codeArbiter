@@ -2069,7 +2069,8 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         import mapped_work_observation as profile
         self.profile=profile
         self.owner=tempfile.TemporaryDirectory();self.addCleanup(self.owner.cleanup)
-        self.root=Path(self.owner.name)/'repo';self.root.mkdir()
+        self.base=Path(self.owner.name).resolve(strict=True)
+        self.root=self.base/'repo';self.root.mkdir()
         self.run_git('init','-q');self.run_git('config','user.name','Fixture')
         self.run_git('config','user.email','fixture@example.invalid')
         self.run_git('config','core.autocrlf','false')
@@ -2168,7 +2169,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
                 with self.assertRaises(ValueError):self.admit(changed)
 
     def test_consumed_native_archive_bytes_are_checked_without_another_download(self):
-        p=self.profile;root=Path(self.owner.name)/'consumed';root.mkdir()
+        p=self.profile;root=self.base/'consumed';root.mkdir()
         names=('artifact-candidate/release.json','artifact-candidate/ca-artifact-windows-amd64.exe',
                'ci20-native-tested.json','native-tests.json','native-observation.json')
         members=[]
@@ -2217,7 +2218,10 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
 
     def test_public_original_entrypoint_runs_once_restores_modules_and_dispatches_closed_report(self):
         # Inert ArtifactClient file-admission seam only; no binary execution/API.
-        p=self.profile;private=Path(self.owner.name);installation=private/'installation';installation.mkdir()
+        # This synthetic supported snapshot belongs to the inert route fixture;
+        # it does not relabel the actual test runner or a native observation.
+        supported_runtime={'python_sha256':'1'*64,'version':[3,14,10]}
+        p=self.profile;private=self.base;installation=private/'installation';installation.mkdir()
         raw=b'{"fixture":"inert-native-file-only"}';(installation/'release.json').write_bytes(raw)
         (installation/'candidate.bin').write_bytes(b'INERT')
         counter=private/'original-entry-count';counter.write_text('0')
@@ -2251,11 +2255,13 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
              mock.patch.object(owner.readiness,'api',side_effect=AssertionError('observer must not request API')) as api, \
              mock.patch.object(owner.readiness,'artifact_bytes',side_effect=AssertionError('observer must not request archive')) as archive, \
              mock.patch.object(p,'native_snapshot',return_value=state) as native, \
+             mock.patch.object(p,'runtime_snapshot',side_effect=lambda:copy.deepcopy(supported_runtime)) as runtime, \
              mock.patch.dict(os.environ,ARTIFACT_TEST_INSTALLATION=str(installation),GITHUB_RUN_ID='7'), \
              mock.patch.object(p.sys,'platform','win32'),mock.patch.object(p.sys,'flags',flags), \
              mock.patch.object(p.sys,'pycache_prefix',str(private/'pycache')):
             self.assertEqual(p.observe(self.root,output,private/'source-stage'),0)
-        self.assertEqual(native.call_count,2);api.assert_not_called();archive.assert_not_called()
+        self.assertEqual(native.call_count,2);self.assertEqual(runtime.call_count,2)
+        api.assert_not_called();archive.assert_not_called()
         self.assertIs(sys.modules['_artifactlib'],poisoned)
         self.assertEqual(counter.read_text(),'1')
         self.assertEqual(before,p.snapshot(self.root))
@@ -2263,6 +2269,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         self.assertEqual(observation['tests'],[{'id':name,'result':'passed'} for name in sorted(p.SELECTORS)])
         self.assertEqual(observation['consumer_binding']['native_admissions'],dict.fromkeys(p.SELECTORS,1))
         self.assertEqual(observation['consumer_binding']['runtime_before'],observation['consumer_binding']['runtime_after'])
+        self.assertEqual(observation['consumer_binding']['runtime_before'],supported_runtime)
         original=owner.load_json(private/'observation.original.json')
         self.assertEqual(original['producer'],'python-test-result-observer')
         self.assertEqual(original['tests'],observation['tests'])
@@ -2316,9 +2323,22 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         self.assertEqual(owner.load_json(emitted),report)
         self.assertEqual(counter.read_text(),'1')
 
+    def test_inert_supported_runtime_fixture_keeps_unsupported_reference_interpreters_refused(self):
+        fixture=self.fixture()
+        self.assertEqual(self.admit(fixture)['qualified_cells'],[self.profile.CELL])
+        for version in ([3,13,9],[3,15,2],[4,14,0]):
+            with self.subTest(version=version):
+                changed=copy.deepcopy(fixture)
+                # Both snapshots agree: refusal must be the closed reference
+                # runtime boundary, not a before/after mismatch.
+                for name in ('runtime_before','runtime_after'):
+                    changed[1]['consumer_binding'][name]['version']=list(version)
+                with self.assertRaisesRegex(ValueError,'reference interpreter changed or is unsupported'):
+                    self.admit(changed)
+
     def test_owned_child_profile_is_private_and_never_passes_parent_credentials(self):
         p=self.profile
-        source=Path(self.owner.name)/'source';output=Path(self.owner.name)/'observed.json'
+        source=self.base/'source';output=self.base/'observed.json'
         parent=dict(os.environ,MAJOR_MAPPED_WORK_SOURCE=str(source),MAJOR_MAPPED_WORK_OBSERVATION=str(output),
                     GH_TOKEN='PRIVATE-PARENT-CANARY',GITHUB_TOKEN='PRIVATE-PARENT-CANARY',NODE_OPTIONS='PRIVATE-PARENT-CANARY')
         with p.conformance_invocation(self.root,'test_work_github.py',sys.executable,parent) as (command,env):
@@ -2341,14 +2361,14 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         p=self.profile
         (self.root/'core/pysrc/untracked.py').write_text('# unbound shadow\n')
         with mock.patch.object(owner,'observe_python') as execute, mock.patch.object(owner,'validate_emitter_environment'), mock.patch.dict(os.environ,
-                ARTIFACT_TEST_INSTALLATION=str(Path(self.owner.name)/'not-executed')), \
+                ARTIFACT_TEST_INSTALLATION=str(self.base/'not-executed')), \
                 mock.patch.object(p.sys,'platform','win32'), \
                 mock.patch.object(p.sys,'flags',SimpleNamespace(**({key:getattr(sys.flags,key) for key in dir(sys.flags) if not key.startswith('_')} | {'no_user_site':1}))), \
-                mock.patch.object(p.sys,'pycache_prefix',str(Path(self.owner.name)/'cache')):
+                mock.patch.object(p.sys,'pycache_prefix',str(self.base/'cache')):
             with self.assertRaisesRegex(ValueError,'dirty'):
-                p.observe(self.root,Path(self.owner.name)/'out.json',Path(self.owner.name)/'stage')
+                p.observe(self.root,self.base/'out.json',self.base/'stage')
         execute.assert_not_called()
-        self.assertFalse((Path(self.owner.name)/'out.json').exists())
+        self.assertFalse((self.base/'out.json').exists())
 
 
 class MappedNativeConsumerWorkflowTests(unittest.TestCase):

@@ -56,12 +56,42 @@ function lexicallyInside(path, root, flavor = flavorForPlatform(process.platform
 var AUDIT_LOG_NAME = "gate-events.log";
 var AUDIT_STATE_DIRECTORY = ".codearbiter";
 var MAX_AUDIT_LINE_BYTES = 2048;
-var NODE_AUDIT_SINK_IO = Object.freeze({ realpath, lstat, open });
+function exactAuditStats(value) {
+  const size = Number(value.size);
+  const nlink = Number(value.nlink);
+  if (!Number.isSafeInteger(size) || !Number.isSafeInteger(nlink)) throw new Error("unsafe audit metadata");
+  return {
+    dev: value.dev,
+    ino: value.ino,
+    size,
+    nlink,
+    isDirectory: () => value.isDirectory(),
+    isFile: () => value.isFile(),
+    isSymbolicLink: () => value.isSymbolicLink()
+  };
+}
+var NODE_AUDIT_SINK_IO = Object.freeze({
+  realpath,
+  lstat: async (path) => exactAuditStats(await lstat(path, { bigint: true })),
+  open: async (path, flags, mode) => {
+    const handle = await open(path, flags, mode);
+    return {
+      stat: async () => exactAuditStats(await handle.stat({ bigint: true })),
+      appendFile: async (data, options) => await handle.appendFile(data, options),
+      sync: async () => await handle.sync(),
+      close: async () => await handle.close()
+    };
+  }
+});
+function sameIdentity(left, right) {
+  const exact = (value) => typeof value === "bigint" ? value >= 0n : Number.isSafeInteger(value) && value >= 0;
+  return exact(left) && exact(right) && BigInt(left) === BigInt(right);
+}
 function sameAuditFile(left, right) {
-  return left.isFile() && right.isFile() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.nlink === 1 && right.nlink === 1 && left.dev === right.dev && left.ino === right.ino;
+  return left.isFile() && right.isFile() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.nlink === 1 && right.nlink === 1 && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
 }
 function sameAuditDirectory(left, right) {
-  return left.isDirectory() && right.isDirectory() && !left.isSymbolicLink() && !right.isSymbolicLink() && left.dev === right.dev && left.ino === right.ino;
+  return left.isDirectory() && right.isDirectory() && !left.isSymbolicLink() && !right.isSymbolicLink() && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
 }
 async function openedAuditTarget(target, io) {
   const noFollow = typeof fsConstants.O_NOFOLLOW === "number" ? fsConstants.O_NOFOLLOW : 0;

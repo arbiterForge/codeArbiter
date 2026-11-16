@@ -4958,75 +4958,39 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T06:26:42.557612+00:00",
-    "controller_anchor": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+    "recorded_at": "2026-11-16T07:13:59.378986+00:00",
+    "controller_anchor": "2f65fda443816d84b0ee4283f9fc237df728b663",
     "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
     "delivery_pr": 1114,
-    "original_ci_run": 43810799848,
-    "original_docs_run": 43810799763,
-    "last_exact_pr_head_result": "F65_TERMINAL_CI_DOCS_FAILURE_ALL100_CHECKS89_PASS_3_FAIL_8_SKIP",
-    "required_aggregate": "SUCCESS_DOES_NOT_OVERRIDE_WHOLE_FAILURE",
-    "new_routes": {
-      "native_original_component_recipes": 8,
-      "mapped_work_source_native_consumer": 1
-    },
+    "original_ci_run": 43819766055,
+    "original_docs_run": 43819766067,
+    "last_exact_pr_head_result": "ORIGINAL_FAILURES_RETAINED_WHOLE_WORKFLOWS_NOT_QUALIFIED",
+    "followup": "Shared exact audit identities, generated bundles, source-aware workflow readers, maintained Atlas pin and portable inert mapped-profile fixtures. Local affected checks are separate from next-head CI.",
+    "current_staged_integrity": "PASSED_MEASURED_16_FILE_TREE_BEFORE_REPORTING_ONLY_EDIT",
+    "source_or_status_renewal": false,
     "ordinary_selection_groups": 49,
     "ordinary_selection_cells": 50,
-    "existing_native16": "UNCHANGED",
+    "native_component_recipes": 8,
     "remaining_native_runtime_unmapped": 110,
     "remaining_software_original_unmapped": 5,
-    "current_staged_integrity": "PASSED",
-    "source_or_status_renewal": false,
+    "private_future_work": "Two actual Docker home/offline effect passes retained; corrected copy-only fixture separate. Four new N09 methods and S75 exact-obsolete-contract source proposal remain private, unadmitted.",
+    "observations": "evidence/ci-contract-precision-development.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
-    "observations": "evidence/native-source-composition-development.json",
-    "before_trigger_followup_integrity": {
-      "staged_integrity_observation": {
-        "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
-        "verification_fixture_commit": "bc3157469e87db4ed55a2912cf148c20c2c5f9a4",
-        "candidate": "candidate-v1:d583fbc5a27db8d5d8de3e50e029662e2d2a18efcfd8706e779c6d7b271cb9cc",
-        "result": "PASSED",
-        "frozen": 105,
-        "records": 1318,
-        "applicability": {
-          "APPLICABLE": 612,
-          "STALE": 706
-        },
-        "seconds": 37.546,
-        "source_ref_moved": false
-      },
-      "source246_current_applicability": {
-        "STALE": 203,
-        "APPLICABLE": 43
-      },
-      "software48_current_applicability": {
-        "APPLICABLE": 9,
-        "STALE": 39
-      }
-    },
-    "Docs_input_followup": "Six exact new native/source owner/control inputs, originalmethodRED then2affectedPASS/66 omissionvectors; main/publication unchanged.",
     "staged_integrity_observation": {
-      "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
-      "verification_fixture_commit": "154a225f2df8bb0d6990826112204f6859b3a2ae",
-      "candidate": "candidate-v1:6531459b02e454f0d8c794ece237b5cf5835972e73808ccf9a472a85cc8bec5e",
+      "actual_branch_head": "2f65fda443816d84b0ee4283f9fc237df728b663",
+      "verification_fixture_commit": "5a4b96bf537e4bdc5c08ed225a2060f624bfb943",
+      "candidate": "candidate-v1:412111cd25b1b8bc831daf1e12d5b04bff2e75586217aba5b8bbc483e29e8ef9",
       "result": "PASSED",
       "frozen": 105,
       "records": 1318,
       "applicability": {
-        "APPLICABLE": 612,
-        "STALE": 706
+        "APPLICABLE": 566,
+        "STALE": 752
       },
-      "seconds": 36.812,
+      "seconds": 39.93,
       "source_ref_moved": false
-    },
-    "source246_current_applicability": {
-      "STALE": 203,
-      "APPLICABLE": 43
-    },
-    "software48_current_applicability": {
-      "APPLICABLE": 9,
-      "STALE": 39
     }
   },
   "checkpoint_history": [
@@ -5139,6 +5103,78 @@
       },
       "superseded_delivery_state": "PR1114_6C_TERMINAL_BLOCK_CORRECTIONS_AWAITING_EXACT_STAGE_REVIEW_AND_NEW_HEAD_CI_PARENT1098_HELD",
       "reason": "Exact f65 terminal and new source/native framework repairs supersede the previous checkpoint; old measured/proof states remain immutable."
+    },
+    {
+      "recorded_at": "2026-11-16T06:26:42.557612+00:00",
+      "controller_anchor": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+      "delivery_pr": 1114,
+      "original_ci_run": 43810799848,
+      "original_docs_run": 43810799763,
+      "last_exact_pr_head_result": "F65_TERMINAL_CI_DOCS_FAILURE_ALL100_CHECKS89_PASS_3_FAIL_8_SKIP",
+      "required_aggregate": "SUCCESS_DOES_NOT_OVERRIDE_WHOLE_FAILURE",
+      "new_routes": {
+        "native_original_component_recipes": 8,
+        "mapped_work_source_native_consumer": 1
+      },
+      "ordinary_selection_groups": 49,
+      "ordinary_selection_cells": 50,
+      "existing_native16": "UNCHANGED",
+      "remaining_native_runtime_unmapped": 110,
+      "remaining_software_original_unmapped": 5,
+      "current_staged_integrity": "PASSED",
+      "source_or_status_renewal": false,
+      "main_merge": "HELD_FOR_USER_TESTING",
+      "publication": "NOT_AUTHORIZED",
+      "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+      "observations": "evidence/native-source-composition-development.json",
+      "before_trigger_followup_integrity": {
+        "staged_integrity_observation": {
+          "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "verification_fixture_commit": "bc3157469e87db4ed55a2912cf148c20c2c5f9a4",
+          "candidate": "candidate-v1:d583fbc5a27db8d5d8de3e50e029662e2d2a18efcfd8706e779c6d7b271cb9cc",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 612,
+            "STALE": 706
+          },
+          "seconds": 37.546,
+          "source_ref_moved": false
+        },
+        "source246_current_applicability": {
+          "STALE": 203,
+          "APPLICABLE": 43
+        },
+        "software48_current_applicability": {
+          "APPLICABLE": 9,
+          "STALE": 39
+        }
+      },
+      "Docs_input_followup": "Six exact new native/source owner/control inputs, originalmethodRED then2affectedPASS/66 omissionvectors; main/publication unchanged.",
+      "staged_integrity_observation": {
+        "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "verification_fixture_commit": "154a225f2df8bb0d6990826112204f6859b3a2ae",
+        "candidate": "candidate-v1:6531459b02e454f0d8c794ece237b5cf5835972e73808ccf9a472a85cc8bec5e",
+        "result": "PASSED",
+        "frozen": 105,
+        "records": 1318,
+        "applicability": {
+          "APPLICABLE": 612,
+          "STALE": 706
+        },
+        "seconds": 36.812,
+        "source_ref_moved": false
+      },
+      "source246_current_applicability": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      },
+      "software48_current_applicability": {
+        "APPLICABLE": 9,
+        "STALE": 39
+      }
     }
   ]
 }
