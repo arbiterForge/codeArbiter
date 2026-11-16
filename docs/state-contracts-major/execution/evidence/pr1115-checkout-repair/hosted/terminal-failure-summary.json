@@ -1,0 +1,148 @@
+{
+  "schema": "exact-pr-terminal-failure-summary/1",
+  "recorded_at": "2026-11-16T10:13:25.801001+00:00",
+  "expected_head": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "observed_head": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "base": "major/state-contracts",
+  "ci": {
+    "id": 43842033549,
+    "head_sha": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "docs": {
+    "id": 43842033398,
+    "head_sha": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "verdict": "BLOCK",
+  "all_checks_terminal": true,
+  "check_counts": {
+    "skipping": 8,
+    "fail": 2,
+    "pass": 90
+  },
+  "required_merge_gate": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43842033549/job/133228042441",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "original_job_populations": {
+    "ci": 94,
+    "docs": 5
+  },
+  "primary_failure": {
+    "job": 133212952151,
+    "file": ".github/scripts/test_retained_archive_cli_observation.py:659",
+    "test": "CheckoutPolicyCharacterizationTests.test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes",
+    "actual": "Physical CRLF and initial clean status assertions passed; fixture.snapshot did not raise the expected ValueError. Original30tests/1failure.",
+    "source_observation": "Fixture base excludes ambient Git config injection; private_environment switches from explicit private autocrlf=true config to null global config; private source snapshot uses Git status plus literal core Python inputs.",
+    "cause": "UNRESOLVED: index/stat-cache behavior is only a source-backed hypothesis, not an established cause.",
+    "log_sha256": "fe2a6bf915f94ff810c3e3da769beb80ca8c6accd3a3cb662300211e27d830ad"
+  },
+  "consequence_failure": {
+    "job": 133228042441,
+    "name": "[GATE ] | [REPO] | Merge readiness",
+    "log_sha256": "0b79f062be44f7bd03269fd91e1b3dde8277dd509c9a790bea674ed644f3d46a"
+  },
+  "native_conformance": [
+    {
+      "id": 133216986572,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133216986630,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133216986637,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133216986699,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133216986708,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133216986856,
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "cold_package_jobs": [
+    {
+      "id": 133226094760,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133226094834,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133226094845,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133226094874,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133226094882,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133226094986,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "selected_controls": {
+    "ref": "selected-controls.json",
+    "sha256": "8a05365995e4966e43f97563334fe0f9ee99c305898c017cd2d1c0217a0fba10"
+  },
+  "terminal_receipt_sha256": "c7cf727c9a7685419a5ea86fac8b4f821911c30922d594f5ceb53bba1f79fca6",
+  "qualification_admitted": false,
+  "local_watcher_closed": true,
+  "limits": [
+    "No workflow retries/cancellation, merge, source/index/ref/marker/API writes or runtime probes.",
+    "Actual original source/job-level positives cannot override whole CI failure or qualify a successor/normal integration.",
+    "Parent1098/main/publication remain held."
+  ]
+}

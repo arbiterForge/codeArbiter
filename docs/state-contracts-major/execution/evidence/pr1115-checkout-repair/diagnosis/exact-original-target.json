@@ -1,0 +1,10 @@
+{
+  "selector": "CheckoutPolicyCharacterizationTests.test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes",
+  "actual_success": true,
+  "tests_run": 1,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "duration_seconds": 0.8890585000044666,
+  "complete_output": "test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.889s\n\nOK\n"
+}

@@ -676,6 +676,54 @@ class CheckoutPolicyCharacterizationTests(unittest.TestCase):
                 fixture["snapshot"]()
             self.assertEqual(tracked.read_bytes(), b"<p>real changed bytes</p>\n")
 
+    def test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard(self):
+        import os
+        import major_qualification_report as reports
+        import retained_archive_cli_observation as observer
+        from _gitexec import local_read_git_env
+        policy = {"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf", "GIT_CONFIG_VALUE_0": "false",
+                  "GIT_CONFIG_KEY_1": "core.eol", "GIT_CONFIG_VALUE_1": "lf"}
+        for label, settings, clean in (("crlf", {}, False), ("lf", policy, True)):
+            with self.subTest(checkout=label), observer_checkout_fixture(settings) as fixture:
+                repo = fixture["repo"]
+                # Seed a real stat cache under the checkout's explicit foreign
+                # policy without relying on racy-Git timestamp fallback.
+                for name in fixture["before"]:
+                    os.utime(repo / name, ns=(1000000000000000000, 1000000000000000000))
+                self.assertEqual(fixture["status"](), b"")
+                index = repo / ".git/index"
+                def retained_index():
+                    info = index.stat()
+                    return (index.read_bytes(), info.st_dev, info.st_ino, info.st_size,
+                            info.st_mode, info.st_mtime_ns, info.st_ctime_ns)
+                before_index = retained_index()
+                before_bytes = {name: (repo / name).read_bytes() for name in fixture["before"]}
+                with observer.private_environment(repo.parent / "explicit-private-home"):
+                    identity = reports.source_identity(repo)
+                self.assertEqual(identity["clean"], clean, "A cached foreign-policy stat must not stand in for a current-policy worktree read")
+                if clean:
+                    self.assertTrue(fixture["snapshot"]()["clean"])
+                else:
+                    with self.assertRaisesRegex(ValueError, "observer source checkout is not clean") as caught:
+                        fixture["snapshot"]()
+                    detail = getattr(caught.exception, "source_checkout_diagnostic", {})
+                    self.assertIn("plugins/ca/tools/.env.example", [row.get("path") for row in detail.get("entries", [])])
+                self.assertEqual(retained_index(), before_index)
+                self.assertEqual({name: (repo / name).read_bytes() for name in before_bytes}, before_bytes)
+                if clean:
+                    # A separate real staged-index guard is required even when
+                    # the HEAD-based worktree index would be clean.
+                    with observer.private_environment(repo.parent / "staged-private-home"):
+                        env = local_read_git_env()
+                        command = ["git", "--no-lazy-fetch", "-C", str(repo)]
+                        blob = subprocess.run([*command, "rev-parse", "HEAD:core/pysrc/helper.py"], env=env, capture_output=True, check=True, timeout=15).stdout.decode().strip()
+                        subprocess.run([*command, "update-index", "--cacheinfo", "100644", blob, "plugins/ca/tools/.env.example"], env=env, check=True, capture_output=True, timeout=15)
+                        staged = retained_index()
+                        self.assertFalse(reports.source_identity(repo)["clean"])
+                        self.assertEqual(retained_index(), staged)
+                    self.assertEqual({name: (repo / name).read_bytes() for name in before_bytes}, before_bytes)
+
+
 
 class RuntimeSnapshotAliasTests(unittest.TestCase):
     def test_runtime_snapshot_hashes_canonical_bytes_for_runtime_aliases(self):

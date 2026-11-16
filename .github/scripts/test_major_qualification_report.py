@@ -343,6 +343,196 @@ class SourceIdentityTest(unittest.TestCase):
             self.assertFalse(owner.ordinary_native_read_lock(repo))
 
 
+
+class SourceIdentityFreshIndexTests(unittest.TestCase):
+    def fixture(self):
+        from test_retained_archive_cli_observation import observer_checkout_fixture
+        return observer_checkout_fixture({"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf", "GIT_CONFIG_VALUE_0": "false",
+                                          "GIT_CONFIG_KEY_1": "core.eol", "GIT_CONFIG_VALUE_1": "lf"})
+
+    def tree_state(self, root):
+        return {p.relative_to(root).as_posix(): (p.read_bytes(), p.stat().st_dev, p.stat().st_ino,
+                 p.stat().st_mode, p.stat().st_mtime_ns, p.stat().st_ctime_ns)
+                for p in root.rglob("*") if p.is_file()}
+
+    def test_staged_and_conflict_changes_refuse_when_HEAD_worktree_is_clean(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        for kind in ("staged", "conflict"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                repo = f["repo"]; env = local_read_git_env()
+                def git(*args, data=None):
+                    return subprocess.run(["git", "-C", str(repo), *args], input=data, env=env,
+                                          capture_output=True, check=True, timeout=15).stdout
+                target = "plugins/ca/tools/.env.example"
+                blob = git("rev-parse", "HEAD:core/pysrc/helper.py").decode().strip()
+                if kind == "staged":
+                    git("update-index", "--cacheinfo", "100644", blob, target)
+                else:
+                    rows = "0 " + "0" * len(blob) + "\t" + target + "\n"
+                    rows += "".join("100644 " + blob + " " + str(stage) + "\t" + target + "\n" for stage in (1, 2, 3))
+                    git("update-index", "--index-info", data=rows.encode())
+                before = self.tree_state(repo)
+                identity, status = owner.source_checkout(repo)
+                self.assertFalse(identity["clean"])
+                self.assertIn(target.encode(), status)
+                if kind == "conflict": self.assertIn(b"UU ", status)
+                self.assertEqual(self.tree_state(repo), before)
+
+    def test_source_read_is_credential_blind_and_only_private_index_commands_disable_caches(self):
+        from retained_archive_cli_observation import private_environment
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            repo = f["repo"]
+            protected = repo.parent / "protected.gitconfig"
+            protected.write_text("[safe]\n\tdirectory = " + str(repo).replace("\\", "/") + "\n", encoding="utf8")
+            calls=[]; actual=owner.subprocess.run
+            def observe(argv, **kwargs):
+                calls.append((list(argv), dict(kwargs["env"])))
+                return actual(argv, **kwargs)
+            values={"GH_TOKEN":"inert-source-canary", "GITHUB_TOKEN":"inert-source-canary",
+                    "UNRELATED_SECRET":"inert-source-canary", "GIT_CONFIG_COUNT":"1",
+                    "GIT_CONFIG_KEY_0":"http.extraheader", "GIT_CONFIG_VALUE_0":"inert-source-canary",
+                    "GIT_CONFIG_GLOBAL":str(protected), "GIT_DIR":"foreign-root", "GIT_INDEX_FILE":"foreign-index"}
+            before=self.tree_state(repo)
+            with mock.patch.dict(os.environ, values), mock.patch.object(owner.subprocess,"run",side_effect=observe):
+                self.assertTrue(owner.source_identity(repo)["clean"])
+                self.assertEqual(os.environ["GH_TOKEN"], "inert-source-canary")
+            private=[]
+            for argv, env in calls:
+                self.assertIn("--no-optional-locks",argv)
+                self.assertEqual(env["GIT_OPTIONAL_LOCKS"],"0")
+                self.assertEqual(env["GIT_CONFIG_GLOBAL"],str(protected))
+                for key in ("GH_TOKEN","GITHUB_TOKEN","UNRELATED_SECRET","GIT_CONFIG_COUNT","GIT_CONFIG_KEY_0","GIT_CONFIG_VALUE_0","GIT_DIR"):
+                    self.assertNotIn(key,env)
+                if "GIT_INDEX_FILE" in env:
+                    private.append((argv,env))
+                    self.assertFalse(Path(env["GIT_INDEX_FILE"]).is_relative_to(repo))
+                    for setting in ("core.splitIndex=false","core.fsmonitor=false","core.untrackedCache=false","index.sparse=false","core.sparseCheckout=false"):
+                        self.assertIn(setting,argv)
+                else:
+                    self.assertNotIn("-c",argv)
+                    self.assertEqual(argv[argv.index("-C")+2],"rev-parse")
+            self.assertEqual(len(private),3)
+            self.assertEqual({next(name for name in ("diff","read-tree","status") if name in argv) for argv,_ in private},{"diff","read-tree","status"})
+            self.assertEqual(self.tree_state(repo),before)
+            # Switch the real index to an authentic split representation after
+            # descriptor validation, immediately before the staged diff. Only
+            # the owned byte-identical ordinary copy may be consumed by Git.
+            ordinary=(repo/".git/index").read_bytes()
+            from _gitexec import local_read_git_env
+            subprocess.run(["git","-C",str(repo),"update-index","--split-index"],env=local_read_git_env(),check=True,capture_output=True,timeout=15)
+            split=(repo/".git/index").read_bytes()
+            (repo/".git/index").write_bytes(ordinary)
+            shared={p.name:(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in (repo/".git").glob("sharedindex.*")}
+            self.assertTrue(shared)
+            actual_git=owner._source_git
+            def switch_index(root,*args,index=None):
+                if args[0]=="diff": (Path(root)/".git/index").write_bytes(split)
+                return actual_git(root,*args,index=index)
+            with mock.patch.object(owner,"_source_git",side_effect=switch_index),self.assertRaisesRegex(ValueError,"split source index"):
+                owner.source_identity(repo)
+            self.assertEqual({p.name:(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in (repo/".git").glob("sharedindex.*")},shared)
+            self.assertEqual({name:(repo/name).read_bytes() for name in f["before"]},f["before"])
+
+    def test_HEAD_or_real_index_race_refuses_instead_of_returning_clean(self):
+        from retained_archive_cli_observation import private_environment
+        for kind in ("HEAD", "index"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                actual=owner._source_git; changed=False
+                def racing(repo,*args,index=None):
+                    nonlocal changed
+                    result=actual(repo,*args,index=index)
+                    if index is not None and args[0]=="status": changed=True
+                    if changed and kind=="HEAD" and args==("rev-parse","HEAD"):
+                        return b"f"*40+b"\n"
+                    if changed and kind=="index":
+                        with (Path(repo)/".git/index").open("ab") as stream: stream.write(b"owned-race")
+                        changed=False
+                    return result
+                with mock.patch.object(owner,"_source_git",side_effect=racing), self.assertRaises((ValueError, subprocess.CalledProcessError)):
+                    owner.source_identity(f["repo"])
+
+    def test_split_index_refuses_before_Git_can_refresh_real_shared_metadata(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            repo=f["repo"]; env=local_read_git_env()
+            subprocess.run(["git","-C",str(repo),"update-index","--split-index"],env=env,check=True,capture_output=True,timeout=15)
+            before=self.tree_state(repo)
+            with mock.patch.object(owner,"_source_git",wraps=owner._source_git) as git,self.assertRaisesRegex(ValueError,"split source index"):
+                owner.source_identity(repo)
+            self.assertTrue(all(call.args[1]=="rev-parse" for call in git.call_args_list))
+            self.assertEqual(self.tree_state(repo),before)
+
+    def test_ordinary_index_versions_and_bounded_extension_scan_keep_actual_Git_validation(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        for version in (2,3,4):
+            with self.subTest(version=version),self.fixture() as f,private_environment(f["repo"].parent/"control-home"):
+                repo=f["repo"]; env=local_read_git_env()
+                def git(*args):
+                    return subprocess.run(["git","-C",str(repo),*args],env=env,check=True,capture_output=True,timeout=15).stdout
+                (repo/"link").write_bytes(b"ordinary tracked filename, not an index extension\n")
+                git("add","link")
+                git("-c","user.name=fixture","-c","user.email=fixture@example.invalid","-c","commit.gpgsign=false","commit","-qm","ordinary link filename")
+                git("update-index","--index-version",str(version))
+                if version==3: git("update-index","--skip-worktree","core/pysrc/helper.py")
+                self.assertEqual(int.from_bytes((repo/".git/index").read_bytes()[4:8],"big"),version)
+                before=self.tree_state(repo)
+                self.assertTrue(owner.source_identity(repo)["clean"])
+                self.assertEqual(self.tree_state(repo),before)
+        for size in (20,32):
+            header=b"DIRC"+(2).to_bytes(4,"big")+bytes(4)
+            # Pure parser vectors only; Git, not this scanner, validates the
+            # trailing digest. No SHA-1 calculation or synthetic admission.
+            owner._source_index_independent(header+bytes(size),size)
+            for raw in (header+b"link"+bytes(4+size),
+                        header+b"TREE"+(100).to_bytes(4,"big")+bytes(size),
+                        b"BAD!"+header[4:]+bytes(size),
+                        b"DIRC"+(5).to_bytes(4,"big")+bytes(4+size),
+                        b"DIRC"+(2).to_bytes(4,"big")+bytes([255])*4+bytes(size),
+                        b"DIRC"+(4).to_bytes(4,"big")+(1).to_bytes(4,"big")+bytes(42+size)+bytes([128])*10+bytes(1+size),
+                        header+b"TREE"+bytes(3+size)):
+                with self.subTest(size=size),self.assertRaises(ValueError):
+                    owner._source_index_independent(raw,size)
+            with self.assertRaises(ValueError): owner._source_index_independent(header+bytes(size),16)
+
+    def test_failed_private_read_and_unreadable_actual_index_never_fall_back_to_cached_clean(self):
+        from retained_archive_cli_observation import private_environment
+        for kind in ("read-tree", "status", "index"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                actual=owner._source_git
+                def failure(repo,*args,index=None):
+                    if index is not None and args[0]==kind:
+                        raise subprocess.CalledProcessError(128,["git",kind])
+                    return actual(repo,*args,index=index)
+                if kind=="index":
+                    with mock.patch.object(owner,"_source_index_state",side_effect=OSError("owned unavailable index")),self.assertRaises(OSError):
+                        owner.source_identity(f["repo"])
+                else:
+                    with mock.patch.object(owner,"_source_git",side_effect=failure),self.assertRaises(subprocess.CalledProcessError):
+                        owner.source_identity(f["repo"])
+
+    def test_index_path_and_descriptor_metadata_must_each_stay_stable(self):
+        from retained_archive_cli_observation import private_environment
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            index=f["repo"] / ".git/index"
+            actual=owner.os.fstat
+            def stat_with_distinct_creation(fd):
+                value=actual(fd)
+                return SimpleNamespace(**{key:getattr(value,key) for key in ("st_dev","st_ino","st_mode","st_size","st_mtime_ns")},st_ctime_ns=value.st_ctime_ns+1)
+            with mock.patch.object(owner.os,"fstat",side_effect=stat_with_distinct_creation):
+                self.assertTrue(owner._source_index_state(index))
+            changed=0
+            def changing_descriptor(fd):
+                nonlocal changed
+                changed+=1;value=actual(fd)
+                return SimpleNamespace(**{key:getattr(value,key) for key in ("st_dev","st_ino","st_mode","st_size","st_mtime_ns")},st_ctime_ns=value.st_ctime_ns+changed)
+            with mock.patch.object(owner.os,"fstat",side_effect=changing_descriptor),self.assertRaisesRegex(ValueError,"source index changed during read"):
+                owner._source_index_state(index)
+            with mock.patch.object(Path,"is_symlink",return_value=True),self.assertRaisesRegex(ValueError,"bounded regular file"):
+                owner._source_index_state(index)
+
 class ActualPythonObserverTest(unittest.TestCase):
     def test_actual_native_read_creates_only_owned_lock_without_invalidating_source(self):
         from test_artifact_authoring import build_installation

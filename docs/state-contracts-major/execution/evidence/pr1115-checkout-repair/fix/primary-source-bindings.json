@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "path": "C:/Program Files/Git/mingw64/share/doc/git-doc/gitformat-index.adoc",
+      "sha256": "c8aca94073fed907c47f631db8a9c53a9a0a0007f8ea3cdce9722224bebbaa93",
+      "reviewed_line_anchors": [
+        18,
+        155,
+        249,
+        274
+      ]
+    },
+    {
+      "path": "C:/Program Files/Git/mingw64/share/doc/git-doc/git-update-index.adoc",
+      "sha256": "380c77e805433d759f5f4d6892a7f5b2b269287ce8ad870e643d4d1f3d25b8b9",
+      "reviewed_line_anchors": [
+        453,
+        475
+      ]
+    }
+  ],
+  "facts": [
+    "Index v2/v3/v4 header, variable-length entries, bounded length-prefixed extensions and storage-object trailer width",
+    "Actual link extension denotes split-index representation; filename bytes are not extension signatures",
+    "Reading an actual split index freshens real shared metadata regardless optional lock suppression"
+  ],
+  "no_vendor_code_executed": true
+}

@@ -15,3 +15,17 @@ The unchanged live coverage ledger still contains842 baseline PLANNED obligation
 The unchanged integrity owner measured the93-path staged source/data tree:105 frozen files and1318 advanced records passed integrity, with523 applicable/795 stale/zero unknown. Only reporting fields and the retained summary followed this measurement. Applicability is not behavioral qualification; no stale record is promoted. Final-head hosted validation remains required.
 
 PR #1115 at639f9e50 has four actual CI blocker classes: missing Sandbox intent binding, omitted exact workflow roles, noncanonical native policy ordering, and one missing conformance registry name. The corrective source preserves every strict guard, all19nativecells and all prior test names. Actual partial hosted positives include whole PRDocs,88Pi package tests with realSDKfooter,414Sandbox tests with realowned effects, all6nativeplatforms/84.3356%statementcoverage, and supported-host Pi/repository coverageunions. These do not qualify the failed whole run or a later head. [Corrective observations](evidence/pr1115-corrective-development/index.json) retain original failures, localRED/GREEN/sourcechecks and their limits. No ledger/task/proofepoch renewal.
+
+## PR #1115 shared checkout repair
+
+At source `19845104`, all 100 hosted checks completed (90 success, 2 failure,
+8 skipped). The Windows retained-observation test failed; merge readiness failed
+as its consequence. Docs and all six native and six cold-package jobs passed.
+A separate owned-checkout regression confirmed a shared Git stat-cache false-clean
+class; the exact original hosted index state remains unknown. The shared observer
+now uses separate owned indexes for current-policy worktree and staged/conflict
+checks, binds real HEAD/index stability, and refuses split indexes before shared
+metadata can be touched. The named regression failed against the old helper;
+13 final controls and 34 affected compatibility tests passed. Fresh full hosted
+CI and Docs remain required before child merge. No qualification ledger or task
+status is renewed. See `evidence/pr1115-checkout-repair/index.json`.

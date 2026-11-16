@@ -1,0 +1,198 @@
+{
+  "schema": "exact-pr-selected-controls/1",
+  "recorded_at": "2026-11-16T10:03:33.390256+00:00",
+  "head": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "ci_run_id": 43842033549,
+  "event": "pull_request",
+  "attempt": 1,
+  "program_integrity_http_controls": [
+    {
+      "job": 133212951447,
+      "job_id": 133212812194,
+      "bytes": 153359,
+      "sha256": "4ee4980a6875acc46564bda8507ea575a2fe5c6c2a4faac2ec905ff7df2751f6",
+      "state": "READ"
+    },
+    {
+      "job": 133212951319,
+      "job_id": 133212812194,
+      "bytes": 153359,
+      "sha256": "4ee4980a6875acc46564bda8507ea575a2fe5c6c2a4faac2ec905ff7df2751f6",
+      "state": "READ"
+    },
+    {
+      "job": 133212951268,
+      "job_id": 133212812194,
+      "bytes": 153359,
+      "sha256": "4ee4980a6875acc46564bda8507ea575a2fe5c6c2a4faac2ec905ff7df2751f6",
+      "state": "READ"
+    }
+  ],
+  "original_impact_log_join": true,
+  "coverage": {
+    "pi": {
+      "job": 133216595988,
+      "hosts": [
+        "ubuntu-latest",
+        "windows-latest"
+      ],
+      "branches": 81.94,
+      "lines": 86.95,
+      "status": "PASS"
+    },
+    "repository_tools": {
+      "job": 133220270914,
+      "hosts": [
+        "ubuntu-latest",
+        "windows-latest"
+      ],
+      "branches": 74.15,
+      "lines": 74.94,
+      "status": "PASS"
+    },
+    "native": {
+      "job": 133216862166,
+      "expected_platforms": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+      ],
+      "go_version": "go1.27.1",
+      "integration": {
+        "missing_platforms": [],
+        "required": true
+      },
+      "metric": "statements",
+      "minimum_met": true,
+      "minimum_statements": 70.0,
+      "missing_platforms": [],
+      "not_measured": [
+        "lines",
+        "branches"
+      ],
+      "platforms": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+      ],
+      "source_sha256": "58648e6edb866becc1eae7c806474ec3b3e720c3667a3d234cd63a87f2e546dc",
+      "statements": {
+        "covered": 11850,
+        "percent": 84.3356,
+        "total": 14051
+      },
+      "status": "COMPLETE"
+    }
+  },
+  "sandbox_original_job": {
+    "id": 133212951619,
+    "result": "success",
+    "effect_observations": [
+      {
+        "format": "sandbox-owned-effect/1",
+        "case": "home",
+        "id": "8a531e0050bcb21a8070fee7120d4744c473c7523f379cbe7055ea0f5d14e7e6",
+        "volume": "ca-sbx-effect-e24896a6-cfc7-4978-bc0f-85c52375b899-home",
+        "uid": 1000,
+        "homeOwner": 1000,
+        "hostAuthCopied": false,
+        "sameContainerRestarted": true,
+        "persistedNonceMatches": true
+      },
+      {
+        "format": "sandbox-owned-effect/1",
+        "case": "offline",
+        "id": "e254d0d52dcc1af9495438fee2ccaeeda11ab4bbf11cf55d85f2481c436717e5",
+        "uid": 1000,
+        "interfaces": [
+          "lo"
+        ],
+        "dummyOnly": true,
+        "foreignCredentialPresent": false,
+        "capEff": "0000000000000000",
+        "noNewPrivs": "1",
+        "networkMode": "none",
+        "readOnly": true
+      },
+      {
+        "format": "sandbox-owned-effect/1",
+        "case": "partial-copy",
+        "id": "358471ac8f761d676c0fe8c65d7a0407f195d7a3ec812515fd28162c080c729f",
+        "observedPartial": 98304,
+        "retained": 983040,
+        "expectedBytes": 67108864,
+        "code": 130,
+        "aborted": true,
+        "timedOut": false,
+        "overflowed": false,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "8a45ed9f23b688f6381dedd2e8f7247c7b76f07196492c04fff8ecf4596da5f9",
+        "prefixMatches": true
+      }
+    ]
+  },
+  "sdk_original_job": {
+    "id": 133212951252,
+    "result": "success",
+    "original_release_package_contract": true
+  },
+  "original_jobs": {
+    "133212951447": {
+      "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+      "log_sha256": "ae493a1f11b05113a662310822e96373d414e45633931f87d761cc874561b22c",
+      "bytes": 656521
+    },
+    "133212951319": {
+      "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+      "log_sha256": "531008eb39d455f660675efd22a0d3e0c4a91a8802639b244d55531e1f315830",
+      "bytes": 668918
+    },
+    "133212951268": {
+      "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+      "log_sha256": "3c99df9aeaeb786ed81dd45a42aa4f7c4217e6365f7b552a18854fb18ec9e5ab",
+      "bytes": 655973
+    },
+    "133216595988": {
+      "name": "[CHECK] | [PI  ] | Coverage union",
+      "log_sha256": "f305e3f7d459d6ae6e8c90ced2a4d8ace493f8f7ab268ff70f135efefeb4d854",
+      "bytes": 44119
+    },
+    "133216862166": {
+      "name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "log_sha256": "ecb04e4b5562b4ca47c696b894f529b10ee4c392cc1cdec892f9a1adfbbe6bfa",
+      "bytes": 36601
+    },
+    "133220270914": {
+      "name": "[CHECK] | [REPO] | Coverage union",
+      "log_sha256": "94c79dd0af7b4bd41bacd7515b4ea1fa8aca83209003d9b83111f976cc464a73",
+      "bytes": 103369
+    },
+    "133212951252": {
+      "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "log_sha256": "d2354f1ee803f2bdb663db32762ba8d35a6866dd9e3588ddb62973cb8f0dfd56",
+      "bytes": 81220
+    },
+    "133212951619": {
+      "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "log_sha256": "20fcccad4c5d1c956adb19e6f748cd22d33db58181247344dca84c16402c1aa8",
+      "bytes": 66077
+    },
+    "133212812194": {
+      "name": "[CHECK] | [REPO] | Impact selection",
+      "log_sha256": "4ee4980a6875acc46564bda8507ea575a2fe5c6c2a4faac2ec905ff7df2751f6",
+      "bytes": 153359
+    }
+  },
+  "whole_workflow_verdict": "BLOCK_PENDING_TERMINAL_WITH_WINDOWS_FIXTURE_FAILURE",
+  "qualification_admitted": false,
+  "limits": [
+    "Current198451 selected original jobs only. Whole workflow failure cannot be overridden.",
+    "These metrics and effects do not qualify a successor or normal integration."
+  ]
+}

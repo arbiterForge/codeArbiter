@@ -103,15 +103,148 @@ def ordinary_native_read_lock(repo):
         return False
 
 
-def source_identity(repo, profile=None):
-    status = git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z")
-    outputs = _pi_output_members(repo) if profile == "pi-tools-v1" else set()
+def _source_git(repo, *args, index=None):
+    """Read the actual index without refresh; only the owned index is writable."""
+    env = local_read_git_env()
+    env["GIT_OPTIONAL_LOCKS"] = "0"
+    command = ["git", "--no-optional-locks", "--no-replace-objects", "--no-lazy-fetch"]
+    if index is not None:
+        env["GIT_INDEX_FILE"] = str(index)
+        command += ["-c", "core.splitIndex=false", "-c", "core.fsmonitor=false",
+                    "-c", "core.untrackedCache=false", "-c", "index.sparse=false",
+                    "-c", "core.sparseCheckout=false"]
+    result = subprocess.run([*command, "-C", str(repo), *args], env=env,
+                            capture_output=True, timeout=30, check=True)
+    require(len(result.stdout) <= MAX_JSON, "source status exceeds bound")
+    return result.stdout
+
+
+def _source_index_independent(raw, object_bytes):
+    """Reject split-index reads before Git can freshen real shared metadata.
+
+    Walk only the documented v2/v3/v4 entry/extension lengths. Git remains the
+    checksum/object/index validator; this does not compute Git object hashes.
+    """
+    end = len(raw) - object_bytes
+    require(object_bytes in (20, 32) and end >= 12 and raw[:4] == b"DIRC", "invalid source index header")
+    version, count = int.from_bytes(raw[4:8], "big"), int.from_bytes(raw[8:12], "big")
+    fixed = 42 + object_bytes
+    require(version in (2, 3, 4) and count <= (end - 12) // (fixed + 1), "unsupported source index layout")
+    cursor = 12
+    for _ in range(count):
+        start = cursor
+        require(cursor + fixed <= end, "truncated source index entry")
+        flags = int.from_bytes(raw[cursor + fixed - 2:cursor + fixed], "big")
+        cursor += fixed
+        if flags & 0x4000:
+            require(version >= 3 and cursor + 2 <= end, "invalid extended source index entry")
+            cursor += 2
+        if version == 4:
+            for number in range(10):
+                require(cursor < end, "truncated source index prefix")
+                value = raw[cursor]; cursor += 1
+                if not value & 0x80:
+                    break
+            else:
+                require(False, "unbounded source index prefix")
+        nul = raw.find(b"\0", cursor, end)
+        require(nul >= 0, "unterminated source index name")
+        if version != 4:
+            require(flags & 0xFFF == 0xFFF or nul - cursor == flags & 0xFFF, "invalid source index name length")
+        cursor = nul + 1
+        if version != 4:
+            padding = -(cursor - start) % 8
+            require(cursor + padding <= end and raw[cursor:cursor + padding] == b"\0" * padding,
+                    "invalid source index padding")
+            cursor += padding
+    while cursor < end:
+        require(cursor + 8 <= end, "truncated source index extension")
+        signature = raw[cursor:cursor + 4]
+        size = int.from_bytes(raw[cursor + 4:cursor + 8], "big")
+        cursor += 8
+        require(size <= end - cursor, "truncated source index extension")
+        require(signature != b"link", "split source index cannot be read without changing shared metadata")
+        cursor += size
+
+
+def _source_index_state(path, object_bytes=20, *, retain=False):
+    """Bind both the bytes and metadata of the real index, without changing it."""
+    path = Path(path)
+    before = path.lstat()
+    require(stat.S_ISREG(before.st_mode) and not path.is_symlink()
+            and not getattr(before, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+            and before.st_size <= 64 * 1024 * 1024, "source index must be a bounded regular file")
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+                info.st_mtime_ns, info.st_ctime_ns)
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        raw = stream.read(64 * 1024 * 1024 + 1)
+        finished = os.fstat(stream.fileno())
+    # Windows path/handle APIs can report different creation/ctime values for
+    # a Git-replaced index. Check each API's ctime for stability, and bind the
+    # descriptor to the path through device/inode/mode/size/mtime instead.
+    require(identity(before) == identity(path.lstat())
+            and identity(opened) == identity(finished)
+            and identity(before)[:5] == identity(opened)[:5]
+            and len(raw) == before.st_size, "source index changed during read")
+    _source_index_independent(raw, object_bytes)
+    state = identity(before), hashlib.sha256(raw).hexdigest()
+    return (state, raw) if retain else state
+
+
+def _source_indices(repo, *, retain=False):
+    actual = os.fsdecode(_source_git(repo, "rev-parse", "--path-format=absolute", "--git-path", "index").rstrip(b"\r\n"))
+    format_name = _source_git(repo, "rev-parse", "--show-object-format").strip()
+    require(format_name in (b"sha1", b"sha256"), "unknown source object format")
+    state = _source_index_state(actual, 20 if format_name == b"sha1" else 32, retain=retain)
+    if retain:
+        return (actual, state[0]), state[1]
+    return actual, state
+
+
+def source_checkout(repo, profile=None):
+    """Return identity and the same current-policy status used by diagnostics.
+
+    An index stat cache may have been produced under another text policy. A
+    fresh HEAD index forces a current-policy read; the real index is checked
+    independently so staged or unmerged changes cannot disappear in that view.
+    """
     require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
-    clean = all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
-                or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.split("\0"))
-    return {"source_commit": git(repo, "rev-parse", "HEAD"),
-            "source_tree": git(repo, "rev-parse", "HEAD^{tree}"),
-            "clean": clean}
+    source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
+    tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
+    before, actual_raw = _source_indices(repo, retain=True)
+    with tempfile.TemporaryDirectory(prefix="ca-source-index-") as temporary:
+        private = Path(temporary).resolve(strict=True)
+        require(not private.is_relative_to(Path(repo).resolve(strict=True)), "source index must be outside checkout")
+        actual_copy = private / "actual-index"
+        with actual_copy.open("xb") as stream:
+            stream.write(actual_raw)
+        staged = _source_git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
+                             "--no-renames", "--name-status", "-z", source, "--", index=actual_copy)
+        owned_index = private / "HEAD-index"
+        _source_git(repo, "read-tree", source, index=owned_index)
+        status = _source_git(repo, "status", "--porcelain=v1", "--no-renames",
+                             "--untracked-files=all", "-z", index=owned_index)
+    require(before == _source_indices(repo)
+            and source == _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip(),
+            "source HEAD or index changed during observation")
+    # Preserve staged/conflict diagnostics even when worktree bytes equal HEAD.
+    parts = staged.split(b"\0")
+    require(parts[-1] == b"" and (len(parts) - 1) % 2 == 0, "invalid staged source status")
+    for label, path in zip(parts[:-1:2], parts[1:-1:2]):
+        require(label in (b"A", b"C", b"D", b"M", b"R", b"T", b"U", b"X", b"B")
+                and path, "invalid staged source status")
+        status += (b"UU " if label == b"U" else label + b"  ") + path + b"\0"
+    require(len(status) <= MAX_JSON, "source status exceeds bound")
+    outputs = _pi_output_members(repo) if profile == "pi-tools-v1" else set()
+    clean = not staged and all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
+                or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.decode("utf-8").split("\0"))
+    return {"source_commit": source, "source_tree": tree, "clean": clean}, status
+
+
+def source_identity(repo, profile=None):
+    return source_checkout(repo, profile)[0]
 
 
 SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',

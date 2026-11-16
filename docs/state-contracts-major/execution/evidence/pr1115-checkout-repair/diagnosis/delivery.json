@@ -1,0 +1,18 @@
+{
+  "kind": "CONFIRMED_FRAMEWORK_DIAGNOSTIC_HANDOFF_NO_REPAIR",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "files": {
+    "causal-handoff.json": "50fde950f565f445b87b5dbb4437b4acae6a9ed51034bb4260699485887be3db",
+    "context-bindings.json": "f2ced1fab5d578bfa0df4061dc13b8026dbb279e7cd8e807443ab0d6afa228e9",
+    "crlf-checkout-fresh.index": "813d1b489e91235a681319f56d3870e1b6da207b0344dcef09c7617199b399e1",
+    "diagnose.py": "ceae5869477645d0702fcb0e243c2af993859acca9ac6d58b5d5a6829f8bac3f",
+    "exact-original-target.json": "cc99498d4edc3fe34ff26efd59e44b3e84c4f1e1af04fda6c2047ac19505d838",
+    "lf-checkout-fresh.index": "813d1b489e91235a681319f56d3870e1b6da207b0344dcef09c7617199b399e1",
+    "owned-comparisons.json": "bb588a09c084d5d7a0f4175011702a6789ea7d7a33e369ff1b23810067930785",
+    "seal.py": "6c3ec3e923aeb169082200e1e895cf50cb6c0a50239a99f11162eb4e84478832",
+    "source-and-outcome.json": "c3f1179c37362e2ebfd1551da6c9e2378211603abf5a8831a446bca2ca2f98f0",
+    "source-literal-joins.json": "ecae3398610698973e1c2ac0f1344d21af6e03e5129554cd6627698040414203"
+  },
+  "canonical_writes": false,
+  "extra_runtime_replays": false
+}
