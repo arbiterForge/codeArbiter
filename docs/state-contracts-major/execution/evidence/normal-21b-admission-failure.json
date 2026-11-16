@@ -1,0 +1,240 @@
+{
+  "format": "trusted-normal-terminal-watch/1",
+  "observed_at": "2026-11-15T23:49:43.882879+00:00",
+  "repository": "arbiterForge/codeArbiter",
+  "source_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+  "source_tree": "d15b27737121fb9f31d603d1d37a1833fa9e04af",
+  "run_id": 43772302989,
+  "attempt": 1,
+  "event": "push",
+  "workflow": ".github/workflows/ci.yml",
+  "branch": "major/state-contracts",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": {
+    "success": 82,
+    "skipped": 7,
+    "failure": 8
+  },
+  "original_installed_owners": [
+    {
+      "job_id": 132990810951,
+      "name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 133002594908,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 133002594910,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 133002594931,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 133002594936,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002594960,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002594968,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002594979,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 133002594995,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002595023,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002595034,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "conclusion": "failure"
+    },
+    {
+      "job_id": 133002595061,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "conclusion": "failure"
+    }
+  ],
+  "native_builder_jobs": [
+    {
+      "job_id": 132990810607,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 132990810608,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 132990810663,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 132990810681,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 132990810683,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+      "conclusion": "success"
+    },
+    {
+      "job_id": 132990810717,
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "conclusion": "success"
+    }
+  ],
+  "required_merge_readiness": {
+    "job_id": 133003350596,
+    "conclusion": "failure"
+  },
+  "installed13_eligible": false,
+  "native133_eligible": false,
+  "refusal": "Whole trusted normal failed. Individual5 installedowner greens and6builder greens do not establish whole13/133 qualification.",
+  "cold_original_closed_diagnostics": [
+    {
+      "platform": "linux/amd64",
+      "job_id": 133002595023,
+      "artifact_id": 14186716385,
+      "artifact_digest": "sha256:c029bbb23f705ec0bee72d129c9ceff246e75de865a8016593e3b9bb84b8b07e",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "673707bc479b8fc7c814630d71a5da3378450db2ee92e0fd81610795edb8e654",
+      "source_checkout_diagnostic_entries": 0,
+      "containment": "not-started"
+    },
+    {
+      "platform": "darwin/amd64",
+      "job_id": 133002594995,
+      "artifact_id": 14186676018,
+      "artifact_digest": "sha256:a8e5981242f1b6f0de1632e1e54531d7a9fe0bb396699c77902dda711ba9375d",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "673707bc479b8fc7c814630d71a5da3378450db2ee92e0fd81610795edb8e654",
+      "source_checkout_diagnostic_entries": 0,
+      "containment": "not-started"
+    },
+    {
+      "platform": "windows/arm64",
+      "job_id": 133002594960,
+      "artifact_id": 14186506463,
+      "artifact_digest": "sha256:43de675e68e0a10be1640f209079c50b7984cdf9927a1144e5dd3729feab8ba8",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "82afe6852d270a948050c47e176d3813d42e26b4462c6b51399c785c40940f40",
+      "source_checkout_diagnostic_entries": 103,
+      "containment": "not-started"
+    },
+    {
+      "platform": "linux/arm64",
+      "job_id": 133002595034,
+      "artifact_id": 14186466420,
+      "artifact_digest": "sha256:161f027a933ac0dfb5212bb225e02bd9991290fd2bd9fca50b459ad8be13e6e2",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "673707bc479b8fc7c814630d71a5da3378450db2ee92e0fd81610795edb8e654",
+      "source_checkout_diagnostic_entries": 0,
+      "containment": "not-started"
+    },
+    {
+      "platform": "windows/amd64",
+      "job_id": 133002594968,
+      "artifact_id": 14186198023,
+      "artifact_digest": "sha256:8d51bef20c57f55ecbef878bf677bae5ebc4e2cd508bdd5200d56b6477160321",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "82afe6852d270a948050c47e176d3813d42e26b4462c6b51399c785c40940f40",
+      "source_checkout_diagnostic_entries": 128,
+      "containment": "not-started"
+    },
+    {
+      "platform": "darwin/arm64",
+      "job_id": 133002595061,
+      "artifact_id": 14185664079,
+      "artifact_digest": "sha256:432e047da784b08dafb3c0179d23d372f7708a762b2b729349d89ea5b45d295a",
+      "original_upload_id_digest_in_original_log": true,
+      "phase": "admission",
+      "failure_text_sha256": "673707bc479b8fc7c814630d71a5da3378450db2ee92e0fd81610795edb8e654",
+      "source_checkout_diagnostic_entries": 0,
+      "containment": "not-started"
+    }
+  ],
+  "Windows_dirty_closed_summary": [
+    {
+      "artifact_id": 14186656780,
+      "retained_entries": 128,
+      "entry_limit": 128,
+      "total_actual_entries": "UNKNOWN when128cap reached",
+      "status_counts": {
+        " M": 128
+      },
+      "prefix_counts": {
+        "plugins": 1,
+        "site": 127
+      },
+      "status_sha256": "c10b387ce014fa5b72a324c9d8c4b979655651a4573a76d42eaf86557c5275b4"
+    },
+    {
+      "artifact_id": 14186198023,
+      "retained_entries": 128,
+      "entry_limit": 128,
+      "total_actual_entries": "UNKNOWN when128cap reached",
+      "status_counts": {
+        " M": 128
+      },
+      "prefix_counts": {
+        "plugins": 21,
+        "site": 107
+      },
+      "status_sha256": "de37a6b0c6463a32a9073a9ed676aa2ecbb4ecfca1b38ff53dfea78767008bac"
+    },
+    {
+      "artifact_id": 14186506463,
+      "retained_entries": 103,
+      "entry_limit": 128,
+      "total_actual_entries": "UNKNOWN when128cap reached",
+      "status_counts": {
+        " M": 103
+      },
+      "prefix_counts": {
+        "site": 101,
+        "tools": 2
+      },
+      "status_sha256": "bed282c4cb87aaca6fdf3aab7c23f59535256f6d30c056fc7bdaed335edc27d7"
+    }
+  ],
+  "causal_bounds": {
+    "established_POSIX": "All4 actualoriginalcold admission observations have fixedregular-file/size guard messagehash673707bc\u2026; no coldcommand started.",
+    "established_Windows": "Both actualoriginalcold Windows andPiWindows bootstrap refused source_checkout notclean. Onlytrackednames+hashes retained; no rawfilecontent read.",
+    "hypothesis_POSIX": "Runtime snapshot resolves identity but hashes unresolved alias under no-follow guard; actualhosted failedpath notretained. Packagingactor owns private targeted regression, no realhostedruntime retry.",
+    "hypothesis_Windows": "Private environment disables globalGitconfig, potentially changing checkoutautocrlf semantics; actualglobalconfig/causalmodifier notretained. CIactor owns private targeted regression.",
+    "unknown": "No innercoldworkflow cause or runtimequalification is inferred, and previousPi2df EOF remainsseparate."
+  },
+  "original_private_receipt_sha256": "c04aedb123bb369934373b32beb8a6c335737e5bb402154394601a02ad522852"
+}

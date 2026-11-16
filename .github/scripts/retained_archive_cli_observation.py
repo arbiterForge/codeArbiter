@@ -430,8 +430,13 @@ def _source_snapshot(repo):
 def _runtime_snapshot():
     git = shutil.which("git")
     require(git is not None, "reviewed Git runtime unavailable")
-    return {name: {"path": str(path.resolve(strict=True)), "sha256": digest(regular_bytes(path, 64 * 1024 * 1024))}
-            for name, path in (("python", Path(sys.executable)), ("git", Path(git)))}
+    result = {}
+    for name, path in (("python", Path(sys.executable)), ("git", Path(git))):
+        # Runtime launch aliases may be links. Record and hash the same resolved
+        # target, retaining the regular-file, reparse-point and size guards.
+        canonical = path.resolve(strict=True)
+        result[name] = {"path": str(canonical), "sha256": digest(regular_bytes(canonical, 64 * 1024 * 1024))}
+    return result
 
 
 def _load_packager(repo):

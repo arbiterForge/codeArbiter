@@ -172,4 +172,25 @@ class RetainedColdPipelineTest(unittest.TestCase):
     with self.subTest(step=name,outcome=outcome):
      self.assertEqual(self._cold_condition_applies(step,outcome),expected)
 
+
+
+class ObserverCheckoutPolicyPipelineTests(unittest.TestCase):
+ def test_original_observer_jobs_materialize_bytes_for_their_private_git_policy(self):
+  import re
+  from test_retained_archive_cli_observation import observer_checkout_fixture
+  jobs=workflow_jobs((ROOT/'.github/workflows/ci.yml').read_text(encoding='utf8'))
+  for job in ('artifact-package-cold','pi-installed-package'):
+   with self.subTest(job=job):
+    # Only job-level environment before steps controls checkout materialization.
+    # A setting introduced after checkout cannot satisfy this behavioral test.
+    precheckout=jobs[job].split('    steps:',1)[0]
+    settings=dict(re.findall(r'^      (GIT_CONFIG_(?:COUNT|KEY_\d+|VALUE_\d+)): [\'"]?([^\'"\n]+?)[\'"]?\s*$',precheckout,re.M))
+    with observer_checkout_fixture(settings) as fixture:
+     try: observed=fixture['snapshot']()
+     except ValueError as error:
+      self.fail('fresh original '+job+' checkout is rejected under its own private Git policy: '+str(error))
+     self.assertTrue(observed['clean'])
+     self.assertEqual(fixture['before'],fixture['contents'])
+     self.assertEqual({name:(fixture['repo']/name).read_bytes() for name in fixture['before']},fixture['before'])
+
 if __name__=='__main__':unittest.main(verbosity=2)

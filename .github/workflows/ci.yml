@@ -1567,6 +1567,14 @@ jobs:
           - os: macos-26
             platform: darwin/arm64
             platform_token: darwin-arm64
+    # Materialize canonical text before observer isolation hides runner Git
+    # configuration. Historical -text inputs retain their exact bytes.
+    env:
+      GIT_CONFIG_COUNT: "2"
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: "false"
+      GIT_CONFIG_KEY_1: core.eol
+      GIT_CONFIG_VALUE_1: lf
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -3905,6 +3913,14 @@ jobs:
     permissions:
       actions: read
       contents: read
+    # Materialize canonical text before observer isolation hides runner Git
+    # configuration. Historical -text inputs retain their exact bytes.
+    env:
+      GIT_CONFIG_COUNT: "2"
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: "false"
+      GIT_CONFIG_KEY_1: core.eol
+      GIT_CONFIG_VALUE_1: lf
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

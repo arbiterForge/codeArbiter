@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+  "head": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-15T23:30:56.471109+00:00",
+  "recorded_at": "2026-11-15T23:58:47.952363+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -19,9 +19,9 @@
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-qualification-coverage",
+        "branch": "codex/state-contracts-observer-admission",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical source/index/progress writer for finite qualification coverage, source60 admission and child delivery; other actors prepare private Temp proposals only."
+        "scope": "Sole canonical source/index/progress writer for observer admission repairs and final PR1114 delivery; other actors use private Temp candidates."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -3784,6 +3784,12 @@
       "kind": "AFTER1113_FINITE_QUALIFICATION_COVERAGE",
       "source": "21b76e3718a759723bb1b0294d6493f80a07ff71",
       "detail": "PR1113 merged21b76 after92successful/6skipped exact-head checks and requiredgatePASS. Native report route coverage is extended to16 complete-clause Windows/amd64 cells with33 exact named selectors;24 owning report tests pass without native execution. Three new built-drawer tests and strict scoped TypeScript pass against the authenticated e064 Pages fixture using installed Chrome. Source60 renews59 PRESERVED and1 NOT_APPLICABLE dispositions at literal e064 after actual source inspection; statuses/history unchanged. Full staged original-owner admission is pending. Trusted normal43772302989 and real installed/native admission are separate; main/publication and user policy/human acceptance holds remain."
+    },
+    {
+      "recorded_at": "2026-11-15T23:58:47.952363+00:00",
+      "kind": "NORMAL21B_ADMISSION_FAILURE_AND_LOCAL_FRAMEWORK_REPAIRS",
+      "source": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+      "detail": "Original trusted normal43772302989 failed82/8/7 with7 installed-owner refusals before cold execution. Private Git fixture reproduces clean CRLF checkout becoming dirty after global config isolation; pre-materialization job text policy admits literal LF and preserves -text CRLF/real-edit refusal. Actual owned symlinks reproduce both runtime alias failures; resolve-once/hash-canonical repair passes unchanged guards. Classifier exact-source history regression RED then25PASS; merged admission owning suite40PASS0skip. Hosted exact failedpath/config remain unknown; final1114 head/CI and current-source applicability pending. No task/installed/native qualification."
     }
   ],
   "scoped_blockers": [
@@ -3801,6 +3807,11 @@
       "id": "NORMAL-BB4-INSTALLED-OWNERS",
       "scope": "Trusted normal installed13/native133 qualification",
       "detail": "Run43758478716 at bb4886b9 is terminal FAILED:78success/12failure/7skip, including11 installed owners and required gate. Transport advanced. Codex nested observer TypeError is source-confirmed; cold internal cause, Pi changed member and Windows dirty entry remain UNKNOWN. Local repairs/diagnostics do not qualify the failed normal run."
+    },
+    {
+      "id": "NORMAL21B_ADMISSION_QUALIFICATION",
+      "scope": "Only installed13/native133 whole-run admission",
+      "detail": "Trusted21b normal failed82/8/7. Local matching admission mechanisms repaired and tested, but final source and exact-head hosted required checks plus a genuinely successful trusted normal run remain required. No blind unchanged retry."
     }
   ],
   "unknown_outcomes": [
@@ -3837,11 +3848,11 @@
     }
   ],
   "next_actions": [
-    "Validate and independently review this finite qualification-coverage child, then deliver through exact-head hosted gates into major/state-contracts.",
-    "Authenticate original installed/native results only from a wholly successful trusted integration push; diagnose actual failures without blind retries.",
-    "Continue remaining software and user/parent/lifecycle acceptance; obtain the pending Pi HTTP policy choice. Keep1098 unmerged to main and publication held."
+    "Finish one affected-scope independent review and current staged integrity of admission repairs; fast-forward PR1114 with final scope and require its exact-head hosted gate.",
+    "After authorized child merge, observe one new trusted integration push and authenticate original installed reports; diagnose any actual remaining failure.",
+    "Continue missing software assertions/report producers and actual user/parent/lifecycle acceptance. Keep Pi HTTP decision pending,1098 held from main, and publication unauthorized."
   ],
-  "delivery_state": "PR1113_MERGED_NEXT_FINITE_QUALIFICATION_COVERAGE_LOCAL_GREEN_PARENT1098_HELD",
+  "delivery_state": "LOCAL_ADMISSION_REPAIRS_GREEN_FINAL1114_HEAD_AND_TRUSTED_NORMAL_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -3865,7 +3876,7 @@
       "source": ".github/workflows/ci.yml current concurrency contract; current Root-scoped correction, 2026-11-15."
     }
   ],
-  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1113",
+  "delivery_pr": "https://github.com/arbiterForge/codeArbiter/pull/1114",
   "integrator_observations": [
     {
       "id": "M46e29-original-acceptance",
@@ -4210,7 +4221,7 @@
       "retained_at_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71"
     }
   ],
-  "head_semantics": "Committed integration anchor after PR1113 true merge. This child extends finite qualification routes and maintained browser tests; no future commit identity or hosted/installed/task qualification is inferred.",
+  "head_semantics": "Last committed anchor ae4 before these admission repairs. Native/site/source60 first-child validation remains historical evidence; final current applicability is measured separately after changed source. No future commit identity or installed success inferred.",
   "superseded_checkpoint_fields": [
     {
       "id": "before-job-log-transport-9f9cde6b",
@@ -4623,44 +4634,68 @@
       },
       "superseded_delivery_state": "LOCAL_REPAIRS_AND82_FINITE_RECORDS_CURRENT_1086APP232STALE_PARENT1098_HELD",
       "reason": "PR1113 merged; current successor updates pending/observed state without deleting the predecessor checkpoint."
+    },
+    {
+      "source_commit": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+      "superseded_live_checkpoint": {
+        "recorded_at": "2026-11-15T23:30:56.471109+00:00",
+        "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+        "merged_child_pr": 1113,
+        "merged_child_head": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+        "exact_child_checks": {
+          "success": 92,
+          "skipped": 6,
+          "required_merge_readiness": "PASS"
+        },
+        "trusted_normal_run": 43772302989,
+        "trusted_normal_status": "PENDING_AUTHENTICATED_TERMINAL_RESULT",
+        "active_branch": "codex/state-contracts-qualification-coverage",
+        "local_native_report_tests": {
+          "passed": 24,
+          "mapped_cells": 16,
+          "selectors": 33,
+          "native_execution": false
+        },
+        "local_browser_tests": {
+          "passed": 3,
+          "built_fixture_source": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+          "controller_source": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+          "strict_typescript": "PASS",
+          "hosted_qualification": false
+        },
+        "source_conformance_updates": {
+          "PRESERVED": 59,
+          "NOT_APPLICABLE": 1,
+          "statuses_unchanged": true,
+          "literal_source_anchor": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+          "staged_owner_validation": "PASSED_105_FROZEN_1318_ADVANCED_1146_APPLICABLE_172_STALE_0_UNKNOWN"
+        },
+        "parent_pr": 1098,
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE"
+      },
+      "superseded_delivery_state": "PR1113_MERGED_NEXT_FINITE_QUALIFICATION_COVERAGE_LOCAL_GREEN_PARENT1098_HELD",
+      "reason": "Trusted normal21b terminal failure and actual admission repair supersede the first1114 pending snapshot."
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-15T23:30:56.471109+00:00",
+    "recorded_at": "2026-11-15T23:58:47.952363+00:00",
+    "source_anchor": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
     "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
-    "merged_child_pr": 1113,
-    "merged_child_head": "e0642aeb4b708ca5e62831638adb548b000f8bca",
-    "exact_child_checks": {
-      "success": 92,
-      "skipped": 6,
-      "required_merge_readiness": "PASS"
-    },
+    "delivery_pr": 1114,
     "trusted_normal_run": 43772302989,
-    "trusted_normal_status": "PENDING_AUTHENTICATED_TERMINAL_RESULT",
-    "active_branch": "codex/state-contracts-qualification-coverage",
-    "local_native_report_tests": {
-      "passed": 24,
-      "mapped_cells": 16,
-      "selectors": 33,
-      "native_execution": false
-    },
-    "local_browser_tests": {
-      "passed": 3,
-      "built_fixture_source": "e0642aeb4b708ca5e62831638adb548b000f8bca",
-      "controller_source": "21b76e3718a759723bb1b0294d6493f80a07ff71",
-      "strict_typescript": "PASS",
-      "hosted_qualification": false
-    },
-    "source_conformance_updates": {
-      "PRESERVED": 59,
-      "NOT_APPLICABLE": 1,
-      "statuses_unchanged": true,
-      "literal_source_anchor": "e0642aeb4b708ca5e62831638adb548b000f8bca",
-      "staged_owner_validation": "PASSED_105_FROZEN_1318_ADVANCED_1146_APPLICABLE_172_STALE_0_UNKNOWN"
-    },
-    "parent_pr": 1098,
+    "trusted_normal_result": "FAILED_82_SUCCESS_8_FAILURE_7_SKIPPED",
+    "failed_owning_jobs": 7,
+    "all_six_cold_commands": "NOT_STARTED_ADMISSION_REFUSAL",
+    "individual_success_limits": "Both Codex versions, PiLinux/Darwin, Sandbox Docker and all6 native builders passed individually; failed whole run admits neither installed13 nor native133.",
+    "local_admission_tests": 40,
+    "local_classifier_tests": 25,
+    "current_staged_integrity": "PASSED_105_FROZEN_1318_ADVANCED_1080_APPLICABLE_238_STALE_0_UNKNOWN",
+    "finite_native_and_browser_implementation": "Existing ae4 native16/24 tests and browser3/TSC unchanged; previous source60 applicability is historical after source changes.",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
-    "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE"
+    "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+    "source_freshness_note": "The six changed admission paths stale66 previously-current source bindings (source60 plusP02six); no actual test failure or status promotion. Final stable-source renewal remains required, without repeated interim captures."
   }
 }

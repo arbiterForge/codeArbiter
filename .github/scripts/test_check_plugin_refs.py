@@ -34,6 +34,31 @@ def write(root: Path, relative: str, text: str) -> None:
 
 
 class ClaudeRootInventoryTest(unittest.TestCase):
+    def test_exact_source_witness_capture_is_immutable_history(self):
+        relative = "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/current-witnesses.json"
+        encoded = (Path(CHECKER.REPO) / relative).read_bytes()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "a4abbd71e960ae918c1e379598c0380cd3e7ebf0a0f87fcaea24794c82b970f8")
+        self.assertIn(ROOT_LITERAL.encode(), encoded)
+        errors, inventory = self.byte_inventory({relative: encoded})
+        self.assertEqual(errors, [])
+        self.assertEqual(len(inventory), 10)
+        self.assertEqual({row.category for row in inventory}, {"immutable-history"})
+
+    def test_source_witness_history_pin_cannot_hide_mutation_or_active_neighbor(self):
+        relative = "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/current-witnesses.json"
+        encoded = (Path(CHECKER.REPO) / relative).read_bytes()
+        for changed in (encoded + b"\n", encoded.replace(ROOT_LITERAL.encode(), b"REMOVED")):
+            with self.subTest(changed_sha256=hashlib.sha256(changed).hexdigest()):
+                errors, inventory = self.byte_inventory({relative: changed})
+                self.assertTrue(any("historical fixture SHA-256 mismatch" in error for error in errors))
+                self.assertEqual(inventory, [])
+        neighbor = "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/active-neighbor.json"
+        errors, inventory = self.byte_inventory({relative: encoded, neighbor: ROOT_LITERAL.encode()})
+        self.assertEqual(len(errors), 1)
+        self.assertIn(neighbor + ":1: unclassified portable/product use", errors[0])
+        self.assertEqual(len(inventory), 10)
+
     def inventory(self, relative: str, text: str):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
