@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path[:0]=[sys.argv[1]];s=unittest.defaultTestLoader.loadTestsFromName('test_npm_binding_observation.ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities');r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\candidate\\.github\\scripts"
+  ],
+  "exit_code": 1,
+  "seconds": 0.19363990001147613,
+  "test_sha256": "a2821387698f860e359ee27794d7808e28cc76f5693b5600191f63c21d3b352c"
+}

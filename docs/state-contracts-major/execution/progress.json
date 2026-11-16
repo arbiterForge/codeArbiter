@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "970518e787c13f82d688a79a55b683ed60225752",
+  "head": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T20:31:16.204300+00:00",
+  "recorded_at": "2026-11-16T22:21:05.583495+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -19,9 +19,9 @@
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-observer-admission",
+        "branch": "codex/state-contracts-acceptance-bindings",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical writer for PR1115 transport, native portability/qualification, real Sandbox cache acceptance and current reporting; other actors use private Temp."
+        "scope": "Sole canonical acceptance-binding, source-projection and reporting writer; peer actors own private Temp only."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -81,7 +81,8 @@
       "implemented": [
         "execution/tools/coverage_ledger.py + execution/coverage-ledger.json: live per-finding/machine/row ledger (70/287/1748, all PLANNED, owners/treatments/tasks from intake). Status vocabulary PLANNED/IMPLEMENTED/TESTED/INSTALLED_QUALIFIED/RELEASED + PRESERVED/NOT_APPLICABLE; check refuses evidence-free, review-only TESTED, commit-less, contract-less N/A and non-installed INSTALLED claims; --require-complete is the promotion predicate (currently FAILS as expected).",
         "Source revalidation of P-02 cited paths since audit: only core/hosts.json changed (Pi skill_expansion_fingerprints key 1.1.0 -> 1.5.0); no owner-contract impact.",
-        "Integration CI now invokes the maintained coverage ledger check and an immutable-bootstrap-pinned original-evidence checker. Current applicability is reported separately; the Q02 publication wrapper retains strict current-input checks. Existing execution/contracts/outcome-axes.md already declares the independent outcome vocabulary."
+        "Integration CI now invokes the maintained coverage ledger check and an immutable-bootstrap-pinned original-evidence checker. Current applicability is reported separately; the Q02 publication wrapper retains strict current-input checks. Existing execution/contracts/outcome-axes.md already declares the independent outcome vocabulary.",
+        "Nine additional source-only native machine projections independently reviewed and privately authenticated through unchanged strict source owners. Initial15-source preview:105frozen/1333records/415applicable/918stale before new consumer changes. Final staged current-input validation remains pending."
       ],
       "tested": [
         "execution/tools/test_coverage_ledger.py: 11 tests OK (Windows 11, Python 3.14).",
@@ -280,7 +281,8 @@
       "id": "Q-02",
       "status": "IN_PROGRESS",
       "implemented": [
-        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification.",
+        "Closed implementation profile plus two semantic groups bind54 original readiness/release assertions and599 literal inputs, wrapping each existing owning CI command once. Six pure transport controls pass; synthetic nested counters are not owner executions. Final-main verify/Q03 unchanged."
       ],
       "tested": [],
       "remaining": [
@@ -362,7 +364,8 @@
       "id": "NT-04",
       "status": "IMPLEMENTED_UNQUALIFIED",
       "implemented": [
-        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification."
+        "Implementation assembled in the combined worktree; local source/fixture evidence is distinct from exact committed and installed-cohort qualification.",
+        "Native default schemas/40recipes/16job bindings and five-member archives retained; opt-in HW04/NT04 reader requires exact0/30/31/32 producer cases plus full role/path/identity child complements on six platforms. Genuine original execution still required."
       ],
       "tested": [],
       "remaining": [
@@ -579,7 +582,8 @@
       "status": "IN_PROGRESS",
       "implemented": [
         "Shared37launchfile/32workspace role boundary is implemented in observation schema/role validation and completion consumer.",
-        "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files."
+        "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files.",
+        "Actual producer now has an opt-in consumed Python/npm-file identity sidecar with six original native/archive/child admissions. Proper missing-sidecar RED and large approved file RED->streaming GREEN;12 affected controls PASS. No actual npm command or six-platform new sidecar run locally."
       ],
       "tested": [
         "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32\u21924/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls."
@@ -3827,6 +3831,14 @@
       "qualification": false,
       "evidence": "docs/state-contracts-major/execution/evidence/producer-union-development.json",
       "summary": "Seven Docs cells/four TS cells implemented with true source/owner identity, portable fixtures and strict workflow readers. All original failures retained; no source/status/acceptance promotion."
+    },
+    {
+      "recorded_at": "2026-11-16T22:21:05.583495+00:00",
+      "source_anchor": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+      "kind": "ACCEPTANCE_BINDINGS_SCOPED_DEVELOPMENT",
+      "qualification": false,
+      "evidence": "docs/state-contracts-major/execution/evidence/acceptance-bindings-development-M0b0/development.json",
+      "summary": "1115 merged; normalM Docs exact metadata mismatch locally repaired; HW04/NT04 and Q02 report bindings implemented with honest development evidence; no task/runtime epoch promotion."
     }
   ],
   "scoped_blockers": [
@@ -3885,12 +3897,13 @@
     }
   ],
   "next_actions": [
-    "Finish final original-owner authentication and affected source review for Atlas and the three finite source dispositions, run the complete declared generator on the final candidate, then push the coherent source and require full exact-head CI/Docs.",
-    "Require entire fresh exact-head CI/Docs and every check. Retain the original0eb executed WindowsARM refusal and unknown original target; local regression success does not qualify hosted execution.",
-    "After green child checks, true-merge into major/state-contracts under standing authority, then require separate complete normal integration qualification. Hold1098 from main and publication.",
-    "Continue remaining native aggregate/baseline reconciliation:836 PLANNED accounting rows after six finite source-only machine dispositions; no runtime/task proof epoch renewed. Retain client/installed/human/model and stable-source acceptance boundaries."
+    "Finish current normalM original observation; retain failed Docs and incomplete/failed scopes without retries or promotion.",
+    "Deliver reviewed acceptance-binding/source-conformance cohort and Pages metadata fix as a child of major/state-contracts; require all exact-head CI/Docs before child merge.",
+    "Authenticate original new six-platform npm sidecars and54 Q02 implementation assertions; keep finalmain readiness/Q03 separate.",
+    "Execute authenticated published0.26.9 downgrade/reinstall journey when suitable retained candidate inputs exist; complete remaining827 baseline obligations and actual task/scenario/client/host/user/model acceptance.",
+    "Keep1098 draft, main unchanged and publication unauthorized until user fully tests and separately authorizes promotion."
   ],
-  "delivery_state": "PR1115_ATLAS_AND_THREE_FINITE_SOURCE_DISPOSITIONS_LOCALLY_OBSERVED_FINAL_CHECKS_PENDING_PARENT1098_HELD",
+  "delivery_state": "LOCAL_ACCEPTANCE_BINDINGS_PENDING_REVIEW_CI_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -5050,145 +5063,58 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T19:27:35.290127+00:00",
-    "controller_anchor": "970518e787c13f82d688a79a55b683ed60225752",
-    "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
-    "delivery_pr": 1115,
+    "recorded_at": "2026-11-16T22:21:05.583495+00:00",
+    "controller_anchor": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+    "integration_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+    "delivery_pr": null,
     "previous_child": {
-      "pr": 1114,
+      "pr": 1115,
       "state": "MERGED",
-      "exact_head": "25b6747e52f5591d55901ace71706200d646461d",
-      "ci_run": 43824929648,
-      "docs_run": 43824929589,
+      "exact_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+      "merge_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+      "ci_run": 43954090117,
+      "docs_run": 43954091033,
       "checks": {
         "successful": 92,
         "expected_skipped": 8,
         "failed": 0
       }
     },
-    "original_ci_run": 43829498560,
-    "original_docs_run": 43829498531,
-    "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Atlas bridge dependency intentionally re-reviewed and rebound; full declared generator and158 existing Atlas tests pass. Three complete Native source-only contracts adopted with explicit N06 accepted exception. Final source authentication/complete child and normal integration CI remain required; old Pi native-exit cause UNKNOWN.",
-    "current_staged_integrity": "PENDING_FINAL_ATLAS_AND_THREE_SOURCE_CONFORMANCE_CANDIDATE",
-    "source_or_status_renewal": true,
-    "ordinary_selection_groups": 53,
-    "ordinary_selection_cells": 54,
-    "native_component_recipes": 40,
-    "remaining_software_original_unmapped": 0,
+    "normal_ci_run": 43960617519,
+    "normal_docs_run": 43960617323,
+    "normal_docs_result": "FAILURE_PUBLIC_GITIGNORE_EXACT_BYTES_MISMATCH",
+    "normal_ci_result": "IN_PROGRESS_AT_RECORDING",
+    "new_local_pages_fix": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+    "acceptance_feature_commit": "PENDING",
+    "observations": "docs/state-contracts-major/execution/evidence/acceptance-bindings-development-M0b0/development.json",
     "whole_baseline_planned": {
       "findings": 49,
-      "machines": 177,
+      "machines": 168,
       "transitions": 610,
-      "total": 836,
-      "meaning": "Accounting obligations, not836 confirmed missing software behaviors."
+      "total": 827,
+      "meaning": "Accounting obligations, not827 demonstrated missing features."
     },
-    "private_future_work": "Separate framework process-admission discriminator/repair; final affected checks and full child CI/Docs; successful trusted normal qualification; native aggregates and remaining installed/client/human/model/lifecycle acceptance. Exact histories retained; no runtime/status promotion.",
-    "observations": "evidence/pr1115-atlas-native-source-followup.json",
-    "main_merge": "HELD_FOR_USER_TESTING",
-    "publication": "NOT_AUTHORIZED",
-    "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_AND_SHIPPED_SOURCE_DOCS_RUNTIME_QUALIFICATION_PENDING",
-    "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
-    "staged_integrity_observation": {
-      "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
-      "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
-      "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
-      "result": "PASSED",
-      "frozen": 105,
-      "records": 1318,
-      "applicability": {
-        "APPLICABLE": 523,
-        "STALE": 795
-      },
-      "seconds": 41.125,
-      "source_ref_moved": false
-    },
-    "last_exact_pr_head_result": "0EB_TERMINAL_CI_FAILURE_WINDOWS_ARM_COLD_EXECUTED_PROCESS_ADMISSION_REFUSAL_DOCS_SUCCESS",
-    "original_pr_ci_run": 43931636706,
-    "original_pr_docs_run": 43931636476,
+    "current_staged_integrity": "PENDING_NEW_ACCEPTANCE_CANDIDATE",
+    "native_component_recipes": 40,
     "source_disposition_change": {
       "machines": [
-        "N05",
-        "N06",
-        "N08"
+        "N03",
+        "N04",
+        "N07",
+        "N10",
+        "N12",
+        "N20",
+        "N27",
+        "N29",
+        "N38"
       ],
       "result": "PRESERVED",
-      "scope": "Finite43-input source review of11 current accepted clauses; N06 names the existing NT-05 exception. All11 existing edge rows and every runtime proof remain unchanged.",
       "runtime_epoch_renewal": false
     },
-    "last_exact_pr_head_counts": {
-      "successful": 81,
-      "failed": 3,
-      "cancelled": 0,
-      "skipped": 11
-    },
-    "native_local_validation": {
-      "parents": 52,
-      "terminal_outcomes": 203,
-      "failed": 0,
-      "skipped": 0,
-      "host": "Windows",
-      "statement_coverage_percent": 71.14035087719299,
-      "changed_helper_statements": "12/12",
-      "qualification_renewal": false
-    },
-    "staged_integrity_observation_scope": "Historical observation retained above; does not cover this new staged candidate.",
-    "collector_local_validation": {
-      "pure_methods": 12,
-      "actual_inert_control": 1,
-      "actual_profile": "inbox-v1",
-      "actual_current_instruction_frames": 83,
-      "actual_threads": 12,
-      "detach_verified": true,
-      "Pi_Node22_cause": "UNKNOWN",
-      "qualification_renewal": false
-    },
-    "routing_local_validation": {
-      "focused_methods": 8,
-      "mandatory_missing_or_skip_vectors": 236,
-      "platform_identity_vectors": 48,
-      "platform_omission_vectors": 30,
-      "qualification_renewal": false
-    },
-    "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
-    "active_pr_observation": {
-      "head": "970518e787c13f82d688a79a55b683ed60225752",
-      "ci_run": 43946909497,
-      "docs_run": 43946909486,
-      "whole_terminal_observation": "Pending sole pinned watcher",
-      "observed_failed_docs_jobs": [
-        133578893605,
-        133578894054
-      ],
-      "failure": "Reviewed Atlas source pin stale after actual bridge change; local complete generator now passes.",
-      "pi_windows_job": "PASS in970; original89 kernel/native-exit cause remains UNKNOWN."
-    },
-    "runtime_evidence_epoch_renewal": false,
-    "task_status_renewal": false,
-    "previous_native_unmapped_inventory": {
-      "cohort": "Native29",
-      "count": 89,
-      "scope": "Historical finite advanced runtime inventory; not recomputed by subtracting newly planned/source-only rows."
-    },
-    "native40_local_validation": {
-      "new_Go_unique_PASS": 29,
-      "new_Go_captures": 2,
-      "portable_exact_Windows_methods_PASS": 3,
-      "operations_vet": "PASS",
-      "pure_methods_PASS": 13,
-      "pure_subtests_PASS": 235,
-      "N19_separate_PASS_outcomes": 5,
-      "N19_route_added": false,
-      "qualification_renewal": false
-    },
-    "framework_repair": {
-      "path": "evidence/pr1115-windows-os-identity-repair.json",
-      "sha256": "bf8fa24fe5d8e0377e1d83c372ccc0341a81a405c5df1964673ec422ef78e6e7"
-    },
-    "consumer_followup": {
-      "path": "evidence/pr1115-os-identity-consumer-followup.json",
-      "sha256": "ddb65036537b61cd926baed723335450d72ba13552714784492496e1366c4da1"
-    }
+    "task_status_promotion": false,
+    "runtime_epoch_renewal": false,
+    "main_merge": "HELD_FOR_USER_TESTING",
+    "publication": "NOT_AUTHORIZED"
   },
   "checkpoint_history": [
     {
@@ -5750,6 +5676,151 @@
           "cohort": "Native29",
           "count": 89,
           "scope": "Historical finite advanced runtime inventory; not recomputed by subtracting newly planned/source-only rows."
+        }
+      }
+    },
+    {
+      "superseded_at": "2026-11-16T22:21:05.583495+00:00",
+      "reason": "Retain1115 premerge journal; actual merged9d and new normal M observations are distinct.",
+      "checkpoint": {
+        "recorded_at": "2026-11-16T19:27:35.290127+00:00",
+        "controller_anchor": "970518e787c13f82d688a79a55b683ed60225752",
+        "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+        "delivery_pr": 1115,
+        "previous_child": {
+          "pr": 1114,
+          "state": "MERGED",
+          "exact_head": "25b6747e52f5591d55901ace71706200d646461d",
+          "ci_run": 43824929648,
+          "docs_run": 43824929589,
+          "checks": {
+            "successful": 92,
+            "expected_skipped": 8,
+            "failed": 0
+          }
+        },
+        "original_ci_run": 43829498560,
+        "original_docs_run": 43829498531,
+        "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
+        "followup": "Atlas bridge dependency intentionally re-reviewed and rebound; full declared generator and158 existing Atlas tests pass. Three complete Native source-only contracts adopted with explicit N06 accepted exception. Final source authentication/complete child and normal integration CI remain required; old Pi native-exit cause UNKNOWN.",
+        "current_staged_integrity": "PENDING_FINAL_ATLAS_AND_THREE_SOURCE_CONFORMANCE_CANDIDATE",
+        "source_or_status_renewal": true,
+        "ordinary_selection_groups": 53,
+        "ordinary_selection_cells": 54,
+        "native_component_recipes": 40,
+        "remaining_software_original_unmapped": 0,
+        "whole_baseline_planned": {
+          "findings": 49,
+          "machines": 177,
+          "transitions": 610,
+          "total": 836,
+          "meaning": "Accounting obligations, not836 confirmed missing software behaviors."
+        },
+        "private_future_work": "Separate framework process-admission discriminator/repair; final affected checks and full child CI/Docs; successful trusted normal qualification; native aggregates and remaining installed/client/human/model/lifecycle acceptance. Exact histories retained; no runtime/status promotion.",
+        "observations": "evidence/pr1115-atlas-native-source-followup.json",
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_AND_SHIPPED_SOURCE_DOCS_RUNTIME_QUALIFICATION_PENDING",
+        "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
+        "staged_integrity_observation": {
+          "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+          "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+          "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 523,
+            "STALE": 795
+          },
+          "seconds": 41.125,
+          "source_ref_moved": false
+        },
+        "last_exact_pr_head_result": "0EB_TERMINAL_CI_FAILURE_WINDOWS_ARM_COLD_EXECUTED_PROCESS_ADMISSION_REFUSAL_DOCS_SUCCESS",
+        "original_pr_ci_run": 43931636706,
+        "original_pr_docs_run": 43931636476,
+        "source_disposition_change": {
+          "machines": [
+            "N05",
+            "N06",
+            "N08"
+          ],
+          "result": "PRESERVED",
+          "scope": "Finite43-input source review of11 current accepted clauses; N06 names the existing NT-05 exception. All11 existing edge rows and every runtime proof remain unchanged.",
+          "runtime_epoch_renewal": false
+        },
+        "last_exact_pr_head_counts": {
+          "successful": 81,
+          "failed": 3,
+          "cancelled": 0,
+          "skipped": 11
+        },
+        "native_local_validation": {
+          "parents": 52,
+          "terminal_outcomes": 203,
+          "failed": 0,
+          "skipped": 0,
+          "host": "Windows",
+          "statement_coverage_percent": 71.14035087719299,
+          "changed_helper_statements": "12/12",
+          "qualification_renewal": false
+        },
+        "staged_integrity_observation_scope": "Historical observation retained above; does not cover this new staged candidate.",
+        "collector_local_validation": {
+          "pure_methods": 12,
+          "actual_inert_control": 1,
+          "actual_profile": "inbox-v1",
+          "actual_current_instruction_frames": 83,
+          "actual_threads": 12,
+          "detach_verified": true,
+          "Pi_Node22_cause": "UNKNOWN",
+          "qualification_renewal": false
+        },
+        "routing_local_validation": {
+          "focused_methods": 8,
+          "mandatory_missing_or_skip_vectors": 236,
+          "platform_identity_vectors": 48,
+          "platform_omission_vectors": 30,
+          "qualification_renewal": false
+        },
+        "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
+        "active_pr_observation": {
+          "head": "970518e787c13f82d688a79a55b683ed60225752",
+          "ci_run": 43946909497,
+          "docs_run": 43946909486,
+          "whole_terminal_observation": "Pending sole pinned watcher",
+          "observed_failed_docs_jobs": [
+            133578893605,
+            133578894054
+          ],
+          "failure": "Reviewed Atlas source pin stale after actual bridge change; local complete generator now passes.",
+          "pi_windows_job": "PASS in970; original89 kernel/native-exit cause remains UNKNOWN."
+        },
+        "runtime_evidence_epoch_renewal": false,
+        "task_status_renewal": false,
+        "previous_native_unmapped_inventory": {
+          "cohort": "Native29",
+          "count": 89,
+          "scope": "Historical finite advanced runtime inventory; not recomputed by subtracting newly planned/source-only rows."
+        },
+        "native40_local_validation": {
+          "new_Go_unique_PASS": 29,
+          "new_Go_captures": 2,
+          "portable_exact_Windows_methods_PASS": 3,
+          "operations_vet": "PASS",
+          "pure_methods_PASS": 13,
+          "pure_subtests_PASS": 235,
+          "N19_separate_PASS_outcomes": 5,
+          "N19_route_added": false,
+          "qualification_renewal": false
+        },
+        "framework_repair": {
+          "path": "evidence/pr1115-windows-os-identity-repair.json",
+          "sha256": "bf8fa24fe5d8e0377e1d83c372ccc0341a81a405c5df1964673ec422ef78e6e7"
+        },
+        "consumer_followup": {
+          "path": "evidence/pr1115-os-identity-consumer-followup.json",
+          "sha256": "ddb65036537b61cd926baed723335450d72ba13552714784492496e1366c4da1"
         }
       }
     }

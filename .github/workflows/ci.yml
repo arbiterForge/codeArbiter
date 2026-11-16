@@ -760,6 +760,16 @@ jobs:
           python tools/build-artifacts.py
           --output "${{ runner.temp }}/artifact-candidate"
           --test-observation "${{ runner.temp }}/native-tests.json"
+          --npm-binding-observations "${{ runner.temp }}/native-npm-binding-identities"
+      - name: Upload original npm binding identities
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-npm-binding-identities-${{ matrix.os }}
+          path: ${{ runner.temp }}/native-npm-binding-identities
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Bind the module-tested binary, source, host and toolchain
         run: >-
           python .github/scripts/ci20_native_binding.py stamp
@@ -3312,12 +3322,34 @@ jobs:
           --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
           --output "${{ runner.temp }}/python-publisher-observation.json"
           -- .github/scripts/test_generated_output.py
+      - name: Prepare Q02 implementation source-test inputs
+        id: q02_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile major-readiness-implementation-v1
+          --output "${{ runner.temp }}/q02-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Test authenticated major readiness admission and refusal
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         run: python .github/scripts/test_major_readiness.py
+      - name: Observe original Q02 readiness implementation tests
+        id: q02_readiness_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile major-readiness-implementation-v1
+          --source-payload "${{ runner.temp }}/q02-source-inputs"
+          --output "${{ runner.temp }}/python-q02-readiness-observation.json"
+          -- .github/scripts/test_major_readiness.py
       - name: Test original named-test qualification reports
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_major_qualification_report.py
+      - name: Test original Python npm binding identities and admission
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_npm_binding_observation.py
       - name: Test retained archive CLI observations
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_retained_archive_cli_observation.py
@@ -3455,13 +3487,23 @@ jobs:
         # structural wiring (_releaselib).
         run: python .github/scripts/test_release_lib.py
       - name: Run hosted release-workflow contract tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # #378/#380/#385: release.yml holds `contents: write` and publishes
         # public, irreversible tags and Releases. This parses the SHIPPED
         # workflow, so deleting the exactly-one-target preflight, the
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Observe original Q02 publication guard tests
+        id: q02_release_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile major-readiness-implementation-v1
+          --source-payload "${{ runner.temp }}/q02-source-inputs"
+          --output "${{ runner.temp }}/python-q02-release-observation.json"
+          -- .github/scripts/test_release_workflow.py
       - name: Run typed qualification-outcome contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # R-06: a green exit from the tag, branch-protection, Codex-host and
@@ -3546,6 +3588,17 @@ jobs:
           retention-days: 14
           include-hidden-files: true
           overwrite: false
+      - name: Upload Q02 implementation source-test inputs
+        id: q02_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.q02_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-q02-implementation
+          path: ${{ runner.temp }}/q02-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
       - name: Retain original Python source-test observations
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -3558,7 +3611,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3568,7 +3621,10 @@ jobs:
             --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
             --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
-            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}"
+            --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
+            --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
+            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
+            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}"
           python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
       - name: Upload major qualification report
         if: steps.python_qualification_emit.outcome == 'success'

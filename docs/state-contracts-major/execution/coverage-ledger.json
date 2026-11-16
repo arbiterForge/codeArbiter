@@ -1821,8 +1821,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY recovery conformance. Preserve prepared/terminal replay, complete all-target/material preflight, outside-edit refusal and retained journal/history. Inherited wording corrected: missing material may report CORRUPT_JOURNAL; early I/O may propagate directly, while terminal acknowledgement uncertainty uses COMMIT_OUTCOME_UNKNOWN. No general undo or race-free same-user sandbox claim."
   },
   "N04": {
    "owner": "native",
@@ -1832,8 +1840,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY conformance with named accepted NT05/NT09 feature-gated non-work0.3.4 extension alongside old0.3.0/1/2 and work0.3.3. Reads do not upgrade/re-certify; writes never downgrade. Typed retirement and current progress semantics are explicit changes, not literal preservation of old defects. No installed/old-client migration acceptance."
   },
   "N05": {
    "owner": "native",
@@ -1880,8 +1896,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY readiness/reference/decision/coverage conformance. Ready remains an explicit validation/strict-consumer boundary; it never becomes a second ADR43 permission gate on ordinary authorized independent work. NT05 typed tombstones retain historical ownership without inferred kind. No executed decision/user/model acceptance."
   },
   "N08": {
    "owner": "native",
@@ -1966,8 +1990,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY optional strict receipt-consumer conformance. Explicit accepted ADR0046/NT09 supersedes N10:02 destructive dependent STALE overwrites while preserving progress/history and deriving assessment. Ordinary no-receipt progress stays outside strict approval/snapshot gates (ADR43). NT11 fresh corrected attempts do not reopen old terminal evidence; no host attempt/runtime acceptance."
   },
   "N11": {
    "owner": "native",
@@ -2032,8 +2064,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY ordinary caller observation versus explicit legacy receipt assessment. Definition changes yield unknown without rewriting history; strict receipt replacement deletes only selected observation and retains evidence. NT05/NT09 monotonic versioning preserved. No observed fact/user choice/host authority fabricated."
   },
   "N13": {
    "owner": "native",
@@ -2326,8 +2366,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY conformance. Explicit inherited-description correction for N20:03: Outline omits context_complete and issues no completed ticket; only contextual pages assert completeness. No literal false field is claimed or added. NT-06 preserves read-mode/effect separation. All existing edge states/proofs/runtime epochs remain unchanged."
   },
   "N21": {
    "owner": "native",
@@ -2590,8 +2638,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite three-clause SOURCE-ONLY conformance including named authorized NT-03 change: repair-apply is now advertised by the finite descriptor table, superseding only the frozen absent-in-Names limitation. Existing repair preview/CAS/journal/replay and create-only standalone export remain; no runtime/task/installed acceptance."
   },
   "N28": {
    "owner": "native",
@@ -2655,8 +2711,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite seven-clause SOURCE-ONLY conformance of owner/CAS/lifecycle/descriptive/delivery boundaries. NT-07 explicitly labels schema-only passed/failed; no public setter or inferred check result. Mapping stages local intent only, never provider delivery. All edge states/proofs/history unchanged."
   },
   "N30": {
    "owner": "native",
@@ -2953,8 +3017,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY conformance. Explicit inherited-description correction for N38:02: fact source_ref/consumer_ref are bounded inert text references; actual CWD/map/scope path fields have path grammar. No filesystem validation of every reference or new approved-policy authority is claimed. Source evidence is independently reacquired. Existing edge/runtime histories unchanged."
   },
   "N39": {
    "owner": "native",

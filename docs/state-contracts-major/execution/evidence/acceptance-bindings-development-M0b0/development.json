@@ -1,0 +1,279 @@
+{
+  "schema": "codearbiter.major.acceptance-binding-development/1",
+  "recorded_at": "2026-11-16T22:21:05.583495+00:00",
+  "basis_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "parent_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "source_state": "Current uncommitted subjects hashed; original development outcomes retain checked bytes and equivalent source-format notes.",
+  "source_subjects": {
+    ".github/major-qualification-policy.json": {
+      "sha256": "a56ec086f1c1b29206c3150fba29d11d18b2f3d44b2f4aeeee04e5fc12be27dc",
+      "bytes": 7975
+    },
+    ".github/major-test-selections.json": {
+      "sha256": "68adda1f50b166aa2f1ff8bf1747e18f9b063d28b9aced774111a9515f044f85",
+      "bytes": 74167,
+      "checked_physical_sha256_before_canonicalization": "ed1c9170052201816d11ffb863db919bdb28fa797dff2adc462445aafa512d56",
+      "equivalence": "Only CRLF->LF; parsed JSON values identical; existing tests reused for unchanged semantics."
+    },
+    ".github/scripts/npm_binding_observation.py": {
+      "sha256": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+      "bytes": 20655
+    },
+    ".github/scripts/test_npm_binding_observation.py": {
+      "sha256": "53713ae085613051fd47acdf62b45a32aea7d5e3281fd1fab141c6c5dfa7ebfb",
+      "bytes": 18012
+    },
+    ".github/scripts/major_readiness.py": {
+      "sha256": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+      "bytes": 82923
+    },
+    ".github/scripts/major_native_observation.py": {
+      "sha256": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e",
+      "bytes": 185096
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+      "bytes": 139419
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+      "bytes": 246510
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "sha256": "240f881349afde9f0fd4b1d0894ef3bfec68deef1f56d0cef332a42c00a093fe",
+      "bytes": 103084
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "860e6cd9a5bdc0d42060bdb61ce605d36a4495a5fcfec0f1a7ae528b66577dba",
+      "bytes": 275574
+    },
+    "tools/build-artifacts.py": {
+      "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "bytes": 15051
+    },
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": {
+      "sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+      "bytes": 6780
+    }
+  },
+  "observations": [
+    {
+      "path": "raw/hw04-producer-red.json",
+      "sha256": "1fedf708c98216f8218ff11beb31f18566ef0c6cc201f3281bce999d6c86fc6a",
+      "bytes": 679
+    },
+    {
+      "path": "raw/hw04-producer-red.stderr",
+      "sha256": "27c4dbb30ac72e6e78c49a410e51f9c5386cbe02909ba9d375366f4b60a87ef2",
+      "bytes": 1237
+    },
+    {
+      "path": "raw/hw04-current-delivery.json",
+      "sha256": "c2f0d85567637b413e6bb40a9579cfefc20cb3e67bfba9cc978f6162b2a47241",
+      "bytes": 14436
+    },
+    {
+      "path": "raw/hw04-large-identity-red.json",
+      "sha256": "2f1d62df960241b14fb1662b0124997ea8e7ec86788ee870a5087e75bb1ed910",
+      "bytes": 1010
+    },
+    {
+      "path": "raw/hw04-large-identity-green.json",
+      "sha256": "26d742c5a0dc01e49aed6fd278a663ca2dfd1907d2d029e452074acdad2c8503",
+      "bytes": 1096
+    },
+    {
+      "path": "raw/hw04-12-controls.json",
+      "sha256": "d04ee6f508921336d3085724ac17fa76283f8d0db0d335553bcda13f920475d0",
+      "bytes": 2694
+    },
+    {
+      "path": "raw/hw04-12-controls.stderr",
+      "sha256": "37a4463d60f8ef90f2e72f4d51890edbaa37c9b9be5cd894a74d48709582e9d2",
+      "bytes": 2316
+    },
+    {
+      "path": "raw/hw04-runtime-snapshot-cost.json",
+      "sha256": "1d87c72a5018fe6889e78a4e905cecb1b037df921022f9fa2aa38691a011673f",
+      "bytes": 174
+    },
+    {
+      "path": "raw/q02-delivery.json",
+      "sha256": "d9ba6b3adc02f650ec069165d260cb5d46d7f34757b1c57e9d9974a76d57a22c",
+      "bytes": 1532
+    },
+    {
+      "path": "raw/q02-clause-matrix.json",
+      "sha256": "a35bf08e58426a34229f080f027400b78c594eecc5a5b9a7d7d03f4ec1344366",
+      "bytes": 16718
+    },
+    {
+      "path": "raw/q02-results.json",
+      "sha256": "32f5b2e45b5acc25ffdefbd1fea1e9b8ee340d6f51d94ffe340d7acab6bd2544",
+      "bytes": 2765
+    },
+    {
+      "path": "raw/q02-proper-red.json",
+      "sha256": "b9b0fdaa7aeee2aba0ca8d5096771589ea3b10d411a0c51ff7fc4d235b506ba4",
+      "bytes": 1156
+    },
+    {
+      "path": "raw/q02-proper-red.stderr",
+      "sha256": "bfd405dc1ec1ca6a8b6e1674d7eee414e10b49e145d6365f74f6fca48a8114b1",
+      "bytes": 2879
+    },
+    {
+      "path": "raw/q02-6-controls.json",
+      "sha256": "7844a3f97167a4ecfd50e4104231725baadf6448d3ece5abd325a6ff097ccca5",
+      "bytes": 1276
+    },
+    {
+      "path": "raw/q02-affected-controls.json",
+      "sha256": "cd8130d3352f445fb9ce9dd23381133ab4857320ef925e7d21528c6ff76db4ca",
+      "bytes": 1349
+    },
+    {
+      "path": "raw/q02-54-synthetic-positive.json",
+      "sha256": "39a90ae4bf7dccb6b5dc4a4fa9f12607634371c6e314decc500edcab6d031681",
+      "bytes": 1157
+    },
+    {
+      "path": "raw/root-composed-59-result.json",
+      "sha256": "790397baf216f4132de4bbb9d3c8642a3d19c3386a905ec3011c230b42c61e5f",
+      "bytes": 1689
+    },
+    {
+      "path": "raw/root-composed-59.stderr",
+      "sha256": "20facded8e725e7ce08e1ba0cb1d4bb2b5993b57921b2d1e7d18b3e1e56bb007",
+      "bytes": 15215
+    },
+    {
+      "path": "raw/root-source-fixture-7-green.json",
+      "sha256": "078b742b1e90e75d239beece86030ae66d05da3771747e87c8f3d940c75bfbbe",
+      "bytes": 674
+    },
+    {
+      "path": "raw/root-source-fixture-7-green.stderr",
+      "sha256": "e5b665d7aff37df4063f5449ef4758c95923740e44c86b630c51b0b4486898dc",
+      "bytes": 1465
+    },
+    {
+      "path": "raw/root-composition-adoption.json",
+      "sha256": "53cd3c04438a3caeead12e4daf31e2f8702d87a31baaeef6e9d5573efa81f91d",
+      "bytes": 4438
+    },
+    {
+      "path": "raw/native-nine-source-adoption.json",
+      "sha256": "702786ffb036ed76fc83ccad30f7480702429382ce26853d15c6a5608f6c2442",
+      "bytes": 3966
+    },
+    {
+      "path": "raw/native-fifteen-strict-preview.json",
+      "sha256": "a76078f4572eca276c431025bf230fee095fcddee291e2072bebd756ac402893",
+      "bytes": 12392
+    },
+    {
+      "path": "raw/child1115-terminal.json",
+      "sha256": "32fe3275ef6a52dbb53e43609c3b59529efafad2554a4d5ba09f977b122684be",
+      "bytes": 17709
+    },
+    {
+      "path": "raw/child1115-postmerge.json",
+      "sha256": "04ed202e0cdaf39628bdf468dc51e87e3c367eb37136f477077acf57860f9f8d",
+      "bytes": 1252
+    },
+    {
+      "path": "raw/normal-M-docs-original-failure.json",
+      "sha256": "5b94e8279394d0e892be7bbc05208fa36f61aa823f1c409ee0795b47b08cf922",
+      "bytes": 1302
+    },
+    {
+      "path": "raw/normal-M-docs-member-delta.json",
+      "sha256": "6ce26f2ac703bb154037afc265931ce91a9dbcb5c7eca76caac8c4fdbe31deff",
+      "bytes": 1304
+    },
+    {
+      "path": "raw/normal-M-native40-producer-phase.json",
+      "sha256": "1676c06974daa4a2f759d4535a94dfad8afe27e8a91f8ccf2c427d25109dbfbe",
+      "bytes": 2094003
+    },
+    {
+      "path": "raw/pages-local-ignore-check.json",
+      "sha256": "a8aec9528e508f8aa5661cbd38e39789eba3b65ce7a3ae2e2c7bb52cf0f423b0",
+      "bytes": 1183
+    },
+    {
+      "path": "raw/pages-full-local-build.json",
+      "sha256": "cf5f8a1bf827b7f590a080133e717ff2c08d71f7815f5fc811500cf5cd13ca2e",
+      "bytes": 1393
+    },
+    {
+      "path": "raw/composed-full-generation.json",
+      "sha256": "a8e8341bc635cf7c4826340e6898f93a74e3946248ce5efc2fcc55ad4f319650",
+      "bytes": 2943
+    },
+    {
+      "path": "raw/q02-routing-utf8-successor.json",
+      "sha256": "278f1a8c43ce371223c50f36e79e7f6558f76627d1955a6bc5a372b8632e7346",
+      "bytes": 9220
+    },
+    {
+      "path": "raw/q02-routing-correction.json",
+      "sha256": "11b1cb8772b15c0ff818704ab7d1c0f6ecafde554bc8f66dd90455226bb930d7",
+      "bytes": 1691
+    },
+    {
+      "path": "raw/source-eol-canonicalization.json",
+      "sha256": "d873933e71af8c4d0a2b813fead054c305f09ecab65bb2b372e2a138d6bcdbb7",
+      "bytes": 684
+    }
+  ],
+  "changes": [
+    "Closed HW04/NT04 identity sidecar accompanies the actual existing binding producer, authenticates six original named native components and uploader archives, and preserves default native40/native16/five-member archives.",
+    "Q02 implementation-only source profile binds599 positive source inputs and54 required original names across two unchanged unfiltered owning CI invocations, once each. Same Hook job/report; final-main/Q03 barrier preserved.",
+    "Nine reviewed native machine source projections retain all41 literal clauses, historical error-prose corrections and accepted NT03/05/09/ADR46 exceptions. All edge histories/task states/runtime epochs unchanged.",
+    "Local Page metadata fix is separately committed as parent d2b8c58a: authoring ignore rule outside public assets, actual full generation/Astro build pass, original exact-byte reader unchanged."
+  ],
+  "local_results": {
+    "hw04_proper_missing_sidecar_red": true,
+    "hw04_large_file_read_only_red_green": true,
+    "hw04_latest_affected_controls": 12,
+    "hw04_node_npm_execution": false,
+    "composed_first_run": {
+      "tests": 59,
+      "passed": 58,
+      "errors": 1,
+      "seconds": 146.338,
+      "error": "Old all-source fixture inherited opt-in native task; original production guard correctly refused."
+    },
+    "affected_fixture_successor": {
+      "tests": 7,
+      "passed": 7,
+      "seconds": 14.713,
+      "change": "Explicitly disable unrelated opt-in native tasks only in the source-disposition fixture; all original assertions and native-task controls remain."
+    },
+    "q02_controls": "six new outer development controls plus two unchanged compatibility controls; nested36+18 are SYNTHETIC transport IDs, not54 actual owner executions",
+    "current_full_four_command_generation": "PASS"
+  },
+  "normal_M": {
+    "source": "0b0ae193496335c0d87337e5993f032a9385fffb",
+    "ci_run": 43960617519,
+    "docs_run": 43960617323,
+    "docs": "FAILURE: original465exact+one extra served workflow-atlas/.gitignore",
+    "native40": "PRODUCER_PHASE_SCOPED_PASS: six original components and all40recipes/eight priority edges; no status promotion",
+    "whole_ci": "IN_PROGRESS_AT_OBSERVATION",
+    "whole_normal_qualification": "BLOCK"
+  },
+  "limits": [
+    "No six-platform new sidecar execution, full54 named Q02 owner report, installed/host/user/model acceptance, final readiness or publication is claimed.",
+    "The original source fixture failure and private source-profile setup errors remain retained.",
+    "Actual HW04 Python runtime snapshots measured6.405/6.532s with profiling overhead,7995files/231630395bytes each. Four real cases have not been timed here.",
+    "Local owned-input/runtime fingerprints do not attest the complete OS/DLL closure."
+  ],
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "program_qualification": false,
+  "parent1098": "OPEN/DRAFT/HELD_FROM_MAIN_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED",
+  "packet_encoding_correction": "Original private Q02 routing fragment alone used Windows locale decoding. Corrected UTF-8 fragment matches all three original SOURCE_JOB strings; canonical policy adopted correct full candidate via explicit one-key CAS. All production subjects/tests unchanged by this packet correction."
+}

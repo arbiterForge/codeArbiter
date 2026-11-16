@@ -1,0 +1,46 @@
+{
+  "status": "SCOPED_DEVELOPMENT_CONTROLS_PASS",
+  "actual_target_red": {
+    "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\RED-expanded.json",
+    "failure": "Existing source_profile rejects the required closed Q02 transport (ValueError unknown source input profile); no missing symbol/setup RED",
+    "outer_tests": 1
+  },
+  "green_epochs": [
+    {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\GREEN-first.json",
+      "outer_passed": 4,
+      "scope": "Initial pure new transport controls;51 synthetic nested IDs"
+    },
+    {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\GREEN-final.json",
+      "outer_passed": 6,
+      "outer_setup_errors": 2,
+      "scope": "All six new controls PASS; two old controls lacked private surface/SDK input files, not product failures"
+    },
+    {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\GREEN-affected.json",
+      "outer_passed": 3,
+      "scope": "Affected cross-kind/current-scope guard plus unchanged two old profile-cap controls after private-only fixture completion"
+    },
+    {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\GREEN-final-positive.json",
+      "outer_passed": 1,
+      "scope": "Final guard positive with51 synthetic transport IDs"
+    },
+    {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\GREEN-54-positive.json",
+      "outer_passed": 1,
+      "scope": "Final54-selector closure positive, actual synthetic transport/source archive admission"
+    }
+  ],
+  "unique_controls": {
+    "new_outer_methods": 6,
+    "reused_unchanged_outer_methods": 2
+  },
+  "nested_unittest_outputs": "Synthetic36 readiness+18 release identities in private inert unittest entrypoints. These are transport counters, NOT actual readiness/release owner suite execution or task qualification.",
+  "unchanged_full_owner_suites": "NOT executed locally; original two CI invocations are wrapped once each in candidate workflow",
+  "private_test_environment": "Credential-blind HOME/USERPROFILE/TEMP, PYTHONNOUSERSITE=1, private PYTHONPYCACHEPREFIX before imports; pinned Python3.14 and Git only",
+  "module_resolution": "Actual test controller supplied private candidate scripts then canonical scripts/core support in PYTHONPATH; ordinary overlay unit evidence, not a clean installed/hosted/full import-graph attestation",
+  "no_new_runtime_network_or_provider_effects": true,
+  "final_barrier": "validate_run/verify/requirements/_requirements/collect/main unchanged AST; final trusted successful main and Q03 boundary preserved"
+}

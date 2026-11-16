@@ -1,0 +1,45 @@
+{
+  "status": "CORRECTED_FRAGMENT_ONLY",
+  "original_preserved": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\final\\routing-fragment.json",
+  "original_sha256": "3283ec44659256431071a92ad157ef76249c78010c8c0a7f23457268bb7410cb",
+  "successor_sha256": "278f1a8c43ce371223c50f36e79e7f6558f76627d1955a6bc5a372b8632e7346",
+  "SOURCE_JOB_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\final\\candidate\\.github\\scripts\\major_qualification_report.py",
+  "SOURCE_JOB_source_sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+  "all_three_fields_equal_actual_SOURCE_JOB": true,
+  "changes": [
+    {
+      "field": "cell_job_bindings.task:Q-02",
+      "old_codepoints": [
+        "0xc2",
+        "0xb7"
+      ],
+      "new_codepoints": [
+        "0xb7"
+      ]
+    },
+    {
+      "field": "selection_groups[0].job",
+      "old_codepoints": [
+        "0xc2",
+        "0xb7"
+      ],
+      "new_codepoints": [
+        "0xb7"
+      ]
+    },
+    {
+      "field": "selection_groups[1].job",
+      "old_codepoints": [
+        "0xc2",
+        "0xb7"
+      ],
+      "new_codepoints": [
+        "0xb7"
+      ]
+    }
+  ],
+  "cause": "Private final-closure metadata controller called json.loads(f.read_text()) without encoding on UTF-8 routing fragment; Windows locale decoding changed U+00B7 to U+00C2 U+00B7. Source code/candidate policy used explicit UTF-8 or JSON bytes and remained correct.",
+  "correction": "All successor reads use JSON bytes or explicit UTF-8; output written explicit UTF-8 bytes. No product/framework source defect inferred.",
+  "source_and_tests_reused_unchanged": true,
+  "tests_rerun": false
+}

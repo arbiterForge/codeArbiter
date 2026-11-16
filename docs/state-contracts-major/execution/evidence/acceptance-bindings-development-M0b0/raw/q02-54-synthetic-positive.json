@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "Q02ReadinessSourceProfileTests.test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r",
+  "exit_code": 0,
+  "elapsed_seconds": 27.225757199979853,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "d1cc398b19a45a53e0ea81395a706d145681bde1bf3dcf9aa017be07ec12f789",
+  "test_sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+  "owner_sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+  "private_environment_keys": [
+    "CA_Q02_CANONICAL_ROOT",
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONPYCACHEPREFIX",
+    "SYSTEMDRIVE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ]
+}

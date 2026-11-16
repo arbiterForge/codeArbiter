@@ -910,6 +910,14 @@ def _requirements(repo, source, run_id):
         native_fields = {'native_compositions': native, 'native_module_sha256': {
             style: _module_membership(repo, source, {'root': 'core/artifacts', 'path_order': style}, load, authenticated)
             for style in ('posix', 'windows')}}
+    launch_tasks = policy.get('native_launch_binding_tasks', [])
+    if launch_tasks:
+        import npm_binding_observation as launch
+        launch.tasks(launch_tasks)
+        require(set(launch_tasks) <= set(required), 'npm binding task outside required population')
+        require(native, 'npm binding task requires original native composition authority')
+        native_fields.update(launch_binding_tasks=launch_tasks,
+            launch_binding_inputs=launch.expected_inputs(repo, source, load))
     return {**native_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
@@ -1305,6 +1313,10 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") == "major-source-inputs-q02-implementation":
+                        require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                                "Q02 source-test payload original owner differs")
+                        validate_upload(job, payload, "Upload Q02 implementation source-test inputs")
                     elif payload.get("name") == "major-source-inputs-pi-sdk-footer":
                         require(job.get("name") == "[CHECK] | [PI  ] | Host-independent adapter contract",
                                 "SDK source-test payload original owner differs")

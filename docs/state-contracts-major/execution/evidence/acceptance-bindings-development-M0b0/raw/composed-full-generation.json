@@ -1,0 +1,54 @@
+{
+  "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-acceptance-bindings-generation-vy0yb0fw",
+  "scripts": [
+    {
+      "script": "gen",
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\gen.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 2.555246600008104,
+      "stdout_sha256": "5fcec887547c6d743562c48c8d40afb929edd65dc9cb93933e26a9ab7a117cdb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "script": "generate-atlas",
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\generate-atlas.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 1.180930200003786,
+      "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "script": "generate-diagrams",
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\generate-diagrams.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.32428020000224933,
+      "stdout_sha256": "ef8d29d5c291fd1fc42d6913b252ef2f70dae251673ccdd2af22aed75df6dcd9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "script": "diagram-audit",
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\diagram-audit.ts"
+      ],
+      "exit_code": 0,
+      "seconds": 0.19927500002086163,
+      "stdout_sha256": "c564af8b5fed8d995a4c57cc81a1675575ccdab85a6aa907ae88f747f83b4831",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Actual complete declared site generator; existing pinned tools, no install/network/publication"
+}

@@ -73,7 +73,8 @@
     "disposition:transitions:S51:01": "[CHECK] | [SBX ] | Sandbox driver contract",
     "disposition:transitions:S51:02": "[CHECK] | [SBX ] | Sandbox driver contract",
     "disposition:transitions:S52:06": "[CHECK] | [SBX ] | Sandbox driver contract",
-    "disposition:transitions:S18:07": "[CHECK] | [PI  ] | Host-independent adapter contract"
+    "disposition:transitions:S18:07": "[CHECK] | [PI  ] | Host-independent adapter contract",
+    "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
   },
   "native_composite_cells": [
     "disposition:findings:N-F02",
@@ -116,5 +117,6 @@
     "disposition:transitions:N19:01",
     "disposition:transitions:N24:02",
     "disposition:transitions:N37:01"
-  ]
+  ],
+  "native_launch_binding_tasks": ["HW-04", "NT-04"]
 }

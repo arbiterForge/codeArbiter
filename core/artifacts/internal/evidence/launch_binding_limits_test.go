@@ -47,15 +47,34 @@ func producerNPMBindings(t *testing.T, root string, workspaces int) ([]any, map[
 	source := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..", "pysrc"))
 	script := `import json, pathlib, sys
 sys.path.insert(0, sys.argv[1])
-import _artifactauthoritylib as a
+import os
 root = pathlib.Path(sys.argv[2]).resolve()
-definition = {"argv": ["npm", "test"], "cwd": ".", "required_tests": ["example test"]}
-print(json.dumps(a._bind_commands(root, {"commands": [{"definition": definition, "definition_sha256": "a"*64}]}, {})))`
+if os.environ.get("CA_NATIVE_NPM_BINDING_OBSERVATION_DIR"):
+    sys.path.insert(0, str(pathlib.Path(sys.argv[1]).resolve().parents[1] / ".github/scripts"))
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="hw04-observer-bytecode-") as cache:
+        previous = sys.pycache_prefix
+        sys.pycache_prefix = cache
+        try:
+            import npm_binding_observation as observer
+            bindings = observer.observe(pathlib.Path(sys.argv[1]).resolve().parents[1], root, int(sys.argv[3]), sys.argv[4], pathlib.Path(os.environ["CA_NATIVE_NPM_BINDING_OBSERVATION_DIR"]))
+        finally:
+            sys.pycache_prefix = previous
+else:
+    import _artifactauthoritylib as a
+    definition = {"argv": ["npm", "test"], "cwd": ".", "required_tests": ["example test"]}
+    bindings = a._bind_commands(root, {"commands": [{"definition": definition, "definition_sha256": "a"*64}]}, {})
+print(json.dumps(bindings))`
 	python := os.Getenv("CODEARBITER_TEST_PYTHON")
 	if python == "" {
 		python = "python"
 	}
-	out, err := exec.Command(python, "-c", script, source, root).CombinedOutput()
+	arguments := []string{"-c", script, source, root}
+	if os.Getenv("CA_NATIVE_NPM_BINDING_OBSERVATION_DIR") != "" {
+		arguments = append([]string{"-I", "-S", "-B", "-X", "utf8"}, arguments...)
+		arguments = append(arguments, fmt.Sprint(workspaces), runtime.GOOS+"/"+runtime.GOARCH)
+	}
+	out, err := exec.Command(python, arguments...).CombinedOutput()
 	if err != nil {
 		t.Fatalf("Python producer: %v: %s", err, out)
 	}
