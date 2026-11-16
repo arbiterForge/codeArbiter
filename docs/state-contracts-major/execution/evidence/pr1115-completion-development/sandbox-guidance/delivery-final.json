@@ -1,0 +1,44 @@
+{
+  "format": "private-sw04-sw08-chore-final/1",
+  "state": "PASSED",
+  "scope": [
+    "SW-F04",
+    "SW-F08"
+  ],
+  "source_epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "subjects": {
+    "plugins/ca-sandbox/README.md": {
+      "preimage_sha256": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d",
+      "candidate_sha256": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+      "apply_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\candidate\\plugins\\ca-sandbox\\README.md"
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+      "preimage_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+      "candidate_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "apply_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\candidate\\plugins\\ca-sandbox\\tools\\claude-inside-cli.ts"
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": {
+      "preimage_sha256": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+      "candidate_sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "apply_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\candidate\\plugins\\ca-sandbox\\tools\\claude-inside-cli.test.ts"
+    }
+  },
+  "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\final.patch",
+  "patch_sha256": "d9f909c4e2fcc50565a80335e32c4b1b485bf76e4117caa4ad76f341b39a8961",
+  "freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\source-freeze.json",
+  "freeze_sha256": "5fe34290b9b9eb4f7f47bf386ff967c1a5de1c3ad26dcca6efcf3b88c82179c8",
+  "filemap": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\filemap.json",
+  "filemap_sha256": "37338683d1383582de4402f7052822153d6109ba23dc69a29f811ea7c8db5786",
+  "actual_unit": {
+    "exit_code": 0,
+    "timed_out": false,
+    "containment": "exited",
+    "elapsed_seconds": 0.4636354999965988
+  },
+  "actual_names": 17,
+  "actual_failed": 0,
+  "actual_skipped": 0,
+  "setup_history": "Initial private helper-call TypeError before Popen, zero tests/processes; preserved original controller and receipt. Only helper-call transport corrected; exactly one actual file execution.",
+  "limits": "No Docker/provider/real token/installed/model qualification, no runtime effects or status promotion. Shipped generated claude-inside.js pending Root owning build/review. Canonical checkout/index/refs untouched.",
+  "root_action": "Apply only three exact source/test candidates with preimage checks; review and owning generated bundle build pending. No finding/task/installed/model status promotion requested."
+}

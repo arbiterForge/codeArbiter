@@ -29,3 +29,25 @@ metadata can be touched. The named regression failed against the old helper;
 13 final controls and 34 affected compatibility tests passed. Fresh full hosted
 CI and Docs remain required before child merge. No qualification ledger or task
 status is renewed. See `evidence/pr1115-checkout-repair/index.json`.
+
+## PR #1115 composed CLI and Sandbox follow-through
+
+The unchanged `a980c220` retry passed Windows RPC but whole CI remained failed:
+90 checks passed, two coverage checks failed, and eight skipped. A real Git
+cleanup fixture exceeded Vitest's five-second default under Windows coverage.
+Its 14 original cases now use a bounded integration budget; the owning V8 run
+and TypeScript check passed. Product cleanup assertions and retry policy remain.
+
+The prepared N37 CLI route raises the composite native recipe count to 20,
+retaining all original recipes and native16. Composed authority checks exposed
+one old exact-set expectation; its correction and both CLI controls passed.
+Sandbox documentation and shipped help now describe host build staging and the
+agent's workflow role. Real shipped shell entries returned 0 and 7 while the same
+owned container and volume survived; cleanup verified both absent. The actual
+unsupported backend source unit passed on unchanged js/wasm under cached Linux
+Node after three preserved failed setup/runtime/oracle attempts. These are local
+development observations with explicit limits. S75 proof bytes are retained for
+future admission; the ledger and its historical proof/status records stay intact.
+See `evidence/pr1115-completion-development/index.json`. Fresh entire CI and Docs
+and a subsequent successful trusted integration run remain required. PR #1098
+is held from main and publication; the Pi HTTP policy choice remains pending.

@@ -548,9 +548,11 @@ function usage() {
     `The OAuth token is read from ${TOKEN_ENV_VAR} in the environment. It is never`,
     "accepted on the command line: an argument list is world-readable.",
     "",
-    "Sanctioned caller: the `sandbox-claude-inside` skill, whose five BLOCK gates",
-    "(posture, image, token, run, teardown) are the reason this is not a",
-    "`sandbox` subcommand."
+    "Use the `sandbox-claude-inside` skill for five agent-guided phases:",
+    "posture, image, token, run and teardown. Separate executable placement",
+    "does not enforce those phases.",
+    "Machine guards validate arguments and environment-token presence, refuse",
+    "token/source co-mounts, and apply the selected network policy and hardening."
   ].join("\n");
 }
 async function runClaudeInsideCli(argv, env = process.env, deps = {}) {

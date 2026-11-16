@@ -1,0 +1,15 @@
+{
+  "name": "typecheck",
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\typescript\\bin\\tsc",
+    "--noEmit"
+  ],
+  "exit_code": 0,
+  "seconds": 1.3279126999841537,
+  "timed_out": false,
+  "overflowed": false,
+  "containment": "exited",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -2,8 +2,9 @@
 
 A locally-hosted GitHub-Codespace equivalent for codeArbiter (ADR-0007). Pull a repo you're curious
 about — including untrusted code — into an **ephemeral, isolated container**, explore or run it safely,
-then tear it down. The cloned repo and all execution live inside the container; your host filesystem is
-never mounted in.
+then tear it down. The clone lives on a named volume. Build preparation uses an owned temporary
+host copy; cleanup uncertainty is reported separately. The running container has no host filesystem
+bind mounts.
 
 This is an **infrastructure** plugin, a sibling to the `ca` governance plugin in the same marketplace.
 It is independent of `ca`: CI is path-scoped and versions bump per-plugin.

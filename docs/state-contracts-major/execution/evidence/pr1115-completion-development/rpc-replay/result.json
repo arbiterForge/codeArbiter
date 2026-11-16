@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a980-pi-rpc-bounded-replay\\unit.py"
+  ],
+  "returncode": 0,
+  "seconds": 5.348492699995404,
+  "timed_out": false,
+  "overflowed": false,
+  "containment": "exited",
+  "source_sdk_tools_stable": true,
+  "source_paths": 737,
+  "sdk_files": 15178,
+  "environment_keys": [
+    "APPDATA",
+    "CA_PI_RPC_DIAGNOSTICS_DIR",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CONFIG_HOME"
+  ],
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "870affc102f2dbddb93f8e1476d18ea7590b5125c55a1dba9930e0cca36e2279"
+}

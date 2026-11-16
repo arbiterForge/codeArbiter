@@ -37,7 +37,7 @@ async function fixture(nested = false) {
   const wt = nested ? path.join(repo, "owned-worktrees", "task") : path.join(root, "worktree");
   await mkdir(repo);
   const git = async (args: string[]): Promise<RunResult> => {
-    const run = spawnSync("git", args, { cwd: repo, encoding: "utf8", windowsHide: true });
+    const run = spawnSync("git", args, { cwd: repo, encoding: "utf8", windowsHide: true, timeout: 15_000 });
     if (run.error) throw run.error;
     return { code: run.status ?? 1, stdout: run.stdout, stderr: run.stderr, out: run.stdout + run.stderr };
   };
@@ -53,7 +53,9 @@ async function fixture(nested = false) {
   return { root, wt, git };
 }
 
-describe("worktree cleanup filesystem observation", () => {
+// These cases create, remove and inspect real Git worktrees under V8 coverage.
+// Windows needs an integration budget rather than Vitest's five-second default.
+describe("worktree cleanup filesystem observation", { timeout: 30_000 }, () => {
   for (const code of ["EACCES", "EIO"]) {
     for (const registered of [false, true]) {
       it(`refuses ${code} with ${registered ? "retained" : "absent"} Git registration without prune or destructive retry`, async () => {

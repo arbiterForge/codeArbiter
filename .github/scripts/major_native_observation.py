@@ -584,6 +584,23 @@ RECIPES.update({'disposition:transitions:N01:01': {'darwin/amd64': ['go:github.c
                                                       'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability']}})
 
 
+# Exact main.run CLI contract: all required terminal children on all platforms.
+RECIPES.update({'disposition:transitions:N37:01': {platform: [
+    'go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:' + name for name in ('TestN37CLIValidDecodeOnceAndCommittedOutputFailure',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/valid-create-and-exact-replay',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-malformed-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-duplicate-key',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-trailing-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-non-object',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-oversized-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-key',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-wrong-protocol',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-operation',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/committed-before-output-failure',
+ 'TestCLIEmitsJSONFaultAndMatchingExitClass')
+] for platform in ('darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64')}})
+
+
 def selected_recipes(cells):
     import major_readiness as owner
     owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)

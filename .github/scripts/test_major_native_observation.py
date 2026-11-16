@@ -567,6 +567,22 @@ BOUNDARY_EXPECTED = {'disposition:transitions:N01:01': {'darwin/amd64': ['go:git
                                                       'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability']}}
 
 
+CLI_EXPECTED = {'disposition:transitions:N37:01': {platform: [
+    'go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:' + name for name in ('TestN37CLIValidDecodeOnceAndCommittedOutputFailure',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/valid-create-and-exact-replay',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-malformed-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-duplicate-key',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-trailing-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-non-object',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-oversized-json',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-key',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-wrong-protocol',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-operation',
+ 'TestN37CLIValidDecodeOnceAndCommittedOutputFailure/committed-before-output-failure',
+ 'TestCLIEmitsJSONFaultAndMatchingExitClass')
+] for platform in ('darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64')}}
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -889,7 +905,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED))
+        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED))
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -934,7 +950,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED))
+        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1063,3 +1079,99 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 self.rewrite(platform,change)
                 with self.subTest(cell=cell,platform=platform), self.assertRaises(readiness.ReadinessError):
                     self.produce()
+
+    def _select_cli_contracts(self, recipes):
+        self.req['native_compositions'] = copy.deepcopy(recipes)
+        self.req['cells'] = [self.runtime, *sorted(recipes)]
+        self.req['cell_jobs'] = {self.runtime: 'Runtime fixture',
+            **dict.fromkeys(recipes, 'major qualification / native')}
+        for platform in self.raw:
+            selectors = sorted({name for recipe in recipes.values() for name in recipe.get(platform, [])})
+            def extend(files):
+                raw = json.loads(files['native-tests.json'])
+                identities = [name.split(':', 2)[1:] for name in selectors]
+                parents = sorted({(package, test.split('/', 1)[0]) for package, test in identities})
+                raw['selected'] = [{'package': package, 'test': test} for package, test in parents]
+                raw['observed'] = [{**row, 'result': 'pass'} for row in raw['selected']]
+                raw['subtests'] = [{'package': package, 'test': test, 'result': 'pass'}
+                    for package, test in identities if '/' in test]
+                files['native-tests.json'] = json.dumps(raw).encode()
+                stamp = json.loads(files['ci20-native-tested.json'])
+                files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+            self.rewrite(platform, extend)
+
+    def test_cli_route_joins_sorted_twenty_policy_and_all_original_components(self):
+        import major_native_observation as native
+        cell = 'disposition:transitions:N37:01'
+        try:
+            selected = native.selected_recipes([cell])
+        except readiness.ReadinessError as error:
+            self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
+        self.assertEqual(selected, CLI_EXPECTED)
+        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
+        self.assertEqual(len(expected), 20)
+        self.assertEqual(native.RECIPES, expected)
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
+        cells = policy['native_composite_cells']
+        self.assertEqual(cells, sorted(set(cells)))
+        self.assertEqual(native.selected_recipes(cells), expected)
+        for invalid in (list(reversed(cells)), cells + [cell], sorted([*cells, 'disposition:transitions:N27:03'])):
+            with self.subTest(selection='noncanonical-or-unmapped'), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes(invalid)
+        self._select_cli_contracts(expected)
+        record = self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(expected))
+        self.assertEqual(len(record['native']['components']), 6)
+        for row in record['native']['results']:
+            self.assertEqual({component['platform']: component['selectors'] for component in row['components']}, expected[row['cell']])
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+        for field, value in (('conclusion', 'failure'), ('event', 'pull_request')):
+            with self.subTest(final_gate=field), self.assertRaises(readiness.ReadinessError):
+                self.verify(record, run={**self.run, field: value})
+
+    def test_cli_parent_pass_never_substitutes_for_required_child_or_platform(self):
+        import major_native_observation as native
+        cell = 'disposition:transitions:N37:01'
+        self.assertEqual(native.selected_recipes([cell]), CLI_EXPECTED)
+        self._select_cli_contracts(CLI_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), dict(self.data))
+        names = CLI_EXPECTED[cell]['windows/amd64']
+        parent = next(name for name in names if name.endswith(':TestN37CLIValidDecodeOnceAndCommittedOutputFailure'))
+        # All ten mandatory terminal children and the original CLI error
+        # complement remain independent of the passing new parent.
+        required = [name for name in names if '/' in name.split(':', 2)[2]
+                    or name.endswith(':TestCLIEmitsJSONFaultAndMatchingExitClass')]
+        self.assertEqual(len(required), 11)
+        for name in required:
+            package, test = name.split(':', 2)[1:]
+            for mode in ('missing', 'skip'):
+                self.artifacts, self.data = copy.deepcopy(initial)
+                def change(files):
+                    raw = json.loads(files['native-tests.json'])
+                    ppackage, ptest = parent.split(':', 2)[1:]
+                    self.assertEqual([row['result'] for row in raw['observed'] if row['package'] == ppackage and row['test'] == ptest], ['pass'])
+                    population = raw['subtests'] if '/' in test else raw['observed']
+                    found = [row for row in population if row['package'] == package and row['test'] == test]
+                    self.assertEqual(len(found), 1)
+                    if mode == 'missing':
+                        population.remove(found[0])
+                        if '/' not in test:
+                            raw['selected'] = [row for row in raw['selected']
+                                if not (row['package'] == package and row['test'] == test)]
+                    else: found[0]['result'] = 'skip'
+                    files['native-tests.json'] = json.dumps(raw).encode()
+                    stamp = json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                self.rewrite('windows/amd64', change)
+                with self.subTest(required=test, outcome=mode), self.assertRaisesRegex(readiness.ReadinessError, 'selected assertion|child'):
+                    self.produce()
+        for platform in CLI_EXPECTED[cell]:
+            self.artifacts, self.data = copy.deepcopy(initial)
+            runner = {value: key for key, value in binding_owner.RUNNERS.items()}[platform]
+            self.artifacts = [item for item in self.artifacts if item['name'] != 'ci20-native-tested-' + runner]
+            with self.subTest(platform=platform, missing='original archive'), self.assertRaisesRegex(readiness.ReadinessError, 'archive/job'):
+                self.produce()
+            changed = copy.deepcopy(self.req)
+            changed['native_compositions'][cell].pop(platform)
+            with self.subTest(platform=platform, missing='recipe platform'), self.assertRaisesRegex(readiness.ReadinessError, 'recipe differs'):
+                native.runtime_requirements(changed)

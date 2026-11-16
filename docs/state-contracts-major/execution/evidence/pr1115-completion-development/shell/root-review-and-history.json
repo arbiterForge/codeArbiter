@@ -1,0 +1,19 @@
+{
+  "predecessor": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-exit-observer",
+  "predecessor_summary_sha256": "de7ca46c2d94389d641c6ff998afdf744e8c9de43461455f8306b849320fa0bc",
+  "actual_cursor_diagnosis_sha256": "fefb79a4a308df26b9fe4a300cf2a298e0b15e474cb780d06bba6e9b6a013562",
+  "repair": "PrivatecollectorpreservesVTcursor-to-column1 aslineboundary beforeotherCSIremoval; actualretainedpositiveandcommand-echo-onlynegativebothPASS. No product/oracle/deadline/hardeningchange. Threepriorfixtureattemptspreservedandallownedcleanupverified.",
+  "private_inputs": {
+    "control.py": "317df611775e32c21020618ecf10024e46ae2b119feedf86240a3eb97fa603b9",
+    "session.py": "3676d82cc923f78ca086e22d60c8f22c3e98434c578b2ed6759abe10a7ec22a0",
+    "shared.py": "5e24c45b0744d2acc8860efb0c30c09f5a8da7980e13fe9e25cf00ec7ce7dda3",
+    "setup.mjs": "d2770dce74466b337a5ce76fa6ad2b82c5e5fa3bb3c62669ad72d2ad7e22fd35",
+    "product/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "product/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "product/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "product/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "product/sandbox.js": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+    "product/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+  },
+  "state": "ROOT_REVIEWED_BEFORE_EFFECT"
+}

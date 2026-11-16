@@ -1,0 +1,7 @@
+{
+  "schema": "literal-utf8-development-capture/1",
+  "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-guidance-build-successor-xrm8ebyr\\shipped-help.stderr",
+  "original_sha256": "d4c9fb0a43c9a1ee554df1c3d2f683e48846611930d93b20961c597608bbb072",
+  "original_bytes": 658,
+  "utf8_text": "ca-sandbox: --image is required\nca-sandbox claude-inside — start a Claude-Code-bearing sandbox box.\n\n  claude-inside --image <tag> --home-volume <name> [--net offline|anthropic-only]\n\nThe OAuth token is read from CLAUDE_CODE_OAUTH_TOKEN in the environment. It is never\naccepted on the command line: an argument list is world-readable.\n\nUse the `sandbox-claude-inside` skill for five agent-guided phases:\nposture, image, token, run and teardown. Separate executable placement\ndoes not enforce those phases.\nMachine guards validate arguments and environment-token presence, refuse\ntoken/source co-mounts, and apply the selected network policy and hardening.\n"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "owning-v8-suite",
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "farm-cleanup-observation.test.ts",
+    "--coverage",
+    "--coverage.reporter=json",
+    "--coverage.reportsDirectory=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-budget-verification\\coverage"
+  ],
+  "exit_code": 0,
+  "seconds": 7.641929499979597,
+  "timed_out": false,
+  "overflowed": false,
+  "containment": "exited",
+  "stdout_sha256": "2b48f1527ef58bdf5116228fe7167090159246fabe2f7628271c73f509d11494",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

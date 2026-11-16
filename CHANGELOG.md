@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Bound Git fixture commands and give worktree cleanup checks an explicit integration-test budget.
 - Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
 
 - Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.

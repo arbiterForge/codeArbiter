@@ -1,0 +1,248 @@
+{
+  "cell": "N37:01",
+  "frozen_contract": {
+    "transition_id": "N37:01",
+    "machine_id": "N37",
+    "owner": "native",
+    "baseline": {
+      "from_state": "request input",
+      "from": "request input",
+      "event": "decode/check/Run",
+      "guard": "strict JSON and supported operation",
+      "to": "operation running or request rejected",
+      "effects": "Run semantic operation once; may commit before response serialization.",
+      "failure_retry": "Structured error on invalid request.",
+      "source": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "symbol": "main",
+          "lines": [
+            16
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+        }
+      ],
+      "transition_id": "N37:01"
+    },
+    "task_ids": [
+      "NT-03",
+      "NT-10",
+      "NT-12"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+      "SEQ-04"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+  },
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "execution_status": "LOCAL_NEW_UNIT_PASS_ONLY",
+  "claim_type": "Future ordinary in-process CLI-boundary Go unit characterization; no product bug presumed.",
+  "parent": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure",
+  "required_children": [
+    "valid-create-and-exact-replay",
+    "refuse-malformed-json",
+    "refuse-duplicate-key",
+    "refuse-trailing-json",
+    "refuse-non-object",
+    "refuse-oversized-json",
+    "refuse-unknown-key",
+    "refuse-wrong-protocol",
+    "refuse-unknown-operation",
+    "committed-before-output-failure"
+  ],
+  "clauses": [
+    {
+      "clause": "Strict JSON and supported operation admit only a valid request.",
+      "source": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "symbol": "run",
+          "start_line": 17,
+          "end_line": 105,
+          "span_sha256": "393a7a6286540e4caedc7885d9ffde51bd070d7f7d08588d0678ca9b1265de5a"
+        },
+        {
+          "path": "core/artifacts/internal/canonical/json.go",
+          "symbol": "Read",
+          "start_line": 48,
+          "end_line": 55,
+          "span_sha256": "151d46d29fd2f3e438104ee5349e75ed7a9b9b631227bd3e466a5b8f57729c38"
+        },
+        {
+          "path": "core/artifacts/internal/canonical/json.go",
+          "symbol": "Decode",
+          "start_line": 30,
+          "end_line": 48,
+          "span_sha256": "f45ff0cb392f67e1568ed18e21d69d3d1fa66c3d00d8640049edfd17e02c66d4"
+        },
+        {
+          "path": "core/artifacts/internal/operations/protocol.go",
+          "symbol": "CheckRequest",
+          "start_line": 553,
+          "end_line": 563,
+          "span_sha256": "f2a077b777991f9fd37c4774a127088daab4693aa7a817f22594ef385f8cab0a"
+        }
+      ],
+      "assertions": "Eight named refusal children assert exact structured code/exit2, one strict closed stdout envelope and unchanged owned repository names/bytes. Valid create uses actual canonical spec fixture and stdin decoding."
+    },
+    {
+      "clause": "Run the semantic operation once.",
+      "source": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "symbol": "run",
+          "start_line": 17,
+          "end_line": 105,
+          "span_sha256": "393a7a6286540e4caedc7885d9ffde51bd070d7f7d08588d0678ca9b1265de5a"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "Run",
+          "start_line": 78,
+          "end_line": 482,
+          "span_sha256": "580d2010e3af7786a41a8ee69f06118491cb0a8f08e740f1abe1d2804b7a604f"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "symbol": "save",
+          "start_line": 482,
+          "end_line": 501,
+          "span_sha256": "d02d68a712f76091636425e24ad834580894a3434347b124ae96feddc9139ecc"
+        }
+      ],
+      "assertions": "Valid request yields first committed/replay=false response, exactly one selected journal with correct request digest and one entry, one artifact at revision1; exact retry yields replay=true and byte-identical committed tree. Actual main.run has one literal operations.Run call, source-pinned as independent corroboration."
+    },
+    {
+      "clause": "Emit one bounded closed JSON stdout response or structured refusal.",
+      "source": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "symbol": "run",
+          "start_line": 17,
+          "end_line": 105,
+          "span_sha256": "393a7a6286540e4caedc7885d9ffde51bd070d7f7d08588d0678ca9b1265de5a"
+        },
+        {
+          "path": "core/artifacts/internal/fault/fault.go",
+          "symbol": "Exit",
+          "start_line": 39,
+          "end_line": 55,
+          "span_sha256": "6fafcdccbbdf77ec1dcd0791de1c1e0353bb95c1762b368b494575acfb465b28"
+        }
+      ],
+      "assertions": "Strict canonical.Object parser rejects extra stdout records/duplicate keys; exact four envelope fields and exactly one final newline; error object accepts only public closed text fields and code/message are required. No artificial change to the65536 budget or any assertion."
+    },
+    {
+      "clause": "A semantic write may commit before response delivery fails; retry must preserve original outcome.",
+      "source": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "symbol": "run",
+          "start_line": 17,
+          "end_line": 105,
+          "span_sha256": "393a7a6286540e4caedc7885d9ffde51bd070d7f7d08588d0678ca9b1265de5a"
+        },
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "symbol": "Commit",
+          "start_line": 258,
+          "end_line": 414,
+          "span_sha256": "8bcdd3201ef13f7d28b4c176bec20241f057ff7d3f8335eff42d693af259bbdf"
+        },
+        {
+          "path": "core/artifacts/internal/store/transaction.go",
+          "symbol": "Lookup",
+          "start_line": 183,
+          "end_line": 203,
+          "span_sha256": "8a7b82a8beea1ceb5075c88e5e34ca7b30b71b1ce9c22101495cbce3763bc2f3"
+        }
+      ],
+      "assertions": "Only injected seam is io.Writer returning ErrClosedPipe. Actual create executes before one failed write attempt; main.run returns5. Actual committed journal/artifact survive, and identical operation-id retry returns replay=true without any file/byte change."
+    }
+  ],
+  "limits": [
+    "Actual single in-process Go unit command passed on Windows/amd64. No installed ca-artifact CLI/helper process or platform6 proof.",
+    "Semantic operation runs through actual main.run and native Go owners inside the UNIT process; only stdout writer is faulted in memory.",
+    "All six eventual original components plus every listed child and original legacy fault test must pass under unchanged native4/source/run/attempt/archive/uploader guards before any report cell passes.",
+    "Controlled post-serialization writer failure establishes committed-before-output-loss behavior; no artificial marshal panic or return-object injection was used.",
+    "N-F08 unsupported backend compilation stays held. No whole-task/installed/production-release qualification."
+  ],
+  "actual_source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "actual_outcomes": [
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/valid-create-and-exact-replay",
+      "Elapsed": 0.04
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-malformed-json",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-duplicate-key",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-trailing-json",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-non-object",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-oversized-json",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-key",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-wrong-protocol",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/refuse-unknown-operation",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure/committed-before-output-failure",
+      "Elapsed": 0.03
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN37CLIValidDecodeOnceAndCommittedOutputFailure",
+      "Elapsed": 0.09
+    }
+  ],
+  "actual_command": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-json",
+    "./cmd/ca-artifact",
+    "-run",
+    "^(TestN37CLIValidDecodeOnceAndCommittedOutputFailure)$",
+    "-count=1",
+    "-timeout=75s",
+    "-failfast"
+  ],
+  "actual_duration_seconds": 5.416443699999945,
+  "actual_exit_code": 0,
+  "local_platform": "windows/amd64",
+  "qualification_now": false,
+  "existing_original_CLI_method_executed_here": false
+}

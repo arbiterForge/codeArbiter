@@ -1,0 +1,156 @@
+{
+  "state": "PASSED",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "elapsed_seconds": 3.026600299985148,
+  "source_tool_artifact_stable": true,
+  "primary_failure": null,
+  "unit_result": {
+    "name": "unit",
+    "argv": [
+      "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+      "run",
+      "--pull=never",
+      "--name",
+      "ca-nf08-wasm-30fdf65e-508c-4df7-9449-74b63112e309-unit",
+      "--label",
+      "ca.sandbox.effect-fixture=30fdf65e-508c-4df7-9449-74b63112e309",
+      "--user",
+      "1000:1000",
+      "--read-only",
+      "--tmpfs",
+      "/tmp",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      "--pids-limit",
+      "512",
+      "--memory",
+      "4g",
+      "--cpus",
+      "2",
+      "--network",
+      "none",
+      "--mount",
+      "type=volume,source=ca-nf08-wasm-30fdf65e-508c-4df7-9449-74b63112e309-data,target=/home/node,readonly",
+      "--workdir",
+      "/tmp",
+      "--env",
+      "HOME=/tmp",
+      "--env",
+      "TMPDIR=/tmp",
+      "--env",
+      "TMP=/tmp",
+      "--env",
+      "TEMP=/tmp",
+      "--env",
+      "GOMAXPROCS=1",
+      "--env",
+      "NODE_OPTIONS=",
+      "--env",
+      "NODE_PATH=",
+      "--env",
+      "NODE_DISABLE_COLORS=1",
+      "sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0",
+      "node",
+      "--stack-size=8192",
+      "/home/node/nf08-wasm/wasm_exec_node.js",
+      "/home/node/nf08-wasm/store-fallback.test.wasm",
+      "-test.run=^TestUnsupportedBackendOpenRefusesWithoutEffects$",
+      "-test.count=1",
+      "-test.timeout=20s",
+      "-test.failfast",
+      "-test.v"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run",
+    "exit_code": 0,
+    "elapsed_seconds": 0.461572400003206,
+    "timeout_seconds": 30,
+    "timed_out": false,
+    "overflowed": false,
+    "containment": "exited",
+    "setup_error": null,
+    "stdin": {
+      "bytes_expected": 0,
+      "bytes_written": 0,
+      "error": null
+    },
+    "streams": {
+      "stdout": {
+        "bytes": 129,
+        "retained_bytes": 129,
+        "sha256": "96e0bf49d5da978f142e9d9085dcef65136c2e82128180a5b9ea155148ff8e08",
+        "error": null
+      },
+      "stderr": {
+        "bytes": 0,
+        "retained_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "error": null
+      }
+    },
+    "cleanup_phase": false
+  },
+  "seed_readback": {
+    "format": "codearbiter.nf08.volume-seeded/1",
+    "nonce": "30fdf65e-508c-4df7-9449-74b63112e309",
+    "uid": 1000,
+    "homeOwner": 1000,
+    "inputBytes": 7451374,
+    "files": {
+      "store-fallback.test.wasm": {
+        "bytes": 5570185,
+        "sha256": "2fa3d866a2b9e4811f924487a8fbcbd2a1ca180c0feae609eae8c7f6919dfba9"
+      },
+      "wasm_exec_node.js": {
+        "bytes": 1186,
+        "sha256": "86b8ce546ecaa462544f3736adc4c19264eedd257c2ec427c9abc6debc1ee184"
+      },
+      "wasm_exec.js": {
+        "bytes": 16992,
+        "sha256": "0c949f4996f9a89698e4b5c586de32249c3b69b7baadb64d220073cc04acba14"
+      }
+    },
+    "node": {
+      "path": "/usr/local/bin/node",
+      "version": "v20.20.2",
+      "bytes": 98932688,
+      "sha256": "6295488653f0d93b0a157841746fef7e72cc4328cfb60c4bbe0ca2668a836ffd"
+    }
+  },
+  "owned_cleanup": [
+    {
+      "name": "ca-nf08-wasm-30fdf65e-508c-4df7-9449-74b63112e309-unit",
+      "absent": true
+    },
+    {
+      "name": "ca-nf08-wasm-30fdf65e-508c-4df7-9449-74b63112e309-seed",
+      "absent": true
+    },
+    {
+      "volume": "ca-nf08-wasm-30fdf65e-508c-4df7-9449-74b63112e309-data",
+      "absent": true
+    }
+  ],
+  "image_id": "sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0",
+  "no_go_compile": true,
+  "no_status_or_canonical_changes": true,
+  "history": [
+    {
+      "delivery": "C:/Users/brenn/AppData/Local/Temp/ca-native-unsupported-wasm-run/delivery.json",
+      "sha256": "d74b2b2c57e04c9bde81266b72e3591a2467f8fb17c65df3f243068b82062709",
+      "fact": "Go-only226 fixture omitted embedded data; compile1, Node NOTRUN."
+    },
+    {
+      "delivery": "C:/Users/brenn/AppData/Local/Temp/ca-native-unsupported-wasm-full-module/delivery.json",
+      "sha256": "e7c6268c227b8638a8d385bd56d0feec4819aa6efe402e905ce9ac5007f7cdca",
+      "fact": "Full250 compilePASS then shared GOMAXPROCS2 caused pretest runtime-init exit2; zero assertions."
+    },
+    {
+      "delivery": "C:/Users/brenn/AppData/Local/Temp/ca-native-unsupported-wasm-single-thread/delivery.json",
+      "sha256": "abae571995f17443d8af2eab71728dd6ba673e4875484423d3278b034176b8ff",
+      "fact": "GOMAXPROCS1 reused artifact; named test executed once, final os.ReadDir oracle failed on Windows O_DIRECTORY bridge; no full PASS."
+    }
+  ],
+  "scope": "Actual unchanged compiled unsupported js/wasm unit on cached Linux Node20 only. No native unsupported OS, supported-six/installed/fullNT08/NF08/SEQ31 qualification."
+}

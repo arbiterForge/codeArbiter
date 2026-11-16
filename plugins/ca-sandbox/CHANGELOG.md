@@ -19,6 +19,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Changed
 
+- Document host build staging and the agent's role in Claude workflow phases; update the shipped usage text.
 - Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.
 - Limit Nixpacks generation to explicit Node/Python, Go and bounded non-workspace Rust profiles with pinned image inputs, including Go/Rust runtime stages. Bound native manifest reads and include their observed inputs in cache identity. Refuse custom Nixpacks configuration and existing generated output before generation or cleanup can change those paths.
 - Report requested and effective network policies separately. Ordinary exploration remains offline.
