@@ -824,6 +824,26 @@
         "disposition:transitions:S75:05"
       ],
       "scope": "Real private write_all success after supplied valid rendered map: changed bytes, equal identity retained, owned orphan removed, handwritten/foreign preserved; transactional publication supersedes direct writes under BUILD-G01. No full generator/build/publication qualification."
+    },
+    {
+      "id": "mapped-work-native-consumer",
+      "job": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+      "payload_name": "major-source-inputs-mapped-work-windows",
+      "observation": "mapped-work",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_partial_issue_success_does_not_repeat_when_project_fails"
+      ],
+      "cells": [
+        "disposition:transitions:S38:04"
+      ],
+      "scope": "Original whole work_github conformance child, real admitted current native input, seven API/native/identity fixture error/retry/no-resend/independent-continuation assertions. Mechanical local software behavior only; no real GitHub, installed-host, task or whole-machine qualification."
     }
   ]
 }

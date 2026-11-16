@@ -18,6 +18,75 @@ import major_qualification_report as owner
 from _git_fixture_diagnostics import run_git_phase
 
 
+class VitestIdentityBudgetTests(unittest.TestCase):
+    """Canonical identity bytes include the source path and the full test name."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-vitest-id-budget-")
+        self.addCleanup(self.temp.cleanup)
+        self.repo = Path(self.temp.name).resolve()
+        self.before = {"source_commit": "a" * 40, "source_tree": "b" * 40, "clean": True}
+
+    def admit(self, names, *, path="a.test.ts", status="passed", exit_code=0):
+        raw = {"testResults": [{"name": str(self.repo / path), "assertionResults": [
+            {"fullName": name, "status": status} for name in names]}]}
+        return owner.admit_vitest(raw, repo=self.repo, before=self.before, after=self.before,
+                                  argv=["npm", "test"], exit_code=exit_code, run_id=7)
+
+    def test_original_public_malformed_input_vector_keeps_its_full_bounded_name(self):
+        name = ("Windows startup stage diagnostics rejects malformed or out-of-order stage "
+                + "PRIVATE_INPUT_SENTINEL" * 100 + " without echoing it")
+        self.assertGreater(len(name.encode("utf-8")), 2048)
+        self.assertLess(len(("vitest:a.test.ts:" + name).encode("utf-8")), 4096)
+        try:
+            observed = self.admit([name])
+        except ValueError as error:
+            self.fail("Valid complete canonical identity was refused: " + str(error))
+        self.assertEqual(observed["tests"], [{"id": "vitest:a.test.ts:" + name, "result": "passed"}])
+
+    def test_exact_complete_ascii_identity_budget_is_accepted(self):
+        prefix = "vitest:a.test.ts:"
+        name = "x" * (4096 - len(prefix.encode("utf-8")))
+        self.assertEqual(len(self.admit([name])["tests"][0]["id"].encode("utf-8")), 4096)
+
+    def test_complete_identity_overflow_is_rejected_without_truncation(self):
+        name = "x" * (4097 - len("vitest:a.test.ts:".encode("utf-8")))
+        with self.assertRaisesRegex(ValueError, "Vitest.*bound"):
+            self.admit([name])
+
+    def test_utf8_bytes_and_full_source_path_share_the_same_budget(self):
+        path = "nested/é.test.ts"
+        prefix = "vitest:" + path + ":"
+        remaining = 4096 - len(prefix.encode("utf-8"))
+        name = "é" * (remaining // 2) + "x" * (remaining % 2)
+        self.assertEqual(len(self.admit([name], path=path)["tests"][0]["id"].encode("utf-8")), 4096)
+        with self.assertRaisesRegex(ValueError, "Vitest.*bound"):
+            self.admit([name + "é"], path=path)
+
+    def test_long_path_cannot_hide_a_complete_identity_overflow(self):
+        path = "nested/" * 120 + "a.test.ts"
+        with self.assertRaisesRegex(ValueError, "Vitest.*bound"):
+            self.admit(["é" * 1700], path=path)
+
+    def test_long_duplicate_names_are_still_rejected(self):
+        name = "long public vector " + "x" * 2200
+        with self.assertRaisesRegex(ValueError, "duplicate Vitest"):
+            self.admit([name, name])
+
+    def test_long_pending_and_failed_names_keep_the_actual_result(self):
+        name = "long public vector " + "x" * 2200
+        self.assertEqual(self.admit([name], status="pending")["tests"][0]["result"], "skipped")
+        observed = self.admit([name], status="failed", exit_code=1)
+        self.assertEqual((observed["exit_code"], observed["tests"][0]["result"]), (1, "failed"))
+
+    def test_shape_status_population_and_zero_name_refusals_remain(self):
+        for name, status in [(None, "passed"), ("", "passed"), ("ok", None), ("ok", "unknown")]:
+            with self.subTest(name=name, status=status), self.assertRaises(ValueError):
+                self.admit([name], status=status)
+        with mock.patch.object(owner, "MAX_TESTS", 2), self.assertRaisesRegex(ValueError, "malformed or unbounded Vitest"):
+            self.admit(["first", "second", "third"])
+
+
 class ReportTest(unittest.TestCase):
     def setUp(self):
         self.cell = "disposition:transitions:N09:04"
@@ -203,6 +272,34 @@ class ReportTest(unittest.TestCase):
                 (root / "candidate/binary").write_bytes(b"different binary")
                 with self.assertRaisesRegex(ValueError, "differs"):
                     owner.authenticated_payload({"id": 8}, self.req, root)
+
+
+    def test_native_child_skip_survives_admission_instead_of_parent_pass_laundering(self):
+        record = {"format":"codearbiter.go-test-observation/1","complete":True,
+            "module_sha256_before":"f"*64,"module_sha256_after":"f"*64,
+            "argv":["python","tools/go_test_parallel.py"],
+            "selected":[{"package":"p","test":"TestA"}],
+            "observed":[{"package":"p","test":"TestA","result":"pass"}],
+            "subtests":[{"package":"p","test":"TestA/workspaces-32","result":"skip"}]}
+        value=owner.admit_go(record,self.binding,"b"*40)
+        self.assertIn({"id":"go:p:TestA/workspaces-32","result":"skipped"},value["tests"])
+
+
+    def test_native_child_shapes_cannot_forge_other_parents_or_duplicate_outcomes(self):
+        record={"format":"codearbiter.go-test-observation/1","complete":True,
+            "module_sha256_before":"f"*64,"module_sha256_after":"f"*64,
+            "argv":["python","tools/go_test_parallel.py"],
+            "selected":[{"package":"p","test":"TestA"}],
+            "observed":[{"package":"p","test":"TestA","result":"pass"}]}
+        child={"package":"p","test":"TestA/child","result":"pass"}
+        for children in ([child,dict(child)],[{**child,"test":"Other/child"}],
+                         [{**child,"result":"fail"}],[{**child,"test":None}],
+                         [{**child,"test":"TestA/"+"x"*4096}],
+                         [{**child,"unexpected":True}]):
+            with self.subTest(children=children),self.assertRaises(ValueError):
+                owner.admit_go({**record,"subtests":children},self.binding,"b"*40)
+        with mock.patch.object(owner,"MAX_TESTS",1),self.assertRaises(ValueError):
+            owner.admit_go({**record,"subtests":[child]},self.binding,"b"*40)
 
 
 class SourceIdentityTest(unittest.TestCase):
@@ -1581,6 +1678,26 @@ def vitest_source_fixture(profile="pi-tools-v1"):
 
 
 class VitestSourceProducerTests(unittest.TestCase):
+    def test_capture_destination_does_not_relocate_the_original_temp_filesystem(self):
+        with vitest_source_fixture() as f:
+            program = Path(f["command"][2])
+            source = program.read_text(encoding="utf-8")
+            self.assertIn("'token_present':", source)
+            source = source.replace("'token_present':", "'temp_filesystem_root':str(pathlib.Path(os.environ['TEMP']).resolve().parent.parent),'token_present':", 1)
+            program.write_text(source, encoding="utf-8")
+            captured = f["base"] / "capture-on-independent-filesystem"
+            captured.mkdir()
+            self.assertEqual(owner.observe_vitest(f["repo"], f["command"], captured / "named.json",
+                captured / "observation.json", f["spec"]["root"], f["staged"]), 0)
+            runs = json.loads(f["counter"].read_text(encoding="utf-8"))
+            self.assertEqual(len(runs), 1)
+            self.assertEqual(runs[0]["temp_filesystem_root"], str(Path(tempfile.gettempdir()).resolve()))
+            self.assertNotEqual(runs[0]["temp_filesystem_root"], str(captured.resolve()))
+            self.assertFalse(runs[0]["token_present"])
+            observed = owner.load_json(captured / "observation.json")
+            self.assertTrue(observed["source_stable"])
+            self.assertEqual(observed["original_argv"], f["command"])
+
     def test_original_vitest_invocation_retains_authenticated_source_binding_once(self):
         for profile in TS_PROFILE_FIXTURES:
             with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
@@ -1914,6 +2031,373 @@ class SourceBytePolicyTests(unittest.TestCase):
             self.assertEqual(code,1)
             self.assertEqual(emitted.getvalue().strip(),'::error::Major qualification report pending: '+str(caught.exception))
             self.assertFalse((f['base']/'cli-refused').exists())
+
+
+class MappedNativeConsumerDispatchTests(unittest.TestCase):
+    def test_closed_mapped_consumer_transports_source_and_original_native_without_reexecution(self):
+        import types
+        ReportTest.setUp(self)
+        cell='disposition:transitions:S38:04';job='[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>'
+        source='major-source-inputs-mapped-work-windows';native='ci20-native-tested-windows-2025'
+        self.req.update(cells=[cell],cell_jobs={cell:job})
+        group=self.map['groups'][0];group.update(job=job,payload_name=source,proof_kind='source-test',cells=[cell])
+        self.observation.update(proof_kind='source-test',producer='python-mapped-native-consumer-observer-v1',
+            source_input_binding={'profile':'mapped-work-native-consumer-v1'})
+        payloads={source:{**self.payload,'artifact_id':8},native:{**self.payload,'artifact_id':10}}
+        admission={'tests':self.observation['tests'],'payloads':[{key:value[key] for key in ('artifact_id','archive_sha256','members')} for value in payloads.values()],
+            'primary_payload_name':source,'qualified_cells':[cell]}
+        module=types.ModuleType('mapped_work_observation');module.admit=mock.Mock(return_value=admission)
+        module.CELL=cell;module.SOURCE_PAYLOAD=source;module.JOB=job
+        # The admitted native component is an inert transport seam, not a real
+        # module/platform observation. The actual adapter owns its closed joins.
+        component={'unit_native_component':'inert-only'}
+        with mock.patch.dict(sys.modules,{'mapped_work_observation':module}):
+            result=owner.build_report(self.req,job_name=job,job_id=9,selections=self.map,
+                observations={'native':self.observation},payloads=payloads,
+                native_components={'native':component})
+        self.assertEqual(result['schema'],'codearbiter-major-qualification/3')
+        self.assertEqual(result['results'][0]['payload_artifact_ids'],[8,10])
+        self.assertEqual(len(result['payloads']),2)
+        self.assertEqual(module.admit.call_count,1)
+        self.assertEqual(module.admit.call_args.kwargs['native_component'],component)
+
+
+
+class MappedNativeConsumerProfileTests(unittest.TestCase):
+    """Pure file/Git/reader controls; never execute the native fixture suite."""
+    def setUp(self):
+        import mapped_work_observation as profile
+        self.profile=profile
+        self.owner=tempfile.TemporaryDirectory();self.addCleanup(self.owner.cleanup)
+        self.root=Path(self.owner.name)/'repo';self.root.mkdir()
+        self.run_git('init','-q');self.run_git('config','user.name','Fixture')
+        self.run_git('config','user.email','fixture@example.invalid')
+        self.run_git('config','core.autocrlf','false')
+        files={'core/pysrc/_artifactlib.py':'# source\n','core/pysrc/_workgithub.py':'# source\n',
+               'core/artifacts/go.mod':'module fixture.invalid/source\n',
+               'core/surface/fixture.md':'# declared source\n',
+               'plugins/ca-codex/helpers/fixture.py':'# original copied first-party input\n',
+               '.github/scripts/test_artifact_authoring.py':'# source\n',
+               '.github/scripts/test_work_github.py':'# source\n',
+               'core/hosts.json':'{}\n','core/artifact-release-manifest.json':'{}\n'}
+        files.update({name:'# declared source\n' for name in profile.EXTRA if name not in files})
+        for name,value in files.items():
+            path=self.root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(value,encoding='utf8')
+        self.commit()
+
+    def run_git(self,*args):
+        return subprocess.run(['git','-C',str(self.root),*args],
+                              capture_output=True,check=True,timeout=15).stdout
+
+    def commit(self):
+        self.run_git('add','-A');self.run_git('commit','-qm','literal fixture source')
+
+    def fixture(self):
+        p=self.profile;snapshot=p.snapshot(self.root)
+        req={**snapshot,'ci_run_id':7,'native_module_sha256':{'windows':'9'*64}}
+        manifest={'format':p.FORMAT,'profile':p.PROFILE,'source_commit':req['source_commit'],
+           'source_tree':req['source_tree'],'ci_run_id':7,'producer_job_name':p.JOB,
+           'members':snapshot['members'],'host_lookup':snapshot['host_lookup']}
+        raw=json.dumps(manifest).encode();sha=owner.readiness.digest(raw)
+        source={'artifact_id':8,'archive_sha256':'c'*64,'members':[{'path':r['path'],'sha256':r['sha256']} for r in snapshot['members']]
+                 +[{'path':p.MANIFEST,'sha256':sha}],'source_upload_job_id':9,'source_manifest_sha256':sha,'documents':{p.MANIFEST:manifest}}
+        native={'artifact_id':10,'archive_sha256':'d'*64,'members':[
+            {'path':'artifact-candidate/release.json','sha256':'e'*64},
+            {'path':'artifact-candidate/ca-artifact-windows-amd64.exe','sha256':'f'*64}]}
+        state={'manifest_sha256':'e'*64,'binary_sha256':'f'*64,'binary_bytes':123,'platform':'windows/amd64'}
+        component={'platform':'windows/amd64',**native,'native_binding':{'manifest_sha256':'e'*64,'binary_sha256':'f'*64,
+            'source_commit':req['source_commit'],'run_id':'7','module_sha256':'9'*64}}
+        binding={'format':p.FORMAT,'profile':p.PROFILE,'source_manifest_sha256':sha,'native_before':state,
+          'native_after':dict(state),'native_admissions':dict.fromkeys(p.SELECTORS,1),
+          'runtime_before':{'python_sha256':'1'*64,'version':[3,14,10]},
+          'runtime_after':{'python_sha256':'1'*64,'version':[3,14,10]},
+          'host_lookup_before':snapshot['host_lookup'],'host_lookup_after':dict(snapshot['host_lookup']),
+          'imported_sources':{r['path']:r['sha256'] for r in snapshot['members'] if r['path'].endswith('.py')}}
+        observed={'producer':p.PRODUCER,'proof_kind':'source-test','consumer_binding':binding,
+             'tests':[{'id':name,'result':'passed'} for name in p.SELECTORS],
+             'argv':['python',str(self.root/p.SCRIPT)]}
+        return req,observed,{p.SOURCE_PAYLOAD:source,p.NATIVE_PAYLOAD:native},component
+
+    def admit(self,fixture):
+        req,observed,payloads,component=fixture
+        return self.profile.admit(observed,req=req,job_id=9,authenticated_payloads=payloads,
+                                  repo=self.root,native_component=component)
+
+    def test_immutable_source_and_full_physical_namespace_refuse_drift_and_shadows(self):
+        p=self.profile;before=p.snapshot(self.root)
+        self.assertEqual({r['path'] for r in before['members']},p._physical_names(self.root))
+        path=self.root/'core/pysrc/_artifactlib.py';old=path.read_bytes();path.write_bytes(old+b'# drift\n')
+        with self.assertRaisesRegex(ValueError,'dirty'):p.snapshot(self.root)
+        path.write_bytes(old)
+        for name in ('core/pysrc/untracked.pyd','.github/scripts/_host.pyc'):
+            with self.subTest(name=name):
+                shadow=self.root/name;shadow.write_bytes(b'inert')
+                try:
+                    with self.assertRaises(ValueError):p.snapshot(self.root)
+                finally:shadow.unlink()
+        host=self.root/'core/pysrc/_host.py';host.write_text('# tracked shadow\n');self.commit()
+        with self.assertRaisesRegex(ValueError,'host lookup shadow'):p.snapshot(self.root)
+
+    def test_source_manifest_binds_exact_original_commit_members_and_closed_job(self):
+        fixture=self.fixture();req,observed,payloads,component=fixture;p=self.profile
+        source=payloads[p.SOURCE_PAYLOAD];manifest=source['documents'][p.MANIFEST]
+        self.assertIs(p.validate_manifest(manifest,req=req,repo=self.root,members=source['members']),manifest)
+        for field,value in (('source_commit','a'*40),('source_tree','b'*40),('ci_run_id',8),
+                            ('producer_job_name','other job'),('profile','source-test'),('host_lookup',{})):
+            with self.subTest(field=field):
+                changed=copy.deepcopy(manifest);changed[field]=value
+                with self.assertRaises(ValueError):p.validate_manifest(changed,req=req,repo=self.root,members=source['members'])
+        for members in (source['members'][:-1],source['members']+[source['members'][0]]):
+            with self.assertRaises(ValueError):p.validate_manifest(manifest,req=req,repo=self.root,members=members)
+
+    def test_actual_builder_and_consumer_native_identity_must_join(self):
+        fixture=self.fixture();admitted=self.admit(fixture)
+        self.assertEqual(admitted['qualified_cells'],[self.profile.CELL])
+        self.assertEqual([row['artifact_id'] for row in admitted['payloads']],[8,10])
+        mutations=[lambda x:x[3].update(artifact_id=11),lambda x:x[3].update(platform='linux/amd64'),
+          lambda x:x[3].update(archive_sha256='0'*64),lambda x:x[3]['native_binding'].update(source_commit='a'*40),
+          lambda x:x[3]['native_binding'].update(run_id='8'),
+          lambda x:x[3]['native_binding'].update(module_sha256='0'*64),
+          lambda x:x[1]['consumer_binding']['native_after'].update(binary_sha256='0'*64),
+          lambda x:x[2].pop(self.profile.NATIVE_PAYLOAD),
+          lambda x:x[2][self.profile.SOURCE_PAYLOAD].update(source_upload_job_id=8),
+          lambda x:x[2][self.profile.NATIVE_PAYLOAD]['members'][1].update(sha256='0'*64)]
+        for number,mutation in enumerate(mutations):
+            with self.subTest(number=number):
+                changed=copy.deepcopy(fixture);mutation(changed)
+                with self.assertRaises(ValueError):self.admit(changed)
+
+    def test_consumed_native_archive_bytes_are_checked_without_another_download(self):
+        p=self.profile;root=Path(self.owner.name)/'consumed';root.mkdir()
+        names=('artifact-candidate/release.json','artifact-candidate/ca-artifact-windows-amd64.exe',
+               'ci20-native-tested.json','native-tests.json','native-observation.json')
+        members=[]
+        for name in names:
+            value=('inert original '+name).encode();path=root/name
+            path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(value)
+            members.append({'path':name,'sha256':owner.readiness.digest(value)})
+        component={'artifact_id':10,'archive_sha256':'d'*64,'members':members}
+        with mock.patch.object(owner.readiness,'artifact_bytes',side_effect=AssertionError('no second download')):
+            self.assertEqual(p.authenticate_native_consumption(root,component),component)
+            binary=root/names[1];binary.write_bytes(b'changed')
+            with self.assertRaisesRegex(ValueError,'bytes changed'):p.authenticate_native_consumption(root,component)
+        for rows in (members[:-1],members[:-1]+[members[0]],members+[members[0]]):
+            with self.assertRaisesRegex(ValueError,'population'):p.authenticate_native_consumption(root,{**component,'members':rows})
+
+    def test_real_admission_import_lookup_and_original_seven_outcomes_cannot_be_relabelled(self):
+        fixture=self.fixture();p=self.profile
+        mutations=[lambda x:x[1]['consumer_binding']['runtime_after'].update(python_sha256='2'*64),
+          lambda x:x[1]['consumer_binding']['native_admissions'].update({p.SELECTORS[0]:0}),
+          lambda x:x[1]['consumer_binding']['native_admissions'].update({'invented':1}),
+          lambda x:x[1]['consumer_binding']['imported_sources'].pop('core/pysrc/_artifactlib.py'),
+          lambda x:x[1]['consumer_binding']['imported_sources'].update({'foreign.py':'0'*64}),
+          lambda x:x[1]['consumer_binding']['host_lookup_after'].update({'core/pysrc/_host.py':'present'}),
+          lambda x:x[1]['tests'].append(dict(x[1]['tests'][0])),
+          lambda x:x[1]['tests'][0].update(result='skipped'),
+          lambda x:x[1].update(argv=['python',str(self.root/p.SCRIPT),'FilteredCase']),
+          lambda x:x[1].update(producer='python-test-result-observer')]
+        for number,mutation in enumerate(mutations):
+            with self.subTest(number=number):
+                changed=copy.deepcopy(fixture);mutation(changed)
+                with self.assertRaises(ValueError):self.admit(changed)
+
+    def test_only_original_conformance_child_slot_can_opt_in_and_default_argv_is_unchanged(self):
+        p=self.profile;env={'MAJOR_MAPPED_WORK_SOURCE':'private-stage','MAJOR_MAPPED_WORK_OBSERVATION':'private.json'}
+        command=p.conformance_command(self.root,'test_work_github.py','locked-python',env)
+        self.assertEqual(command,['locked-python',str(self.root/'.github/scripts/mapped_work_observation.py'),
+                   'observe','--repo',str(self.root),'--source-payload','private-stage','--output','private.json'])
+        for script in ('test_work_github.py','test_artifact_bridge.py'):
+            self.assertEqual(p.conformance_command(self.root,script,'locked-python',{}),
+                             ['locked-python',str(self.root/'.github/scripts'/script)])
+        self.assertEqual(p.conformance_command(self.root,'test_artifact_bridge.py','locked-python',env),
+                         ['locked-python',str(self.root/'.github/scripts/test_artifact_bridge.py')])
+        for env in ({'MAJOR_MAPPED_WORK_SOURCE':'stage'},{'MAJOR_MAPPED_WORK_OBSERVATION':'out'},
+                    {'MAJOR_MAPPED_WORK_SOURCE':'','MAJOR_MAPPED_WORK_OBSERVATION':'out'}):
+            with self.assertRaisesRegex(ValueError,'requires both'):p.conformance_command(self.root,'test_work_github.py','python',env)
+
+    def test_public_original_entrypoint_runs_once_restores_modules_and_dispatches_closed_report(self):
+        # Inert ArtifactClient file-admission seam only; no binary execution/API.
+        p=self.profile;private=Path(self.owner.name);installation=private/'installation';installation.mkdir()
+        raw=b'{"fixture":"inert-native-file-only"}';(installation/'release.json').write_bytes(raw)
+        (installation/'candidate.bin').write_bytes(b'INERT')
+        counter=private/'original-entry-count';counter.write_text('0')
+        (self.root/'core/pysrc/_artifactlib.py').write_text(
+            "import os\nfrom pathlib import Path\nclass ArtifactClient:\n"
+            " def __init__(self,installation): self.installation=Path(installation)\n"
+            " def _open_binary(self): return os.open(self.installation/'candidate.bin',os.O_RDONLY)\n")
+        child=("import os,unittest\nfrom pathlib import Path\nimport _artifactlib,_workgithub,test_artifact_authoring\n"
+               +f"counter=Path({str(counter)!r});counter.write_text(str(int(counter.read_text())+1))\n"
+               +"class GithubWorkTest(unittest.TestCase):\n")
+        for name in p.NAMES:
+            child+=(f" def {name}(self):\n  fd=_artifactlib.ArtifactClient({str(installation)!r})._open_binary()\n"
+                    "  try: self.assertEqual(os.read(fd,1),b'I')\n  finally: os.close(fd)\n")
+        child+="if __name__=='__main__': unittest.main(verbosity=2)\n"
+        (self.root/p.SCRIPT).write_text(child)
+        selections={'schema':owner.SELECTIONS,'groups':[{'id':'mapped','job':p.JOB,'payload_name':p.SOURCE_PAYLOAD,
+           'observation':'mapped','proof_kind':'source-test','selectors':list(p.SELECTORS),'cells':[p.CELL],
+           'scope':'Inert producer/reader route unit control; no native qualification.'}]}
+        (self.root/'.github/major-test-selections.json').write_text(json.dumps(selections))
+        self.commit()
+        with mock.patch.dict(os.environ,GITHUB_RUN_ID='7'):manifest=p.prepare(self.root,private/'source-stage')
+        before=p.snapshot(self.root)
+        state={'platform':'windows/amd64','manifest_sha256':owner.readiness.digest(raw),
+               'binary_sha256':owner.readiness.digest(b'INERT'),'binary_bytes':5}
+        poisoned=SimpleNamespace(__file__='/untrusted/_artifactlib.py')
+        sys.modules['_artifactlib']=poisoned
+        self.addCleanup(lambda:sys.modules.pop('_artifactlib',None) if sys.modules.get('_artifactlib') is poisoned else None)
+        output=private/'observation.json'
+        flags=SimpleNamespace(**({key:getattr(sys.flags,key) for key in dir(sys.flags) if not key.startswith('_')} | {'no_user_site':1}))
+        with mock.patch.object(owner,'validate_emitter_environment'), \
+             mock.patch.object(owner.readiness,'api',side_effect=AssertionError('observer must not request API')) as api, \
+             mock.patch.object(owner.readiness,'artifact_bytes',side_effect=AssertionError('observer must not request archive')) as archive, \
+             mock.patch.object(p,'native_snapshot',return_value=state) as native, \
+             mock.patch.dict(os.environ,ARTIFACT_TEST_INSTALLATION=str(installation),GITHUB_RUN_ID='7'), \
+             mock.patch.object(p.sys,'platform','win32'),mock.patch.object(p.sys,'flags',flags), \
+             mock.patch.object(p.sys,'pycache_prefix',str(private/'pycache')):
+            self.assertEqual(p.observe(self.root,output,private/'source-stage'),0)
+        self.assertEqual(native.call_count,2);api.assert_not_called();archive.assert_not_called()
+        self.assertIs(sys.modules['_artifactlib'],poisoned)
+        self.assertEqual(counter.read_text(),'1')
+        self.assertEqual(before,p.snapshot(self.root))
+        observation=owner.load_json(output);self.assertEqual(observation['producer'],p.PRODUCER)
+        self.assertEqual(observation['tests'],[{'id':name,'result':'passed'} for name in sorted(p.SELECTORS)])
+        self.assertEqual(observation['consumer_binding']['native_admissions'],dict.fromkeys(p.SELECTORS,1))
+        self.assertEqual(observation['consumer_binding']['runtime_before'],observation['consumer_binding']['runtime_after'])
+        original=owner.load_json(private/'observation.original.json')
+        self.assertEqual(original['producer'],'python-test-result-observer')
+        self.assertEqual(original['tests'],observation['tests'])
+        sha=owner.readiness.digest((private/'source-stage'/p.MANIFEST).read_bytes())
+        source={'artifact_id':8,'archive_sha256':'c'*64,'members':[
+            {'path':row['path'],'sha256':row['sha256']} for row in manifest['members']]+[{'path':p.MANIFEST,'sha256':sha}],
+            'documents':{p.MANIFEST:manifest},'source_upload_job_id':9,'source_manifest_sha256':sha}
+        native_payload={'artifact_id':10,'archive_sha256':'d'*64,'members':[
+           {'path':'artifact-candidate/release.json','sha256':state['manifest_sha256']},
+           {'path':'artifact-candidate/ca-artifact-windows-amd64.exe','sha256':state['binary_sha256']}]}
+        component={'platform':'windows/amd64',**native_payload,'native_binding':{**state,
+            'source_commit':before['source_commit'],'run_id':'7','module_sha256':'9'*64}}
+        req={**before,'ci_run_id':7,'native_module_sha256':{'windows':'9'*64},'cells':[p.CELL],'cell_jobs':{p.CELL:p.JOB}}
+        selections={'schema':owner.SELECTIONS,'groups':[{'id':'mapped','job':p.JOB,'payload_name':p.SOURCE_PAYLOAD,
+           'observation':'mapped','proof_kind':'source-test','selectors':list(p.SELECTORS),'cells':[p.CELL],
+           'scope':'Inert producer/reader route unit control; no native qualification.'}]}
+        with mock.patch.object(owner,'ROOT',self.root):
+            report=owner.build_report(req,job_name=p.JOB,job_id=9,selections=selections,
+                 observations={'mapped':observation},payloads={p.SOURCE_PAYLOAD:source,p.NATIVE_PAYLOAD:native_payload},
+                 native_components={'mapped':component})
+        self.assertEqual(report['schema'],'codearbiter-major-qualification/3')
+        self.assertEqual(report['results'][0]['payload_artifact_ids'],[8,10])
+        self.assertEqual(report['results'][0]['selected_population'],7)
+        # Real emit CLI/immutable membership orchestration, inert API/archive
+        # authority seams only. It must derive the pin, never accept observation data.
+        job={'id':9,'name':p.JOB,'status':'in_progress'}
+        artifacts=[{'id':8,'name':p.SOURCE_PAYLOAD},{'id':10,'name':p.NATIVE_PAYLOAD}]
+        import types
+        native_module=types.ModuleType('major_native_observation')
+        def authenticated(req_arg,run_arg,artifacts_arg,jobs_arg,platform):
+            self.assertEqual(platform,'windows/amd64')
+            self.assertNotEqual(req_arg['native_module_sha256']['windows'],'9'*64)
+            self.assertEqual(set(req_arg['native_module_sha256']),{'posix','windows'})
+            return {**component,'native_binding':{**component['native_binding'],
+                    'module_sha256':req_arg['native_module_sha256']['windows']}}
+        native_module.authenticate_component=mock.Mock(side_effect=authenticated)
+        emitted=private/'emitted.json'
+        with mock.patch.dict(sys.modules,{'major_native_observation':native_module}), \
+             mock.patch.dict(os.environ,GITHUB_SHA=before['source_commit'],GITHUB_RUN_ID='7'), \
+             mock.patch.object(owner,'ROOT',self.root),mock.patch.object(owner,'validate_emitter_environment'), \
+             mock.patch.object(owner.readiness,'collect',return_value=(req,None,artifacts,[job])), \
+             mock.patch.object(owner.readiness,'api',return_value={'id':7}) as api, \
+             mock.patch.object(owner,'authenticated_payload',return_value=source) as source_auth, \
+             mock.patch.object(p,'authenticate_native_consumption',return_value=native_payload) as consumed:
+            self.assertEqual(owner.main(['emit','--repo',str(self.root),'--output',str(emitted),
+               '--job-name',p.JOB,'--observation','mapped='+str(output),
+               '--payload-root',p.SOURCE_PAYLOAD+'='+str(self.root),
+               '--payload-root',p.NATIVE_PAYLOAD+'='+str(installation)]),0)
+        native_module.authenticate_component.assert_called_once()
+        source_auth.assert_called_once();consumed.assert_called_once();api.assert_called_once_with('actions/runs/7')
+        self.assertEqual(owner.load_json(emitted),report)
+        self.assertEqual(counter.read_text(),'1')
+
+    def test_owned_child_profile_is_private_and_never_passes_parent_credentials(self):
+        p=self.profile
+        source=Path(self.owner.name)/'source';output=Path(self.owner.name)/'observed.json'
+        parent=dict(os.environ,MAJOR_MAPPED_WORK_SOURCE=str(source),MAJOR_MAPPED_WORK_OBSERVATION=str(output),
+                    GH_TOKEN='PRIVATE-PARENT-CANARY',GITHUB_TOKEN='PRIVATE-PARENT-CANARY',NODE_OPTIONS='PRIVATE-PARENT-CANARY')
+        with p.conformance_invocation(self.root,'test_work_github.py',sys.executable,parent) as (command,env):
+            home=Path(env['HOME']);self.assertTrue(home.is_dir())
+            self.assertEqual(home.parent.parent,Path(tempfile.gettempdir()).resolve(strict=True))
+            self.assertNotEqual(home.parent.parent,output.parent.resolve(strict=True))
+            self.assertEqual(home.parent,home.parent.resolve(strict=True))
+            self.assertNotEqual(env['HOME'],parent.get('HOME'))
+            self.assertEqual(env['USERPROFILE'],env['HOME'])
+            self.assertTrue(Path(env['PYTHONPYCACHEPREFIX']).is_relative_to(home.parent))
+            self.assertEqual(env['PYTHONNOUSERSITE'],'1')
+            self.assertFalse({'GH_TOKEN','GITHUB_TOKEN','NODE_OPTIONS','PYTHONPATH'} & env.keys())
+            self.assertNotIn('PRIVATE-PARENT-CANARY',json.dumps(env))
+            self.assertEqual(command[0],sys.executable)
+        self.assertFalse(home.exists())
+        with p.conformance_invocation(self.root,'test_artifact_bridge.py',sys.executable,parent) as (_,env):
+            self.assertIs(env,parent)
+
+    def test_public_observer_refuses_unbound_source_before_original_child_execution(self):
+        p=self.profile
+        (self.root/'core/pysrc/untracked.py').write_text('# unbound shadow\n')
+        with mock.patch.object(owner,'observe_python') as execute, mock.patch.object(owner,'validate_emitter_environment'), mock.patch.dict(os.environ,
+                ARTIFACT_TEST_INSTALLATION=str(Path(self.owner.name)/'not-executed')), \
+                mock.patch.object(p.sys,'platform','win32'), \
+                mock.patch.object(p.sys,'flags',SimpleNamespace(**({key:getattr(sys.flags,key) for key in dir(sys.flags) if not key.startswith('_')} | {'no_user_site':1}))), \
+                mock.patch.object(p.sys,'pycache_prefix',str(Path(self.owner.name)/'cache')):
+            with self.assertRaisesRegex(ValueError,'dirty'):
+                p.observe(self.root,Path(self.owner.name)/'out.json',Path(self.owner.name)/'stage')
+        execute.assert_not_called()
+        self.assertFalse((Path(self.owner.name)/'out.json').exists())
+
+
+class MappedNativeConsumerWorkflowTests(unittest.TestCase):
+    @staticmethod
+    def check_workflow(text):
+        import mapped_work_observation as p
+        block=text.split('  artifact-native-bridges:\n',1)[1].split('  artifact-authority:\n',1)[0]
+        gate="matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''"
+        prepare=block.split('      - name: Prepare mapped-work source-test inputs\n',1)[1].split('      - name:',1)[0]
+        emit=block.split('      - name: Emit original mapped-work source qualification report\n',1)[1].split('      - name:',1)[0]
+        assert '        if: '+gate+'\n' in prepare
+        assert '!cancelled() && '+gate+" && steps.mapped_work_original.outcome == 'success' && steps.mapped_work_source_upload.outcome == 'success'" in emit
+        assert 'GH_TOKEN: ${{ github.token }}' in emit and block.count('GH_TOKEN:')==1
+        assert '      actions: read\n' in block and '      contents: read\n' in block
+        assert 'actions: write' not in block and 'contents: write' not in block
+        assert 'continue-on-error:' not in block
+        command=('          python .github/scripts/run_concurrent_suites.py\n'
+                 '          .github/scripts/test_artifact_approval_adapter.py\n'
+                 '          .github/scripts/test_artifact_prerequisite_adapter.py\n'
+                 '          .github/scripts/test_artifact_reconciliation_adapter.py\n'
+                 '          .github/scripts/test_replylib.py\n'
+                 '          .github/scripts/test_literal_python_reads.py\n'
+                 '          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON\n'
+                 '          .github/scripts/test_artifact_conformance.py\n')
+        assert block.count(command)==1
+        assert 'python .github/scripts/test_work_github.py' not in block
+        assert '--payload-root "'+p.SOURCE_PAYLOAD+'=${{ github.workspace }}"' in emit
+        assert '--payload-root "'+p.NATIVE_PAYLOAD+'=${{ runner.temp }}"' in emit
+        source=block.split('      - name: Upload mapped-work source-test inputs\n',1)[1].split('      - name:',1)[0]
+        assert 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' in source
+        assert 'include-hidden-files: true' in source and 'if-no-files-found: error' in source and 'overwrite: false' in source
+        assert 'name: '+p.SOURCE_PAYLOAD+'\n' in source
+        assert "GIT_CONFIG_KEY_0: core.autocrlf\n" in block and "GIT_CONFIG_VALUE_0: 'false'\n" in block
+
+    def test_exact_owning_child_and_trusted_step_local_emitter_keep_nonprogram_flow(self):
+        text=(owner.ROOT/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        self.check_workflow(text)
+        replacements=[("matrix.expected_platform == 'windows/amd64' && github.event_name == 'push'","matrix.expected_platform == 'windows/amd64' && github.event_name == 'pull_request'"),
+          ('steps.mapped_work_original.outcome == \'success\'','true'),
+          ('GH_TOKEN: ${{ github.token }}','GH_TOKEN: omitted'),
+          ('      actions: read\n','      actions: write\n'),
+          ('--payload-root "ci20-native-tested-windows-2025=${{ runner.temp }}"','--payload-root "wrong=${{ runner.temp }}"'),
+          ('          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON\n','          --filter missing\n'),
+          ('          .github/scripts/test_artifact_conformance.py\n','          .github/scripts/test_artifact_conformance.py || true\n'),
+          ('        id: mapped_work_original\n','        id: mapped_work_original\n        continue-on-error: true\n')]
+        for old,new in replacements:
+            self.assertIn(old,text)
+            with self.subTest(old=old):
+                with self.assertRaises(AssertionError):self.check_workflow(text.replace(old,new))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

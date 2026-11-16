@@ -697,12 +697,18 @@ def source_runtime_requirements(req):
 
 
 def runtime_record(record):
-    """Unwrap one typed-source envelope; recursive or unknown envelopes refuse."""
+    """Unwrap only the finite source3 -> native4 -> Docs2/Core1 grammar."""
     if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
-        runtime = record.get('runtime')
-        require(isinstance(runtime, dict) and runtime.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2'), 'invalid source envelope runtime schema')
-        return runtime
+        inner = record.get('runtime')
+        require(isinstance(inner, dict) and inner.get('schema') in
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4'),
+                'invalid source envelope runtime schema')
+        record = inner
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-readiness/4':
+        inner = record.get('runtime')
+        require(isinstance(inner, dict) and inner.get('schema') in
+                (SCHEMA, 'codearbiter-major-readiness/2'), 'invalid native envelope runtime schema')
+        record = inner
     return record
 
 
@@ -893,7 +899,18 @@ def _requirements(repo, source, run_id):
     scenarios = read(CORPUS + "contracts/scenarios.json")["scenarios"]
     policy = read(".github/major-qualification-policy.json")
     cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, disposition_jobs, policy)
-    return {**({"source_dispositions": source_dispositions} if source_dispositions else {}),
+    from major_native_observation import selected_recipes
+    native = selected_recipes(policy.get('native_composite_cells', []))
+    require(set(native) <= set(cells), 'native composition selection is outside disposition population')
+    # Strictly authenticated source facts retain their own typed result; a
+    # declaration never relabels PRESERVED/N/A as native execution.
+    native = {cell: recipe for cell, recipe in native.items() if cell not in source_dispositions}
+    native_fields = {}
+    if native:
+        native_fields = {'native_compositions': native, 'native_module_sha256': {
+            style: _module_membership(repo, source, {'root': 'core/artifacts', 'path_order': style}, load, authenticated)
+            for style in ('posix', 'windows')}}
+    return {**native_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
@@ -997,6 +1014,10 @@ def validate_upload(job, artifact, step_name, *, job_log=None):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-readiness/4':
+        from major_native_observation import verify as verify_native
+        return verify_native(record=record, requirements=req, run=run, artifact=artifact,
+            archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts, payload_members=payload_members)
     if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
         validate_run(run, req)
         runtime_req = source_runtime_requirements(req)
@@ -1004,9 +1025,14 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
                 and record.get('program_id') == PROGRAM and record.get('state') == 'PREPUBLICATION_READY'
                 and all(record.get(key) == value for key, value in req.items()),
                 'typed source readiness differs from authenticated requirements')
-        return verify(record=runtime_record(record), requirements=runtime_req, run=run,
+        inner = record.get('runtime')
+        require(isinstance(inner, dict) and inner.get('schema') in
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4'),
+                'invalid source envelope runtime schema')
+        return verify(record=inner, requirements=runtime_req, run=run,
             artifact=artifact, archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,
             payload_members=payload_members)
+    require('native_compositions' not in req, 'native composite readiness envelope required')
     require('source_dispositions' not in req, 'typed source readiness envelope required')
     if isinstance(record, dict) and record.get("schema") == "codearbiter-major-readiness/2":
         from site_playwright_observation import verify as verify_docs
@@ -1234,6 +1260,9 @@ def produce(req, artifacts, jobs):
         runtime_req = source_runtime_requirements(req)
         return {'schema': SOURCE_SCHEMA, 'program_id': PROGRAM, 'state': 'PREPUBLICATION_READY',
                 **req, 'runtime': produce(runtime_req, artifacts, jobs)}
+    if 'native_compositions' in req:
+        from major_native_observation import produce as produce_native
+        return produce_native(req, artifacts, jobs)
     if "Site | [Build] - Astro Pages" in req["cell_jobs"].values():
         from site_playwright_observation import produce as produce_docs
         return produce_docs(req, artifacts, jobs)
@@ -1276,6 +1305,10 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") == "major-source-inputs-mapped-work-windows":
+                        require(job.get("name") == "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+                                "mapped source-test payload original owner differs")
+                        validate_upload(job, payload, "Upload mapped-work source-test inputs")
                     elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver"):
                         owner_name, upload_step = {
                             "major-source-inputs-pi-windows-coverage": ("Coverage union (Pi)  <os: windows-latest>", "Upload Pi source-test inputs"),

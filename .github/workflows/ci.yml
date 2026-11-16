@@ -1001,6 +1001,7 @@ jobs:
     timeout-minutes: ${{ (matrix.expected_platform == 'darwin/amd64' || matrix.expected_platform == 'windows/arm64' || matrix.expected_platform == 'windows/amd64') && 60 || 30 }}
     permissions:
       contents: read
+      actions: read
     env:
       GOTOOLCHAIN: local
     strategy:
@@ -1027,6 +1028,12 @@ jobs:
             artifact_binary: ca-artifact-darwin-arm64
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        env:
+          GIT_CONFIG_COUNT: ${{ matrix.expected_platform == 'windows/amd64' && '2' || '0' }}
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+          GIT_CONFIG_KEY_1: core.eol
+          GIT_CONFIG_VALUE_1: lf
         with:
           fetch-depth: 0
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -1149,9 +1156,29 @@ jobs:
           python tools/create-artifact-examples.py
           --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
           --output "${{ runner.temp }}/artifact-review"
+      - name: Prepare mapped-work source-test inputs
+        id: mapped_work_source_prepare
+        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
+        run: >-
+          python -B .github/scripts/mapped_work_observation.py prepare
+          --repo . --output "${{ runner.temp }}/mapped-work-source"
+      - name: Upload mapped-work source-test inputs
+        id: mapped_work_source_upload
+        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.mapped_work_source_prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-mapped-work-windows
+          path: ${{ runner.temp }}/mapped-work-source/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
       - name: Test host-owned bridges, reply capture and cross-kind conformance
+        id: mapped_work_original
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+          MAJOR_MAPPED_WORK_SOURCE: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-source', runner.temp) || '' }}
+          MAJOR_MAPPED_WORK_OBSERVATION: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-observation.json', runner.temp) || '' }}
         run: >-
           python .github/scripts/run_concurrent_suites.py
           .github/scripts/test_artifact_approval_adapter.py
@@ -1169,6 +1196,40 @@ jobs:
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
+      - name: Retain original mapped-work consumer observation
+        if: ${{ !cancelled() && (success() || failure()) && steps.mapped_work_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mapped-work-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mapped-work-*.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original mapped-work source qualification report
+        id: mapped_work_qualification_emit
+        if: ${{ !cancelled() && matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.mapped_work_original.outcome == 'success' && steps.mapped_work_source_upload.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "${{ runner.temp }}/qualification.json" \
+            --job-name "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>" \
+            --observation "mapped-work=${{ runner.temp }}/mapped-work-observation.json" \
+            --payload-root "major-source-inputs-mapped-work-windows=${{ github.workspace }}" \
+            --payload-root "ci20-native-tested-windows-2025=${{ runner.temp }}"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.mapped_work_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.mapped_work_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
   artifact-authority:
     name: "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}>"
     needs: [changes, artifact-native-build]

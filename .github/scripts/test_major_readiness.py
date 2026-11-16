@@ -12,10 +12,11 @@ import warnings
 from pathlib import Path
 
 path = Path(__file__).with_name("major_readiness.py")
-spec = importlib.util.spec_from_file_location("major_readiness", path)
-owner = importlib.util.module_from_spec(spec)
-sys.modules[spec.name] = owner
-spec.loader.exec_module(owner)
+import major_readiness as owner
+# Reuse the owning module across combined suites so inert API patches also
+# cover dynamic consumers; replacing sys.modules splits their mock boundaries.
+if Path(owner.__file__).resolve() != path.resolve():
+    raise RuntimeError("readiness test owner resolved outside its source directory")
 
 
 class ReadinessTest(unittest.TestCase):
@@ -1554,6 +1555,10 @@ class TypedSourceDispositionTests(unittest.TestCase):
             archive=retained(wrong)
             with self.assertRaisesRegex(owner.ReadinessError,'original qualification evidence'):
                 owner.load_verified_receipt(self.repo,self.source,7)
+
+
+# Keep closed native transport controls in this existing owning CI entrypoint.
+from test_major_native_observation import NativeCompositeAuthorityTests
 
 
 if __name__ == "__main__":

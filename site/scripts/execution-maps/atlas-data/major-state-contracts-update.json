@@ -1,5 +1,5 @@
 {
-  "revision": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "revision": "f65f1e7543f2934a274909cb0d157b94ee909e61",
   "title": "State-contract program: inspected source changes",
   "summary": "Exact blob bindings identify inspected source bytes; the linked revision is the committed source base. Implementation, verification, live host qualification and release remain separate claims. Real user stops and host permissions remain effective. This source review covers progress preservation, discovery capture, bounded recovery, scoped conflicts, generator and manifest contracts; it is not installed-host certification.",
   "changes": [
@@ -171,8 +171,8 @@
     },
     {
       "path": "core/artifacts/internal/render/render.go",
-      "blob": "c17d027974ff9a91cb60dd1bfd1cabd2c41e0d39",
-      "summary": "Typed retirement preserves original symbol kind and historical command observations without live scheduling or ID reuse. Feature-aware schema labels advance monotonically; incompatible old clients refuse new writes.",
+      "blob": "2ea57163ae893bba09a190d8a6f66fac2acc8bfd",
+      "summary": "Typed retirement preserves original symbol kind and historical command observations without live scheduling or ID reuse. Feature-aware schema labels advance monotonically; incompatible old clients refuse new writes. Knowledge path lists render as escaped values while action-path records retain their table. Reads accept only the complete current or validated legacy canonical HTML bytes; they never rewrite old views implicitly.",
       "nodes": [
         "f-plan",
         "f-selection",

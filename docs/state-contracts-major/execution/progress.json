@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+  "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-16T05:21:48.900166+00:00",
+  "recorded_at": "2026-11-16T06:26:42.557612+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3885,7 +3885,7 @@
     "Complete independent typed source-disposition derivation and remaining bounded software routes; preserve real host/Docker/human/model effects and user choices.",
     "After final source freeze, renew only owner-measured stale evidence through original controllers; obtain complete trusted integration qualification and user testing before any main/publication promotion."
   ],
-  "delivery_state": "PR1114_6C_TERMINAL_BLOCK_CORRECTIONS_AWAITING_EXACT_STAGE_REVIEW_AND_NEW_HEAD_CI_PARENT1098_HELD",
+  "delivery_state": "PR1114_F65_WHOLE_CI_DOCS_BLOCKED_LOCAL_NATIVE_SOURCE_COMPOSITION_READY_FOR_AFFECTED_REVIEW_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4958,44 +4958,66 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-16T05:21:48.900166+00:00",
-    "controller_anchor": "6c4530299d726876d12c58cc8240d59cef69725c",
+    "recorded_at": "2026-11-16T06:26:42.557612+00:00",
+    "controller_anchor": "f65f1e7543f2934a274909cb0d157b94ee909e61",
     "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
     "delivery_pr": 1114,
-    "original_ci_run": 43805897072,
-    "original_docs_run": 43805896938,
-    "last_exact_pr_head_result": "6C_TERMINAL_FAILURE_ALL100_CHECKS83_PASS_9_FAIL_8_SKIP_REQUIRED_GATE_FAIL",
-    "last_pr_primary_failure": "Five classes: stale Site/Sandbox workflow oracles, missing source-binding validation order, Windows source bytes and macOS inert fixture alias. Local owning regressions repaired; exact new-head hosted checks pending.",
-    "new_producer_cells": {
-      "Docs": 7,
-      "TS": 4,
-      "Python": 9,
-      "native": 16
+    "original_ci_run": 43810799848,
+    "original_docs_run": 43810799763,
+    "last_exact_pr_head_result": "F65_TERMINAL_CI_DOCS_FAILURE_ALL100_CHECKS89_PASS_3_FAIL_8_SKIP",
+    "required_aggregate": "SUCCESS_DOES_NOT_OVERRIDE_WHOLE_FAILURE",
+    "new_routes": {
+      "native_original_component_recipes": 8,
+      "mapped_work_source_native_consumer": 1
     },
-    "union_selection_groups": 48,
-    "union_selection_cells": 49,
-    "typed_source_readiness": "Authenticated original current PRESERVED/exact-contract NOT_APPLICABLE outcomes only; no synthetic execution or status/ledger/proof changes.",
-    "renderer_fix": "Render knowledge string paths correctly; exact validated legacy canonical profile retains old document bytes and rejects tampering.",
+    "ordinary_selection_groups": 49,
+    "ordinary_selection_cells": 50,
+    "existing_native16": "UNCHANGED",
+    "remaining_native_runtime_unmapped": 110,
+    "remaining_software_original_unmapped": 5,
     "current_staged_integrity": "PASSED",
-    "remaining_software_original_unmapped": 6,
-    "remaining_native_runtime_unmapped": 118,
+    "source_or_status_renewal": false,
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
-    "observations": "evidence/qualified-outcomes-development.json",
-    "scope": "Affected local source checks only; no task/scenario/installed/human/model/whole-program qualification.",
+    "observations": "evidence/native-source-composition-development.json",
+    "before_trigger_followup_integrity": {
+      "staged_integrity_observation": {
+        "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "verification_fixture_commit": "bc3157469e87db4ed55a2912cf148c20c2c5f9a4",
+        "candidate": "candidate-v1:d583fbc5a27db8d5d8de3e50e029662e2d2a18efcfd8706e779c6d7b271cb9cc",
+        "result": "PASSED",
+        "frozen": 105,
+        "records": 1318,
+        "applicability": {
+          "APPLICABLE": 612,
+          "STALE": 706
+        },
+        "seconds": 37.546,
+        "source_ref_moved": false
+      },
+      "source246_current_applicability": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      },
+      "software48_current_applicability": {
+        "APPLICABLE": 9,
+        "STALE": 39
+      }
+    },
+    "Docs_input_followup": "Six exact new native/source owner/control inputs, originalmethodRED then2affectedPASS/66 omissionvectors; main/publication unchanged.",
     "staged_integrity_observation": {
-      "actual_branch_head": "6c4530299d726876d12c58cc8240d59cef69725c",
-      "verification_fixture_commit": "0bc01f6e5f0ee06699d7e9f901b0cb0ef2349a84",
-      "candidate": "candidate-v1:8f14af585286362e95b93a7866e50ebec4cf27a9e4f9aa3cbf5fc0e96c8c3857",
+      "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "verification_fixture_commit": "154a225f2df8bb0d6990826112204f6859b3a2ae",
+      "candidate": "candidate-v1:6531459b02e454f0d8c794ece237b5cf5835972e73808ccf9a472a85cc8bec5e",
       "result": "PASSED",
       "frozen": 105,
       "records": 1318,
       "applicability": {
-        "APPLICABLE": 711,
-        "STALE": 607
+        "APPLICABLE": 612,
+        "STALE": 706
       },
-      "seconds": 36.667,
+      "seconds": 36.812,
       "source_ref_moved": false
     },
     "source246_current_applicability": {
@@ -5003,8 +5025,8 @@
       "APPLICABLE": 43
     },
     "software48_current_applicability": {
-      "STALE": 39,
-      "APPLICABLE": 9
+      "APPLICABLE": 9,
+      "STALE": 39
     }
   },
   "checkpoint_history": [
@@ -5062,6 +5084,61 @@
       },
       "superseded_delivery_state": "PR1114_DOCS_TS_UNION_AND_PORTABLE_FIXTURES_LOCAL_CHECKS_COMPLETE_EXACT_REVIEW_AND_HOSTED_PENDING_PARENT1098_HELD",
       "reason": "Original6c terminal failure and affected source-readiness/renderer/producer fixes supersede prior checkpoint; old measurements remain historical."
+    },
+    {
+      "source_commit": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "superseded_live_checkpoint": {
+        "recorded_at": "2026-11-16T05:21:48.900166+00:00",
+        "controller_anchor": "6c4530299d726876d12c58cc8240d59cef69725c",
+        "integration_commit": "21b76e3718a759723bb1b0294d6493f80a07ff71",
+        "delivery_pr": 1114,
+        "original_ci_run": 43805897072,
+        "original_docs_run": 43805896938,
+        "last_exact_pr_head_result": "6C_TERMINAL_FAILURE_ALL100_CHECKS83_PASS_9_FAIL_8_SKIP_REQUIRED_GATE_FAIL",
+        "last_pr_primary_failure": "Five classes: stale Site/Sandbox workflow oracles, missing source-binding validation order, Windows source bytes and macOS inert fixture alias. Local owning regressions repaired; exact new-head hosted checks pending.",
+        "new_producer_cells": {
+          "Docs": 7,
+          "TS": 4,
+          "Python": 9,
+          "native": 16
+        },
+        "union_selection_groups": 48,
+        "union_selection_cells": 49,
+        "typed_source_readiness": "Authenticated original current PRESERVED/exact-contract NOT_APPLICABLE outcomes only; no synthetic execution or status/ledger/proof changes.",
+        "renderer_fix": "Render knowledge string paths correctly; exact validated legacy canonical profile retains old document bytes and rejects tampering.",
+        "current_staged_integrity": "PASSED",
+        "remaining_software_original_unmapped": 6,
+        "remaining_native_runtime_unmapped": 118,
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+        "observations": "evidence/qualified-outcomes-development.json",
+        "scope": "Affected local source checks only; no task/scenario/installed/human/model/whole-program qualification.",
+        "staged_integrity_observation": {
+          "actual_branch_head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "verification_fixture_commit": "0bc01f6e5f0ee06699d7e9f901b0cb0ef2349a84",
+          "candidate": "candidate-v1:8f14af585286362e95b93a7866e50ebec4cf27a9e4f9aa3cbf5fc0e96c8c3857",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 711,
+            "STALE": 607
+          },
+          "seconds": 36.667,
+          "source_ref_moved": false
+        },
+        "source246_current_applicability": {
+          "STALE": 203,
+          "APPLICABLE": 43
+        },
+        "software48_current_applicability": {
+          "STALE": 39,
+          "APPLICABLE": 9
+        }
+      },
+      "superseded_delivery_state": "PR1114_6C_TERMINAL_BLOCK_CORRECTIONS_AWAITING_EXACT_STAGE_REVIEW_AND_NEW_HEAD_CI_PARENT1098_HELD",
+      "reason": "Exact f65 terminal and new source/native framework repairs supersede the previous checkpoint; old measured/proof states remain immutable."
     }
   ]
 }

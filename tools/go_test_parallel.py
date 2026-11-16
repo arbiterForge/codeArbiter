@@ -92,7 +92,8 @@ def _text(value: str | bytes | None) -> str:
 
 def run_chunk(binary: Path, package: str, package_dir: Path, names: list[str],
               extra: list[str], env: dict[str, str],
-              timeout: float | None = None) -> tuple[dict[str, str], str, int, float]:
+              timeout: float | None = None, *,
+              child_results: dict[str, str] | None = None) -> tuple[dict[str, str], str, int, float]:
     pattern = "^(" + "|".join(re.escape(name) for name in names) + ")$"
     # The test binary is the direct child so a timeout kills the process that
     # holds the pipes; its test2json stream is converted afterwards.
@@ -117,8 +118,15 @@ def run_chunk(binary: Path, package: str, package_dir: Path, names: list[str],
             output.append(line)
             continue
         test, action = event.get("Test"), event.get("Action")
+        if test is not None and action in TERMINAL and (not isinstance(test, str)
+                or not test or len(test.encode("utf-8")) > 4096):
+            raise ValueError("invalid named test identity")
         if action == "output":
             output.append(event.get("Output", "").rstrip("\n"))
+        elif test and "/" in test and action in TERMINAL and child_results is not None:
+            if not isinstance(test, str) or len(test.encode("utf-8")) > 4096 or len(child_results) >= 20000:
+                raise ValueError("invalid or unbounded child test population")
+            child_results[test] = "repeated" if test in child_results else action
         elif test and "/" not in test and action in TERMINAL:
             if test in outcomes:
                 outcomes[test] = "repeated"
@@ -185,14 +193,29 @@ def run() -> int:
         print(f"go-test-parallel: {len(expected)} top-level tests in {len(tested)} packages, "
               f"{len(work)} chunks on {args.jobs} workers", flush=True)
         seen: dict[tuple[str, str], str] = {}
+        children: dict[tuple[str, str], str] = {}
         failed = False
         with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
-            futures = {pool.submit(run_chunk, binary, package, directory, names,
-                                   [f"-test.timeout={args.timeout}"], env, chunk_timeout): (package, names)
-                       for _, binary, package, directory, names in work}
+            futures = {}
+            for _, binary, package, directory, names in work:
+                child_results: dict[str, str] = {}
+                # Keep the public four-value chunk API and every original
+                # invocation. Only the optional observation retains descendants.
+                kwargs = {"child_results": child_results} if args.observation is not None else {}
+                future = pool.submit(run_chunk, binary, package, directory, names,
+                                     [f"-test.timeout={args.timeout}"], env, chunk_timeout, **kwargs)
+                futures[future] = (package, names, child_results)
             for future in concurrent.futures.as_completed(futures):
-                package, names = futures[future]
+                package, names, child_results = futures[future]
                 outcomes, output, code, seconds = future.result()
+                for name, outcome in child_results.items():
+                    identity = (package, name)
+                    if len(children) >= 20000:
+                        raise ValueError("child test population exceeds bound")
+                    if (name.split("/", 1)[0] not in names
+                            or outcome not in ("pass", "skip") or identity in children):
+                        failed = True
+                    children[identity] = "repeated" if identity in children else outcome
                 bad = [n for n in names if outcomes.get(n) not in ("pass", "skip")]
                 stray = sorted(set(outcomes) - set(names))
                 for name, outcome in outcomes.items():
@@ -227,6 +250,8 @@ def run() -> int:
                 "selected": [{"package": package, "test": name} for package, name in sorted(expected)],
                 "observed": [{"package": package, "test": name, "result": result}
                              for (package, name), result in sorted(seen.items())],
+                "subtests": [{"package": package, "test": name, "result": result}
+                             for (package, name), result in sorted(children.items())],
             }
             with args.observation.open("x", encoding="utf-8") as stream:
                 json.dump(record, stream, indent=2)

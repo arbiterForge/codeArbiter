@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
+
 - Carry authenticated preserved and inapplicable source outcomes alongside required runtime qualification; add bounded C33 and publisher observations.
 
 - Retain source-bound observations from original TypeScript and built-site browser commands; authenticate separate Docs evidence and prepare exact-tar Pages promotion under the existing main-only release boundary.
@@ -31,6 +33,8 @@ predate the plugin rewrite and are grouped by date.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
 ### Fixed
+
+- Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
 
 - Render knowledge path lists correctly while retaining exact validated legacy HTML reads.
 - Preserve source-byte equality across supported checkouts and correct workflow observation readers, source-binding validation and canonical debugger fixtures.

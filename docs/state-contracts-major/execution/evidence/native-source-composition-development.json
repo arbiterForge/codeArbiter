@@ -1,0 +1,2698 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+  "recorded_at": "2026-11-16T06:26:42.557612+00:00",
+  "qualification": false,
+  "original_f65_terminal": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\terminal-failure-summary.json",
+    "sha256": "22362b788e050906faf13760b3c0d995df1dbd7fcaface33f1e136117b8d4f35",
+    "record": {
+      "schema": "exact-pr-terminal-diagnosis/1",
+      "recorded_utc": "2026-11-16T06:04:23.217380+00:00",
+      "expected_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "observed_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "base": "major/state-contracts",
+      "ci": {
+        "id": 43810799848,
+        "head_sha": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/ci.yml",
+        "head_branch": "codex/state-contracts-qualification-coverage"
+      },
+      "docs": {
+        "id": 43810799763,
+        "head_sha": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/docs.yml",
+        "head_branch": "codex/state-contracts-qualification-coverage"
+      },
+      "verdict": "BLOCK",
+      "all_check_counts": {
+        "skipping": 8,
+        "pass": 89,
+        "fail": 3
+      },
+      "required_gate": [
+        {
+          "bucket": "pass",
+          "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43810799848/job/133121851879",
+          "name": "[GATE ] | [REPO] | Merge readiness",
+          "state": "SUCCESS"
+        }
+      ],
+      "gate_limit": "Required aggregate SUCCESS does not override actual whole-CI/Docs failure; no merge readiness claim.",
+      "terminal_receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\terminal-receipt.json",
+        "sha256": "5190c3ba429cddbe6197f191d297eb8149895c24ceeff93b116bb0e381346e7b"
+      },
+      "watcher_active": false,
+      "primary_failure_classes": [
+        {
+          "class": "ATLAS_RENDERER_REVIEW_BINDING",
+          "job_ids": [
+            133111796872,
+            133111797094
+          ],
+          "source": "core/artifacts/internal/render/render.go referenced by maintained Atlas source guard",
+          "actual": "Both Docs jobs stop at explicit Atlas source-changed guard before tests/browser, requiring affected-route review and intentional source binding refresh.",
+          "limit": "No guard disabling/hash-only approval inferred. Root reports reviewed actual generator correction separately."
+        },
+        {
+          "class": "VITEST_CANONICAL_ID_BUDGET",
+          "job_ids": [
+            133111885564
+          ],
+          "source": ".github/scripts/major_qualification_report.py admit_vitest lines899-902",
+          "actual": "One passed process-tree.test.ts case fullName2293 UTF8bytes exceeds producer2048 field cap, while full canonical id2346 fits existing downstream4096 budget. Raw1085case population<32768; no other shape/status predicate failed.",
+          "original_case": {
+            "suite_index": 28,
+            "case_index": 32,
+            "file": "plugins/ca-pi/tools/test/process-tree.test.ts:185-194",
+            "template": "rejects malformed or out-of-order stage %s without echoing it",
+            "case_sha256": "79e3c8436fa459eda8323140c783489a57a003772605f8695ca89038e4a3a5cf",
+            "status": "passed"
+          },
+          "limit": "No unchecked fullName/raw test payload echoed; no truncation or unbounded reader relaxation. Root reports complete-ID repair and inert raw-JSON reparse separately."
+        },
+        {
+          "class": "WINDOWS_SHORT_ALIAS_TEMP_PREREQUISITE",
+          "job_ids": [
+            133111885564
+          ],
+          "source": "plugins/ca-pi/tools/test/bridge.test.ts:248-264,1610-1669; major_qualification_report.py observe_vitest private Temp selection",
+          "actual": "Original suite has two real failed Bridge short-alias cases,1081passed/2failed/2skipped; raw success=false. Local fixed cmd on owned C returns genuine aliases; same command on owned D returns unchanged absolute same-file spelling, which original helper rejects.",
+          "scope": "Supported source portability defect in forcing private test Temp onto unrelated raw-artifact filesystem; Root received validated causal handoff.",
+          "historical_limit": "Exact original GHA cmd status/absolute/changed discriminator was not retained and remains UNKNOWN. Original underlying process exit not independently retained after parser refusal; wrapper CLI exit1 is known.",
+          "handoff": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\debug-handoff.json",
+            "sha256": "cf2f765a4515a9dc3f1f29f9f59ec85be024e68410ad0349d5c99e0d4caaa66c",
+            "validation_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\debug-handoff-validation.json",
+            "validation": {
+              "protocol": "codearbiter.debug-validation/1.0.0",
+              "valid": true,
+              "errors": [],
+              "truncated": false
+            }
+          }
+        }
+      ],
+      "raw_diagnostic": {
+        "artifact_id": 14199649610,
+        "archive_sha256": "c89aedeffa3222f384fd5c62c8819db4367728a40d7d42b0992993ef54fb382d",
+        "member_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\artifact-14199649610-pi-vitest-named.json",
+        "member_sha256": "b0bd1275606443f532c57d87a5dd7e7401ef99a2dda4126b2448a0e976ed0a45",
+        "member_bytes": 2720719,
+        "authentication_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\pi-source-observation-authentication.json",
+        "shape_diagnosis_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\pi-vitest-closed-shape-diagnosis.json",
+        "suite_result": {
+          "success": false,
+          "numTotalTests": 1085,
+          "numPassedTests": 1081,
+          "numFailedTests": 2,
+          "numPendingTests": 2,
+          "numTotalTestSuites": 127,
+          "numPassedTestSuites": 125,
+          "numFailedTestSuites": 2
+        },
+        "status_counts": {
+          "passed": 1081,
+          "failed": 2,
+          "skipped": 2
+        },
+        "original_case_count": 1085,
+        "qualification": false
+      },
+      "positive_limits": {
+        "windows_pi_actual_rpc": {
+          "job_id": 133111885611,
+          "conclusion": "success",
+          "actual_rpc_step": "success",
+          "historical_intermitttent_shutdown_cause": "UNKNOWN"
+        },
+        "earlier_repairs": "Original6c missing-binding owner, Sandbox command reader, macOS inert fixture and Windows raw input preparation all advanced past their failing points.",
+        "native": "All selected native conformance/cold package jobs completed successfully individually; no failed-whole/PR qualification."
+      },
+      "original_failed_jobs": {
+        "133111885564": {
+          "name": "Coverage union (Pi)  <os: windows-latest>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111885564.json",
+          "metadata_sha256": "06ed696202b79185d0f18eed3da205485af0f56d81e6a0a450f0416fa70ac2c1",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111885564.log",
+          "log_sha256": "9006d2b1708f8b0fd5fdd5ecf23a2f27a952e66aa0f50d54714f4d4a473cff2d",
+          "log_bytes": 58835
+        },
+        "133111796872": {
+          "name": "Site | [Build] - Astro Pages",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111796872.json",
+          "metadata_sha256": "e619d48df3cd26363d535f43187b7b96dc54c97d38f0846dee3f75216210b917",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111796872.log",
+          "log_sha256": "e906e097875e65dcaebe6b0168982bfb2464ea7d045497f873206d372c192213",
+          "log_bytes": 88565
+        },
+        "133111797094": {
+          "name": "Site | [Test] - Generator",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111797094.json",
+          "metadata_sha256": "c95cf84a736cd9c68e4d9fd5623d8f2cbb2654d339d5f66cf21b64566ae00b1d",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\failed-job-133111797094.log",
+          "log_sha256": "ecf5e1e906dedff888ba5d9eae7ecb383a468caea5b18754b2ae9c0a8a4feb94",
+          "log_bytes": 89815
+        }
+      },
+      "limits": [
+        "Original API metadata binds run/head/pull_request/attempt1 and complete CI94/Docs5 job populations.",
+        "No remote retry/cancel/merge/ref or Gov/source/index/marker writes by watcher. Root owns current source corrections and separate affected review.",
+        "Only three explicitly authorized fixed-cmd owned-dir probes; no Pi/BridgeClient/Node/Go/SDK/provider replay or global8dot3/config/admin changes.",
+        "One diagnostic artifact downloaded/authenticated once; no PiEOF artifact because real Windows Pi RPC succeeded.",
+        "Prior local review remains immutable and bounded; authentic hosted failure controls current disposition. Parent1098 held from main; publication unauthorized."
+      ]
+    }
+  },
+  "sealed_author_packets": {
+    "native": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\delivery.json",
+      "sha256": "b2c74e0a9269cd532d253f390c16161fa6682cf1f8aa9302cb13488ac4ffa308",
+      "record": {
+        "schema": "codearbiter-private-native-composition-delivery/1",
+        "status": "READY_FOR_ROOT_INTEGRATION",
+        "qualification": false,
+        "source_epoch": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "preimage_basis": "Owned physical overlay copied before f65; byte-identical original files independently recovered/joined to retained f65. Concurrent Root Vitest edits excluded from this patch.",
+        "subjects": [
+          {
+            "path": "tools/go_test_parallel.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\tools\\go_test_parallel.py",
+            "preimage_sha256": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40",
+            "candidate_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+            "current_physical_sha256": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40",
+            "application": "exact candidate after preimage check"
+          },
+          {
+            "path": ".github/scripts/test_go_test_parallel.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\test_go_test_parallel.py",
+            "preimage_sha256": "19980e11d5b1a0277957c130f21eefcba306d06e402ee630ff6a38c4f482fad8",
+            "candidate_sha256": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            "current_physical_sha256": "19980e11d5b1a0277957c130f21eefcba306d06e402ee630ff6a38c4f482fad8",
+            "application": "exact candidate after preimage check"
+          },
+          {
+            "path": ".github/scripts/major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\major_qualification_report.py",
+            "preimage_sha256": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+            "candidate_sha256": "75bc3f51d8809559a3c4c1ae64656eda8c4871bbd6747052fb0897108fd7de40",
+            "current_physical_sha256": "ac83e4addeefca9db267218b092e651407c755cac008c4dfe262a567d6e1dd52",
+            "application": "apply owned hunk; preserve concurrent Vitest changes"
+          },
+          {
+            "path": ".github/scripts/test_major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_sha256": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+            "candidate_sha256": "802fca9ddefa388337ff85e9e44acf0b5c57125a3b63f479c1ba5265746cc49b",
+            "current_physical_sha256": "b60e56c294273bc5321e2cb4565fe524c36ae8d0abf0d2ae56933c49cbb576bb",
+            "application": "apply owned hunk; preserve concurrent Vitest changes"
+          },
+          {
+            "path": ".github/scripts/major_readiness.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\major_readiness.py",
+            "preimage_sha256": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            "candidate_sha256": "11361077d0c15b7d7ad7785071e6dde60655dcb6bd600799dfb49bf9721f22a6",
+            "current_physical_sha256": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            "application": "exact candidate after preimage check"
+          },
+          {
+            "path": ".github/scripts/test_major_readiness.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\test_major_readiness.py",
+            "preimage_sha256": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "candidate_sha256": "0b9c49d45599c0405a0d6692bd3633e60f2de0179413bd3a1961d4b688459715",
+            "current_physical_sha256": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "application": "exact candidate after preimage check"
+          },
+          {
+            "path": ".github/major-qualification-policy.json",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\major-qualification-policy.json",
+            "preimage_sha256": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            "candidate_sha256": "ca0ec5d83c28b9e6a888415ca3926143e134003ac9553e78fc6210c1d8fcb4cc",
+            "current_physical_sha256": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            "application": "exact candidate after preimage check"
+          },
+          {
+            "path": ".github/scripts/major_native_observation.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\major_native_observation.py",
+            "preimage_sha256": null,
+            "candidate_sha256": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            "current_physical_sha256": null,
+            "application": "new file"
+          },
+          {
+            "path": ".github/scripts/test_major_native_observation.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\test_major_native_observation.py",
+            "preimage_sha256": null,
+            "candidate_sha256": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+            "current_physical_sha256": null,
+            "application": "new file"
+          }
+        ],
+        "filemap_sha256": "b4714a261316790c4f29e68a36c700d20dc1260aeeae55b24050a32b0f0e9e0e",
+        "patches": {
+          "proposal.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\proposal.patch",
+            "sha256": "48d7ef74f9cc0ace7221efd9d3496bb1e1cabe40612435cc45a6569737e9c7b1"
+          },
+          "admit-go-only.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\admit-go-only.patch",
+            "sha256": "e85f24d76e7409d256dcac1ac18ffe46bbee550eaee1425d22df98724a5bd401"
+          },
+          "report-test-only.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\report-test-only.patch",
+            "sha256": "4e3b7111f91843f9c3dcf759116873135bdbdbaeb21dbaffe0bbfc26eace7bc2"
+          },
+          "readiness-only.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\readiness-only.patch",
+            "sha256": "35e12ccb25b01079d25d53caa1268b7d979f9a3cc9b961b0bfe7578a1b3e77ab"
+          }
+        },
+        "public_native_component_helper": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\candidate\\.github\\scripts\\major_native_observation.py",
+          "sha256": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+          "function": "authenticate_component(req, run, artifacts, jobs, platform)",
+          "phase": "Original component producer-time authority only; module pins supplied only by immutable Git owner. Final admission independently requires whole trusted main success."
+        },
+        "policy": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+          "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+          "records": 32,
+          "reuse": "unchanged complete policy consumed with original actor delivery"
+        },
+        "recipes": {
+          "cells": [
+            "disposition:findings:N-F05",
+            "disposition:transitions:N08:03",
+            "disposition:transitions:N10:02",
+            "disposition:transitions:N13:04",
+            "disposition:transitions:N18:01",
+            "disposition:transitions:N18:02",
+            "disposition:transitions:N19:01",
+            "disposition:transitions:N24:02"
+          ],
+          "mapping_witness": "C:/Users/brenn/AppData/Local/Temp/ca-native-runtime-routing-plan-tu6g7tes",
+          "literal_recipes": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\recipe-data.json",
+          "literal_recipes_sha256": "c039c0ae512a6d9d72b628add02ba717f09b882c3b9efef8b71a35151c7f07bc",
+          "scope": "Three clause-witnessed safe additions plus five full original platform/component recipes. Existing native16 and selections file unchanged. Mixed-eight and every other unsupported native cell remain unmapped. No machine/task/scenario/status promotion."
+        },
+        "implementation": [
+          "Optional slash-child terminal outcomes retained through original Go collector and admit_go; parent API/default flags preserved.",
+          "Exact original six-platform CI20 job/upload/archive/candidate/raw/stamp/retained observation authentication; all complete required selectors and observed children must pass.",
+          "Known additive Native4 readiness consumed by actual produce/verify/load paths under Source3 and around Docs2/Core1; unknown/reversed/recursive envelopes refuse.",
+          "Same-source/runtime partition preserves authenticated typed source dispositions instead of relabeling them as native runtime.",
+          "Only policy native_composite_cells added; existing native16 and all unrelated job/producer/archive/report constraints preserved."
+        ],
+        "actual_checks": {
+          "child-target-red": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\child-target-red.json",
+            "sha256": "0fc04ecbcc5fa865e3188483d0c0939cf67a360acbf6c787238df9943e351cb9",
+            "raw_log_sha256": "4a76f48d64f87164a5a29ea216cebf14ed291ee475d36a887a3cd5d7221cc2af",
+            "tests": 1,
+            "failures": 1,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 1,
+            "duration_seconds": 0.03233249999175314
+          },
+          "child-admission-red": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\child-admission-red.json",
+            "sha256": "b9f2e11ff37338356091af791bbfb39cfeca7f5d93c1585459d01ede1878a7f4",
+            "raw_log_sha256": "2d75648169ec2852888078e723d0bf798d7e871d464d6ea70c436e9fde0e2fc8",
+            "tests": 1,
+            "failures": 1,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 1,
+            "duration_seconds": 0.0006607999966945499
+          },
+          "composite-target-red": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\composite-target-red.json",
+            "sha256": "e273d8a9adc6086d75f936726344a3fac2f0e115d7a880dfd2dceaa5aedbfd28",
+            "raw_log_sha256": "b0b732a892668c56fcf132a7f44c8cf431adc37cd38005eebd548ec1d84efbce",
+            "tests": 1,
+            "failures": 0,
+            "errors": 1,
+            "skips": 0,
+            "exit_code": 1,
+            "duration_seconds": 0.0035269000072730705
+          },
+          "collector-pure-final": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\collector-pure-final.json",
+            "sha256": "07b4edb09fc2079e6d5c3922cf15d26ceaaa1c1d52ee27effd8f2af742560a5b",
+            "raw_log_sha256": "eb7e43ea0ac4a86d4659a14dd33b232dc22bffb0d38a2d8359c7e93350d2d8bc",
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.08396879999781959
+          },
+          "child-admission-green": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\child-admission-green.json",
+            "sha256": "3615d364c713c56b87759e624c6ea6c5c10423c5495433105eca36d611a2304a",
+            "raw_log_sha256": "5588d82c866e79b13a9996f6473ae2fb5a04e8bb67cbcb4a0de7471ebafedf39",
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.00028780000866390765
+          },
+          "child-shape-controls": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\child-shape-controls.json",
+            "sha256": "2758aa449bda2474ffdfcb04aba7719ef63602bdeea393815bfe9032d2d98cc1",
+            "raw_log_sha256": "8539802b21310198bc5128797076849cfbc26644716e40a37bab75f484a3578c",
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.00029710000671911985
+          },
+          "native16-and-reports": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\native16-and-reports.json",
+            "sha256": "49f898ee1390c176123818e1bea74c90d388230e4ab4ab96178c0c2b65f98f56",
+            "raw_log_sha256": "cfd2b7e80fffec98fb3a32d48a0cb38505498598effa43a444c33debf82e5198",
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.08547839999664575
+          },
+          "owning-readiness-native-final": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\owning-readiness-native-final.json",
+            "sha256": "eb5d5931c555225bc71bb35f315f02c172a9e45f723094ff9e0e326f8ad2c2f3",
+            "raw_log_sha256": "9c5c048796adb08231559a35bc835d70ebb82283aa70281fa61cac5a8ada19e7",
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.5738388999889139
+          },
+          "consistent-native-controls": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\consistent-native-controls.json",
+            "sha256": "ab8d09a30e61a403e65a4bafccbb04de57c8ba6b4fa04be7762f3098830bb237",
+            "raw_log_sha256": "916b7959b3e3811a3794a62b4b72e37466fef9b4fbab5d391314538b0241af5e",
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.06693460000678897
+          },
+          "legacy-core-final": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\legacy-core-final.json",
+            "sha256": "d6ab9410349b257127892967e8ebda91d50f325c5a8600f429366d10e9f74793",
+            "raw_log_sha256": "895f04171b75a9d50a4ac8d53ddc900a6a4a822e49f83c38c69e787f025d499d",
+            "tests": 29,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.012482800011639483
+          },
+          "legacy-docs-final": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\legacy-docs-final.json",
+            "sha256": "6412c2e25b35af47c17e594f10ead874802a020f1d6e101baf08f10d269cc890",
+            "raw_log_sha256": "ed9bd338c99b69bb7a90fe3f1323398e3f514ae348d8c20e9371d8687adb32ff",
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.04178670000692364
+          },
+          "composite-owning-green": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\composite-owning-green.json",
+            "sha256": "a8b6dd7c4f45afe9e2def6d7b51831889c58f463bb3359643bbb1f96d2129b8a",
+            "raw_log_sha256": "d8a5acab89042fda2b4967beaf3ec919aa9dc55850f4a8daf9aa9474619a1ebb",
+            "tests": 8,
+            "failures": 0,
+            "errors": 3,
+            "skips": 0,
+            "exit_code": 1,
+            "duration_seconds": 0.3608739000046626
+          },
+          "composite-fixture-refinement": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\composite-fixture-refinement.json",
+            "sha256": "d1712d5c5cc2fd767bb3ee5f56d527be2fde8fc96c7a0b34450452d98711c18c",
+            "raw_log_sha256": "e91843d227f220a7a5bc35b37c42d28708f7d03d51a920f42db186895bb70326",
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "exit_code": 0,
+            "duration_seconds": 0.21712139999726787
+          }
+        },
+        "mutation_checks": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\mutation-controls.json",
+          "sha256": "f13931aa2ed78d1777ccf9575209519beb3a465e5860a364deeb1b5622169584",
+          "assertion_failures": {
+            "removed_upload_guard": 2,
+            "removed_child_guard": 1,
+            "removed_immutable_source_guard": 1
+          },
+          "errors": 0
+        },
+        "guards": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\final-preservation-guards.json",
+          "sha256": "a8a16fca71eee6f6a5bd2c8e45fcad0170f899268caacdc2d752507a8d087b17",
+          "all_original_class_method_ASTs_unchanged": true,
+          "changed_existing_report_function": "admit_go only",
+          "unchanged_major_readiness_authorities": "All except _requirements/produce/verify/runtime_record bytecode AST unchanged",
+          "patch_check": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-composite-producer-fbu5mxds\\patch-check-corrected.json",
+          "syntax": "all changed Python compiled without executing product",
+          "gitleaks": {
+            "exit_code": 0,
+            "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+            "bytes_scanned": 4821927,
+            "findings": 0
+          }
+        },
+        "limits": [
+          "Pure Python unit fixtures only; no Go/native/Node/helper/SDK/runtime/provider/network/build/install or evidence renewal executed. Fake binary bytes were archive fixtures and never executed; real maintained candidate_identity parsed them. Production module identity derives from immutable Git membership; test module digest fixtures are inert.",
+          "The thirteen native authority methods passed as eleven plus two retained captures, not one claimed full thirteen run. Report/native16 seventeen and one later child-shape capture are separate.",
+          "Composite initial eight-method fixture run had three API lookup StopIteration setup errors, retained as composite-owning-green; corrected fixture-only metadata lookup then three passing controls and final eleven/two captures. These are not product failures.",
+          "Owning Go RealModule tests require real Go and were not run. Existing original native fixture/whole qualification suite not run. No live platform or installed qualification follows.",
+          "Coverage tooling absent under existing FACT005 scoped exemption; no invented line/branch percentage. Meaningful negative/mutation controls retained. Root single affected peer and exact-current CI still required.",
+          "Root concurrent admit_vitest/test additions must remain; shared files apply only included narrow patches. No Gov/index/Git/ref/marker writes by author. Parent1098 main/publication/human/model holds remain."
+        ]
+      }
+    },
+    "mapped_work": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\delivery.json",
+      "sha256": "ec6ec30db1e03a0823e8feb6049b4ba9d7d47411f09a75ccf31ac44d4d2dbea5",
+      "record": {
+        "format": "codearbiter.private-feature-delivery/1",
+        "task": "S38:04 mapped-work native consumer",
+        "state": "READY_FOR_ROOT_BOUNDED_COMPOSITION",
+        "source_freeze": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\source-freeze.json",
+          "sha256": "24ed5f1febc02ba60b56fa32672f642ede623f079945d65253595139604b149c"
+        },
+        "filemap": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\filemap.json",
+          "sha256": "f76e4c511ee303f609eb7e4572850566a05f6e220ec08015a05c10efb47342b6"
+        },
+        "routing_fragment": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\routing-fragments.json",
+          "sha256": "ff379851ab404fdd6572b521eeb5c8349d9b17d0e73647140e3568aabf5b5873"
+        },
+        "clause_witness": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\clause-witness.json",
+          "sha256": "f2ac7b5ccf5df876e2a5d0f2a9cb61bb328af729b92a0fd5c34d592cd81dec9b"
+        },
+        "checks": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\checks.json",
+          "sha256": "9d4b3bf61a3bc6d42f38b56713df404b8600f5c6033f7e4505762749b36622bf"
+        },
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\proposal.patch",
+          "sha256": "43987f4a1369b1ac9fd5596162d3cd9deaacd5cbe2f56254a78de4377e56b387"
+        },
+        "per_path_patches": {
+          ".github/scripts/mapped_work_observation.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\mapped_work_observation.py.patch",
+            "sha256": "acfb190fe9183bdac661f75d7565aa67e89bc5b376d3e468bd73909f32ca2f8c"
+          },
+          ".github/scripts/major_qualification_report.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\major_qualification_report.py.patch",
+            "sha256": "632cd0227a575dc70ea099526b482fabc46e1ad380aa35c68288d06050d2f1a2"
+          },
+          ".github/scripts/test_major_qualification_report.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\test_major_qualification_report.py.patch",
+            "sha256": "0ab46626f7cd2b95862f8b6f109b722bcb614dea3674e954976fb20933eddc20"
+          },
+          ".github/scripts/test_artifact_conformance.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\test_artifact_conformance.py.patch",
+            "sha256": "d2e458aacf922770194c6305efc3ed55995ba78ab2cb9135e4267e39856f59be"
+          },
+          ".github/workflows/ci.yml": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\ci-owner.patch",
+            "sha256": "bd810e7e0a96674b72b31abb3c3240dbe7758f37448d5ebafa5a1ec183c270d2"
+          },
+          ".github/scripts/major_readiness.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-native-consumer-f64z5brf\\readiness-role.patch",
+            "sha256": "25c048d12d92f3a0dacc058098a3fb6a9bd53fb071742398311cbde8450add73"
+          }
+        },
+        "limits": [
+          "No real native/SDK/Go/Node/Pi/model/provider/network/API/installed qualification or owning work_github suite replay.",
+          "No source-test string relabel or native-only archive substitute: exact profile/one S38:04 cell; source and original CI20 are two distinct authenticated artifacts.",
+          "No status/proof/ledger/task/machine promotion. Future real original native CI invocation must supply genuine named results and admission evidence.",
+          "No whole third-party distribution inventory claim; reference Python executable/version is beforeafter pinned and its existing locked CI environment remains independently owned.",
+          "Old Python176/TS profile membership, unknown-profile refusal, final main publication/readiness authority remain unchanged.",
+          "Root disjoint report MAX_TEST_ID_BYTES/observe_vitest changes and VitestIdentityBudgetTests must be preserved by hunk composition."
+        ],
+        "old_history": "All original packets, raw test failures, unit outcomes and source preimages remain immutable in this Temp folder."
+      }
+    },
+    "knowledge_scope": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-knowledge-scope-fix-f65-root\\delivery.json",
+      "sha256": "e2f229b4ea14ba60a728964e417feb9c3ff90a3c0e0628e336bc0a33c48048f1",
+      "record": {
+        "schema": "private-root-fix/1",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "qualification": false,
+        "files": {
+          "core/pysrc/knowledge.py": {
+            "sha256": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+            "bytes": 24672,
+            "candidate_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "candidate_bytes": 25169
+          },
+          ".github/scripts/test_knowledge_cli.py": {
+            "sha256": "bc825dc40446a972de2082e854b938cd655a99484ae7f91f45a7068ba7a6439c",
+            "bytes": 35454,
+            "candidate_sha256": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            "candidate_bytes": 40804
+          }
+        },
+        "actual_checks": {
+          "target-red": {
+            "argv": [
+              "C:\\Python314\\python.exe",
+              "-B",
+              "-X",
+              "utf8",
+              "-m",
+              "unittest",
+              "test_knowledge_cli.KnowledgeFreshnessScope.test_directory_scope_detects_committed_descendant_without_rebaseline"
+            ],
+            "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-knowledge-scope-fix-f65-root\\candidate\\.github\\scripts",
+            "exit_code": 1,
+            "seconds": 0.598032100009732,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "53d9944a89e9465f2a7466ef1b410e12a1c2cf7acaaabf9f608eed6a7eae81fe",
+            "source_sha256": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+            "test_sha256": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            "limits": "Real private Git and actual _stale; native record enumeration is inert. No native helper, Go, Node, provider, installed or semantic freshness qualification."
+          },
+          "owning-green": {
+            "argv": [
+              "C:\\Python314\\python.exe",
+              "-B",
+              "-X",
+              "utf8",
+              "-m",
+              "unittest",
+              "test_knowledge_cli.KnowledgeFreshnessScope"
+            ],
+            "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-knowledge-scope-fix-f65-root\\candidate\\.github\\scripts",
+            "exit_code": 0,
+            "seconds": 2.6118628999975044,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "ed044fa233c3bbef2d7321eeb92383ead32d2d4678bb8f0121e458c63bb0a245",
+            "source_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "test_sha256": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            "limits": "Real private Git and actual _stale; native record enumeration is inert. No native helper, Go, Node, provider, installed or semantic freshness qualification."
+          },
+          "unsafe-prefix-mutant": {
+            "argv": [
+              "C:\\Python314\\python.exe",
+              "-B",
+              "-X",
+              "utf8",
+              "-m",
+              "unittest",
+              "test_knowledge_cli.KnowledgeFreshnessScope.test_sibling_prefix_does_not_match_directory"
+            ],
+            "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-knowledge-scope-fix-f65-root\\candidate\\.github\\scripts",
+            "exit_code": 1,
+            "seconds": 0.46713679999811575,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "7a6e60f6c52be1408c5fc04e1ca1c487f639d0030625e2642182eb50c21f03bf",
+            "source_sha256": "e2f30d9cab3c6ec751844c0cc747dc1f1cd149b905dceedc980966825e9590d3",
+            "test_sha256": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            "limits": "Real private Git and actual _stale; native record enumeration is inert. No native helper, Go, Node, provider, installed or semantic freshness qualification."
+          }
+        },
+        "preservation": "Original KnowledgeCli class AST unchanged; only separate pure class added. Shared security glob compiler is unchanged. Advisory scope fix does not rebaseline, write records or establish semantic freshness.",
+        "contract": "core/artifacts/internal/operations/task_knowledge.go scopeOverlaps: a plain directory covers its contents. Match descendants with slash boundary without relying on existence; glob depth and exact/cited paths retain guards.",
+        "limits": "Python stdlib/owned real Git fixture only. Native record enumeration inert. No native/Go/Node/provider/installed or full CLI qualification.",
+        "root_integration": "Apply exact2CAS files then canonical sync-core owner once, byte-parity check. Existing f65source unaffected except these declared files."
+      }
+    }
+  },
+  "mapped_successor": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\S38-temp-and-encoding-successor.json",
+    "sha256": "e50686ccff5de023b43918dfe1b05f233f92577e0eb286fbd584e7490b9b671c",
+    "record": {
+      "result": "PASS",
+      "delivery_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\delivery.json",
+      "delivery_sha256": "23c256ec9fa7339feeb25bd572d9ecfe9c594d67d9af7c6e85149f6d785a2d15",
+      "record": {
+        "format": "codearbiter.private-source-successor/1",
+        "state": "READY",
+        "subjects": [
+          {
+            "path": ".github/scripts/mapped_work_observation.py",
+            "preimage_sha256": "2a701cfab0418ad750b0764391cc634a70a90a0ee2dc70367efa0d9ef3cb30c2",
+            "sha256": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\candidate\\.github\\scripts\\mapped_work_observation.py",
+            "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\mapped_work_observation.py.patch"
+          },
+          {
+            "path": ".github/scripts/test_major_qualification_report.py",
+            "preimage_sha256": "39a601dc02cf646b891aceac9f3cf1d80c34f1dc880f660024e527849d9e0957",
+            "sha256": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+            "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\test_major_qualification_report.py.patch"
+          }
+        ],
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\successor.patch",
+          "sha256": "c42444b3d91ce4a77e03b1d0d98cd2a208becd57def9337e4cccd5f3a6f26d1a"
+        },
+        "freeze": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\source-freeze.json",
+          "sha256": "afa4d0adfcb6bdee5bd13a43fc1947f1baa3678a50342be98ae11fd9f8f08bf9"
+        },
+        "forensic": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\encoding-forensics.json",
+          "sha256": "89b2ae0c084134eabb9ca6407e31016b0a934de9a86e4fc80da19a847b63abcb"
+        },
+        "checks": [
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\RED-temp-filesystem\\result.json",
+            "sha256": "c6c47302e146608ee908a085d3bfdc2ad49f72f897f1d1a6e43ce0259f78b0d8",
+            "exit_code": 1,
+            "source_stable": true,
+            "seconds": 0.625164400000358,
+            "stderr": {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\RED-temp-filesystem\\stderr.log",
+              "sha256": "d94f08163b94f6db9fed0fa1beef27100cfcbe8a2fac5e11af5521cea0cbf88a"
+            }
+          },
+          {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\GREEN-affected-two\\result.json",
+            "sha256": "85dd88af76985893900a053dbe56f4007176aa67095ea44a3b4e26ab5f9be583",
+            "exit_code": 0,
+            "source_stable": true,
+            "seconds": 3.329960299990489,
+            "stderr": {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-temp-utf8-successor-axpxu588\\GREEN-affected-two\\stderr.log",
+              "sha256": "5c39d3ae72b0725c0c337165f8f1ecc0fae741db79eb0745f5e0b1b8e684d2b4"
+            }
+          }
+        ],
+        "limits": "Only two affected pure controls executed; nested seven same-name cases are inert producer mechanics, not original native tests. No native/Node/Go/provider/API replay; no Gov/index/ref writes. Original sealed packet and source histories preserved.",
+        "integration": "Apply successor.patch two narrow hunks only. No report source changes requested; old unrelated SOURCE_JOB hunk remains rejected."
+      },
+      "source_hashes": {
+        ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+        ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d"
+      },
+      "unrelated_original_SOURCE_JOB_preserved": true,
+      "qualification": false
+    }
+  },
+  "root_checks": {
+    "atlas-render-binding-target-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-render-binding-target-red.json",
+      "sha256": "52b33e7461d92975ddcfbd53ad27acfd0549318a0a5b0e738973b71c0ae8ef4c",
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "--import",
+          "tsx",
+          "scripts/generate-atlas.ts"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 1,
+        "seconds": 1.2413473000051454,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "af3385c29c54770114d56ae4d24e6f8154e435d803f9bcccd36ac263652c45e3",
+        "source_review_binding_sha256": "35341c9a7b244038e0e9bb411b18e2324e125d2f47200998f95f28ac60592325",
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "scope": "Original maintained Atlas generator only, cached tsx/TypeScript, no install/browser/full Site/native/provider. Generated outputs remain ignored."
+      }
+    },
+    "atlas-render-binding-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-render-binding-green.json",
+      "sha256": "e8e31fa40083d17a5ad4388babeacedbecfcf78725e7890f90bbb7cf3116ab4a",
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "--import",
+          "tsx",
+          "scripts/generate-atlas.ts"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 0,
+        "seconds": 0.8354342000093311,
+        "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_review_binding_sha256": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "scope": "Original maintained Atlas generator only, cached tsx/TypeScript, no install/browser/full Site/native/provider. Generated outputs remain ignored."
+      }
+    },
+    "knowledge-scope-actual-read": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\knowledge-scope-actual-read.json",
+      "sha256": "4bfc946620c1202dcf432e208ffe512ac4b4c34d3020210d3e77d69dc2057d06",
+      "record": {
+        "result": "PASS",
+        "advisory_report": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "documents": [
+            {
+              "artifact_id": "CTX-PROJECT",
+              "baseline": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+              "revision": 6,
+              "stale": []
+            },
+            {
+              "artifact_id": "CTX-TECH-STACK",
+              "baseline": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+              "revision": 10,
+              "stale": [
+                {
+                  "record": "CMD-074",
+                  "title": "plugins/ca/tools: npm audit --audit-level=high",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-075",
+                  "title": "plugins/ca/tools: npm ci",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-076",
+                  "title": "plugins/ca/tools: npm run typecheck",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-077",
+                  "title": "plugins/ca/tools: npm test",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-078",
+                  "title": "plugins/ca/tools: npm run build",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-079",
+                  "title": "plugins/ca/tools: npm run coverage",
+                  "changed_paths": [
+                    "plugins/ca/tools/artifact-manifest.test.ts",
+                    "plugins/ca/tools/artifact-manifest.ts",
+                    "plugins/ca/tools/exec.ts",
+                    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+                    "plugins/ca/tools/farm-interruption.test.ts",
+                    "plugins/ca/tools/farm-recovery.test.ts",
+                    "plugins/ca/tools/farm-recovery.ts",
+                    "plugins/ca/tools/farm-registry-lock.test.ts",
+                    "plugins/ca/tools/farm.js",
+                    "plugins/ca/tools/farm.test.ts",
+                    "plugins/ca/tools/farm.ts",
+                    "plugins/ca/tools/farm.unit.test.ts",
+                    "plugins/ca/tools/state-contracts.test.ts",
+                    "plugins/ca/tools/tsconfig.json"
+                  ]
+                },
+                {
+                  "record": "CMD-080",
+                  "title": "plugins/ca-sandbox/tools: npm ci",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-081",
+                  "title": "plugins/ca-sandbox/tools: npm run typecheck",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-082",
+                  "title": "plugins/ca-sandbox/tools: npm test",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-083",
+                  "title": "plugins/ca-sandbox/tools: npm run build",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-084",
+                  "title": "plugins/ca-sandbox/tools: npm run coverage",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-085",
+                  "title": "plugins/ca-pi/tools: npm ci --ignore-scripts",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-086",
+                  "title": "plugins/ca-pi/tools: npm run typecheck",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-087",
+                  "title": "plugins/ca-pi/tools: npm test",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-088",
+                  "title": "plugins/ca-pi/tools: npm run build",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-089",
+                  "title": "plugins/ca-pi/tools: npm run coverage",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-090",
+                  "title": "site: npm ci",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-091",
+                  "title": "site: npm run typecheck",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-092",
+                  "title": "site: npm test",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-093",
+                  "title": "site: npm run build",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-094",
+                  "title": "site: npm run coverage",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-095",
+                  "title": "site: npm run link-audit",
+                  "changed_paths": [
+                    "site/WORKFLOW-ATLAS.md",
+                    "site/package.json",
+                    "site/playwright.components.config.ts",
+                    "site/playwright.config.ts",
+                    "site/scripts/execution-maps/atlas-assistive.test.ts",
+                    "site/scripts/execution-maps/atlas-data/catalog.json",
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+                    "site/scripts/execution-maps/atlas-revalidation.test.ts",
+                    "site/scripts/execution-maps/atlas.test.ts",
+                    "site/scripts/execution-maps/atlas.ts",
+                    "site/scripts/gen.ts",
+                    "site/scripts/generate-academy.ts",
+                    "site/scripts/generator/assign-slugs.ts",
+                    "site/scripts/generator/configuration-reference.ts",
+                    "site/scripts/generator/extract-hook-gates.ts",
+                    "site/scripts/generator/generate.ts",
+                    "site/scripts/generator/render-hooks-reference.ts",
+                    "site/scripts/owned-output.test.ts",
+                    "site/scripts/owned-output.ts",
+                    "site/scripts/pagefind-build.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-096",
+                  "title": "plugins/ca-sandbox/tools: npm audit --audit-level=high",
+                  "changed_paths": [
+                    "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+                    "plugins/ca-sandbox/tools/build.test.ts",
+                    "plugins/ca-sandbox/tools/build.ts",
+                    "plugins/ca-sandbox/tools/builder-observation.test.ts",
+                    "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.js",
+                    "plugins/ca-sandbox/tools/claude-inside.test.ts",
+                    "plugins/ca-sandbox/tools/claude-inside.ts",
+                    "plugins/ca-sandbox/tools/cli.test.ts",
+                    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+                    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+                    "plugins/ca-sandbox/tools/create.test.ts",
+                    "plugins/ca-sandbox/tools/create.ts",
+                    "plugins/ca-sandbox/tools/deadline.test.ts",
+                    "plugins/ca-sandbox/tools/exec.ts",
+                    "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+                    "plugins/ca-sandbox/tools/layering.test.ts",
+                    "plugins/ca-sandbox/tools/multistack.test.ts",
+                    "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+                    "plugins/ca-sandbox/tools/network.test.ts"
+                  ]
+                },
+                {
+                  "record": "CMD-097",
+                  "title": "plugins/ca-pi/tools: npm audit --audit-level=high",
+                  "changed_paths": [
+                    "plugins/ca-pi/tools/src/approval-entry.ts",
+                    "plugins/ca-pi/tools/src/bridge.ts",
+                    "plugins/ca-pi/tools/src/child-extension.ts",
+                    "plugins/ca-pi/tools/src/compatibility.ts",
+                    "plugins/ca-pi/tools/src/contracts.ts",
+                    "plugins/ca-pi/tools/src/delegated-executor.ts",
+                    "plugins/ca-pi/tools/src/delegation-client.ts",
+                    "plugins/ca-pi/tools/src/delegation-contract.ts",
+                    "plugins/ca-pi/tools/src/delegation-journal.ts",
+                    "plugins/ca-pi/tools/src/delegation-session.ts",
+                    "plugins/ca-pi/tools/src/dispatch.ts",
+                    "plugins/ca-pi/tools/src/extension.ts",
+                    "plugins/ca-pi/tools/src/farm.ts",
+                    "plugins/ca-pi/tools/src/parent-delegation.ts",
+                    "plugins/ca-pi/tools/src/runner.ts",
+                    "plugins/ca-pi/tools/src/sidebar-manager.ts",
+                    "plugins/ca-pi/tools/src/status.ts",
+                    "plugins/ca-pi/tools/src/tool-guard.ts",
+                    "plugins/ca-pi/tools/test/activation.test.ts",
+                    "plugins/ca-pi/tools/test/bridge.test.ts"
+                  ]
+                }
+              ]
+            },
+            {
+              "artifact_id": "CTX-CODING-STANDARDS",
+              "baseline": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+              "revision": 5,
+              "stale": []
+            },
+            {
+              "artifact_id": "CTX-SECURITY-CONTROLS",
+              "baseline": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+              "revision": 5,
+              "stale": []
+            },
+            {
+              "artifact_id": "CTX-CODE-MAP",
+              "baseline": "52a6b7f72404d2bc14243a3c8c700d553a0cdc13",
+              "revision": 8,
+              "stale": [
+                {
+                  "record": "COMP-001",
+                  "title": "core/pysrc",
+                  "changed_paths": [
+                    "core/pysrc/knowledge.py"
+                  ]
+                },
+                {
+                  "record": "COMP-016",
+                  "title": "core/artifacts/internal/render",
+                  "changed_paths": [
+                    "core/artifacts/internal/render/path_values_test.go",
+                    "core/artifacts/internal/render/render.go"
+                  ]
+                },
+                {
+                  "record": "COMP-029",
+                  "title": "core/pysrc/knowledge.py",
+                  "changed_paths": [
+                    "core/pysrc/knowledge.py"
+                  ]
+                },
+                {
+                  "record": "COMP-031",
+                  "title": "plugins/ca",
+                  "changed_paths": [
+                    "plugins/ca/hooks/knowledge.py"
+                  ]
+                },
+                {
+                  "record": "COMP-032",
+                  "title": "plugins/ca-codex",
+                  "changed_paths": [
+                    "plugins/ca-codex/hooks/knowledge.py"
+                  ]
+                },
+                {
+                  "record": "COMP-038",
+                  "title": "site/scripts",
+                  "changed_paths": [
+                    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json"
+                  ]
+                },
+                {
+                  "record": "COMP-039",
+                  "title": "site/test",
+                  "changed_paths": [
+                    "site/test/release-applicability/workflow.test.ts"
+                  ]
+                },
+                {
+                  "record": "COMP-041",
+                  "title": ".codearbiter",
+                  "changed_paths": [
+                    ".codearbiter/.artifacts/history/knowledge-rebaseline-f2152bb4957a3489547b0e1cc08ea86ce0242920-0.before",
+                    ".codearbiter/.artifacts/store.lock",
+                    ".codearbiter/.artifacts/transactions/knowledge-rebaseline-f2152bb4957a3489547b0e1cc08ea86ce0242920.json",
+                    ".codearbiter/context/code-map.html"
+                  ]
+                },
+                {
+                  "record": "COMP-046",
+                  "title": ".github/scripts",
+                  "changed_paths": [
+                    ".github/scripts/major_qualification_report.py",
+                    ".github/scripts/major_readiness.py",
+                    ".github/scripts/site_playwright_observation.py",
+                    ".github/scripts/test_generated_output.py",
+                    ".github/scripts/test_knowledge_cli.py",
+                    ".github/scripts/test_major_qualification_report.py",
+                    ".github/scripts/test_major_readiness.py",
+                    ".github/scripts/test_pi_package.py",
+                    ".github/scripts/test_sandbox_ci_wiring.py"
+                  ]
+                }
+              ]
+            },
+            {
+              "artifact_id": "DECOMP-PROJECT",
+              "baseline": null,
+              "note": "no baseline commit; run rebaseline after checking the records"
+            }
+          ],
+          "note": "Advisory: listed records cite or govern changed paths. Check them; unlisted records are unaffected."
+        },
+        "Gov_head_index_status_unchanged": true,
+        "qualification": false,
+        "limit": "Source reader uses actual unchanged installed ArtifactClient for read-only native records; no record/baseline write or runtime replay. Installed package code remains old until separately delivered."
+      }
+    },
+    "vitest-canonical-id-target-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-canonical-id-target-red.json",
+      "sha256": "2e7e6eee984d7a197bbd40a4e33a57461d709759300c7d7648364ac8babfa160",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestIdentityBudgetTests.test_original_public_malformed_input_vector_keeps_its_full_bounded_name"
+        ],
+        "exit_code": 1,
+        "seconds": 0.1640895000018645,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "6c13fdbbd579f637dac2e1d7163c249c4189af8b278e20ecf11745fedcc42f6a",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "6c13fdbbd579f637dac2e1d7163c249c4189af8b278e20ecf11745fedcc42f6a",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "42f40942ed541dc6fce07c45a6d4569c7ea0e49b0c5a3c91d3120cd1a8b0f6df"
+      }
+    },
+    "vitest-canonical-id-target-red-assertion": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-canonical-id-target-red-assertion.json",
+      "sha256": "839967e3b3b3c64cc5cd60cb6c97cb755eccffc6e777fb76a55972a5a241cd9f",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestIdentityBudgetTests.test_original_public_malformed_input_vector_keeps_its_full_bounded_name"
+        ],
+        "exit_code": 1,
+        "seconds": 0.17093500000191852,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "4e68b7eb5e71b72c43bd653bb3d881405a178fe2347c042c0e21d4d416702559",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "4e68b7eb5e71b72c43bd653bb3d881405a178fe2347c042c0e21d4d416702559",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "c3a2a158a023ce9867a979f4af238e25136dd888516fb77756bd7860167da51d"
+      }
+    },
+    "vitest-canonical-id-owning-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-canonical-id-owning-green.json",
+      "sha256": "6f8e459ef714e74ff6d978da1328aceba297c277d5305498c5f118c4bf8e5474",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestIdentityBudgetTests",
+          "test_major_qualification_report.ReportTest.test_vitest_admission_uses_actual_names_and_never_counts_pending_as_passed"
+        ],
+        "exit_code": 1,
+        "seconds": 0.21745150000788271,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "4e68b7eb5e71b72c43bd653bb3d881405a178fe2347c042c0e21d4d416702559",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "4e68b7eb5e71b72c43bd653bb3d881405a178fe2347c042c0e21d4d416702559",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "2f5c4a42708008dda5214276ca1911a55e49eab1b8fcf3f6bb8eb925d80b1d43"
+      }
+    },
+    "vitest-canonical-id-population-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-canonical-id-population-green.json",
+      "sha256": "3d0f75efdc6c94ea6f6face86452fa4d8d06f557724a11d22f302612cc200f4b",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestIdentityBudgetTests.test_shape_status_population_and_zero_name_refusals_remain"
+        ],
+        "exit_code": 0,
+        "seconds": 0.2894793000014033,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "75e926847f7f9b7c48d4b61bc5ec57fb4c3575ff25250c0d1acb857bf883b5de",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "75e926847f7f9b7c48d4b61bc5ec57fb4c3575ff25250c0d1acb857bf883b5de",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3cf9954ddcf4b68e3854b6eb2c29ca15ab187c8dc51c80627aa402562a82b481"
+      }
+    },
+    "vitest-original-raw-admission": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-original-raw-admission.json",
+      "sha256": "6e1488c14dcf31c9608bb49ae59c9c4b5485be03519a939473626d3a463d9277",
+      "record": {
+        "result": "PASS_READER_REPLAY_ONLY",
+        "raw_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-f65f1e-watch-nu76u_s6\\artifact-14199649610-pi-vitest-named.json",
+        "raw_sha256": "b0bd1275606443f532c57d87a5dd7e7401ef99a2dda4126b2448a0e976ed0a45",
+        "cases": 1085,
+        "results": {
+          "passed": 1081,
+          "failed": 2,
+          "skipped": 2
+        },
+        "max_complete_id_bytes": 2346,
+        "reader_source_sha256": "ac83e4addeefca9db267218b092e651407c755cac008c4dfe262a567d6e1dd52",
+        "source_stable": false,
+        "original_process_exit_code": null,
+        "conservative_exit_code_argument": 1,
+        "qualification": false,
+        "limits": "Only original retained JSON is reprocessed. No Vitest/Pi/Node invocation, no original exit-code assertion, no source-binding or whole-run qualification. Original two failed cases remain failed."
+      }
+    },
+    "vitest-temp-filesystem-target-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-temp-filesystem-target-red.json",
+      "sha256": "56b6156779da8fce98f532243a07d6a25ab5b7d07aba31bd5459f0013c6a21a1",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestSourceProducerTests.test_capture_destination_does_not_relocate_the_original_temp_filesystem"
+        ],
+        "exit_code": 1,
+        "seconds": 1.9589568999945186,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "b60e56c294273bc5321e2cb4565fe524c36ae8d0abf0d2ae56933c49cbb576bb",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "9fdb74e0200cb3361e26bf9557002f90a2b66585c4b912d0b4105b17f74260c8",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "b60e56c294273bc5321e2cb4565fe524c36ae8d0abf0d2ae56933c49cbb576bb",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "45247166dad0221ce36d3be16602a05d08b5462f27244e7fc242ce04f8a54bd2"
+      }
+    },
+    "vitest-temp-filesystem-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\vitest-temp-filesystem-green.json",
+      "sha256": "37150ca1c56a0923cf84a8d6860e8fc04bbfc904ae1ffc0463fffe1babef6581",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.VitestSourceProducerTests.test_capture_destination_does_not_relocate_the_original_temp_filesystem",
+          "test_major_qualification_report.VitestSourceProducerTests.test_original_vitest_invocation_retains_authenticated_source_binding_once",
+          "test_major_qualification_report.VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells"
+        ],
+        "exit_code": 0,
+        "seconds": 10.007206499998574,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "ac83e4addeefca9db267218b092e651407c755cac008c4dfe262a567d6e1dd52",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "b60e56c294273bc5321e2cb4565fe524c36ae8d0abf0d2ae56933c49cbb576bb",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/scripts/major_qualification_report.py": "ac83e4addeefca9db267218b092e651407c755cac008c4dfe262a567d6e1dd52",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_qualification_report.py": "b60e56c294273bc5321e2cb4565fe524c36ae8d0abf0d2ae56933c49cbb576bb",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "895ee6cd2bb38b906bb201364195a155cb2203806393b86443cb5a4fcd5acbe1"
+      }
+    },
+    "native-source-composition-union": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-source-composition-union.json",
+      "sha256": "51bc35e6c502bfda1f1015bcb72158fe4164e2ae26949dd043f9ee48d44b159e",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_native_observation.NativeCompositeAuthorityTests",
+          "test_major_readiness.TypedSourceDispositionTests",
+          "test_major_qualification_report.MappedNativeConsumerDispatchTests",
+          "test_major_qualification_report.MappedNativeConsumerProfileTests",
+          "test_major_qualification_report.MappedNativeConsumerWorkflowTests",
+          "test_major_qualification_report.VitestIdentityBudgetTests",
+          "test_major_qualification_report.VitestSourceProducerTests.test_capture_destination_does_not_relocate_the_original_temp_filesystem",
+          "test_major_qualification_report.ReportTest.test_source_test_cannot_qualify_from_unbound_native_archive"
+        ],
+        "exit_code": 1,
+        "seconds": 19.82534090000263,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "0b9c49d45599c0405a0d6692bd3633e60f2de0179413bd3a1961d4b688459715",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "0b9c49d45599c0405a0d6692bd3633e60f2de0179413bd3a1961d4b688459715",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "7f43b9db783258f2e747d26f8ab44e6f306c96eed2e37f12d21f1927e95444ea"
+      }
+    },
+    "native-source-composition-union-fixed": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-source-composition-union-fixed.json",
+      "sha256": "d0c3bbc1bd0116b84cbc4ee25d7cc54c9e4263fa3df79752b9886810323adbe6",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_native_observation.NativeCompositeAuthorityTests",
+          "test_major_readiness.TypedSourceDispositionTests",
+          "test_major_qualification_report.MappedNativeConsumerDispatchTests",
+          "test_major_qualification_report.MappedNativeConsumerProfileTests",
+          "test_major_qualification_report.MappedNativeConsumerWorkflowTests",
+          "test_major_qualification_report.VitestIdentityBudgetTests",
+          "test_major_qualification_report.VitestSourceProducerTests.test_capture_destination_does_not_relocate_the_original_temp_filesystem",
+          "test_major_qualification_report.SourcePayloadAdmissionTest.test_source_test_cannot_qualify_from_unbound_native_archive"
+        ],
+        "exit_code": 0,
+        "seconds": 19.219323900004383,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "f01060f2c10171adbafab29cf5114c8427a90793f0a674c5017d6aff9eaf4b7c",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1f4a8c0ff54d9c69d63d3092630c4a576071620e11132f1ae4744bd12f27c578"
+      }
+    },
+    "atlas-composed-source-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-composed-source-green.json",
+      "sha256": "5544285908da4e94389aa7cca1c24c127e300e69856b1e77a5658c4b1727325a",
+      "record": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "--import",
+          "tsx",
+          "scripts/generate-atlas.ts"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 0,
+        "seconds": 0.7182631999894511,
+        "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_review_binding_sha256": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "scope": "Original maintained Atlas generator only, cached tsx/TypeScript, no install/browser/full Site/native/provider. Generated outputs remain ignored."
+      }
+    },
+    "native-source-docs-trigger-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-source-docs-trigger-red.json",
+      "sha256": "c82520e04084633ef981801d6153ff13189e30079d739568fd633207461b1716",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input"
+        ],
+        "exit_code": 1,
+        "seconds": 0.18888739999965765,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "112ad606f4a1acdb2c538a878f3c62d9280362a6062e66fa95d3d63b5b61feee",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_ci_impact.py": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "CHANGELOG.md": "49f59e75925e8e8dd2583a201c11d50e51867d9ad927d9b81c3aa77c28fa9d99",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "dfa33b600ba794676a2a5b727958b162c735cc55e549c251161443847f97cf2b",
+            "docs/state-contracts-major/execution/evidence/native-source-composition-development.json": "037152f4dc7d7a12f8439b927b789821c7b1b0d0f5ff96f472f2dfde6d75e1bb",
+            "docs/state-contracts-major/execution/progress.json": "4f1e1f4a4597976bbdf1ece2d2ec5f0e99a7169e18876dbe32f5ba4af098c049",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "112ad606f4a1acdb2c538a878f3c62d9280362a6062e66fa95d3d63b5b61feee",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_ci_impact.py": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            "CHANGELOG.md": "49f59e75925e8e8dd2583a201c11d50e51867d9ad927d9b81c3aa77c28fa9d99",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "dfa33b600ba794676a2a5b727958b162c735cc55e549c251161443847f97cf2b",
+            "docs/state-contracts-major/execution/evidence/native-source-composition-development.json": "037152f4dc7d7a12f8439b927b789821c7b1b0d0f5ff96f472f2dfde6d75e1bb",
+            "docs/state-contracts-major/execution/progress.json": "4f1e1f4a4597976bbdf1ece2d2ec5f0e99a7169e18876dbe32f5ba4af098c049",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "7fac53e2169d713ad89f102c33a94b317594674e024a1db81d606dfa040f7fea"
+      }
+    },
+    "native-source-docs-trigger-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-source-docs-trigger-green.json",
+      "sha256": "28ef6fb3c09d5c5eb26d4b3414dd3ea27f7dbbc4781dc6e1d6cff8f72d16e6b0",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+          "test_ci_impact.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy"
+        ],
+        "exit_code": 0,
+        "seconds": 0.18845299999520648,
+        "before": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "112ad606f4a1acdb2c538a878f3c62d9280362a6062e66fa95d3d63b5b61feee",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_ci_impact.py": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            ".github/workflows/docs.yml": "ce86124a4520bce7ec02815e7478ba66a4919016749f2f98da8cca0908898b1c",
+            "CHANGELOG.md": "49f59e75925e8e8dd2583a201c11d50e51867d9ad927d9b81c3aa77c28fa9d99",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "dfa33b600ba794676a2a5b727958b162c735cc55e549c251161443847f97cf2b",
+            "docs/state-contracts-major/execution/evidence/native-source-composition-development.json": "037152f4dc7d7a12f8439b927b789821c7b1b0d0f5ff96f472f2dfde6d75e1bb",
+            "docs/state-contracts-major/execution/progress.json": "4f1e1f4a4597976bbdf1ece2d2ec5f0e99a7169e18876dbe32f5ba4af098c049",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "after": {
+          "head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+          "index": "112ad606f4a1acdb2c538a878f3c62d9280362a6062e66fa95d3d63b5b61feee",
+          "files": {
+            ".github/major-qualification-policy.json": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+            ".github/major-test-selections.json": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+            ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+            ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+            ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+            ".github/scripts/mapped_work_observation.py": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+            ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+            ".github/scripts/test_ci_impact.py": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+            ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+            ".github/scripts/test_knowledge_cli.py": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+            ".github/scripts/test_major_native_observation.py": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+            ".github/scripts/test_major_qualification_report.py": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+            ".github/scripts/test_major_readiness.py": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+            ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+            ".github/workflows/docs.yml": "ce86124a4520bce7ec02815e7478ba66a4919016749f2f98da8cca0908898b1c",
+            "CHANGELOG.md": "49f59e75925e8e8dd2583a201c11d50e51867d9ad927d9b81c3aa77c28fa9d99",
+            "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "dfa33b600ba794676a2a5b727958b162c735cc55e549c251161443847f97cf2b",
+            "docs/state-contracts-major/execution/evidence/native-source-composition-development.json": "037152f4dc7d7a12f8439b927b789821c7b1b0d0f5ff96f472f2dfde6d75e1bb",
+            "docs/state-contracts-major/execution/progress.json": "4f1e1f4a4597976bbdf1ece2d2ec5f0e99a7169e18876dbe32f5ba4af098c049",
+            "plugins/ca-codex/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca-pi/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+            "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+            "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "a83ffcef3c387b94d03a039de793ead719250e49d31be9ca97859adb896d4a8b"
+      }
+    }
+  },
+  "source_bindings": {
+    ".github/major-qualification-policy.json": {
+      "sha256": "472fd77fa86753b983d35fa97f39181cbdd4d85ff5dae4fb06352d898983fa85",
+      "bytes": 6265
+    },
+    ".github/major-test-selections.json": {
+      "sha256": "30a83a1b1b5b93ea4d6670b5a57e30667b142aad6833d87f33d23c3e32ba6eea",
+      "bytes": 56050
+    },
+    ".github/scripts/major_native_observation.py": {
+      "sha256": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+      "bytes": 38474
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "sha256": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+      "bytes": 89848
+    },
+    ".github/scripts/major_readiness.py": {
+      "sha256": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d",
+      "bytes": 81642
+    },
+    ".github/scripts/mapped_work_observation.py": {
+      "sha256": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+      "bytes": 26233
+    },
+    ".github/scripts/test_artifact_conformance.py": {
+      "sha256": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+      "bytes": 43489
+    },
+    ".github/scripts/test_go_test_parallel.py": {
+      "sha256": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+      "bytes": 18269
+    },
+    ".github/scripts/test_knowledge_cli.py": {
+      "sha256": "4f1cf906c72ef3de627f41b73ae20b455394cae269a07219d4d93b88b3a2628a",
+      "bytes": 40804
+    },
+    ".github/scripts/test_major_native_observation.py": {
+      "sha256": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+      "bytes": 50948
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "sha256": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+      "bytes": 178404
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "sha256": "90269a000ab1c0f552cae82e7e7258dcccf79ecd5b063d57d87734b0885dd03d",
+      "bytes": 102696
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+      "bytes": 268870
+    },
+    "core/pysrc/knowledge.py": {
+      "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "bytes": 25169
+    },
+    "plugins/ca-codex/hooks/knowledge.py": {
+      "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "bytes": 25169
+    },
+    "plugins/ca-pi/hooks/knowledge.py": {
+      "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "bytes": 25169
+    },
+    "plugins/ca/hooks/knowledge.py": {
+      "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "bytes": 25169
+    },
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+      "sha256": "fd6b285e318d62dfef90dec7eee6ce3cf320b8295f4d17ecc306bb5adab51f9f",
+      "bytes": 21180
+    },
+    "tools/go_test_parallel.py": {
+      "sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+      "bytes": 14234
+    },
+    ".github/workflows/docs.yml": {
+      "sha256": "ce86124a4520bce7ec02815e7478ba66a4919016749f2f98da8cca0908898b1c",
+      "bytes": 22618
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "sha256": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+      "bytes": 293462
+    }
+  },
+  "short_alias_diagnosis": {
+    "validated_handoff": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\debug-handoff.json",
+      "sha256": "cf2f765a4515a9dc3f1f29f9f59ec85be024e68410ad0349d5c99e0d4caaa66c",
+      "record": {
+        "protocol": "codearbiter.debug-handoff/1.0.0",
+        "case_id": "DBG-f65-owned-temp-alias-volume",
+        "request": {
+          "intent": "diagnosis_only",
+          "request_ref": "Root bounded ca-debug prerequisite within ongoing authorized program fix",
+          "scope": "Read immutable f65 and original evidence; one literal cmd probe for each of two owned C layouts and one distinct D:/projects layout. Return causal facts and regression obligation only.",
+          "restrictions": [
+            "No source/index/ref/marker/proof edits.",
+            "No Pi/BridgeClient/Node/Go/SDK/provider replay, credentials or raw output exposure.",
+            "No global8dot3/config/admin changes or repeated unchanged probes."
+          ]
+        },
+        "snapshots": [
+          {
+            "id": "S-01",
+            "repository": "arbiterForge/codeArbiter",
+            "worktree": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter",
+            "commit": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+            "dirty_state": "unknown",
+            "fingerprint": null,
+            "fingerprint_recipe": null,
+            "runtime_identity": "GHA Windows original job133111885564; exact cmd executable hash unavailable there.",
+            "limitations": "Immutable Git blobs used; concurrent working tree is not the observed source."
+          },
+          {
+            "id": "S-02",
+            "repository": "arbiterForge/codeArbiter",
+            "worktree": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg",
+            "commit": null,
+            "dirty_state": "unknown",
+            "fingerprint": null,
+            "fingerprint_recipe": null,
+            "runtime_identity": "Local System32/cmd.exe SHA256 75320a519959cc6d089ea3eba33c38caccb7f138a025ea439bc9686cdb79ded4",
+            "limitations": "Private owned local Windows probes, not original GHA VM; no actual Node/Bridge invocation."
+          }
+        ],
+        "symptom": {
+          "observed": "Configured Temp location changes whether the original short-path prerequisite can obtain a real alias: local C succeeds, same literal cmd on owned D yields unchanged spelling and helper refusal. Original Windows Pi coverage also has two alias-helper failures.",
+          "expected": "A wrapper preserving the original suite must retain a supported private temporary-filesystem prerequisite rather than implicitly force unrelated artifact-volume alias capability. Real alias containment assertions must remain.",
+          "expected_evidence_ids": [
+            "E-01",
+            "E-02"
+          ]
+        },
+        "reproduction": {
+          "status": "reproduced",
+          "recipe": {
+            "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg",
+            "preconditions": "Existing C user Temp and D:/projects with observed different alias capability; fixed System32/cmd.exe, tiny SystemRoot/owned input env, each command bounded5s.",
+            "steps": [
+              "Create unique owned directory beneath canonical C Temp and an observer-style owned tmp subtree; run fixed for-short-path command once per target.",
+              "Resolve D:/projects; create unique owned ca-shortpath-* directory and verify its resolved parent equals that approved parent.",
+              "Run the same fixed command once on D; record exit/absolute/changed/same-file/length/hash only, no raw output."
+            ],
+            "failure_signature": "D cmd exit0 and absolute/same-file true but changed false; windowsShortPath guard rejects unchanged spelling."
+          },
+          "evidence_ids": [
+            "E-03",
+            "E-04"
+          ],
+          "limitations": "Reproduces the supported temp-filesystem capability defect locally, not the precise original GHA cmd subpredicate."
+        },
+        "hypotheses": [
+          {
+            "id": "H-01",
+            "mechanism": "Forcing the isolated temporary root onto raw artifact storage can move a Windows suite from a capable ambient filesystem to a target that returns no changed short alias; existing real alias tests then reject before BridgeClient assertions.",
+            "discriminator": "Identical cmd/environment shape with owned C versus D targets; check status, absolute/changed and same-file.",
+            "status": "supported",
+            "supporting_evidence_ids": [
+              "E-01",
+              "E-02",
+              "E-03",
+              "E-04"
+            ],
+            "opposing_evidence_ids": [],
+            "limitations": "Supported class defect and local filesystem counterexample; original GHA exact subpredicate remains unobserved."
+          },
+          {
+            "id": "H-02",
+            "mechanism": "The fixed literal cmd command cannot produce a valid alias even on a capable local filesystem.",
+            "discriminator": "Observe actual changed absolute same-file result using the literal command on C.",
+            "status": "refuted",
+            "supporting_evidence_ids": [],
+            "opposing_evidence_ids": [
+              "E-03"
+            ],
+            "limitations": "Refutes only this local command claim, not every Node-specific original transport hypothesis."
+          },
+          {
+            "id": "H-03",
+            "mechanism": "The original GHA alias failures specifically used the unchanged-spelling D outcome.",
+            "discriminator": "Original GHA cmd status/absolute/changed or a new bounded original-attempt diagnostic.",
+            "status": "inconclusive",
+            "supporting_evidence_ids": [
+              "E-05"
+            ],
+            "opposing_evidence_ids": [],
+            "limitations": "Original helper emits one fixed message for three different subpredicates; cannot infer which occurred."
+          }
+        ],
+        "checks": [
+          {
+            "id": "C-01",
+            "operation": "Fixed absolute System32/cmd.exe /d /s /c for-short-path command, tiny env, one run on each distinct owned C target.",
+            "cwd": null,
+            "status": "completed",
+            "expectation": "Capable filesystem yields changed absolute same-file alias; malformed command would fail or produce nonabsolute output.",
+            "observed": "Both C layouts exit0, absolute/changed/same-file true, stderr0.",
+            "exit_code": 0,
+            "evidence_ids": [
+              "E-03"
+            ],
+            "authorization_basis": "Root explicit bounded owned Temp cmd prerequisite.",
+            "side_effects": "Owned Temp directories and private closed JSON receipt only; no global settings or production changes."
+          },
+          {
+            "id": "C-02",
+            "operation": "Same fixed cmd command once on unique owned D:/projects target, after exact resolved-parent verification.",
+            "cwd": null,
+            "status": "completed",
+            "expectation": "Distinguish unsupported alias capability from command failure through status/absolute/changed/same-file.",
+            "observed": "Exit0, absolute true, changed false, same-file true, stderr0; no validated alias.",
+            "exit_code": 0,
+            "evidence_ids": [
+              "E-04"
+            ],
+            "authorization_basis": "Root separate explicit authorization for one D:/projects fixture and distinct filesystem discriminator.",
+            "side_effects": "One uniquely prefixed owned D directory retained; private JSON receipt stored in existing C Temp. No cleanup/config/admin changes."
+          }
+        ],
+        "evidence": [
+          {
+            "id": "E-01",
+            "kind": "source",
+            "snapshot_id": "S-01",
+            "locator": "git:f65f1e7543f2934a274909cb0d157b94ee909e61:plugins/ca-pi/tools/test/bridge.test.ts:248-264,1610-1669",
+            "observation": "Existing real alias tests require cmd exit0, absolute and changed spelling; unchanged spelling raises the original fixed error before BridgeClient assertions.",
+            "observed_at": null,
+            "check_id": null,
+            "coverage": "complete_for_claim",
+            "limitations": null
+          },
+          {
+            "id": "E-02",
+            "kind": "source",
+            "snapshot_id": "S-01",
+            "locator": "git:f65f1e7543f2934a274909cb0d157b94ee909e61:.github/scripts/major_qualification_report.py:1101-1120",
+            "observation": "observe_vitest forces isolated private home/temp onto raw_results.parent, rather than preserving ambient temp filesystem; child TEMP/TMP/TMPDIR all use this private subtree.",
+            "observed_at": null,
+            "check_id": null,
+            "coverage": "complete_for_claim",
+            "limitations": null
+          },
+          {
+            "id": "E-03",
+            "kind": "command_result",
+            "snapshot_id": "S-02",
+            "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\result.json sha256:f4ff9315b61e326c09bb5412e78d44290a8f899fc0b223d97d7b78b4d90323f8",
+            "observation": "Both C ambient-owned and observer-style canonical-owned cases: cmd exit0, stdout absolute/changed/same-file true, stderr empty.",
+            "observed_at": "2026-11-16T05:46:25.825786+00:00",
+            "check_id": "C-01",
+            "coverage": "complete_for_claim",
+            "limitations": null
+          },
+          {
+            "id": "E-04",
+            "kind": "command_result",
+            "snapshot_id": "S-02",
+            "locator": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\volume-D-result.json sha256:c9d7b946f5aee68a6c686937891bbdeec5fa8c3cd5caf7ec0f0ca4a07faa532d",
+            "observation": "Unique owned D:/projects directory, verified parent exact: cmd exit0, absolute true, changed false, same-file true, stderr empty. Existing helper would reject this nonalias result.",
+            "observed_at": "2026-11-16T05:48:58.865913+00:00",
+            "check_id": "C-02",
+            "coverage": "complete_for_claim",
+            "limitations": null
+          },
+          {
+            "id": "E-05",
+            "kind": "observation",
+            "snapshot_id": "S-01",
+            "locator": "C:/Users/brenn/AppData/Local/Temp/ca-PR1114-f65f1e-watch-nu76u_s6/failed-job-133111885564.log sha256:9006d2b1708f8b0fd5fdd5ecf23a2f27a952e66aa0f50d54714f4d4a473cff2d",
+            "observation": "Original GHA source f65, run43810799848/attempt1/job133111885564: two real Bridge short-alias tests failed with unavailable alias; original helper discards its cmd discriminator. Underlying suite success=false/2fails, separate from reporter name-length refusal.",
+            "observed_at": null,
+            "check_id": null,
+            "coverage": "partial",
+            "limitations": "Original cmd input/status/stdout subpredicate and actual filesystem capability were not retained; no exact historical cause is asserted."
+          }
+        ],
+        "disposition": {
+          "kind": "confirmed_code_defect",
+          "rationale": "Source observation and differing real filesystem outcomes establish the portability defect in coupling private test Temp to unrelated raw-results storage. This is a bounded supported source defect; exact original GHA inner failure cause remains unknown.",
+          "evidence_ids": [
+            "E-01",
+            "E-02",
+            "E-03",
+            "E-04",
+            "E-05"
+          ],
+          "cause_ids": [
+            "H-01"
+          ],
+          "blockers": []
+        },
+        "regression": {
+          "snapshot_id": "S-01",
+          "basis": "causal_trace",
+          "obligation": "Observe a failing owning regression when raw output storage is on a filesystem without short aliases but ambient private Temp is capable; preserve real alias equality/containment, private child isolation and raw output identity guards. Then make minimal source repair under Root fix owner.",
+          "candidate_test_id": "observe_vitest preserves capable isolated Temp independently of raw-results filesystem",
+          "reuse_existing": false,
+          "oracle": "Before repair the real owned cmd alias prerequisite rejects unchanged spelling; after repair genuine changed absolute same-file alias succeeds while original private environment/output ownership and real alias rejection controls remain. No skips/fake aliases/global changes.",
+          "evidence_ids": [
+            "E-01",
+            "E-02",
+            "E-03",
+            "E-04"
+          ]
+        },
+        "next_step": {
+          "target": "fix",
+          "owner": "Root active program fix owner",
+          "action": "Use these observed facts to author/observe the owning target RED, then evaluate independent ambient/canonical private Temp selection. This diagnosis does not edit or authorize additional runtime beyond caller scope.",
+          "completion_evidence": "Actual target RED then minimal source GREEN with genuine alias and privacy/output controls; subsequent exact-head hosted suite succeeds. Preserve original GHA uncertainty and failed suite results."
+        }
+      }
+    },
+    "actual_C_cases": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\result.json",
+      "sha256": "f4ff9315b61e326c09bb5412e78d44290a8f899fc0b223d97d7b78b4d90323f8",
+      "record": {
+        "schema": "owned-shortpath-cmd-prerequisite/1",
+        "recorded_utc": "2026-11-16T05:46:25.825786+00:00",
+        "source_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "source": "plugins/ca-pi/tools/test/bridge.test.ts:248-264",
+        "literal_for_command": "for %I in (\"%CA_PI_LONG_PATH%\") do @echo %~sI",
+        "argv_transport": "Raw fixed CreateProcess command line emulates Node windowsVerbatimArguments:true; Python list2cmdline not used.",
+        "executable": {
+          "path": "C:\\Windows\\System32\\cmd.exe",
+          "sha256": "75320a519959cc6d089ea3eba33c38caccb7f138a025ea439bc9686cdb79ded4"
+        },
+        "rows": [
+          {
+            "case": "ambient-temp-owned",
+            "exit_code": 0,
+            "absolute": true,
+            "changed": true,
+            "same_file": true,
+            "stdout_bytes": 44,
+            "stdout_sha256": "2b54321f2774f4bab1075e59b3d2d16b971145d57f40fa66c67e8a21c28bd92b",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "input_bytes": 69,
+            "input_sha256": "92c7f395360f07e78366663f172059ddf0111636edbd4ead2a9b785c469fb3ec",
+            "local_capability": "REAL_ALIAS_OBSERVED"
+          },
+          {
+            "case": "observer-canonical-temp-owned",
+            "exit_code": 0,
+            "absolute": true,
+            "changed": true,
+            "same_file": true,
+            "stdout_bytes": 66,
+            "stdout_sha256": "3a6278b55e43477ed92162d4ee3b9ca66e052f4b7f2d60bdedc5cb78c4b47065",
+            "stderr_bytes": 0,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "input_bytes": 117,
+            "input_sha256": "f8ab8a62db46cea829e027e3f73f2632b701642551a5d29bc436c2e7ed272e45",
+            "local_capability": "REAL_ALIAS_OBSERVED"
+          }
+        ],
+        "limits": [
+          "Local Windows/owned paths only; actual GHA cmd input/stdout/status remain unobserved.",
+          "No Pi/BridgeClient/Node/Go/SDK/provider, environment dump, raw output exposure, global8dot3/config/admin change, source/index/ref/proof write.",
+          "Each owned target probed once; retained directories only."
+        ]
+      }
+    },
+    "actual_D_case": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-shortpath-prerequisite-e3v1mnkg\\volume-D-result.json",
+      "sha256": "c9d7b946f5aee68a6c686937891bbdeec5fa8c3cd5caf7ec0f0ca4a07faa532d",
+      "record": {
+        "schema": "owned-shortpath-cmd-prerequisite/1",
+        "recorded_utc": "2026-11-16T05:48:58.865913+00:00",
+        "source_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+        "source": "plugins/ca-pi/tools/test/bridge.test.ts:248-264",
+        "case": "distinct-D-projects-owned-fixture",
+        "verified_parent": "D:/projects",
+        "actual_drive": "D:",
+        "parent_exact": true,
+        "cmd_sha256": "75320a519959cc6d089ea3eba33c38caccb7f138a025ea439bc9686cdb79ded4",
+        "exit_code": 0,
+        "absolute": true,
+        "changed": false,
+        "same_file": true,
+        "stdout_bytes": 42,
+        "stdout_sha256": "35758fc09f3491221d8a441e264e262abd120d74fe17be1670e377cafc5f8842",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input_bytes": 40,
+        "input_sha256": "5443788ee9318cc73599755810e7e347565cb9c3bbcd29c3311c328fb3fa825e",
+        "local_capability": "NO_VALIDATED_ALIAS",
+        "limits": [
+          "One distinct D filesystem probe; no global8dot3/config/admin changes, C repeat or actual Bridge/Pi/Node/Go/native/provider execution.",
+          "Original GHA cmd innerstatus/stdout/drive capability not captured, so its precise subpredicate remains unknown.",
+          "Owned fixture retained; no cleanup/move of user directory."
+        ]
+      }
+    },
+    "limit": "Supports the temp-filesystem class defect; original hosted helper subpredicate remains UNKNOWN. Root repair is authorized by the existing user program, not this diagnosis-only packet."
+  },
+  "integration": {
+    "native": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-composition-integration.json",
+      "sha256": "8aa5bf420637b16e948b7a0054b351d7cc32003f4426bc2dc47f608c5605360b",
+      "record": {
+        "result": "PASS",
+        "paths": [
+          "tools/go_test_parallel.py",
+          ".github/scripts/test_go_test_parallel.py",
+          ".github/scripts/major_qualification_report.py",
+          ".github/scripts/test_major_qualification_report.py",
+          ".github/scripts/major_readiness.py",
+          ".github/scripts/test_major_readiness.py",
+          ".github/major-qualification-policy.json",
+          ".github/scripts/major_native_observation.py",
+          ".github/scripts/test_major_native_observation.py"
+        ],
+        "author_delivery_sha256": "b2c74e0a9269cd532d253f390c16161fa6682cf1f8aa9302cb13488ac4ffa308",
+        "source_hashes": {
+          "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+          ".github/scripts/test_go_test_parallel.py": "695a8929d2c1b0bd0c9c3df08ccdede5efe4f590e23fe705a75cbc37fe57bea3",
+          ".github/scripts/major_qualification_report.py": "e10a4f77d7e878316ce5e9f0faba495a987a0038896a6000bbfb214eac3760ed",
+          ".github/scripts/test_major_qualification_report.py": "54165be7e52edc76071631002d26cdf0fb7df4caf8b130a57b17bc2a850655db",
+          ".github/scripts/major_readiness.py": "11361077d0c15b7d7ad7785071e6dde60655dcb6bd600799dfb49bf9721f22a6",
+          ".github/scripts/test_major_readiness.py": "0b9c49d45599c0405a0d6692bd3633e60f2de0179413bd3a1961d4b688459715",
+          ".github/major-qualification-policy.json": "ca0ec5d83c28b9e6a888415ca3926143e134003ac9553e78fc6210c1d8fcb4cc",
+          ".github/scripts/major_native_observation.py": "e583b2d9cc9ec8d3c798881b611b4019bb90ef4ebd2db14962eaac10e1c3fac9",
+          ".github/scripts/test_major_native_observation.py": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc"
+        },
+        "shared_report_only_changed_function": "admit_go",
+        "Root_vitest_classes_preserved": true
+      }
+    },
+    "mapped": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\S38-integration.json",
+      "sha256": "0d0f62c33d6f992c432a0defc0ac1b4e7eebcbf5b9d469704efbc56f99ef8f0a",
+      "record": {
+        "result": "PASS",
+        "paths": [
+          ".github/scripts/mapped_work_observation.py",
+          ".github/scripts/major_qualification_report.py",
+          ".github/scripts/test_major_qualification_report.py",
+          ".github/scripts/test_artifact_conformance.py",
+          ".github/workflows/ci.yml",
+          ".github/scripts/major_readiness.py",
+          ".github/major-qualification-policy.json",
+          ".github/major-test-selections.json"
+        ],
+        "source_hashes": {
+          ".github/scripts/mapped_work_observation.py": "2a701cfab0418ad750b0764391cc634a70a90a0ee2dc70367efa0d9ef3cb30c2",
+          ".github/scripts/major_qualification_report.py": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+          ".github/scripts/test_major_qualification_report.py": "39a601dc02cf646b891aceac9f3cf1d80c34f1dc880f660024e527849d9e0957",
+          ".github/scripts/test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+          ".github/workflows/ci.yml": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+          ".github/scripts/major_readiness.py": "88a51a10e1dcd4882d11a6070e6414869a5b5bf4fb4600c155b53e3d11d6aa1d"
+        },
+        "rejected_unrelated_hunks": [
+          {
+            "path": ".github/scripts/major_qualification_report.py",
+            "reason": "Unrelated SOURCE_JOB middle-dot encoding corruption; preserve exact current literal."
+          }
+        ],
+        "Root_Vitest_and_native_admission_AST_preserved": true,
+        "author_packet_sha256": "ec6ec30db1e03a0823e8feb6049b4ba9d7d47411f09a75ccf31ac44d4d2dbea5",
+        "qualification": false
+      }
+    },
+    "rejected_hunk": "The unrelated author SOURCE_JOB mojibake hunk was rejected; the exact pre-existing authority literal is preserved. Private tooling UTF-8 correction and successor are recorded separately."
+  },
+  "scope_limits": [
+    "Eight closed native component recipes reuse six genuine original archives; no new job, duplicate execution, whole-machine/task/scenario or installed qualification.",
+    "S38 observes the original whole work_github child once, with seven selected current API/native/identity/refusal/no-resend/continuation assertions. Local controls use inert native/API seams; actual original native cases are future CI.",
+    "Root identity-control run had eight passes and one test-regex mismatch; only the corrected population method was rerun and passed. These are not one fabricated nine-pass command. Initial API/setup errors in author packets remain distinct from genuine production refusals.",
+    "Initial combined fixtures split the readiness module identity and therefore their API mocks; Root also selected one wrong test class. The test loader now reuses the exact owning source module, and the corrected combined command is retained separately. No production API guard or test assertion is weakened.",
+    "Original raw JSON replay retains1085 actual outcomes:1081passed/2failed/2skipped. Original process exit is unknown; replay is explicitly source_stable=false and cannot qualify.",
+    "The actual ambient-temp and D-volume probes ran once per distinct owned layout. Existing real alias/containment assertions, deadlines, private credentials and raw output ownership remain.",
+    "Knowledge freshness now reports plain-directory descendants using slash boundaries. It does not rewrite baselines, records, history or establish semantic freshness. All three host copies come from the canonical sync owner.",
+    "No status/ledger/proof/input epoch renewal or human/model/parent/lifecycle acceptance is claimed. Parent1098 stays OPEN/DRAFT held from main and publication."
+  ],
+  "integrity": {
+    "summary": {
+      "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "verification_fixture_commit": "154a225f2df8bb0d6990826112204f6859b3a2ae",
+      "candidate": "candidate-v1:6531459b02e454f0d8c794ece237b5cf5835972e73808ccf9a472a85cc8bec5e",
+      "result": "PASSED",
+      "frozen": 105,
+      "records": 1318,
+      "applicability": {
+        "APPLICABLE": 612,
+        "STALE": 706
+      },
+      "seconds": 36.812,
+      "source_ref_moved": false
+    },
+    "groups": {
+      "source246": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      },
+      "software48": {
+        "APPLICABLE": 9,
+        "STALE": 39
+      }
+    },
+    "qualification": false,
+    "limit": "Private distinct Git epoch preserves immutable original reads. Only measured metadata follows; no source/status/proof restamp."
+  },
+  "remaining_software_original_unmapped": [
+    "S18:07",
+    "S51:01",
+    "S51:02",
+    "S52:06",
+    "S75:08"
+  ],
+  "remaining_native_runtime_unmapped": 110,
+  "minor_stage_correction": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-source-eof-correction.json",
+    "sha256": "ee5b8aaf7881dcad5021a56406e7d6ed7a01f97dd44dc2a11d134cd3724a6c76",
+    "record": {
+      "path": ".github/scripts/test_major_native_observation.py",
+      "before_sha256": "9158db90de06a601d4a1e304041937cd915df46c7dabf2421dadb126c346f2cc",
+      "after_sha256": "48fc5e02358e0beef228e91728b33a9aa23c5d1e904d070562f8e78e20ca809b",
+      "AST_unchanged": true,
+      "reason": "Original stage whitespace check caught one new blank line at EOF; no runtime behavior/test assertion changed."
+    },
+    "initial_owner_attempt": "Owner validation returned before summary creation, but the stage candidate had not been produced because whitespace-check failed. Preserved first-unfinalized-index-integrity.json; final corrected staged tree is measured independently. No qualification from that incomplete controller attempt."
+  },
+  "local_combined_verification": {
+    "actual_tests": 44,
+    "result": "PASS",
+    "seconds": 19.023,
+    "nested_seven": "Inert same-name mechanics only, not actual original native product cases.",
+    "receipt": "root_checks/native-source-composition-union-fixed"
+  },
+  "affected_review_followup": {
+    "severity": "MEDIUM",
+    "finding": "New native/source helper dependencies could skip owning Docs validation/same-source production on helper-only followups. Current batch itself already triggers.",
+    "resolution": "Add six exact direct owner/control inputs to both push and PR; preserve event/main-only publication authority and all original omission assertions.",
+    "actual_regression": "Existing owning method genuinely failed missing native helper, then owning trigger and deploy-authority methods both passed with66 removal vectors. No broad glob, parser replacement or privilege change.",
+    "source_files": [
+      ".github/workflows/docs.yml",
+      ".github/scripts/test_ci_impact.py"
+    ],
+    "retained_prior_conclusions": "All original23 source/security conclusions retained; only trigger/control and measured metadata followup is new."
+  },
+  "before_trigger_followup_integrity": {
+    "summary": {
+      "actual_branch_head": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+      "verification_fixture_commit": "bc3157469e87db4ed55a2912cf148c20c2c5f9a4",
+      "candidate": "candidate-v1:d583fbc5a27db8d5d8de3e50e029662e2d2a18efcfd8706e779c6d7b271cb9cc",
+      "result": "PASSED",
+      "frozen": 105,
+      "records": 1318,
+      "applicability": {
+        "APPLICABLE": 612,
+        "STALE": 706
+      },
+      "seconds": 37.546,
+      "source_ref_moved": false
+    },
+    "groups": {
+      "source246": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      },
+      "software48": {
+        "APPLICABLE": 9,
+        "STALE": 39
+      }
+    },
+    "qualification": false,
+    "limit": "Private distinct Git epoch preserves immutable original reads. Only measured metadata follows; no source/status/proof restamp."
+  }
+}

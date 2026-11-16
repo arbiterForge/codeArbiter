@@ -68,6 +68,17 @@
     "disposition:transitions:S54:01": "[CHECK] | [SBX ] | Sandbox driver contract",
     "disposition:transitions:C33:01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:machines:C33": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
-    "disposition:transitions:S75:05": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
-  }
+    "disposition:transitions:S75:05": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:transitions:S38:04": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>"
+  },
+  "native_composite_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03",
+    "disposition:transitions:N10:02",
+    "disposition:transitions:N13:04",
+    "disposition:transitions:N18:01",
+    "disposition:transitions:N18:02",
+    "disposition:transitions:N19:01",
+    "disposition:transitions:N24:02"
+  ]
 }

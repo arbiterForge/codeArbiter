@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import nullcontext
 import concurrent.futures
 import hashlib
 import os
@@ -667,11 +668,17 @@ class ArtifactConformanceTest(unittest.TestCase):
         def run(script: str) -> subprocess.CompletedProcess[str]:
             print(f"conformance suite start: {script}", flush=True)
             command = [sys.executable, str(REPO / ".github/scripts" / script)]
+            invocation = nullcontext((command, environment))
+            if script == "test_work_github.py" and ("MAJOR_MAPPED_WORK_SOURCE" in environment
+                    or "MAJOR_MAPPED_WORK_OBSERVATION" in environment):
+                from mapped_work_observation import conformance_invocation
+                invocation = conformance_invocation(REPO, script, sys.executable, environment)
             try:
-                return subprocess.run(
-                    command, cwd=REPO, env=environment, capture_output=True, text=True,
-                    encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
-                )
+                with invocation as (command, child_environment):
+                    return subprocess.run(
+                        command, cwd=REPO, env=child_environment, capture_output=True, text=True,
+                        encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
+                    )
             except subprocess.TimeoutExpired as expired:
                 # A hung suite fails on its own, with its partial output, below the job limit.
                 partial = [value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")

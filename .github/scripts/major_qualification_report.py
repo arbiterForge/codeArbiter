@@ -38,6 +38,7 @@ OBSERVATION = "codearbiter.major-test-observation/1"
 SELECTIONS = "codearbiter.major-test-selections/1"
 MAX_JSON = 16 * 1024 * 1024
 MAX_TESTS = 32768
+MAX_TEST_ID_BYTES = 4096
 
 
 def require(value, reason):
@@ -873,13 +874,26 @@ def admit_go(record, binding, source_tree):
     require(selected and len(set(selected)) == len(selected) and sorted(selected) == sorted(observed)
             and len(set(observed)) == len(observed), "native named population differs")
     require(all(r.get("result") in ("pass", "skip") for r in record["observed"]), "native failure cannot qualify")
+    children = record.get("subtests", [])
+    require(isinstance(children, list) and len(children) + len(selected) <= MAX_TESTS,
+            "native child population exceeds bound")
+    child_names = set()
+    for child in children:
+        require(isinstance(child, dict) and set(child) == {"package", "test", "result"}
+                and isinstance(child["package"], str) and isinstance(child["test"], str)
+                and "/" in child["test"] and len(child["test"].encode("utf-8")) <= 4096
+                and (child["package"], child["test"].split("/", 1)[0]) in selected
+                and child["result"] in ("pass", "skip"), "invalid native child outcome")
+        identity = (child["package"], child["test"])
+        require(identity not in child_names, "repeated native child outcome")
+        child_names.add(identity)
     return {"format": OBSERVATION, "source_commit": binding["source_commit"],
             "source_tree": source_tree, "source_stable": True, "ci_run_id": int(binding["run_id"]),
             "proof_kind": "native-module", "producer": "go-named-ci20-join",
             "native_binding": binding, "argv": record["argv"], "exit_code": 0,
             "tests": [{"id": "go:" + r["package"] + ":" + r["test"],
                        "result": "passed" if r["result"] == "pass" else "skipped"}
-                      for r in record["observed"]]}
+                      for r in [*record["observed"], *children]]}
 
 
 def admit_vitest(record, *, repo, before, after, argv, exit_code, run_id):
@@ -897,13 +911,15 @@ def admit_vitest(record, *, repo, before, after, argv, exit_code, run_id):
             raise ValueError("Vitest suite is outside source repository") from None
         for case in suite["assertionResults"]:
             require(isinstance(case, dict) and isinstance(case.get("fullName"), str)
-                    and 0 < len(case["fullName"].encode("utf-8")) <= 2048
+                    and 0 < len(case["fullName"].encode("utf-8")) <= MAX_TEST_ID_BYTES
                     and isinstance(case.get("status"), str) and len(rows) < MAX_TESTS,
                     "malformed or unbounded Vitest named outcome")
             state = {"passed": "passed", "failed": "failed", "pending": "skipped",
                      "skipped": "skipped", "todo": "skipped", "disabled": "skipped"}.get(case["status"])
             require(state is not None, "unknown Vitest outcome")
             identity = "vitest:" + path + ":" + case["fullName"]
+            require(len(identity.encode("utf-8")) <= MAX_TEST_ID_BYTES,
+                    "Vitest complete named identity exceeds canonical bound")
             require(identity not in identities, "duplicate Vitest named outcome")
             identities.add(identity)
             rows.append({"id": identity, "result": state})
@@ -1112,7 +1128,11 @@ def observe_vitest(repo, arguments, raw_results, output, execution_cwd=None, sou
         try:
             original = os.fstat(descriptor)
             if source_payload:
-                private = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="ca-vitest-profile-", dir=raw_results.parent)))
+                # Capturing reports on another volume must not change the
+                # original suite's temp-filesystem capabilities (for example
+                # Windows short aliases). Keep a fresh private ambient temp
+                # root; report files retain their independent ownership checks.
+                private = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="ca-vitest-profile-"))).resolve(strict=True)
                 process = start_process(launch, cwd=cwd, env=_vitest_environment(private))
             else:
                 process = start_process(command, cwd=cwd)
@@ -1172,7 +1192,7 @@ def validate_selections(document):
 
 
 def build_report(req, *, job_name, job_id, selections, observations, payloads,
-                 producer_job=None, runtime_acquisitions=None):
+                 producer_job=None, runtime_acquisitions=None, native_components=None):
     require(type(job_id) is int and job_id > 0, "positive actual job identity required")
     groups = validate_selections(selections)
     # One declared original-package role is source-bound; no general formatting
@@ -1262,10 +1282,28 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 for item in admitted["payloads"]:
                     installed_payloads[item["artifact_id"]] = item
                 dual_payload_report = True
+            elif (group["proof_kind"] == "source-test"
+                  and observed.get("producer") == "python-mapped-native-consumer-observer-v1"):
+                from mapped_work_observation import admit, CELL, SOURCE_PAYLOAD, JOB
+                require(cell == CELL and set(group["cells"]) == {CELL}
+                        and group["payload_name"] == SOURCE_PAYLOAD and job_name == JOB,
+                        "mapped native consumer cannot qualify another cell or job")
+                if group["observation"] not in installed_admissions:
+                    installed_admissions[group["observation"]] = admit(
+                        observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT,
+                        native_component=(native_components or {}).get(group["observation"]))
+                admitted = installed_admissions[group["observation"]]
+                require(admitted["tests"] == observed.get("tests") and cell in admitted["qualified_cells"]
+                        and admitted["primary_payload_name"] == group["payload_name"],
+                        "mapped native consumer outcomes or finite scope differ")
+                for item in admitted["payloads"]:
+                    installed_payloads[item["artifact_id"]] = item
+                dual_payload_report = True
             else:
                 require(observed.get("producer") in producers.get(group["proof_kind"], ()),
                         "no qualified observer for this proof kind")
-            if group["proof_kind"] == "source-test":
+            if (group["proof_kind"] == "source-test"
+                    and observed.get("producer") != "python-mapped-native-consumer-observer-v1"):
                 binding = observed.get("source_input_binding")
                 require(isinstance(binding, dict), "source input binding is missing")
                 profile = binding.get("profile") if isinstance(binding, dict) else None
@@ -1284,7 +1322,7 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 require(isinstance(tests, list) and len(tests) <= MAX_TESTS
                         and all(isinstance(test, dict) and set(test) == {"id", "result"}
                                 and isinstance(test["id"], str) and test["id"]
-                                and len(test["id"].encode("utf-8")) <= 4096 for test in tests),
+                                and len(test["id"].encode("utf-8")) <= MAX_TEST_ID_BYTES for test in tests),
                         "invalid or unbounded original named outcomes")
                 indices[key] = {}
                 for test in tests:
@@ -1362,8 +1400,24 @@ def authenticated_payload(metadata, req, consumed_root, source_job=None):
                 and snapshot["members"] == manifest["members"], "source payload actual consumed source differs")
         documents[SOURCE_MANIFEST] = manifest
         source_manifest_sha256 = readiness.digest(raw)
+    if any(member["path"] == "major-mapped-work-inputs.json" for member in members):
+        from mapped_work_observation import MANIFEST as MAPPED_MANIFEST, SOURCE_PAYLOAD as MAPPED_PAYLOAD, JOB as MAPPED_JOB, UPLOAD as MAPPED_UPLOAD, validate_manifest as validate_mapped_manifest
+        require(metadata.get("name") == MAPPED_PAYLOAD and isinstance(source_job, dict)
+                and type(source_job.get("id")) is int and source_job["id"] > 0
+                and source_job.get("name") == MAPPED_JOB and source_job.get("status") == "in_progress"
+                and source_job.get("conclusion") is None, "mapped original source uploader missing")
+        steps = [step for step in source_job.get("steps", []) if step.get("name") == MAPPED_UPLOAD]
+        require(len(steps) == 1 and steps[0].get("status") == "completed" and steps[0].get("conclusion") == "success",
+                "mapped original source upload did not complete")
+        with zipfile.ZipFile(io.BytesIO(archive)) as source_archive:
+            require(source_archive.getinfo(MAPPED_MANIFEST).file_size <= 1024 * 1024, "mapped manifest exceeds bound")
+            raw = source_archive.read(MAPPED_MANIFEST)
+        manifest = json.loads(raw, object_pairs_hook=unique)
+        validate_mapped_manifest(manifest, req=req, repo=ROOT, members=members)
+        documents[MAPPED_MANIFEST] = manifest
+        source_manifest_sha256 = readiness.digest(raw)
     for member in members:
-        if member["path"] == SOURCE_MANIFEST:
+        if member["path"] in (SOURCE_MANIFEST, "major-mapped-work-inputs.json"):
             continue  # Validated archive metadata, never claimed as executed input.
 
         path = root
@@ -1443,17 +1497,38 @@ def main(argv=None):
             key, path = item.split("=", 1)
             require(key not in observations, "duplicate observation key")
             observations[key] = load_json(path)
+        native_components = {}
+        mapped_keys = [key for key, value in observations.items()
+                       if value.get("producer") == "python-mapped-native-consumer-observer-v1"]
+        if mapped_keys:
+            require(len(mapped_keys) == 1, "one original mapped consumer observation required")
+            from major_native_observation import authenticate_component
+            # Pins come only from the immutable owning source, never the report.
+            with readiness.blob_transaction(args.repo):
+                for order in ("posix", "windows"):
+                    pin = readiness._module_membership(args.repo, source,
+                        {"root": "core/artifacts", "path_order": order},
+                        lambda commit, path: readiness.blob(args.repo, commit, path), {})
+                    req.setdefault("native_module_sha256", {})[order] = pin
+            run = readiness.api(f"actions/runs/{run_id}")
+            native_components[mapped_keys[0]] = authenticate_component(req, run, artifacts, jobs, "windows/amd64")
         payloads = {}
         for item in args.payload_root:
             name, path = item.split("=", 1)
             require(name not in payloads, "duplicate payload identity")
             found = [a for a in artifacts if a["name"] == name]
             require(len(found) == 1, "original consumed artifact missing or ambiguous")
-            payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0] if name in (SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values()) else None)
+            if mapped_keys and name == "ci20-native-tested-windows-2025":
+                from mapped_work_observation import authenticate_native_consumption
+                payloads[name] = authenticate_native_consumption(path, native_components[mapped_keys[0]])
+                require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
+            else:
+                payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
+                    if name in (SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],
-                              observations=observations, payloads=payloads)
+                              observations=observations, payloads=payloads, native_components=native_components)
         new_output(args.output, report)
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, readiness.ReadinessError) as error:
