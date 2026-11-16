@@ -16,8 +16,119 @@ import tempfile
 import unittest
 
 from test_artifact_authoring import build_installation
+from unittest import mock
 
 CONTEXT = ".codearbiter/" + "CONTEXT.md"
+
+
+class KnowledgeFreshnessScope(unittest.TestCase):
+    """Real Git changes through the advisory owner; native records are inert."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-knowledge-scope-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.source = self.root / "src/pkg/service.py"
+        self.source.parent.mkdir(parents=True)
+        self.source.write_text("version = 1\n", encoding="utf-8")
+        self.git("init", "-q")
+        self.git("add", "--", "src/pkg/service.py")
+        self.git("commit", "-qm", "baseline")
+        self.baseline = self.git("rev-parse", "HEAD").strip()
+        spec = importlib.util.spec_from_file_location(
+            "knowledge_freshness_under_test", Path(__file__).resolve().parents[2] / "core/pysrc/knowledge.py")
+        self.reader = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.reader)
+        self.records = [
+            {"id": identity, "title": identity, "scope": {"paths": paths}, "source_refs": refs}
+            for identity, paths, refs in [
+                ("DIRECTORY", ["src/pkg"], []),
+                ("EXACT", ["src/pkg/service.py"], []),
+                ("GLOB", ["src/pkg/*.py"], []),
+                ("RECURSIVE", ["src/pkg/**"], []),
+                ("SIBLING", ["src/pkg-extra"], []),
+                ("UNSCOPED", [], []),
+                ("CITED", [], ["SRC-SERVICE"]),
+            ]
+        ]
+
+    def git(self, *args):
+        result = subprocess.run([
+            "git", "-c", "core.hooksPath=" + os.devnull,
+            "-c", "commit.gpgsign=false", "-c", "core.fsmonitor=false",
+            "-c", "core.autocrlf=false", "-c", "user.name=Owned fixture",
+            "-c", "user.email=fixture@example.invalid", *args,
+        ], cwd=self.root, capture_output=True, encoding="utf-8", timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout
+
+    def report(self):
+        def records(_client, _doc, collection="records"):
+            if collection == "sources":
+                return [{"id": "SRC-SERVICE", "locator": "src/pkg/service.py"}]
+            return self.records
+        with mock.patch.object(self.reader, "_identity", return_value={"revision": 1}), \
+                mock.patch.object(self.reader, "_baseline", return_value=self.baseline), \
+                mock.patch.object(self.reader, "_records", side_effect=records):
+            report = self.reader._stale(object(), str(self.root), ["code-map"])
+        return report["documents"][0]
+
+    def hits(self):
+        return {row["record"]: row["changed_paths"] for row in self.report()["stale"]}
+
+    def test_directory_scope_detects_committed_descendant_without_rebaseline(self):
+        self.source.write_text("version = 2\n", encoding="utf-8")
+        self.git("add", "--", "src/pkg/service.py")
+        self.git("commit", "-qm", "source changed")
+        self.assertEqual(self.hits(), {key: ["src/pkg/service.py"] for key in
+            ("DIRECTORY", "EXACT", "GLOB", "RECURSIVE", "CITED")})
+        self.assertEqual(self.report()["baseline"], self.baseline)
+
+    def test_directory_scope_detects_unstaged_and_staged_descendant(self):
+        self.source.write_text("version = 2\n", encoding="utf-8")
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                if staged:
+                    self.git("add", "--", "src/pkg/service.py")
+                self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+
+    def test_untracked_and_added_nested_member_respect_glob_depth(self):
+        added = self.root / "src/pkg/deep/new.py"
+        added.parent.mkdir()
+        added.write_text("new = True\n", encoding="utf-8")
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                if staged:
+                    self.git("add", "--", "src/pkg/deep/new.py")
+                self.assertEqual(self.hits(), {key: ["src/pkg/deep/new.py"] for key in
+                    ("DIRECTORY", "RECURSIVE")})
+
+    def test_deleted_descendant_still_matches_directory(self):
+        self.source.unlink()
+        self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+        self.assertEqual(self.hits()["CITED"], ["src/pkg/service.py"])
+
+    def test_rename_outside_scope_retains_old_directory_path(self):
+        (self.root / "elsewhere").mkdir()
+        self.git("mv", "src/pkg/service.py", "elsewhere/new.py")
+        self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+        self.assertEqual(self.hits()["EXACT"], ["src/pkg/service.py"])
+
+    def test_sibling_prefix_does_not_match_directory(self):
+        other = self.root / "src/pkg-extra/new.py"
+        other.parent.mkdir()
+        other.write_text("unrelated = True\n", encoding="utf-8")
+        self.assertEqual(self.hits(), {"SIBLING": ["src/pkg-extra/new.py"]})
+
+    def test_unchanged_sources_leave_all_records_unlisted(self):
+        self.assertEqual(self.hits(), {})
+
+    def test_missing_baseline_remains_unknown_without_source_enumeration(self):
+        self.baseline = None
+        report = self.report()
+        self.assertIsNone(report["baseline"])
+        self.assertNotIn("stale", report)
+        self.assertIn("no baseline", report["note"])
 
 
 class KnowledgeCli(unittest.TestCase):

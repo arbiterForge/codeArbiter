@@ -1,0 +1,123 @@
+{
+  "schema": "codearbiter-major-development-observation/1",
+  "source_commit": "0fbfc42db0a2b483e8a9c6439d0a081de4050138",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "defect": "New inert audit precision test file was absent from both exact physical source-profile membership and independent host policy-path inventory. Hosted source setup refused before execution; four owning descriptor checks failed.",
+  "correction": "Move all ten precision cases verbatim into existing owning audit-sink.test.ts, remove only the just-introduced file and restore original CI argv. No allowlist or source-profile guard change. Production source and generated bundles remain byte-identical to reviewed0fb.",
+  "observations": {
+    "pi-member-placement-target-red": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "test_host_descriptors.GenerationContractTest"
+      ],
+      "exit_code": 1,
+      "seconds": 15.48216539999703,
+      "source_and_index_stable": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "77063fd160fbf608ea96c55704c6d34784a0b99b4cdeb5a4f4cbf55191ab9aa2"
+    },
+    "pi-member-placement-owning-green": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "test_host_descriptors.GenerationContractTest"
+      ],
+      "exit_code": 1,
+      "seconds": 2.740325099992333,
+      "source_and_index_stable": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0e276642f3bccad2f6e09c092c06420866a38260e54b3c87a53efe1181780283"
+    },
+    "pi-member-placement-owning-serial-green": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "test_host_descriptors.GenerationContractTest"
+      ],
+      "exit_code": 0,
+      "seconds": 2.5599816999892937,
+      "source_and_index_stable": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "971c99db1c339f4420211697270228e95f60967c79e84b13b40028001258653a"
+    },
+    "pi-member-placement-67-green": {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "test/audit-sink.test.ts",
+        "test/security.test.ts",
+        "--config",
+        "vitest.config.ts",
+        "--configLoader",
+        "runner",
+        "--maxWorkers",
+        "1",
+        "--retry",
+        "0",
+        "--reporter",
+        "verbose",
+        "--reporter",
+        "json",
+        "--outputFile",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-member-placement-67-green-results.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+      "exit_code": 0,
+      "seconds": 1.5801255000114907,
+      "source_unchanged": true,
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-r4boorxr",
+      "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+    },
+    "pi-member-placement-typecheck": {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+      "exit_code": 0,
+      "seconds": 1.9753689000062877,
+      "source_unchanged": true,
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-qdnbjgcb",
+      "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+    },
+    "pi-member-placement-physical": {
+      "source_commit": "0fbfc42db0a2b483e8a9c6439d0a081de4050138",
+      "physical_membership_before": {
+        "result": "REFUSED",
+        "reason": "source profile physical membership differs"
+      },
+      "physical_membership_after": {
+        "result": "PASS"
+      },
+      "preserved_test_body_sha256": "8e01f0e4b0a8f9da6d0b188e516238418e0843a16a1888be2f4baae0b15edece",
+      "test_body_verbatim": true,
+      "new_file_deleted": true,
+      "no_production_or_bundles_changed": true,
+      "limits": "Organization correction only. Ten precision cases retained; no allowlist, physical membership, runtime or authority guard relaxed."
+    }
+  },
+  "sequence": "Actual12-method owning class initially4FAIL; physical ownerREFUSED. After relocation67audit/security PASS, typecheckPASS, physicalownerPASS. First combined generation12 run had11PASS1snapshotFAIL while concurrent Vitest rewrote its ignored cache inside the snapshot namespace; precise changed snapshot key was not captured. Retained that failure, then reran owning12 alone and allPASS. No product assertion changed.",
+  "coverage": "Local PARTIAL. Complete new-head source-bound supported-host union remains required; previous invalid cohort is not reused.",
+  "limits": [
+    "No task/status/proof/epoch promotion or installed qualification.",
+    "Previous code/security review retained; this delta changes test organization only.",
+    "Parent1098 remains OPEN/DRAFT held from main and publication unauthorized."
+  ]
+}

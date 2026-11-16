@@ -1854,10 +1854,15 @@ async function withCommonWorktreeLock<T>(fn: () => Promise<T>, opts: WorktreeLoc
       handle = await open(lock, fsConstants.O_RDWR | fsConstants.O_CREAT | fsConstants.O_EXCL | (fsConstants.O_NOFOLLOW ?? 0), 0o600);
       break;
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      const code = (error as NodeJS.ErrnoException).code;
+      // Exclusive creation can be briefly denied even for cooperative writers.
+      // Waiting grants no ownership; only a successful open can enter fn().
+      if (code !== "EEXIST" && code !== "EPERM") throw error;
       opts.onContention?.();
-      if (performance.now() >= deadline)
+      if (performance.now() >= deadline) {
+        if (code === "EPERM") throw error;
         throw new Error("Git worktree administration busy or retained lock present; no lock owner was removed");
+      }
       await sleep(Math.min(25, Math.max(0, deadline - performance.now())));
     }
   }

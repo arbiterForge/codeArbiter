@@ -269,7 +269,7 @@ class PackageTests(unittest.TestCase):
             staged.chmod(0o500)
             details = (str(staged), [str(staged), "capabilities"], None, {})
             with (
-                mock.patch.object(INSTALLED_HOST.platform, "system", return_value="Darwin"),
+                mock.patch.object(INSTALLED_HOST.sys, "platform", "darwin"),
                 mock.patch.object(INSTALLED_HOST.stat, "S_IMODE", return_value=0o500),
             ):
                 INSTALLED_HOST.enforce_runtime_event(
@@ -2362,6 +2362,113 @@ else:raise AssertionError('actual guard did not refuse inert audit control')
                 self.assertEqual(record["error"], "RuntimeError" if broken_decoder else "unclassified")
                 self.assertEqual((record["audit_event"], record["audit_site"], record["audit_depth"]), ("none", "none", "none"))
                 self.assertNotIn("PrivateFixtureValue", output.getvalue())
+
+
+
+
+class RuntimeAuditPlatformTests(unittest.TestCase):
+    """Real audit-hook controls, isolated from native package fixture setup."""
+
+    def audited_platform_child(self, mode):
+        temporary = tempfile.TemporaryDirectory(prefix="ca-audit-platform-")
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name).resolve(strict=True)
+        binary = root / "inert-pinned-binary"
+        binary.write_bytes(b"not executable; audit event input only")
+        unreviewed = root / "inert-unreviewed-binary"
+        unreviewed.write_bytes(b"not executable; refusal input only")
+        verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+        script = r"""
+import hashlib,importlib.util,json,os,sys
+from pathlib import Path
+verifier=Path(sys.argv[1]).resolve(strict=True)
+s=importlib.util.spec_from_file_location('owned_audit_verifier',verifier)
+v=importlib.util.module_from_spec(s);s.loader.exec_module(v)
+v._FAILURE_HOST='claude'
+binary=Path(sys.argv[2]).resolve(strict=True)
+unreviewed=Path(sys.argv[3]).resolve(strict=True)
+python=Path(sys.executable).resolve(strict=True)
+child_environment={'PATH':os.environ['PATH']}
+verifier_event=(str(python),[str(python),'-I','-B',str(verifier)],None,child_environment)
+probe_calls=0
+def nested_platform_probe():
+ global probe_calls
+ probe_calls+=1
+ sys.audit('subprocess.Popen',*verifier_event)
+ return 'Windows'
+v.platform.system=nested_platform_probe if sys.argv[4]=='verifier' else lambda:'Windows'
+v.install_runtime_guard(binary,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),permit_verifier_children=True)
+if sys.argv[4]=='verifier':
+ failure=None
+ try:sys.audit('subprocess.Popen',*verifier_event)
+ except Exception as error:failure=v.failure_record(error,phase='commit-proof')
+ print(json.dumps({'outcome':'allowed' if failure is None else 'refused','dynamic_probe_calls':probe_calls,'failure':failure},sort_keys=True))
+else:
+ outcomes=[]
+ for event,details in [('subprocess.Popen',(str(unreviewed),[str(unreviewed)],None,{})),('socket.connect',(None,('127.0.0.1',9))),('os.system',('inert-not-executed',))]:
+  try:sys.audit(event,*details)
+  except Exception as error:
+   record=v.failure_record(error,phase='commit-proof')
+   outcomes.append({'error':record['error'],'event':record['audit_event'],'site':record['audit_site']})
+  else:outcomes.append({'error':'NOT_REFUSED'})
+ print(json.dumps({'denials':outcomes},sort_keys=True))
+"""
+        environment = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "COMSPEC", "PATHEXT") if key in os.environ}
+        environment.update(HOME=str(root), USERPROFILE=str(root), APPDATA=str(root), LOCALAPPDATA=str(root),
+                           TEMP=str(root), TMP=str(root), PATH=str(root), PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1")
+        result = subprocess.run([sys.executable, "-I", "-B", "-X", f"pycache_prefix={root / 'pycache'}",
+                                 "-c", script, str(verifier), str(binary), str(unreviewed), mode],
+                                cwd=root, env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                timeout=15, check=False)
+        self.assertEqual(result.returncode, 0, f"audit child failed; stderr_sha256={hashlib.sha256(result.stderr).hexdigest()}")
+        self.assertEqual(result.stderr, b"")
+        self._audit_child_result = json.loads(result.stdout)
+        return self._audit_child_result
+
+    def test_valid_verifier_audit_never_runs_dynamic_platform_discovery(self):
+        result = self.audited_platform_child("verifier")
+        self.assertEqual(result, {"outcome": "allowed", "dynamic_probe_calls": 0, "failure": None})
+
+    def test_unknown_process_network_and_process_escape_still_refuse(self):
+        result = self.audited_platform_child("denials")
+        self.assertEqual(result, {"denials": [
+            {"error": "RuntimeError", "event": "subprocess", "site": "launch-guard"},
+            {"error": "RuntimeError", "event": "network", "site": "network-guard"},
+            {"error": "RuntimeError", "event": "process-escape", "site": "process-guard"},
+        ]})
+
+
+
+    def test_darwin_stage_keeps_exact_hash_and_mode_guards_with_inert_bytes(self):
+        import importlib.util
+        from unittest import mock
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_darwin_audit_guard", source)
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        with tempfile.TemporaryDirectory(prefix="ca-audit-pinned-") as original_root, \
+             tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as staged_root:
+            binary = Path(original_root).resolve(strict=True) / "inert-original"
+            contents = b"inert audit-only stage fixture; never executed"
+            binary.write_bytes(contents)
+            staged = Path(staged_root).resolve(strict=True) / "ca-artifact"
+            staged.write_bytes(contents)
+            details = (str(staged), [str(staged), "capabilities"], None, {})
+            # Darwin mode representation is simulated on Windows; path/regular
+            # file identity, exact bytes and SHA256 comparisons stay real.
+            with mock.patch.object(verifier.sys, "platform", "darwin"), \
+                 mock.patch.object(verifier.stat, "S_IMODE", return_value=0o500) as mode:
+                verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                    binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+                mode.return_value = 0o600
+                with self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process"):
+                    verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                        binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+                mode.return_value = 0o500
+                staged.write_bytes(contents + b"drift")
+                with self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process"):
+                    verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                        binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
 
 
 if __name__ == "__main__":

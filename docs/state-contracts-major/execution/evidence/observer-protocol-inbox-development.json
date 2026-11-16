@@ -1,0 +1,823 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "88c497128a498ff2a946cfc157d67913d47bcb89",
+  "recorded_at": "2026-11-16T03:23:39.431362+00:00",
+  "qualification": false,
+  "original_failures": "docs/state-contracts-major/execution/evidence/original-88c-windows-failures.json",
+  "physical_source_sha256": {
+    ".github/scripts/_git_fixture_diagnostics.py": "9748f19ce3ce519bf955eddb158226852ad483f32c643b8b545adc800b108d0e",
+    ".github/scripts/_windows_dbgeng.py": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+    ".github/scripts/_windows_rpc_timeout.py": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+    ".github/scripts/major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+    ".github/scripts/test_major_qualification_report.py": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+    ".github/scripts/test_pi_package.py": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+    "plugins/ca/tools/farm-registry-lock.test.ts": "c8da7ba5ed87d0276869e7d61cd446c9ffe5e89a96e99e37e8c908d8eaabd9a8"
+  },
+  "actual_local_checks": {
+    "vitest_original_argv": {
+      "focused_PASS": 10,
+      "retained_nonnative_baseline": "One49-method command48PASS/1ERROR because private ADR support leaves were omitted; only unchanged failed method then PASS after literal support-copy correction. No single49PASS claim.",
+      "duplicate_name_mutant": "Actual RED",
+      "scope": "Original multi-reporter argv, one process, owned fresh JSON, bounded project cwd; no actual Vitest/Pi execution."
+    },
+    "farm_canonical_fixture": {
+      "target_RED": 2,
+      "owning_PASS": 15,
+      "skips": 0,
+      "seconds": 5.746,
+      "original_controls": 13,
+      "typecheck": "PASS",
+      "scope": "Owned junction and physical-target identity; production farm.ts/js unchanged."
+    },
+    "git_fixture_diagnostic": {
+      "target_RED": 1,
+      "focused_PASS": 6,
+      "skips": 0,
+      "seconds": 3.246,
+      "scope": "Includes original three Git setup commands success; unchanged15s/no retry. Sanitized bounded failure note; does not fix or establish hosted delay cause."
+    },
+    "inbox_debugger_profile": {
+      "new_profile_PASS": 6,
+      "skips": 0,
+      "seconds": 0.074,
+      "retained_pure_guards_PASS": 5,
+      "scope": "Retained five guards passed before final refinement; relevant production ASTs unchanged. Same5s aggregate budget/identity/detach/closed outputs. Root-binding mutant has two genuine failures."
+    },
+    "owned_native_control": {
+      "PASS": 1,
+      "seconds": 1.002,
+      "node_version": "24.22.1",
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "scope": "One already authorized existing sleeping-owned-Node control captures recognized frames, detaches, preserves owned handle and recognizes late exit. No Pi/SDK install/provider/foreign process; does not diagnose failing hosted Node22.19 shutdown."
+    }
+  },
+  "sealed_author_records": {
+    "vitest": [
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\delivery.json",
+        "sha256": "c2b37a95248650c9600ab40cb9d14684a9a9439cfee207914d27ad58013dad44",
+        "bytes": 2832,
+        "record": {
+          "format": "codearbiter.temp-delivery/1",
+          "purpose": "Preserve one original Vitest command with multi-reporter output and bounded project cwd",
+          "source_commit": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "apply_files": {
+            ".github/scripts/major_qualification_report.py": {
+              "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\candidate\\.github\\scripts\\major_qualification_report.py",
+              "before_sha256": "a70545eb5dbe253d71d3dfab0f418b3ad8e08d4a26f623303cc6c4a46e19cb08",
+              "after_sha256": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+              "bytes": 60394,
+              "literal_git_source": "88c497128a498ff2a946cfc157d67913d47bcb89",
+              "current_physical_sha256": "a70545eb5dbe253d71d3dfab0f418b3ad8e08d4a26f623303cc6c4a46e19cb08"
+            },
+            ".github/scripts/test_major_qualification_report.py": {
+              "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+              "before_sha256": "7aea06b894cdf9385ed81514fa300e114caa5fb450f2e25e432c19f7163feb4d",
+              "after_sha256": "0b9b9be1e220db5ae2941e02d957ed3a997f4547fd9ced9633263c0c50b5f31c",
+              "bytes": 81717,
+              "literal_git_source": "88c497128a498ff2a946cfc157d67913d47bcb89",
+              "current_physical_sha256": "7aea06b894cdf9385ed81514fa300e114caa5fb450f2e25e432c19f7163feb4d"
+            }
+          },
+          "patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\final.patch",
+            "sha256": "c7cd855690b54372f80cb99749b5ea8c90ee6a42c657ffd9ec28f2d5f6785f98"
+          },
+          "source_freeze": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\source-freeze.json",
+            "sha256": "42bda1c8ed99862a5794ef48bb1cd97f88ffa79ecafdb1f8f660a39c8df0638a"
+          },
+          "filemap": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\filemap.json",
+            "sha256": "0d70e918a592801010ca53bc9c544ae07a7459e8a6ab336629a220ee7d0e9433"
+          },
+          "verification_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\verification.json",
+          "remaining": "Root owns affected independent review, integration, changelog and exact-head hosted checks. No repeated39 or native case.",
+          "coverage_citation_for_PR": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface.\nGo native statements are not the no-tooling exemption."
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\verification.json",
+        "sha256": "d784c0c4284cbf8a3667bd40f69ae39262d53b2bc043d22e718a2648c0c6bf72",
+        "bytes": 10003,
+        "record": {
+          "RED": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestInvocationTests.test_original_multi_reporter_invocations_are_preserved_and_run_once"
+            ],
+            "seconds": 0.6526064000063343,
+            "result_sha256": "3483db143008c330d802506235a0cb8965b69e287b2f2e106ac5832c034366bf"
+          },
+          "GREEN-target": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestInvocationTests.test_original_multi_reporter_invocations_are_preserved_and_run_once",
+              "test_major_qualification_report.ActualPythonObserverTest.test_vitest_protocol_wrapper_invokes_one_original_process_and_retains_its_named_json"
+            ],
+            "seconds": 2.2921134999924107,
+            "result_sha256": "76136a0e889953a05554ca8086d33d78b61c9fd9d95a46e5d02537d6da2cac28"
+          },
+          "GREEN-focused": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestInvocationTests"
+            ],
+            "seconds": 9.168646499994793,
+            "result_sha256": "0f389d0ee020bfac999a0927672d570aa6ab120a921563b2f9b411e1b2041307"
+          },
+          "GREEN-nonnative": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.ReportTest.test_one_actual_named_test_can_substantiate_explicit_semantic_rows_without_reexecution",
+              "test_major_qualification_report.ReportTest.test_real_largest_owner_population_and_overlay_inventory_fit_retained_report_bound",
+              "test_major_qualification_report.ReportTest.test_skip_failure_missing_duplicate_and_unknown_outcomes_refuse",
+              "test_major_qualification_report.ReportTest.test_stale_source_run_drift_exit_and_proof_kind_refuse",
+              "test_major_qualification_report.ReportTest.test_unmapped_or_extra_cells_do_not_inherit_suite_success",
+              "test_major_qualification_report.ReportTest.test_source_only_tests_cannot_qualify_installed_upstream_hosts",
+              "test_major_qualification_report.ReportTest.test_source_native_module_cannot_qualify_installed_native_cell",
+              "test_major_qualification_report.ReportTest.test_changing_a_proof_kind_string_does_not_create_an_installed_observer",
+              "test_major_qualification_report.ReportTest.test_native_test_outcomes_must_join_the_original_consumed_payload_stamp",
+              "test_major_qualification_report.ReportTest.test_payload_names_cannot_alias_one_artifact_id_to_different_consumed_bytes",
+              "test_major_qualification_report.ReportTest.test_native_admission_preserves_skips_and_checks_actual_membership_and_input_stamp",
+              "test_major_qualification_report.ReportTest.test_vitest_admission_uses_actual_names_and_never_counts_pending_as_passed",
+              "test_major_qualification_report.ReportTest.test_payload_requires_original_archive_bytes_and_actual_consumed_member_equality",
+              "test_major_qualification_report.SourceIdentityTest.test_only_exact_untracked_ordinary_empty_native_read_lock_is_nonsource_metadata",
+              "test_major_qualification_report.ActualPythonObserverTest.test_vitest_protocol_wrapper_invokes_one_original_process_and_retains_its_named_json",
+              "test_major_qualification_report.ActualPythonObserverTest.test_original_entrypoint_executes_once_and_named_skip_failure_and_subtest_are_observed",
+              "test_major_qualification_report.RetainedColdReportTest.test_only_explicit_source_bound_package_placeholder_is_rendered",
+              "test_major_qualification_report.RetainedColdReportTest.test_emission_accepts_only_normal_main_or_program_push",
+              "test_major_qualification_report.RetainedColdReportTest.test_valid_closed_installed_observer_retains_both_distinct_original_payloads",
+              "test_major_qualification_report.RetainedColdReportTest.test_cold_profile_never_qualifies_versioned_hosts_or_docker",
+              "test_major_qualification_report.CanonicalNativeWholeClauseMapTest.test_canonical_native_map_uses_reconciled_per_cell_named_evidence",
+              "test_major_qualification_report.CanonicalNativeWholeClauseMapTest.test_canonical_native_map_refuses_incomplete_or_unbound_original_evidence",
+              "test_major_qualification_report.CanonicalNativeWholeClauseMapTest.test_canonical_map_cannot_erase_explicit_platform_or_behavior_limits",
+              "test_major_qualification_report.SourcePayloadAdmissionTest.test_source_test_cannot_qualify_from_unbound_native_archive",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_running_source_producer_never_reads_its_own_unavailable_job_log",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_final_readiness_authenticates_both_original_source_and_report_uploads",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_bound_original_entrypoints_execute_once_and_never_infer_child_test_ids",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_authenticated_archive_requires_exact_input_bytes_profile_and_original_upload",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_actual_source_membership_and_staged_bytes_drift_refuse_without_rewriting",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_source_reparse_metadata_refuses_before_file_open",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_six_source_cells_keep_exact_selectors_and_single_original_ci_executions",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_readiness_local_git_cannot_inherit_parent_metadata_credentials",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_local_git_keeps_protected_file_config_and_only_explicit_alternate_index",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_report_and_immutable_reader_pass_blind_local_environment",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_readiness_git_role_cannot_be_used_for_network_or_mutating_commands",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_only_owned_adr_child_receives_the_blind_python_environment",
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_actual_owned_adr_child_reads_a_private_committed_ledger",
+              "test_major_qualification_report.VitestInvocationTests.test_original_multi_reporter_invocations_are_preserved_and_run_once",
+              "test_major_qualification_report.VitestInvocationTests.test_project_cwd_and_split_reporter_arguments_use_the_original_process",
+              "test_major_qualification_report.VitestInvocationTests.test_cli_project_cwd_is_forwarded_without_changing_original_flags",
+              "test_major_qualification_report.VitestInvocationTests.test_duplicate_conflicting_json_ownership_refuses_before_execution",
+              "test_major_qualification_report.VitestInvocationTests.test_stale_or_linked_json_and_observation_paths_refuse_before_execution",
+              "test_major_qualification_report.VitestInvocationTests.test_missing_replaced_hardlinked_or_oversize_results_cannot_be_admitted",
+              "test_major_qualification_report.VitestInvocationTests.test_malformed_duplicate_or_outside_named_json_is_not_a_named_pass",
+              "test_major_qualification_report.VitestInvocationTests.test_pending_failed_exit_and_source_drift_remain_nonqualifying_observations",
+              "test_major_qualification_report.VitestInvocationTests.test_outside_nonexistent_and_reparse_project_cwd_refuse_before_execution",
+              "test_major_qualification_report.VitestInvocationTests.test_timeout_keeps_original_containment_and_never_writes_a_pass"
+            ],
+            "seconds": 37.46290030000091,
+            "result_sha256": "f8d2f3a745ea45b8c890c2e002dca12e525e001e832c4d03e0bc005358604a62"
+          },
+          "GREEN-ADR-support-only": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.LocalReadGitEnvironmentTests.test_actual_owned_adr_child_reads_a_private_committed_ledger"
+            ],
+            "seconds": 0.9075937000015983,
+            "result_sha256": "930c300a554aed90d2fea7e1f1bb457389e18889477b9267ce123124df6d812b"
+          },
+          "mutant/duplicate-guard-RED": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestInvocationTests.test_malformed_duplicate_or_outside_named_json_is_not_a_named_pass"
+            ],
+            "seconds": 2.5216182000003755,
+            "result_sha256": "70e8f8a514d669e20d36efe3e4878a5b56bd06ed8c0a47610fb10132b02e673a"
+          },
+          "counts_and_limits": {
+            "RED": "1 named method, two original reporter-vector assertion failures, no setup error; original production unchanged",
+            "GREEN-target": "2 PASS: original new regression and existing simple wrapper",
+            "GREEN-focused": "10 PASS, 0 skips",
+            "GREEN-nonnative": "49 selected: 48 PASS, 1 private missing-support ERROR; not a passing command",
+            "GREEN-ADR-support-only": "only the failed unchanged method: 1 PASS after five immutable88c source dependencies copied privately",
+            "mutant/duplicate-guard-RED": "1 named unchanged negative test FAIL: ValueError not raised at duplicate-vector; only duplicate-name require removed",
+            "excluded": "Unchanged actual-native-installation-dependent method not run",
+            "hosted_failure_distinction": "Original88c Windows source_payload_fixture Git index15s timeout is separate; no local occurrence or causal inference",
+            "scope": "Ordinary Windows CPython3.14.6 owned inert Python/Git fixtures; no real Vitest/Node/native/installed/provider execution; no report/payload/selection eligibility widening"
+          }
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-vitest-original-command-fix-h_0hu2oq\\ADR-support-correction.json",
+        "sha256": "563ac956995ed9ca4fc36bb327ff390f9027e05bb24b3c24d649bb1422a2db0b",
+        "bytes": 1668,
+        "record": {
+          "source": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "cause": "Private copied readiness sibling checker/import closure absent; original full49 reports48PASS1ERROR. No product timeout or Vitest failure inferred.",
+          "records": [
+            {
+              "path": ".github/scripts/check_adr_lifecycle.py",
+              "sha256": "4da73f8b4143c5fed5f4986c78086b4dc5342b0bd4724c6e04072bae88b7e9ed",
+              "role": "Exact immutable support for existing private read-only ADR-child test only; no apply-file change."
+            },
+            {
+              "path": ".github/scripts/adr_lifecycle.py",
+              "sha256": "ae0608c528715e5ff527e33486cf272e360111beb2162a28a3c4c7ed6247ffbe",
+              "role": "Exact immutable support for existing private read-only ADR-child test only; no apply-file change."
+            },
+            {
+              "path": ".github/scripts/prepare_adr_acceptance.py",
+              "sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+              "role": "Exact immutable support for existing private read-only ADR-child test only; no apply-file change."
+            },
+            {
+              "path": "core/pysrc/_adrlifecycle.py",
+              "sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+              "role": "Exact immutable support for existing private read-only ADR-child test only; no apply-file change."
+            },
+            {
+              "path": "core/pysrc/_adrlifecyclegit.py",
+              "sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+              "role": "Exact immutable support for existing private read-only ADR-child test only; no apply-file change."
+            }
+          ],
+          "rerun_scope": "Only LocalReadGitEnvironmentTests.test_actual_owned_adr_child_reads_a_private_committed_ledger"
+        }
+      }
+    ],
+    "farm_fixture": [
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\delivery.json",
+        "sha256": "12797e1e6f21bc4b482804e27a67ccae75e55f5f6c4a4cdd003d6897d923d430",
+        "bytes": 4851,
+        "record": {
+          "format": "owned-farm-fixture-canonical-identity-fix/1",
+          "source_epoch": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "paths": [
+            "plugins/ca/tools/farm-registry-lock.test.ts"
+          ],
+          "filemap": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\filemap.json",
+            "sha256": "f142be513a988762bde09e348aa8edbba81f69070dd1bfa4f483de68fd73f993"
+          },
+          "patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\proposal.patch",
+            "sha256": "1ba00a6960b8e7295dd6d0c16f8b06bab8c05a6e22e892acf7c8190adbd407fe"
+          },
+          "guards": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\guards.json",
+            "sha256": "7c1dce37038f3a245969efa6fa4f723cce1b3bac1126c35642e41a78951d3694"
+          },
+          "evidence": [
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\test-preparation.json",
+              "sha256": "f0ab6a0b0b9901f2dd770d60e520b1c0e9c799f6521b647e848f153b2584df24"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\target-red.json",
+              "sha256": "0c9547c2bc15e163eb7d4afaea964947950a3e7727462d16a635d64f82062dec"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\target-red-results.json",
+              "sha256": "509045e0b45870236d4625ec12f960b457814a5c77975c6d1d25285383b6ffde"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\target-red.stdout",
+              "sha256": "6bc1210edaf9c99cf11c1905bcc16ca5c44a8370f6ee5446dc8582bde8dd62dd"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\target-red.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\focused-green.json",
+              "sha256": "cb6b5e113993533916e570c63eb915bfecb7147b42c09eab79e541b2b7876f5e"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\focused-green-results.json",
+              "sha256": "af8dd5bc834cec1d7f409289bc70cdbf79d2bcbd8d7647a1336ec0bd7f81f0a5"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\focused-green.stdout",
+              "sha256": "cd2358fb37c62178ed0f1b2c4ebd74de4b0f2e6bc3e34d55bd408adc81ebfd22"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\focused-green.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\typecheck.json",
+              "sha256": "1ec3ad9ba68f4f327df33f3ef32f445003ee0d65f56e56e08196a4d43c83a12e"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\typecheck.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\typecheck.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "actual_red": {
+            "cases": 2,
+            "failed": 2,
+            "seconds": 0.6976992999989307,
+            "cause": "Both source and generated bundle entered the real owned callback with injected-attempt counter0 through an actual owned directory junction. No setup/import failure; exact assertion expected0toBe2.",
+            "other13_cases": "deliberately unselected during RED only"
+          },
+          "actual_green": {
+            "cases": 15,
+            "failed": 0,
+            "skipped": 0,
+            "seconds": 5.745671999990009,
+            "exit_code": 0,
+            "node": "v24.22.1",
+            "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+          },
+          "typecheck": "Existing owning tsc --noEmit PASS/no diagnostics",
+          "delta": "Canonicalize the actual created private fixture root with realpathSync.native before deriving repo/lock/env identities. Retain exact mock equality; optional owned parent enables permanent junction regression.",
+          "limits": [
+            "The controlled alias mechanism reproduces the missed injection; original hosted actual open argument was not logged, so its exact alias/casing representation remains unknown.",
+            "This changes tests only, never Farm ownership/retry/release code or kernel behavior. Original7acEPERMcause remains unknown.",
+            "Only private ordinary Node/Git/filesystem source/bundle registry fixtures and cached Vitest/TSC; no fullFarm/provider/mockHTTP/native/SDK/network/build/install/model replay.",
+            "No report-test/pkg-owned edits, Gov/index/ref/marker/source mutation, branch creation or provider action."
+          ]
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\guards.json",
+        "sha256": "7c1dce37038f3a245969efa6fa4f723cce1b3bac1126c35642e41a78951d3694",
+        "bytes": 424,
+        "record": {
+          "all13_original_case_bodies_and_assertions_unchanged": true,
+          "strict_exact_open_mock_path_match_unchanged": true,
+          "production_TS_JS_byte_identical_to88c": true,
+          "owned_junction_and_target_containment_checked_before_fixture": true,
+          "only_canonical_created_root_plus_optional_private_parent_changes_fixture": true,
+          "original_hosted_open_path_not_recorded": true,
+          "no_original_kernel_EPERM_cause_claim": true
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\typecheck.json",
+        "sha256": "1ec3ad9ba68f4f327df33f3ef32f445003ee0d65f56e56e08196a4d43c83a12e",
+        "bytes": 633,
+        "record": {
+          "argv": [
+            "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+            "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\candidate\\plugins\\ca\\tools\\node_modules\\typescript\\bin\\tsc",
+            "--noEmit"
+          ],
+          "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-fix-w_g4y0vy\\candidate\\plugins\\ca\\tools",
+          "exit_code": 0,
+          "seconds": 1.1796749999921303,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "git_fixture": [
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\delivery.json",
+        "sha256": "98004742b34e387696ad084ef6a79d18be5450771ff868b68331350d1a49db15",
+        "bytes": 3651,
+        "record": {
+          "format": "source-fixture-closed-git-diagnostic-fix/1",
+          "source_epoch": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "physical_test_preimage_sha256": "0b9b9be1e220db5ae2941e02d957ed3a997f4547fd9ced9633263c0c50b5f31c",
+          "owner_report_support_copy_sha256": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+          "paths": [
+            ".github/scripts/test_major_qualification_report.py",
+            ".github/scripts/_git_fixture_diagnostics.py"
+          ],
+          "filemap": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\filemap.json",
+            "sha256": "f855df354952d374615aec4de02e6a4b8d7bd7b3bb97292100c3586a86c66ae6"
+          },
+          "patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\proposal.patch",
+            "sha256": "f7ee1246d318d96955af2a4364847093861734f9bd98acbe38de44285b302308"
+          },
+          "guards": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\guards.json",
+            "sha256": "95dfddfcfe2c13de40dcf26b497927b420a2b4a58f271a6e6a13c88e066bae9f"
+          },
+          "evidence": [
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\preimages.json",
+              "sha256": "ad1509c360d291f663c39a2c8f49575b917328df5ffdf6249a1d1b25e1a6e169"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\target-red.json",
+              "sha256": "eb8bd38ab8b2f649ceb0528e90f73ce585d5a4f035ae86da9d4e77ebc9cf0b6a"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\target-red.log",
+              "sha256": "d1f9a1a5b5c5f039a759585a91730a9e8abf7a85308f3ce0b358e5501d93c847"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\focused-green.json",
+              "sha256": "ade72978b52f9ce8c69db693d9139b8214533ca2a4ea7651b8b3ce0d75fd7257"
+            },
+            {
+              "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\focused-green.log",
+              "sha256": "df4180f1b1ccd1ff01fe88d1be9f9ba081f7c34dc84e5a54acf76d5f7ef97aa5"
+            }
+          ],
+          "actual_red": "Existing source_payload_fixture controlled index TimeoutExpired:1 assertionFAIL/0 errors0.128s for absent closed diagnostic note; original exception/15s/no-retry already asserted.",
+          "actual_green": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skips": 0,
+            "seconds": 3.2458287999907043,
+            "exit_code": 0
+          },
+          "diagnostic_contract": "Failure-only exception note with closed phase/failure enum, finite elapsedms and bounded owned Trace2 event/category/label/numeric projection; unknown values hashed/dropped, never raw argv/path/error/stdout/stderr/env. Real temp trace remains outside repo and is projected before cleanup. Diagnostic failure cannot replace original process outcome.",
+          "suggested_changelog": "Retain bounded sanitized phase and Trace2 diagnostics when source-fixture Git preparation fails, preserving its original deadline and error.",
+          "limits": [
+            "Underlying hosted Git index-preparation slowdown remains UNKNOWN and was not reproduced or repaired.",
+            "Only six directly affected ordinary Python/Git/filesystem controls ran, including one real original three-command success. No full49/native/Pi/Node/Vitest/SDK/provider/network/install replay.",
+            "Original40+new10 method bodies and original source-payload assertions unchanged. No timer increase, retry, command weakening or failure suppression.",
+            "Gov/index/ref/marker/source files untouched; Root alone applies/changelogs/reviews/commits. No runtime/program/installed qualification claimed."
+          ]
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\focused-green.json",
+        "sha256": "ade72978b52f9ce8c69db693d9139b8214533ca2a4ea7651b8b3ce0d75fd7257",
+        "bytes": 1517,
+        "record": {
+          "source_epoch": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "source_basis": "Current physical Root Vitest overlay, not literal88c test bytes",
+          "argv": [
+            "C:\\Python314\\python.exe",
+            "-I",
+            "-S",
+            "-B",
+            "-X",
+            "utf8",
+            "C:/Users/brenn/AppData/Local/Temp/ca-source-fixture-git-diag-ydrmq6yj/run.py",
+            "focused-green"
+          ],
+          "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter",
+          "seconds": 3.2458287999907043,
+          "exit_code": 0,
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "raw_sha256": "df4180f1b1ccd1ff01fe88d1be9f9ba081f7c34dc84e5a54acf76d5f7ef97aa5",
+          "candidate_before": {
+            ".github\\scripts\\major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+            ".github\\scripts\\test_major_qualification_report.py": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+            ".github\\scripts\\_git_fixture_diagnostics.py": "9748f19ce3ce519bf955eddb158226852ad483f32c643b8b545adc800b108d0e"
+          },
+          "candidate_after": {
+            ".github\\scripts\\major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+            ".github\\scripts\\test_major_qualification_report.py": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+            ".github\\scripts\\_git_fixture_diagnostics.py": "9748f19ce3ce519bf955eddb158226852ad483f32c643b8b545adc800b108d0e"
+          },
+          "qualification": false,
+          "full_report_native_Pi_Node_suites": false
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-fixture-git-diag-ydrmq6yj\\guards.json",
+        "sha256": "95dfddfcfe2c13de40dcf26b497927b420a2b4a58f271a6e6a13c88e066bae9f",
+        "bytes": 695,
+        "record": {
+          "all50_original_and_Vitest_added_method_ASTs_unchanged": true,
+          "only_existing_helper_changed": "source_payload_fixture",
+          "original_three_command_argument_tuples_AST_identical": true,
+          "check_capture_timeout15_no_retry_retained": true,
+          "owner_major_qualification_report_byte_unchanged": true,
+          "no_core_hostcopy_Farm_inbox_or_Docs_edits": true,
+          "trace_storage_outside_fixture_repo_before_cleanup": true,
+          "closed_trace_read_bound_bytes": 262144,
+          "closed_trace_scan_bound_lines": 256,
+          "closed_trace_retained_events": 32,
+          "failure_note_bound_UTF8_bytes": 8192,
+          "primary_exception_identity_and_success_behavior_retained": true,
+          "underlying_hosted_Git_delay_unknown": true
+        }
+      }
+    ],
+    "inbox_debugger": [
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\delivery.json",
+        "sha256": "897f36400fb2286c8c3650f62e73d8e5f53b381afeb104791ebf4adaefc35470",
+        "bytes": 2651,
+        "record": {
+          "format": "codearbiter.temp-delivery/1",
+          "purpose": "Remove unused CDB gating through closed protected inbox profile without new installation",
+          "source_commit": "88c497128a498ff2a946cfc157d67913d47bcb89",
+          "apply_files": {
+            ".github/scripts/_windows_rpc_timeout.py": {
+              "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\candidate\\.github\\scripts\\_windows_rpc_timeout.py",
+              "before_sha256": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a",
+              "after_sha256": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+              "bytes": 18419
+            },
+            ".github/scripts/_windows_dbgeng.py": {
+              "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\candidate\\.github\\scripts\\_windows_dbgeng.py",
+              "before_sha256": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424",
+              "after_sha256": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+              "bytes": 15063
+            },
+            ".github/scripts/test_pi_package.py": {
+              "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\candidate\\.github\\scripts\\test_pi_package.py",
+              "before_sha256": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c",
+              "after_sha256": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+              "bytes": 270379
+            }
+          },
+          "patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\final.patch",
+            "sha256": "98cff92824f7515766360115d49f0aa5683c3729a37452d4f093f4d1fd1de1d6"
+          },
+          "source_freeze": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\source-freeze.json",
+            "sha256": "b42a58958775f4f4f848a45d6b6c67478382eb103c1be6b2509bac719d13dfcf"
+          },
+          "filemap": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\filemap.json",
+            "sha256": "cee60d25e14f42767f1506dc651dbaeee0377b6c1384f3ee4a7f04016f4a820d"
+          },
+          "verification": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\verification.json",
+          "limits": "No existing real-owned-Node test, DLL API/attach, Pi/SDK/native/provider/actual-host replay, installations or new acquisition. GHA inbox availability and original Pi cause UNKNOWN.",
+          "original_failure": "Original88c Windows Pi natural EOF/OSrunning cause remains UNKNOWN; no native frame or hosted capability claim",
+          "remaining": "Root affected independent review/integration/exact-head hosted qualification; any actual owned native probe separately authorized"
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\verification.json",
+        "sha256": "ed9fadf51b242465aaf6278410ca97ff35b7139b7f0de4c24ef1581cb51a6f7c",
+        "bytes": 5446,
+        "record": {
+          "RED": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb"
+            ],
+            "elapsed_seconds": 0.4060252000053879,
+            "result_sha256": "4e0f0cf8501464440ab170addcb910e2e2d5ac20b12c6535358fa687c6612a6f"
+          },
+          "GREEN-target": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb"
+            ],
+            "elapsed_seconds": 0.4155871999973897,
+            "result_sha256": "475faeea144cc50be81e3eb2f035318486a8cbb7b332a76a8b8f3b3940d20d0b"
+          },
+          "GREEN-focused": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests",
+              "test_pi_package.PiPackageTests.test_rpc_native_shutdown_stack_projection_is_closed_and_bounded",
+              "test_pi_package.PiPackageTests.test_rpc_native_shutdown_identity_refuses_foreign_or_unknown_handles",
+              "test_pi_package.PiPackageTests.test_rpc_native_shutdown_transport_has_one_deadline_and_aggregate_cap",
+              "test_pi_package.PiPackageTests.test_rpc_native_shutdown_fixed_debugger_profile_and_private_sidecar",
+              "test_pi_package.PiPackageTests.test_rpc_native_shutdown_failure_hook_preserves_original_then_cleanup"
+            ],
+            "elapsed_seconds": 1.1904661000007764,
+            "result_sha256": "11305b580ee27cc300e6a98c40a941f43d25a4c0f228d1c545d0d3362317b654"
+          },
+          "RED-alias-ancestor": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files"
+            ],
+            "elapsed_seconds": 0.40950039999734145,
+            "result_sha256": "0015e4476d73d9b9b77ad89d8a0fd6ec290684be881ce2d0810c10d2656f580a"
+          },
+          "GREEN-affected": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files",
+              "test_pi_package.DebuggerInboxTests.test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine",
+              "test_pi_package.DebuggerInboxTests.test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb"
+            ],
+            "elapsed_seconds": 0.443526799994288,
+            "result_sha256": "d9142a5549f00c0d6b0edac58d355ea734deddcdb3587fb9683764712bbed195"
+          },
+          "GREEN-transport": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport"
+            ],
+            "elapsed_seconds": 0.4178533999947831,
+            "result_sha256": "04c74df9f8cbd8b5865399fcd657d71567ea5f32277ccc6570295d9aa515ff06"
+          },
+          "GREEN-final-profile": {
+            "exit_code": 0,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests"
+            ],
+            "elapsed_seconds": 0.4594389999983832,
+            "result_sha256": "9de4eccd2470173efe65745aee8550470749f9b00c87257d13454bd6594bed2a"
+          },
+          "mutant/root-binding-RED": {
+            "exit_code": 1,
+            "timed_out": false,
+            "source_runtime_candidate_before_after_equal": true,
+            "selected": [
+              "test_pi_package.DebuggerInboxTests.test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine"
+            ],
+            "elapsed_seconds": 0.4313951999938581,
+            "result_sha256": "7496e9a9b04d09cb7f2c7a9aa5957b65d129ac7cd46294407801c16fb7fc59da"
+          },
+          "interpretation": {
+            "initial_RED": "1 target assertion failure: unavailable rather than captured; no worker executed. Initial inert empty-stdin finalizer warning retained; cleanup corrected without changing status oracle.",
+            "initial_focused": "10 selected: 9 PASS and 1 method with two wrong test-fixture image-status expectations (directory instead of regular foreign image). Original failed command retained; corrected fixture uses existing inert regular foreign file.",
+            "affected_GREEN": "3 PASS after linked-ancestor refusal and precise foreign-image fixture correction.",
+            "final_profile_GREEN": "All6 new profile tests PASS0.074s/0skip on final literal candidate.",
+            "original_pure_controls": "5 original named projection/identity/transport/legacy worker/failure-first cleanup controls PASS in GREEN-focused; their relevant production ASTs unchanged afterward.",
+            "critical_mutation": "Removing only expected-root equality admits same-byte foreign libraries; unchanged negative method fails two vectors (inbox and SDK).",
+            "discovery": "81 original ->87 final, all81 remain in original partitions, new6 package only. Discovery-only original support error retained separately.",
+            "not_run": "No existing real-owned-Node test, DLL API/attach, Pi/SDK/native/provider/actual-host replay, installations or new acquisition. GHA inbox availability and original Pi cause UNKNOWN.",
+            "budget": "Existing5s aggregate deadline and128KiB/32KiB/16thread/24frame limits unchanged. Kernel/filesystem calls are not forcibly cancellable; no claim every capture completes within wall-clock5s."
+          }
+        }
+      },
+      {
+        "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-inbox-debugger-fix-x153s719\\source-guards.json",
+        "sha256": "afa8699f5bdd7d335e8ed81f14fe8523ee8e6037c49f0ff01b18b6dfe18c27d3",
+        "bytes": 1531,
+        "record": {
+          ".github/scripts/_windows_rpc_timeout.py": {
+            "changed_named_nodes": [
+              "_debugger"
+            ],
+            "added_named_nodes": [
+              "_system_directory",
+              "_tool_profile",
+              "_bound_tool_profile"
+            ],
+            "all_other_named_ASTs_unchanged": true,
+            "compile": "PASS",
+            "source_physical_equals_literal88c": true
+          },
+          ".github/scripts/_windows_dbgeng.py": {
+            "changed_named_nodes": [
+              "decode_result",
+              "run"
+            ],
+            "added_named_nodes": [],
+            "all_other_named_ASTs_unchanged": true,
+            "compile": "PASS",
+            "source_physical_equals_literal88c": true
+          },
+          "existing_test_delta": {
+            "only_changed_old_method": [
+              "test_rpc_native_shutdown_real_owned_node_handles_and_late_exit"
+            ],
+            "purpose": "Existing if-present capability check now selects closed SDK/inbox profile and exact corresponding hash set; no local execution",
+            "all_other_original_helpers_and_test_ASTs_unchanged": true
+          },
+          ".github/scripts/test_pi_package.py": {
+            "changed_named_nodes": [
+              "PiPackageTests"
+            ],
+            "added_named_nodes": [
+              "DebuggerInboxTests"
+            ],
+            "all_other_named_ASTs_unchanged": true,
+            "compile": "PASS",
+            "source_physical_equals_literal88c": true
+          },
+          "source_windows": [
+            "Every executed capture retained before/after matching snapshots; source88c, actual private candidate epoch recorded per command.",
+            "All current production profile guards, query handle, process identity, no-network policy, frame vocabulary, cleanup and limits retained."
+          ]
+        }
+      }
+    ]
+  },
+  "root_owned_native_control": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\owned-inbox-control.json",
+    "sha256": "9e38e08875ba75340a2d1430fbf159c253ed64b5a69bd75704043d28ecb153e8",
+    "bytes": 2983,
+    "record": {
+      "scope": "One existing owned sleeping-Node control; no Pi/SDK installation/provider/real RPC/foreign process probe",
+      "prior_authority": "Existing user-approved bounded local debugger probes; no new dependency or installation",
+      "command": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "-v",
+        "test_pi_package.PiPackageTests.test_rpc_native_shutdown_real_owned_node_handles_and_late_exit"
+      ],
+      "node": "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "exit_code": 0,
+      "seconds": 1.3821059000038076,
+      "before": {
+        "head": "88c497128a498ff2a946cfc157d67913d47bcb89",
+        "index": "d06739992755aa624321b0246ea4f23a3911dea05ffd2e7280b63f831568e18a",
+        "files": {
+          ".github/scripts/_git_fixture_diagnostics.py": "9748f19ce3ce519bf955eddb158226852ad483f32c643b8b545adc800b108d0e",
+          ".github/scripts/_windows_dbgeng.py": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+          ".github/scripts/_windows_rpc_timeout.py": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+          ".github/scripts/major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+          ".github/scripts/test_major_qualification_report.py": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+          ".github/scripts/test_pi_package.py": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+          "plugins/ca/tools/farm-registry-lock.test.ts": "c8da7ba5ed87d0276869e7d61cd446c9ffe5e89a96e99e37e8c908d8eaabd9a8"
+        }
+      },
+      "after": {
+        "head": "88c497128a498ff2a946cfc157d67913d47bcb89",
+        "index": "d06739992755aa624321b0246ea4f23a3911dea05ffd2e7280b63f831568e18a",
+        "files": {
+          ".github/scripts/_git_fixture_diagnostics.py": "9748f19ce3ce519bf955eddb158226852ad483f32c643b8b545adc800b108d0e",
+          ".github/scripts/_windows_dbgeng.py": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+          ".github/scripts/_windows_rpc_timeout.py": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+          ".github/scripts/major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+          ".github/scripts/test_major_qualification_report.py": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+          ".github/scripts/test_pi_package.py": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+          "plugins/ca/tools/farm-registry-lock.test.ts": "c8da7ba5ed87d0276869e7d61cd446c9ffe5e89a96e99e37e8c908d8eaabd9a8"
+        }
+      },
+      "source_and_index_stable": true,
+      "stdout_sha256": "64f5e4fbd5b88d31861b315840c19a07e25b013de57e73ee931444d85f57b137",
+      "stderr_sha256": "d6896b9c0c541c67f0b060f6c25159f27991701c905e8b2dfadef9a342bac41f"
+    }
+  },
+  "root_selected_debugger_provider": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\owned-inbox-selected-provider.json",
+    "sha256": "2367ed0b4f8ef6525700a5ec6ecdd6647f63cb00aca626ed078d30b53e70e39e",
+    "bytes": 410,
+    "record": {
+      "profile": "inbox-v1",
+      "directory": "C:\\Windows\\System32",
+      "hashes": {
+        "dbgeng.dll": "bfa188b10eb64a94f1eb59bfb0f8d85eb5dfc803cd0f6b5c554816fe311a236e",
+        "dbghelp.dll": "1463249a85bb239fcb536780f3b964c5f2fd68398ffbd35ebec0d65660c8d83e"
+      },
+      "default_sdk_present": false,
+      "scope": "Read-only protected provider selection after one existing owned-process control; no new attach"
+    }
+  },
+  "preservation": [
+    "Python176 default profile and six-cell admission unchanged; TS/Docs producer features remain private separate work.",
+    "All original40 report method ASTs preserved through Vitest change; all50 preserved through Git diagnostics change.",
+    "No workflow/actions/permissions/guards/selection/timeouts/native cohort or qualification cell promotion in this correction.",
+    "No source evidence renewal/status promotion/hash restamp; existing authentic epochs/history remain.",
+    "No repeated full suite/native fixture/RPC/browser/provider replay by authors. Root owned native control is separately recorded, not hidden in pure fixture counts."
+  ],
+  "limits": [
+    "Original hosted Git delay and Pi OS shutdown cause remain UNKNOWN.",
+    "Local inbox profile success does not establish GHA capability or passing Pi shutdown.",
+    "Exact final-head child CI and later complete trusted integration run remain required.",
+    "PR1098 remains OPEN/DRAFT held from main; publication unauthorized; human/model/parent/lifecycle acceptance and pending HTTP choice remain."
+  ],
+  "staged_integrity_observation": {
+    "actual_branch_head": "88c497128a498ff2a946cfc157d67913d47bcb89",
+    "verification_fixture_commit": "9e800d0357460bddabffc38bc58fe0e758c68274",
+    "candidate": "candidate-v1:97b2a10eabd8a6c0f07a403221bfd13b4f518212fd993a07d14567b8c6de5199",
+    "result": "PASSED",
+    "frozen": 105,
+    "records": 1318,
+    "applicability": {
+      "APPLICABLE": 788,
+      "STALE": 530
+    },
+    "seconds": 39.465,
+    "source_ref_moved": false,
+    "final_metadata_note": "Only measured metadata changes after original owner validation; proof/ledger/source inputs and statuses unchanged."
+  }
+}

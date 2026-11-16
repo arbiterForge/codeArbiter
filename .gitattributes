@@ -150,3 +150,14 @@ site/**/*.json    text eol=lf
 # Retained evidence is byte-bound, including original Windows line terminators.
 # Recognize CRLF while retaining the normal whitespace error checks.
 /docs/state-contracts-major/execution/evidence/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# These exact declared source-profile inputs are compared to raw Git blobs.
+# Keep fresh Windows checkouts canonical without touching historical/raw files.
+/.github/major-qualification-policy.json text eol=lf
+/.github/major-test-selections.json text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/go/go.mod text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/go/main.go text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs text eol=lf

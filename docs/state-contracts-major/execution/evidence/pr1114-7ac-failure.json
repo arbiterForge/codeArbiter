@@ -1,0 +1,103 @@
+{
+  "schema": "exact-pr-watch-terminal-v1",
+  "recorded_utc": "2026-11-16T01:50:32.888438+00:00",
+  "pr": 1114,
+  "expected_head": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "observed_head": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "head_pin": true,
+  "base_ref": "major/state-contracts",
+  "ci": {
+    "id": 43786223415,
+    "event": "pull_request",
+    "head_sha": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "docs": {
+    "id": 43786223209,
+    "event": "pull_request",
+    "head_sha": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "ci_job_counts": {
+    "skipped": 7,
+    "failure": 17,
+    "success": 65
+  },
+  "all_check_counts": {
+    "skipping": 9,
+    "pass": 65,
+    "fail": 19
+  },
+  "required": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43786223415/job/133040600052",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "verdict": "BLOCK",
+  "causes": [
+    {
+      "kind": "stale-captures",
+      "jobs": [
+        133034341074,
+        133034341423
+      ],
+      "facts": "Four original capture source hashes stale for _gitexec.py; actual outputs must be recaptured."
+    },
+    {
+      "kind": "new-source-role-classifiers",
+      "jobs": [
+        133034461174,
+        133034461601,
+        133034461613,
+        133034461660,
+        133034461693
+      ],
+      "facts": "Existing impact merge-group and folded hook role classifiers reject new legitimate source-test prepare/observe/normal-only emitter roles."
+    },
+    {
+      "kind": "step-local-token-owning-contract",
+      "jobs": [
+        133034461799,
+        133034461806,
+        133034461860
+      ],
+      "facts": "Existing integration wiring blanket hooks GH_TOKEN absence assertion rejects approved step-local normal emitter."
+    },
+    {
+      "kind": "strict-suite-membership",
+      "jobs": [
+        133036535218,
+        133036535258,
+        133036535259,
+        133036535260,
+        133036535264,
+        133036535290
+      ],
+      "facts": "All six: package child exits0, exact method comparison omits exactly3 reviewed pure RuntimeAuditPlatformTests."
+    },
+    {
+      "kind": "farm-concurrent-lock-admission",
+      "jobs": [
+        133034461614
+      ],
+      "facts": "farm.test.ts2376 expected [0,0], received [0,2]; bravo2 release/reverification failed opening worktree sidecar EPERM. Actual underlying Windows mechanism remains UNKNOWN."
+    },
+    {
+      "kind": "downstream",
+      "jobs": [
+        133040542676,
+        133040600052
+      ],
+      "facts": "Qualification and Merge correctly fail on upstream required failures."
+    }
+  ],
+  "original_receipt_sha256": "b30c0478308a88a0efd46dac21441c97d68a9654285dc1586bb07ebf3b3abb1e",
+  "qualification": false
+}

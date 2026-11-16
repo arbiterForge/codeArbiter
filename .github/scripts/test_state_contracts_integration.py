@@ -715,7 +715,40 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         for step in steps:
             if step not in (consumers[0], controls[0]):
                 self.assertNotIn("GH_TOKEN:", step)
-        self.assertNotIn("GH_TOKEN:", self.job(text, "hooks"))
+        # Hooks has one reviewed report producer; its token remains step-local.
+        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' }}"
+        def assert_hook_token_scope(document):
+            hooks = self.job(document, "hooks")
+            prefix = hooks.split("    steps:\n", 1)[0]
+            permission_block = re.search(r"(?m)^    permissions:\n((?:      [^\n]+\n)+)", prefix).group(1)
+            self.assertEqual(permission_block, "      contents: read\n      actions: read\n")
+            self.assertNotIn("GH_TOKEN:", prefix)
+            hook_steps = re.split(r"(?m)^      - ", hooks.split("    steps:\n", 1)[1])[1:]
+            emitters = [step for step in hook_steps if step.startswith("name: Emit original Python source qualification report\n")]
+            self.assertEqual(len(emitters), 1)
+            emitter = emitters[0]
+            self.assertIn("        id: python_qualification_emit\n", emitter)
+            self.assertIn("        if: " + expected_hook_guard + "\n", emitter)
+            self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emitter)
+            self.assertEqual(emitter.count("GH_TOKEN:"), 1)
+            self.assertIn("python -B .github/scripts/major_qualification_report.py emit", emitter)
+            for hook_step in hook_steps:
+                if hook_step is not emitter:
+                    self.assertNotIn("GH_TOKEN:", hook_step)
+        assert_hook_token_scope(text)
+        hooks = self.job(text, "hooks")
+        first_step = re.split(r"(?m)^      - ", hooks.split("    steps:\n", 1)[1])[1]
+        mutants = {
+            "other-step-token": hooks.replace(first_step, first_step + "        env:\n          GH_TOKEN: ${{ github.token }}\n", 1),
+            "job-level-token": hooks.replace("    steps:\n", "    env:\n      GH_TOKEN: ${{ github.token }}\n    steps:\n", 1),
+            "expanded-event": hooks.replace("github.event_name == 'push'", "(github.event_name == 'push' || github.event_name == 'pull_request')"),
+            "expanded-branch": hooks.replace("github.ref == 'refs/heads/major/state-contracts')", "github.ref == 'refs/heads/major/state-contracts' || github.ref == 'refs/heads/untrusted')"),
+            "write-permission": hooks.replace("      actions: read\n", "      actions: write\n", 1),
+        }
+        for mutation, altered_hooks in mutants.items():
+            self.assertNotEqual(altered_hooks, hooks, mutation)
+            with self.subTest(hooks_token_mutation=mutation), self.assertRaises(AssertionError):
+                assert_hook_token_scope(text.replace(hooks, altered_hooks, 1))
 
     def test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate(self):
         text = self.workflow()

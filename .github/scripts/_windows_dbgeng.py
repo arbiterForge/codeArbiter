@@ -1,4 +1,4 @@
-"""Private, inherited-handle SDK worker. No debugger text callbacks or commands."""
+"""Private, inherited-handle DbgEng worker. No debugger text callbacks or commands."""
 from __future__ import annotations
 
 import ctypes as C
@@ -54,15 +54,25 @@ def project_frame(name: bytes, address: int, base: int, unique: bool) -> dict:
     return {"module": module, "returnOffset": address - base} if module in MODULES else unknown
 
 
-def decode_result(raw: bytes, pid: int, created: int) -> dict | None:
+def decode_result(raw: bytes, pid: int, created: int, *, profile=None) -> dict | None:
     """The worker cannot expand the parent's public diagnostic vocabulary."""
     try:
         if len(raw) > MAX_JSON:
             return None
         data = json.loads(raw)
-        if (type(data) is not dict or set(data) != {"schemaVersion", "status", "threads", "truncated",
-                "pid", "created", "bound", "attached", "policy", "detached", "hresult"}
-                or type(data["schemaVersion"]) is not int or data["schemaVersion"] != 1
+        fields = {"schemaVersion", "status", "threads", "truncated", "pid", "created",
+                  "bound", "attached", "policy", "detached", "hresult"}
+        if type(data) is not dict or type(data.get("schemaVersion")) is not int:
+            return None
+        version = data["schemaVersion"]
+        if version == 2:
+            fields.add("profile")
+            if (type(data.get("profile")) is not str or data["profile"] not in {"sdk-v1", "inbox-v1"}
+                    or (profile is not None and data["profile"] != profile)):
+                return None
+        elif version != 1 or profile is not None:
+            return None
+        if (set(data) != fields
                 or type(data["pid"]) is not int or type(data["created"]) is not int
                 or data["pid"] != pid or data["created"] != created
                 or data["status"] not in {"captured", "unrecognized", "engine_failed", "identity_refused",
@@ -101,7 +111,7 @@ class Engine:
     def __init__(self, sdk: Path):
         if C.sizeof(PTR) != 8 or C.sizeof(GUID) != 16 or C.sizeof(Frame) != 128:
             raise ValueError("unsupported ABI")
-        # Preload the checked SDK DbgHelp, then DbgEng. Search only each DLL's
+        # Preload the checked profile's DbgHelp, then DbgEng. Search only each DLL's
         # directory and System32; never PATH/cwd or arbitrary DLL directories.
         self.help = C.WinDLL(str(sdk / "dbghelp.dll"), winmode=0x100 | 0x800)
         self.dll = C.WinDLL(str(sdk / "dbgeng.dll"), winmode=0x100 | 0x800)
@@ -211,7 +221,16 @@ def run(request, native, *, engine_factory=Engine):
               "policy": 0, "detached": False, "hresult": None}
     engine, inherited = None, None
     try:
-        if (type(request) is not dict or set(request) != {"handle", "pid", "created", "image", "sdk", "hashes", "deadline"}
+        fields = {"handle", "pid", "created", "image", "sdk", "hashes", "deadline"}
+        version = 1
+        if type(request) is dict and "schemaVersion" in request:
+            version = request["schemaVersion"]
+            if (type(version) is not int or version != 2 or type(request.get("profile")) is not str
+                    or request["profile"] not in {"sdk-v1", "inbox-v1"}):
+                return result
+            fields.update(("schemaVersion", "profile"))
+            result.update(schemaVersion=2, profile=request["profile"])
+        if (type(request) is not dict or set(request) != fields
                 or any(type(request[k]) is not int or request[k] <= 0 for k in ("handle", "pid", "created"))
                 or request["handle"] >= 2**64 or request["pid"] > 0xFFFFFFFF or request["created"] >= 2**64
                 or type(request["image"]) is not str or type(request["sdk"]) is not str
@@ -227,15 +246,19 @@ def run(request, native, *, engine_factory=Engine):
             return result
         result["bound"] = True
         deadline = min(request["deadline"], time.monotonic() + 5.0)
-        sdk = native._regular(Path(request["sdk"]), directory=True)
-        hashes = request["hashes"]
-        if (type(hashes) is not dict or set(hashes) != {"cdb.exe", "dbgeng.dll", "dbghelp.dll"}
-                or any(type(v) is not str or len(v) != 64 or any(c not in "0123456789abcdef" for c in v)
-                       for v in hashes.values())):
-            return result
-        for name, digest in hashes.items():
-            if native._digest(sdk / name, deadline) != digest:
+        if version == 2:
+            sdk = native._bound_tool_profile(request["profile"], request["sdk"], request["hashes"], deadline)
+        else:
+            # Historical requests retain their original three-file SDK checks.
+            sdk = native._regular(Path(request["sdk"]), directory=True)
+            hashes = request["hashes"]
+            if (type(hashes) is not dict or set(hashes) != {"cdb.exe", "dbgeng.dll", "dbghelp.dll"}
+                    or any(type(v) is not str or len(v) != 64 or any(c not in "0123456789abcdef" for c in v)
+                           for v in hashes.values())):
                 return result
+            for name, digest in hashes.items():
+                if native._digest(sdk / name, deadline) != digest:
+                    return result
         if time.monotonic() >= deadline:
             raise TimeoutError()
         engine = engine_factory(sdk)

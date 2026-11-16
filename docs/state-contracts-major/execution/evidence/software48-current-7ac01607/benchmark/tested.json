@@ -1,0 +1,1170 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "source_tree": "e604e5c7c7e0673cc0793933f13b8cb0b3a913d7",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools actual7ac benchmark original owning software capture; no hosted/native/installed qualification"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "package.json": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+    "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+    "plugins/ca-codex/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca-pi/package.json": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+    "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+    "plugins/ca-pi/tools/package.json": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+    "plugins/ca-pi/tools/src/audit-sink.ts": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/notices.ts": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+    "plugins/ca-pi/tools/test/benchmark-boundary.ts": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+    "plugins/ca-pi/tools/tsconfig.json": "558973c3547ee0cca6872c5c13e9b0f1bbf29f8bdccd4bc96b8039b89c60f7c5",
+    "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "ba26cb7e243ea1d7c06d5f5b5f017d0cec71ed399c262e0d72409bed2e6ccf93"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca/hooks",
+      "path_order": "windows",
+      "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca-codex/hooks",
+      "path_order": "windows",
+      "sha256": "a2d976f78e54c2eb652cb9a57ed3279af7cebc7b6cf0afc8256ddb84d3e2948c"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/pi_benchmark.py",
+        "--samples",
+        "100"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 4.154374099991401,
+      "stdout_sha256": "584b576af7ff63534d79f878ad6956aa7c1a26284be2f50d435113c778043ac9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/protocol/capture-owner.py",
+      "sha256": "df6d0a0e3a9d3f44e4c39991ca5196adc8ce7bbcfcf738cf710f39480299892d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/config.json",
+      "sha256": "4432db58e5c66a2cff8df2277103cbfb89bdc764a8a106b43b882e3a4818d37a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/run-start.json",
+      "sha256": "a4ec4d1d6ff66b8cf18e0c1025fcd02ea1cba57e20c98f448d4eb9181f5d3b5b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/after-snapshot.json",
+      "sha256": "c7ae7d7db6562f3a47002f591f4e45e1b38003e8558f343bd7b8b5417bd2c6cd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/process-exit.json",
+      "sha256": "52467d171d306da0a44ff25f89c97341bdbeacf96f14fecee28e32f608fa6b9f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/run-result.json",
+      "sha256": "f59b3bea21c232352a005dcb7ef9201f8ea53fde296683266819f04675b4a366"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/capture-complete.json",
+      "sha256": "f88a3ea99b33b3d058cbb7f5c33b66f5c8253beab873c59855cf084e7394dd57"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/observer/sitecustomize.py",
+      "sha256": "fcd3d4c8ebfcd5de7f461b855c4501f710f710f0fb2d717ce1de81848ef5ef08"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/original.stdout.log.base64.json",
+      "sha256": "e9d5a17cbd2f5a4dab4bc065dbfde7082bff7a99a4c19e3a4bf53449bba733a5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/original.stderr.log.base64.json",
+      "sha256": "a7fc4605a679a0c6fcb5f88beabf5b12ba4ac5d862ff34e0bbc0f03bd6bd4e17"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/boundary-observation.json",
+      "sha256": "23dcd0250896b571350557a3b816115404247f057a028c349b018dee1df3eeaa"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:C36:02",
+    "disposition:transitions:C36:03"
+  ],
+  "original_named_results": [],
+  "execution_context": {
+    "actual_execution_source": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "actual_working_source_state": "Each original before/after identity retained; no clean/current epoch inferred from subsequent Root edits.",
+    "source_before_after": {
+      "ref": {
+        "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/run-start.json",
+        "sha256": "a4ec4d1d6ff66b8cf18e0c1025fcd02ea1cba57e20c98f448d4eb9181f5d3b5b"
+      },
+      "after_ref": {
+        "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/raw/after-snapshot.json",
+        "sha256": "c7ae7d7db6562f3a47002f591f4e45e1b38003e8558f343bd7b8b5417bd2c6cd"
+      },
+      "equal": true
+    },
+    "actual_positive_input_count": 30,
+    "structured_Python_runtime_count": 10795,
+    "actual_imports": {
+      ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+      "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+      "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+      "plugins/ca-codex/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    "typed_complete_Git_namespaces": [
+      {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows",
+        "sha256": "ba26cb7e243ea1d7c06d5f5b5f017d0cec71ed399c262e0d72409bed2e6ccf93"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "core/pysrc",
+        "path_order": "windows",
+        "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "plugins/ca/hooks",
+        "path_order": "windows",
+        "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "plugins/ca-codex/hooks",
+        "path_order": "windows",
+        "sha256": "a2d976f78e54c2eb652cb9a57ed3279af7cebc7b6cf0afc8256ddb84d3e2948c"
+      }
+    ],
+    "physical_namespace_projection": {
+      ".github/scripts": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_boundedproc.cpython-314.pyc",
+          "__pycache__/_codex_cli_profile.cpython-314.pyc",
+          "__pycache__/_contextverificationlib.cpython-314.pyc",
+          "__pycache__/_immutable_git_blobs.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check-plugin-refs.cpython-314.pyc",
+          "__pycache__/check_adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check_codex_host.cpython-314.pyc",
+          "__pycache__/check_codex_skill_resources.cpython-314.pyc",
+          "__pycache__/check_codex_static_package.cpython-314.pyc",
+          "__pycache__/check_control_bytes.cpython-314.pyc",
+          "__pycache__/check_sandbox_docker_layers.cpython-314.pyc",
+          "__pycache__/check_skill_portability.cpython-314.pyc",
+          "__pycache__/check_state_contracts_integration.cpython-314.pyc",
+          "__pycache__/ci20_native_binding.cpython-314.pyc",
+          "__pycache__/codex_agent_routes.cpython-314.pyc",
+          "__pycache__/major_qualification_report.cpython-314.pyc",
+          "__pycache__/major_readiness.cpython-314.pyc",
+          "__pycache__/observe_codex_installed_cli.cpython-314.pyc",
+          "__pycache__/observe_pi_installed_rpc.cpython-314.pyc",
+          "__pycache__/payload_scope.cpython-314.pyc",
+          "__pycache__/pi_benchmark.cpython-314.pyc",
+          "__pycache__/pi_cli_resolver.cpython-314.pyc",
+          "__pycache__/pi_host_locks.cpython-314.pyc",
+          "__pycache__/prepare_adr_acceptance.cpython-314.pyc",
+          "__pycache__/project_knowledge.cpython-314.pyc",
+          "__pycache__/retained_archive_cli_observation.cpython-314.pyc",
+          "__pycache__/run_artifact_authority_shard.cpython-314.pyc",
+          "__pycache__/run_concurrent_suites.cpython-314.pyc",
+          "__pycache__/test_artifact_authoring.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_adapter.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_retention.cpython-314.pyc",
+          "__pycache__/test_artifact_consumers.cpython-314.pyc",
+          "__pycache__/test_artifact_git_excludes.cpython-314.pyc",
+          "__pycache__/test_artifact_installed_host.cpython-314.pyc",
+          "__pycache__/test_artifact_npm_nested_launch.cpython-314.pyc",
+          "__pycache__/test_build_surface.cpython-314.pyc",
+          "__pycache__/test_ci20_native_pipeline.cpython-314.pyc",
+          "__pycache__/test_ci_impact.cpython-314.pyc",
+          "__pycache__/test_context_native.cpython-314.pyc",
+          "__pycache__/test_generated_output.cpython-314.pyc",
+          "__pycache__/test_hook_ci_partition.cpython-314.pyc",
+          "__pycache__/test_major_qualification_report.cpython-314.pyc",
+          "__pycache__/test_pi_child_live.cpython-314.pyc",
+          "__pycache__/test_pi_package.cpython-314.pyc",
+          "__pycache__/test_review_resubmission.cpython-314.pyc",
+          "__pycache__/test_sync_core.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_cli.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_hosts.cpython-314.pyc",
+          "__pycache__/verify_pi_support.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_adrlifecycle.cpython-314.pyc",
+          "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+          "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_artifactpromptlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_intentlib.cpython-314.pyc",
+          "__pycache__/_knowledgelib.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/_replylib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/knowledge.cpython-314.pyc",
+          "__pycache__/security-pass.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "plugins/ca/hooks": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_bashguardlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_gitlib.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_host.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_protectedstatelib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/pre-write.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "plugins/ca-codex/hooks": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_adrlifecycle.cpython-314.pyc",
+          "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+          "__pycache__/_adrlifecyclewrite.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_host.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_protectedstatelib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/pre-write.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      }
+    },
+    "private_prefix_and_no_user_site_observed": true,
+    "old_proof_retained_unchanged": {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+      "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+      "actual_old_source": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+    },
+    "actual_owned_host_lookup": {
+      "descriptor": {
+        "path": "core/pysrc/_host.py",
+        "path_style": "windows"
+      },
+      "physical": [
+        {
+          "parent": ".",
+          "successful_enumeration": true,
+          "names": [
+            ".agents",
+            ".claude",
+            ".claude-plugin",
+            ".codearbiter",
+            ".coderabbit.yaml",
+            ".git",
+            ".gitattributes",
+            ".github",
+            ".gitignore",
+            ".gitleaks.toml",
+            ".gitmodules",
+            "CHANGELOG.md",
+            "CLA.md",
+            "CODE_OF_CONDUCT.md",
+            "CONTRIBUTING.md",
+            "LICENSE",
+            "PRIVACY.md",
+            "README.md",
+            "SECURITY.md",
+            "THIRD_PARTY_NOTICES.md",
+            "academy-source",
+            "context-audit",
+            "core",
+            "docs",
+            "package.json",
+            "plugins",
+            "site",
+            "tests",
+            "tools"
+          ],
+          "matches": [
+            "core"
+          ],
+          "directory_identity": [
+            7847029335260095372,
+            103019841476668345
+          ]
+        },
+        {
+          "parent": "core",
+          "successful_enumeration": true,
+          "names": [
+            "activation-contract.json",
+            "artifact-release-manifest.json",
+            "artifacts",
+            "hosts.json",
+            "pysrc",
+            "surface",
+            "workflow-recovery-contract.json"
+          ],
+          "matches": [
+            "pysrc"
+          ],
+          "directory_identity": [
+            7847029335260095372,
+            7036874418346321
+          ]
+        },
+        {
+          "parent": "core/pysrc",
+          "successful_enumeration": true,
+          "names": [
+            "__pycache__",
+            "_activationlib.py",
+            "_adrlifecycle.py",
+            "_adrlifecyclegit.py",
+            "_adrlifecyclewrite.py",
+            "_appendonlyconflictlib.py",
+            "_approvallib.py",
+            "_arbiterstatelib.py",
+            "_artifactauthoritylib.py",
+            "_artifactlib.py",
+            "_artifactmanifestlib.py",
+            "_artifactpromptlib.py",
+            "_babysitlib.py",
+            "_bashguardlib.py",
+            "_boxlib.py",
+            "_cleanuplib.py",
+            "_colorlib.py",
+            "_contextmergelib.py",
+            "_contextreportlib.py",
+            "_contextselectlib.py",
+            "_contextsnapshotlib.py",
+            "_contextwriterlib.py",
+            "_debughandofflib.py",
+            "_durabilitylib.py",
+            "_entrylib.py",
+            "_fmtlib.py",
+            "_gitexec.py",
+            "_githooks.py",
+            "_gitlib.py",
+            "_hooklib.py",
+            "_intentlib.py",
+            "_knowledgelib.py",
+            "_ledgerlib.py",
+            "_modelib.py",
+            "_overrideappendlib.py",
+            "_pathnorm.py",
+            "_planfilelib.py",
+            "_prerequisitelib.py",
+            "_protectedlib.py",
+            "_protectedstatelib.py",
+            "_provenancelib.py",
+            "_prunelib.py",
+            "_prunepolicy.py",
+            "_readinjectlib.py",
+            "_reconciliationlib.py",
+            "_releaselib.py",
+            "_replylib.py",
+            "_scopelib.py",
+            "_segmentslib.py",
+            "_sensitivelib.py",
+            "_sessionlib.py",
+            "_sloplib.py",
+            "_sprintapprovallib.py",
+            "_standuplib.py",
+            "_subagentslib.py",
+            "_taskboardlib.py",
+            "_taskexcludelib.py",
+            "_tribunalinventorylib.py",
+            "_tribunalrunlib.py",
+            "_updatelib.py",
+            "_usagelib.py",
+            "_workadopt.py",
+            "_workflowrecoverylib.py",
+            "_workgithub.py",
+            "_worklib.py",
+            "adr-acceptance.py",
+            "adr-merge-method.py",
+            "append-override.py",
+            "artifact-authority-hook.py",
+            "artifact-authority.py",
+            "artifact-reconcile.py",
+            "babysit.py",
+            "boardsync.py",
+            "debug-handoff.py",
+            "doctor.py",
+            "git-enforce.py",
+            "hostapi.py",
+            "init-codearbiter.py",
+            "knowledge.py",
+            "migration-pass.py",
+            "post-write-edit.py",
+            "pre-bash.py",
+            "pre-edit.py",
+            "pre-read.py",
+            "pre-write.py",
+            "prompt-submit.py",
+            "prune-transcript.py",
+            "releasehash.py",
+            "resolve-append-only-conflict.py",
+            "resolve-context-conflict.py",
+            "security-pass.py",
+            "session-start.py",
+            "statusline.py",
+            "taskwrite.py",
+            "tribunal.py",
+            "update-refresh.py",
+            "wire-statusline.py",
+            "work.py",
+            "workflow-recovery.py"
+          ],
+          "matches": [],
+          "directory_identity": [
+            7847029335260095372,
+            29836347531910111
+          ]
+        }
+      ],
+      "immutable": [
+        {
+          "parent": ".",
+          "successful_enumeration": true,
+          "entries": [
+            {
+              "name": ".agents",
+              "entry": "040000 tree f52c6d9c5bbb75102ede34d4725b0b24d96bd6b0"
+            },
+            {
+              "name": ".claude-plugin",
+              "entry": "040000 tree 1b951253b9bac94b25886704617a353dc32d6cab"
+            },
+            {
+              "name": ".codearbiter",
+              "entry": "040000 tree aa81ea7a5e20491d47f276b67c3b52010c79abc3"
+            },
+            {
+              "name": ".coderabbit.yaml",
+              "entry": "100644 blob c96eb04ab2198a787d75190d1994b0dfb3738073"
+            },
+            {
+              "name": ".gitattributes",
+              "entry": "100644 blob bab79a18460520362cdde59b882337d2706f31f2"
+            },
+            {
+              "name": ".github",
+              "entry": "040000 tree 175c23deeae67a4d00fac07b2fbae013106ba4be"
+            },
+            {
+              "name": ".gitignore",
+              "entry": "100644 blob c3c19e899b7df09f73054ff1d157171ece3f2428"
+            },
+            {
+              "name": ".gitleaks.toml",
+              "entry": "100644 blob 1aebd3b9e11e5f8fcd65423cb6ca106fa4a1386a"
+            },
+            {
+              "name": ".gitmodules",
+              "entry": "100644 blob 984e7051db098986d992f311371064c9351f0a5f"
+            },
+            {
+              "name": "CHANGELOG.md",
+              "entry": "100644 blob b8810da77523e464351265aba443777f774c649f"
+            },
+            {
+              "name": "CLA.md",
+              "entry": "100644 blob 2d0b14aa7371a4366f37c5c9876b9d7c995cbc6d"
+            },
+            {
+              "name": "CODE_OF_CONDUCT.md",
+              "entry": "100644 blob e22dcc34793d94fffa7d0660ab0042f1da6ce8f2"
+            },
+            {
+              "name": "CONTRIBUTING.md",
+              "entry": "100644 blob 180dfee17e1da7a2aa00a5525295ef5ce4bd5921"
+            },
+            {
+              "name": "LICENSE",
+              "entry": "100644 blob be3f7b28e564e7dd05eaf59d64adba1a4065ac0e"
+            },
+            {
+              "name": "PRIVACY.md",
+              "entry": "100644 blob eddb84738ade23fbc63ebaf565c12e6172ceeb88"
+            },
+            {
+              "name": "README.md",
+              "entry": "100644 blob 31bb46dc4c235027abf1c351b7d5da817bbf91f0"
+            },
+            {
+              "name": "SECURITY.md",
+              "entry": "100644 blob 445f07800076f1a771cb15e6f965b7b7f43e783d"
+            },
+            {
+              "name": "THIRD_PARTY_NOTICES.md",
+              "entry": "100644 blob 346e0c63677aac60426a20efd3984907dc3bcaf5"
+            },
+            {
+              "name": "academy-source",
+              "entry": "160000 commit 54e8a42874664ee2f484dee433024f80b0aa128b"
+            },
+            {
+              "name": "context-audit",
+              "entry": "040000 tree 2069170847b2fbc7a01c6901fb0fb72a789b86cb"
+            },
+            {
+              "name": "core",
+              "entry": "040000 tree de8850bc1634de079425b4b143465e214300706b"
+            },
+            {
+              "name": "docs",
+              "entry": "040000 tree ad73425761bc80dd157a775df36a2a8747259028"
+            },
+            {
+              "name": "package.json",
+              "entry": "100644 blob 96bbd20a8447a0d7327a059aee5b265e546aa104"
+            },
+            {
+              "name": "plugins",
+              "entry": "040000 tree 2f83fadb77d807c5775ae89070a82b17d2532d48"
+            },
+            {
+              "name": "site",
+              "entry": "040000 tree 10dabb9dd731ef8b8cf7492f2a6eb07740c0df93"
+            },
+            {
+              "name": "tests",
+              "entry": "040000 tree 6aeab58483cc2e947b82bebb4aaaf42b498068fc"
+            },
+            {
+              "name": "tools",
+              "entry": "040000 tree 69ff98eb8f6a58c8f71fb269ced7d18dbbd4b449"
+            }
+          ],
+          "matches": [
+            {
+              "name": "core",
+              "entry": "040000 tree de8850bc1634de079425b4b143465e214300706b"
+            }
+          ],
+          "stdout_sha256": "7c122fcadb6b8e0d554302206bc6cbed6b2198fbc1dfa2dffd5d3afca7b6a89b"
+        },
+        {
+          "parent": "core",
+          "successful_enumeration": true,
+          "entries": [
+            {
+              "name": "activation-contract.json",
+              "entry": "100644 blob 0e679de3a91cb648f1faac43381151281be514a7"
+            },
+            {
+              "name": "artifact-release-manifest.json",
+              "entry": "100644 blob ca170c2b363301e75c28b39976c92218e5ac624c"
+            },
+            {
+              "name": "artifacts",
+              "entry": "040000 tree 51f9bd804065d9367802d57bd02b19b768088066"
+            },
+            {
+              "name": "hosts.json",
+              "entry": "100644 blob 2fc53a8b7ca7b0e5a656f5640d9662d798af8856"
+            },
+            {
+              "name": "pysrc",
+              "entry": "040000 tree 933452016c79926dd0c858aea94bf4a5670d4900"
+            },
+            {
+              "name": "surface",
+              "entry": "040000 tree af11b23d7044deb66aaa3c55942b653317ce7d3e"
+            },
+            {
+              "name": "workflow-recovery-contract.json",
+              "entry": "100644 blob 663d76c9e34970a48261f0a1d7c550d09dc3a101"
+            }
+          ],
+          "matches": [
+            {
+              "name": "pysrc",
+              "entry": "040000 tree 933452016c79926dd0c858aea94bf4a5670d4900"
+            }
+          ],
+          "stdout_sha256": "6a64d980486d0db7f42afb481211d7c866446fced1664e43023cd0a40a9d0b43"
+        },
+        {
+          "parent": "core/pysrc",
+          "successful_enumeration": true,
+          "entries": [
+            {
+              "name": "_activationlib.py",
+              "entry": "100644 blob 3e3875a454941317efb1f172d2861e407b1c6b4c"
+            },
+            {
+              "name": "_adrlifecycle.py",
+              "entry": "100644 blob ba8cc2bdd08911b501d4e3e97c5ac52788b53bfd"
+            },
+            {
+              "name": "_adrlifecyclegit.py",
+              "entry": "100644 blob c762d9a12103e25d747904b923e2357e19b74004"
+            },
+            {
+              "name": "_adrlifecyclewrite.py",
+              "entry": "100644 blob 46e59f0be15c25e39efa4d58380daab615483c76"
+            },
+            {
+              "name": "_appendonlyconflictlib.py",
+              "entry": "100644 blob e7b541afea6765c9fed282eb68610e2367b3d77e"
+            },
+            {
+              "name": "_approvallib.py",
+              "entry": "100644 blob f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13"
+            },
+            {
+              "name": "_arbiterstatelib.py",
+              "entry": "100644 blob be9ed277e3cc84936dd1cc2fbe41e5142c48d06e"
+            },
+            {
+              "name": "_artifactauthoritylib.py",
+              "entry": "100644 blob fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+            },
+            {
+              "name": "_artifactlib.py",
+              "entry": "100644 blob 4ebc16010335c0288a65ff8721068717d4212d78"
+            },
+            {
+              "name": "_artifactmanifestlib.py",
+              "entry": "100644 blob 1e84d812031a969be1decaa73ee8ea0bf8c613cb"
+            },
+            {
+              "name": "_artifactpromptlib.py",
+              "entry": "100644 blob e9f2faeef57008fc202ef05f1693f9afdaaed099"
+            },
+            {
+              "name": "_babysitlib.py",
+              "entry": "100644 blob bbdbe552f371e1268f4a208d3d11ddf0c0cfdf07"
+            },
+            {
+              "name": "_bashguardlib.py",
+              "entry": "100644 blob 85e332e9b7eb3a385e66afcd7052b9d39ec4bce3"
+            },
+            {
+              "name": "_boxlib.py",
+              "entry": "100644 blob 65d29531fcdfa1ac364acdebc3e45438b1064519"
+            },
+            {
+              "name": "_cleanuplib.py",
+              "entry": "100644 blob 4d92635ec4245ad0b9c77bf275f704b909fee9ca"
+            },
+            {
+              "name": "_colorlib.py",
+              "entry": "100644 blob 13b37ec8329c2f8bd01bc662d95df2fa3b1ff925"
+            },
+            {
+              "name": "_contextmergelib.py",
+              "entry": "100644 blob b4fd6fe36b38e9821b3c65888392b9df67a88f11"
+            },
+            {
+              "name": "_contextreportlib.py",
+              "entry": "100644 blob 000a03764987f7bb45db3093b1ae9c0da713650a"
+            },
+            {
+              "name": "_contextselectlib.py",
+              "entry": "100644 blob 4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+            },
+            {
+              "name": "_contextsnapshotlib.py",
+              "entry": "100644 blob cc89a71aa784b109fbdfe123a787b30dab957134"
+            },
+            {
+              "name": "_contextwriterlib.py",
+              "entry": "100644 blob 0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+            },
+            {
+              "name": "_debughandofflib.py",
+              "entry": "100644 blob ea1b8f3f36456e7364923dd1d4373a953831c736"
+            },
+            {
+              "name": "_durabilitylib.py",
+              "entry": "100644 blob eb0c3815bee5a039b3643ba059a1ccb44ff986a6"
+            },
+            {
+              "name": "_entrylib.py",
+              "entry": "100644 blob 14f5b7f68a60430df9c87a0395be1ca47d9aa70c"
+            },
+            {
+              "name": "_fmtlib.py",
+              "entry": "100644 blob 76ab33d684c69833756b05c6eea3f0612acbf344"
+            },
+            {
+              "name": "_gitexec.py",
+              "entry": "100644 blob 6f959b77dbe4a1779bb55e7002ddc237c9b0eab1"
+            },
+            {
+              "name": "_githooks.py",
+              "entry": "100644 blob c30c2fbebdc49d481126adc2fd3994eb416c9ecf"
+            },
+            {
+              "name": "_gitlib.py",
+              "entry": "100644 blob c870e393c0416b23b1f997232dd5f36d3f5705fe"
+            },
+            {
+              "name": "_hooklib.py",
+              "entry": "100644 blob ef7b48317f0875ac0dc0189326206f5fef8e3050"
+            },
+            {
+              "name": "_intentlib.py",
+              "entry": "100644 blob 5b88d6e66c7f41f251a822d5238a62e2ce991427"
+            },
+            {
+              "name": "_knowledgelib.py",
+              "entry": "100644 blob 5248c4c87fdf47d9587a82abab876b60a10f011c"
+            },
+            {
+              "name": "_ledgerlib.py",
+              "entry": "100644 blob 48a66da46a8b33e9b56df5934a97be931a33adf1"
+            },
+            {
+              "name": "_modelib.py",
+              "entry": "100644 blob 9593bb119d8a85eea0291ad45d1edaf9dc7e405f"
+            },
+            {
+              "name": "_overrideappendlib.py",
+              "entry": "100644 blob dc3e310b65cf5c0438f7d5441b60d4684a17df3c"
+            },
+            {
+              "name": "_pathnorm.py",
+              "entry": "100644 blob a4ca0fcc856c80c175b221465b577ccf70591784"
+            },
+            {
+              "name": "_planfilelib.py",
+              "entry": "100644 blob e3825a54039985bd4b6f13a4b280445f5a9b3cfd"
+            },
+            {
+              "name": "_prerequisitelib.py",
+              "entry": "100644 blob 124e82479efdf836aebfcd00746d94a84fbd8a48"
+            },
+            {
+              "name": "_protectedlib.py",
+              "entry": "100644 blob 9daeaf94103e8fb6d935eccbd55347d45818da6c"
+            },
+            {
+              "name": "_protectedstatelib.py",
+              "entry": "100644 blob 1d90335465271ba4920fb119bb564a94ca56e8f1"
+            },
+            {
+              "name": "_provenancelib.py",
+              "entry": "100644 blob 790ec8470991180dacace9455d22da59fb16faec"
+            },
+            {
+              "name": "_prunelib.py",
+              "entry": "100644 blob ed0626c34ca98efecb4049f9321deb8bb263ace3"
+            },
+            {
+              "name": "_prunepolicy.py",
+              "entry": "100644 blob 0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6"
+            },
+            {
+              "name": "_readinjectlib.py",
+              "entry": "100644 blob eb9ac0c2ed4516450ec8607327790e3edaab8252"
+            },
+            {
+              "name": "_reconciliationlib.py",
+              "entry": "100644 blob 394a2212fac91ea597a9989414cae10ee004e915"
+            },
+            {
+              "name": "_releaselib.py",
+              "entry": "100644 blob 7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8"
+            },
+            {
+              "name": "_replylib.py",
+              "entry": "100644 blob 01091fb370347018a2b38a2e2e1176d9ba266f51"
+            },
+            {
+              "name": "_scopelib.py",
+              "entry": "100644 blob 53994a0d077cba7ec461a3b103766c5f077704d1"
+            },
+            {
+              "name": "_segmentslib.py",
+              "entry": "100644 blob 1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf"
+            },
+            {
+              "name": "_sensitivelib.py",
+              "entry": "100644 blob e9671658cc8f2ce1ccb27277848de601641b6f90"
+            },
+            {
+              "name": "_sessionlib.py",
+              "entry": "100644 blob 2f66a623db10c277af9a33f9edeb8c99b5dc16cc"
+            },
+            {
+              "name": "_sloplib.py",
+              "entry": "100644 blob fe429cca7fca219da512faad06dd0bfc15846a52"
+            },
+            {
+              "name": "_sprintapprovallib.py",
+              "entry": "100644 blob 7219fd881b203b917d2bec192c3c274d08c83fda"
+            },
+            {
+              "name": "_standuplib.py",
+              "entry": "100644 blob 0906f3eb5087ba0d15182581cbe3d24c319b1ef7"
+            },
+            {
+              "name": "_subagentslib.py",
+              "entry": "100644 blob eef3178da2580558be6e6bf84cba276b4f355cdc"
+            },
+            {
+              "name": "_taskboardlib.py",
+              "entry": "100644 blob 85511a724f3de7a8cf84c069814d0605e72f3395"
+            },
+            {
+              "name": "_taskexcludelib.py",
+              "entry": "100644 blob df2300611bfc7ca9aa945900d53c7b6c5032eda9"
+            },
+            {
+              "name": "_tribunalinventorylib.py",
+              "entry": "100644 blob 8103dfb8e48ae62c3b36fb5557c71075bd409577"
+            },
+            {
+              "name": "_tribunalrunlib.py",
+              "entry": "100644 blob c2db7a2b082e005e0be9dd637a853c6ee096a01f"
+            },
+            {
+              "name": "_updatelib.py",
+              "entry": "100644 blob 7de5c411dd17a443d57ad7df13d8c6e6309e601b"
+            },
+            {
+              "name": "_usagelib.py",
+              "entry": "100644 blob 62ed503ae24522500162a7a307b024b9d958ff26"
+            },
+            {
+              "name": "_workadopt.py",
+              "entry": "100644 blob 8c1d380094a66b4de42d5d96ffc6f75eb90a0334"
+            },
+            {
+              "name": "_workflowrecoverylib.py",
+              "entry": "100644 blob a211da361e2fa03333b98fce0260687af330079d"
+            },
+            {
+              "name": "_workgithub.py",
+              "entry": "100644 blob f666340a7bfa3524944dff608fc3d8fe95b6d41b"
+            },
+            {
+              "name": "_worklib.py",
+              "entry": "100644 blob 7f118b7ae057b89017e1c1ec7c779c7687740330"
+            },
+            {
+              "name": "adr-acceptance.py",
+              "entry": "100644 blob e2754ecae806b0c45653cd506a3423a00c936c8b"
+            },
+            {
+              "name": "adr-merge-method.py",
+              "entry": "100644 blob 183d7739639adfcaff2267c183445c1d311e8503"
+            },
+            {
+              "name": "append-override.py",
+              "entry": "100644 blob 0add80319167c6760f43cfc3a7b494f0b0155287"
+            },
+            {
+              "name": "artifact-authority-hook.py",
+              "entry": "100644 blob a8087a07c199db1a36ee8f59b23c866958abb6a2"
+            },
+            {
+              "name": "artifact-authority.py",
+              "entry": "100644 blob 9ecd8bb20f843b9b97069f0289f898747eade725"
+            },
+            {
+              "name": "artifact-reconcile.py",
+              "entry": "100644 blob d80602a85ea9e79a64523bfbc8014bd2ca97f538"
+            },
+            {
+              "name": "babysit.py",
+              "entry": "100644 blob bd3b7612bbf233112cae9a23c3d551a24494830d"
+            },
+            {
+              "name": "boardsync.py",
+              "entry": "100644 blob 06290bcb50929cf147c08b47cad276c5f73fe55c"
+            },
+            {
+              "name": "debug-handoff.py",
+              "entry": "100644 blob 14d301010a576f009f052dc2fbc3328e88484598"
+            },
+            {
+              "name": "doctor.py",
+              "entry": "100644 blob d3b81bdcc21fb02977936ac51151db9086ad3397"
+            },
+            {
+              "name": "git-enforce.py",
+              "entry": "100644 blob bf26b26b73f5db048b3e21126a131938c962c06e"
+            },
+            {
+              "name": "hostapi.py",
+              "entry": "100644 blob 1a7db1792ef432615a47a7cf4aed7714b16045dc"
+            },
+            {
+              "name": "init-codearbiter.py",
+              "entry": "100644 blob f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4"
+            },
+            {
+              "name": "knowledge.py",
+              "entry": "100644 blob 91bd9d4bb5077b5980d0e2559b5fe793718feb65"
+            },
+            {
+              "name": "migration-pass.py",
+              "entry": "100644 blob aca17a32b2f311164db80e44dda76bb8b736d869"
+            },
+            {
+              "name": "post-write-edit.py",
+              "entry": "100644 blob 797cbe9b01a976fc8740534bc837be49ea128f06"
+            },
+            {
+              "name": "pre-bash.py",
+              "entry": "100644 blob 85d6f488dea32761a9a6c1bbb929ff5eb67d8e9f"
+            },
+            {
+              "name": "pre-edit.py",
+              "entry": "100644 blob 7e74f13f6fdb6257d86ca63924bd8e7362d75aae"
+            },
+            {
+              "name": "pre-read.py",
+              "entry": "100644 blob 08f4467a9895d81eff1a71b9a1c57b5682a311f8"
+            },
+            {
+              "name": "pre-write.py",
+              "entry": "100644 blob 858679550a2ec79003a02e5e208665049ccb3de2"
+            },
+            {
+              "name": "prompt-submit.py",
+              "entry": "100644 blob 5a92b48650a9b5beb056e0d01cc6af997ff98acd"
+            },
+            {
+              "name": "prune-transcript.py",
+              "entry": "100644 blob f6a8bfb89b12d225a323c327d8792442ea28af8f"
+            },
+            {
+              "name": "releasehash.py",
+              "entry": "100644 blob 0cf9ac47e7e3e18b60646807e24915beeddf5c03"
+            },
+            {
+              "name": "resolve-append-only-conflict.py",
+              "entry": "100644 blob 8dbb1604c21d0f09f3c9b4c615b419e1d2c17962"
+            },
+            {
+              "name": "resolve-context-conflict.py",
+              "entry": "100644 blob 4e9a9555ba0f708557d76a231cbf88ce4a36ce41"
+            },
+            {
+              "name": "security-pass.py",
+              "entry": "100644 blob 6cd472e73368b9e0609b18ebc3f805f231570b59"
+            },
+            {
+              "name": "session-start.py",
+              "entry": "100644 blob 9f14a960219746ec7632c2afbecf0238e215cc51"
+            },
+            {
+              "name": "statusline.py",
+              "entry": "100644 blob 41692a6903478ab6ca253865efb86e387b089692"
+            },
+            {
+              "name": "taskwrite.py",
+              "entry": "100644 blob 2243e3bfed634f496c70f815c54d5208ed321032"
+            },
+            {
+              "name": "tribunal.py",
+              "entry": "100644 blob c3f6ca2ab5ec9a6717878de32fa277d354ca6f84"
+            },
+            {
+              "name": "update-refresh.py",
+              "entry": "100644 blob 0dda6d1b20d8e4328fc19108968095e646ab65e2"
+            },
+            {
+              "name": "wire-statusline.py",
+              "entry": "100644 blob d04c83234fc373121d3f8b52f317690373f01080"
+            },
+            {
+              "name": "work.py",
+              "entry": "100644 blob fce39a305e86c19675af0e1f664b886949a86c53"
+            },
+            {
+              "name": "workflow-recovery.py",
+              "entry": "100644 blob 41f0ade6ae5ade17915dda699ef6432fe9079739"
+            }
+          ],
+          "matches": [],
+          "stdout_sha256": "29eaad051f2650919d0074de829658866d628a5d8d1f502c7bd4c6cb5b0b8d6f"
+        }
+      ]
+    }
+  },
+  "scope": "Same existing 2 TESTED software rows only; exact original owning assertions/current actual inputs and output observed at7ac. No new statuses, task/scenario/native/host/provider/model/publication qualification.",
+  "limits": [
+    "Original test/source/command assertions unchanged. Actual first result and full after-snapshot persisted before validation.",
+    "Full actual Python installation10795 files observed in structured records; no historical1905 count relabeled as current.",
+    "Complete physical namespace records preserve legacy caches/untracked noncausal entries; private bytecode prefix precedes project imports. No cache deletion or blanket physical==Git claim.",
+    "Transcripts retained losslessly with original decoded SHA256/bytes; private originals unchanged.",
+    "All current cells preserve old active/history references at real source/ref epochs; no overall staged/program readiness claimed.",
+    "Original --samples100 command only, no --real-spawn. Temporary production wrapBuiltins bundle+approved Node/esbuild run; bridge/factory105 counters are stubs, not105 Go/native effects.",
+    "Read-only profiling adds overhead; no uninstrumented performance, improvement or real-host/provider claim. CPU lane was quiet after ci actor inspection release."
+  ],
+  "absent_inputs": [
+    {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows"
+    }
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:C36:02",
+      "original_owner": "pi_benchmark._production_pi_samples + _boundary_session",
+      "observed_assertions": {
+        "cached_esbuild_version": "0.28.1",
+        "node_profile": "approved cached22.19 hash995a3fb3\u2026",
+        "build_exit_code": 0,
+        "bundle_sha256": "1c97eb09139a2887899549d30b2b4b6de3c85d364d72d877140b603fa9a8ff15",
+        "temporary_bundle_bytes": 39932,
+        "first_message": {
+          "phase": "ready",
+          "wrapperCount": 4,
+          "registrationMs": 0.5377999999999972
+        },
+        "startup_ms": 34.0122
+      },
+      "full_clause": "Original temporary production wrapBuiltins bundle succeeded; original bounded readiness owner returned the actual first ready record with4 wrappers and measured startup. Existing accepted R07 readiness bound supersedes historical unbounded-readline defect; no criterion/guard changes."
+    },
+    {
+      "cell": "disposition:transitions:C36:03",
+      "original_owner": "pi_benchmark._production_pi_samples + _measure_host + main",
+      "observed_assertions": {
+        "phase": "complete",
+        "timings": 100,
+        "bridgeCallCount": 105,
+        "nativeCallCount": 105,
+        "child_exit_code": 0,
+        "public_rows": [
+          {
+            "platform": "windows",
+            "host": "claude",
+            "sampleCount": 100,
+            "startupMs": 2119.6288,
+            "coreP50Ms": 0.6996,
+            "adapterP50Ms": 1.3641,
+            "adapterP95Ms": 2.0168
+          },
+          {
+            "platform": "windows",
+            "host": "codex",
+            "sampleCount": 100,
+            "startupMs": 20.8886,
+            "coreP50Ms": 0.7278,
+            "adapterP50Ms": 1.3965,
+            "adapterP95Ms": 3.4711
+          },
+          {
+            "platform": "windows",
+            "host": "pi",
+            "sampleCount": 100,
+            "startupMs": 34.0122,
+            "coreP50Ms": 0.7006,
+            "adapterP50Ms": 0.01559999999999917,
+            "adapterP95Ms": 0.05679999999999907
+          }
+        ],
+        "original_cli_exit_code": 0
+      },
+      "full_clause": "Original parent validated exactly100 timings and105+105 fixture calls, phase complete and exit0; calculated P50/P95 and emitted only bounded public scalar rows. Failure/retry checks unchanged; existing malformed/timeout reader history remains at its original epoch."
+    }
+  ]
+}

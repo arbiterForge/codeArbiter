@@ -13,13 +13,17 @@ from __future__ import annotations
 import argparse
 from contextlib import ExitStack
 import hashlib
+import io
+import zipfile
 import json
 import os
 from pathlib import Path, PurePosixPath
 import runpy
+import shutil
 import stat
 import subprocess
 import sys
+import tempfile
 import traceback
 import unittest
 from unittest import mock
@@ -27,12 +31,14 @@ from unittest import mock
 import major_readiness as readiness
 import ci20_native_binding as native_binding_owner
 from _boundedproc import start as start_process, terminate_tree
+from _gitexec import local_read_git_env
 
 ROOT = Path(__file__).resolve().parents[2]
 OBSERVATION = "codearbiter.major-test-observation/1"
 SELECTIONS = "codearbiter.major-test-selections/1"
 MAX_JSON = 16 * 1024 * 1024
 MAX_TESTS = 32768
+MAX_TEST_ID_BYTES = 4096
 
 
 def require(value, reason):
@@ -67,15 +73,11 @@ def new_output(path, document):
         stream.write("\n")
 
 
-def git(repo, *args):
-    env = dict(os.environ)
-    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
-                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
-                 "GIT_GRAFT_FILE", "GIT_REPLACE_REF_BASE", "GIT_SHALLOW_FILE"):
-        env.pop(name, None)
+def git(repo, *args, raw=False, input=None):
+    env = local_read_git_env()
     result = subprocess.run(["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args],
-                            env=env, capture_output=True, timeout=30, check=True)
-    return result.stdout.decode("utf-8").strip()
+                            env=env, input=input, capture_output=True, timeout=30, check=True)
+    return result.stdout if raw else result.stdout.decode("utf-8").strip()
 
 
 def ordinary_native_read_lock(repo):
@@ -101,16 +103,674 @@ def ordinary_native_read_lock(repo):
         return False
 
 
-def source_identity(repo):
+def source_identity(repo, profile=None):
     status = git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z")
+    outputs = _pi_output_members(repo) if profile == "pi-tools-v1" else set()
+    require(profile is None or profile == SOURCE_PROFILE or profile in TS_PROFILE_PATHS, "unknown source identity profile")
     clean = all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
-                for entry in status.split("\0"))
+                or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.split("\0"))
     return {"source_commit": git(repo, "rev-parse", "HEAD"),
             "source_tree": git(repo, "rev-parse", "HEAD^{tree}"),
             "clean": clean}
 
 
-def observe_python(repo, script, arguments, output):
+SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/check_skill_proof_fresh.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/test_check_skill_proof_fresh.py',
+ '.github/scripts/test_generated_output.py',
+ 'core/artifact-release-manifest.json',
+ 'core/hosts.json',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/surface/COMMANDS.md',
+ 'core/surface/README.md',
+ 'core/surface/SPRINT.md',
+ 'core/surface/agents/INDEX.md',
+ 'core/surface/agents/architecture-drift-reviewer.md',
+ 'core/surface/agents/auth-crypto-reviewer.md',
+ 'core/surface/agents/authority-reviewer.md',
+ 'core/surface/agents/backend-author.md',
+ 'core/surface/agents/checkpoint-aggregator.md',
+ 'core/surface/agents/coverage-auditor.md',
+ 'core/surface/agents/decision-challenger.md',
+ 'core/surface/agents/dependency-reviewer.md',
+ 'core/surface/agents/design-quality-reviewer.md',
+ 'core/surface/agents/finding-triage.md',
+ 'core/surface/agents/frontend-author.md',
+ 'core/surface/agents/grader.md',
+ 'core/surface/agents/infra-author.md',
+ 'core/surface/agents/map-deps.md',
+ 'core/surface/agents/map-structure.md',
+ 'core/surface/agents/migration-reviewer.md',
+ 'core/surface/agents/scout.md',
+ 'core/surface/agents/security-reviewer.md',
+ 'core/surface/agents/tribunal-lens-reviewer.md',
+ 'core/surface/agents/verdict-aggregator.md',
+ 'core/surface/arbiter.md',
+ 'core/surface/command-routes.json',
+ 'core/surface/commands/add-dep.md',
+ 'core/surface/commands/adr-status.md',
+ 'core/surface/commands/adr.md',
+ 'core/surface/commands/audit.md',
+ 'core/surface/commands/checkpoint.md',
+ 'core/surface/commands/chore.md',
+ 'core/surface/commands/cleanup.md',
+ 'core/surface/commands/commit.md',
+ 'core/surface/commands/conflict.md',
+ 'core/surface/commands/context-check.md',
+ 'core/surface/commands/create-context.md',
+ 'core/surface/commands/debug.md',
+ 'core/surface/commands/decompose.md',
+ 'core/surface/commands/doctor.md',
+ 'core/surface/commands/feature.md',
+ 'core/surface/commands/fix.md',
+ 'core/surface/commands/init.md',
+ 'core/surface/commands/override.md',
+ 'core/surface/commands/pr.md',
+ 'core/surface/commands/prune.md',
+ 'core/surface/commands/reconcile.md',
+ 'core/surface/commands/refactor.md',
+ 'core/surface/commands/release.md',
+ 'core/surface/commands/review.md',
+ 'core/surface/commands/spike.md',
+ 'core/surface/commands/sprint.md',
+ 'core/surface/commands/standup.md',
+ 'core/surface/commands/status.md',
+ 'core/surface/commands/statusline.md',
+ 'core/surface/commands/task.md',
+ 'core/surface/commands/threat-model.md',
+ 'core/surface/commands/tribunal.md',
+ 'core/surface/commands/watch.md',
+ 'core/surface/includes/anti-slop-design/INDEX.md',
+ 'core/surface/includes/anti-slop-design/color.md',
+ 'core/surface/includes/anti-slop-design/core.md',
+ 'core/surface/includes/anti-slop-design/images.md',
+ 'core/surface/includes/anti-slop-design/layout.md',
+ 'core/surface/includes/anti-slop-design/medium-cli.md',
+ 'core/surface/includes/anti-slop-design/medium-dataviz.md',
+ 'core/surface/includes/anti-slop-design/medium-diagram.md',
+ 'core/surface/includes/anti-slop-design/medium-documents.md',
+ 'core/surface/includes/anti-slop-design/medium-slides.md',
+ 'core/surface/includes/anti-slop-design/medium-web.md',
+ 'core/surface/includes/anti-slop-design/typography.md',
+ 'core/surface/includes/artifacts-attestation.md',
+ 'core/surface/includes/artifacts.md',
+ 'core/surface/includes/author-tdd-workflow.md',
+ 'core/surface/includes/codex-host-notes.md',
+ 'core/surface/includes/command-compatibility.md',
+ 'core/surface/includes/compaction-charter.md',
+ 'core/surface/includes/cut-docs.md',
+ 'core/surface/includes/dangerous-mode.md',
+ 'core/surface/includes/farm.md',
+ 'core/surface/includes/fresh-verification.md',
+ 'core/surface/includes/harvest.md',
+ 'core/surface/includes/helper-invocation.md',
+ 'core/surface/includes/knowledge.md',
+ 'core/surface/includes/maturity-coverage.md',
+ 'core/surface/includes/ops-mode.md',
+ 'core/surface/includes/pi-host-notes.md',
+ 'core/surface/includes/redirect.md',
+ 'core/surface/includes/reference-map.md',
+ 'core/surface/includes/review-matrix.md',
+ 'core/surface/includes/reviewer-contract.md',
+ 'core/surface/includes/routing-table.md',
+ 'core/surface/includes/safety-core.md',
+ 'core/surface/includes/security-gate-record.md',
+ 'core/surface/includes/smarts/core.md',
+ 'core/surface/includes/smarts/decision-log-format.md',
+ 'core/surface/includes/smarts/lenses.md',
+ 'core/surface/includes/sprint-authority.md',
+ 'core/surface/includes/verification-boundary.md',
+ 'core/surface/skills/INDEX.md',
+ 'core/surface/skills/brainstorming/SKILL.md',
+ 'core/surface/skills/commit-gate/SKILL.md',
+ 'core/surface/skills/context-check/SKILL.md',
+ 'core/surface/skills/context-creation/SKILL.md',
+ 'core/surface/skills/context-creation/references/markdown-format.md',
+ 'core/surface/skills/crypto-compliance/SKILL.md',
+ 'core/surface/skills/debug/SKILL.md',
+ 'core/surface/skills/debug/references/debug-handoff.schema.json',
+ 'core/surface/skills/debug/references/handoff.md',
+ 'core/surface/skills/debug/references/minimal-unresolved.json',
+ 'core/surface/skills/debug/references/preparation.md',
+ 'core/surface/skills/decision-lifecycle/SKILL.md',
+ 'core/surface/skills/decision-lifecycle/references/adr-template.md',
+ 'core/surface/skills/decision-lifecycle/references/authoring.md',
+ 'core/surface/skills/decision-variance/SKILL.md',
+ 'core/surface/skills/decision-variance/references/analysis.md',
+ 'core/surface/skills/decompose/SKILL.md',
+ 'core/surface/skills/decompose/references/markdown-format.md',
+ 'core/surface/skills/dispatching-parallel-agents/SKILL.md',
+ 'core/surface/skills/executing-plans/SKILL.md',
+ 'core/surface/skills/finishing-a-development-branch/SKILL.md',
+ 'core/surface/skills/post-merge-cleanup/SKILL.md',
+ 'core/surface/skills/refactor/SKILL.md',
+ 'core/surface/skills/release/SKILL.md',
+ 'core/surface/skills/secret-handling/SKILL.md',
+ 'core/surface/skills/security-architecture/SKILL.md',
+ 'core/surface/skills/subagent-driven-development/SKILL.md',
+ 'core/surface/skills/subagent-driven-development/references/farm-dispatch.md',
+ 'core/surface/skills/tdd/SKILL.md',
+ 'core/surface/skills/tribunal/SKILL.md',
+ 'core/surface/skills/tribunal/references/ai-markers.md',
+ 'core/surface/skills/tribunal/references/cost-and-models.md',
+ 'core/surface/skills/tribunal/references/finding-record.md',
+ 'core/surface/skills/tribunal/references/issue-filing.md',
+ 'core/surface/skills/tribunal/references/lenses/appsec.md',
+ 'core/surface/skills/tribunal/references/lenses/architecture.md',
+ 'core/surface/skills/tribunal/references/lenses/change-closure.md',
+ 'core/surface/skills/tribunal/references/lenses/coverage.md',
+ 'core/surface/skills/tribunal/references/lenses/infra.md',
+ 'core/surface/skills/tribunal/references/lenses/migration.md',
+ 'core/surface/skills/tribunal/references/lenses/observability.md',
+ 'core/surface/skills/tribunal/references/lenses/performance.md',
+ 'core/surface/skills/tribunal/references/lenses/reliability.md',
+ 'core/surface/skills/tribunal/references/lenses/secrets-supply.md',
+ 'core/surface/skills/tribunal/references/lenses/semantic-contract.md',
+ 'core/surface/skills/tribunal/references/lenses/test-fidelity.md',
+ 'core/surface/skills/tribunal/references/lenses/typesafety.md',
+ 'core/surface/skills/tribunal/references/report.md',
+ 'core/surface/skills/tribunal/references/review-risk.md',
+ 'core/surface/skills/tribunal/references/schemas.md',
+ 'core/surface/skills/tribunal/references/telemetry.md',
+ 'core/surface/skills/tribunal/references/triage.md',
+ 'core/surface/skills/tribunal/references/verification-quality.md',
+ 'core/surface/skills/using-git-worktrees/SKILL.md',
+ 'core/surface/skills/writing-plans/SKILL.md',
+ 'core/surface/skills/writing-plans/references/farm-plan.md',
+ 'plugins/ca/skills/release/SKILL.md',
+ 'tools/build-artifact-manifest-contract.py',
+ 'tools/build-surface.py',
+ 'tools/command_compatibility.py',
+ 'tools/host_descriptors.py',
+ 'tools/owned_output.py'))
+
+SOURCE_PROFILE = "hooks-proof-publisher-v1"
+SOURCE_MANIFEST = "source-test-inputs.json"
+SOURCE_FORMAT = "codearbiter.source-test-input-payload/1"
+SOURCE_BINDING = "codearbiter.source-test-input-binding/1"
+SOURCE_PAYLOAD = readiness.SOURCE_INPUT_PAYLOAD
+SOURCE_JOB = "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+SOURCE_UPLOAD = readiness.SOURCE_INPUT_UPLOAD
+SOURCE_PROFILE_CELLS = frozenset(('disposition:added_transitions:S75:added-rolled-back', 'disposition:added_transitions:S75:added-stage-failed', 'disposition:added_transitions:S75:added-unusable', 'disposition:added_transitions:S75:added-writer-refused', 'disposition:machines:C33', 'disposition:transitions:C33:01', 'disposition:transitions:C33:02', 'disposition:transitions:C33:03', 'disposition:transitions:S75:05'))
+
+
+TS_COMMON_PATHS = frozenset(('.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/workflows/ci.yml',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py'))
+TS_PROFILE_PATHS = {
+    'pi-tools-v1': TS_COMMON_PATHS | frozenset(('core/hosts.json',
+     'plugins/ca-pi/extensions/codearbiter-child.js',
+     'plugins/ca-pi/extensions/codearbiter.js',
+     'plugins/ca-pi/tools/build.mjs',
+     'plugins/ca-pi/tools/package-lock.json',
+     'plugins/ca-pi/tools/package.json',
+     'plugins/ca-pi/tools/src/activation.ts',
+     'plugins/ca-pi/tools/src/activity.ts',
+     'plugins/ca-pi/tools/src/approval-dialog.ts',
+     'plugins/ca-pi/tools/src/approval-entry.ts',
+     'plugins/ca-pi/tools/src/attestation.ts',
+     'plugins/ca-pi/tools/src/audit-sink.ts',
+     'plugins/ca-pi/tools/src/background-jobs.ts',
+     'plugins/ca-pi/tools/src/bridge.ts',
+     'plugins/ca-pi/tools/src/child-env.ts',
+     'plugins/ca-pi/tools/src/child-extension.ts',
+     'plugins/ca-pi/tools/src/command-ownership.ts',
+     'plugins/ca-pi/tools/src/commands.ts',
+     'plugins/ca-pi/tools/src/compaction.ts',
+     'plugins/ca-pi/tools/src/compatibility.ts',
+     'plugins/ca-pi/tools/src/contracts.ts',
+     'plugins/ca-pi/tools/src/delegated-executor.ts',
+     'plugins/ca-pi/tools/src/delegation-client.ts',
+     'plugins/ca-pi/tools/src/delegation-contract.ts',
+     'plugins/ca-pi/tools/src/delegation-journal.ts',
+     'plugins/ca-pi/tools/src/delegation-session.ts',
+     'plugins/ca-pi/tools/src/dispatch.ts',
+     'plugins/ca-pi/tools/src/doctor.ts',
+     'plugins/ca-pi/tools/src/extension.ts',
+     'plugins/ca-pi/tools/src/farm.ts',
+     'plugins/ca-pi/tools/src/footer-state.ts',
+     'plugins/ca-pi/tools/src/footer.ts',
+     'plugins/ca-pi/tools/src/git-facts.ts',
+     'plugins/ca-pi/tools/src/inference-broker.ts',
+     'plugins/ca-pi/tools/src/native-background.ts',
+     'plugins/ca-pi/tools/src/native-plan.ts',
+     'plugins/ca-pi/tools/src/notices.ts',
+     'plugins/ca-pi/tools/src/parent-delegation.ts',
+     'plugins/ca-pi/tools/src/path-boundary.ts',
+     'plugins/ca-pi/tools/src/pi-api.d.ts',
+     'plugins/ca-pi/tools/src/plan-mode.ts',
+     'plugins/ca-pi/tools/src/policy.ts',
+     'plugins/ca-pi/tools/src/process-tree.ts',
+     'plugins/ca-pi/tools/src/redaction.ts',
+     'plugins/ca-pi/tools/src/roles.ts',
+     'plugins/ca-pi/tools/src/runner.ts',
+     'plugins/ca-pi/tools/src/runtime-resolver.ts',
+     'plugins/ca-pi/tools/src/session-identity.ts',
+     'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+     'plugins/ca-pi/tools/src/sidebar-data.ts',
+     'plugins/ca-pi/tools/src/sidebar-manager.ts',
+     'plugins/ca-pi/tools/src/sidebar.ts',
+     'plugins/ca-pi/tools/src/status.ts',
+     'plugins/ca-pi/tools/src/tool-guard.ts',
+     'plugins/ca-pi/tools/src/windows-supervisor.ts',
+     'plugins/ca-pi/tools/test/activation.test.ts',
+     'plugins/ca-pi/tools/test/activity.test.ts',
+     'plugins/ca-pi/tools/test/approval-dialog.test.ts',
+     'plugins/ca-pi/tools/test/audit-sink.test.ts',
+     'plugins/ca-pi/tools/test/background-jobs.test.ts',
+     'plugins/ca-pi/tools/test/benchmark-boundary.ts',
+     'plugins/ca-pi/tools/test/bridge.test.ts',
+     'plugins/ca-pi/tools/test/child-env.test.ts',
+     'plugins/ca-pi/tools/test/commands.test.ts',
+     'plugins/ca-pi/tools/test/compaction.test.ts',
+     'plugins/ca-pi/tools/test/delegated-executor.test.ts',
+     'plugins/ca-pi/tools/test/delegation-contract.test.ts',
+     'plugins/ca-pi/tools/test/delegation-journal.test.ts',
+     'plugins/ca-pi/tools/test/delegation-session.test.ts',
+     'plugins/ca-pi/tools/test/dispatch.test.ts',
+     'plugins/ca-pi/tools/test/doctor.test.ts',
+     'plugins/ca-pi/tools/test/farm.test.ts',
+     'plugins/ca-pi/tools/test/final-arguments-live.test.ts',
+     'plugins/ca-pi/tools/test/final-arguments.test.ts',
+     'plugins/ca-pi/tools/test/fixtures/live-governed-extension.mjs',
+     'plugins/ca-pi/tools/test/fixtures/live-later-extension.mjs',
+     'plugins/ca-pi/tools/test/fixtures/pi-0.80.5-help.txt',
+     'plugins/ca-pi/tools/test/fixtures/pi-0.80.6-help.txt',
+     'plugins/ca-pi/tools/test/footer.test.ts',
+     'plugins/ca-pi/tools/test/git-facts.test.ts',
+     'plugins/ca-pi/tools/test/inference-broker.test.ts',
+     'plugins/ca-pi/tools/test/live-pi-host.ts',
+     'plugins/ca-pi/tools/test/module-structure.test.ts',
+     'plugins/ca-pi/tools/test/notices.test.ts',
+     'plugins/ca-pi/tools/test/package.test.ts',
+     'plugins/ca-pi/tools/test/parent-delegation.test.ts',
+     'plugins/ca-pi/tools/test/path-boundary.test.ts',
+     'plugins/ca-pi/tools/test/plan-mode.test.ts',
+     'plugins/ca-pi/tools/test/policy.test.ts',
+     'plugins/ca-pi/tools/test/process-tree.test.ts',
+     'plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts',
+     'plugins/ca-pi/tools/test/runner-isolation.test.ts',
+     'plugins/ca-pi/tools/test/runtime-resolver.test.ts',
+     'plugins/ca-pi/tools/test/security.test.ts',
+     'plugins/ca-pi/tools/test/setup-disposable-home.ts',
+     'plugins/ca-pi/tools/test/sidebar-compositor.test.ts',
+     'plugins/ca-pi/tools/test/sidebar-data.test.ts',
+     'plugins/ca-pi/tools/test/sidebar-manager.test.ts',
+     'plugins/ca-pi/tools/test/sidebar-probe-live.test.ts',
+     'plugins/ca-pi/tools/test/sidebar-window-contract.test.ts',
+     'plugins/ca-pi/tools/test/sidebar.test.ts',
+     'plugins/ca-pi/tools/test/status.test.ts',
+     'plugins/ca-pi/tools/test/tool-guard.test.ts',
+     'plugins/ca-pi/tools/test/windows-supervisor.test.ts',
+     'plugins/ca-pi/tools/test/workflow-recovery.test.ts',
+     'plugins/ca-pi/tools/tsconfig.json',
+     'plugins/ca-pi/tools/vitest.config.ts',
+     'plugins/ca/hooks/secret-detection-corpus.json',
+     'plugins/ca/tools/redactor.ts')),
+    'sandbox-tools-v1': TS_COMMON_PATHS | frozenset(('plugins/ca-sandbox/tools/__fixtures__/docker-required/gate.fixture.test.ts',
+     'plugins/ca-sandbox/tools/__fixtures__/docker-required/vitest.config.ts',
+     'plugins/ca-sandbox/tools/__fixtures__/go/go.mod',
+     'plugins/ca-sandbox/tools/__fixtures__/go/main.go',
+     'plugins/ca-sandbox/tools/__fixtures__/node/index.js',
+     'plugins/ca-sandbox/tools/__fixtures__/node/package.json',
+     'plugins/ca-sandbox/tools/__fixtures__/py/main.py',
+     'plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt',
+     'plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock',
+     'plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml',
+     'plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs',
+     'plugins/ca-sandbox/tools/__tests__/isolation.test.ts',
+     'plugins/ca-sandbox/tools/build-pinned-base.test.ts',
+     'plugins/ca-sandbox/tools/build.test.ts',
+     'plugins/ca-sandbox/tools/build.ts',
+     'plugins/ca-sandbox/tools/builder-observation.test.ts',
+     'plugins/ca-sandbox/tools/cache-provenance.test.ts',
+     'plugins/ca-sandbox/tools/claude-inside-cli.test.ts',
+     'plugins/ca-sandbox/tools/claude-inside-cli.ts',
+     'plugins/ca-sandbox/tools/claude-inside.js',
+     'plugins/ca-sandbox/tools/claude-inside.test.ts',
+     'plugins/ca-sandbox/tools/claude-inside.ts',
+     'plugins/ca-sandbox/tools/cli-resolve.test.ts',
+     'plugins/ca-sandbox/tools/cli.test.ts',
+     'plugins/ca-sandbox/tools/cli.ts',
+     'plugins/ca-sandbox/tools/cp.test.ts',
+     'plugins/ca-sandbox/tools/cp.ts',
+     'plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts',
+     'plugins/ca-sandbox/tools/create-partial-compensation.test.ts',
+     'plugins/ca-sandbox/tools/create.test.ts',
+     'plugins/ca-sandbox/tools/create.ts',
+     'plugins/ca-sandbox/tools/deadline.test.ts',
+     'plugins/ca-sandbox/tools/dephash.test.ts',
+     'plugins/ca-sandbox/tools/dephash.ts',
+     'plugins/ca-sandbox/tools/destroy.ts',
+     'plugins/ca-sandbox/tools/docker-gate.test.ts',
+     'plugins/ca-sandbox/tools/docker-gate.ts',
+     'plugins/ca-sandbox/tools/docker.ts',
+     'plugins/ca-sandbox/tools/exec.test.ts',
+     'plugins/ca-sandbox/tools/exec.ts',
+     'plugins/ca-sandbox/tools/installed-bundle.test.ts',
+     'plugins/ca-sandbox/tools/layering.test.ts',
+     'plugins/ca-sandbox/tools/lifecycle.test.ts',
+     'plugins/ca-sandbox/tools/mounts.test.ts',
+     'plugins/ca-sandbox/tools/mounts.ts',
+     'plugins/ca-sandbox/tools/multistack.test.ts',
+     'plugins/ca-sandbox/tools/native-build-inputs.test.ts',
+     'plugins/ca-sandbox/tools/network.test.ts',
+     'plugins/ca-sandbox/tools/network.ts',
+     'plugins/ca-sandbox/tools/package-lock.json',
+     'plugins/ca-sandbox/tools/package.json',
+     'plugins/ca-sandbox/tools/registry.ts',
+     'plugins/ca-sandbox/tools/run.test.ts',
+     'plugins/ca-sandbox/tools/run.ts',
+     'plugins/ca-sandbox/tools/sandbox.js',
+     'plugins/ca-sandbox/tools/smoke.test.ts',
+     'plugins/ca-sandbox/tools/smoke.ts',
+     'plugins/ca-sandbox/tools/state-contracts.test.ts',
+     'plugins/ca-sandbox/tools/supply-chain.test.ts',
+     'plugins/ca-sandbox/tools/teardown.test.ts',
+     'plugins/ca-sandbox/tools/tsconfig.json',
+     'plugins/ca-sandbox/tools/vitest.config.ts')),
+}
+
+TS_PROFILE_ROOTS = {"pi-tools-v1": "plugins/ca-pi/tools", "sandbox-tools-v1": "plugins/ca-sandbox/tools"}
+TS_PROFILE_JOBS = {"pi-tools-v1": "Coverage union (Pi)  <os: windows-latest>",
+                   "sandbox-tools-v1": "[CHECK] | [SBX ] | Sandbox driver contract"}
+TS_PROFILE_PAYLOADS = {"pi-tools-v1": "major-source-inputs-pi-windows-coverage",
+                       "sandbox-tools-v1": "major-source-inputs-sandbox-driver"}
+TS_PROFILE_UPLOADS = {"pi-tools-v1": "Upload Pi source-test inputs", "sandbox-tools-v1": "Upload Sandbox source-test inputs"}
+TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualification:disposable-home:" + number for number in ("01", "02", "03")),
+                    "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",))}
+TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
+
+
+def source_profile(profile=SOURCE_PROFILE):
+    if profile == SOURCE_PROFILE:
+        return {"paths": SOURCE_PATHS, "job": SOURCE_JOB, "payload": SOURCE_PAYLOAD, "upload": SOURCE_UPLOAD}
+    require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
+    return {"paths": TS_PROFILE_PATHS[profile], "job": TS_PROFILE_JOBS[profile],
+            "payload": TS_PROFILE_PAYLOADS[profile], "upload": TS_PROFILE_UPLOADS[profile], "root": TS_PROFILE_ROOTS[profile]}
+
+
+def _ts_members(repo, profile):
+    root = Path(repo) / TS_PROFILE_ROOTS[profile]
+    found, pending, count = set(), [root], 0
+    while pending:
+        folder = pending.pop(); count += 1
+        info = folder.lstat()
+        require(count <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "source profile namespace is unsafe or unbounded")
+        for path in folder.iterdir():
+            if folder == root and path.name in ("node_modules", "coverage", ".vitest-reports"):
+                continue  # Declared third-party/runtime outputs, never claimed as captured source.
+            if folder == root and profile == "pi-tools-v1" and path.name == "coverage-inputs":
+                _pi_output_members(repo)
+                continue
+            info = path.lstat()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "source profile namespace contains a link")
+            if stat.S_ISDIR(info.st_mode): pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode), "source profile namespace contains nonregular data")
+                found.add(path.relative_to(repo).as_posix())
+                require(len(found) <= 2048, "source profile namespace exceeds bound")
+    require(found == {p for p in TS_PROFILE_PATHS[profile] if p.startswith(TS_PROFILE_ROOTS[profile] + "/")},
+            "source profile physical membership differs")
+
+
+def _pi_output_members(repo):
+    folder = Path(repo) / "plugins/ca-pi/tools/coverage-inputs"
+    if not folder.exists() and not folder.is_symlink(): return set()
+    info = folder.lstat()
+    require(stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+            and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "Pi coverage output directory is unsafe")
+    names = set()
+    for path in folder.iterdir():
+        info = path.lstat()
+        require(path.name in TS_OUTPUT_NAMES and stat.S_ISREG(info.st_mode) and info.st_nlink == 1
+                and not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+                and info.st_size <= MAX_JSON, "foreign or unsafe Pi coverage output")
+        names.add(path.relative_to(repo).as_posix())
+    return names
+
+
+
+def _source_file(repo, relative, paths=None):
+    paths = SOURCE_PATHS if paths is None else paths
+    require(relative in paths, "source payload path outside fixed profile")
+    path = Path(repo)
+    for component in PurePosixPath(relative).parts:
+        path = path / component
+        info = path.lstat()
+        require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "source payload link/reparse input")
+        if path != Path(repo) / relative:
+            require(stat.S_ISDIR(info.st_mode), "source payload ancestor is not a directory")
+    require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and info.st_size <= 8 * 1024 * 1024,
+            "source payload input is not bounded regular data")
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(descriptor, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        require((opened.st_dev, opened.st_ino) == (info.st_dev, info.st_ino)
+                and stat.S_ISREG(opened.st_mode), "source payload input changed before read")
+        value = stream.read(8 * 1024 * 1024 + 1)
+        after = os.fstat(stream.fileno())
+    require(len(value) <= 8 * 1024 * 1024 and (opened.st_size, opened.st_mtime_ns) == (after.st_size, after.st_mtime_ns),
+            "source payload input changed during read")
+    return value
+
+
+def _source_root_members(repo):
+    found, pending, directories = set(), [Path(repo) / "core/surface"], 0
+    while pending:
+        folder = pending.pop(); directories += 1
+        info = folder.lstat()
+        require(directories <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "source payload root is unsafe or unbounded")
+        for path in folder.iterdir():
+            info = path.lstat()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "source payload membership contains a link")
+            if stat.S_ISDIR(info.st_mode): pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode), "source payload membership is not regular")
+                found.add(path.relative_to(repo).as_posix())
+                require(len(found) <= 2048, "source payload membership exceeds bound")
+    require(found == {p for p in SOURCE_PATHS if p.startswith("core/surface/")},
+            "source payload physical membership differs")
+
+
+def _source_byte_mismatch(relative, expected, actual):
+    # Do not decode source content or forward arbitrary paths/metadata. This
+    # diagnostic describes only one bounded member of a closed source profile.
+    require(type(relative) is str and (relative in SOURCE_PATHS
+            or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
+            "byte mismatch diagnostic member is outside fixed profiles")
+    require(type(expected) is bytes and type(actual) is bytes
+            and len(expected) <= 8 * 1024 * 1024 and len(actual) <= 8 * 1024 * 1024,
+            "byte mismatch diagnostic requires bounded source bytes")
+    def summary(value):
+        crlf = value.count(b"\r\n")
+        return {"sha256": readiness.digest(value), "bytes": len(value),
+                "lf": value.count(b"\n") - crlf, "crlf": crlf,
+                "cr": value.count(b"\r") - crlf}
+    record = {"format": "codearbiter.source-input-byte-mismatch/1",
+              "member_sha256": readiness.digest(relative.encode("utf-8")),
+              "expected": summary(expected), "actual": summary(actual)}
+    return "source payload physical bytes differ from Git: " + json.dumps(record, sort_keys=True, separators=(",", ":"))
+
+
+def source_input_snapshot(repo, profile=SOURCE_PROFILE):
+    repo = Path(repo).resolve(strict=True)
+    spec = source_profile(profile)
+    paths = spec["paths"]
+    identity = source_identity(repo, profile)
+    require(identity["clean"], "source payload checkout is not clean")
+    if profile == SOURCE_PROFILE: _source_root_members(repo)
+    else: _ts_members(repo, profile)
+    rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
+    entries = []
+    for row in rows.split(b"\0"):
+        if not row: continue
+        header, relative = row.split(b"\t", 1)
+        mode, kind, blob = header.decode("ascii").split()
+        relative = relative.decode("utf-8")
+        require(relative in paths and kind == "blob" and mode in ("100644", "100755")
+                and readiness.SHA.fullmatch(blob), "source payload immutable member invalid")
+        entries.append((relative, mode, blob))
+    require(len(entries) == len(paths) and len({p for p, _, _ in entries}) == len(paths),
+            "source payload immutable membership differs")
+    batch = git(repo, "cat-file", "--batch", raw=True,
+                input="".join(blob + "\n" for _, _, blob in entries).encode("ascii"))
+    require(len(batch) <= 64 * 1024 * 1024, "source payload byte bound exceeded")
+    cursor, members, total = 0, [], 0
+    for relative, mode, expected in entries:
+        end = batch.index(b"\n", cursor)
+        blob, kind, size = batch[cursor:end].decode("ascii").split()
+        size = int(size); cursor = end + 1
+        require(blob == expected and kind == "blob" and 0 <= size <= 8 * 1024 * 1024, "source payload blob invalid")
+        value = batch[cursor:cursor + size]; cursor += size
+        require(batch[cursor:cursor + 1] == b"\n", "source payload blob truncated"); cursor += 1
+        actual = _source_file(repo, relative, paths)
+        if actual != value:
+            raise ValueError(_source_byte_mismatch(relative, value, actual))
+        total += size
+        require(total <= 64 * 1024 * 1024, "source payload total exceeds bound")
+        members.append({"path": relative, "sha256": readiness.digest(value), "bytes": size, "git_mode": mode})
+    require(cursor == len(batch), "source payload has trailing blob data")
+    return {**identity, "members": sorted(members, key=lambda item: item["path"])}
+
+
+def validate_source_manifest(record, req, job_name, members):
+    spec = source_profile(record.get("profile") if isinstance(record, dict) else None)
+    paths = spec["paths"]
+    fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
+    require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
+            and record["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
+            and job_name == record["producer_job_name"] == spec["job"]
+            and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
+            and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
+            and type(record["ci_run_id"]) is int and record["ci_run_id"] == req["ci_run_id"] > 0,
+            "source payload manifest identity differs")
+    rows = record["members"]
+    require(isinstance(rows, list) and len(rows) == len(paths), "source payload manifest population differs")
+    require(all(isinstance(row, dict) and set(row) == {"path", "sha256", "bytes", "git_mode"}
+                and type(row["path"]) is str and row["path"] in paths
+                and type(row["sha256"]) is str and readiness.DIGEST.fullmatch(row["sha256"])
+                and type(row["bytes"]) is int and 0 <= row["bytes"] <= 8 * 1024 * 1024
+                and row["git_mode"] in ("100644", "100755") for row in rows), "source payload manifest member invalid")
+    require([row["path"] for row in rows] == sorted(paths)
+            and sum(row["bytes"] for row in rows) <= 64 * 1024 * 1024, "source payload manifest membership differs")
+    expected = {row["path"]: row["sha256"] for row in rows}
+    actual = {row["path"]: row["sha256"] for row in members}
+    require(len(actual) == len(members) and set(actual) == paths | {SOURCE_MANIFEST}
+            and all(actual[path] == value for path, value in expected.items()), "source payload archive membership differs")
+    return record
+
+
+def prepare_source_payload(repo, output, job_name, profile=SOURCE_PROFILE):
+    spec = source_profile(profile)
+    require(job_name == spec["job"], "source payload owner differs")
+    repo = Path(repo).resolve(strict=True); output = Path(output).absolute()
+    output = output.parent.resolve(strict=True) / output.name
+    require(not output.exists() and not output.is_symlink() and not output.is_relative_to(repo),
+            "new external source payload directory required")
+    before = source_input_snapshot(repo, profile)
+    output.mkdir()
+    for row in before["members"]:
+        value = _source_file(repo, row["path"], spec["paths"])
+        require(readiness.digest(value) == row["sha256"], "source payload changed before staging")
+        target = output / row["path"]; target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as stream: stream.write(value)
+    record = {"format": SOURCE_FORMAT, "profile": profile,
+        "source_commit": before["source_commit"], "source_tree": before["source_tree"],
+        "workflow": ".github/workflows/ci.yml", "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0")),
+        "producer_job_name": job_name, "members": before["members"]}
+    require(record["ci_run_id"] > 0 and source_input_snapshot(repo, profile) == before, "source payload staging source changed")
+    new_output(output / SOURCE_MANIFEST, record)
+    return record
+
+
+def source_observation_binding(repo, staged, identity, profile=SOURCE_PROFILE):
+    spec = source_profile(profile)
+    staged = Path(staged)
+    info = staged.lstat()
+    require(stat.S_ISDIR(info.st_mode) and not staged.is_symlink()
+            and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "source payload stage is not an ordinary directory")
+    staged = staged.resolve(strict=True)
+    require(not staged.is_relative_to(Path(repo).resolve()), "source payload must be outside source")
+    record = load_json(staged / SOURCE_MANIFEST)
+    require(record.get("profile") == profile, "source payload profile differs from original invocation")
+    snapshot = source_input_snapshot(repo, profile)
+    require(all(snapshot[key] == identity[key] for key in ("source_commit", "source_tree", "clean")),
+            "source payload observation source changed")
+    members = [{"path": row["path"], "sha256": row["sha256"]} for row in snapshot["members"]]
+    raw = (staged / SOURCE_MANIFEST).read_bytes()
+    require(len(raw) <= 1024 * 1024, "source payload manifest exceeds bound")
+    members.append({"path": SOURCE_MANIFEST, "sha256": readiness.digest(raw)})
+    validate_source_manifest(record, {**identity, "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0"))}, spec["job"], members)
+    require(record["members"] == snapshot["members"], "source payload observation members changed")
+    actual, pending = set(), [staged]
+    permitted = spec["paths"] | {SOURCE_MANIFEST}
+    parents = {parent.as_posix() for name in permitted for parent in PurePosixPath(name).parents if parent.as_posix() != "."}
+    while pending:
+        folder = pending.pop()
+        for path in folder.iterdir():
+            info = path.lstat(); name = path.relative_to(staged).as_posix()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "source payload stage contains a link")
+            if stat.S_ISDIR(info.st_mode):
+                require(name in parents, "source payload stage has a foreign directory")
+                pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode) and name in permitted, "source payload stage has a foreign member")
+                actual.add(name)
+    require(actual == permitted, "source payload stage contains extra/missing files")
+    for row in record["members"]:
+        require(readiness.digest(_source_file(staged, row["path"], spec["paths"])) == row["sha256"], "source payload staged bytes differ")
+    return {"format": SOURCE_BINDING, "profile": profile,
+            "payload_name": spec["payload"], "manifest_sha256": readiness.digest(raw)}
+
+
+def admit_source_observation(observed, payload, req, job_name, job_id):
+    binding = observed.get("source_input_binding")
+    spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
+    require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
+            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS)
+            and binding["payload_name"] == spec["payload"]
+            and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
+            and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
+            "source test payload binding missing or differs")
+    if binding["profile"] != SOURCE_PROFILE:
+        require(observed.get("producer") == "vitest-json-observer", "TS source profile requires original Vitest observer")
+    record = payload.get("documents", {}).get(SOURCE_MANIFEST)
+    validate_source_manifest(record, req, job_name, payload.get("members", []))
+    require(next(row["sha256"] for row in payload["members"] if row["path"] == SOURCE_MANIFEST)
+            == binding["manifest_sha256"], "source test manifest digest differs")
+
+
+def observe_python(repo, script, arguments, output, source_payload=None):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
@@ -118,6 +778,7 @@ def observe_python(repo, script, arguments, output):
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
     before = source_identity(repo)
+    source_binding = source_observation_binding(repo, source_payload, before) if source_payload else None
     rows, active = [], {}
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
@@ -171,13 +832,21 @@ def observe_python(repo, script, arguments, output):
         sys.path[:] = original_path
         os.chdir(original_cwd)
     after = source_identity(repo)
-    new_output(output, {"format": OBSERVATION, **before,
-                       "source_stable": before == after and before["clean"],
+    stable = before == after and before["clean"]
+    if source_payload:
+        try:
+            stable = stable and source_observation_binding(repo, source_payload, after) == source_binding
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+            stable = False
+    document = {"format": OBSERVATION, **before,
+                       "source_stable": stable,
                        "ci_run_id": int(os.environ.get("GITHUB_RUN_ID", "0")),
                        "proof_kind": "source-test", "producer": "python-test-result-observer",
                        "argv": [sys.executable, str(script), *arguments],
-                       "exit_code": code, "tests": rows})
-    return code
+                       "exit_code": code, "tests": rows}
+    if source_binding is not None: document["source_input_binding"] = source_binding
+    new_output(output, document)
+    return code if not source_payload or stable else 1
 
 
 def admit_go(record, binding, source_tree):
@@ -205,52 +874,301 @@ def admit_go(record, binding, source_tree):
     require(selected and len(set(selected)) == len(selected) and sorted(selected) == sorted(observed)
             and len(set(observed)) == len(observed), "native named population differs")
     require(all(r.get("result") in ("pass", "skip") for r in record["observed"]), "native failure cannot qualify")
+    children = record.get("subtests", [])
+    require(isinstance(children, list) and len(children) + len(selected) <= MAX_TESTS,
+            "native child population exceeds bound")
+    child_names = set()
+    for child in children:
+        require(isinstance(child, dict) and set(child) == {"package", "test", "result"}
+                and isinstance(child["package"], str) and isinstance(child["test"], str)
+                and "/" in child["test"] and len(child["test"].encode("utf-8")) <= 4096
+                and (child["package"], child["test"].split("/", 1)[0]) in selected
+                and child["result"] in ("pass", "skip"), "invalid native child outcome")
+        identity = (child["package"], child["test"])
+        require(identity not in child_names, "repeated native child outcome")
+        child_names.add(identity)
     return {"format": OBSERVATION, "source_commit": binding["source_commit"],
             "source_tree": source_tree, "source_stable": True, "ci_run_id": int(binding["run_id"]),
             "proof_kind": "native-module", "producer": "go-named-ci20-join",
             "native_binding": binding, "argv": record["argv"], "exit_code": 0,
             "tests": [{"id": "go:" + r["package"] + ":" + r["test"],
                        "result": "passed" if r["result"] == "pass" else "skipped"}
-                      for r in record["observed"]]}
+                      for r in [*record["observed"], *children]]}
 
 
 def admit_vitest(record, *, repo, before, after, argv, exit_code, run_id):
-    require(isinstance(record, dict) and isinstance(record.get("testResults"), list), "Vitest named outcomes missing")
-    rows = []
+    require(isinstance(record, dict) and isinstance(record.get("testResults"), list)
+            and len(record["testResults"]) <= MAX_TESTS, "Vitest named outcomes missing or exceed bound")
+    rows, identities = [], set()
     repo = Path(repo).resolve()
     for suite in record["testResults"]:
-        path = Path(suite["name"]).resolve().relative_to(repo).as_posix()
+        require(isinstance(suite, dict) and isinstance(suite.get("name"), str)
+                and 0 < len(suite["name"].encode("utf-8")) <= 4096
+                and isinstance(suite.get("assertionResults"), list), "malformed Vitest suite")
+        try:
+            path = Path(suite["name"]).resolve().relative_to(repo).as_posix()
+        except (OSError, ValueError):
+            raise ValueError("Vitest suite is outside source repository") from None
         for case in suite["assertionResults"]:
+            require(isinstance(case, dict) and isinstance(case.get("fullName"), str)
+                    and 0 < len(case["fullName"].encode("utf-8")) <= MAX_TEST_ID_BYTES
+                    and isinstance(case.get("status"), str) and len(rows) < MAX_TESTS,
+                    "malformed or unbounded Vitest named outcome")
             state = {"passed": "passed", "failed": "failed", "pending": "skipped",
                      "skipped": "skipped", "todo": "skipped", "disabled": "skipped"}.get(case["status"])
             require(state is not None, "unknown Vitest outcome")
-            rows.append({"id": "vitest:" + path + ":" + case["fullName"], "result": state})
+            identity = "vitest:" + path + ":" + case["fullName"]
+            require(len(identity.encode("utf-8")) <= MAX_TEST_ID_BYTES,
+                    "Vitest complete named identity exceeds canonical bound")
+            require(identity not in identities, "duplicate Vitest named outcome")
+            identities.add(identity)
+            rows.append({"id": identity, "result": state})
     require(rows, "Vitest ran no named tests")
     return {"format": OBSERVATION, **before, "source_stable": before == after and before["clean"],
             "ci_run_id": run_id, "proof_kind": "source-test", "producer": "vitest-json-observer", "argv": argv,
             "exit_code": exit_code, "tests": rows}
 
 
-def observe_vitest(repo, arguments, raw_results, output):
-    """Add a JSON reporter to the one original owning Vitest invocation."""
-    require(arguments and raw_results and not Path(raw_results).exists() and not Path(raw_results).is_symlink()
-            and not Path(output).exists() and not Path(output).is_symlink(),
-            "new Vitest result and observation paths required")
-    require(not any(a.startswith(("--reporter", "--outputFile")) for a in arguments),
-            "the original invocation must use the one owned JSON reporter")
-    before = source_identity(repo)
-    command = [*arguments, "--reporter=json", "--outputFile=" + str(Path(raw_results).absolute())]
-    process = start_process(command, cwd=repo)
+def _vitest_cwd(repo, requested):
+    path = Path(requested) if requested is not None else repo
+    require(".." not in path.parts, "Vitest execution cwd must be an owned project directory")
+    path = path if path.is_absolute() else repo / path
     try:
-        code = process.wait(timeout=1200)
-    except subprocess.TimeoutExpired:
-        containment = terminate_tree(process)
-        raise ValueError("original Vitest run timed out; containment=" + containment) from None
-    after = source_identity(repo)
-    document = admit_vitest(load_json(raw_results), repo=repo, before=before, after=after,
-                            argv=command, exit_code=code, run_id=int(os.environ.get("GITHUB_RUN_ID", "0")))
-    new_output(output, document)
-    return code
+        relative = path.relative_to(repo)
+        current = repo
+        for component in (None, *relative.parts):
+            if component is not None:
+                current = current / component
+            info = current.lstat()
+            require(stat.S_ISDIR(info.st_mode) and not current.is_symlink()
+                    and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "Vitest execution cwd must not contain a link or reparse point")
+        return path.resolve(strict=True)
+    except (OSError, ValueError):
+        raise ValueError("Vitest execution cwd must be an owned project directory") from None
+
+
+def _vitest_new_path(value):
+    path = Path(value).absolute()
+    require(path.name not in ("", ".", "..") and ".." not in path.parts, "unsafe Vitest output path")
+    parent = path.parent
+    info = parent.lstat()
+    require(stat.S_ISDIR(info.st_mode) and not parent.is_symlink()
+            and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "Vitest output parent must be a regular directory")
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        pass
+    else:
+        raise ValueError("new Vitest result and observation paths required")
+    return parent.resolve(strict=True) / path.name, (info.st_dev, info.st_ino)
+
+
+def _vitest_command(arguments, raw_results, cwd):
+    require(isinstance(arguments, (list, tuple)) and arguments
+            and all(isinstance(arg, str) and arg and "\0" not in arg for arg in arguments),
+            "original Vitest argv required")
+    reporters, outputs = [], {}
+    index = 0
+    while index < len(arguments):
+        arg = arguments[index]
+        option, separator, value = arg.partition("=")
+        if option in ("--reporter", "--reporters") or option == "--outputFile" or option.startswith("--outputFile."):
+            if not separator:
+                index += 1
+                require(index < len(arguments) and not arguments[index].startswith("--"), "Vitest option value missing")
+                value = arguments[index]
+            require(value and "\0" not in value, "Vitest option value missing")
+            if option in ("--reporter", "--reporters"):
+                reporters.append(value)
+            else:
+                key = option.removeprefix("--outputFile")
+                require(key not in outputs, "duplicate Vitest output ownership")
+                outputs[key] = value
+        elif option.startswith(("--reporter", "--outputFile")):
+            raise ValueError("unsupported Vitest reporter/output option")
+        index += 1
+    require(reporters.count("json") <= 1, "duplicate JSON reporter ownership")
+    require(not ("" in outputs and len(outputs) > 1), "ambiguous generic/per-reporter output ownership")
+    if "" in outputs:
+        require(reporters.count("json") == 1 and not any(r not in ("json", "default", "verbose", "dot", "github-actions") for r in reporters),
+                "generic output cannot ambiguously select JSON")
+    selected = outputs.get(".json", outputs.get(""))
+    if selected is not None:
+        path = Path(selected)
+        path = path if path.is_absolute() else cwd / path
+        require(not path.exists() and not path.is_symlink(), "original JSON output is stale or linked")
+        require(path.resolve(strict=False) == raw_results, "original JSON output differs from owned result path")
+    for key, value in outputs.items():
+        if key in ("", ".json"):
+            continue
+        other = Path(value)
+        other = other if other.is_absolute() else cwd / other
+        require(other.resolve(strict=False) != raw_results, "another reporter shares JSON output")
+    command = list(arguments)
+    if "json" not in reporters:
+        command.append("--reporter=json")
+    if selected is None:
+        # Keep the original simple wrapper's generic output argument compatible.
+        key = "--outputFile=" if not reporters and not outputs else "--outputFile.json="
+        command.append(key + str(raw_results))
+    return command
+
+
+def _vitest_owned_json(path, descriptor, original):
+    info, opened = path.lstat(), os.fstat(descriptor)
+    for item in (info, opened):
+        require(stat.S_ISREG(item.st_mode) and item.st_nlink == 1
+                and not getattr(item, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+                and (item.st_dev, item.st_ino) == (original.st_dev, original.st_ino)
+                and item.st_size <= MAX_JSON, "Vitest result was replaced, linked or exceeds bound")
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    raw = bytearray()
+    while len(raw) <= MAX_JSON:
+        chunk = os.read(descriptor, min(1024 * 1024, MAX_JSON + 1 - len(raw)))
+        if not chunk:
+            break
+        raw.extend(chunk)
+    final, current = os.fstat(descriptor), path.lstat()
+    require(len(raw) <= MAX_JSON and len(raw) == info.st_size
+            and all((value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_nlink)
+                    == (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, 1)
+                    for value in (final, current)), "Vitest result changed while read")
+    return json.loads(raw, object_pairs_hook=unique), hashlib.sha256(raw).hexdigest()
+
+
+def _vitest_runtime_file(path):
+    declared = Path(path).absolute()
+    resolved = declared.resolve(strict=True)  # npm's ordinary POSIX alias is recorded, never hashed as a symlink.
+    info = resolved.lstat()
+    require(stat.S_ISREG(info.st_mode) and info.st_size <= 128 * 1024 * 1024
+            and not resolved.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "Vitest launch input is not bounded regular data")
+    digest = hashlib.sha256(); total = 0
+    with resolved.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        require((opened.st_dev, opened.st_ino) == (info.st_dev, info.st_ino), "Vitest launch input changed before read")
+        while chunk := stream.read(1024 * 1024):
+            total += len(chunk)
+            require(total <= 128 * 1024 * 1024, "Vitest launch input exceeds bound")
+            digest.update(chunk)
+        after = os.fstat(stream.fileno())
+    require((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+            == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+            and declared.resolve(strict=True) == resolved, "Vitest launch input changed during read")
+    return {"path": str(declared), "resolved_path": str(resolved), "bytes": total,
+            "sha256": digest.hexdigest(), "filesystem_id": str(info.st_dev) + ":" + str(info.st_ino)}
+
+
+def _vitest_launch(command):
+    executable = shutil.which(command[0])
+    require(executable, "original Vitest executable unavailable")
+    executable = Path(executable).absolute()
+    paths = [executable]
+    if os.name == "nt" and executable.suffix.casefold() in (".cmd", ".bat"):
+        from _artifactauthoritylib import _native_launch
+        require(executable.name.casefold() in ("npm.cmd", "npx.cmd"), "unsupported Vitest batch launcher")
+        npm = executable.with_name("npm.cmd")
+        launch, bound = _native_launch(npm, list(command[1:]))
+        paths.extend(Path(row["path"]) for row in bound)
+        if executable.name.casefold() == "npx.cmd":
+            # Reuse HW04's qualified npm wrapper, changing only its closed sibling entry.
+            expected = npm.read_text(encoding="utf-8").replace("NPM_PREFIX_NPM_CLI_JS", "NPM_PREFIX_NPX_CLI_JS")
+            expected = expected.replace("NPM_CLI_JS", "NPX_CLI_JS").replace("npm-cli.js", "npx-cli.js")
+            require([line for line in executable.read_text(encoding="utf-8").splitlines() if line]
+                    == [line for line in expected.splitlines() if line], "unqualified npx wrapper")
+            entry = Path(launch[1]).with_name("npx-cli.js")
+            paths.append(entry); launch[1] = str(entry)
+    else:
+        launch = [str(executable.resolve(strict=True)), *command[1:]]
+    records = [_vitest_runtime_file(path) for path in dict.fromkeys(paths)]
+    return launch, records
+
+
+def _vitest_environment(root):
+    env = local_read_git_env()
+    for key in ("CI", "GITHUB_ACTIONS", "GITHUB_WORKSPACE", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+                "CA_SANDBOX_REQUIRE_DOCKER", "CA_SANDBOX_DOCKER_SENTINEL", "NAPI_RS_FORCE_WASI"):
+        if key in os.environ: env[key] = os.environ[key]
+    for name in ("home", "appdata", "localappdata", "tmp", "cache", "config", "pycache"):
+        (root / name).mkdir()
+    (root / "empty-user.npmrc").write_bytes(b"")
+    (root / "empty-global.npmrc").write_bytes(b"")
+    env.update(HOME=str(root / "home"), USERPROFILE=str(root / "home"), APPDATA=str(root / "appdata"),
+        LOCALAPPDATA=str(root / "localappdata"), TEMP=str(root / "tmp"), TMP=str(root / "tmp"), TMPDIR=str(root / "tmp"),
+        XDG_CACHE_HOME=str(root / "cache"), XDG_CONFIG_HOME=str(root / "config"),
+        PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1", PYTHONPYCACHEPREFIX=str(root / "pycache"),
+        GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1", NPM_CONFIG_USERCONFIG=str(root / "empty-user.npmrc"),
+        NPM_CONFIG_GLOBALCONFIG=str(root / "empty-global.npmrc"), NPM_CONFIG_CACHE=str(root / "cache"))
+    env.pop("HOMEDRIVE", None); env.pop("HOMEPATH", None)
+    return env
+
+
+def observe_vitest(repo, arguments, raw_results, output, execution_cwd=None, source_payload=None):
+    """Observe one original invocation, preserving its reporters and project cwd."""
+    require(arguments and raw_results and output, "Vitest invocation and new outputs required")
+    repo = Path(repo).resolve(strict=True)
+    cwd = _vitest_cwd(repo, execution_cwd)
+    raw_results, raw_parent = _vitest_new_path(raw_results)
+    output, observation_parent = _vitest_new_path(output)
+    require(raw_results != output, "result and observation output ownership conflict")
+    command = _vitest_command(arguments, raw_results, cwd)
+    profile = load_json(Path(source_payload) / SOURCE_MANIFEST).get("profile") if source_payload else None
+    if source_payload:
+        spec = source_profile(profile)
+        require(profile in TS_PROFILE_PATHS and cwd == repo / spec["root"], "TS source profile requires its original project cwd")
+    before = source_identity(repo, profile)
+    source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
+    raw_before = git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z", raw=True) if source_payload else None
+    launch, runtime = _vitest_launch(command) if source_payload else (command, None)
+    descriptor = os.open(raw_results, os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
+                         | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    with ExitStack() as stack:
+        try:
+            original = os.fstat(descriptor)
+            if source_payload:
+                # Capturing reports on another volume must not change the
+                # original suite's temp-filesystem capabilities (for example
+                # Windows short aliases). Keep a fresh private ambient temp
+                # root; report files retain their independent ownership checks.
+                private = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="ca-vitest-profile-"))).resolve(strict=True)
+                process = start_process(launch, cwd=cwd, env=_vitest_environment(private))
+            else:
+                process = start_process(command, cwd=cwd)
+            try:
+                code = process.wait(timeout=1200)
+            except subprocess.TimeoutExpired:
+                containment = terminate_tree(process)
+                raise ValueError("original Vitest run timed out; containment=" + containment) from None
+            if source_payload:
+                try:
+                    after = source_identity(repo, profile)
+                    stable = before == after and before["clean"]
+                    stable = stable and source_observation_binding(repo, source_payload, after, profile) == source_binding
+                    stable = stable and [_vitest_runtime_file(row["path"]) for row in runtime] == runtime
+                except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+                    after = None
+                    stable = False
+            else:
+                after = source_identity(repo)
+                stable = before == after and before["clean"]
+            require(all((path.parent.stat().st_dev, path.parent.stat().st_ino) == expected
+                        for path, expected in ((raw_results, raw_parent), (output, observation_parent))),
+                    "Vitest output parent changed")
+            record, raw_digest = _vitest_owned_json(raw_results, descriptor, original)
+            document = admit_vitest(record, repo=repo, before=before, after=after,
+                                    argv=command, exit_code=code, run_id=int(os.environ.get("GITHUB_RUN_ID", "0")))
+            document.update(original_argv=list(arguments), cwd=str(cwd), raw_results_sha256=raw_digest)
+            if source_payload:
+                document.update(source_stable=stable, source_input_binding=source_binding, launch_argv=launch,
+                    launch_inputs=runtime, runtime_scope="Selected launch inputs only; ignored third-party graph and installed host bytes are not attested.",
+                    raw_worktree_status_before_sha256=readiness.digest(raw_before),
+                    raw_worktree_status_after_sha256=readiness.digest(git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z", raw=True)))
+            new_output(output, document)
+            return code if not source_payload or stable else 1
+        finally:
+            os.close(descriptor)
 
 
 def validate_selections(document):
@@ -274,7 +1192,7 @@ def validate_selections(document):
 
 
 def build_report(req, *, job_name, job_id, selections, observations, payloads,
-                 producer_job=None, runtime_acquisitions=None):
+                 producer_job=None, runtime_acquisitions=None, native_components=None):
     require(type(job_id) is int and job_id > 0, "positive actual job identity required")
     groups = validate_selections(selections)
     # One declared original-package role is source-bound; no general formatting
@@ -364,9 +1282,38 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 for item in admitted["payloads"]:
                     installed_payloads[item["artifact_id"]] = item
                 dual_payload_report = True
+            elif (group["proof_kind"] == "source-test"
+                  and observed.get("producer") == "python-mapped-native-consumer-observer-v1"):
+                from mapped_work_observation import admit, CELL, SOURCE_PAYLOAD, JOB
+                require(cell == CELL and set(group["cells"]) == {CELL}
+                        and group["payload_name"] == SOURCE_PAYLOAD and job_name == JOB,
+                        "mapped native consumer cannot qualify another cell or job")
+                if group["observation"] not in installed_admissions:
+                    installed_admissions[group["observation"]] = admit(
+                        observed, req=req, job_id=job_id, authenticated_payloads=payloads, repo=ROOT,
+                        native_component=(native_components or {}).get(group["observation"]))
+                admitted = installed_admissions[group["observation"]]
+                require(admitted["tests"] == observed.get("tests") and cell in admitted["qualified_cells"]
+                        and admitted["primary_payload_name"] == group["payload_name"],
+                        "mapped native consumer outcomes or finite scope differ")
+                for item in admitted["payloads"]:
+                    installed_payloads[item["artifact_id"]] = item
+                dual_payload_report = True
             else:
                 require(observed.get("producer") in producers.get(group["proof_kind"], ()),
                         "no qualified observer for this proof kind")
+            if (group["proof_kind"] == "source-test"
+                    and observed.get("producer") != "python-mapped-native-consumer-observer-v1"):
+                binding = observed.get("source_input_binding")
+                require(isinstance(binding, dict), "source input binding is missing")
+                profile = binding.get("profile") if isinstance(binding, dict) else None
+                spec = source_profile(profile)
+                require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
+                if profile == SOURCE_PROFILE:
+                    require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
+                else:
+                    require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
+                admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
             if group["proof_kind"] == "native-module":
                 native_bindings.append(observed.get("native_binding"))
             key = group["observation"]
@@ -375,7 +1322,7 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 require(isinstance(tests, list) and len(tests) <= MAX_TESTS
                         and all(isinstance(test, dict) and set(test) == {"id", "result"}
                                 and isinstance(test["id"], str) and test["id"]
-                                and len(test["id"].encode("utf-8")) <= 4096 for test in tests),
+                                and len(test["id"].encode("utf-8")) <= MAX_TEST_ID_BYTES for test in tests),
                         "invalid or unbounded original named outcomes")
                 indices[key] = {}
                 for test in tests:
@@ -424,12 +1371,55 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
             "payloads": [retained_payloads[i] for i in sorted(retained_payloads)]}
 
 
-def authenticated_payload(metadata, req, consumed_root):
+def authenticated_payload(metadata, req, consumed_root, source_job=None):
     archive = readiness.artifact_bytes(metadata, req)
     members = readiness.members(archive)
     root = Path(consumed_root).resolve(strict=True)
     native_bindings, documents = [], {}
+    source_manifest_sha256 = None
+    if any(member["path"] == SOURCE_MANIFEST for member in members):
+        with zipfile.ZipFile(io.BytesIO(archive)) as source_archive:
+            require(source_archive.getinfo(SOURCE_MANIFEST).file_size <= 1024 * 1024, "source payload manifest exceeds bound")
+            raw = source_archive.read(SOURCE_MANIFEST)
+        manifest = json.loads(raw, object_pairs_hook=unique)
+        spec = source_profile(manifest.get("profile") if isinstance(manifest, dict) else None)
+        require(isinstance(source_job, dict) and type(source_job.get("id")) is int
+                and source_job["id"] > 0 and source_job.get("name") == spec["job"]
+                and source_job.get("status") == "in_progress" and source_job.get("conclusion") is None,
+                "source payload original uploader job missing")
+        # The owning job is still running, so its completed job log does not
+        # exist yet. Bind producer-time identity to its completed upload step;
+        # final readiness authenticates both uploader logs independently.
+        upload_steps = [step for step in source_job.get("steps", []) if step.get("name") == spec["upload"]]
+        require(metadata.get("name") == spec["payload"] and len(upload_steps) == 1
+                and upload_steps[0].get("status") == "completed"
+                and upload_steps[0].get("conclusion") == "success", "source payload upload step did not complete")
+        validate_source_manifest(manifest, req, source_job["name"], members)
+        snapshot = source_input_snapshot(root, manifest["profile"])
+        require(snapshot["source_commit"] == req["source_commit"] and snapshot["source_tree"] == req["source_tree"]
+                and snapshot["members"] == manifest["members"], "source payload actual consumed source differs")
+        documents[SOURCE_MANIFEST] = manifest
+        source_manifest_sha256 = readiness.digest(raw)
+    if any(member["path"] == "major-mapped-work-inputs.json" for member in members):
+        from mapped_work_observation import MANIFEST as MAPPED_MANIFEST, SOURCE_PAYLOAD as MAPPED_PAYLOAD, JOB as MAPPED_JOB, UPLOAD as MAPPED_UPLOAD, validate_manifest as validate_mapped_manifest
+        require(metadata.get("name") == MAPPED_PAYLOAD and isinstance(source_job, dict)
+                and type(source_job.get("id")) is int and source_job["id"] > 0
+                and source_job.get("name") == MAPPED_JOB and source_job.get("status") == "in_progress"
+                and source_job.get("conclusion") is None, "mapped original source uploader missing")
+        steps = [step for step in source_job.get("steps", []) if step.get("name") == MAPPED_UPLOAD]
+        require(len(steps) == 1 and steps[0].get("status") == "completed" and steps[0].get("conclusion") == "success",
+                "mapped original source upload did not complete")
+        with zipfile.ZipFile(io.BytesIO(archive)) as source_archive:
+            require(source_archive.getinfo(MAPPED_MANIFEST).file_size <= 1024 * 1024, "mapped manifest exceeds bound")
+            raw = source_archive.read(MAPPED_MANIFEST)
+        manifest = json.loads(raw, object_pairs_hook=unique)
+        validate_mapped_manifest(manifest, req=req, repo=ROOT, members=members)
+        documents[MAPPED_MANIFEST] = manifest
+        source_manifest_sha256 = readiness.digest(raw)
     for member in members:
+        if member["path"] in (SOURCE_MANIFEST, "major-mapped-work-inputs.json"):
+            continue  # Validated archive metadata, never claimed as executed input.
+
         path = root
         for part in PurePosixPath(member["path"]).parts:
             path = path / part
@@ -450,8 +1440,11 @@ def authenticated_payload(metadata, req, consumed_root):
             require(binding.get("format") == native_binding_owner.FORMAT,
                     "consumed native stamp has the wrong format")
             native_bindings.append(binding)
-    return {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
+    result = {"artifact_id": metadata["id"], "archive_sha256": readiness.digest(archive),
             "members": members, "native_bindings": native_bindings, "documents": documents}
+    if source_manifest_sha256 is not None:
+        result.update(source_manifest_sha256=source_manifest_sha256, source_upload_job_id=source_job["id"])
+    return result
 
 
 def validate_emitter_environment():
@@ -463,22 +1456,28 @@ def validate_emitter_environment():
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("observe-python", "observe-vitest", "admit-go", "emit"))
+    parser.add_argument("operation", choices=("prepare-source", "observe-python", "observe-vitest", "admit-go", "emit"))
     parser.add_argument("--repo", type=Path, default=ROOT)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
+    parser.add_argument("--source-payload", type=Path)
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
+    parser.add_argument("--execution-cwd", type=Path)
     parser.add_argument("--job-name")
     parser.add_argument("--payload-root", action="append", default=[], help="artifact name=original consumed root")
     parser.add_argument("arguments", nargs="*")
     args = parser.parse_args(argv)
     try:
+        if args.operation == "prepare-source":
+            prepare_source_payload(args.repo, args.output, args.job_name, args.source_profile)
+            return 0
         if args.operation == "observe-python":
             require(args.arguments, "Python entry point required")
-            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output)
+            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload)
         if args.operation == "observe-vitest":
-            return observe_vitest(args.repo, args.arguments, args.raw_results, args.output)
+            return observe_vitest(args.repo, args.arguments, args.raw_results, args.output, args.execution_cwd, args.source_payload)
         if args.operation == "admit-go":
             require(len(args.observation) == 1 and args.native_binding, "native observation and original stamp required")
             binding = load_json(args.native_binding)
@@ -487,7 +1486,8 @@ def main(argv=None):
             return 0
         validate_emitter_environment()
         source, run_id = os.environ["GITHUB_SHA"], int(os.environ["GITHUB_RUN_ID"])
-        identity = source_identity(args.repo)
+        profile = next((p for p, job in TS_PROFILE_JOBS.items() if job == args.job_name), None)
+        identity = source_identity(args.repo, profile)
         require(identity["source_commit"] == source and identity["clean"], "report source differs from actual clean checkout")
         req, _, artifacts, jobs = readiness.collect(args.repo, source, run_id, producing=True, allow_program_branch=True, producer_scope=True)
         matching = [j for j in jobs if j["name"] == args.job_name and j.get("status") == "in_progress"]
@@ -497,17 +1497,38 @@ def main(argv=None):
             key, path = item.split("=", 1)
             require(key not in observations, "duplicate observation key")
             observations[key] = load_json(path)
+        native_components = {}
+        mapped_keys = [key for key, value in observations.items()
+                       if value.get("producer") == "python-mapped-native-consumer-observer-v1"]
+        if mapped_keys:
+            require(len(mapped_keys) == 1, "one original mapped consumer observation required")
+            from major_native_observation import authenticate_component
+            # Pins come only from the immutable owning source, never the report.
+            with readiness.blob_transaction(args.repo):
+                for order in ("posix", "windows"):
+                    pin = readiness._module_membership(args.repo, source,
+                        {"root": "core/artifacts", "path_order": order},
+                        lambda commit, path: readiness.blob(args.repo, commit, path), {})
+                    req.setdefault("native_module_sha256", {})[order] = pin
+            run = readiness.api(f"actions/runs/{run_id}")
+            native_components[mapped_keys[0]] = authenticate_component(req, run, artifacts, jobs, "windows/amd64")
         payloads = {}
         for item in args.payload_root:
             name, path = item.split("=", 1)
             require(name not in payloads, "duplicate payload identity")
             found = [a for a in artifacts if a["name"] == name]
             require(len(found) == 1, "original consumed artifact missing or ambiguous")
-            payloads[name] = authenticated_payload(found[0], req, path)
+            if mapped_keys and name == "ci20-native-tested-windows-2025":
+                from mapped_work_observation import authenticate_native_consumption
+                payloads[name] = authenticate_native_consumption(path, native_components[mapped_keys[0]])
+                require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
+            else:
+                payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
+                    if name in (SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],
-                              observations=observations, payloads=payloads)
+                              observations=observations, payloads=payloads, native_components=native_components)
         new_output(args.output, report)
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, readiness.ReadinessError) as error:

@@ -1,0 +1,1504 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "source_tree": "e604e5c7c7e0673cc0793933f13b8cb0b3a913d7",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools actual7ac statusline original owning software capture; no hosted/native/installed qualification"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+    "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+    "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca/hooks",
+      "path_order": "windows",
+      "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline",
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 1.2645418000029167,
+      "stdout_sha256": "96fec0c2a0ac5f37258d8e3f4e3847a2120e49342b0e0bcae60ed335d347af5e",
+      "stderr_sha256": "277708c0a0ec3adb52227d44a3071384443dd9d355ad37aff94ef1d9fb02fc3f"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/protocol/capture-owner.py",
+      "sha256": "df6d0a0e3a9d3f44e4c39991ca5196adc8ce7bbcfcf738cf710f39480299892d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/config.json",
+      "sha256": "5d8b58877b5ff357e8cc99497f3c6f27e8c703104b87e0baac3340272f9c33e4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/run-start.json",
+      "sha256": "b257c4e18f12a67bf87d19a2e507b830635da2b0314caea32dfedefa43f70850"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/after-snapshot.json",
+      "sha256": "fe84546fa989b0b6922faca9e72a64dc890d9b9d5ea5f471492945ee8ca16ee4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/process-exit.json",
+      "sha256": "b13a5fb2951e2f45f1f15eccb88af32b48266372de3970c494d5d8619a974d0b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/run-result.json",
+      "sha256": "be7319ed4316f2c7855765139bcf532580d72aedb30c10a73556078556a094fd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/capture-complete.json",
+      "sha256": "ac94b5092348bf1be5e312892c1d5b35a9a0d242aea2a5d7caea77f140ff1729"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/actual-imports-64288.json",
+      "sha256": "c4f5ed779790128f1363556da6bab13a3df446f93e99b4ce1fe403ce759152dc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/original.stdout.log.base64.json",
+      "sha256": "cd079a42a1bc9f69036a0f278d452030e96744c216cd44c5b504befd6a6c0c87"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/original.stderr.log.base64.json",
+      "sha256": "6f7234eda946dc292f94df36cbdd18aa3c670193e84a1fbfaaf64d31d1363f3c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/selectors.json",
+      "sha256": "93ae8561fd8f661cf61fffa9d7a3f0c3d9316ca2cd104a55152ee9e16bbfff7a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/run-selected.py",
+      "sha256": "377ac3a0a923158de791482acbe302a5a3e4148cd083e1932d8ee9b3b3f830fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/named-results.json",
+      "sha256": "0b87783bd82ada8fcdaa052a555a23db550b69119c71c64b5c30ab48617fc260"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/private-controls.json",
+      "sha256": "e8d341cefa6916129421e16adc19798898bafe5acd13f09789f6da6b1551e22a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/validated-selection.json",
+      "sha256": "dedfb37e5e99cb1669d5a9ec03d96ab032dffec50f0e456eab194779570234b5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/whole-row-preservation.json",
+      "sha256": "fd9537e31bde985f1324f6b872a08909f438b632980e271716c067babd74fad6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/test_install_refusals_preserve_existing_settings.readbacks.json",
+      "sha256": "791942a36a8706f19b64fe5368698b2f220d3412bd5bd70ac57707abbefa4233"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/test_install_reinstall_user_takeover_and_restore_preserves_whole_settings.readbacks.json",
+      "sha256": "86d11fcbd39806296e9eb055a40130b5a736d910615078cf73a38b14173a80fc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/test_legacy_source_and_cache_reinstall_preserves_original_backup.readbacks.json",
+      "sha256": "f7d0579e37ab9ac1ff7742fc87543acdbdba988fcd31f94c7c3d77299e11c16f"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:machines:hooks:statusline-wiring",
+    "disposition:transitions:hooks:statusline-wiring:01",
+    "disposition:transitions:hooks:statusline-wiring:02",
+    "disposition:transitions:hooks:statusline-wiring:03",
+    "disposition:transitions:hooks:statusline-wiring:04",
+    "disposition:transitions:hooks:statusline-wiring:05",
+    "disposition:transitions:hooks:statusline-wiring:06",
+    "disposition:transitions:hooks:statusline-wiring:07",
+    "disposition:findings:HOOK-F05"
+  ],
+  "original_named_results": [
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+      "outcome": "PASS"
+    }
+  ],
+  "execution_context": {
+    "actual_execution_source": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "actual_working_source_state": "Each original before/after identity retained; no clean/current epoch inferred from subsequent Root edits.",
+    "source_before_after": {
+      "ref": {
+        "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/run-start.json",
+        "sha256": "b257c4e18f12a67bf87d19a2e507b830635da2b0314caea32dfedefa43f70850"
+      },
+      "after_ref": {
+        "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/raw/after-snapshot.json",
+        "sha256": "fe84546fa989b0b6922faca9e72a64dc890d9b9d5ea5f471492945ee8ca16ee4"
+      },
+      "equal": true
+    },
+    "actual_positive_input_count": 29,
+    "structured_Python_runtime_count": 10795,
+    "actual_imports": {
+      "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+      "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+      "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+      "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+      "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+      "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+      "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+      "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+    },
+    "typed_complete_Git_namespaces": [
+      {
+        "profile": "python-import-directory-v1",
+        "root": "core/pysrc",
+        "path_order": "windows",
+        "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "plugins/ca/hooks",
+        "path_order": "windows",
+        "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+      }
+    ],
+    "physical_namespace_projection": {
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_adrlifecycle.cpython-314.pyc",
+          "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+          "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_artifactpromptlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_intentlib.cpython-314.pyc",
+          "__pycache__/_knowledgelib.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/_replylib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/knowledge.cpython-314.pyc",
+          "__pycache__/security-pass.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "plugins/ca/hooks": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_bashguardlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_gitlib.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_host.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_protectedstatelib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/pre-write.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      }
+    },
+    "private_prefix_and_no_user_site_observed": true,
+    "old_proof_retained_unchanged": {
+      "path": "docs/state-contracts-major/execution/evidence/statusline67-current-77160413/tested.json",
+      "sha256": "44f89df49d70480774aab89c2f27787eeeae2b5a8435b4763491ccad04fe3193",
+      "actual_old_source": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+  },
+  "scope": "Same existing 9 TESTED software rows only; exact original owning assertions/current actual inputs and output observed at7ac. No new statuses, task/scenario/native/host/provider/model/publication qualification.",
+  "limits": [
+    "Original test/source/command assertions unchanged. Actual first result and full after-snapshot persisted before validation.",
+    "Full actual Python installation10795 files observed in structured records; no historical1905 count relabeled as current.",
+    "Complete physical namespace records preserve legacy caches/untracked noncausal entries; private bytecode prefix precedes project imports. No cache deletion or blanket physical==Git claim.",
+    "Transcripts retained losslessly with original decoded SHA256/bytes; private originals unchanged.",
+    "All current cells preserve old active/history references at real source/ref epochs; no overall staged/program readiness claimed.",
+    "All9 statuses remainTESTED; machine already admitted historically, no fresh machine promotion. Fixture Host/root/settings only; no real host/UI/ACL/CAS/parent/task closure."
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:machines:hooks:statusline-wiring",
+      "observed_named_cases": [
+        "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+        "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound",
+        "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+        "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+        "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+        "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+        "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+        "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+        "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+        "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+        "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+        "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+        "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+        "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+        "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+        "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+        "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+        "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+        "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+        "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+        "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+        "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+        "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+        "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+        "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+        "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+        "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json",
+        "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+        "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+        "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner",
+        "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting"
+      ],
+      "assertion_scope": "One actual single-source/producer/29-input run proves finite install/reinstall ownership, refresh/noop/foreign protection, independent statusline/spinner restore and user-change preservation, bounded durability fallback, atomic write behavior and explicit refusal before writes. Each of seven accepted edge clauses is mapped below; no union of old observations is used as this result.",
+      "edge_assertions": [
+        {
+          "edge": "hooks:statusline-wiring:01",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:01",
+            "observed_named_cases": [
+              "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+              "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+            ],
+            "assertion_scope": "Real main(install) through documented fixture Host writes exact command/owner/spinner and exact prior backups with full-object readback. Mismatch/missing Host, ephemeral root, missing renderer, malformed JSON and injected unreadable read refuse before replacing settings or changing directory entries.",
+            "failure_retry": "Each refusal preserves complete original bytes/tree; normal valid private durable install positive supplies the successful branch. PermissionError is injected, not actual OS ACL behavior.",
+            "limits": [
+              "Private fixture Host, not actual installed Claude adapter or live settings/rendering. No cross-writer CAS or universal filesystem-lifetime claim."
+            ]
+          },
+          "criterion": {
+            "from": "unwired / foreign",
+            "event": "explicit install",
+            "guard": "authenticated durable plugin root and valid settings JSON",
+            "to": "installed",
+            "effects": "Back up prior statusLine and spinner, set exact owned command/spinner.",
+            "failure_retry": "Unsafe/ephemeral worktree path refuses; unreadable/invalid JSON not overwritten.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:01"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "current_HW05_migration_assertions": [
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+          ],
+          "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:02",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:02",
+            "observed_named_cases": [
+              "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+              "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup"
+            ],
+            "assertion_scope": "Owned reinstall to a new durable renderer preserves original backups and unrelated object fields. Strict source/cache legacy reinstall retains original backup; nearby foreign filename gets a fresh exact live backup. User custom line/spinner survive automatic refresh; explicit reinstall backs up those current user choices, then uninstall restores them exactly.",
+            "failure_retry": "Automatic refresh never silently takes over foreign custom values. Only explicit reinstall refreshes backup to the current foreign choice. No old test result or source epoch relabeled.",
+            "limits": [
+              "Three newly executed private methods only; original03..07 methods were not selected or reexecuted."
+            ]
+          },
+          "criterion": {
+            "from": "owned",
+            "event": "explicit reinstall",
+            "guard": "recorded ownership or strict recognized legacy source/cache command",
+            "to": "installed",
+            "effects": "Refresh owned command while preserving original backup.",
+            "failure_retry": "Current custom foreign command can replace backup on explicit install, not silently automatic refresh.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:02"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "current_HW05_migration_assertions": [
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+          ],
+          "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:03",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:03",
+            "observed_named_cases": [
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+              "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+              "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings"
+            ],
+            "assertion_scope": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged.",
+            "failure_retry": "Absent renderer preserves previous stale pin for later refresh; no setting is installed if absent; steady state is no-op.",
+            "source_clauses": [
+              "refresh_if_stale",
+              "cmd_refresh",
+              "plugin_root"
+            ],
+            "limits": [
+              "Authenticated fixture Host seam is used; no installed package or actual Claude SessionStart/rendering qualification.",
+              "Ephemeral-path denial belongs to separate row06 and is source-read here, not newly executed; no row06 or whole machine promotion.",
+              "No concurrent-writer CAS, atomic-write failure injection or I/O fault coverage claim; row07 remains unchanged."
+            ]
+          },
+          "criterion": {
+            "from": "owned-stale",
+            "event": "automatic refresh",
+            "guard": "exact owned statusline and durable current payload",
+            "to": "owned",
+            "effects": "Update only owned command/root metadata.",
+            "failure_retry": "Foreign/user-modified line preserved; automatic refresh does not alter spinner.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:03"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "current_HW05_migration_assertions": [
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+          ],
+          "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:04",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:04",
+            "observed_named_cases": [
+              "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+              "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+            ],
+            "assertion_scope": "Install followed by uninstall restores the exact prior statusLine dictionary with extra fields; no-prior owned line is removed together with owner/backup metadata; a user replacement after install remains unchanged while independent owned spinner is restored.",
+            "limits": [
+              "No concurrent writer or arbitrary settings I/O failure qualification."
+            ]
+          },
+          "criterion": {
+            "from": "owned",
+            "event": "uninstall",
+            "guard": "current statusLine still matches owner",
+            "to": "restored",
+            "effects": "Restore saved prior line or remove owned line, then remove own metadata.",
+            "failure_retry": "If current line differs, preserve user change and drop obsolete own backup.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:04"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:05",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:05",
+            "observed_named_cases": [
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+              "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+            ],
+            "assertion_scope": "HW-05 deliberately corrects historical unconditional spinner restoration: current exact installed-value equality grants restoration, while later user changes or deletion survive and stale own bookkeeping is removed. Legacy unstamped backup restores only while current spinner equals this version installed value; explicit reinstall backs up the current custom choice; repeated uninstall is idempotent.",
+            "candidate_transition": {
+              "from": "spinner installed or ownership ended",
+              "event": "uninstall",
+              "guard": "current spinner equals recorded installed value; conservative unstamped legacy equality fallback",
+              "to": "restored prior spinner when still owned, otherwise retained user choice",
+              "effects": "Remove own spinner metadata; restore/remove prior spinner only while owned; preserve custom/deleted user setting and unrelated keys otherwise",
+              "failure_retry": "Repeated uninstall is no-op; statusLine ownership is evaluated independently. Atomic replacement/concurrent-writer races are not qualified by this finite sequence."
+            }
+          },
+          "criterion": {
+            "from": "spinner installed",
+            "event": "uninstall",
+            "guard": "spinner backup exists",
+            "to": "restored prior spinner",
+            "effects": "Unconditionally restore spinner backup.",
+            "failure_retry": "Current post-install user spinner edit is overwritten; confirmed probe, unlike statusLine ownership guard.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:05"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": "HW-05 exact-current-owned spinner restoration supersedes frozen old unconditional restoration wording; no new change.",
+          "current_HW05_migration_assertions": [
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+            "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+          ],
+          "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:06",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:06",
+            "observed_named_cases": [
+              "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+              "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+              "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+              "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+              "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+              "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+              "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+              "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+              "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+              "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+              "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+              "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+              "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+              "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+              "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+              "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+              "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+              "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+              "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+              "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+              "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+              "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+              "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+              "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+              "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound"
+            ],
+            "assertion_scope": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive.",
+            "limits": [
+              "PermissionError is an explicit private module-open injection, not actual OS ACL qualification.",
+              "64 bound and4096 read limit are intentional durable fallbacks, not proof that arbitrary roots live forever."
+            ]
+          },
+          "criterion": {
+            "from": "path classification",
+            "event": "durability probe",
+            "guard": "worktrees or *-worktrees segment, or nearest Gitfile points there",
+            "to": "ephemeral-refused",
+            "effects": "Prevent durable wiring from transient checkout.",
+            "failure_retry": "Unreadable Gitfile and bounded ancestor probe failure classify durable by implemented fallback; not full lifetime proof.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:06"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        },
+        {
+          "edge": "hooks:statusline-wiring:07",
+          "accepted_guard_effect_retry": {
+            "cell": "disposition:transitions:hooks:statusline-wiring:07",
+            "observed_named_cases": [
+              "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+              "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+              "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+              "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json"
+            ],
+            "assertion_scope": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged.",
+            "limits": [
+              "One save is observed for unique staging, not simultaneous writer success.",
+              "Frozen no-multi-writer-CAS residual is preserved; no lost-update immunity, fsync/power-loss/all-storage fault or whole settings concurrency claim."
+            ]
+          },
+          "criterion": {
+            "from": "settings mutation",
+            "event": "save",
+            "guard": "valid current JSON loaded",
+            "to": "saved",
+            "effects": "Atomic settings replacement.",
+            "failure_retry": "No multi-writer CAS; concurrent unrelated settings writer remains material unverified race.",
+            "source": [
+              {
+                "path": "core/pysrc/wire-statusline.py",
+                "symbol": "module",
+                "lines": "1-440",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+              },
+              {
+                "path": "core/pysrc/_durabilitylib.py",
+                "symbol": "module",
+                "lines": "1-186",
+                "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+                "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+              }
+            ],
+            "transition_id": "hooks:statusline-wiring:07"
+          },
+          "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+          "authorized_change": null,
+          "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+        }
+      ],
+      "limits": [
+        "Software fixture Host/private filesystem only, not installed Claude/UI or actual parent acceptance.",
+        "Intentional uncertain/bounded probe durable fallback and known residual no-multi-writer-CAS remain.",
+        "PermissionError is a fixture injection, not OS ACL qualification.",
+        "No task/HW27, arbitrary lifecycle/rollback/native/provider/model/publication completion."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:01",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:01",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:01",
+          "observed_named_cases": [
+            "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+            "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+          ],
+          "assertion_scope": "Real main(install) through documented fixture Host writes exact command/owner/spinner and exact prior backups with full-object readback. Mismatch/missing Host, ephemeral root, missing renderer, malformed JSON and injected unreadable read refuse before replacing settings or changing directory entries.",
+          "failure_retry": "Each refusal preserves complete original bytes/tree; normal valid private durable install positive supplies the successful branch. PermissionError is injected, not actual OS ACL behavior.",
+          "limits": [
+            "Private fixture Host, not actual installed Claude adapter or live settings/rendering. No cross-writer CAS or universal filesystem-lifetime claim."
+          ]
+        },
+        "criterion": {
+          "from": "unwired / foreign",
+          "event": "explicit install",
+          "guard": "authenticated durable plugin root and valid settings JSON",
+          "to": "installed",
+          "effects": "Back up prior statusLine and spinner, set exact owned command/spinner.",
+          "failure_retry": "Unsafe/ephemeral worktree path refuses; unreadable/invalid JSON not overwritten.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:01"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "current_HW05_migration_assertions": [
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+        ],
+        "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:02",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:02",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:02",
+          "observed_named_cases": [
+            "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+            "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup"
+          ],
+          "assertion_scope": "Owned reinstall to a new durable renderer preserves original backups and unrelated object fields. Strict source/cache legacy reinstall retains original backup; nearby foreign filename gets a fresh exact live backup. User custom line/spinner survive automatic refresh; explicit reinstall backs up those current user choices, then uninstall restores them exactly.",
+          "failure_retry": "Automatic refresh never silently takes over foreign custom values. Only explicit reinstall refreshes backup to the current foreign choice. No old test result or source epoch relabeled.",
+          "limits": [
+            "Three newly executed private methods only; original03..07 methods were not selected or reexecuted."
+          ]
+        },
+        "criterion": {
+          "from": "owned",
+          "event": "explicit reinstall",
+          "guard": "recorded ownership or strict recognized legacy source/cache command",
+          "to": "installed",
+          "effects": "Refresh owned command while preserving original backup.",
+          "failure_retry": "Current custom foreign command can replace backup on explicit install, not silently automatic refresh.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:02"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "current_HW05_migration_assertions": [
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+        ],
+        "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:03",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:03",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:03",
+          "observed_named_cases": [
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+            "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+            "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings"
+          ],
+          "assertion_scope": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged.",
+          "failure_retry": "Absent renderer preserves previous stale pin for later refresh; no setting is installed if absent; steady state is no-op.",
+          "source_clauses": [
+            "refresh_if_stale",
+            "cmd_refresh",
+            "plugin_root"
+          ],
+          "limits": [
+            "Authenticated fixture Host seam is used; no installed package or actual Claude SessionStart/rendering qualification.",
+            "Ephemeral-path denial belongs to separate row06 and is source-read here, not newly executed; no row06 or whole machine promotion.",
+            "No concurrent-writer CAS, atomic-write failure injection or I/O fault coverage claim; row07 remains unchanged."
+          ]
+        },
+        "criterion": {
+          "from": "owned-stale",
+          "event": "automatic refresh",
+          "guard": "exact owned statusline and durable current payload",
+          "to": "owned",
+          "effects": "Update only owned command/root metadata.",
+          "failure_retry": "Foreign/user-modified line preserved; automatic refresh does not alter spinner.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:03"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "current_HW05_migration_assertions": [
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+        ],
+        "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:04",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:04",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:04",
+          "observed_named_cases": [
+            "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+            "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+          ],
+          "assertion_scope": "Install followed by uninstall restores the exact prior statusLine dictionary with extra fields; no-prior owned line is removed together with owner/backup metadata; a user replacement after install remains unchanged while independent owned spinner is restored.",
+          "limits": [
+            "No concurrent writer or arbitrary settings I/O failure qualification."
+          ]
+        },
+        "criterion": {
+          "from": "owned",
+          "event": "uninstall",
+          "guard": "current statusLine still matches owner",
+          "to": "restored",
+          "effects": "Restore saved prior line or remove owned line, then remove own metadata.",
+          "failure_retry": "If current line differs, preserve user change and drop obsolete own backup.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:04"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:05",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:05",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:05",
+          "observed_named_cases": [
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+            "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+          ],
+          "assertion_scope": "HW-05 deliberately corrects historical unconditional spinner restoration: current exact installed-value equality grants restoration, while later user changes or deletion survive and stale own bookkeeping is removed. Legacy unstamped backup restores only while current spinner equals this version installed value; explicit reinstall backs up the current custom choice; repeated uninstall is idempotent.",
+          "candidate_transition": {
+            "from": "spinner installed or ownership ended",
+            "event": "uninstall",
+            "guard": "current spinner equals recorded installed value; conservative unstamped legacy equality fallback",
+            "to": "restored prior spinner when still owned, otherwise retained user choice",
+            "effects": "Remove own spinner metadata; restore/remove prior spinner only while owned; preserve custom/deleted user setting and unrelated keys otherwise",
+            "failure_retry": "Repeated uninstall is no-op; statusLine ownership is evaluated independently. Atomic replacement/concurrent-writer races are not qualified by this finite sequence."
+          }
+        },
+        "criterion": {
+          "from": "spinner installed",
+          "event": "uninstall",
+          "guard": "spinner backup exists",
+          "to": "restored prior spinner",
+          "effects": "Unconditionally restore spinner backup.",
+          "failure_retry": "Current post-install user spinner edit is overwritten; confirmed probe, unlike statusLine ownership guard.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:05"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": "HW-05 exact-current-owned spinner restoration supersedes frozen old unconditional restoration wording; no new change.",
+        "current_HW05_migration_assertions": [
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+          "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+        ],
+        "current_HW05_migration_scope": "V2 prior-backup metadata removes exact released-reader legacy trigger. Explicit legacy writes migrate; durable owned refresh migrates stale/already-current commands. Conflicting formats refuse before save/autodecline. Current V2 idempotent; foreign/ephemeral remain inert. No arbitrary older-writer guarantee.",
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:06",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:06",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:06",
+          "observed_named_cases": [
+            "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+            "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+            "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+            "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+            "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+            "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+            "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+            "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+            "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+            "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+            "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+            "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+            "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+            "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+            "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+            "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+            "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+            "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+            "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+            "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+            "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+            "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+            "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+            "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+            "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound"
+          ],
+          "assertion_scope": "Whole-segment lexical and nearest Git-marker classification preserves main checkout/submodule/cache/nearest-boundary cases; explicit install refuses ephemeral pin, refresh declines without byte changes, removal/status remain available. Scoped PermissionError falls back durable without ACL mutation; actual64-directory fixture ignores marker just beyond bound and detects it one level nearer; actual binary read requests4096 and ignores worktree suffix beyond cap while detecting in-bound positive.",
+          "limits": [
+            "PermissionError is an explicit private module-open injection, not actual OS ACL qualification.",
+            "64 bound and4096 read limit are intentional durable fallbacks, not proof that arbitrary roots live forever."
+          ]
+        },
+        "criterion": {
+          "from": "path classification",
+          "event": "durability probe",
+          "guard": "worktrees or *-worktrees segment, or nearest Gitfile points there",
+          "to": "ephemeral-refused",
+          "effects": "Prevent durable wiring from transient checkout.",
+          "failure_retry": "Unreadable Gitfile and bounded ancestor probe failure classify durable by implemented fallback; not full lifetime proof.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:06"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:07",
+      "observed_assertions": {
+        "edge": "hooks:statusline-wiring:07",
+        "accepted_guard_effect_retry": {
+          "cell": "disposition:transitions:hooks:statusline-wiring:07",
+          "observed_named_cases": [
+            "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+            "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+            "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+            "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json"
+          ],
+          "assertion_scope": "Actual save_settings stages to a unique sibling path rather than fixed settings.json.tmp. Forced os.replace failure raises, preserves previous valid settings contents and leaves no temp. Actual install main refuses corrupt JSON and leaves that file unchanged.",
+          "limits": [
+            "One save is observed for unique staging, not simultaneous writer success.",
+            "Frozen no-multi-writer-CAS residual is preserved; no lost-update immunity, fsync/power-loss/all-storage fault or whole settings concurrency claim."
+          ]
+        },
+        "criterion": {
+          "from": "settings mutation",
+          "event": "save",
+          "guard": "valid current JSON loaded",
+          "to": "saved",
+          "effects": "Atomic settings replacement.",
+          "failure_retry": "No multi-writer CAS; concurrent unrelated settings writer remains material unverified race.",
+          "source": [
+            {
+              "path": "core/pysrc/wire-statusline.py",
+              "symbol": "module",
+              "lines": "1-440",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+            },
+            {
+              "path": "core/pysrc/_durabilitylib.py",
+              "symbol": "module",
+              "lines": "1-186",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_durabilitylib.py"
+            }
+          ],
+          "transition_id": "hooks:statusline-wiring:07"
+        },
+        "new_observation_basis": "All named assertions genuinely executed together at77160413 in this single67-method observation; old observations remain immutable.",
+        "authorized_change": null,
+        "criterion_source_epoch": "Frozen contract retained; actual current behavior uses accepted HW05 ownership/migration correction."
+      }
+    },
+    {
+      "cell": "disposition:findings:HOOK-F05",
+      "original_full_clause_assertions_reexecuted": {
+        "cell": "disposition:findings:HOOK-F05",
+        "observed_named_cases": [
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+          "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+        ],
+        "assertion_scope": "Real fixture settings install writes separate exact owner stamp and prior backup; later custom spinner survives uninstall, stale bookkeeping is dropped, unrelated theme remains, and ownership-ended report is emitted. Still-owned prior value restores; deleted spinner is not recreated; legacy backup conservatively restores only exact current installed value; repeated uninstall is no-op. Independent status replacement survives while still-owned spinner restores.",
+        "limits": [
+          "Finite current synchronous filesystems and exact existing fixtures. No concurrent-writer CAS, all malformed backups, partial-write failure matrix, actual Claude installation, or machine-wide completion."
+        ]
+      },
+      "new_released_reader_migration_assertions": [
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+        "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner"
+      ],
+      "whole_scope": "Current install and exact stamped/conservative legacy uninstall preserve later spinner/user deletion/unrelated settings; explicit reinstall backups current choice; independent status ownership/repeated uninstall remain. Exact released pure8-line function cannot trigger on V2; literal legacy migration and stale/current owned refresh protect current values; conflicting formats refuse. No installed old package or arbitrary older writers."
+    }
+  ],
+  "source_clause_binding": {
+    "canonical_owners": [
+      "core/pysrc/wire-statusline.py",
+      "core/pysrc/_durabilitylib.py"
+    ],
+    "executed_generated_owners": [
+      "plugins/ca/hooks/wire-statusline.py",
+      "plugins/ca/hooks/_durabilitylib.py"
+    ],
+    "captured_source_byte_parity": true,
+    "criterion_source": "Existing whole software machine/7 edges/HOOK-F05 with accepted HW05 correction; actual67-case single cohort only."
+  }
+}

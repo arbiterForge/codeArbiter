@@ -1,0 +1,973 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "6c4530299d726876d12c58cc8240d59cef69725c",
+  "recorded_at": "2026-11-16T05:21:48.900166+00:00",
+  "qualification": false,
+  "original_6c_terminal": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\terminal-failure-summary.json",
+    "sha256": "2713cf3b597cf8458eefc9b52e79aed2c08cc3662a1e4786fc653df6539d486e",
+    "record": {
+      "schema": "exact-pr-terminal-diagnosis/1",
+      "recorded_utc": "2026-11-16T05:14:52.376738+00:00",
+      "expected_head": "6c4530299d726876d12c58cc8240d59cef69725c",
+      "observed_head": "6c4530299d726876d12c58cc8240d59cef69725c",
+      "base": "major/state-contracts",
+      "ci": {
+        "id": 43805897072,
+        "head_sha": "6c4530299d726876d12c58cc8240d59cef69725c",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/ci.yml",
+        "head_branch": "codex/state-contracts-qualification-coverage"
+      },
+      "docs": {
+        "id": 43805896938,
+        "head_sha": "6c4530299d726876d12c58cc8240d59cef69725c",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/docs.yml",
+        "head_branch": "codex/state-contracts-qualification-coverage"
+      },
+      "verdict": "BLOCK",
+      "all_check_counts": {
+        "skipping": 8,
+        "fail": 9,
+        "pass": 83
+      },
+      "terminal_receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\terminal-receipt.json",
+        "sha256": "6e6f777f86b73c37acb1bf7e1c6ec52cbf81656f5da84c6f3ea394bfa7de6541"
+      },
+      "watcher_active": false,
+      "primary_failures": [
+        {
+          "class": "DOCS_OWNING_GATE_ORACLE",
+          "job_ids": [
+            133096486327
+          ],
+          "source": "site/test/release-applicability/workflow.test.ts:140",
+          "actual": "1560PASS/1FAIL; owning gate assertion still requires single-line run text, while reviewed observer/fallback uses run block.",
+          "recommended_scope": "Exact owning gate-shape assertion plus bypass/omission negatives; preserve publication failure guards."
+        },
+        {
+          "class": "SANDBOX_OWNING_COMMAND_PROJECTION",
+          "job_ids": [
+            133096580249
+          ],
+          "source": ".github/scripts/test_sandbox_ci_wiring.py:141",
+          "actual": "13methods11PASS2FAIL; original npm run substring count0 inside new reviewed observer wrapper; actual suite not executed.",
+          "recommended_scope": "Project exact reviewed original wrapper command while preserving pinned image, mandatory pull, ordering and mutation guards."
+        },
+        {
+          "class": "SOURCE_BINDING_VALIDATION_ORDER",
+          "job_ids": [
+            133096580245,
+            133096580305,
+            133096580512
+          ],
+          "source": ".github/scripts/test_major_qualification_report.py:533 and major_qualification_report.py build_report source-test branch",
+          "actual": "Intentional missing source_input_binding reaches source_profile(None) before binding validation; unknown source profile does not match unchanged source-binding rejection assertion.",
+          "recommended_scope": "Require dict source_input_binding before profile lookup, preserving old negative oracle and fail-closed scope."
+        },
+        {
+          "class": "WINDOWS_PI_SOURCE_BYTES",
+          "job_ids": [
+            133096580357
+          ],
+          "source": ".github/workflows/ci.yml coverage Pi job / major_qualification_report.py source manifest",
+          "actual": "Prepare Pi source-test inputs fails closed: source payload physical bytes differ from Git. Actual offending member and original Git configuration UNKNOWN.",
+          "hypothesis": "New source-bound Windows job lacks pre-checkout LF policy; two common .github policy/selection JSON inputs lack explicit LF attributes. This is not proof of the historical member or modifier.",
+          "recommended_scope": "Bounded exact-source reproduction before fix; preserve byte equality, no hash restamp/normalization bypass."
+        },
+        {
+          "class": "MACOS_INERT_DEBUGGER_FIXTURE",
+          "job_ids": [
+            133096580192
+          ],
+          "source": ".github/scripts/test_pi_package.py DebuggerInboxTests / _windows_rpc_timeout.py:240",
+          "actual": "Seven failures: spy launch0 vs1, transport_failed instead of captured/deadline/output_limit. Not a live DLL/Pi process failure.",
+          "hypothesis": "Inner ambient tempfile path can carry macOS /var alias before strict _regular check, while only outer fixture root is resolved. Exact original inner path remains UNKNOWN.",
+          "recommended_scope": "Bounded inert alias reproduction and canonical owned fixture temp location; preserve production no-alias guard."
+        }
+      ],
+      "secondary_failures": [
+        {
+          "job_id": 133098937805,
+          "actual": "Pi coverage merge/report fails after Windows producer input failure; no independent inner cause claimed."
+        },
+        {
+          "job_id": 133105617745,
+          "actual": "Required aggregate Merge readiness fails with selected job failures."
+        }
+      ],
+      "positive_limits": {
+        "windows_pi_adapter": {
+          "job_id": 133096580377,
+          "result": "SUCCESS",
+          "actual_rpc_step": "SUCCESS",
+          "historical_intermitttent_shutdown_cause": "UNKNOWN"
+        },
+        "program_integrity": "All three OS jobs SUCCESS individually.",
+        "native_conformance": "All six platform jobs SUCCESS individually.",
+        "qualification": "No failed whole-run/PR installed/native promotion."
+      },
+      "original_failed_jobs": {
+        "133096580192": {
+          "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580192.json",
+          "metadata_sha256": "b05221bd69a0f93d416fdb8f12ff08e6db4142c8a884ece7c690bc41863b1ab7",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580192.log",
+          "log_sha256": "add8974420a587b789be8bbe7a396b0eb61be99e1d85c5d29f4a7caeb9b36236",
+          "log_bytes": 49963
+        },
+        "133096580245": {
+          "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580245.json",
+          "metadata_sha256": "936a46fedc97ba61304df914f35c02241715e371412bbcd7f61dda2997d58034",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580245.log",
+          "log_sha256": "c7201310271cd1eea30382dbae93d1e5628f7900f9a17800b5443869b7014c3f",
+          "log_bytes": 178267
+        },
+        "133096580249": {
+          "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580249.json",
+          "metadata_sha256": "c30d9fb20d241c15cdfbc81f7b5da1414327c749bb760e1626955e7bc689b326",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580249.log",
+          "log_sha256": "9e108ecc6d5fcec97fcd61b2843f0d8ac02f822c563e9bab77e65b36ad865e95",
+          "log_bytes": 29040
+        },
+        "133096580305": {
+          "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580305.json",
+          "metadata_sha256": "601fcc45c74aa0744653c8824ee6d910e4c72831e0bde80ba4a09b653b40df41",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580305.log",
+          "log_sha256": "44eca7e6ec33ea698223b185b4b51665de2950b57cd89f1e3471476180fd2327",
+          "log_bytes": 192476
+        },
+        "133096580357": {
+          "name": "Coverage union (Pi)  <os: windows-latest>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580357.json",
+          "metadata_sha256": "f5a119d63f0fa385b9edbc556af1ef5d0f4648fd9220a317fc24190d111383ae",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580357.log",
+          "log_sha256": "e5e781422ae86e321766ab3a7af353b44ae714949aa484d2d56c3627ef076441",
+          "log_bytes": 30226
+        },
+        "133096580512": {
+          "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580512.json",
+          "metadata_sha256": "ca12d80f12dffd007f9958bba7dde8e13744b4de901b7c30e40773a0afe5f2de",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096580512.log",
+          "log_sha256": "e7270fce3d4c49c3daef1981671b868d9aa18c256e760b3d35a280601ed44df7",
+          "log_bytes": 178789
+        },
+        "133098937805": {
+          "name": "[CHECK] | [PI  ] | Coverage union",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133098937805.json",
+          "metadata_sha256": "940d15af4e1b369cb063fad9a62cfefc3d6701c5be79b43c448f71d76c146740",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133098937805.log",
+          "log_sha256": "3613bc9e08a1ec65432ed7f34b744e4d302c48d9af5f518f8c209db8528f2bc0",
+          "log_bytes": 24922
+        },
+        "133105617745": {
+          "name": "[GATE ] | [REPO] | Merge readiness",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133105617745.json",
+          "metadata_sha256": "be567c85caf717edf00c75827ee4b7670683fc2d4433fba86985db1cef4e474a",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133105617745.log",
+          "log_sha256": "214a91cc1b1786b72129354fb931373f7baf486f873c408c625ded45693feee8",
+          "log_bytes": 5400
+        },
+        "133096486327": {
+          "name": "Site | [Test] - Generator",
+          "metadata_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096486327.json",
+          "metadata_sha256": "3d5ec45399e838cca346c62314161bda8427f083d7e1732d0d43e9499d2e91a8",
+          "log_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-6c4530-watch-iq5tfgfw\\failed-job-133096486327.log",
+          "log_sha256": "a9d58148b994bcfa62d688bfb9dd8d9f3de3be02ce62dc888988a66b099c8e14",
+          "log_bytes": 150852
+        }
+      },
+      "limits": [
+        "All original run/job metadata bound exact6c head, pull_request event, attempt1; CI94 and Docs5 complete populations checked.",
+        "No retry/cancel/source/index/ref/marker/merge writes or runtime/SDK/native/provider probes.",
+        "No Pi failure artifact downloaded because original Windows actual RPC succeeded.",
+        "Parent1098 remains held from main; publication unauthorized."
+      ]
+    }
+  },
+  "sealed_author_packets": {
+    "typed_source_readiness": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-typed-source-readiness-bu_jqk_6\\delivery.json",
+      "sha256": "a700bfa5f230ba0cb71d4bccad9c12bdf9252dba00b1b0044ee30ff0e6c226f5",
+      "record": {
+        "schema": "private-author-delivery/1",
+        "status": "READY_FOR_ROOT_INTEGRATION_AND_AFFECTED_REVIEW",
+        "route": "ca-sprint/ca-feature",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "observed_root_head_at_freeze": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "immutable_base_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "basis": "Exact current physical Docs+TS preimages; root may advance independently; no whole-checkout freeze claimed.",
+        "files": [
+          {
+            "path": ".github/scripts/major_readiness.py",
+            "preimage_sha256": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            "candidate_sha256": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            "candidate_bytes": 79245
+          },
+          {
+            "path": ".github/scripts/test_major_readiness.py",
+            "preimage_sha256": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+            "candidate_sha256": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "candidate_bytes": 102398
+          },
+          {
+            "path": ".github/scripts/site_playwright_observation.py",
+            "preimage_sha256": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            "candidate_sha256": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            "candidate_bytes": 37219
+          }
+        ],
+        "patch": "proposal.patch",
+        "patch_sha256": "624032932a947e808546e067ebb3a5544dce0240810b7d6ba8ba8829d88b293b",
+        "requirements": "typed-source-disposition-sprint-input.txt and context.json in RootOUT; packet410da094bc555663fe70cddda1d04811636e7ee9398d24940e4db55619db6a20",
+        "policy": {
+          "records": 32,
+          "json_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+          "unchanged": true
+        },
+        "design": {
+          "selected": "Reuse strictly authenticated per-transaction current proof cache; typed source outcomes require no synthetic executed report.",
+          "alternative_not_selected": "A redundant source CI report would add a fake execution/artifact authority for source conformance already authenticated by the strict owner.",
+          "version": "codearbiter-major-readiness/3",
+          "legacy": "Readiness Core1/Docs2 and qualification reports1-3 unchanged.",
+          "typed_results": [
+            "PRESERVED",
+            "NOT_APPLICABLE"
+          ],
+          "source_kinds": [
+            "review",
+            "conformance-check"
+          ],
+          "source_producers": [
+            "source-conformance",
+            "independent-review"
+          ],
+          "fields": "actual ref/ref_commit/sha256/source_commit/kind/result/producer/current_at; exact contract+rationale for N/A only",
+          "current_at": "Emitted only after unchanged authenticate_disposition sets current-proof=True at exact candidate.",
+          "independence": "Both production collection paths call requirements with fresh strict owner cache; final load reconstructs record==produce and verify compares full canonical req. Inert unit seams do not themselves qualify a real run.",
+          "partition": "Full outer cells preserved; source dict keys and runtime cells disjoint/exhaustive, task/scenario/installed obligations remain runtime; no all-source envelope.",
+          "preserved_digest": "Original disposition_evidence_sha256 construction unchanged.",
+          "guards": "Original strict proof/raw/history/input applicability, main-only trusted whole-Core success, whole-Docs success, original upload/package/archive/tar guards unchanged."
+        },
+        "actual_checks": {
+          "original_target_red": "target-red-captured.json",
+          "original_red_result": "1 test, exit1, correct missing fictional source job; real immutable proof auth succeeded first",
+          "new_tests": "typed-final.json",
+          "new_result": "10PASS/0SKIP7.590s (7.747s subprocess)",
+          "legacy_core": "legacy-core-compatibility.json",
+          "legacy_core_result": "29PASS0.011s0SKIP; Core/report1-3/uploader/package guards",
+          "legacy_docs": "legacy-docs.json",
+          "legacy_docs_result": "4PASS0.043s0SKIP; existing separate-run/main/tar guards",
+          "mutants": "mutant-controls.json",
+          "mutant_result": "2 isolated incorrect production mutants rejected by assertion failures, not setup failures",
+          "guards": "guards.json",
+          "patch_check": "patch-check.json",
+          "gitleaks": "gitleaks.json (0 findings)"
+        },
+        "preservation": "All93 original test_major_readiness class methods AST unchanged; all25 Docs test methods unchanged; original authenticate_disposition/authenticate_recorded_disposition/disposition_input_applicability/validate_run/validate_artifact/validate_upload AST unchanged. One added test class10 methods. Docs module only adds validated runtime unwrap after load_verified_receipt.",
+        "refinements": [
+          "Original pipeline target-red.log did not preserve child exit; target-red-captured.json is authoritative actual exit1 captured before implementation.",
+          "Initial7-control run had6PASS and1 fixture-setup ERROR: inert artifact name missing. Added exact required name; no production weakening.",
+          "Inspection found real PRESERVED ledger rows omit contract; initial private design required contract too broadly. Refined shape requires contract only for N/A; fixture now mirrors actual absence. No old proof or row changes."
+        ],
+        "coverage": "No installed coverage runner used; reuse accepted Python FACT005/no-tooling. Meaningful positive/negative owning controls and two actual isolated production mutants retained, no invented line/branch percentage.",
+        "limits": [
+          "Local Python/Git/JSON/inert artifact fixtures only. Accepted-ADR child seam inert in one requirements fixture; every Git/proof read remains real.",
+          "Production collect/HTTP artifacts/Docs APIs mocked in live-reader unit control; no live CI/provider/browser/native/Go/SDK/CLI/Node/model execution.",
+          "No task/scenario/human/model acceptance, installed qualification, publication readiness or disposition promotion claimed.",
+          "No Gov/source/index/ref/progress/marker or proof renewal writes. Root sole writer/reviewer/integrator. Parent1098 main/publication hold unchanged."
+        ],
+        "integration": "Apply only3 files/hunks against listed preimages; retain Root Docs bounded descriptor fix and TS7 roles. Root adds truthful intent note, then one affected security/coverage peer; no broad suite/review fleet."
+      }
+    },
+    "c33_publisher_oracles": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\delivery.json",
+      "sha256": "2737e582853358290da902863c39cb9e669501f6de2603189c6351cbf5b5bde5",
+      "record": {
+        "format": "codearbiter.feature-delivery/1",
+        "state": "READY",
+        "apply_files": [
+          {
+            "path": ".github/scripts/major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\candidate\\.github\\scripts\\major_qualification_report.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\preimages\\.github\\scripts\\major_qualification_report.py",
+            "preimage_sha256": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            "sha256": "d68293b0318796011a5cea02989460f8a50b0819707cae03cfab2cbb78763548"
+          },
+          {
+            "path": ".github/scripts/test_major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_sha256": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            "sha256": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894"
+          },
+          {
+            "path": ".github/scripts/test_generated_output.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\candidate\\.github\\scripts\\test_generated_output.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\preimages\\.github\\scripts\\test_generated_output.py",
+            "preimage_sha256": "86de623036894bfcbeee70658ac86908025bf0e31c2979ed34aea067681d6610",
+            "sha256": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87"
+          }
+        ],
+        "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\implementation.patch",
+        "patch_sha256": "e87086ff12654faae7e6d44ebfd8497de60a74da1125abd25de825316524f5a6",
+        "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\source-freeze.json",
+        "source_freeze_sha256": "7a40914e88d93d3cdbaef5c6f4f2ac8447b28c43ea33a173d07b5aa162ca3471",
+        "routing_fragments": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\routing-fragments.json",
+        "routing_sha256": "c57ab44fdb34c91b069a3e71dbfc835df3febcb5f8b9c3145bacb5fcc6855f79",
+        "filemap": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\filemap.json",
+        "filemap_sha256": "846cbea4bc47c2e143a4a3500d71de16c7f366b0c2b0be7fb0b94e13c490f179",
+        "semantic_mapping": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\semantic-mapping.json",
+        "S75_08_proposal": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-publisher-oracles-j7zye38f\\S75-08-reconciliation-proposal.json",
+        "actual_results": {
+          "RED": "4methods:publisher characterizationPASS; illegalcell3subcases+missing3mapping assertions FAIL5, no import/setup error.",
+          "GREEN-focused": "4PASS/7.592s;132 missing/skipped/failed/repeated selected-outcome rejection vectors,3 illegal-scope refusals.",
+          "GREEN-existing-compatibility": "2PASS/11.706s; inert source counter/child and existing source-manifest/refusal controls.",
+          "orphan_mutant": "1FAIL/0.058s; removed only real orphan-removal collection, unchanged new test observes publication count1!=2.",
+          "source_stability": true,
+          "compile": "3PASS"
+        },
+        "limits": [
+          "Pure private Python/Git/files fixtures only; no original checker14 cohort/CI report qualification execution here.",
+          "S75 render map/descriptor supplied at rendering boundary; actual write_all/disk/targets/transaction/helper effects exercised, render correctness not claimed.",
+          "No publisher production or readiness/CI/API/transport/import-member/profile expansion.",
+          "No ledger/CAS evidence/status/N_A/history writes; mappings are future successful trusted original CI observation recipes.",
+          "C33 finite mechanical checker only, no actual model/agent release-skill exercise, task/scenario/installed/publication closure.",
+          "S75:08 separate proposal only; old no-rollback effect superseded by accepted BUILD-G01, no unqualified PASSED for obsolete effect."
+        ],
+        "integration": "Three owned source paths exact preimageCAS; shared policy/selections additive fragments only, preserve concurrent readiness3 routes. No ledger metadata/status application."
+      }
+    },
+    "renderer_paths": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-render-paths-fix-juxxzazc\\delivery.json",
+      "sha256": "71a6f2863de532690b58f4f896800ff2fbf47dd11480d452d2a312dd5064fb0b",
+      "record": {
+        "schema": "private-author-delivery/1",
+        "state": "FROZEN_READY_FOR_ROOT",
+        "route": "ca-fix",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "base_epoch": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "packet_sha256": "4f75801d2a4e01fe42d6f2665323fbbb3345b3f66c31cf6de42fbbf6ac1fd22e",
+        "files": [
+          {
+            "path": "core/artifacts/internal/render/render.go",
+            "preimage_sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f",
+            "candidate_sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+            "bytes": 18629
+          },
+          {
+            "path": "core/artifacts/internal/render/path_values_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "e2fdf973c18c6ea0f141df89498c104f523ae0865e0a0aa3edb9b1ea107431db",
+            "bytes": 6579
+          },
+          {
+            "path": "core/artifacts/testdata/compat/knowledge-paths-0.3.2.html",
+            "preimage_sha256": null,
+            "candidate_sha256": "d2a65e19f9e1adb0f12a10f9dda79ea8f04d2fa4cea3c8f7caa252b127c076ef",
+            "bytes": 16328
+          }
+        ],
+        "patch_sha256": "e57bab7702c9704a5fba1ce53899227d72aa5a78f0c388a5c5140dfa17f53988",
+        "diagnosis": "Generic writer treated every nonempty paths list as action/path maps; strings became empty cells. Original data model retained actual values, so embedded JSON alone was a false visibility oracle.",
+        "design": {
+          "selected": "Correct default path shape rendering plus one exact finite pre-fix path-list profile used only for Parse comparison. New Render always corrected. Full validated model/container/style/markers and complete byte equality retained for both profiles.",
+          "alternative": "New renderer-version identity would require broad client/manifest compatibility migration for this bounded display repair; avoided. No arbitrary DOM interpretation, stripped-byte fallback, field patching or model-only acceptance.",
+          "model_identity": "No format/schema/renderer-version or model hash change. A normal read does not rewrite input; an explicit new Render can intentionally correct legacy display.",
+          "old_paths": "All-map path arrays preserve exact original Action/Repository path table. Strings/mixed arrays render existing escaped generic value grammar.",
+          "golden_fixture": "Synthetic typed knowledge0.3.2 generated and Parse-validated by unchanged original production Render BEFORE any fix; exactSHA256 pin d2a65e19f9e1adb0f12a10f9dda79ea8f04d2fa4cea3c8f7caa252b127c076ef. Author-only capture test retained outside candidate."
+        },
+        "actual_tests": {
+          "target_red": "target-red.json: exit1; string+mixed FAIL, original map/table PASS; no setup failure.",
+          "compatibility_red": "compatibility-red.json: naive writer fix failed authentic old typed view with RENDER_DRIFT, before compatibility code.",
+          "legacy_capture": "legacy-capture.json: original typed fixture Render+Parse PASS, source bytes stable; original source hash recorded.",
+          "green": "final-coverage.json:9top-level focused tests PASS0SKIP,1.269s controller, sourcebeforeafter stable;4new owning tests+5unchanged existing renderer tests, includes16old/new tamper subcases, original0.3.0 spec/plan bytes and0.3.0/1 exact action-table grammar.",
+          "critical_mutant": "canonical-bypass-successor.json: removes legacy byte comparison; actual12 noncanonical-byte acceptance assertion failures, exit1. Candidate production bytes unchanged; Go overlay private only.",
+          "mutant_setup_failure": "canonical-mutant.json retained first invalid mutant with unused legacy variable build error. Not accepted as safeguard sensitivity; corrected successor compiles and fails actual assertions.",
+          "syntax_lint": "gofmt applied owning two Go files; selected Go compilation/test passes. No broad lint/fullmodule claim.",
+          "security_scan": "gitleaks.json0findings on exact3subjects; patch-check.jsonPASS"
+        },
+        "coverage": {
+          "profile": "go-native",
+          "measurement": "Windows focused renderer-unit statement coverage only; partial, not full native/module/platform coverage verdict.",
+          "package_statements_percent": 53.4,
+          "changed_block_statements": "16/17=94.12% in blocks intersecting modified lines; changed-block-coverage.json diagnostic only",
+          "lines_branches": "unmeasured",
+          "uncovered_changed_statement": "legacy render error return; full renderer error checks remain in both profiles. No scope/threshold/host exclusions changed."
+        },
+        "preservation": {
+          "all_original_test_files": "Every originally tracked module file remains byte-identical except render.go. New path_values_test.go contains4top-level tests; no old test assertion changed.",
+          "model_artifact": "core/artifacts/internal/model/artifact.go unchanged",
+          "API": "Prepare/Render/Parse signatures, Version, model schema/client manifests unchanged",
+          "oldviews": "Existing0.3.0/1 object path tables unchanged; old0.3.2 knowledge view accepted byte-exact. Unknown/tampered complete HTML still refused."
+        },
+        "limits": [
+          "Private offline owning Go UNIT tests only, existing Go toolchain; no module-wide Go suite, artifact helper/native conformance/install/API/provider/SDK/Node/browser/model/deploy.",
+          "No current Gov knowledge regeneration or native installation. Root coordinates qualified candidate CI/consumer following source change.",
+          "No Gov/index/refs/progress/status/proof-renewal writes. Root16producerstage untouched by actor; no whole-checkout freeze claim.",
+          "Local unit passes do not qualify native/installed/published/task/real-host behavior. Parent1098main/publication hold remains."
+        ],
+        "integration": "Root apply exact3paths/CAS preimages only, add truthful root intent note; one affected security/coverage review. Readiness3 earlier delivery remains immutable independent increment."
+      }
+    },
+    "owning_workflow_readers": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\delivery.json",
+      "sha256": "d5d83198b86195c8b19f31710dd2eba0d4df2f567ffcf21623169b0415835af0",
+      "record": {
+        "format": "codearbiter.owning-reader-repair-delivery/1",
+        "state": "READY",
+        "apply_files": [
+          {
+            "path": "site/test/release-applicability/workflow.test.ts",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\candidate\\site\\test\\release-applicability\\workflow.test.ts",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\preimages\\site\\test\\release-applicability\\workflow.test.ts",
+            "preimage_sha256": "9fb50919d1b6e04f83de5f4c06b81e8eb115fc7e2b9439094a5e798d4ef2186d",
+            "sha256": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630"
+          },
+          {
+            "path": ".github/scripts/test_sandbox_ci_wiring.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\candidate\\.github\\scripts\\test_sandbox_ci_wiring.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\preimages\\.github\\scripts\\test_sandbox_ci_wiring.py",
+            "preimage_sha256": "de8016e15c14b37b0a3231ec701afeddabb57a2324daf3e7651a3771e9de0e83",
+            "sha256": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d"
+          }
+        ],
+        "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\final.patch",
+        "patch_sha256": "d1ea5fbc61804be15ecf6a75a4d1157947f9e547c19f3864af1931c9e2c02222",
+        "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\source-freeze.json",
+        "source_freeze_sha256": "68ac380bace9b14e57c46d7d3de21efb4b5b542016e2c5a9a93ad78d2bf93a66",
+        "filemap": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6c-owning-reader-fixes-x1_tzdw6\\filemap.json",
+        "filemap_sha256": "9ccd050c88d436a7dec6de80129a7e2ee1eb88097be5d0fb9b2e4e0557540f15",
+        "actual_results": {
+          "RED-site": {
+            "exit_code": 1,
+            "seconds": 2.0569954000093276,
+            "source_stable": true,
+            "tools_stable": true,
+            "test_counts": {
+              "numTotalTests": 11,
+              "numPassedTests": 10,
+              "numFailedTests": 1,
+              "numPendingTests": 0
+            },
+            "selected_files": [
+              "C:/Users/brenn/AppData/Local/Temp/ca-6c-owning-reader-fixes-x1_tzdw6/candidate/site/test/release-applicability/workflow.test.ts"
+            ]
+          },
+          "RED-python": {
+            "exit_code": 1,
+            "seconds": 1.1350576999975601,
+            "source_stable": true,
+            "tools_stable": true,
+            "test_counts": null,
+            "selected_files": null
+          },
+          "GREEN-site": {
+            "exit_code": 0,
+            "seconds": 0.4858084000006784,
+            "source_stable": true,
+            "tools_stable": true,
+            "test_counts": {
+              "numTotalTests": 11,
+              "numPassedTests": 11,
+              "numFailedTests": 0,
+              "numPendingTests": 0
+            },
+            "selected_files": [
+              "C:/Users/brenn/AppData/Local/Temp/ca-6c-owning-reader-fixes-x1_tzdw6/candidate/site/test/release-applicability/workflow.test.ts"
+            ]
+          },
+          "GREEN-python": {
+            "exit_code": 0,
+            "seconds": 0.5007383000047412,
+            "source_stable": true,
+            "tools_stable": true,
+            "test_counts": null,
+            "selected_files": null
+          }
+        },
+        "guards": {
+          "site/test/release-applicability/workflow.test.ts": {
+            "only_changed_existing_test": "a failed browser gate still blocks Pages upload and deployment",
+            "all_prior_bytes_before_that_test_unchanged": true,
+            "original141_144_assertion_expressions_preserved": true,
+            "exact11_original_test_IDs_unchanged": true,
+            "mutation_vectors": 18,
+            "mutation_fixture_change_asserted": true
+          },
+          ".github/scripts/test_sandbox_ci_wiring.py": {
+            "changed_methods": [
+              "SourceContracts.assert_source_image_prerequisite",
+              "SourceContracts.test_source_image_prerequisite_rejects_missing_wrong_late_or_optional_pull"
+            ],
+            "all_other_original_methods_AST_unchanged": true,
+            "new_test_IDs": 0,
+            "original5_image_mutants_preserved": true,
+            "new_command_guard_mutants": 11
+          }
+        },
+        "limits": [
+          "Only11 original owning Site unit tests and2 affected Python methods; other11 Python methods not rerun.",
+          "Reader/test-only; YAML/image/action/token/deadline/production semantics unchanged.",
+          "No browser/Chrome, Docker, subject CLI, native/SDK, product TS suite, build, network, install or provider execution.",
+          "No current CI success, task/platform/installed/publication or ledger qualification claim.",
+          "All original failed/ANSI logs retained privately and decoded-byte-identical base64 envelopes supplied; no stripping or scanner waiver."
+        ]
+      }
+    },
+    "macos_inert_fixture": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-macos-inbox-fixture-57ypg4fl\\delivery.json",
+      "sha256": "10e64b31da30eaf0e467e578f8b98fa56cb7de8fb615223536cdcc5d1297f084",
+      "record": {
+        "schema": "private-author-delivery/1",
+        "state": "FROZEN_READY_FOR_ROOT",
+        "route": "ca-fix",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "source_epoch": "6c4530299d726876d12c58cc8240d59cef69725c",
+        "packet_sha256": "5d646204cc07c2ba45e93847229e8d3b61c57a5e72c79d9533ddfa00591d3798",
+        "files": [
+          {
+            "path": ".github/scripts/test_pi_package.py",
+            "preimage_sha256": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            "candidate_sha256": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce"
+          }
+        ],
+        "patch_sha256": "3ab06b694f2c8213567e1ede8c53fd1b0b6cec40f8be405f8fd8c0a788ba199d",
+        "bug": "Two pure test methods resolve only their outer fixture; production collector allocates new inner default Temp whose aliased ancestor is correctly refused before inert Popen.",
+        "historical_fact": "Original macOS job133096580192 has seven matching assertion failures/zero-launch. Original inner path not observed and remains UNKNOWN; this owned reproduction proves mechanism rather than historical path identity.",
+        "repair": "Capture real TemporaryDirectory class before patch; for only production inner factory within two existing method scopes, pass dir=already-resolved owned outer root. Keep original prefix/options, strict production path validation and all original assertions; add exact cwd.parent==root assertion.",
+        "actual_red": {
+          "receipt": "alias-red.json",
+          "log": "alias-red.log",
+          "tests": 6,
+          "failures": 7,
+          "errors": 0,
+          "skips": 0,
+          "exit_code": 1,
+          "seconds": 0.0845236000022851,
+          "inner_paths": "Seven observed real _regular ValueError refusals beneath an owned junction; outerroots canonical."
+        },
+        "actual_green": {
+          "receipt": "alias-green.json",
+          "log": "alias-green.log",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "exit_code": 0,
+          "seconds": 0.06132959999376908,
+          "inner_paths": "Seven real _regular acceptances on canonical owned inner roots despite aliased defaulttemp."
+        },
+        "guards": "guards.json: all87method identities unchanged,85other test ASTs/100other class methods unchanged,all old assertion ASTs retained; production _windows_rpc_timeout.py/_windows_dbgeng.py unchanged; actual process andDLL calls0. Missing WinDLL/STARTUPINFO/CREATE_NO_WINDOW namespace controls remain intact.",
+        "owned_FS_safety": "Before creating junction both resolved endpoints verified under this private Temp directory; junction target equality verified; only owned junction rmdir after capture, never recursive target deletion. Real Temp subdirectories owned by original six fixtures.",
+        "verification": "Python compile and portable gitapplycheckPASS;gitleaks0findings. Existing Python FACT005/no-tooling policy unchanged, no coverage percentage claimed for fixture-only delta.",
+        "limits": [
+          "Pure standard-library/filesystem/inert namespace controls only. Junction reproduction on Windows models same strict alias refusal; actual macOS rerun remains hosted follow-up.",
+          "No real debugger DLL/SDK/Node/Pi/RPC/native/Go/provider/network/install or ownedNode replay. No full87suite/skips/xfails/deadline/assertion weakening.",
+          "No Gov/index/refs/source/progress/marker/proof/status writes; Root owns integration. Current remote6c watch independent; readiness3+renderer packets immutable.",
+          "Parent1098main/publication remain held. This is test-fixture portability, not native capability/qualification or Pi process-cause fix."
+        ]
+      }
+    },
+    "source_byte_policy": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\delivery.json",
+      "sha256": "0308a5ff3e56efc22271a2a551ddc9f1d2bc0133da70fb411719bc0dcfde7f24",
+      "record": {
+        "format": "codearbiter.source-byte-policy-delivery/1",
+        "state": "READY",
+        "apply_files": [
+          {
+            "path": ".gitattributes",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\candidate\\.gitattributes",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\preimages\\.gitattributes",
+            "preimage_sha256": "26cc6d455dfa8157d75775e567277638deecce6e5cf02f7878cfa6edf0a3ac96",
+            "sha256": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333"
+          },
+          {
+            "path": ".github/scripts/major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\candidate\\.github\\scripts\\major_qualification_report.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\preimages\\.github\\scripts\\major_qualification_report.py",
+            "preimage_sha256": "8eee76ea7ce11a1d0c73eea46aace1bfeb608e2f402c57695dd6dd15cbab9282",
+            "sha256": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6"
+          },
+          {
+            "path": ".github/scripts/test_major_qualification_report.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_sha256": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894",
+            "sha256": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3"
+          }
+        ],
+        "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\final.patch",
+        "patch_sha256": "c2d51538b8d5fb4a102a7741fee606a73a2df83211221d3c3d80f91c5ee7d911",
+        "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\source-freeze.json",
+        "source_freeze_sha256": "c57f7a28628f2e47f1b6508e83ce26c24b715a661f2e6febd56a88cf8a0ad5f3",
+        "filemap": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\filemap.json",
+        "filemap_sha256": "3db05d7af8178d23eec9c7c535f26052e2b7113742cc8f94ce3409a66eb9f1ef",
+        "attribute_audit": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-byte-policy-mssj2_b3\\attribute-audit.json",
+        "results": {
+          "initial_RED": "Two original actual prepare-source calls on clean private autocrlf=true clones refuse byte mismatch; closed mismatch diagnosis absent.2methods/3FAIL10.577s.",
+          "final_GREEN": "3PASS22.410s; exact124/77 memberblob/content joins, raw-text CRLF and ordinary autocrlf behavior retained, dirty/unknownprofile refusals, actual mismatch+CLI closed output and privacy/bounds/type/extra-key controls.",
+          "existing_refusals": "2PASS3.954s; Rootmissing-binding order and originalsource membership/staged-drift refusal controls unchanged.",
+          "mutation": "Rawmember-path emission instead of hash makes unchangedprivacy methodFAIL in0.001s, no import/setup error."
+        },
+        "limits": [
+          "OriginalGHAoffendingmember/config/EOL remainsUNKNOWN; controlledsource defect does not establish originalCIcause.",
+          "Two shared JSON rules repair complete WindowsPi124 profile; six exact Sandboxfixture rules are preventive text policy. Sandboxactualproducer remainsUbuntu; no Windowsqualification claim.",
+          "Zero normalized/changed original member content; no globalGitconfig, YAML/checkout-policy change, sourceprofile expansion or byte-binding waiver.",
+          "No actualNode/Vitest/Pi/Go/native/SDK/Chrome/Docker/browser/provider/network/install/product execution.",
+          "No test/evidence/ledger/task/machine/installed/publication qualification or status changes."
+        ]
+      }
+    }
+  },
+  "root_affected_checks": {
+    "qualified-outcomes-protocol-union": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\qualified-outcomes-protocol-union.json",
+      "sha256": "852ef0ae7a04ab336c72029df9992ae0daa22217ace8d027d0d693c299d8d000",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_readiness.TypedSourceDispositionTests"
+        ],
+        "exit_code": 0,
+        "seconds": 7.5116187000094214,
+        "before": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".gitattributes": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333",
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            ".github/scripts/test_pi_package.py": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+            ".github/scripts/test_sandbox_ci_wiring.py": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+            "site/test/release-applicability/workflow.test.ts": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630"
+          }
+        },
+        "after": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".gitattributes": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333",
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            ".github/scripts/test_pi_package.py": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+            ".github/scripts/test_sandbox_ci_wiring.py": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+            "site/test/release-applicability/workflow.test.ts": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "69770126b6610bebfab7aee01a19895f599a6cd3c7225173955bd5817bf00499"
+      }
+    },
+    "qualified-outcomes-report-bound-union": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\qualified-outcomes-report-bound-union.json",
+      "sha256": "0caa9469cbde5211d341022d972e3ee85b71dae860db4b1ac970734299c7afb4",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.ReportTest.test_real_largest_owner_population_and_overlay_inventory_fit_retained_report_bound",
+          "test_major_qualification_report.SourcePayloadAdmissionTest.test_source_test_cannot_qualify_from_unbound_native_archive"
+        ],
+        "exit_code": 0,
+        "seconds": 0.19093620000057854,
+        "before": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".gitattributes": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333",
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            ".github/scripts/test_pi_package.py": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+            ".github/scripts/test_sandbox_ci_wiring.py": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+            "site/test/release-applicability/workflow.test.ts": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630"
+          }
+        },
+        "after": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".gitattributes": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333",
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            ".github/scripts/test_pi_package.py": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+            ".github/scripts/test_sandbox_ci_wiring.py": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+            "site/test/release-applicability/workflow.test.ts": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "d624895c00d1a035d9dd1765556a9ee323492642992bd8901c34d628427c6561"
+      }
+    },
+    "source-binding-order-target-red": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source-binding-order-target-red.json",
+      "sha256": "b67ea9e4c0a7c7019ba2621c2b8c4f212d9a815e106d3f607a710e8c06eecfd2",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.SourcePayloadAdmissionTest.test_source_test_cannot_qualify_from_unbound_native_archive"
+        ],
+        "exit_code": 1,
+        "seconds": 0.16269199999806006,
+        "before": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "d68293b0318796011a5cea02989460f8a50b0819707cae03cfab2cbb78763548",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99"
+          }
+        },
+        "after": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "d68293b0318796011a5cea02989460f8a50b0819707cae03cfab2cbb78763548",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "10f0ed66db5264ab08b4a8363000ffdd607dd62cfcdfded27863c147f22e0a91"
+      }
+    },
+    "source-binding-order-target-green": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source-binding-order-target-green.json",
+      "sha256": "71d6d48050ff7c0731a07a73885b1b97801f87ed260bbfc09573841a9ad60adc",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.SourcePayloadAdmissionTest.test_source_test_cannot_qualify_from_unbound_native_archive"
+        ],
+        "exit_code": 0,
+        "seconds": 0.16179379999812227,
+        "before": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "8eee76ea7ce11a1d0c73eea46aace1bfeb608e2f402c57695dd6dd15cbab9282",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99"
+          }
+        },
+        "after": {
+          "head": "6c4530299d726876d12c58cc8240d59cef69725c",
+          "index": "580b383fc90e14df07b961258873a040d9e640932a641080fe11ebc6143976e0",
+          "files": {
+            ".github/major-qualification-policy.json": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+            ".github/major-test-selections.json": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+            ".github/scripts/major_qualification_report.py": "8eee76ea7ce11a1d0c73eea46aace1bfeb608e2f402c57695dd6dd15cbab9282",
+            ".github/scripts/major_readiness.py": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+            ".github/scripts/site_playwright_observation.py": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+            ".github/scripts/test_generated_output.py": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+            ".github/scripts/test_major_qualification_report.py": "9f75c664b84d947f6f754ef9df7c637d7ed4f164bfe36e628b5a4eab76799894",
+            ".github/scripts/test_major_readiness.py": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+            "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1a52ff93b2b7c8bc576900f70c9062f5baedb573cf55507ec33070c999cd9b12"
+      }
+    }
+  },
+  "source_bindings": {
+    ".gitattributes": {
+      "sha256": "a43a01c44d1e1ca0f18ab6f211a7e7d5bad9bfd7013d1572a7d23c60c94ac333",
+      "bytes": 8377
+    },
+    ".github/major-qualification-policy.json": {
+      "sha256": "87bbc42daa2ee53508678d8a5fbb259294a961742501e4d110226033a0bed156",
+      "bytes": 5823
+    },
+    ".github/major-test-selections.json": {
+      "sha256": "bd7d332dc2146d97772ab0a8c7968b41e8e0f4b0793ab2a55102869d6ca6c2cf",
+      "bytes": 54257
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "sha256": "1367489cdcd6776a11f84afb9d54b580afc282001ec4cb232e09fd945108b6a6",
+      "bytes": 84021
+    },
+    ".github/scripts/major_readiness.py": {
+      "sha256": "daea797c8321cf3e87fe5c6a696aafce696012f3e00f2a5cf7b5f18f902c4e9b",
+      "bytes": 79245
+    },
+    ".github/scripts/site_playwright_observation.py": {
+      "sha256": "c54e65e2b3b99e6b37bca652253ac07dec687f098b6c4ea7d95c4cf002925df3",
+      "bytes": 37219
+    },
+    ".github/scripts/test_generated_output.py": {
+      "sha256": "9498275811334f739004007f81755230254a126468e00f6300319c1dec753f87",
+      "bytes": 9252
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "sha256": "28776d9f3aac15fd820232e0a05615575dd2b6d2c341c7ca121276e5a20b1bc3",
+      "bytes": 143036
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "sha256": "42712eddcbc2859f8f8a7ac7d480780f4e8695b55c68646902a294f6441469fe",
+      "bytes": 102398
+    },
+    ".github/scripts/test_pi_package.py": {
+      "sha256": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+      "bytes": 271891
+    },
+    ".github/scripts/test_sandbox_ci_wiring.py": {
+      "sha256": "50a1b6bfe66e93ae23b2de8f0f4345f3bdb65d1ba5e6f4ffcc9e2f8342fce75d",
+      "bytes": 20512
+    },
+    "core/artifacts/internal/render/path_values_test.go": {
+      "sha256": "e2fdf973c18c6ea0f141df89498c104f523ae0865e0a0aa3edb9b1ea107431db",
+      "bytes": 6579
+    },
+    "core/artifacts/internal/render/render.go": {
+      "sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+      "bytes": 18629
+    },
+    "core/artifacts/testdata/compat/knowledge-paths-0.3.2.html": {
+      "sha256": "d2a65e19f9e1adb0f12a10f9dda79ea8f04d2fa4cea3c8f7caa252b127c076ef",
+      "bytes": 16328
+    },
+    "site/test/release-applicability/workflow.test.ts": {
+      "sha256": "ffcfc3d3d3b1be84e578f43b4bbdbd240e7df3477ec670590db3702312c7f630",
+      "bytes": 9606
+    }
+  },
+  "scope_corrections": [
+    "Typed readiness author preservation means 25 Docs class methods, consisting of19 tests and6 support methods; it does not mean25 tests.",
+    "Current readiness3 authenticates only original current PRESERVED/exact-contract NOT_APPLICABLE source dispositions; executed/task/scenario/installed obligations remain required and distinct.",
+    "C33 mechanical18-selector union is not an actual model/agent exercise. Publisher success and four current failure states do not establish the superseded S75:08 analytical effect.",
+    "Renderer Go coverage is partial package statements53.4% and intersecting changed-block statements16/17, not measured line/branch coverage or whole-native qualification.",
+    "Original Windows offending member/configuration and original macOS inner alias remain UNKNOWN. Owned reproductions establish supported defects; no historical identity is inferred.",
+    "Root unit snapshot excludes the two untracked Go leaves, which are bound separately by sealed packet and final full-stage review. No whole-checkout freeze is claimed."
+  ],
+  "integrity": {
+    "summary": {
+      "actual_branch_head": "6c4530299d726876d12c58cc8240d59cef69725c",
+      "verification_fixture_commit": "0bc01f6e5f0ee06699d7e9f901b0cb0ef2349a84",
+      "candidate": "candidate-v1:8f14af585286362e95b93a7866e50ebec4cf27a9e4f9aa3cbf5fc0e96c8c3857",
+      "result": "PASSED",
+      "frozen": 105,
+      "records": 1318,
+      "applicability": {
+        "APPLICABLE": 711,
+        "STALE": 607
+      },
+      "seconds": 36.667,
+      "source_ref_moved": false
+    },
+    "groups": {
+      "source246": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      },
+      "software48": {
+        "STALE": 39,
+        "APPLICABLE": 9
+      }
+    },
+    "qualification": false,
+    "limit": "Original historical input epochs are immutable. Only measured metadata follows this observation; no proof/ledger/source epoch/status restamp."
+  },
+  "remaining": {
+    "software_original_unmapped": [
+      "S18:07",
+      "S38:04",
+      "S51:01",
+      "S51:02",
+      "S52:06",
+      "S75:08"
+    ],
+    "native_runtime_unmapped": 118,
+    "native_route_plan": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-runtime-routing-plan-tu6g7tes\\native-runtime-plan.json",
+      "sha256": "eb8a4512faea2e7fa966800fe0b155795cae053e63e8563134f5f261f27906fd"
+    },
+    "holds": [
+      "PR1098 stays OPEN/DRAFT held from main for user testing; publication unauthorized.",
+      "Final stable-source renewal and successful trusted whole integration runs remain required.",
+      "Actual UI/Docker/model/human/parent/lifecycle and pending Pi HTTP choice are not closed by these local checks."
+    ]
+  }
+}

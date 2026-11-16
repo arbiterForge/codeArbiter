@@ -279,5 +279,58 @@ class Chunking(unittest.TestCase):
                 runner.duration_seconds(value)
 
 
+
+
+class NamedChildObservation(unittest.TestCase):
+    """Actual runner orchestration, only compiler/process effects are inert."""
+    def observe(self, events):
+        runner = load_runner()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/'go.mod').write_text('module example.test/children\n\ngo 1.21\n')
+            (root/'fixture_test.go').write_text('package children\n')
+            output = root/'observation.json'
+            package = 'example.test/children'
+            def go(arguments, module, env):
+                if arguments[0] == 'list':
+                    return json.dumps({'ImportPath':package,'Dir':str(root),'TestGoFiles':['fixture_test.go']})
+                self.assertEqual(arguments[:3],['test','-c','-buildvcs=false'])
+                target=Path(arguments[arguments.index('-o')+1])
+                (target/('children.test'+('.exe' if os.name=='nt' else ''))).write_bytes(b'inert unit binary placeholder')
+                return ''
+            encoded='\n'.join(json.dumps(x) for x in events).encode()
+            results=[subprocess.CompletedProcess([],0,b'inert test stream',b''),
+                     subprocess.CompletedProcess([],0,encoded,b'')]
+            argv=['runner','--module',str(root),'--jobs','1','--hints',str(root/'absent.json'),
+                  '--observation',str(output)]
+            with unittest.mock.patch.object(runner,'go',side_effect=go), \
+                 unittest.mock.patch.object(runner,'discover',return_value=['TestProducer']), \
+                 unittest.mock.patch.object(runner.subprocess,'run',side_effect=results) as effects, \
+                 unittest.mock.patch.object(sys,'argv',argv), contextlib.redirect_stdout(io.StringIO()):
+                code=runner.main()
+            self.assertEqual(effects.call_count,2,'original suite and test2json conversion occur once')
+            return code,json.loads(output.read_text())
+
+    def test_parent_pass_preserves_required_child_skip_in_original_observation(self):
+        code,record=self.observe([
+            {'Test':'TestProducer/workspaces-32','Action':'skip'},
+            {'Test':'TestProducer','Action':'pass'}])
+        self.assertEqual(code,0,'unselected skips keep original whole-run semantics')
+        self.assertTrue(record['complete'])
+        self.assertEqual(record['observed'],[{'package':'example.test/children','test':'TestProducer','result':'pass'}])
+        self.assertEqual(record.get('subtests',[]),[
+            {'package':'example.test/children','test':'TestProducer/workspaces-32','result':'skip'}])
+
+
+    def test_duplicate_stray_and_failed_children_cannot_be_complete(self):
+        for children in ([{'Test':'TestProducer/child','Action':'pass'}]*2,
+                         [{'Test':'OtherParent/child','Action':'pass'}],
+                         [{'Test':'TestProducer/child','Action':'fail'}]):
+            with self.subTest(children=children):
+                code,record=self.observe([*children,{'Test':'TestProducer','Action':'pass'}])
+                self.assertEqual(code,1)
+                self.assertFalse(record['complete'])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

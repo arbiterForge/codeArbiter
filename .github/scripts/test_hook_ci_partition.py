@@ -68,6 +68,91 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
 '''
 
 
+# Finite reviewed roles: original suites stay in the legacy digest; metadata
+# does not become a merge-queue test. Exact blocks keep commands, guards,
+# credentials and uploader pins reviewable, as for native qualification above.
+PYTHON_SOURCE_ROLES = {
+    'Prepare Python source-test inputs': r"""      - name: Prepare Python source-test inputs
+        id: python_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --output "${{ runner.temp }}/python-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+""",
+    'Observe original interrupted output publication tests': r"""      - name: Observe original interrupted output publication tests
+        id: python_publisher_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
+          --output "${{ runner.temp }}/python-publisher-observation.json"
+          -- .github/scripts/test_generated_output.py
+""",
+    'Observe original skill-proof freshness tests': r"""      - name: Observe original skill-proof freshness tests
+        id: python_proof_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
+          --output "${{ runner.temp }}/python-proof-observation.json"
+          -- .github/scripts/test_check_skill_proof_fresh.py
+""",
+    'Upload Python source-test inputs': r"""      - name: Upload Python source-test inputs
+        id: python_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-windows-contracts
+          path: ${{ runner.temp }}/python-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+""",
+    'Retain original Python source-test observations': r"""      - name: Retain original Python source-test observations
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: python-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/python-*-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+""",
+    'Emit original Python source qualification report': r"""      - name: Emit original Python source qualification report
+        id: python_qualification_emit
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "${{ runner.temp }}/qualification.json" \
+            --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
+            --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
+            --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
+            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+""",
+    'Upload major qualification report': r"""      - name: Upload major qualification report
+        if: steps.python_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.python_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+""",
+}
+
 def require(ok: bool, message: str) -> None:
     if not ok:
         raise ValueError(message)
@@ -96,7 +181,52 @@ def command(block: str) -> str | None:
         if line.startswith('          '): lines.append(line[10:])
         elif not line.strip(): lines.append('')
         else: break
+    if hit[1] in ('>','>-'):
+        # These owned command scalars use ordinary equally-indented lines.
+        # Refuse unsupported folded shapes rather than misread shell input.
+        require(all(line and not line.startswith((' ', '\t')) for line in lines),
+                'Unsupported folded command shape')
+        return ' '.join(lines).rstrip()
     return '\n'.join(lines).rstrip()
+
+
+
+def python_source_roles(block: str) -> dict[str,str]:
+    steps=step_blocks(block)
+    found={name:[step for step in steps if step.startswith('      - name: '+name+'\n')]
+           for name in PYTHON_SOURCE_ROLES}
+    if not any(found.values()):return {}
+    for name,expected in PYTHON_SOURCE_ROLES.items():
+        require(found[name]==[expected], 'Python source qualification role changed or repeated: '+name)
+    pre=block.split('    steps:\n',1)[0]
+    require(pre.count('    permissions:\n')==1, 'Python source metadata permissions missing or repeated')
+    permission_lines=pre.split('    permissions:\n',1)[1].split('    env:\n',1)[0].splitlines()
+    require([line for line in permission_lines if line.strip() and not line.lstrip().startswith('#')]
+            == ['      contents: read','      actions: read'], 'Python source metadata permissions changed')
+    require(re.findall(r'(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$',block)
+            == ['          GH_TOKEN: ${{ github.token }}'], 'Python source credentials escaped metadata emission')
+    require(block.count('${{ github.token }}')==1 and 'secrets.' not in block,
+            'Python source credentials escaped metadata emission')
+    expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in PYTHON_SOURCE_ROLES]
+    require(expected_order==sorted(expected_order), 'Python source role ordering changed')
+    for name,entry in (('Test interrupted output publication','test_generated_output.py'),
+                       ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py')):
+        selected=[step for step in steps if step.startswith('      - name: '+name+'\n')]
+        require(len(selected)==1 and command(selected[0])=='python .github/scripts/'+entry
+                and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
+                    "(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"],
+                'Python source observer must replace one original invocation on its exact cell')
+    return {name:found[name][0] for name in PYTHON_SOURCE_ROLES}
+
+
+def reviewed_python_source_event_guards(block: str) -> set[str]:
+    roles=python_source_roles(block)
+    if not roles:return set()
+    emit=roles['Emit original Python source qualification report']
+    predicate=re.findall(r'^        if: (.*)$',emit,re.M)[0]
+    require(re.findall(r'(?m)^\s+if: (.*)$',block).count(predicate)==1,
+            'Python metadata predicate reused by an ordinary test')
+    return {predicate}
 
 
 def command_digest(commands: list[str]) -> str:
@@ -123,9 +253,12 @@ def validate(
     require(HOOK_TIMEOUT in pre,'Only Windows contracts may use the bounded25-minute budget; other hook cells retain20minutes')
     require('continue-on-error:' not in block,'Required hook checks cannot soften failures')
     require(pre.count(NATIVE_READER_ENV)==1,'Use the fixed same-job qualified native reader')
+    roles=python_source_roles(block)
+    reviewed_python_source_event_guards(block)
     counters={'contracts':0,'isolation':0,'guard':0,'setup':0,'native_setup':0}
     commands=[]
     for step in step_blocks(block):
+        if step in roles.values():continue
         cmd=command(step)
         predicates=re.findall(r'^        if: (.*)$',step,re.M)
         if cmd is None:
@@ -151,7 +284,10 @@ def validate(
         kind='isolation' if cmd==ISOLATION else 'contracts'
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
-        require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
+        observed_original = roles and cmd in ('python .github/scripts/test_generated_output.py',
+                                               'python .github/scripts/test_check_skill_proof_fresh.py')
+        if not observed_original:
+            require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['native_setup']==1,'Expected exactly one ordinary native qualification')
     require(counters['guard']==1,'Expected one mandatory partition validation')
     steps=step_blocks(block)
@@ -348,6 +484,48 @@ class PartitionContractTests(unittest.TestCase):
     def test_deleted_contract_command_fails(self): self.bad("      - name: contracts\n        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n        run: python contract.py\n",'')
     def test_replaced_contract_command_fails(self): self.bad('python contract.py','python replacement.py')
     def test_duplicated_contract_command_fails(self): self.bad('        run: python contract.py\n','        run: python contract.py\n      - name: duplicate\n        if: matrix.partition == \'all\' || matrix.partition == \'contracts\'\n        run: python contract.py\n')
+
+
+
+class SourceQualificationRoleTests(unittest.TestCase):
+    def current(self):
+        return (Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+
+    def test_current_roles_keep_the_original_inventory_and_counts(self):
+        try:
+            counters=validate(self.current())
+        except ValueError as error:
+            self.fail(str(error))
+        self.assertEqual(counters,{'contracts':74,'isolation':1,'guard':1,'setup':3,'native_setup':1})
+
+    def test_folded_scalar_keeps_every_interpolation_and_argument(self):
+        block=('      - name: fixed\n        run: >-\n'
+               '          python owner.py --output "${{ runner.temp }}/owned.json"\n'
+               '          --name "${{ github.job }}"\n')
+        self.assertEqual(command(block),'python owner.py --output "${{ runner.temp }}/owned.json" --name "${{ github.job }}"')
+        self.assertEqual(command(block.replace('run: >-','run: |')),'python owner.py --output "${{ runner.temp }}/owned.json"\n--name "${{ github.job }}"')
+
+    def test_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials(self):
+        text=self.current()
+        self.assertEqual(validate(text)['contracts'],74)
+        for before,after in (
+            ("id: python_source_prepare\n        if: matrix.os == 'windows-latest'", "id: python_source_prepare\n        if: matrix.os == 'ubuntu-latest'"),
+            ('-- .github/scripts/test_generated_output.py','-- .github/scripts/test_generated_output.py; python .github/scripts/test_generated_output.py'),
+            ('-- .github/scripts/test_check_skill_proof_fresh.py','-- .github/scripts/unreviewed.py'),
+            ('id: python_source_prepare\n','id: python_source_prepare\n        env:\n          GH_TOKEN: ${{ github.token }}\n'),
+            ("github.event_name == 'push' && (github.ref == 'refs/heads/main'", "github.event_name == 'pull_request' && (github.ref == 'refs/heads/main'"),
+            ('include-hidden-files: true','include-hidden-files: false'),
+            ('--payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}"','--payload-root "major-source-inputs-hooks-windows-contracts=${{ runner.temp }}"'),
+            ('id: python_qualification_emit\n','id: python_qualification_emit\n        continue-on-error: true\n'),
+        ):
+            # Restrict mutations to hooks so unrelated reviewed roles are intact.
+            block=job_block(text,'hooks');self.assertIn(before,block)
+            changed=text.replace(block,block.replace(before,after,1),1)
+            with self.subTest(change=before),self.assertRaises(ValueError):validate(changed)
+        block=job_block(text,'hooks');observer=next(step for step in step_blocks(block) if 'id: python_publisher_observed' in step)
+        with self.assertRaises(ValueError):validate(text.replace(observer,observer+observer,1))
+        unknown="      - name: unreviewed source command\n        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n        run: python unreviewed.py\n"
+        with self.assertRaises(ValueError):validate(text.replace(block,block+unknown,1))
 
 
 def main() -> int:

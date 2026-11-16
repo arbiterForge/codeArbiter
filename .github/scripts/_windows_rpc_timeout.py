@@ -1,8 +1,8 @@
 """Failure-only Windows RPC observation. Raw debugger output never leaves RAM.
 
 This observes a previously failed wait; it cannot replace that failure or prove
-an OS exit from a JavaScript exit event. The existing SDK is optional; its fixed
-CDB location identifies the sibling DLLs used by the private typed worker.
+an OS exit from a JavaScript exit event. Closed SDK and protected Windows inbox
+profiles identify only the checked libraries used by the private typed worker.
 """
 from __future__ import annotations
 
@@ -21,7 +21,10 @@ import time
 MAX_OUTPUT = 128 << 10
 MAX_JSON = 32 << 10
 SECONDS = 5.0
-CDB = Path("C:/Program Files (x86)/Windows Kits/10/Debuggers/x64/cdb.exe")
+DEFAULT_CDB = Path("C:/Program Files (x86)/Windows Kits/10/Debuggers/x64/cdb.exe")
+CDB = DEFAULT_CDB
+TOOL_FILES = {"sdk-v1": ("cdb.exe", "dbgeng.dll", "dbghelp.dll"),
+              "inbox-v1": ("dbgeng.dll", "dbghelp.dll")}
 MODULES = frozenset(("node", "ntdll", "kernel32", "kernelbase", "ucrtbase", "vcruntime140", "msvcp140"))
 
 
@@ -48,6 +51,57 @@ def _digest(path: Path, deadline: float) -> str:
                 raise ValueError("identity bound")
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _system_directory() -> Path:
+    """The OS supplies this path; environment variables and PATH are not inputs."""
+    api = ctypes.WinDLL("kernel32", use_last_error=True, winmode=0x800)
+    query = api.GetSystemDirectoryW
+    query.restype, query.argtypes = wintypes.UINT, [wintypes.LPWSTR, wintypes.UINT]
+    buffer = ctypes.create_unicode_buffer(32768)
+    count = query(buffer, len(buffer))
+    if not 0 < count < len(buffer) or len(buffer.value) != count:
+        raise ValueError("system directory unavailable")
+    path = Path(buffer.value)
+    if not path.is_absolute():
+        raise ValueError("unsupported system directory")
+    return _regular(path, directory=True)
+
+
+def _tool_profile(deadline: float) -> tuple[str, Path, dict]:
+    # Only absence of the default SDK directory permits the inbox profile.
+    # A selected override, incomplete SDK or reparse/tamper failure never does.
+    try:
+        CDB.parent.lstat()
+    except FileNotFoundError:
+        if CDB != DEFAULT_CDB:
+            raise ValueError("selected SDK unavailable") from None
+        for component in CDB.parent.absolute().parents:
+            try:
+                info = component.lstat()
+            except FileNotFoundError:
+                continue
+            if (not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode)
+                    or getattr(info, "st_file_attributes", 0) & 0x400):
+                raise ValueError("unsupported file identity")
+        profile, directory = "inbox-v1", _system_directory()
+    else:
+        profile, directory = "sdk-v1", _regular(CDB.parent, directory=True)
+    return profile, directory, {name: _digest(directory / name, deadline) for name in TOOL_FILES[profile]}
+
+
+def _bound_tool_profile(profile, directory, hashes, deadline) -> Path:
+    """Rebind the worker request to the same closed protected provider."""
+    if (type(profile) is not str or profile not in TOOL_FILES
+            or type(hashes) is not dict or set(hashes) != set(TOOL_FILES[profile])
+            or any(type(value) is not str or len(value) != 64
+                   or any(c not in "0123456789abcdef" for c in value) for value in hashes.values())):
+        raise ValueError("unsupported debugger profile")
+    expected = (_regular(CDB.parent, directory=True) if profile == "sdk-v1" else _system_directory())
+    actual = _regular(Path(directory), directory=True)
+    if actual != expected or any(_digest(actual / name, deadline) != digest for name, digest in hashes.items()):
+        raise ValueError("debugger profile identity mismatch")
+    return actual
 
 
 class WindowsKernel:
@@ -173,20 +227,21 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
     from _windows_dbgeng import decode_result
     result = {"status": "unavailable", "threads": [], "truncated": False,
               "temporarilySuspends": False, "toolHashes": None,
-              "publisherSignature": "not-verified", "toolVersion": "not-observed"}
+              "publisherSignature": "not-verified", "toolVersion": "not-observed", "profile": None}
     try:
-        sdk = _regular(CDB.parent, directory=True)
-        hashes = {name: _digest(sdk / name, deadline) for name in ("cdb.exe", "dbgeng.dll", "dbghelp.dll")}
+        profile, sdk, hashes = _tool_profile(deadline)
     except Exception:
         return result
     result["toolHashes"] = hashes
+    result["profile"] = profile
     process, duplicate = None, None
     try:
         with tempfile.TemporaryDirectory(prefix="ca-rpc-native-") as directory:
             root = _regular(Path(directory), directory=True)
             worker = _regular(Path(__file__).with_name("_windows_dbgeng.py"))
             duplicate = kernel.duplicate_query(binding["handle"])
-            request = {"handle": duplicate, "pid": pid, "created": binding["created"],
+            request = {"schemaVersion": 2, "profile": profile,
+                       "handle": duplicate, "pid": pid, "created": binding["created"],
                        "image": binding["image"], "sdk": str(sdk), "hashes": hashes,
                        "deadline": deadline}
             encoded = json.dumps(request, separators=(",", ":")).encode("utf-8")
@@ -208,7 +263,7 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
             if status != "captured":
                 result.update(status=status, truncated=status == "output_limit")
             else:
-                decoded = decode_result(raw, pid, binding["created"])
+                decoded = decode_result(raw, pid, binding["created"], profile=profile)
                 if decoded is None:
                     result["status"] = "transport_failed"
                 else:

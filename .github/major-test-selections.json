@@ -8,9 +8,10 @@
       "observation": "native-module",
       "proof_kind": "native-module",
       "selectors": [
-        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
         "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
-        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel"
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress"
       ],
       "cells": [
         "disposition:transitions:N09:04"
@@ -227,6 +228,622 @@
         "installed:native:darwin:arm64"
       ],
       "scope": "Original final-package native capability and complete extracted Claude bridge workflow on darwin/arm64, with the same three installed-context cases. Exact authenticated archive/native/promotion/runtime joins; no source-module, public parent, TUI, provider or physical consent qualification."
+    },
+    {
+      "id": "native-contract-findings-n-f06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue"
+      ],
+      "cells": [
+        "disposition:findings:N-F06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:findings:N-F06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-machines-n39",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:machines:N39"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:machines:N39. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n01-06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N01:06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N01:06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-06",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:06"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:06. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-07",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:07"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:07. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n02-08",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct"
+      ],
+      "cells": [
+        "disposition:transitions:N02:08"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N02:08. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n12-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDecisionRemainsAUserChoiceNotAToolResult",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving"
+      ],
+      "cells": [
+        "disposition:transitions:N12:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N12:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n14-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport"
+      ],
+      "cells": [
+        "disposition:transitions:N14:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N14:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n14-03",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport"
+      ],
+      "cells": [
+        "disposition:transitions:N14:03"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N14:03. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n29-07",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue"
+      ],
+      "cells": [
+        "disposition:transitions:N29:07"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N29:07. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n36-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject"
+      ],
+      "cells": [
+        "disposition:transitions:N36:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N36:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n36-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject"
+      ],
+      "cells": [
+        "disposition:transitions:N36:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N36:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-01",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:01"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:01. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-02",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:02"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:02. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "native-contract-transitions-n39-03",
+      "job": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "payload_name": "ci20-native-tested-windows-2025",
+      "observation": "native-module",
+      "proof_kind": "native-module",
+      "selectors": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections"
+      ],
+      "cells": [
+        "disposition:transitions:N39:03"
+      ],
+      "scope": "Complete frozen guard/effect/retry assertions for disposition:transitions:N39:03. Windows/amd64 named Go cohort only; no whole-task, installed artifact, parent, provider, UI or other-platform qualification."
+    },
+    {
+      "id": "software-added_transitions-S75-added-rolled-back",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-rolled-back"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-stage-failed",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-stage-failed"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-unusable",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-unusable"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-added_transitions-S75-added-writer-refused",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker"
+      ],
+      "cells": [
+        "disposition:added_transitions:S75:added-writer-refused"
+      ],
+      "scope": "Actual publish_files against real private files reaches the named fault; explicit exact-byte and marker/journal/assert_complete oracles cover this introduced state only. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-transitions-C33-02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong"
+      ],
+      "cells": [
+        "disposition:transitions:C33:02"
+      ],
+      "scope": "Wrong declared owner path and wrong recorded SHA both refuse; perturbation of the real artifact forces proof_current=true so the hash branch is reached. Current check() is read-only and returns a stale diagnostic instead of generating an exercise. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "software-transitions-C33-03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise"
+      ],
+      "cells": [
+        "disposition:transitions:C33:03"
+      ],
+      "scope": "The exact three full-prose direct-owner paths are derived and public composed wrappers excluded; historical cross-host hash metadata remains bound to its own named exercise. This qualifies mechanical proof scope bookkeeping only, not any agent exercise. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "docs-built-sf16",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+      ],
+      "cells": [
+        "disposition:findings:SF16"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:findings:SF16; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-s62",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+      ],
+      "cells": [
+        "disposition:machines:S62"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:machines:S62; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+      ],
+      "cells": [
+        "disposition:transitions:S62:01"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:01; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state"
+      ],
+      "cells": [
+        "disposition:transitions:S62:02"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:02; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-03",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+      ],
+      "cells": [
+        "disposition:transitions:S62:03"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:03; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-04",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+      ],
+      "cells": [
+        "disposition:transitions:S62:04"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:04; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-05",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+      ],
+      "cells": [
+        "disposition:transitions:S62:05"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:05; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "software-pi-disposable-home-01",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:01"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-pi-disposable-home-02",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:02"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-pi-disposable-home-03",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:03"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-sandbox-valid-dispatch-and-interrupt",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches create -> await handlers.create(url, {netPolicy, keepVolume})",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches prune -> await handlers.prune() (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches shell -> await handlers.shell(id, shell) and returns its code",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) returns a non-zero code and does NOT throw on an unknown flag",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:CLI direct-entry signal wiring installs SIGINT before one valid dispatch and forwards cancellation through the original entry"
+      ],
+      "cells": [
+        "disposition:transitions:S54:01"
+      ],
+      "scope": "Full S54:01 finite software clause: six real runCli parsing/selected-handler boundary tests (create/exec/cp/destroy/prune/shell), invalid-option/no-create refusal, and one actual direct-entry registration-before-one-valid-exec/all-nonselected-ports oracle. Injected handlers and listener ports; no six real child variants, Docker effects, installed host, model or whole machine/task qualification. S54:04 cancellation resolution is observed by that same case but not mapped in this increment."
+    },
+    {
+      "id": "software-transitions-C33-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises"
+      ],
+      "cells": [
+        "disposition:transitions:C33:01"
+      ],
+      "scope": "Mechanical current proof record acceptance and malformed/missing/path/hash/eligible-owner refusals; no fresh model exercise or external transcript authority."
+    },
+    {
+      "id": "software-machines-C33",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo"
+      ],
+      "cells": [
+        "disposition:machines:C33"
+      ],
+      "scope": "Complete finite mechanical checker guard/effect/refusal and exercised-host bookkeeping union of C33:01..03; not an agent/model exercise, whole Q01 or installed qualification."
+    },
+    {
+      "id": "software-transitions-S75-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files"
+      ],
+      "cells": [
+        "disposition:transitions:S75:05"
+      ],
+      "scope": "Real private write_all success after supplied valid rendered map: changed bytes, equal identity retained, owned orphan removed, handwritten/foreign preserved; transactional publication supersedes direct writes under BUILD-G01. No full generator/build/publication qualification."
+    },
+    {
+      "id": "mapped-work-native-consumer",
+      "job": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+      "payload_name": "major-source-inputs-mapped-work-windows",
+      "observation": "mapped-work",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend",
+        "python:.github/scripts/test_work_github.py:__main__.GithubWorkTest.test_mapped_partial_issue_success_does_not_repeat_when_project_fails"
+      ],
+      "cells": [
+        "disposition:transitions:S38:04"
+      ],
+      "scope": "Original whole work_github conformance child, real admitted current native input, seven API/native/identity fixture error/retry/no-resend/independent-continuation assertions. Mechanical local software behavior only; no real GitHub, installed-host, task or whole-machine qualification."
     }
   ]
 }

@@ -435,9 +435,16 @@ def _stale(client, root, docs):
         stale = []
         for record in _records(client, doc_id):
             patterns = [_glob_to_re(g) for g in record["scope"]["paths"]]
+            # Knowledge scopes name directories as well as glob patterns. Keep
+            # the native task selector's literal-directory boundary, including
+            # deleted paths; filesystem existence is not required for a match.
+            directories = [g.rstrip("/") + "/" for g in record["scope"]["paths"]
+                           if not any(token in g for token in "*?[")]
             cited = [sources.get(ref, "") for ref in record.get("source_refs", [])]
             hits = sorted({p for p in changed
-                           if any(rx.match(p) for rx in patterns) or any(c and (p == c or p.startswith(c.rstrip("/") + "/")) for c in cited)})
+                           if any(rx.match(p) for rx in patterns)
+                           or any(p.startswith(prefix) for prefix in directories)
+                           or any(c and (p == c or p.startswith(c.rstrip("/") + "/")) for c in cited)})
             if hits:
                 stale.append({"record": record["id"], "title": record["title"], "changed_paths": hits[:20]})
         report.append({"artifact_id": doc_id, "baseline": baseline, "revision": identity["revision"], "stale": stale})

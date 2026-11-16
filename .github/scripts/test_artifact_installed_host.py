@@ -580,7 +580,8 @@ def enforce_runtime_event(
         if not arguments or Path(arguments[0]).resolve(strict=True) != binary or not native_environment_allowed(environment):
             raise RuntimeError("native binary launch escaped its bounded host Git environment")
         return
-    if platform.system() == "Darwin" and native_environment_allowed(environment):
+    # Platform discovery may launch a subprocess and reenter this audit hook.
+    if sys.platform == "darwin" and native_environment_allowed(environment):
         _audit_site = "binary-guard"
         requested = Path(executable).absolute()
         info = requested.lstat()

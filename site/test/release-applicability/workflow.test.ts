@@ -135,12 +135,51 @@ describe("browser failure evidence does not bypass publication", () => {
   });
 
   test("a failed browser gate still blocks Pages upload and deployment", () => {
+    const assertPublication = (workflow: string) => {
+      const build = jobBody(workflow, "build");
+      const step = (name: string): string => {
+        const parts = build.split(`      - name: ${name}\n`);
+        if (parts.length !== 2) throw new Error(`missing or duplicate step: ${name}`);
+        return parts[1].split(/\n      - /)[0];
+      };
+      const gate = step("Browser publication gate");
+      expect(gate).toContain("id: browser-gate");
+      // Both exact branches execute the original complete browser suite once.
+      // Pin the trusted predicate and observer argv; no generic wrapper waiver.
+      expect(gate.trimEnd()).toBe(
+        "        id: browser-gate\n        env:\n          DOCS_PROGRAM_OBSERVE: ${{ steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('[\"refs/heads/main\",\"refs/heads/major/state-contracts\"]'), github.ref) }}\n        run: |\n          if [ \"$DOCS_PROGRAM_OBSERVE\" = true ]; then\n            python -B ../.github/scripts/site_playwright_observation.py observe --repo .. \\\n              --browser-binary /opt/google/chrome/chrome \\\n              --output \"$RUNNER_TEMP/docs-browser-observation.json\"\n          else\n            npm run test:browser\n          fi"
+      );
+      expect(build).not.toContain("continue-on-error:");
+      expect(step("Upload Pages artifact")).not.toContain("if:");
+      expect(workflow).toContain("needs: [build, site-check]");
+      expect(workflow).toContain(`${"if"}: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'`);
+    };
+    assertPublication(workflow);
     const gate = step("Browser publication gate");
-    expect(gate).toContain("id: browser-gate");
-    expect(gate).toContain("run: npm run test:browser");
-    expect(build).not.toContain("continue-on-error:");
-    expect(step("Upload Pages artifact")).not.toContain("if:");
-    expect(workflow).toContain("needs: [build, site-check]");
-    expect(workflow).toContain(`${"if"}: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'`);
+    const changeGate = (changed: string) => workflow.replace(gate, changed);
+    const mutations: [string, string][] = [
+      ["unknown observer", changeGate(gate.replace(".py observe --repo ..", ".py preview --repo .."))],
+      ["wrong observer root", changeGate(gate.replace("observe --repo ..", "observe --repo ../foreign"))],
+      ["wrong Chrome", changeGate(gate.replace("/opt/google/chrome/chrome", "/unreviewed/chrome"))],
+      ["wrong output", changeGate(gate.replace("docs-browser-observation.json", "other.json"))],
+      ["untrusted predicate", changeGate(gate.replace("github.event_name == 'push'", "github.event_name == 'pull_request'"))],
+      ["conditional gate", changeGate(gate.replace("id: browser-gate", "id: browser-gate\n        if: false"))],
+      ["suppressed suite", changeGate(gate.replace("npm run test:browser", "npm run test:browser || true"))],
+      ["filtered suite", changeGate(gate.replace("npm run test:browser", "npm run test:browser -- --grep partial"))],
+      ["omitted ordinary suite", changeGate(gate.replace("            npm run test:browser\n", ""))],
+      ["omitted observer", changeGate(gate.replace("python -B ../.github/scripts/site_playwright_observation.py observe", "echo observe"))],
+      ["duplicate ordinary suite", changeGate(gate.replace("npm run test:browser", "npm run test:browser\n            npm run test:browser"))],
+      ["early success", changeGate(gate.replace("        run: |", "        run: |\n          exit 0"))],
+      ["ignored failure", changeGate(gate.replace("id: browser-gate", "id: browser-gate\n        continue-on-error: true"))],
+      ["missing gate", workflow.replace("      - name: Browser publication gate\n" + gate, "")],
+      ["duplicate gate", workflow.replace("      - name: Browser publication gate\n", "      - name: Browser publication gate\n" + gate + "\n      - name: Browser publication gate\n")],
+      ["conditional Pages upload", workflow.replace("      - name: Upload Pages artifact\n", "      - name: Upload Pages artifact\n        if: always()\n")],
+      ["missing test dependency", workflow.replace("needs: [build, site-check]", "needs: [build]")],
+      ["non-main deployment", workflow.replace(`if: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'`, `if: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/other'`)],
+    ];
+    for (const [name, changed] of mutations) {
+      expect(changed, `${name} fixture must change the workflow`).not.toBe(workflow);
+      expect(() => assertPublication(changed), name).toThrow();
+    }
   });
 });

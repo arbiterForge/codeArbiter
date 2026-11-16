@@ -16,6 +16,16 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
+
+- Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
+
+- Carry authenticated preserved and inapplicable source outcomes alongside required runtime qualification; add bounded C33 and publisher observations.
+
+- Retain source-bound observations from original TypeScript and built-site browser commands; authenticate separate Docs evidence and prepare exact-tar Pages promotion under the existing main-only release boundary.
+
+- Retain authenticated source-input artifacts and original named Python test observations for six bounded software qualification cells; keep final trusted-run readiness separate.
+
 - Separate recorded work progress from derived dependency readiness and independently verified checks; retain stable identities, journals, user stops and later edits across supported schema upgrades.
 - Reconcile interrupted workflow and farm effects through their owning receipts; preserve primary failures when staging cleanup also fails and bound recovery reads before consuming content.
 - Deliver current mode, context, task discovery and corrected-review resubmission through shared canonical helpers and generated host surfaces.
@@ -25,6 +35,15 @@ predate the plugin rewrite and are grouped by date.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
 ### Fixed
+
+- Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
+
+- Render knowledge path lists correctly while retaining exact validated legacy HTML reads.
+- Preserve source-byte equality across supported checkouts and correct workflow observation readers, source-binding validation and canonical debugger fixtures.
+
+- Preserve original multi-reporter qualification commands and bounded fixture diagnostics; capture timeout stacks with protected Windows inbox debugger libraries when the SDK is absent.
+
+- Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
 
 - Keep installed-host observers transparent to nested Git calls, preserve failed cold-check diagnostics, and disable Pi helper bytecode before package imports.
 - Preserve newer user spinner choices during rollback by keeping backups outside the legacy reader's restoration key and migrating older metadata without discarding its value.
@@ -48,7 +67,7 @@ predate the plugin rewrite and are grouped by date.
 - Classify malformed provider JSON at the transport boundary without hiding programmer errors.
 - Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
 - Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
-- Serialize Farm worktree administration across concurrent processes sharing a Git common directory. Bound contention, retain unknown lock owners and preserve primary failures when lock release cannot be verified.
+- Serialize Farm worktree administration across concurrent processes sharing a Git common directory. Bound contention and temporary exclusive-open denials, retain unknown lock owners and preserve primary failures when lock release cannot be verified.
 
 ## [3.8.9] - 2026-11-12
 

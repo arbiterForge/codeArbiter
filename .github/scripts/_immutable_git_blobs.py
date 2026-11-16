@@ -14,7 +14,7 @@ import threading
 import time
 
 from _boundedproc import start, terminate_tree
-from _gitexec import git_executable, root_bound_git_env
+from _gitexec import git_executable, local_read_git_env
 
 MAX_BLOB = 16 * 1024 * 1024
 MAX_TOTAL = 256 * 1024 * 1024
@@ -70,7 +70,7 @@ class Reader:
         self.lock = threading.Lock()
 
     def _start(self):
-        env = root_bound_git_env()
+        env = local_read_git_env()
         env.update(GIT_NO_REPLACE_OBJECTS='1', GIT_NO_LAZY_FETCH='1', GIT_TERMINAL_PROMPT='0')
         self.process = start([git_executable(), '--no-replace-objects', '--no-lazy-fetch',
                               '-C', str(self.repo), 'cat-file', '--batch'],

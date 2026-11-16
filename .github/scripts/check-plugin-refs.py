@@ -128,6 +128,10 @@ _IMMUTABLE_HISTORY_FILES = {
     ".github/fixtures/tribunal/qualification/incumbent-bundle.json",
 }
 _IMMUTABLE_HISTORY_SHA256 = {
+    # Authenticated passive source excerpts retain native syntax verbatim.
+    # Only this complete capture is history; edits and neighboring files refuse.
+    "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/current-witnesses.json":
+        "a4abbd71e960ae918c1e379598c0380cd3e7ebf0a0f87fcaea24794c82b970f8",
     # Exact failed-test stderr preserves quoted native syntax as inert evidence.
     # Whole-file bytes and path are pinned; changed or neighbouring logs refuse.
     "docs/state-contracts-major/execution/evidence/ci-6083-followup/p02-original-failed35.stderr.log":

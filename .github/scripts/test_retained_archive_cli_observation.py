@@ -594,4 +594,149 @@ class UploadHTTPReasonProjectionTest(unittest.TestCase):
                 error.command_diagnostic=bad;self.assertIsNone(_command_diagnostic(error))
 
 
+
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def observer_checkout_fixture(checkout_settings):
+    """Private Git configuration only; no user/global config or checkout edits."""
+    import os
+    import shutil
+    import retained_archive_cli_observation as owner
+    git_executable = shutil.which("git")
+    if git_executable is None:
+        raise AssertionError("Git is required for the checkout admission fixture")
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory).resolve()
+        repo = root / "repo"; repo.mkdir()
+        profile = root / "checkout-home"; profile.mkdir()
+        global_config = root / "fixture-global.gitconfig"
+        global_config.write_text("[core]\n\tautocrlf = true\n\teol = crlf\n", encoding="utf8")
+        base = {key: value for key, value in os.environ.items()
+                if key.upper() in {"SYSTEMROOT", "WINDIR", "SYSTEMDRIVE", "COMSPEC", "PATHEXT"}}
+        base.update(PATH=os.pathsep.join([str(Path(git_executable).parent), str(Path(sys.executable).parent)]),
+                    HOME=str(profile), USERPROFILE=str(profile), GIT_CONFIG_NOSYSTEM="1",
+                    GIT_CONFIG_GLOBAL=str(global_config), GIT_TERMINAL_PROMPT="0")
+        def git(*args, settings=None):
+            env = dict(base)
+            if settings is not None: env.update(settings)
+            return subprocess.run([git_executable, "--no-lazy-fetch", "-C", str(repo), *args],
+                                  env=env, check=True, capture_output=True, timeout=15).stdout
+        git("init", "-q")
+        contents = {".gitattributes": b"*.py text eol=lf\n.gitattributes text eol=lf\n/retained.raw -text\n",
+                    "core/pysrc/helper.py": b"# fixed LF source input\n",
+                    "plugins/ca/tools/.env.example": b"FIXTURE_EXAMPLE=not-a-credential\n",
+                    "site/example.html": b"<p>public fixture</p>\n",
+                    "retained.raw": b"historical\r\nexact bytes\r\n"}
+        for name, value in contents.items():
+            target = repo / name; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(value)
+        git("-c", "core.autocrlf=false", "-c", "core.eol=lf", "add", ".")
+        git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+            "-c", "commit.gpgsign=false", "commit", "-qm", "private line-ending fixture")
+        # Only owned fixture files are removed to let Git materialize a fresh
+        # checkout. This is not post-checkout normalization or user-file repair.
+        for name in contents: (repo / name).unlink()
+        git("checkout", "--force", "HEAD", "--", ".", settings=checkout_settings)
+        before = {name: (repo / name).read_bytes() for name in contents}
+        source = git("rev-parse", "HEAD").decode().strip()
+        def snapshot():
+            with mock.patch.dict(os.environ, base, clear=True):
+                with owner.private_environment(root / "observer-home"):
+                    return owner._source_snapshot(repo)
+        yield {"repo": repo, "contents": contents, "before": before, "source": source,
+               "snapshot": snapshot, "status": lambda: git("status", "--porcelain=v1", "--untracked-files=all", "-z")}
+
+
+class CheckoutPolicyCharacterizationTests(unittest.TestCase):
+    def test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes(self):
+        # Simulate a runner's global setting using only an explicit private file.
+        with observer_checkout_fixture({}) as fixture:
+            self.assertEqual(fixture["status"](), b"")
+            example = "plugins/ca/tools/.env.example"
+            self.assertIn(b"\r\n", fixture["before"][example])
+            with self.assertRaisesRegex(ValueError, "observer source checkout is not clean") as caught:
+                fixture["snapshot"]()
+            detail = getattr(caught.exception, "source_checkout_diagnostic", {})
+            self.assertIn(example, [entry.get("path") for entry in detail.get("entries", [])])
+            self.assertEqual({name: (fixture["repo"] / name).read_bytes() for name in fixture["before"]}, fixture["before"])
+        policy = {"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf", "GIT_CONFIG_VALUE_0": "false",
+                  "GIT_CONFIG_KEY_1": "core.eol", "GIT_CONFIG_VALUE_1": "lf"}
+        with observer_checkout_fixture(policy) as fixture:
+            self.assertEqual(fixture["before"], fixture["contents"])
+            snapshot = fixture["snapshot"]()
+            self.assertTrue(snapshot["clean"])
+            self.assertEqual(snapshot["source_commit"], fixture["source"])
+            self.assertEqual(snapshot["inputs"]["core/pysrc/helper.py"], hashlib.sha256(fixture["contents"]["core/pysrc/helper.py"]).hexdigest())
+            self.assertEqual((fixture["repo"] / "retained.raw").read_bytes(), b"historical\r\nexact bytes\r\n")
+            tracked = fixture["repo"] / "site/example.html"
+            tracked.write_bytes(b"<p>real changed bytes</p>\n")
+            with self.assertRaisesRegex(ValueError, "observer source checkout is not clean"):
+                fixture["snapshot"]()
+            self.assertEqual(tracked.read_bytes(), b"<p>real changed bytes</p>\n")
+
+
+class RuntimeSnapshotAliasTests(unittest.TestCase):
+    def test_runtime_snapshot_hashes_canonical_bytes_for_runtime_aliases(self):
+        import retained_archive_cli_observation as owner
+        with tempfile.TemporaryDirectory(prefix="ca-runtime-alias-") as temporary:
+            root = Path(temporary).resolve()
+            python, git = root / "python-target", root / "git-target"
+            python.write_bytes(b"inert Python runtime identity fixture\n")
+            git.write_bytes(b"inert Git runtime identity fixture\n")
+            alias = root / "runtime-alias"
+            expected = {name: {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                        for name, path in (("python", python), ("git", git))}
+            original = {str(path): path.read_bytes() for path in (python, git)}
+            for role, target in (("python", python), ("git", git)):
+                with self.subTest(role=role):
+                    try:
+                        alias.symlink_to(target)
+                    except OSError as error:
+                        self.skipTest("owned file symlink unavailable: " + str(getattr(error, "winerror", error.errno)))
+                    self.assertTrue(alias.is_symlink())
+                    self.assertEqual(alias.resolve(strict=True), target)
+                    try:
+                        with mock.patch.object(owner.sys, "executable", str(alias if role == "python" else python)), \
+                             mock.patch.object(owner.shutil, "which", return_value=str(alias if role == "git" else git)):
+                            try:
+                                observed = owner._runtime_snapshot()
+                            except ValueError as error:
+                                self.fail("A runtime alias must hash its recorded canonical target: " + str(error))
+                        self.assertEqual(observed, expected)
+                    finally:
+                        self.assertEqual({str(path): path.read_bytes() for path in (python, git)}, original)
+                        self.assertTrue(alias.is_symlink())
+                        self.assertEqual(alias.resolve(strict=True), target)
+                        alias.unlink()
+
+    def test_runtime_snapshot_preserves_regular_input_and_size_guards(self):
+        import retained_archive_cli_observation as owner
+        with tempfile.TemporaryDirectory(prefix="ca-runtime-guards-") as temporary:
+            root = Path(temporary).resolve()
+            ordinary = root / "ordinary"
+            ordinary.write_bytes(b"inert runtime fixture\n")
+            directory = root / "not-a-file"
+            directory.mkdir()
+            oversized = root / "too-large"
+            with oversized.open("wb") as stream:
+                stream.truncate(64 * 1024 * 1024 + 1)
+            for role in ("python", "git"):
+                for invalid in (directory, oversized):
+                    with self.subTest(role=role, invalid=invalid.name), \
+                         mock.patch.object(owner.sys, "executable", str(invalid if role == "python" else ordinary)), \
+                         mock.patch.object(owner.shutil, "which", return_value=str(invalid if role == "git" else ordinary)):
+                        with self.assertRaisesRegex(ValueError, "bounded regular observer input required"):
+                            owner._runtime_snapshot()
+            alias = root / "input-link"
+            try:
+                alias.symlink_to(ordinary)
+            except OSError as error:
+                self.skipTest("owned file symlink unavailable: " + str(getattr(error, "winerror", error.errno)))
+            with self.assertRaisesRegex(ValueError, "bounded regular observer input required"):
+                owner.regular_bytes(alias)
+            self.assertEqual(ordinary.read_bytes(), b"inert runtime fixture\n")
+            self.assertEqual(oversized.stat().st_size, 64 * 1024 * 1024 + 1)
+
 if __name__ == "__main__": unittest.main(verbosity=2)
