@@ -752,6 +752,78 @@
         "disposition:transitions:S54:01"
       ],
       "scope": "Full S54:01 finite software clause: six real runCli parsing/selected-handler boundary tests (create/exec/cp/destroy/prune/shell), invalid-option/no-create refusal, and one actual direct-entry registration-before-one-valid-exec/all-nonselected-ports oracle. Injected handlers and listener ports; no six real child variants, Docker effects, installed host, model or whole machine/task qualification. S54:04 cancellation resolution is observed by that same case but not mapped in this increment."
+    },
+    {
+      "id": "software-transitions-C33-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises"
+      ],
+      "cells": [
+        "disposition:transitions:C33:01"
+      ],
+      "scope": "Mechanical current proof record acceptance and malformed/missing/path/hash/eligible-owner refusals; no fresh model exercise or external transcript authority."
+    },
+    {
+      "id": "software-machines-C33",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "skill-proof",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+        "python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo"
+      ],
+      "cells": [
+        "disposition:machines:C33"
+      ],
+      "scope": "Complete finite mechanical checker guard/effect/refusal and exercised-host bookkeeping union of C33:01..03; not an agent/model exercise, whole Q01 or installed qualification."
+    },
+    {
+      "id": "software-transitions-S75-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-windows-contracts",
+      "observation": "publisher",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files"
+      ],
+      "cells": [
+        "disposition:transitions:S75:05"
+      ],
+      "scope": "Real private write_all success after supplied valid rendered map: changed bytes, equal identity retained, owned orphan removed, handwritten/foreign preserved; transactional publication supersedes direct writes under BUILD-G01. No full generator/build/publication qualification."
     }
   ]
 }

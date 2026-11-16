@@ -81,6 +81,9 @@ func label(s string) string {
 type writer struct {
 	b bytes.Buffer
 	d *model.Document
+	// Parse alone can compare the exact pre-fix path-list grammar. New writes
+	// always use the corrected profile; no model or renderer identity changes.
+	legacyPaths bool
 }
 
 func (w *writer) text(s string) { w.b.WriteString(esc(s)) }
@@ -150,7 +153,16 @@ func (w *writer) value(v any, k string) {
 			w.raw(`</code></pre>`)
 			return
 		}
-		if len(x) > 0 && k == "paths" {
+		pathTable := len(x) > 0 && k == "paths"
+		if pathTable && !w.legacyPaths {
+			for _, item := range x {
+				if _, ok := item.(map[string]any); !ok {
+					pathTable = false
+					break
+				}
+			}
+		}
+		if pathTable {
 			w.raw(`<div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody>`)
 			for _, item := range x {
 				m := model.M(item)
@@ -357,6 +369,10 @@ func (w *writer) block(m map[string]any) {
 }
 func Render(d *model.Document) ([]byte, error) { return render(d, 0) }
 func render(d *model.Document, capacity int) ([]byte, error) {
+	return renderProfile(d, capacity, false)
+}
+
+func renderProfile(d *model.Document, capacity int, legacyPaths bool) ([]byte, error) {
 	if e := d.VerifyIntegrity(); e != nil {
 		return nil, e
 	}
@@ -375,7 +391,7 @@ func render(d *model.Document, capacity int) ([]byte, error) {
 	}
 	version := model.S(d.Data["schema_version"])
 	historical := version == "0.3.0" || version == "0.3.1"
-	w := writer{d: d}
+	w := writer{d: d, legacyPaths: legacyPaths}
 	if capacity > 0 {
 		w.b.Grow(capacity)
 	}
@@ -527,7 +543,17 @@ func Parse(b []byte) (*model.Document, error) {
 		return nil, e
 	}
 	if !bytes.Equal(expected, b) {
-		return nil, fault.New("RENDER_DRIFT", "HTML view differs from its validated model; use explicit repair preview, never an implicit rewrite")
+		// One finite historical profile, not an HTML/DOM or model-only fallback:
+		// compare the complete canonical document with only the old paths-list
+		// rendering. Container, stylesheet, markers and every other byte remain
+		// bound to the same validated model. Reading never rewrites the input.
+		legacy, err := renderProfile(d, len(b), true)
+		if err != nil {
+			return nil, err
+		}
+		if !bytes.Equal(legacy, b) {
+			return nil, fault.New("RENDER_DRIFT", "HTML view differs from its validated model; use explicit repair preview, never an implicit rewrite")
+		}
 	}
 	return d, nil
 }

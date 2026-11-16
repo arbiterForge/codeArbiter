@@ -498,6 +498,7 @@ def prepare_promotion(repo, source, core_run_id, output):
     identity = reports.source_identity(repo)
     need(identity['clean'] and identity['source_commit'] == source, 'promotion checkout differs from main source')
     record, verified = owner.load_verified_receipt(repo, source, core_run_id)
+    record = owner.runtime_record(record)
     need(record.get('schema') == ENVELOPE and verified.get('docs_run_id') == record['docs']['run_id']
          and verified.get('state') == 'PREPUBLICATION_READY'
          and record['source_tree'] == identity['source_tree'], 'qualified Docs envelope required before promotion')

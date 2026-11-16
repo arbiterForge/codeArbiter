@@ -65,6 +65,9 @@
     "disposition:transitions:pi-qualification:disposable-home:01": "Coverage union (Pi)  <os: windows-latest>",
     "disposition:transitions:pi-qualification:disposable-home:02": "Coverage union (Pi)  <os: windows-latest>",
     "disposition:transitions:pi-qualification:disposable-home:03": "Coverage union (Pi)  <os: windows-latest>",
-    "disposition:transitions:S54:01": "[CHECK] | [SBX ] | Sandbox driver contract"
+    "disposition:transitions:S54:01": "[CHECK] | [SBX ] | Sandbox driver contract",
+    "disposition:transitions:C33:01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:machines:C33": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:transitions:S75:05": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
   }
 }

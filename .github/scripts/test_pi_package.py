@@ -5030,6 +5030,7 @@ class DebuggerInboxTests(unittest.TestCase):
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
+            collector_temp = tempfile.TemporaryDirectory
             inbox = root / "protected-system"
             inbox.mkdir()
             for name in ("dbgeng.dll", "dbghelp.dll"):
@@ -5070,7 +5071,9 @@ class DebuggerInboxTests(unittest.TestCase):
                 self.assertIs(child, process)
                 response = sdk.run(requests[-1], native, engine_factory=Backend)
                 return "captured", json.dumps(response).encode()
-            with mock.patch.object(native, "CDB", missing), \
+            with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                   side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                 mock.patch.object(native, "CDB", missing), \
                  mock.patch.object(native, "DEFAULT_CDB", missing, create=True), \
                  mock.patch.object(native.ctypes, "WinDLL", return_value=api, create=True), \
                  mock.patch.object(native, "WindowsKernel", return_value=kernel), \
@@ -5086,6 +5089,7 @@ class DebuggerInboxTests(unittest.TestCase):
             self.assertEqual(actual["status"], "captured", "DLL-only inbox must reach the bound worker")
             self.assertEqual(actual["profile"], "inbox-v1")
             self.assertEqual(launch.call_count, 1)
+            self.assertEqual(launch.call_args.kwargs["cwd"].parent, root)
             self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
             self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
             self.assertEqual(set(actual["toolHashes"]), {"dbgeng.dll", "dbghelp.dll"})
@@ -5284,6 +5288,7 @@ class DebuggerInboxTests(unittest.TestCase):
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
+            collector_temp = tempfile.TemporaryDirectory
             hashes = {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]}
             good = {"schemaVersion": 2, "profile": "inbox-v1", "status": "captured", "threads": [{"frames": [
                 {"module": "node", "returnOffset": 16}]}], "truncated": False,
@@ -5302,7 +5307,9 @@ class DebuggerInboxTests(unittest.TestCase):
                     kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
                     process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
                         _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
-                    with mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root, hashes)), \
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                           side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root, hashes)), \
                          mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
                          mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
                          mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
@@ -5312,6 +5319,7 @@ class DebuggerInboxTests(unittest.TestCase):
                     self.assertEqual(actual["status"], expected)
                     self.assertEqual(actual["profile"], "inbox-v1")
                     self.assertEqual(launch.call_count, 1)
+                    self.assertEqual(launch.call_args.kwargs["cwd"].parent, root)
                     self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
                     self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
                     if expected != "captured": self.assertEqual(actual["threads"], [])

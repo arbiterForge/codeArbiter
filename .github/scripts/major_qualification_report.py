@@ -297,6 +297,7 @@ SOURCE_BINDING = "codearbiter.source-test-input-binding/1"
 SOURCE_PAYLOAD = readiness.SOURCE_INPUT_PAYLOAD
 SOURCE_JOB = "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
 SOURCE_UPLOAD = readiness.SOURCE_INPUT_UPLOAD
+SOURCE_PROFILE_CELLS = frozenset(('disposition:added_transitions:S75:added-rolled-back', 'disposition:added_transitions:S75:added-stage-failed', 'disposition:added_transitions:S75:added-unusable', 'disposition:added_transitions:S75:added-writer-refused', 'disposition:machines:C33', 'disposition:transitions:C33:01', 'disposition:transitions:C33:02', 'disposition:transitions:C33:03', 'disposition:transitions:S75:05'))
 
 
 TS_COMMON_PATHS = frozenset(('.github/major-qualification-policy.json',
@@ -598,6 +599,26 @@ def _source_root_members(repo):
             "source payload physical membership differs")
 
 
+def _source_byte_mismatch(relative, expected, actual):
+    # Do not decode source content or forward arbitrary paths/metadata. This
+    # diagnostic describes only one bounded member of a closed source profile.
+    require(type(relative) is str and (relative in SOURCE_PATHS
+            or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
+            "byte mismatch diagnostic member is outside fixed profiles")
+    require(type(expected) is bytes and type(actual) is bytes
+            and len(expected) <= 8 * 1024 * 1024 and len(actual) <= 8 * 1024 * 1024,
+            "byte mismatch diagnostic requires bounded source bytes")
+    def summary(value):
+        crlf = value.count(b"\r\n")
+        return {"sha256": readiness.digest(value), "bytes": len(value),
+                "lf": value.count(b"\n") - crlf, "crlf": crlf,
+                "cr": value.count(b"\r") - crlf}
+    record = {"format": "codearbiter.source-input-byte-mismatch/1",
+              "member_sha256": readiness.digest(relative.encode("utf-8")),
+              "expected": summary(expected), "actual": summary(actual)}
+    return "source payload physical bytes differ from Git: " + json.dumps(record, sort_keys=True, separators=(",", ":"))
+
+
 def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     repo = Path(repo).resolve(strict=True)
     spec = source_profile(profile)
@@ -629,7 +650,9 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
         require(blob == expected and kind == "blob" and 0 <= size <= 8 * 1024 * 1024, "source payload blob invalid")
         value = batch[cursor:cursor + size]; cursor += size
         require(batch[cursor:cursor + 1] == b"\n", "source payload blob truncated"); cursor += 1
-        require(_source_file(repo, relative, paths) == value, "source payload physical bytes differ from Git")
+        actual = _source_file(repo, relative, paths)
+        if actual != value:
+            raise ValueError(_source_byte_mismatch(relative, value, actual))
         total += size
         require(total <= 64 * 1024 * 1024, "source payload total exceeds bound")
         members.append({"path": relative, "sha256": readiness.digest(value), "bytes": size, "git_mode": mode})
@@ -1244,10 +1267,13 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                         "no qualified observer for this proof kind")
             if group["proof_kind"] == "source-test":
                 binding = observed.get("source_input_binding")
+                require(isinstance(binding, dict), "source input binding is missing")
                 profile = binding.get("profile") if isinstance(binding, dict) else None
                 spec = source_profile(profile)
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
-                if profile != SOURCE_PROFILE:
+                if profile == SOURCE_PROFILE:
+                    require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
+                else:
                     require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
                 admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
             if group["proof_kind"] == "native-module":

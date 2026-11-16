@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Carry authenticated preserved and inapplicable source outcomes alongside required runtime qualification; add bounded C33 and publisher observations.
+
 - Retain source-bound observations from original TypeScript and built-site browser commands; authenticate separate Docs evidence and prepare exact-tar Pages promotion under the existing main-only release boundary.
 
 - Retain authenticated source-input artifacts and original named Python test observations for six bounded software qualification cells; keep final trusted-run readiness separate.
@@ -29,6 +31,9 @@ predate the plugin rewrite and are grouped by date.
 - Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
 
 ### Fixed
+
+- Render knowledge path lists correctly while retaining exact validated legacy HTML reads.
+- Preserve source-byte equality across supported checkouts and correct workflow observation readers, source-binding validation and canonical debugger fixtures.
 
 - Preserve original multi-reporter qualification commands and bounded fixture diagnostics; capture timeout stacks with protected Windows inbox debugger libraries when the SDK is absent.
 

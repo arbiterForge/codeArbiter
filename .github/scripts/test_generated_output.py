@@ -93,6 +93,36 @@ class GeneratedOutputTests(unittest.TestCase):
         for consumer in ['core','surface']:
             with self.assertRaisesRegex(OSError,'incomplete'):assert_complete(self.root,consumer)
 
+    def test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files(self):
+        spec=importlib.util.spec_from_file_location('surface_success',ROOT/'tools/build-surface.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        # Supply the already-rendered map at the rendering boundary; ownership
+        # enumeration, equality checks, transactional publication and deletion
+        # below are the real implementations operating on private files.
+        descriptor=SimpleNamespace(name='fixture',plugin_dir='plugin',
+            managed_subtrees=('generated',),catalog=None)
+        plugin=self.root/'plugin';generated=plugin/'generated';generated.mkdir(parents=True)
+        changed=generated/'changed.md';equal=generated/'equal.md';orphan=generated/'orphan.md'
+        changed.write_bytes(b'old changed');equal.write_bytes(b'keep equal');orphan.write_bytes(b'owned orphan')
+        handwritten=plugin/'handwritten.md';handwritten.write_bytes(b'handwritten keep')
+        foreign=self.root/'foreign'/'generated'/'keep.md';foreign.parent.mkdir(parents=True);foreign.write_bytes(b'foreign keep')
+        same=equal.stat();equal_identity=(same.st_dev,same.st_ino,same.st_mtime_ns,same.st_size)
+        expected={'generated/changed.md':b'new changed','generated/equal.md':b'keep equal'}
+        with mock.patch.object(module,'load_host_descriptors',return_value=(descriptor,)), \
+             mock.patch.object(module,'render_all',return_value=expected) as render:
+            self.assertEqual(module.write_all(str(self.root),hosts=('fixture',)),2)
+        render.assert_called_once_with(str(self.root),'fixture',descriptors=(descriptor,))
+        self.assertEqual(changed.read_bytes(),b'new changed')
+        self.assertEqual(equal.read_bytes(),b'keep equal')
+        same=equal.stat();self.assertEqual((same.st_dev,same.st_ino,same.st_mtime_ns,same.st_size),equal_identity)
+        self.assertFalse(orphan.exists())
+        self.assertEqual(handwritten.read_bytes(),b'handwritten keep')
+        self.assertEqual(foreign.read_bytes(),b'foreign keep')
+        self.assertEqual({p.relative_to(self.root).as_posix() for p in self.root.rglob('*') if p.is_file()},
+            {'a','b','plugin/generated/changed.md','plugin/generated/equal.md',
+             'plugin/handwritten.md','foreign/generated/keep.md'})
+        assert_complete(self.root,'surface')
+
     def test_second_host_render_failure_has_no_first_host_effect(self):
         spec=importlib.util.spec_from_file_location('surface_fault',ROOT/'tools/build-surface.py')
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)

@@ -759,6 +759,45 @@ class BoundSourcePayloadTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"link/reparse"):owner._source_file(fixture["repo"],relative)
                 opening.assert_not_called()
 
+    def test_python_source_profile_cannot_qualify_other_software_or_tasks(self):
+        with source_payload_fixture() as fixture:
+            observed,selection=self.synthetic_case(fixture);payload=fixture['authenticate']()
+            self.assertEqual(len(self.build(fixture,observed,selection,payload)['results']),1)
+            for cell in ('disposition:transitions:C33:99','task:Q-01','disposition:machines:S75'):
+                chosen=copy.deepcopy(selection);chosen['groups'][0]['cells']=[cell]
+                fixture['req'].update(cells=[cell],cell_jobs={cell:owner.SOURCE_JOB})
+                with self.subTest(cell=cell),self.assertRaisesRegex(ValueError,'Python profile cannot qualify another software scope'):
+                    self.build(fixture,observed,chosen,payload)
+
+    def test_complete_checker_and_publisher_groups_require_each_named_pass(self):
+        selection=json.loads((owner.ROOT/'.github/major-test-selections.json').read_text())
+        cells={'disposition:transitions:C33:01','disposition:machines:C33','disposition:transitions:S75:05'}
+        groups=[g for g in selection['groups'] if cells.intersection(g['cells'])]
+        self.assertEqual({cell for group in groups for cell in group['cells']},cells)
+        self.assertEqual(len(groups),3)
+        with source_payload_fixture() as fixture:
+            observed,_=self.synthetic_case(fixture);payload=fixture['authenticate']()
+            for group in groups:
+                fixture['req'].update(cells=group['cells'],cell_jobs={cell:owner.SOURCE_JOB for cell in group['cells']})
+                observed['tests']=[{'id':selector,'result':'passed'} for selector in group['selectors']]
+                chosen={'schema':owner.SELECTIONS,'groups':[group]}
+                observations={group['observation']:observed}
+                def build():
+                    return owner.build_report(fixture['req'],job_name=owner.SOURCE_JOB,job_id=9,selections=chosen,
+                        observations=observations,payloads={owner.SOURCE_PAYLOAD:payload})
+                result=build()['results'][0]
+                self.assertEqual(result['selected_population'],len(group['selectors']))
+                self.assertEqual(result['executed_population'],len(group['selectors']))
+                for index,selector in enumerate(group['selectors']):
+                    for state in ('missing','skipped','failed','repeated'):
+                        original=copy.deepcopy(observed['tests'])
+                        if state=='missing':observed['tests'].pop(index)
+                        elif state=='repeated':observed['tests'].append(dict(observed['tests'][index]))
+                        else:observed['tests'][index]['result']=state
+                        with self.subTest(cell=group['cells'],selector=selector,state=state),self.assertRaisesRegex(ValueError,'selected named test'):
+                            build()
+                        observed['tests']=original
+
     def test_six_source_cells_keep_exact_selectors_and_single_original_ci_executions(self):
         from test_ci_impact import workflow_jobs
         selection=json.loads((owner.ROOT/".github/major-test-selections.json").read_text())
@@ -767,6 +806,7 @@ class BoundSourcePayloadTests(unittest.TestCase):
         expected={"disposition:transitions:C33:02","disposition:transitions:C33:03",*
             ("disposition:added_transitions:S75:"+name for name in
              ("added-stage-failed","added-rolled-back","added-unusable","added-writer-refused"))}
+        expected.update({'disposition:transitions:C33:01', 'disposition:transitions:S75:05', 'disposition:machines:C33'})
         self.assertEqual({cell for group in source for cell in group["cells"]},expected)
         exact_selectors = {'disposition:added_transitions:S75:added-rolled-back': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges'},
          'disposition:added_transitions:S75:added-stage-failed': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set'},
@@ -778,6 +818,7 @@ class BoundSourcePayloadTests(unittest.TestCase):
          'disposition:transitions:C33:03': {'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise',
                                             'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof',
                                             'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo'}}
+        exact_selectors.update({'disposition:transitions:C33:01': {'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file'}, 'disposition:machines:C33': {'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_missing_entirely', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercise_object_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_fresh_document_passes', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_null_top_level_reports_cleanly_not_attributeerror', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_recorded_path_no_longer_exists_on_disk', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_sha256_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_unparseable_json', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_exercised_skill_path_missing', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_proof_current_false', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_json_array_top_level_reports_cleanly_not_attributeerror', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_hash_mismatch', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof', 'python:.github/scripts/test_check_skill_proof_fresh.py:__main__.CheckFailureModeTest.test_missing_artifact_file'}, 'disposition:transitions:S75:05': {'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files'}})
         for group in source:
             self.assertEqual((group["job"],group["payload_name"]),(owner.SOURCE_JOB,owner.SOURCE_PAYLOAD))
             for cell in group["cells"]: self.assertEqual(set(group["selectors"]), exact_selectors[cell])
@@ -1764,6 +1805,115 @@ IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
                     with self.assertRaises(owner.readiness.ReadinessError):
                         owner.readiness.produce({**req, "cell_jobs": {cell: foreign["name"]}}, [source, report_artifact], [foreign, jobs[1]])
 
+
+
+@contextmanager
+def autocrlf_source_checkout(profile):
+    """Actual declared input bytes and attributes in a disposable local Git clone."""
+    with tempfile.TemporaryDirectory(prefix="ca-source-autocrlf-") as temporary:
+        base=Path(temporary).resolve();seed=base/'seed';seed.mkdir()
+        paths=owner.TS_PROFILE_PATHS[profile]
+        for relative in paths:
+            path=seed/relative;path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes((owner.ROOT/relative).read_bytes())
+        (seed/'.gitattributes').write_bytes((owner.ROOT/'.gitattributes').read_bytes())
+        raw=seed/'.codearbiter/legacy/byte-policy-control.md';raw.parent.mkdir(parents=True);raw.write_bytes(b'raw\r\nkept\r\n')
+        (seed/'ordinary.txt').write_bytes(b'ordinary\nconversion\n')
+        owner.git(seed,'init','-q');owner.git(seed,'config','core.autocrlf','false')
+        owner.git(seed,'add','.')
+        owner.git(seed,'-c','user.name=fixture','-c','user.email=fixture@example.invalid',
+            '-c','commit.gpgsign=false','commit','-qm','source byte-policy fixture')
+        original={relative:owner.git(seed,'rev-parse','HEAD:'+relative) for relative in paths}
+        checkout=base/'checkout'
+        owner.git(base,'clone','--no-hardlinks','--no-checkout','--quiet',str(seed),str(checkout))
+        owner.git(checkout,'config','core.autocrlf','true')
+        owner.git(checkout,'checkout','--force','HEAD')
+        with mock.patch.dict(os.environ,{'GITHUB_RUN_ID':'7'}):
+            yield {'base':base,'seed':seed,'repo':checkout,'paths':paths,'blob_ids':original}
+
+
+class SourceBytePolicyTests(unittest.TestCase):
+    def test_actual_ts_profiles_prepare_from_fresh_autocrlf_checkout_without_changing_blobs(self):
+        for profile in owner.TS_PROFILE_PATHS:
+            with self.subTest(profile=profile),autocrlf_source_checkout(profile) as f:
+                before=owner.source_identity(f['repo'],profile)
+                try:
+                    manifest=owner.prepare_source_payload(f['repo'],f['base']/'payload',
+                        owner.TS_PROFILE_JOBS[profile],profile)
+                except ValueError as error:
+                    self.fail('actual prepare-source refused a fresh autocrlf checkout: '+str(error))
+                self.assertEqual({row['path'] for row in manifest['members']},f['paths'])
+                for relative in f['paths']:
+                    with self.subTest(member=relative):
+                        self.assertEqual(owner.git(f['repo'],'rev-parse','HEAD:'+relative),f['blob_ids'][relative])
+                        self.assertEqual((f['repo']/relative).read_bytes(),owner.git(f['repo'],'show','HEAD:'+relative,raw=True))
+                self.assertEqual((f['repo']/'.codearbiter/legacy/byte-policy-control.md').read_bytes(),b'raw\r\nkept\r\n')
+                self.assertEqual((f['repo']/'ordinary.txt').read_bytes(),b'ordinary\r\nconversion\r\n')
+                self.assertEqual(owner.source_identity(f['repo'],profile),before)
+                # An unrelated dirty source still refuses before byte diagnostics.
+                target=f['repo']/'.github/major-qualification-policy.json'
+                target.write_bytes(target.read_bytes()+b'changed\n')
+                with self.assertRaisesRegex(ValueError,'checkout is not clean'):
+                    owner.source_input_snapshot(f['repo'],profile)
+                with self.assertRaisesRegex(ValueError,'unknown source input profile'):
+                    owner.source_input_snapshot(f['repo'],'foreign-profile')
+
+    def test_byte_diagnostic_rejects_foreign_unbounded_or_extra_data_and_never_emits_content(self):
+        relative='.github/major-qualification-policy.json'
+        canary='PRIVATE_SOURCE_PAYLOAD_CANARY'
+        message=owner._source_byte_mismatch(relative,b'public\n',canary.encode()+b'\r\n')
+        self.assertNotIn(canary,message);self.assertNotIn(relative,message)
+        record=json.loads(message.split(': ',1)[1])
+        self.assertEqual(set(record),{'format','member_sha256','expected','actual'})
+        self.assertEqual(set(record['expected']),{'sha256','bytes','lf','crlf','cr'})
+        self.assertEqual(set(record['actual']),{'sha256','bytes','lf','crlf','cr'})
+        self.assertLess(len(message.encode()),1024)
+        with self.assertRaisesRegex(ValueError,'outside fixed profiles') as foreign:
+            owner._source_byte_mismatch(canary,b'public',b'other')
+        self.assertNotIn(canary,str(foreign.exception))
+        for expected,actual in [(b'x'*(8*1024*1024+1),b'x'),(b'x',bytearray(b'x')),(b'x',{'private':canary})]:
+            with self.subTest(kind=type(actual).__name__),self.assertRaisesRegex(ValueError,'bounded source bytes') as bounded:
+                owner._source_byte_mismatch(relative,expected,actual)
+            self.assertNotIn(canary,str(bounded.exception))
+        with self.assertRaises(TypeError):
+            owner._source_byte_mismatch(relative,b'x',b'y',raw_content=canary)
+
+    def test_actual_mismatch_reports_closed_hashed_member_and_exact_byte_counts(self):
+        profile='pi-tools-v1';relative='.github/major-qualification-policy.json'
+        with autocrlf_source_checkout(profile) as f:
+            # Private local override simulates unexpected checkout conversion
+            # even after the maintained attributes are correct. No tracked input
+            # is normalized, and the immutable/physical mismatch must refuse.
+            (f['repo']/'.git/info/attributes').write_text('/'+relative+' text eol=crlf\n',encoding='utf8')
+            (f['repo']/relative).unlink();owner.git(f['repo'],'checkout','--',relative)
+            self.assertTrue(owner.source_identity(f['repo'],profile)['clean'])
+            expected=owner.git(f['repo'],'show','HEAD:'+relative,raw=True)
+            actual=(f['repo']/relative).read_bytes();self.assertNotEqual(actual,expected)
+            with self.assertRaisesRegex(ValueError,'source payload physical bytes differ from Git') as caught:
+                owner.prepare_source_payload(f['repo'],f['base']/'refused',owner.TS_PROFILE_JOBS[profile],profile)
+            prefix='source payload physical bytes differ from Git: '
+            self.assertTrue(str(caught.exception).startswith(prefix),'actual mismatch must retain closed byte diagnosis')
+            diagnostic=json.loads(str(caught.exception)[len(prefix):])
+            self.assertEqual(set(diagnostic),{'format','member_sha256','expected','actual'})
+            self.assertEqual(diagnostic['format'],'codearbiter.source-input-byte-mismatch/1')
+            self.assertEqual(diagnostic['member_sha256'],owner.readiness.digest(relative.encode('utf8')))
+            for key,value in [('expected',expected),('actual',actual)]:
+                row=diagnostic[key]
+                self.assertEqual(set(row),{'sha256','bytes','lf','crlf','cr'})
+                self.assertEqual(row,{'sha256':owner.readiness.digest(value),'bytes':len(value),
+                    'lf':value.count(b'\n')-value.count(b'\r\n'),'crlf':value.count(b'\r\n'),
+                    'cr':value.count(b'\r')-value.count(b'\r\n')})
+            self.assertNotIn(relative,str(caught.exception));self.assertNotIn(str(f['repo']),str(caught.exception))
+            self.assertLess(len(str(caught.exception).encode('utf8')),1024)
+            self.assertFalse((f['base']/'refused').exists())
+            from contextlib import redirect_stderr
+            emitted=io.StringIO()
+            with redirect_stderr(emitted):
+                code=owner.main(['prepare-source','--repo',str(f['repo']),'--output',str(f['base']/'cli-refused'),
+                    '--job-name',owner.TS_PROFILE_JOBS[profile],'--source-profile',profile])
+            self.assertEqual(code,1)
+            self.assertEqual(emitted.getvalue().strip(),'::error::Major qualification report pending: '+str(caught.exception))
+            self.assertFalse((f['base']/'cli-refused').exists())
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

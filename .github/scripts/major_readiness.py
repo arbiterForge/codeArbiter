@@ -28,6 +28,7 @@ from _gitexec import local_read_git_env
 REPOSITORY = "arbiterForge/codeArbiter"
 PROGRAM = "codearbiter-major-state-contracts"
 SCHEMA = "codearbiter-major-readiness/1"
+SOURCE_SCHEMA = "codearbiter-major-readiness/3"
 CORPUS = "docs/state-contracts-major/"
 SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
@@ -612,6 +613,99 @@ def authenticate_disposition(repo, candidate, cell, row, paths, load, cache):
     return bound
 
 
+
+def authenticated_source_disposition(candidate, cell, row, cache):
+    """Project only strictly authenticated, current source claims, never executions.
+
+    Called after authenticate_disposition by the requirements owner. Its cache is
+    local to that immutable source transaction; caller labels are not authority.
+    Legacy PRESERVED proofs whose actual result is PASSED stay on the executed
+    path. A mixed proof population also retains that path in its entirety.
+    """
+    if not cell.startswith('disposition:') or row.get('status') not in ('PRESERVED', 'NOT_APPLICABLE'):
+        return None
+    proofs = []
+    for item in row.get('evidence', []):
+        retained = item.get('ref_commit', candidate)
+        key = ('proof', retained, item.get('ref'), item.get('sha256'))
+        require(key in cache and cache.get(('current-proof', candidate, key)) is True,
+                'source disposition lacks strict current authentication')
+        proof = cache[key]
+        if (proof.get('kind') not in ('review', 'conformance-check')
+                or proof.get('producer', {}).get('class') not in ('source-conformance', 'independent-review')
+                or proof.get('result') != row['status']):
+            return None
+        projected = {'ref': item['ref'], 'ref_commit': retained, 'sha256': item['sha256'],
+            'source_commit': proof['source_commit'], 'kind': proof['kind'], 'result': proof['result'],
+            'producer': {key: proof['producer'][key] for key in ('class', 'identity')}, 'current_at': candidate}
+        if row['status'] == 'NOT_APPLICABLE':
+            require(proof.get('contract') == row.get('contract') and isinstance(proof.get('rationale'), str)
+                    and proof['rationale'].strip(), 'N/A source disposition lacks exact contract/rationale')
+            projected.update(contract=proof['contract'], rationale=proof['rationale'])
+        proofs.append(projected)
+    require(proofs, 'source disposition has no authenticated proof')
+    return {'result': row['status'], 'proofs': proofs,
+            **({'contract': row['contract']} if row['status'] == 'NOT_APPLICABLE' else {})}
+
+
+def source_runtime_requirements(req):
+    """Validate the closed v3 source population and retain every other obligation."""
+    population = req.get('source_dispositions')
+    require(isinstance(population, dict) and population, 'typed source population is empty or malformed')
+    cells, jobs = req.get('cells'), req.get('cell_jobs')
+    require(isinstance(cells, list) and all(isinstance(c, str) for c in cells)
+            and len(cells) == len(set(cells)) and isinstance(jobs, dict) and set(jobs) == set(cells)
+            and set(population) < set(cells), 'source/runtime cell partition differs')
+    for cell, outcome in population.items():
+        require(cell.startswith('disposition:') and isinstance(outcome, dict)
+                and outcome.get('result') in ('PRESERVED', 'NOT_APPLICABLE')
+                and set(outcome) == ({'result', 'proofs', 'contract'} if outcome['result'] == 'NOT_APPLICABLE'
+                                     else {'result', 'proofs'})
+                and isinstance(outcome['proofs'], list) and outcome['proofs'], 'invalid typed source outcome')
+        if outcome['result'] == 'NOT_APPLICABLE':
+            require(isinstance(outcome['contract'], str) and outcome['contract'].strip(),
+                    'N/A source outcome lacks contract')
+        seen = set()
+        for proof in outcome['proofs']:
+            fields = {'ref', 'ref_commit', 'sha256', 'source_commit', 'kind', 'result', 'producer', 'current_at'}
+            if outcome['result'] == 'NOT_APPLICABLE':
+                fields |= {'contract', 'rationale'}
+            require(isinstance(proof, dict) and set(proof) == fields, 'invalid source proof fields')
+            path = PurePosixPath(proof['ref']) if isinstance(proof['ref'], str) else PurePosixPath('..')
+            require(not path.is_absolute() and '..' not in path.parts and path.as_posix() == proof['ref']
+                    and ':' not in proof['ref'] and '\\' not in proof['ref']
+                    and isinstance(proof['sha256'], str) and DIGEST.fullmatch(proof['sha256'])
+                    and all(isinstance(proof[k], str) and SHA.fullmatch(proof[k])
+                            for k in ('ref_commit', 'source_commit'))
+                    and proof['current_at'] == req['source_commit']
+                    and proof['kind'] in ('review', 'conformance-check')
+                    and proof['result'] == outcome['result'], 'invalid source proof identity or result')
+            producer = proof['producer']
+            require(isinstance(producer, dict) and set(producer) == {'class', 'identity'}
+                    and producer['class'] in ('source-conformance', 'independent-review')
+                    and isinstance(producer['identity'], str) and producer['identity'].strip(),
+                    'invalid source proof producer')
+            if outcome['result'] == 'NOT_APPLICABLE':
+                require(proof['contract'] == outcome['contract'] and isinstance(proof['rationale'], str)
+                        and proof['rationale'].strip(), 'N/A source proof contract/rationale differs')
+            identity = (proof['ref_commit'], proof['ref'], proof['sha256'])
+            require(identity not in seen, 'duplicate source proof')
+            seen.add(identity)
+    return {**{key: value for key, value in req.items() if key != 'source_dispositions'},
+            'cells': [cell for cell in cells if cell not in population],
+            'cell_jobs': {cell: name for cell, name in jobs.items() if cell not in population}}
+
+
+def runtime_record(record):
+    """Unwrap one typed-source envelope; recursive or unknown envelopes refuse."""
+    if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
+        runtime = record.get('runtime')
+        require(isinstance(runtime, dict) and runtime.get('schema') in
+                (SCHEMA, 'codearbiter-major-readiness/2'), 'invalid source envelope runtime schema')
+        return runtime
+    return record
+
+
 def bind_named_jobs(cell_jobs, policy):
     """Bind selected cells to existing owning jobs without inventing a second run.
 
@@ -766,7 +860,7 @@ def _requirements(repo, source, run_id):
         content = blob(repo, source, CORPUS + entry["path"])
         require(len(content) == entry["bytes"] and digest(content) == entry["sha256"],
                 "frozen intake identity differs: " + entry["path"])
-    dispositions, disposition_jobs = {}, {}
+    dispositions, disposition_jobs, source_dispositions = {}, {}, {}
     task_owners = {t['id']: t['owner'] for t in tasks}
     for group in ("findings", "machines", "transitions", "added_transitions"):
         for identity, row in ledger.get(group, {}).items():
@@ -785,6 +879,9 @@ def _requirements(repo, source, run_id):
             paths = evidence_paths(contract)
             require(paths, 'disposition has no source scope: ' + cell)
             dispositions[cell] = authenticate_disposition(repo, source, cell, row, paths, load, authenticated)
+            typed = authenticated_source_disposition(source, cell, row, authenticated)
+            if typed is not None:
+                source_dispositions[cell] = typed
             disposition_jobs[cell] = disposition_job(cell, row, contract, task_owners)
     # Accepted lifecycle identities are validated by the existing immutable owner,
     # not inferred from an accepted label inside this record.
@@ -796,7 +893,8 @@ def _requirements(repo, source, run_id):
     scenarios = read(CORPUS + "contracts/scenarios.json")["scenarios"]
     policy = read(".github/major-qualification-policy.json")
     cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, disposition_jobs, policy)
-    return {"source_commit": source,
+    return {**({"source_dispositions": source_dispositions} if source_dispositions else {}),
+            "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
             "task_manifest_sha256": digest(blob(repo, source, CORPUS + "execution/progress.json")),
@@ -899,6 +997,17 @@ def validate_upload(job, artifact, step_name, *, job_log=None):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
+        validate_run(run, req)
+        runtime_req = source_runtime_requirements(req)
+        require(set(record) == {'schema', 'program_id', 'state', 'runtime', *req}
+                and record.get('program_id') == PROGRAM and record.get('state') == 'PREPUBLICATION_READY'
+                and all(record.get(key) == value for key, value in req.items()),
+                'typed source readiness differs from authenticated requirements')
+        return verify(record=runtime_record(record), requirements=runtime_req, run=run,
+            artifact=artifact, archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,
+            payload_members=payload_members)
+    require('source_dispositions' not in req, 'typed source readiness envelope required')
     if isinstance(record, dict) and record.get("schema") == "codearbiter-major-readiness/2":
         from site_playwright_observation import verify as verify_docs
         return verify_docs(record=record, requirements=req, run=run, artifact=artifact,
@@ -1121,6 +1230,10 @@ def produce(req, artifacts, jobs):
     No project report file or caller-supplied pass flag is an input. Each job's
     artifact binds its actual command population and exact package artifact IDs.
     """
+    if 'source_dispositions' in req:
+        runtime_req = source_runtime_requirements(req)
+        return {'schema': SOURCE_SCHEMA, 'program_id': PROGRAM, 'state': 'PREPUBLICATION_READY',
+                **req, 'runtime': produce(runtime_req, artifacts, jobs)}
     if "Site | [Build] - Astro Pages" in req["cell_jobs"].values():
         from site_playwright_observation import produce as produce_docs
         return produce_docs(req, artifacts, jobs)
@@ -1208,7 +1321,8 @@ def load_verified_receipt(repo, source, run_id):
         require(z.getinfo("major-readiness.json").file_size <= 4 * 1024 * 1024, "readiness exceeds bound")
         record = json.loads(z.read("major-readiness.json"))
     observed_members = {}
-    core_record = record.get("core", {}) if record.get("schema") == "codearbiter-major-readiness/2" else record
+    execution = runtime_record(record)
+    core_record = execution.get("core", {}) if execution.get("schema") == "codearbiter-major-readiness/2" else execution
     for payload in core_record.get("artifacts", []):
         metadata = next((x for x in artifacts if x["id"] == payload["artifact_id"]), None)
         validate_artifact(metadata, req, payload.get("archive_sha256"))

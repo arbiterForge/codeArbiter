@@ -137,9 +137,34 @@ class SourceContracts(unittest.TestCase):
                             'Required source image acquisition must fail closed')
         self.assertLess(source.index('Docker preflight (REQUIRED prerequisite'),source.index(pull))
         self.assertLess(source.index(pull),source.index('acquire_nixpacks.py'))
-        original='run: npm test -- --reporter=default --reporter=github-actions --reporter=json'
-        self.assertEqual(source.count(original),1)
-        self.assertLess(source.index(pull),source.index(original))
+        import shlex
+        suites=list(re.finditer(r'(?ms)^      - name: Test \(Docker required - a missing daemon fails the run\)\n(?P<body>.*?)(?=^      - |\Z)',source))
+        self.assertEqual(len(suites),1,'exact original required source suite must execute once')
+        suite=suites[0];body=suite.group('body')
+        self.assertNotRegex(body,r'(?m)^        (?:if|continue-on-error):')
+        self.assertEqual(body.count('        run: >-\n'),1)
+        argv=shlex.split(' '.join(body.split('        run: >-\n',1)[1].split()))
+        self.assertEqual(argv,[
+            'python3','-B','../../../.github/scripts/major_qualification_report.py','observe-vitest',
+            '--repo','../../..','--execution-cwd','plugins/ca-sandbox/tools',
+            '--source-payload','$RUNNER_TEMP/sandbox-source-inputs',
+            '--raw-results','$RUNNER_TEMP/ca-sandbox-vitest.json',
+            '--output','$RUNNER_TEMP/sandbox-vitest-observation.json','--','npm','test','--',
+            '--reporter=default','--reporter=github-actions','--reporter=json',
+            '--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json'])
+        self.assertEqual(source.count('npm test'),1)
+        self.assertLess(source.index(pull),suite.start())
+        self.assertIn('CA_SANDBOX_REQUIRE_DOCKER: "1"',source)
+        preflight=next(step for step in steps if step.startswith('name: Docker preflight (REQUIRED prerequisite'))
+        self.assertIn('exit 1',preflight)
+        self.assertNotRegex(preflight,r'(?m)^        (?:if|continue-on-error):')
+        sentinel='name: Assert every real-container layer executed'
+        checks=[step for step in steps if step.startswith(sentinel)]
+        self.assertEqual(len(checks),1)
+        self.assertIn('run: python3 .github/scripts/check_sandbox_docker_layers.py --sentinel "$CA_SANDBOX_DOCKER_SENTINEL"',checks[0])
+        self.assertNotRegex(checks[0],r'(?m)^        (?:if|continue-on-error):')
+        self.assertNotIn('|| true',checks[0])
+        self.assertLess(suite.start(),source.index(checks[0]))
         return '      - '+pull
 
     def source_image_inputs(self):
@@ -167,8 +192,20 @@ class SourceContracts(unittest.TestCase):
             'late':source.replace(pull,'',1)+pull,
             'optional':source.replace(pull,pull.replace('        run:',"        if: false\n        run:",1),1),
             'ignored-failure':source.replace(pull,pull.replace('        run:',"        continue-on-error: true\n        run:",1),1),
+            'unknown-wrapper':source.replace('major_qualification_report.py observe-vitest','major_qualification_report.py other',1),
+            'filtered-suite':source.replace('npm test --','npm test -- cli.test.ts',1),
+            'suppressed-suite':source.replace('--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"','--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json" || true',1),
+            'skipped-suite':source.replace('      - name: Test (Docker required - a missing daemon fails the run)\n','      - name: Test (Docker required - a missing daemon fails the run)\n        if: false\n',1),
+            'missing-suite':source.replace('name: Test (Docker required - a missing daemon fails the run)','name: removed source suite',1),
+            'wrong-cwd':source.replace('--execution-cwd plugins/ca-sandbox/tools','--execution-cwd other',1),
+            'wrong-output':source.replace('--output "$RUNNER_TEMP/sandbox-vitest-observation.json"','--output "$RUNNER_TEMP/other.json"',1),
+            'optional-docker':source.replace('CA_SANDBOX_REQUIRE_DOCKER: "1"','CA_SANDBOX_REQUIRE_DOCKER: "0"',1),
+            'preflight-no-failure':source.replace('exit 1','echo unavailable',1),
+            'missing-sentinel':source.replace('name: Assert every real-container layer executed','name: removed sentinel',1),
+            'optional-sentinel':source.replace('name: Assert every real-container layer executed\n','name: Assert every real-container layer executed\n        if: false\n',1),
         }
         for name,changed in mutations.items():
+            self.assertNotEqual(changed,source,name+' fixture must change the source')
             with self.subTest(mutation=name),self.assertRaises(AssertionError):
                 self.assert_source_image_prerequisite(changed,image)
 

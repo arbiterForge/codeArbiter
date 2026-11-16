@@ -1200,5 +1200,361 @@ class UploadLogHTTPWorkerBoundaryTest(unittest.TestCase):
                 self.reason(self.execute_inert_worker([error]),reason)
 
 
+
+
+class TypedSourceDispositionTests(unittest.TestCase):
+    """Owned immutable proof fixtures; artifact APIs below are inert unit seams."""
+    def setUp(self):
+        import os
+        import tempfile
+        self.private = tempfile.TemporaryDirectory()
+        self.addCleanup(self.private.cleanup)
+        self.repo = Path(self.private.name)
+        self.env = {key: value for key, value in os.environ.items()
+                    if key.upper() in {'PATH', 'SYSTEMROOT', 'WINDIR', 'TEMP', 'TMP'}}
+        self.env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1',
+                        GIT_TERMINAL_PROMPT='0', GIT_AUTHOR_NAME='Inert fixture',
+                        GIT_AUTHOR_EMAIL='fixture@example.invalid', GIT_COMMITTER_NAME='Inert fixture',
+                        GIT_COMMITTER_EMAIL='fixture@example.invalid')
+        self.git('init', '-q')
+        (self.repo / 'owner.py').write_bytes(b'# inert source contract\n')
+        self.git('add', 'owner.py'); self.git('commit', '-qm', 'owned source fixture')
+        self.base = self.git('rev-parse', 'HEAD').decode().strip()
+        self.cell = 'disposition:transitions:fixture:01'
+        self.proof = {'schema': 'codearbiter-disposition-evidence/1', 'kind': 'conformance-check',
+            'result': 'PRESERVED', 'source_commit': self.base,
+            'producer': {'class': 'source-conformance', 'identity': 'inert owned unit fixture'},
+            'disposition_ids': [self.cell], 'inputs': {'owner.py': owner.digest((self.repo/'owner.py').read_bytes())},
+            'raw_evidence': [{'path': 'raw.txt', 'sha256': owner.digest(b'inert inspection witness\n')}]}
+        self.retain()
+
+    def git(self, *args):
+        return subprocess.run(['git', '-c', 'core.autocrlf=false', '-c', 'commit.gpgsign=false',
+            '-c', 'core.hooksPath=' + str(self.repo/'no-hooks'), *args], cwd=self.repo,
+            env=self.env, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10).stdout
+
+    def retain(self):
+        content = json.dumps(self.proof, sort_keys=True).encode()
+        (self.repo/'proof.json').write_bytes(content)
+        (self.repo/'raw.txt').write_bytes(b'inert inspection witness\n')
+        self.git('add', 'proof.json', 'raw.txt'); self.git('commit', '--allow-empty', '-qm', 'retain original proof')
+        self.source = self.git('rev-parse', 'HEAD').decode().strip()
+        self.row = {'status': self.proof['result'],
+            **({'contract':'fixture:contract'} if self.proof['result']=='NOT_APPLICABLE' else {}), 'evidence': [{
+            'kind': self.proof['kind'], 'commit': self.base, 'ref_commit': self.source,
+            'ref': 'proof.json', 'sha256': owner.digest(content)}]}
+        self.cache = {}
+
+    def authenticate(self):
+        return owner.authenticate_disposition(self.repo, self.source, self.cell, self.row,
+            {'owner.py'}, lambda commit, path: owner.blob(self.repo, commit, path), self.cache)
+
+    def expected_typed(self):
+        item = self.row['evidence'][0]
+        return {'result': self.row['status'],
+            **({'contract': self.row['contract']} if self.row['status'] == 'NOT_APPLICABLE' else {}), 'proofs': [{
+            'ref': item['ref'], 'ref_commit': item['ref_commit'], 'sha256': item['sha256'],
+            'source_commit': item['commit'], 'kind': self.proof['kind'], 'result': self.proof['result'],
+            'producer': self.proof['producer'], 'current_at': self.source,
+            **({'contract': self.proof['contract'], 'rationale': self.proof['rationale']}
+               if self.row['status'] == 'NOT_APPLICABLE' else {})}]}
+
+    def producer(self, typed):
+        runtime = 'installed:fixture:package'
+        req = {'source_commit': self.source, 'source_tree': self.git('rev-parse', 'HEAD^{tree}').decode().strip(),
+            'ci_run_id': 7, 'task_ids': ['Q-02'], 'targets': [], 'cells': [self.cell, runtime],
+            'cell_jobs': {self.cell: 'major qualification / source fixture', runtime: 'inert runtime owner'},
+            'source_dispositions': {self.cell: typed}, 'required_artifact_names': ['qualified-payload'],
+            'disposition_evidence_sha256': owner.digest(json.dumps(self.authenticate(), sort_keys=True).encode())}
+        output = io.BytesIO()
+        with zipfile.ZipFile(output, 'w') as zipped:
+            zipped.writestr('package.txt', b'inert package fixture')
+        data = output.getvalue()
+        payload = {'id': 12, 'name': 'qualified-payload', 'expired': False, 'size_in_bytes': len(data),
+            'digest': 'sha256:' + owner.digest(data), 'workflow_run': {'id': 7, 'head_sha': self.source}}
+        report_artifact = {'id': 30, 'name': 'major-qualification-20'}
+        report = {'schema': 'codearbiter-major-qualification/1', 'source_commit': self.source,
+            'source_tree': req['source_tree'], 'ci_run_id': 7, 'job_id': 20, 'results': [{
+            'cell': runtime, 'result': 'PASSED', 'commands': [{'argv': ['inert-unit-command'], 'exit_code': 0}],
+            'selected_population': 1, 'executed_population': 1, 'payload_artifact_id': 12,
+            'payload_archive_sha256': owner.digest(data), 'payload_members': owner.members(data)}]}
+        jobs = [{'id': 20, 'name': 'inert runtime owner', 'conclusion': 'success'},
+                {'id': 99, 'name': 'major readiness producer', 'conclusion': 'success'}]
+        with mock.patch.object(owner, 'validate_upload'), \
+             mock.patch.object(owner, 'read_artifact_json', return_value=report), \
+             mock.patch.object(owner, 'api', return_value=data):
+            record = owner.produce(req, [payload, report_artifact], jobs)
+        return req, record, jobs, [payload, report_artifact]
+
+    def test_current_authenticated_source_proof_needs_no_fictional_executed_job(self):
+        authenticated = self.authenticate()
+        self.assertEqual(authenticated[0]['source_commit'], self.base)
+        self.assertTrue(self.cache[('current-proof', self.source,
+            ('proof', self.source, 'proof.json', self.row['evidence'][0]['sha256']))])
+        req, record, jobs, artifacts = self.producer(self.expected_typed())
+        self.assertEqual(record['schema'], 'codearbiter-major-readiness/3')
+        self.assertEqual(record['source_dispositions'][self.cell]['result'], 'PRESERVED')
+        self.assertEqual([row['cell'] for row in record['runtime']['results']], ['installed:fixture:package'])
+        self.assertNotIn('job_id', record['source_dispositions'][self.cell])
+        self.assertEqual(record['disposition_evidence_sha256'], req['disposition_evidence_sha256'])
+
+
+    def test_requirements_derives_source_facts_after_real_immutable_authentication(self):
+        corpus = owner.CORPUS
+        data = {
+            corpus+'contracts/program.json': {'id': owner.PROGRAM, 'counts': {'tasks':82,'findings':70,
+                'machines':287,'transitions':1748,'composed_scenarios':31},
+                'delivery_predicates': {'PREPUBLICATION_READY': {'required_task_ids':['Q-02']}}},
+            corpus+'contracts/tasks.json': {'tasks':[{'id':'Q-02','owner':'fixture', 'required_before_publication':True}]},
+            corpus+'execution/progress.json': {'task_updates':[{'id':'Q-02','status':'DONE'}]},
+            corpus+'execution/coverage-ledger.json': {'findings':{},'machines':{},'added_transitions':{},
+                'transitions':{'fixture:01':self.row}},
+            corpus+'contracts/finding-dispositions.json': {'records':[]},
+            corpus+'contracts/machine-coverage.json': {'machines':[]},
+            corpus+'contracts/transition-coverage.json': {'transitions':[{'transition_id':'fixture:01',
+                'task_ids':['Q-02'], 'baseline':{'source':[{'path':'owner.py'}]}}]},
+            corpus+'contracts/scenarios.json': {'scenarios':[{'id':'fixture-scenario'}]},
+            corpus+'MANIFEST.json': {'files':[]},
+            '.github/major-qualification-policy.json': {'program_id':owner.PROGRAM,
+                'required_installed_cells':['installed:fixture:package']},
+            '.github/integration-candidate.json': {'schema':'codearbiter-integration-candidate/1',
+                'branch':'major/state-contracts','baseline_main_commit':self.base,
+                'candidates':{'ca':'4.0.0','ca-codex':'0.30.0','ca-pi':'0.30.0','ca-sandbox':'0.2.0'}}}
+        for path, value in data.items():
+            file = self.repo/path; file.parent.mkdir(parents=True,exist_ok=True)
+            file.write_bytes(json.dumps(value).encode())
+        for path, raw in {'.codearbiter/open-questions.md':b'# Open questions\n_None open._\n',
+                          '.codearbiter/decisions/adr-lifecycle.jsonl':b''}.items():
+            file = self.repo/path;file.parent.mkdir(parents=True,exist_ok=True);file.write_bytes(raw)
+        self.git('add','.');self.git('commit','-qm','owned requirements fixture')
+        self.source = self.git('rev-parse','HEAD').decode().strip()
+        original_command = owner.command
+        def local(argv, repo=None, **kwargs):
+            # The unrelated accepted-ADR child is inert; every Git/proof read is real.
+            if kwargs.get('local_adr'):
+                return b''
+            return original_command(argv, repo, **kwargs)
+        with mock.patch.object(owner,'command',side_effect=local):
+            req = owner.requirements(self.repo,self.source,7)
+        self.assertEqual(req['source_dispositions'],{self.cell:self.expected_typed()})
+        self.assertIn('task:Q-02',owner.source_runtime_requirements(req)['cells'])
+        self.assertIn('scenario:fixture-scenario',owner.source_runtime_requirements(req)['cells'])
+        self.assertIn('installed:fixture:package',owner.source_runtime_requirements(req)['cells'])
+        # Metadata DONE does not remove the independently executed task obligation.
+        self.assertNotIn(self.cell,owner.source_runtime_requirements(req)['cells'])
+        self.assertEqual(req['disposition_evidence_sha256'],owner.digest(json.dumps(
+            {self.cell:self.authenticate()},sort_keys=True,separators=(',',':')).encode()))
+
+    def test_exact_contract_not_applicable_keeps_rationale_and_original_history(self):
+        self.proof.update(result='NOT_APPLICABLE',contract='fixture:contract',
+                          rationale='This inert source contract excludes the unadvertised operation.')
+        self.retain();self.authenticate()
+        fact = owner.authenticated_source_disposition(self.source,self.cell,self.row,self.cache)
+        self.assertEqual(fact,self.expected_typed())
+        self.assertEqual(fact['proofs'][0]['source_commit'],self.base)
+        self.assertNotEqual(self.base,fact['proofs'][0]['ref_commit'])
+        self.row['contract']='different-contract'
+        with self.assertRaisesRegex(owner.ReadinessError,'contract/rationale'):
+            self.authenticate()
+        self.row['contract']='fixture:contract';self.proof['rationale']=''
+        self.retain()
+        with self.assertRaisesRegex(owner.ReadinessError,'contract/rationale'):
+            self.authenticate()
+
+    def test_stale_missing_raw_wrong_scope_and_unavailable_history_never_become_source_facts(self):
+        load = lambda commit,path:owner.blob(self.repo,commit,path)
+        for label, mutate in [('raw',lambda raw: b'changed raw'),('input',lambda raw:b'changed input')]:
+            def changed(commit,path):
+                if path == ('raw.txt' if label=='raw' else 'owner.py'):
+                    return mutate(load(commit,path))
+                return load(commit,path)
+            with self.subTest(label=label),self.assertRaises(owner.ReadinessError):
+                owner.authenticate_disposition(self.repo,self.source,self.cell,self.row,{'owner.py'},changed,{})
+        row = copy.deepcopy(self.row);row['evidence'][0]['ref_commit']='f'*40
+        with self.assertRaises(owner.ReadinessError):
+            owner.authenticate_disposition(self.repo,self.source,self.cell,row,{'owner.py'},load,{})
+        self.proof['disposition_ids']=['disposition:transitions:other:01'];self.retain()
+        with self.assertRaisesRegex(owner.ReadinessError,'does not cover'):
+            self.authenticate()
+        self.proof['disposition_ids']=[self.cell];self.retain()
+        (self.repo/'owner.py').write_bytes(b'# current source changed\n')
+        self.git('add','owner.py');self.git('commit','-qm','make prior source proof stale')
+        self.source=self.git('rev-parse','HEAD').decode().strip()
+        with self.assertRaisesRegex(owner.ReadinessError,'retained evidence bytes differ'):
+            self.authenticate()
+
+    def test_runtime_mixed_proofs_and_legacy_passed_reviews_stay_on_executed_path(self):
+        for kind,result,producer in [('test','PRESERVED','local-host'),
+                                    ('review','PASSED','independent-review'),
+                                    ('review','PRESERVED','local-host')]:
+            self.proof.update(kind=kind,result=result,producer={'class':producer,'identity':'inert fixture'})
+            self.retain();self.row['status']='PRESERVED';self.authenticate()
+            self.assertIsNone(owner.authenticated_source_disposition(self.source,self.cell,self.row,self.cache))
+        for cell in ('task:Q-02','scenario:fixture','installed:fixture'):
+            self.assertIsNone(owner.authenticated_source_disposition(self.source,cell,self.row,self.cache))
+        self.row['status']='TESTED'
+        self.assertIsNone(owner.authenticated_source_disposition(self.source,self.cell,self.row,self.cache))
+        self.proof.update(kind='conformance-check',result='PRESERVED',
+                          producer={'class':'source-conformance','identity':'inert fixture'})
+        self.retain();self.authenticate()
+        self.cache.pop(('current-proof',self.source,('proof',self.source,'proof.json',self.row['evidence'][0]['sha256'])))
+        with self.assertRaisesRegex(owner.ReadinessError,'strict current'):
+            owner.authenticated_source_disposition(self.source,self.cell,self.row,self.cache)
+
+    def test_closed_source_shapes_cannot_omit_duplicate_or_relabel_runtime_population(self):
+        self.authenticate();req,record,_,_=self.producer(self.expected_typed())
+        mutations = [lambda r:r['source_dispositions'].clear(),
+            lambda r:r['cells'].append(self.cell),
+            lambda r:r['cell_jobs'].pop('installed:fixture:package'),
+            lambda r:r['source_dispositions'][self.cell].update(result='PASSED'),
+            lambda r:r['source_dispositions'][self.cell].update(job_id=99),
+            lambda r:r['source_dispositions'][self.cell]['proofs'][0].update(kind='test'),
+            lambda r:r['source_dispositions'][self.cell]['proofs'][0].update(current_at='e'*40),
+            lambda r:r['source_dispositions'][self.cell]['proofs'][0]['producer'].update(**{'class':'hosted'}),
+            lambda r:r['source_dispositions'][self.cell]['proofs'].append(copy.deepcopy(r['source_dispositions'][self.cell]['proofs'][0])),
+            lambda r:r['source_dispositions'].update({'installed:fixture:package':copy.deepcopy(r['source_dispositions'][self.cell])})]
+        for index,mutate in enumerate(mutations):
+            wrong=copy.deepcopy(req);mutate(wrong)
+            with self.subTest(index=index),self.assertRaises(owner.ReadinessError):
+                owner.source_runtime_requirements(wrong)
+        self.assertEqual(set(req['cells']),set(req['source_dispositions'])|set(record['runtime']['cells']))
+        self.assertFalse(set(req['source_dispositions'])&set(record['runtime']['cells']))
+
+    def test_final_reader_reconstructs_typed_facts_and_keeps_original_main_execution_guards(self):
+        self.authenticate();req,record,jobs,artifacts=self.producer(self.expected_typed())
+        run={'id':7,'head_sha':self.source,'head_branch':'main','event':'push','conclusion':'success',
+             'path':'.github/workflows/ci.yml','repository':{'full_name':owner.REPOSITORY}}
+        artifact={'id':11,'name':'major-readiness-'+self.source,'expired':False,'size_in_bytes':100,'digest':'sha256:'+'f'*64,
+                  'workflow_run':{'id':7,'head_sha':self.source}}
+        args=dict(record=record,requirements=req,run=run,artifact=artifact,archive_digest='f'*64,
+                  jobs=jobs,build_artifacts=artifacts,payload_members={12:record['runtime']['artifacts'][0]['members']})
+        with mock.patch.object(owner,'validate_upload'):
+            self.assertEqual(owner.verify(**args)['state'],'PREPUBLICATION_READY')
+            for field,value in [('head_branch','major/state-contracts'),('event','pull_request'),('conclusion','failure')]:
+                with self.subTest(field=field),self.assertRaises(owner.ReadinessError):
+                    owner.verify(**dict(args,run=dict(run,**{field:value})))
+            for label,mutate in [('source',lambda r:r['source_dispositions'][self.cell]['proofs'][0].update(sha256='e'*64)),
+                ('omitted',lambda r:r['runtime']['results'].clear()),
+                ('skipped',lambda r:r['runtime']['results'][0].update(result='SKIPPED')),
+                ('recursive',lambda r:r['runtime'].update(schema=owner.SOURCE_SCHEMA)),
+                ('package',lambda r:r['runtime']['artifacts'][0].update(archive_sha256='e'*64)),
+                ('task',lambda r:r['runtime']['task_ids'].append('Q-03'))]:
+                wrong=copy.deepcopy(record);mutate(wrong)
+                with self.subTest(label=label),self.assertRaises(owner.ReadinessError):
+                    owner.verify(**dict(args,record=wrong))
+            with self.assertRaisesRegex(owner.ReadinessError,'typed source readiness envelope'):
+                owner.verify(**dict(args,record=record['runtime']))
+
+
+    def test_typed_runtime_keeps_docs_separate_success_and_exact_tar_promotion(self):
+        import tempfile
+        import os
+        import test_site_playwright_observation as fixture
+        docs_case = fixture.DocsAuthorityTests()
+        docs_case.setUp()
+        docs = docs_case.docs
+        self.authenticate();req,record,jobs,artifacts=self.producer(self.expected_typed())
+        runtime_req = owner.source_runtime_requirements(req)
+        docs_req = {**copy.deepcopy(runtime_req), 'cells':runtime_req['cells']+fixture.CELLS,
+                    'cell_jobs':{**runtime_req['cell_jobs'],**dict.fromkeys(fixture.CELLS,fixture.JOB)}}
+        docs_record = {'schema':docs.ENVELOPE,'program_id':owner.PROGRAM,'state':'PREPUBLICATION_READY',
+                       **docs_req,'core':record['runtime'],'docs':{'run_id':17}}
+        full_req = {**docs_req,'source_dispositions':req['source_dispositions'],
+                    'cells':docs_req['cells']+[self.cell],
+                    'cell_jobs':{**docs_req['cell_jobs'],self.cell:req['cell_jobs'][self.cell]}}
+        envelope = {'schema':owner.SOURCE_SCHEMA,'program_id':owner.PROGRAM,'state':'PREPUBLICATION_READY',
+                    **full_req,'runtime':docs_record}
+        run={'id':7,'head_sha':self.source,'head_branch':'main','event':'push','conclusion':'success',
+             'path':'.github/workflows/ci.yml','repository':{'full_name':owner.REPOSITORY}}
+        artifact={'id':11,'name':'major-readiness-'+self.source,'expired':False,'size_in_bytes':100,
+                  'digest':'sha256:'+'f'*64,'workflow_run':{'id':7,'head_sha':self.source}}
+        args=dict(record=envelope,requirements=full_req,run=run,artifact=artifact,archive_digest='f'*64,
+                  jobs=jobs,build_artifacts=artifacts)
+        with mock.patch.object(docs,'admit',return_value=docs_record['docs']) as admit, \
+             mock.patch.object(owner,'validate_upload'):
+            self.assertEqual(owner.verify(**args)['docs_run_id'],17)
+            with mock.patch.object(docs,'admit',side_effect=owner.ReadinessError('Docs run not successful')), \
+                 self.assertRaisesRegex(owner.ReadinessError,'Docs run not successful'):
+                owner.verify(**args)
+            wrong=copy.deepcopy(envelope);wrong['runtime']['docs']['run_id']=7
+            with self.assertRaises(owner.ReadinessError):
+                owner.verify(**dict(args,record=wrong))
+        # Promotion receives an already independently verified envelope. It must
+        # unwrap, not rebuild, and still authenticate the original exact tar.
+        with mock.patch.object(owner,'api',side_effect=docs_case.api):
+            admitted=docs.admit(docs_case.req)
+        verified={'state':'PREPUBLICATION_READY','docs_run_id':17}
+        original={'schema':docs.ENVELOPE,'source_tree':'b'*40,'docs':admitted}
+        source_envelope={'schema':owner.SOURCE_SCHEMA,'runtime':original}
+        env={'GITHUB_ACTIONS':'true','GITHUB_EVENT_NAME':'workflow_dispatch','GITHUB_REF':'refs/heads/main',
+             'GITHUB_REPOSITORY':owner.REPOSITORY,'GITHUB_SHA':'a'*40}
+        def api(path,binary=False):
+            return docs_case.artifacts[0] if path=='actions/artifacts/31' else docs_case.api(path,binary)
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve()
+            with mock.patch.dict(os.environ,env,clear=True), \
+                 mock.patch.object(docs.reports,'source_identity',return_value={
+                    'source_commit':'a'*40,'source_tree':'b'*40,'clean':True}), \
+                 mock.patch.object(owner,'load_verified_receipt',return_value=(source_envelope,verified)), \
+                 mock.patch.object(owner,'api',side_effect=api):
+                result=docs.prepare_promotion(root,'a'*40,7,root/'stage')
+                self.assertEqual((root/'stage/artifact.tar').read_bytes(),docs_case.tar)
+                self.assertFalse(result['deployment_observed'])
+                self.assertEqual(result['original_pages_artifact_id'],31)
+
+
+    def test_mixed_original_proofs_and_unknown_sources_cannot_acquire_source_authority(self):
+        self.authenticate()
+        runtime_proof={**copy.deepcopy(self.proof),'kind':'review','result':'PASSED',
+                       'producer':{'class':'independent-review','identity':'inert execution review'}}
+        content=json.dumps(runtime_proof).encode()
+        (self.repo/'execution-proof.json').write_bytes(content)
+        self.git('add','execution-proof.json');self.git('commit','-qm','retain second distinct original proof')
+        self.source=self.git('rev-parse','HEAD').decode().strip()
+        self.row['evidence'].append({'kind':'review','commit':self.base,'ref_commit':self.source,
+                                    'ref':'execution-proof.json','sha256':owner.digest(content)})
+        self.authenticate()
+        self.assertIsNone(owner.authenticated_source_disposition(self.source,self.cell,self.row,self.cache))
+        self.proof['kind']='unknown-proof-kind';self.retain()
+        with self.assertRaisesRegex(owner.ReadinessError,'unknown original evidence class'):
+            self.authenticate()
+        self.proof['kind']='conformance-check';self.proof['producer']['class']='unknown-class';self.retain()
+        with self.assertRaisesRegex(owner.ReadinessError,'producer identity'):
+            self.authenticate()
+
+    def test_live_reader_rebuilds_source_and_runtime_from_fresh_authorities(self):
+        self.authenticate();req,record,jobs,artifacts=self.producer(self.expected_typed())
+        run={'id':7,'head_sha':self.source,'head_branch':'main','event':'push','conclusion':'success',
+             'path':'.github/workflows/ci.yml','repository':{'full_name':owner.REPOSITORY}}
+        output=io.BytesIO()
+        with zipfile.ZipFile(output,'w') as zipped:
+            zipped.writestr('package.txt',b'inert package fixture')
+        package=output.getvalue()
+        def retained(value):
+            output=io.BytesIO()
+            with zipfile.ZipFile(output,'w') as zipped:
+                zipped.writestr('major-readiness.json',json.dumps(value).encode())
+            return output.getvalue()
+        archive=retained(record)
+        metadata={'id':11,'name':'major-readiness-'+self.source,'expired':False,'size_in_bytes':len(archive),
+                  'digest':'sha256:'+owner.digest(archive),'workflow_run':{'id':7,'head_sha':self.source}}
+        def payload(item,requirements):
+            return archive if item['id']==11 else package
+        with mock.patch.object(owner,'collect',return_value=(req,run,artifacts+[metadata],jobs)) as collect, \
+             mock.patch.object(owner,'artifact_bytes',side_effect=payload), \
+             mock.patch.object(owner,'produce',return_value=record) as reconstruct, \
+             mock.patch.object(owner,'validate_upload'):
+            actual,result=owner.load_verified_receipt(self.repo,self.source,7)
+            self.assertEqual(actual,record);self.assertEqual(result['source'],self.source)
+            collect.assert_called_once_with(self.repo,self.source,7)
+            reconstruct.assert_called_once_with(req,artifacts+[metadata],jobs)
+            # The original bytes still hash correctly; a forged source binding
+            # must fail independent reconstruction, before accepting the record.
+            wrong=copy.deepcopy(record);wrong['source_dispositions'][self.cell]['proofs'][0]['ref']='foreign.json'
+            archive=retained(wrong)
+            with self.assertRaisesRegex(owner.ReadinessError,'original qualification evidence'):
+                owner.load_verified_receipt(self.repo,self.source,7)
+
+
 if __name__ == "__main__":
     unittest.main()
