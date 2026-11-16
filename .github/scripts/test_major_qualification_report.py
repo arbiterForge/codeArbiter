@@ -763,7 +763,7 @@ class BoundSourcePayloadTests(unittest.TestCase):
         from test_ci_impact import workflow_jobs
         selection=json.loads((owner.ROOT/".github/major-test-selections.json").read_text())
         policy=json.loads((owner.ROOT/".github/major-qualification-policy.json").read_text())
-        source=[group for group in selection["groups"] if group["proof_kind"]=="source-test"]
+        source=[group for group in selection["groups"] if group["proof_kind"]=="source-test" and group["payload_name"]==owner.SOURCE_PAYLOAD]
         expected={"disposition:transitions:C33:02","disposition:transitions:C33:03",*
             ("disposition:added_transitions:S75:"+name for name in
              ("added-stage-failed","added-rolled-back","added-unusable","added-writer-refused"))}
@@ -1282,6 +1282,487 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
                 self.assertEqual(run.call_args.kwargs["timeout"],15)
                 self.assertEqual(dict(os.environ),before)
                 self.assertNotIn("CANARY","\n".join(getattr(problem,"__notes__",[])))
+
+
+TS_PROFILE_FIXTURES = {'pi-tools-v1': {'job': 'Coverage union (Pi)  <os: windows-latest>',
+                 'paths': ['.github/major-qualification-policy.json',
+                           '.github/major-test-selections.json',
+                           '.github/scripts/_boundedproc.py',
+                           '.github/scripts/_contextverificationlib.py',
+                           '.github/scripts/_immutable_git_blobs.py',
+                           '.github/scripts/ci20_native_binding.py',
+                           '.github/scripts/major_qualification_report.py',
+                           '.github/scripts/major_readiness.py',
+                           '.github/workflows/ci.yml',
+                           'core/hosts.json',
+                           'core/pysrc/_artifactauthoritylib.py',
+                           'core/pysrc/_artifactlib.py',
+                           'core/pysrc/_artifactmanifestlib.py',
+                           'core/pysrc/_artifactpromptlib.py',
+                           'core/pysrc/_gitexec.py',
+                           'core/pysrc/_replylib.py',
+                           'plugins/ca-pi/extensions/codearbiter-child.js',
+                           'plugins/ca-pi/extensions/codearbiter.js',
+                           'plugins/ca-pi/tools/build.mjs',
+                           'plugins/ca-pi/tools/package-lock.json',
+                           'plugins/ca-pi/tools/package.json',
+                           'plugins/ca-pi/tools/src/activation.ts',
+                           'plugins/ca-pi/tools/src/activity.ts',
+                           'plugins/ca-pi/tools/src/approval-dialog.ts',
+                           'plugins/ca-pi/tools/src/approval-entry.ts',
+                           'plugins/ca-pi/tools/src/attestation.ts',
+                           'plugins/ca-pi/tools/src/audit-sink.ts',
+                           'plugins/ca-pi/tools/src/background-jobs.ts',
+                           'plugins/ca-pi/tools/src/bridge.ts',
+                           'plugins/ca-pi/tools/src/child-env.ts',
+                           'plugins/ca-pi/tools/src/child-extension.ts',
+                           'plugins/ca-pi/tools/src/command-ownership.ts',
+                           'plugins/ca-pi/tools/src/commands.ts',
+                           'plugins/ca-pi/tools/src/compaction.ts',
+                           'plugins/ca-pi/tools/src/compatibility.ts',
+                           'plugins/ca-pi/tools/src/contracts.ts',
+                           'plugins/ca-pi/tools/src/delegated-executor.ts',
+                           'plugins/ca-pi/tools/src/delegation-client.ts',
+                           'plugins/ca-pi/tools/src/delegation-contract.ts',
+                           'plugins/ca-pi/tools/src/delegation-journal.ts',
+                           'plugins/ca-pi/tools/src/delegation-session.ts',
+                           'plugins/ca-pi/tools/src/dispatch.ts',
+                           'plugins/ca-pi/tools/src/doctor.ts',
+                           'plugins/ca-pi/tools/src/extension.ts',
+                           'plugins/ca-pi/tools/src/farm.ts',
+                           'plugins/ca-pi/tools/src/footer-state.ts',
+                           'plugins/ca-pi/tools/src/footer.ts',
+                           'plugins/ca-pi/tools/src/git-facts.ts',
+                           'plugins/ca-pi/tools/src/inference-broker.ts',
+                           'plugins/ca-pi/tools/src/native-background.ts',
+                           'plugins/ca-pi/tools/src/native-plan.ts',
+                           'plugins/ca-pi/tools/src/notices.ts',
+                           'plugins/ca-pi/tools/src/parent-delegation.ts',
+                           'plugins/ca-pi/tools/src/path-boundary.ts',
+                           'plugins/ca-pi/tools/src/pi-api.d.ts',
+                           'plugins/ca-pi/tools/src/plan-mode.ts',
+                           'plugins/ca-pi/tools/src/policy.ts',
+                           'plugins/ca-pi/tools/src/process-tree.ts',
+                           'plugins/ca-pi/tools/src/redaction.ts',
+                           'plugins/ca-pi/tools/src/roles.ts',
+                           'plugins/ca-pi/tools/src/runner.ts',
+                           'plugins/ca-pi/tools/src/runtime-resolver.ts',
+                           'plugins/ca-pi/tools/src/session-identity.ts',
+                           'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+                           'plugins/ca-pi/tools/src/sidebar-data.ts',
+                           'plugins/ca-pi/tools/src/sidebar-manager.ts',
+                           'plugins/ca-pi/tools/src/sidebar.ts',
+                           'plugins/ca-pi/tools/src/status.ts',
+                           'plugins/ca-pi/tools/src/tool-guard.ts',
+                           'plugins/ca-pi/tools/src/windows-supervisor.ts',
+                           'plugins/ca-pi/tools/test/activation.test.ts',
+                           'plugins/ca-pi/tools/test/activity.test.ts',
+                           'plugins/ca-pi/tools/test/approval-dialog.test.ts',
+                           'plugins/ca-pi/tools/test/audit-sink.test.ts',
+                           'plugins/ca-pi/tools/test/background-jobs.test.ts',
+                           'plugins/ca-pi/tools/test/benchmark-boundary.ts',
+                           'plugins/ca-pi/tools/test/bridge.test.ts',
+                           'plugins/ca-pi/tools/test/child-env.test.ts',
+                           'plugins/ca-pi/tools/test/commands.test.ts',
+                           'plugins/ca-pi/tools/test/compaction.test.ts',
+                           'plugins/ca-pi/tools/test/delegated-executor.test.ts',
+                           'plugins/ca-pi/tools/test/delegation-contract.test.ts',
+                           'plugins/ca-pi/tools/test/delegation-journal.test.ts',
+                           'plugins/ca-pi/tools/test/delegation-session.test.ts',
+                           'plugins/ca-pi/tools/test/dispatch.test.ts',
+                           'plugins/ca-pi/tools/test/doctor.test.ts',
+                           'plugins/ca-pi/tools/test/farm.test.ts',
+                           'plugins/ca-pi/tools/test/final-arguments-live.test.ts',
+                           'plugins/ca-pi/tools/test/final-arguments.test.ts',
+                           'plugins/ca-pi/tools/test/fixtures/live-governed-extension.mjs',
+                           'plugins/ca-pi/tools/test/fixtures/live-later-extension.mjs',
+                           'plugins/ca-pi/tools/test/fixtures/pi-0.80.5-help.txt',
+                           'plugins/ca-pi/tools/test/fixtures/pi-0.80.6-help.txt',
+                           'plugins/ca-pi/tools/test/footer.test.ts',
+                           'plugins/ca-pi/tools/test/git-facts.test.ts',
+                           'plugins/ca-pi/tools/test/inference-broker.test.ts',
+                           'plugins/ca-pi/tools/test/live-pi-host.ts',
+                           'plugins/ca-pi/tools/test/module-structure.test.ts',
+                           'plugins/ca-pi/tools/test/notices.test.ts',
+                           'plugins/ca-pi/tools/test/package.test.ts',
+                           'plugins/ca-pi/tools/test/parent-delegation.test.ts',
+                           'plugins/ca-pi/tools/test/path-boundary.test.ts',
+                           'plugins/ca-pi/tools/test/plan-mode.test.ts',
+                           'plugins/ca-pi/tools/test/policy.test.ts',
+                           'plugins/ca-pi/tools/test/process-tree.test.ts',
+                           'plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts',
+                           'plugins/ca-pi/tools/test/runner-isolation.test.ts',
+                           'plugins/ca-pi/tools/test/runtime-resolver.test.ts',
+                           'plugins/ca-pi/tools/test/security.test.ts',
+                           'plugins/ca-pi/tools/test/setup-disposable-home.ts',
+                           'plugins/ca-pi/tools/test/sidebar-compositor.test.ts',
+                           'plugins/ca-pi/tools/test/sidebar-data.test.ts',
+                           'plugins/ca-pi/tools/test/sidebar-manager.test.ts',
+                           'plugins/ca-pi/tools/test/sidebar-probe-live.test.ts',
+                           'plugins/ca-pi/tools/test/sidebar-window-contract.test.ts',
+                           'plugins/ca-pi/tools/test/sidebar.test.ts',
+                           'plugins/ca-pi/tools/test/status.test.ts',
+                           'plugins/ca-pi/tools/test/tool-guard.test.ts',
+                           'plugins/ca-pi/tools/test/windows-supervisor.test.ts',
+                           'plugins/ca-pi/tools/test/workflow-recovery.test.ts',
+                           'plugins/ca-pi/tools/tsconfig.json',
+                           'plugins/ca-pi/tools/vitest.config.ts',
+                           'plugins/ca/hooks/secret-detection-corpus.json',
+                           'plugins/ca/tools/redactor.ts'],
+                 'payload': 'major-source-inputs-pi-windows-coverage',
+                 'root': 'plugins/ca-pi/tools',
+                 'test': 'plugins/ca-pi/tools/test/security.test.ts'},
+ 'sandbox-tools-v1': {'job': '[CHECK] | [SBX ] | Sandbox driver contract',
+                      'paths': ['.github/major-qualification-policy.json',
+                                '.github/major-test-selections.json',
+                                '.github/scripts/_boundedproc.py',
+                                '.github/scripts/_contextverificationlib.py',
+                                '.github/scripts/_immutable_git_blobs.py',
+                                '.github/scripts/ci20_native_binding.py',
+                                '.github/scripts/major_qualification_report.py',
+                                '.github/scripts/major_readiness.py',
+                                '.github/workflows/ci.yml',
+                                'core/pysrc/_artifactauthoritylib.py',
+                                'core/pysrc/_artifactlib.py',
+                                'core/pysrc/_artifactmanifestlib.py',
+                                'core/pysrc/_artifactpromptlib.py',
+                                'core/pysrc/_gitexec.py',
+                                'core/pysrc/_replylib.py',
+                                'plugins/ca-sandbox/tools/__fixtures__/docker-required/gate.fixture.test.ts',
+                                'plugins/ca-sandbox/tools/__fixtures__/docker-required/vitest.config.ts',
+                                'plugins/ca-sandbox/tools/__fixtures__/go/go.mod',
+                                'plugins/ca-sandbox/tools/__fixtures__/go/main.go',
+                                'plugins/ca-sandbox/tools/__fixtures__/node/index.js',
+                                'plugins/ca-sandbox/tools/__fixtures__/node/package.json',
+                                'plugins/ca-sandbox/tools/__fixtures__/py/main.py',
+                                'plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt',
+                                'plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock',
+                                'plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml',
+                                'plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs',
+                                'plugins/ca-sandbox/tools/__tests__/isolation.test.ts',
+                                'plugins/ca-sandbox/tools/build-pinned-base.test.ts',
+                                'plugins/ca-sandbox/tools/build.test.ts',
+                                'plugins/ca-sandbox/tools/build.ts',
+                                'plugins/ca-sandbox/tools/builder-observation.test.ts',
+                                'plugins/ca-sandbox/tools/cache-provenance.test.ts',
+                                'plugins/ca-sandbox/tools/claude-inside-cli.test.ts',
+                                'plugins/ca-sandbox/tools/claude-inside-cli.ts',
+                                'plugins/ca-sandbox/tools/claude-inside.js',
+                                'plugins/ca-sandbox/tools/claude-inside.test.ts',
+                                'plugins/ca-sandbox/tools/claude-inside.ts',
+                                'plugins/ca-sandbox/tools/cli-resolve.test.ts',
+                                'plugins/ca-sandbox/tools/cli.test.ts',
+                                'plugins/ca-sandbox/tools/cli.ts',
+                                'plugins/ca-sandbox/tools/cp.test.ts',
+                                'plugins/ca-sandbox/tools/cp.ts',
+                                'plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts',
+                                'plugins/ca-sandbox/tools/create-partial-compensation.test.ts',
+                                'plugins/ca-sandbox/tools/create.test.ts',
+                                'plugins/ca-sandbox/tools/create.ts',
+                                'plugins/ca-sandbox/tools/deadline.test.ts',
+                                'plugins/ca-sandbox/tools/dephash.test.ts',
+                                'plugins/ca-sandbox/tools/dephash.ts',
+                                'plugins/ca-sandbox/tools/destroy.ts',
+                                'plugins/ca-sandbox/tools/docker-gate.test.ts',
+                                'plugins/ca-sandbox/tools/docker-gate.ts',
+                                'plugins/ca-sandbox/tools/docker.ts',
+                                'plugins/ca-sandbox/tools/exec.test.ts',
+                                'plugins/ca-sandbox/tools/exec.ts',
+                                'plugins/ca-sandbox/tools/installed-bundle.test.ts',
+                                'plugins/ca-sandbox/tools/layering.test.ts',
+                                'plugins/ca-sandbox/tools/lifecycle.test.ts',
+                                'plugins/ca-sandbox/tools/mounts.test.ts',
+                                'plugins/ca-sandbox/tools/mounts.ts',
+                                'plugins/ca-sandbox/tools/multistack.test.ts',
+                                'plugins/ca-sandbox/tools/native-build-inputs.test.ts',
+                                'plugins/ca-sandbox/tools/network.test.ts',
+                                'plugins/ca-sandbox/tools/network.ts',
+                                'plugins/ca-sandbox/tools/package-lock.json',
+                                'plugins/ca-sandbox/tools/package.json',
+                                'plugins/ca-sandbox/tools/registry.ts',
+                                'plugins/ca-sandbox/tools/run.test.ts',
+                                'plugins/ca-sandbox/tools/run.ts',
+                                'plugins/ca-sandbox/tools/sandbox.js',
+                                'plugins/ca-sandbox/tools/smoke.test.ts',
+                                'plugins/ca-sandbox/tools/smoke.ts',
+                                'plugins/ca-sandbox/tools/state-contracts.test.ts',
+                                'plugins/ca-sandbox/tools/supply-chain.test.ts',
+                                'plugins/ca-sandbox/tools/teardown.test.ts',
+                                'plugins/ca-sandbox/tools/tsconfig.json',
+                                'plugins/ca-sandbox/tools/vitest.config.ts'],
+                      'payload': 'major-source-inputs-sandbox-driver',
+                      'root': 'plugins/ca-sandbox/tools',
+                      'test': 'plugins/ca-sandbox/tools/cli.test.ts'}}
+
+@contextmanager
+def vitest_source_fixture(profile="pi-tools-v1"):
+    """Real private checkout/archive and inert once-only named JSON process."""
+    with tempfile.TemporaryDirectory(prefix="ca-ts-source-fixture-") as temporary:
+        base = Path(temporary).resolve(); repo = base / "repo"; repo.mkdir()
+        spec = TS_PROFILE_FIXTURES[profile]
+        for relative in spec["paths"]:
+            target = repo / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(b"inert declared source fixture\n")
+        (repo / ".gitignore").write_text(spec["root"] + "/node_modules/\n" + spec["root"] + "/coverage/\n", encoding="utf-8")
+        git = shutil.which("git")
+        if git is None: raise AssertionError("Git required for private source fixture")
+        env = {k: v for k, v in os.environ.items() if k.upper() in {"SYSTEMROOT", "WINDIR", "SYSTEMDRIVE", "COMSPEC", "PATHEXT"}}
+        env.update(PATH=os.pathsep.join([str(Path(git).parent), str(Path(sys.executable).parent)]),
+            HOME=str(base), USERPROFILE=str(base), GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1",
+            GIT_TERMINAL_PROMPT="0", GITHUB_RUN_ID="7", PYTHONDONTWRITEBYTECODE="1", PYTHONNOUSERSITE="1")
+        with mock.patch.dict(os.environ, env, clear=True):
+            for args in (("init", "-q"), ("add", "."), ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+                           "-c", "commit.gpgsign=false", "commit", "-qm", "source fixture")):
+                phase = "init" if args[0] == "init" else "index" if args[0] == "add" else "commit"
+                run_git_phase([git, "-C", str(repo), *args], phase=phase, trace_dir=base)
+            identity = owner.source_identity(repo)
+            staged = base / "staged"; staged.mkdir()
+            rows = []
+            for relative in spec["paths"]:
+                value = (repo / relative).read_bytes(); target = staged / relative
+                target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(value)
+                rows.append({"path": relative, "sha256": owner.readiness.digest(value), "bytes": len(value), "git_mode": "100644"})
+            manifest = {"format": owner.SOURCE_FORMAT, "profile": profile, "workflow": ".github/workflows/ci.yml",
+                "source_commit": identity["source_commit"], "source_tree": identity["source_tree"], "ci_run_id": 7,
+                "producer_job_name": spec["job"], "members": rows}
+            owner.new_output(staged / owner.SOURCE_MANIFEST, manifest)
+            raw, observation, counter = base / "named.json", base / "observation.json", base / "counter.json"
+            program = base / "inert-original.py"
+            suite = str(repo / spec["test"])
+            program.write_text("import pathlib,json,sys,os\n"
+                f"p=pathlib.Path({str(counter)!r});rows=json.loads(p.read_text())if p.exists()else[]\n"
+                "rows.append({'argv':sys.argv[1:],'cwd':os.getcwd(),'token_present':bool(os.environ.get('GH_TOKEN')or os.environ.get('OPENAI_API_KEY'))});p.write_text(json.dumps(rows))\n"
+                "args=sys.argv[1:];out=next(a.split('=',1)[1]for a in args if a.startswith(('--outputFile.json=','--outputFile=')))\n"
+                f"pathlib.Path(out).write_text(json.dumps({{'testResults':[{{'name':{suite!r},'assertionResults':[{{'fullName':'owned inert original case','status':'passed'}}]}}]}}))\n", encoding="utf-8")
+            command = [sys.executable, "-B", str(program), "--coverage", "--reporter=blob", "--reporter=default", "--outputFile.blob=original.blob"]
+            yield {"base": base, "repo": repo, "spec": spec, "staged": staged, "manifest": manifest,
+                "identity": identity, "raw": raw, "observation": observation, "counter": counter, "command": command}
+
+
+class VitestSourceProducerTests(unittest.TestCase):
+    def test_original_vitest_invocation_retains_authenticated_source_binding_once(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
+                args = ["observe-vitest", "--repo", str(f["repo"]), "--output", str(f["observation"]),
+                    "--raw-results", str(f["raw"]), "--source-payload", str(f["staged"]),
+                    "--execution-cwd", f["spec"]["root"], "--", *f["command"]]
+                self.assertEqual(owner.main(args), 0)
+                self.assertEqual(len(json.loads(f["counter"].read_text())), 1)
+                document = owner.load_json(f["observation"])
+                self.assertEqual(document["original_argv"], f["command"])
+                self.assertEqual(document["cwd"], str(f["repo"] / f["spec"]["root"]))
+                self.assertEqual(document.get("source_input_binding"), {
+                    "format": owner.SOURCE_BINDING, "profile": profile,
+                    "payload_name": f["spec"]["payload"],
+                    "manifest_sha256": owner.readiness.digest((f["staged"] / owner.SOURCE_MANIFEST).read_bytes())})
+
+    def authenticate(self, f, mutate=None, job=None):
+        files = {p.relative_to(f["staged"]).as_posix(): p.read_bytes() for p in f["staged"].rglob("*") if p.is_file()}
+        if mutate: mutate(files)
+        raw = io.BytesIO()
+        with zipfile.ZipFile(raw, "w") as archive:
+            for name, value in sorted(files.items()): archive.writestr(name, value)
+        metadata = {"id": 8, "name": f["spec"]["payload"]}
+        req = {**f["identity"], "ci_run_id": 7}
+        job = job if job is not None else {"id": 9, "name": f["spec"]["job"], "status": "in_progress", "conclusion": None,
+            "steps": [{"name": "Upload Pi source-test inputs" if f["spec"]["root"].endswith("ca-pi/tools") else "Upload Sandbox source-test inputs", "status": "completed", "conclusion": "success"}]}
+        with mock.patch.object(owner.readiness, "artifact_bytes", return_value=raw.getvalue()) as authenticated, \
+             mock.patch.object(owner.readiness, "validate_upload", side_effect=AssertionError("own incomplete log must not be read")):
+            result = owner.authenticated_payload(metadata, req, f["repo"], source_job=job)
+            authenticated.assert_called_once_with(metadata, req)
+            return result
+
+    def test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells(self):
+        cells = {"pi-tools-v1": "disposition:transitions:pi-qualification:disposable-home:01",
+                 "sandbox-tools-v1": "disposition:transitions:S54:01"}
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
+                stage = f["base"] / "prepared"
+                self.assertEqual(owner.prepare_source_payload(f["repo"], stage, f["spec"]["job"], profile), f["manifest"])
+                self.assertEqual(owner.observe_vitest(f["repo"], f["command"], f["raw"], f["observation"], f["spec"]["root"], f["staged"]), 0)
+                observed = owner.load_json(f["observation"])
+                payload = self.authenticate(f)
+                cell = cells[profile]
+                req = {**f["identity"], "ci_run_id": 7, "cells": [cell], "cell_jobs": {cell: f["spec"]["job"]}}
+                group = {"id": "synthetic-source", "job": f["spec"]["job"], "payload_name": f["spec"]["payload"],
+                    "observation": "owning", "proof_kind": "source-test", "selectors": [observed["tests"][0]["id"]],
+                    "cells": [cell], "scope": "Inert source-admission fixture only; no actual TypeScript qualification"}
+                def build(o=observed, p=payload, gr=group, required=req):
+                    return owner.build_report(required, job_name=f["spec"]["job"], job_id=9,
+                        selections={"schema": owner.SELECTIONS, "groups": [gr]}, observations={"owning": o}, payloads={f["spec"]["payload"]: p})
+                self.assertEqual(build()["results"][0]["cell"], cell)
+                for failure in ("missing-binding", "unknown-profile", "wrong-role", "digest", "uploader", "pending", "failure", "duplicate", "dirty", "nonzero", "other-cell"):
+                    bad, consumed, selected, required = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(group), copy.deepcopy(req)
+                    if failure == "missing-binding": bad.pop("source_input_binding")
+                    if failure == "unknown-profile": bad["source_input_binding"]["profile"] = "unknown-ts-profile"
+                    if failure == "wrong-role": selected["payload_name"] = "unrelated-native-archive"
+                    if failure == "digest": consumed["source_manifest_sha256"] = "0" * 64
+                    if failure == "uploader": consumed["source_upload_job_id"] = True
+                    if failure == "pending": bad["tests"][0]["result"] = "skipped"
+                    if failure == "failure": bad["tests"][0]["result"] = "failed"
+                    if failure == "duplicate": bad["tests"].append(dict(bad["tests"][0]))
+                    if failure == "dirty": bad["source_stable"] = False
+                    if failure == "nonzero": bad["exit_code"] = 1
+                    if failure == "other-cell":
+                        selected["cells"] = required["cells"] = ["disposition:transitions:S51:01"]
+                        required["cell_jobs"] = {required["cells"][0]: f["spec"]["job"]}
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): build(bad, consumed, selected, required)
+
+    def test_archive_profile_source_member_and_original_upload_fail_closed(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
+                for failure in ("changed", "missing", "foreign", "profile", "source", "duplicate-json"):
+                    def mutate(files):
+                        first = f["spec"]["paths"][0]
+                        if failure == "changed": files[first] += b"changed"
+                        if failure == "missing": del files[first]
+                        if failure == "foreign": files["foreign-input"] = b"inert"
+                        if failure in ("profile", "source"):
+                            manifest = json.loads(files[owner.SOURCE_MANIFEST]); manifest["profile" if failure == "profile" else "source_commit"] = "foreign" if failure == "profile" else "f" * 40
+                            files[owner.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                        if failure == "duplicate-json": files[owner.SOURCE_MANIFEST] = b'{"profile":"pi-tools-v1","profile":"sandbox-tools-v1"}'
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): self.authenticate(f, mutate)
+                for failure in ("owner", "upload-missing", "upload-running", "upload-failed", "job-completed"):
+                    upload = "Upload Pi source-test inputs" if profile == "pi-tools-v1" else "Upload Sandbox source-test inputs"
+                    job = {"id": 9, "name": f["spec"]["job"], "status": "in_progress", "conclusion": None,
+                        "steps": [{"name": upload, "status": "completed", "conclusion": "success"}]}
+                    if failure == "owner": job["name"] = "foreign owner"
+                    if failure == "upload-missing": job["steps"] = []
+                    if failure == "upload-running": job["steps"][0]["status"] = "in_progress"
+                    if failure == "upload-failed": job["steps"][0]["conclusion"] = "failure"
+                    if failure == "job-completed": job.update(status="completed", conclusion="success")
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): self.authenticate(f, job=job)
+
+    def test_source_namespace_stage_and_after_drift_do_not_become_a_stable_pass(self):
+        for kind in ("tracked", "namespace", "coverage-output", "stage"):
+            with self.subTest(kind=kind), vitest_source_fixture() as f:
+                if kind == "stage":
+                    target = f["staged"] / f["spec"]["paths"][0]
+                    target.write_bytes(target.read_bytes() + b"changed")
+                    with self.assertRaises(ValueError):
+                        owner.observe_vitest(f["repo"], f["command"], f["raw"], f["observation"], f["spec"]["root"], f["staged"])
+                    self.assertFalse(f["counter"].exists())
+                    continue
+                target = f["repo"] / (f["spec"]["paths"][0] if kind == "tracked" else f["spec"]["root"] + "/unobserved-source.ts")
+                if kind == "coverage-output":
+                    folder = f["repo"] / f["spec"]["root"] / "coverage-inputs"
+                    folder.mkdir()
+                    target = folder / "foreign-output.json"
+                script = Path(f["command"][2]); script.write_text(script.read_text() + f"pathlib.Path({str(target)!r}).write_bytes(b'actual changed source')\n", encoding="utf-8")
+                self.assertEqual(owner.observe_vitest(f["repo"], f["command"], f["raw"], f["observation"], f["spec"]["root"], f["staged"]), 1)
+                observed = owner.load_json(f["observation"])
+                self.assertFalse(observed["source_stable"])
+                self.assertEqual(observed["exit_code"], 0, "Original process exit is retained separately from admission")
+                self.assertEqual(len(json.loads(f["counter"].read_text())), 1)
+                self.assertEqual(target.read_bytes(), b"actual changed source")
+
+    def test_pi_generated_outputs_are_exact_bounded_exclusions_only_for_that_profile(self):
+        with vitest_source_fixture() as f:
+            folder = f["repo"] / f["spec"]["root"] / "coverage-inputs"; folder.mkdir()
+            for name in ("windows-latest.provenance.json", "windows-latest.json", "windows-latest.checked.json"):
+                (folder / name).write_bytes(b"{}")
+            self.assertFalse(owner.source_identity(f["repo"])["clean"])
+            self.assertTrue(owner.source_identity(f["repo"], "pi-tools-v1")["clean"])
+            owner.source_input_snapshot(f["repo"], "pi-tools-v1")
+            foreign = folder / "foreign.ts"; foreign.write_bytes(b"unexpected source")
+            with self.assertRaises(ValueError): owner.source_identity(f["repo"], "pi-tools-v1")
+            self.assertEqual(foreign.read_bytes(), b"unexpected source"); foreign.unlink()
+            target = folder / "windows-latest.json"; target.unlink(); target.symlink_to(folder / "windows-latest.provenance.json")
+            with self.assertRaises(ValueError): owner.source_identity(f["repo"], "pi-tools-v1")
+            target.unlink(); target.mkdir()
+            with self.assertRaises(ValueError): owner.source_identity(f["repo"], "pi-tools-v1")
+            with self.assertRaises(ValueError): owner.source_identity(f["repo"], "unknown-profile")
+
+    def test_observed_child_is_credential_blind_and_preserves_original_docker_prerequisites(self):
+        with vitest_source_fixture("sandbox-tools-v1") as f, mock.patch.dict(os.environ, {
+            "GH_TOKEN": "PrivateFixtureValue", "OPENAI_API_KEY": "PrivateFixtureValue", "ACTIONS_RUNTIME_TOKEN": "PrivateFixtureValue",
+            "CA_SANDBOX_REQUIRE_DOCKER": "1", "CA_SANDBOX_DOCKER_SENTINEL": str(f["base"] / "owned.sentinel")}):
+            self.assertEqual(owner.observe_vitest(f["repo"], f["command"], f["raw"], f["observation"], f["spec"]["root"], f["staged"]), 0)
+            self.assertFalse(json.loads(f["counter"].read_text())[0]["token_present"])
+            private = f["base"] / "env-profile"; private.mkdir()
+            env = owner._vitest_environment(private)
+            self.assertNotIn("PrivateFixtureValue", json.dumps(env))
+            self.assertEqual(env["CA_SANDBOX_REQUIRE_DOCKER"], "1")
+            self.assertEqual(env["CA_SANDBOX_DOCKER_SENTINEL"], str(f["base"] / "owned.sentinel"))
+            for name in ("HOME", "USERPROFILE", "TEMP", "APPDATA", "LOCALAPPDATA", "NPM_CONFIG_CACHE"):
+                self.assertTrue(Path(env[name]).is_relative_to(private))
+
+    def test_windows_npx_uses_the_qualified_adjacent_native_launch_without_a_shell(self):
+        import _artifactauthoritylib as authority
+        from types import SimpleNamespace
+        npm_wrapper = r''':: Created by npm, please don't edit manually.
+@ECHO OFF
+SETLOCAL
+SET "NODE_EXE=%~dp0\node.exe"
+IF NOT EXIST "%NODE_EXE%" (
+  SET "NODE_EXE=node"
+)
+SET "NPM_PREFIX_JS=%~dp0\node_modules\npm\bin\npm-prefix.js"
+SET "NPM_CLI_JS=%~dp0\node_modules\npm\bin\npm-cli.js"
+FOR /F "delims=" %%F IN ('CALL "%NODE_EXE%" "%NPM_PREFIX_JS%"') DO (
+  SET "NPM_PREFIX_NPM_CLI_JS=%%F\node_modules\npm\bin\npm-cli.js"
+)
+IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
+  SET "NPM_CLI_JS=%NPM_PREFIX_NPM_CLI_JS%"
+)
+"%NODE_EXE%" "%NPM_CLI_JS%" %*'''
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            npm, npx, node = root / "npm.cmd", root / "npx.cmd", root / "node.exe"
+            cli = root / "node_modules/npm/bin/npm-cli.js"; cli.parent.mkdir(parents=True)
+            npm.write_text(npm_wrapper, encoding="utf-8")
+            npx_wrapper = npm_wrapper.replace("NPM_PREFIX_NPM_CLI_JS", "NPM_PREFIX_NPX_CLI_JS").replace("NPM_CLI_JS", "NPX_CLI_JS").replace("npm-cli.js", "npx-cli.js")
+            npx.write_text(npx_wrapper, encoding="utf-8")
+            npx.chmod(0o755); npm.chmod(0o755)
+            for path in (node, cli, cli.with_name("npx-cli.js")): path.write_bytes(b"inert runtime data; never executed")
+            args = [str(npx), "vitest", "run", "--coverage", "--reporter=blob", "--reporter=default", "--outputFile.blob=coverage-inputs/windows-latest.json"]
+            proxy = SimpleNamespace(**vars(os)); proxy.name = "nt"
+            with mock.patch.object(owner, "os", proxy), mock.patch.object(authority, "os", proxy):
+                actual, records = owner._vitest_launch(args)
+                self.assertEqual(actual, [str(node), str(cli.with_name("npx-cli.js")), *args[1:]])
+                self.assertEqual({row["resolved_path"] for row in records}, {str(p) for p in (npm, npx, node, cli, cli.with_name("npx-cli.js"))})
+                self.assertTrue(all(row["sha256"] == owner.readiness.digest(Path(row["resolved_path"]).read_bytes()) for row in records))
+                self.assertNotIn("cmd.exe", actual)
+                before = list(records)
+                cli.with_name("npx-cli.js").write_bytes(b"actual modified entry")
+                self.assertNotEqual([owner._vitest_runtime_file(row["path"]) for row in records], before)
+                npx.write_text(npx_wrapper + "\necho unexpected\n", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "unqualified npx wrapper"): owner._vitest_launch(args)
+                npx.write_text(npx_wrapper, encoding="utf-8"); node.unlink()
+                with self.assertRaises(authority.AuthorityError): owner._vitest_launch(args)
+
+    def test_final_ts_reports_authenticate_the_original_source_upload_and_owner(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile):
+                spec = TS_PROFILE_FIXTURES[profile]
+                cell = "disposition:transitions:pi-qualification:disposable-home:01" if profile == "pi-tools-v1" else "disposition:transitions:S54:01"
+                raw = io.BytesIO()
+                with zipfile.ZipFile(raw, "w") as archive: archive.writestr("owned-input", b"source")
+                content = raw.getvalue(); members = owner.readiness.members(content)
+                req = {"source_commit": "a" * 40, "source_tree": "b" * 40, "ci_run_id": 7,
+                    "cells": [cell], "cell_jobs": {cell: spec["job"]}, "required_artifact_names": [spec["payload"]]}
+                source = {"id": 8, "name": spec["payload"]}
+                report_artifact = {"id": 10, "name": "major-qualification-9"}
+                job = {"id": 9, "name": spec["job"], "status": "completed", "conclusion": "success"}
+                report = {"schema": "codearbiter-major-qualification/2", **{k: req[k] for k in ("source_commit", "source_tree", "ci_run_id")},
+                    "job_id": 9, "payloads": [{"artifact_id": 8, "archive_sha256": owner.readiness.digest(content), "members": members}],
+                    "results": [{"cell": cell, "result": "PASSED", "commands": [{"argv": ["original-owning-command"], "exit_code": 0}],
+                        "selected_population": 1, "executed_population": 1, "payload_artifact_id": 8}]}
+                upload = "Upload Pi source-test inputs" if profile == "pi-tools-v1" else "Upload Sandbox source-test inputs"
+                with mock.patch.object(owner.readiness, "read_artifact_json", return_value=report), \
+                     mock.patch.object(owner.readiness, "artifact_bytes", return_value=content), \
+                     mock.patch.object(owner.readiness, "validate_upload") as attribution:
+                    jobs = [job, {"id": 11, "name": "major readiness producer"}]
+                    owner.readiness.produce(req, [source, report_artifact], jobs)
+                    self.assertEqual(attribution.call_args_list, [mock.call(job, report_artifact, "Upload major qualification report"), mock.call(job, source, upload)])
+                    def refuse(_job, _artifact, step):
+                        if step == upload: raise owner.readiness.ReadinessError("original source uploader refused")
+                    attribution.side_effect = refuse
+                    with self.assertRaises(owner.readiness.ReadinessError): owner.readiness.produce(req, [source, report_artifact], jobs)
+                    attribution.side_effect = None
+                    foreign = {**job, "name": "foreign source owner"}
+                    with self.assertRaises(owner.readiness.ReadinessError):
+                        owner.readiness.produce({**req, "cell_jobs": {cell: foreign["name"]}}, [source, report_artifact], [foreign, jobs[1]])
 
 
 if __name__ == "__main__":

@@ -5072,8 +5072,10 @@ class DebuggerInboxTests(unittest.TestCase):
                 return "captured", json.dumps(response).encode()
             with mock.patch.object(native, "CDB", missing), \
                  mock.patch.object(native, "DEFAULT_CDB", missing, create=True), \
-                 mock.patch.object(native.ctypes, "WinDLL", return_value=api), \
+                 mock.patch.object(native.ctypes, "WinDLL", return_value=api, create=True), \
                  mock.patch.object(native, "WindowsKernel", return_value=kernel), \
+                 mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                 mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
                  mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
                  mock.patch.object(native, "_collect", side_effect=collect), \
                  mock.patch.dict(os.environ, {"SystemRoot": str(root / "attacker"),
@@ -5084,6 +5086,8 @@ class DebuggerInboxTests(unittest.TestCase):
             self.assertEqual(actual["status"], "captured", "DLL-only inbox must reach the bound worker")
             self.assertEqual(actual["profile"], "inbox-v1")
             self.assertEqual(launch.call_count, 1)
+            self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
+            self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
             self.assertEqual(set(actual["toolHashes"]), {"dbgeng.dll", "dbghelp.dll"})
             self.assertEqual(actual["toolHashes"], {name: hashlib.sha256((inbox / name).read_bytes()).hexdigest()
                                                     for name in ("dbgeng.dll", "dbghelp.dll")})
@@ -5182,7 +5186,7 @@ class DebuggerInboxTests(unittest.TestCase):
                         return size + int(failure == "mismatch")
                     function = mock.Mock(side_effect=query)
                     api = SimpleNamespace(GetSystemDirectoryW=function)
-                    with mock.patch.object(native.ctypes, "WinDLL", return_value=api) as loader, \
+                    with mock.patch.object(native.ctypes, "WinDLL", return_value=api, create=True) as loader, \
                          mock.patch.dict(os.environ, {"SystemRoot": "PrivateFixtureValue", "WINDIR": "PrivateFixtureValue", "PATH": "PrivateFixtureValue"}):
                         if failure is None:
                             self.assertEqual(native._system_directory(), inbox)
@@ -5299,6 +5303,8 @@ class DebuggerInboxTests(unittest.TestCase):
                     process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
                         _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
                     with mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root, hashes)), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
                          mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
                          mock.patch.object(native, "_collect", return_value=(transport, raw)):
                         actual = native._debugger(33, kernel, time.monotonic() + 5,
@@ -5306,6 +5312,8 @@ class DebuggerInboxTests(unittest.TestCase):
                     self.assertEqual(actual["status"], expected)
                     self.assertEqual(actual["profile"], "inbox-v1")
                     self.assertEqual(launch.call_count, 1)
+                    self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
+                    self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
                     if expected != "captured": self.assertEqual(actual["threads"], [])
                     self.assertEqual(actual["truncated"], expected == "output_limit")
                     self.assertNotIn("PrivateFixtureValue", json.dumps(actual))

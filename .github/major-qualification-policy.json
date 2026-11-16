@@ -54,6 +54,17 @@
     "disposition:added_transitions:S75:added-stage-failed": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:added_transitions:S75:added-rolled-back": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:added_transitions:S75:added-unusable": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
-    "disposition:added_transitions:S75:added-writer-refused": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+    "disposition:added_transitions:S75:added-writer-refused": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:SF16": "Site | [Build] - Astro Pages",
+    "disposition:machines:S62": "Site | [Build] - Astro Pages",
+    "disposition:transitions:S62:01": "Site | [Build] - Astro Pages",
+    "disposition:transitions:S62:02": "Site | [Build] - Astro Pages",
+    "disposition:transitions:S62:03": "Site | [Build] - Astro Pages",
+    "disposition:transitions:S62:04": "Site | [Build] - Astro Pages",
+    "disposition:transitions:S62:05": "Site | [Build] - Astro Pages",
+    "disposition:transitions:pi-qualification:disposable-home:01": "Coverage union (Pi)  <os: windows-latest>",
+    "disposition:transitions:pi-qualification:disposable-home:02": "Coverage union (Pi)  <os: windows-latest>",
+    "disposition:transitions:pi-qualification:disposable-home:03": "Coverage union (Pi)  <os: windows-latest>",
+    "disposition:transitions:S54:01": "[CHECK] | [SBX ] | Sandbox driver contract"
   }
 }

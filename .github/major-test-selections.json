@@ -577,6 +577,181 @@
         "disposition:transitions:C33:03"
       ],
       "scope": "The exact three full-prose direct-owner paths are derived and public composed wrappers excluded; historical cross-host hash metadata remains bound to its own named exercise. This qualifies mechanical proof scope bookkeeping only, not any agent exercise. No installed-host, actual agent exercise, platform expansion or whole-task claim."
+    },
+    {
+      "id": "docs-built-sf16",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+      ],
+      "cells": [
+        "disposition:findings:SF16"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:findings:SF16; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-s62",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+      ],
+      "cells": [
+        "disposition:machines:S62"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:machines:S62; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+      ],
+      "cells": [
+        "disposition:transitions:S62:01"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:01; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state"
+      ],
+      "cells": [
+        "disposition:transitions:S62:02"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:02; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-03",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+      ],
+      "cells": [
+        "disposition:transitions:S62:03"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:03; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-04",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+      ],
+      "cells": [
+        "disposition:transitions:S62:04"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:04; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "docs-built-05",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-drawer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners",
+        "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+      ],
+      "cells": [
+        "disposition:transitions:S62:05"
+      ],
+      "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:05; source/browser software only, no installed, task, human, model, publication or live public readback claim."
+    },
+    {
+      "id": "software-pi-disposable-home-01",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:01"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-pi-disposable-home-02",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:02"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-pi-disposable-home-03",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home"
+      ],
+      "cells": [
+        "disposition:transitions:pi-qualification:disposable-home:03"
+      ],
+      "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "software-sandbox-valid-dispatch-and-interrupt",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches create -> await handlers.create(url, {netPolicy, keepVolume})",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches prune -> await handlers.prune() (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches shell -> await handlers.shell(id, shell) and returns its code",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) returns a non-zero code and does NOT throw on an unknown flag",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:CLI direct-entry signal wiring installs SIGINT before one valid dispatch and forwards cancellation through the original entry"
+      ],
+      "cells": [
+        "disposition:transitions:S54:01"
+      ],
+      "scope": "Full S54:01 finite software clause: six real runCli parsing/selected-handler boundary tests (create/exec/cp/destroy/prune/shell), invalid-option/no-create refusal, and one actual direct-entry registration-before-one-valid-exec/all-nonselected-ports oracle. Injected handlers and listener ports; no six real child variants, Docker effects, installed host, model or whole machine/task qualification. S54:04 cancellation resolution is observed by that same case but not mapped in this increment."
     }
   ]
 }

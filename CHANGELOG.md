@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Retain source-bound observations from original TypeScript and built-site browser commands; authenticate separate Docs evidence and prepare exact-tar Pages promotion under the existing main-only release boundary.
+
 - Retain authenticated source-input artifacts and original named Python test observations for six bounded software qualification cells; keep final trusted-run readiness separate.
 
 - Separate recorded work progress from derived dependency readiness and independently verified checks; retain stable identities, journals, user stops and later edits across supported schema upgrades.

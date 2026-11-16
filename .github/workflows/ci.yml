@@ -2049,6 +2049,9 @@ jobs:
     # 25, matching ca-pi-tools: the cold Windows `npm install --global`
     # dominates that job's 452s worst cell and this one now pays it too.
     timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
     defaults:
       run:
         working-directory: plugins/ca-pi/tools
@@ -2086,6 +2089,15 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Bind coverage inputs
         run: python ../../../.github/scripts/coverage_union.py prepare --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
+      - name: Prepare Pi source-test inputs
+        id: pi_source_prepare
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: >-
+          python -B ../../../.github/scripts/major_qualification_report.py prepare-source
+          --repo ../../.. --source-profile pi-tools-v1
+          --output "$RUNNER_TEMP/pi-source-inputs"
+          --job-name "Coverage union (Pi)  <os: windows-latest>"
       - name: Coverage (blob)
         # A BLOB report is what `--merge-reports` recombines, and vitest
         # recomputes coverage across blobs after the merge job verifies and
@@ -2096,7 +2108,20 @@ jobs:
         # reporter: the first run of this job failed on Windows and the log
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
+        if: matrix.os != 'windows-latest'
         run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-inputs/${{ matrix.os }}.json
+      - name: Observe original Pi coverage invocation
+        id: pi_tools_observed
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: >-
+          python -B ../../../.github/scripts/major_qualification_report.py observe-vitest
+          --repo ../../.. --execution-cwd plugins/ca-pi/tools
+          --source-payload "$RUNNER_TEMP/pi-source-inputs"
+          --raw-results "$RUNNER_TEMP/pi-vitest-named.json"
+          --output "$RUNNER_TEMP/pi-vitest-observation.json"
+          -- npx vitest run --coverage --reporter=blob --reporter=default
+          --outputFile.blob=coverage-inputs/${{ matrix.os }}.json
       - name: Recheck coverage inputs after execution
         if: always()
         run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
@@ -2115,6 +2140,54 @@ jobs:
           name: coverage-blob-ca-pi-os-${{ matrix.os }}
           path: plugins/ca-pi/tools/coverage-inputs/
           retention-days: 5
+
+      - name: Upload Pi source-test inputs
+        id: pi_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && steps.pi_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-pi-windows-coverage
+          path: ${{ runner.temp }}/pi-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original Pi source-test observation
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && steps.pi_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pi-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/pi-vitest-observation.json
+            ${{ runner.temp }}/pi-vitest-named.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original Pi source qualification report
+        id: pi_qualification_emit
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.pi_tools_observed.outcome == 'success' && steps.pi_source_upload.outcome == 'success' }}
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "$RUNNER_TEMP/pi-qualification.json" \
+            --job-name "Coverage union (Pi)  <os: windows-latest>" \
+            --observation "pi-tools=$RUNNER_TEMP/pi-vitest-observation.json" \
+            --payload-root "major-source-inputs-pi-windows-coverage=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"pi-qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+      - name: Upload major qualification report
+        if: steps.pi_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.pi_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/pi-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
 
   coverage-union-pi-merge:
     # The union half of #521: every host's blob merged into the single figure
@@ -2264,6 +2337,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.ca-sandbox == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     # Issue #406. Docker is a REQUIRED prerequisite for this job, not a nicety.
     # ca-sandbox is the driver that clones UNTRUSTED repositories into a
     # container, and every real-container suite used to convert a failed
@@ -2359,10 +2435,27 @@ jobs:
           python3 .github/scripts/acquire_nixpacks.py
           --output "$RUNNER_TEMP/nixpacks-acquisition.json"
           --github-path
+      - name: Prepare Sandbox source-test inputs
+        id: sandbox_source_prepare
+        shell: bash
+        run: >-
+          python3 -B ../../../.github/scripts/major_qualification_report.py prepare-source
+          --repo ../../.. --source-profile sandbox-tools-v1
+          --output "$RUNNER_TEMP/sandbox-source-inputs"
+          --job-name "[CHECK] | [SBX ] | Sandbox driver contract"
       - name: Test (Docker required - a missing daemon fails the run)
         # Preserve the original console/annotations and retain the same run's
         # named outcomes; reporters never select or repeat tests.
-        run: npm test -- --reporter=default --reporter=github-actions --reporter=json --outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"
+        id: sandbox_tools_observed
+        shell: bash
+        run: >-
+          python3 -B ../../../.github/scripts/major_qualification_report.py observe-vitest
+          --repo ../../.. --execution-cwd plugins/ca-sandbox/tools
+          --source-payload "$RUNNER_TEMP/sandbox-source-inputs"
+          --raw-results "$RUNNER_TEMP/ca-sandbox-vitest.json"
+          --output "$RUNNER_TEMP/sandbox-vitest-observation.json"
+          -- npm test -- --reporter=default --reporter=github-actions --reporter=json
+          --outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"
       - name: Assert every real-container layer executed
         # The preflight only proves the daemon answered once. This proves each
         # docker-gated layer actually ran, so a suite that silently stops
@@ -2404,6 +2497,53 @@ jobs:
           include-hidden-files: false
           overwrite: false
 
+
+      - name: Upload Sandbox source-test inputs
+        id: sandbox_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && steps.sandbox_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-sandbox-driver
+          path: ${{ runner.temp }}/sandbox-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original Sandbox source-test observation
+        if: ${{ !cancelled() && (success() || failure()) && steps.sandbox_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sandbox-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/sandbox-vitest-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original Sandbox source qualification report
+        id: sandbox_qualification_emit
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.sandbox_tools_observed.outcome == 'success' && steps.sandbox_source_upload.outcome == 'success' }}
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "$RUNNER_TEMP/sandbox-qualification.json" \
+            --job-name "[CHECK] | [SBX ] | Sandbox driver contract" \
+            --observation "sandbox-tools=$RUNNER_TEMP/sandbox-vitest-observation.json" \
+            --payload-root "major-source-inputs-sandbox-driver=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"sandbox-qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+      - name: Upload major qualification report
+        if: steps.sandbox_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.sandbox_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/sandbox-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
 
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"

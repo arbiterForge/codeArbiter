@@ -1,0 +1,2113 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "62b2800cab45cf43dbd9f868cc68680da244446c",
+  "recorded_at": "2026-11-16T04:13:34.797285+00:00",
+  "qualification": false,
+  "original_62b_terminal": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-62b280-watch-rjgbrbro\\terminal-failure-receipt.json",
+    "sha256": "224c2ae54c9c6b7abd27de51371bdc301ceb4a19a3adf01b913b9225927101b9",
+    "record": {
+      "schema": "exact-pr-watch-terminal-v1",
+      "recorded_utc": "2026-11-16T04:04:54.075442+00:00",
+      "pr": 1114,
+      "expected_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+      "observed_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+      "head_pin": true,
+      "base": "major/state-contracts",
+      "ci": {
+        "id": 43798623253,
+        "head_sha": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "docs": {
+        "id": 43798623300,
+        "head_sha": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "ci_job_counts": {
+        "success": 86,
+        "failure": 4,
+        "skipped": 4
+      },
+      "all_check_counts": {
+        "skipping": 6,
+        "fail": 4,
+        "pass": 88
+      },
+      "required": [
+        {
+          "bucket": "fail",
+          "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43798623253/job/133082765199",
+          "name": "[GATE ] | [REPO] | Merge readiness",
+          "state": "FAILURE"
+        }
+      ],
+      "verdict": "BLOCK",
+      "failure_group": {
+        "cause": "New DebuggerInboxTests pure mocks are incomplete on POSIX. ctypes.WinDLL missing patch target gives7errors; collector Windows STARTUPINFO/CREATE_NO_WINDOW absent before Popen yields6subcase failures and0launch. No production/native/RPC cause inferred from these fixtures.",
+        "original_jobs": [
+          {
+            "id": 133073231207,
+            "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+            "failed_steps": [
+              "Test release package contract"
+            ]
+          },
+          {
+            "id": 133073231699,
+            "name": "[CHECK] | [PI  ] | Adapter contract  <os: ubuntu-latest \u00b7 runtime: Pi 1.5.0>",
+            "failed_steps": [
+              "Test cross-platform paths, encoding, cancellation, process trees, prune, and generation"
+            ]
+          },
+          {
+            "id": 133073231728,
+            "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+            "failed_steps": [
+              "Test cross-platform paths, encoding, cancellation, process trees, prune, and generation"
+            ]
+          },
+          {
+            "id": 133082765199,
+            "name": "[GATE ] | [REPO] | Merge readiness",
+            "failed_steps": [
+              "Require every required job to have succeeded or been skipped"
+            ]
+          }
+        ],
+        "owning_path": ".github/scripts/test_pi_package.py",
+        "test_methods": [
+          "test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb",
+          "test_system_directory_uses_typed_os_api_and_rejects_invalid_paths",
+          "test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport"
+        ],
+        "known_scope": "Original Linux host-independent87method suite and Linux/macOS25method package partitions; actual unchanged prior assertion or WindowsRpc failure not established."
+      },
+      "positive_facts": {
+        "Docs": "BothselectedjobsSUCCESS; deploySKIPPED",
+        "native_six": [
+          {
+            "id": 133076422729,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133076422748,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133076422768,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133076422787,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133076422795,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133076422803,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+            "conclusion": "success"
+          }
+        ],
+        "ProgramIntegrity3OS": "AllSUCCESS; exact matching authenticated original log-read controls retained in positive-program-and-farm.json",
+        "Windows_hooks": {
+          "id": 133073231645,
+          "conclusion": "success",
+          "source176_steps": [
+            {
+              "name": "Prepare Python source-test inputs",
+              "conclusion": "success"
+            },
+            {
+              "name": "Observe original interrupted output publication tests",
+              "conclusion": "success"
+            },
+            {
+              "name": "Observe original skill-proof freshness tests",
+              "conclusion": "success"
+            },
+            {
+              "name": "Upload Python source-test inputs",
+              "conclusion": "success"
+            },
+            {
+              "name": "Retain original Python source-test observations",
+              "conclusion": "success"
+            },
+            {
+              "name": "Emit original Python source qualification report",
+              "conclusion": "skipped"
+            }
+          ],
+          "scope": "Prepare,bothoriginal observers,source andobservation uploadsSUCCESS; trustednormal emitterSKIPPED onPR. Not a six-cell qualification."
+        },
+        "Windows_Pi": {
+          "id": 133073231788,
+          "conclusion": "success",
+          "coordinator": "Original rpc-observed/rpc partitions passed; original log retained. No claim original historical EOF cause fixed or inbox availability from conditional test."
+        },
+        "Windows_Farm": {
+          "id": 133073231139,
+          "conclusion": "success",
+          "original397": "PASS4480ms; corrected15 registry cases included in successful job."
+        },
+        "coverage": {
+          "CA": {
+            "lines": 74.94,
+            "branches": 74.15,
+            "job": 133076048201
+          },
+          "Pi": {
+            "lines": 86.93,
+            "branches": 81.92,
+            "job": 133075519235
+          },
+          "native": {
+            "statements": 84.2521,
+            "all6platformintegration": "COMPLETE",
+            "job": 133077272166
+          }
+        }
+      },
+      "watch": {
+        "one_foreground_owner": true,
+        "ended_naturally_exit": 1,
+        "active_watch": false,
+        "retry_cancel_or_APIwrites": false
+      },
+      "limits": [
+        "Original62b CI remainsfailed despite positive Windows/native/Docs jobs. No installed/native/source-cell/wholeprogram qualification fromPR.",
+        "No debugger artifact acquired for successful WindowsPi; no runtime/SDK/native replay performed.",
+        "Parent1098 remainsheldfrommain/publication.",
+        "Root reported inherited software48 live subtotal should9APPLICABLE39STALE ratherthan48APPLICABLE; overall788/530unchanged. Retained separate followup; no CI restart/ledger status change.",
+        "Gov working source mayadvance independently; all diagnosis uses original62b logs/immutable Git source.",
+        "Original preceding failure and review/followup receipts remain unchanged."
+      ],
+      "files": {
+        "aggregate-job-133075519235.log": {
+          "sha256": "7eb8aec409d303a1dfde3b2c054efc58c128da7e0312400b4aa675e7647cb060",
+          "bytes": 44394
+        },
+        "aggregate-job-133076048201.log": {
+          "sha256": "0dcc38eb99b9cb4699c9718566682497333c790eb3c867d0ea476e9be981e699",
+          "bytes": 99750
+        },
+        "aggregate-job-133077272166.log": {
+          "sha256": "d336ce9496e62485513982fd32c854e663d0956b1f4d203a82153e29160cdf24",
+          "bytes": 36594
+        },
+        "aggregate-job-133082765199.log": {
+          "sha256": "afe378feabdb712d68b22345de68fa9a6b36d0d7e6e2b85135b9317b39f47527",
+          "bytes": 5400
+        },
+        "aggregate-outcomes.json": {
+          "sha256": "b36644e83ecc8f5a2e9f34bf54f72c130c9919e93b3513847a4621dcadaaf656",
+          "bytes": 2311
+        },
+        "binding.json": {
+          "sha256": "1e710567b7cad86076bca59dc499ea835795c64d7fba38de1d71ab304acbc0cd",
+          "bytes": 306
+        },
+        "checks-terminal.json": {
+          "sha256": "1b6181a1058b146851c5d49959168b72f804e07176ee86e75f92c4b687a2c05b",
+          "bytes": 19050
+        },
+        "ci-initial.json": {
+          "sha256": "f9bd69a32ae496d1f5ee8c278068448c13e2fad90f6c8cddbc556f5142638a6a",
+          "bytes": 13863
+        },
+        "ci-jobs-latest.json": {
+          "sha256": "eb81879ba763a6d50e73e10a9ae1653ac7c26a3afb2d035822e74dac40369f5e",
+          "bytes": 407821
+        },
+        "ci-jobs-terminal.json": {
+          "sha256": "eb81879ba763a6d50e73e10a9ae1653ac7c26a3afb2d035822e74dac40369f5e",
+          "bytes": 407821
+        },
+        "ci-run-terminal.json": {
+          "sha256": "41a5295a6366a0f9f496268f17904255ba5f6116ecf7fe58aff0a0d6c61ddf2d",
+          "bytes": 13871
+        },
+        "docs-initial.json": {
+          "sha256": "46201556c4f6df193eb8b7311fac3bac0aadefac264767923bf2443726291bca",
+          "bytes": 13879
+        },
+        "docs-jobs-latest.json": {
+          "sha256": "6297262ff386d4d16d670682fae9eb279921994b32579d2b51d8dfce222977dd",
+          "bytes": 8107
+        },
+        "docs-jobs-terminal.json": {
+          "sha256": "6297262ff386d4d16d670682fae9eb279921994b32579d2b51d8dfce222977dd",
+          "bytes": 8107
+        },
+        "docs-run-terminal.json": {
+          "sha256": "0f31de5c67abde5894dc8e78a483bb65581212ea6129b4117775113be0095fd4",
+          "bytes": 13882
+        },
+        "failed-job-133073231207.json": {
+          "sha256": "8147949c726feb0665b135dda77cdbf2157944c9c3480ffd50969775feaf31e4",
+          "bytes": 7981
+        },
+        "failed-job-133073231207.log": {
+          "sha256": "055bd383cd689e4f5838bdb2bddf4d95a11aae7b124de766dbadd6d8fe47e743",
+          "bytes": 94817
+        },
+        "failed-job-133073231699.json": {
+          "sha256": "b5c008da0f0828482b2f385cc9a98e2655e98febf124ff0993f1c419769367ee",
+          "bytes": 5873
+        },
+        "failed-job-133073231699.log": {
+          "sha256": "c5bb81e30494bdb6d98ccfff38710249da36bd54079d10501ee83a91a9ca5507",
+          "bytes": 49481
+        },
+        "failed-job-133073231728.json": {
+          "sha256": "2b2e9cb395c8b4156510afffdeec26b1b89a1067a4f4f693c302abded7995e54",
+          "bytes": 4548
+        },
+        "failed-job-133073231728.log": {
+          "sha256": "1b0447c100036c65c598ce0f6abb97dbba3af819e8e97097de2164825dacefc4",
+          "bytes": 49088
+        },
+        "native-darwin-amd64-latest.json": {
+          "sha256": "1f79396a13763053693931a21cb67382cc44d765881133548b98daacebde753a",
+          "bytes": 6874
+        },
+        "pi-windows-success-job.json": {
+          "sha256": "52c7fb90edbc769f5546471c041480f62f94a0f6d39c175d0cce84cc6cdb3162",
+          "bytes": 5875
+        },
+        "pi-windows-success-job.log": {
+          "sha256": "49457274fdfb34e42e1b21f91d88d1054a8b8f7294390d6f2dc6285ce2d5c351",
+          "bytes": 50799
+        },
+        "positive-job-133073231139.log": {
+          "sha256": "bccc024828d39732e8811caada7768531fb94066cc748bcaad63b09fd07e28c8",
+          "bytes": 76175
+        },
+        "positive-job-133073231786.log": {
+          "sha256": "c8bfa1ed30076bfbfe5c3bfcb53f32b1de9485a48ad5111e66786c20ed639706",
+          "bytes": 579943
+        },
+        "positive-job-133073231835.log": {
+          "sha256": "4c52cf0fe26cb05a40bcd5f147d02bef12eaf4b80e8dfa0fd2f07cb30ed886c9",
+          "bytes": 567729
+        },
+        "positive-job-133073231978.log": {
+          "sha256": "ca973be443129790acc5b3a61a8d5973a230ce17192a155d9b0d2447f4028e39",
+          "bytes": 568730
+        },
+        "positive-program-and-farm.json": {
+          "sha256": "7ccc4d5165e5b5ef9acfb37365988d7d638eeb527770995bf85f09046f8ce1dd",
+          "bytes": 1890
+        },
+        "pr-initial.json": {
+          "sha256": "6a45660bc82eca4ac85de23e1aedeb543eb6c145a7aae81916c777cb758925fe",
+          "bytes": 20830
+        },
+        "pr-terminal.json": {
+          "sha256": "46dbd47b851f93ee0bab1da6f6d1256522e1e7ed44fa392a73bfcbc1e6962069",
+          "bytes": 21188
+        },
+        "required-terminal.json": {
+          "sha256": "f5aed2dabd2e8e8bfe7b882e308b7a6c99369cd1295d81c5805da05190016793",
+          "bytes": 177
+        },
+        "watch-terminal.json": {
+          "sha256": "c9a3aad9dc91608084ce1116b119a7b03b5837d79164ae869bff461c94970202",
+          "bytes": 63
+        },
+        "watch.log": {
+          "sha256": "36dbf8c7e0e48fb49e101774b2c7874c1ffbcb43bfa82870c357fdef56192b08",
+          "bytes": 2426414
+        }
+      }
+    }
+  },
+  "original_62b_result": "CI86SUCCESS4FAIL4SKIP; Docs2SUCCESS1SKIP; all98checks88PASS4FAIL6SKIP; required gateFAIL. Three POSIX Pi package jobs failed incomplete Windows API pure fixtures. WindowsPi/Farm/hooks, original source observers/uploads, all6native and all3ProgramIntegrity individually succeeded. No failed-run qualification; earlier intermittent PiEOF cause UNKNOWN.",
+  "deliveries": {
+    "docs_seven": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\delivery.json",
+      "sha256": "529b1ec399d35d69fdb941bf31500d95785576f9452fb19ed94a52b2b8b7fd28",
+      "record": {
+        "format": "private-docs-seven-adapter-delivery/1",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "origin": "github:arbiterForge/codeArbiter:pull/1098",
+        "author": "ci_repair_review",
+        "context_source_epoch": "88c497128a498ff2a946cfc157d67913d47bcb89",
+        "source_basis": "Physical88c plus Root-owned seven explicit source overlays, subsequently committed as62b2800cab45cf43dbd9f868cc68680da244446c. Authored existing-path preimages match physical current owner bytes at seal; no whole-checkout cleanliness or frozen HEAD claim.",
+        "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate",
+        "filemap": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\filemap.json",
+          "sha256": "b25c7d1a8c8c8ee8693fe3a3fdba5a42d76857f86e3ca7d560af4264bc3f6f54"
+        },
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\proposal.patch",
+          "sha256": "303b0f882e2c2501332f5953556d2b4f657989dad618e41a0128a1e40a7e7444"
+        },
+        "shared_map_fragments": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\additive-maps.json",
+          "sha256": "2a449555609a3654d4c81afcfcad91955c0a19641fb89b5ce0f2f46eebdf3dc4",
+          "merge_only": true
+        },
+        "context_input": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\88c-docs-sprint-input.txt",
+          "sha256": "d963c9eed88e2d2a51b16d9ffdf6b10ac4fc6981e96c3471cc3a84c66b9967b0"
+        },
+        "subjects": [
+          {
+            "path": ".github/scripts/site_playwright_observation.py",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate\\.github\\scripts\\site_playwright_observation.py",
+            "preimage_sha256": null,
+            "sha256": "82deb6e468de6ad5b8da5776285299b7c57501ff926f9d50de8f2b7b31e8dae4",
+            "bytes": 36305,
+            "new": true
+          },
+          {
+            "path": ".github/scripts/test_site_playwright_observation.py",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate\\.github\\scripts\\test_site_playwright_observation.py",
+            "preimage_sha256": null,
+            "sha256": "3d53c78a1bcb36d0fa96fa557364f7991334a82525451e7f821d7591acd9bdc1",
+            "bytes": 32616,
+            "new": true
+          },
+          {
+            "path": ".github/scripts/major_readiness.py",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate\\.github\\scripts\\major_readiness.py",
+            "preimage_sha256": "63013018c9ae831522693bb76fd38315a854c8c959734643d29c56a8109694be",
+            "sha256": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            "bytes": 70955,
+            "new": false
+          },
+          {
+            "path": ".github/workflows/docs.yml",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate\\.github\\workflows\\docs.yml",
+            "preimage_sha256": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+            "sha256": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "bytes": 20500,
+            "new": false
+          },
+          {
+            "path": "site/playwright.config.ts",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\candidate\\site\\playwright.config.ts",
+            "preimage_sha256": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+            "sha256": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8",
+            "bytes": 1684,
+            "new": false
+          }
+        ],
+        "unchanged_dependencies": {
+          ".github/scripts/major_qualification_report.py": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+          ".github/scripts/pages_readiness.py": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871",
+          ".github/scripts/test_major_readiness.py": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8",
+          "site/test/browser/publication.spec.ts": "6a821154688b2061879f649ea1f61ad0d705ca4b1def67f0244cf6f25de2c946",
+          "site/test/browser/concepts-execution.spec.ts": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+          "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+          "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "docs/state-contracts-major/root-tasks.json": "d3b7e723c0a8576fc2d8d69ac57f0e97700607aee5c62c646f45e77b182f8e13"
+        },
+        "primary_schema": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\primary-schema.json",
+          "sha256": "28b32b502a355a1d2edb091057035dc6c077f0a7d271a12d3208c4dbc2c26cf7"
+        },
+        "verification": {
+          "initial_target_red": {
+            "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\target-red.json",
+            "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\target-red.log",
+            "actual_tests": 1,
+            "errors": 1,
+            "failures": 0,
+            "classification": "Genuine existing Core producer ReadinessError: distinct original Docs job absent from Core. Initial retaining wrapper exited0; the unittest outcome itself is RED, not an application CLI exit claim."
+          },
+          "linked_report_red": {
+            "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\linked-report-red.json",
+            "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\linked-report-red.log",
+            "tests": 1,
+            "failures": 1,
+            "exit_code": 1,
+            "classification": "Genuine linked raw reporter output was wrongly admitted by initial adapter; private owned hardlink fixture, fixed by owned regular-file/parent read."
+          },
+          "final_docs": {
+            "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\docs-final.json",
+            "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\docs-final.log",
+            "argv": [
+              "C:/Users/brenn/AppData/Local/Temp/ca-docs-seven-adapter-vp3ka17t/run-controls.py",
+              "docs"
+            ],
+            "tests": 18,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "exit_code": 0,
+            "elapsed_seconds": 0.08675019998918287,
+            "qualification": false,
+            "scope": "Actual Python adapter/legacy controls with inert API/process seams; no browser/build/deployment/network/native effects."
+          },
+          "legacy_controls": {
+            "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\legacy-final.json",
+            "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\legacy-final.log",
+            "tests": 61,
+            "passed": 60,
+            "setup_errors": 1,
+            "failed_control": "test_complete_frozen_population_receipt_fits_existing_json_bound",
+            "cause": "Original five JSON capacity fixture inputs were absent from the private candidate. No product defect. Original log remains intact."
+          },
+          "capacity_successor": {
+            "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\legacy-capacity-successor.json",
+            "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\legacy-capacity-successor.log",
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "elapsed_seconds": 0.052208599998266436,
+            "exit_code": 0,
+            "scope": "Copied original five JSON capacity fixtures only; unchanged assertions, no repeat of the other 60 legacy controls"
+          },
+          "exclusions": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-seven-adapter-vp3ka17t\\legacy-exclusions.json",
+            "sha256": "7c1d8f1f28bb4d7ed95bb475b48ea86bf565f1560ea9ae4b1c66c872064a0b53",
+            "count": 8,
+            "scope": "Unchanged whole-corpus/Git-HEAD metadata fixtures, not repeated in this private subset."
+          },
+          "syntax": "PASS on three changed Python subjects; no bytecode writes",
+          "old_test_source_unchanged": "0ccbfaa3a3ab08f5a09486103b207bbeb75cd2c5b8d668987467d43d553326d8"
+        },
+        "behavior": [
+          "Actual Playwright1.63 JSON suites/specs/tests/results normalized separately from Vitest; five actual finite titles cover only seven declared built drawer software cells.",
+          "Original npm run test:browser command executes once through the observer, with list plus conditional JSON reporters. Source/tree cleanliness, all served path/mode/size/SHA256 rows and actual Node/npm/Chrome file identities are joined before/after. Original Playwright30s/test and60s preview-server deadlines and owning Actions job lifetime remain authoritative.",
+          "Producing-only original Docs coordinator binds its actual in-progress run/job, completed Pages upload metadata, exact outer ZIP/nested tar/member bytes and original observation. No own completed job log is requested.",
+          "Final closed schema2 envelope retains legacy Core receipt and actual Core run ID; separate Docs run/job/report/Pages IDs require same-source trusted main push, whole Docs success, original Pages and report uploader logs and immutable archive/member digests. Legacy report v1-v3/default Core/main/installed guards remain.",
+          "Active-program Docs completes qualification with deployment skipped, avoiding a Core/Docs cycle. Later explicit main-only dispatch verifies full exact readiness, stages original tar without rebuild, uploads into the current run for the pinned deploy action, reads back exact tar and served manifest before a dependent privileged deploy job. Preparation/readback say deployment_observed=false."
+        ],
+        "integration_notes": [
+          "Root must merge additive shared policy/selections with packaging actor fragments; do not copy private full JSON snapshots over the shared union.",
+          "No ci.yml change is proposed. Eighteen stdlib/inert Docs tests are wired into existing Docs site-check. No Hook partition/digest/inventory exemption or duplicate original suite was introduced.",
+          "Packaging actor supplied two additional exact source-input uploader roles for major_readiness; Root should apply that separate hunk/test after this file. This packet deliberately does not author its independent profile change.",
+          "Root handles truthful changelogs, release-intent and any generated Workflow Atlas/current binding successor against actual committed Docs workflow/helper bytes. No source proof or ledger status is advanced here."
+        ],
+        "limits": [
+          "No real browser/Node/npm/build/deployment/provider/API/network/native/Go/SDK/container/model/install execution occurred. All API/process effects in adapter tests are inert and private.",
+          "Actual current-source hosted Playwright report population, complete served count (previous design465, not hardcoded or reasserted as current runtime), archive/uploader receipt, Core+Docs success and later live public Pages readback remain future observations.",
+          "The producer does not wait indefinitely for Docs: discovery is bounded and unambiguous; missing, unfinished or ambiguous original same-source Docs keeps readiness pending. No retry, latest selection or fabricated CI identity.",
+          "Q-03/publication/main merge is not executed or authorized by this delivery. Parent1098 remains held. No human/model/installed/task-completion or whole-program promotion follows from these fixtures."
+        ]
+      }
+    },
+    "ts_four": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\delivery.json",
+      "sha256": "e1a4c312171f4885e74a2fa03e75c782c278392c431daaaf8e390de2148edb93",
+      "record": {
+        "format": "codearbiter.temp-delivery/1",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "purpose": "Original full owning TypeScript command source observations/reports for exact four finite software clauses",
+        "apply_files": {
+          ".github/scripts/major_qualification_report.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\candidate\\.github\\scripts\\major_qualification_report.py",
+            "preimage_sha256": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+            "sha256": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            "bytes": 82091,
+            "mode": "fullfile",
+            "actual_Gov_current_sha256": "c48872c4831bd27fb6f43c20eaa066731de44671f180207abaa184abd2f1df46",
+            "current_equals_retained_preimage": true
+          },
+          ".github/scripts/test_major_qualification_report.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+            "preimage_sha256": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+            "sha256": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            "bytes": 127647,
+            "mode": "fullfile",
+            "actual_Gov_current_sha256": "83dd8b53df232507ebc23d7fcc8689b9ecdbd58fbf165648133dbbe380012a56",
+            "current_equals_retained_preimage": true
+          },
+          ".github/scripts/test_ci_impact.py": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\candidate\\.github\\scripts\\test_ci_impact.py",
+            "preimage_sha256": "21874f32f4b1622bbeb449f7561ab790e09cd6c8735fe6c79d65c64301d3bbee",
+            "sha256": "d161513523319f4a8002496a47d45b1ece01cd0542d824cda7c73c5cf493784e",
+            "bytes": 273270,
+            "mode": "apply-hunks-only; preserve ci author SiteBrowserPublicationWorkflowTest successor",
+            "actual_Gov_current_sha256": "985d38913bb1c0d3faa029d18e873ee509b10e3e01ea45cac445b8d2fb51c203",
+            "current_equals_retained_preimage": false
+          },
+          ".github/workflows/ci.yml": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\candidate\\.github\\workflows\\ci.yml",
+            "preimage_sha256": "583b25e5bf6f09a328261ce92b6e8762d0ed6330360167eb55cdbf1797892fcd",
+            "sha256": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            "bytes": 264564,
+            "mode": "fullfile",
+            "actual_Gov_current_sha256": "583b25e5bf6f09a328261ce92b6e8762d0ed6330360167eb55cdbf1797892fcd",
+            "current_equals_retained_preimage": true
+          }
+        },
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\implementation.patch",
+          "sha256": "b022f701eb611838af45a0e81b9d6a5a00083cd18564f1964e543f7b7955563c"
+        },
+        "CI_shared_file_hunks": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\ci-impact-own-regions.patch",
+          "sha256": "5dcc9b75b549347efc30b0bb03a3922a71cc61a8544932cfed4ed8deeaa393eb",
+          "preserve_other_author_Docs_class": true
+        },
+        "readiness_hunk": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\readiness-role-only.patch",
+          "sha256": "080c5b1a5eaf0283b50d3d8325c21de7151348902f6d676cc3c04012dc43619f",
+          "do_not_copy_private_old_fullmodule": true
+        },
+        "routing_fragments": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\routing-fragments.json",
+          "sha256": "7683c75735b3e7d130a52c6569b66384c292735a9917a555ed3606cfceabd20f"
+        },
+        "source_freeze": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\source-freeze.json",
+          "sha256": "398a074bb1529bf08100d6ded8d98266f4f87803fd26412775555d1af550d9ba"
+        },
+        "filemap": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\filemap.json",
+          "sha256": "20ccbf250b1817602715981246ff9a06573c3223390cf77bd387c5a4617fe624"
+        },
+        "verification": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\verification.json",
+        "scope_limits": "No real Vitest/Node/Pi/SDK/native/Go/Docker/browser/provider/network/acquisition/install/model execution. Ordinary owned inert Python/Git files/processes only; Windows npm/npx files are inert data. No runtime/task/machine/installed/publication qualification.",
+        "remaining": "Nine original software19 scopes unmapped after earlier Python6 and these4. Superseded S54:04 prototype retained;04 not added. All whole machines/tasks/user/host/native/installed/publication holds remain.",
+        "integration": "Root sole writer; apply major_readiness ONLY bounded role hunk after current Docs owner; apply test_ci_impact only own bounded regions preserving Docs class successor; merge shared policy/selection additive fragments.",
+        "coverage_PR_citation": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface.\nGo native statements are not the no-tooling exemption."
+      }
+    },
+    "ts_verification": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ts-source-producer-34uunhiz\\verification.json",
+      "sha256": "5c4ef59ed8d1e83592f058b01c18fb212117f3ba6f1c20a5008410c3d29bf851",
+      "record": {
+        "commands": {
+          "GREEN-ci-affected": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_ci_impact.WorkflowContractTest.test_sandbox_uploads_source_bound_original_json_and_requires_presence",
+              "test_ci_impact.WorkflowContractTest.test_cross_host_coverage_identity_is_verified_before_union",
+              "test_ci_impact.WorkflowContractTest.test_the_coverage_union_is_advisory_not_a_required_check",
+              "test_ci_impact.WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group",
+              "test_ci_impact.VitestSourceQualificationWiringTest.test_original_coverage_and_docker_invocations_remain_once_and_report_after_upload"
+            ],
+            "seconds": 0.4384678000060376,
+            "result_sha256": "0669c0d26c716a871791a34dafbde7b6e02b7ba9a7115d973213d470ac2a8a63"
+          },
+          "GREEN-ci-wiring": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_ci_impact.VitestSourceQualificationWiringTest"
+            ],
+            "seconds": 0.4252950999944005,
+            "result_sha256": "e2ed02184bdd64501ece6b75fc7599e0353236943fb6333c9df016ce4e8c9d3f"
+          },
+          "GREEN-ci-wiring-support-corrected": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_ci_impact.VitestSourceQualificationWiringTest"
+            ],
+            "seconds": 0.456818699996802,
+            "result_sha256": "aae61c5195bed9e34d7c2cf7369ba78f63e85ec0206226f5e7d0086aa31a6084"
+          },
+          "GREEN-correct-four-scope": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells",
+              "test_major_qualification_report.VitestSourceProducerTests.test_final_ts_reports_authenticate_the_original_source_upload_and_owner",
+              "test_ci_impact.VitestSourceQualificationWiringTest.test_only_four_exact_software_cells_are_added_to_original_assertion_routes"
+            ],
+            "seconds": 5.431331999992835,
+            "result_sha256": "5cafcaa9e751c43fcf2fd37dc1a7a138a8c73ecc614b2627f6629652262bf001"
+          },
+          "GREEN-final-source-uploader": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_final_ts_reports_authenticate_the_original_source_upload_and_owner"
+            ],
+            "seconds": 0.44535399999585934,
+            "result_sha256": "2dd0976def6f523c35b62d1ecf204c8d08c8663cddb4eba4806cc8990ced3c58"
+          },
+          "GREEN-launch-and-drift": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_windows_npx_uses_the_qualified_adjacent_native_launch_without_a_shell",
+              "test_major_qualification_report.VitestSourceProducerTests.test_source_namespace_stage_and_after_drift_do_not_become_a_stable_pass"
+            ],
+            "seconds": 5.404603399991174,
+            "result_sha256": "9840548f251a0d839562692e44370aa82ea955067e3d107f907114da48ece4f2"
+          },
+          "GREEN-legacy-affected-only": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.ReportTest.test_real_largest_owner_population_and_overlay_inventory_fit_retained_report_bound",
+              "test_major_qualification_report.BoundSourcePayloadTests.test_six_source_cells_keep_exact_selectors_and_single_original_ci_executions"
+            ],
+            "seconds": 0.528526599999168,
+            "result_sha256": "de8ebebb9f6cd3b74fcbb646f8d825f5231ecb422cf0be96f26b3ce2f3989a03"
+          },
+          "GREEN-legacy-profile-boundary": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.ReportTest",
+              "test_major_qualification_report.BoundSourcePayloadTests",
+              "test_major_qualification_report.VitestInvocationTests",
+              "test_major_qualification_report.ActualPythonObserverTest.test_vitest_protocol_wrapper_invokes_one_original_process_and_retains_its_named_json"
+            ],
+            "seconds": 35.67366280000715,
+            "result_sha256": "90e66f411111003a88f8be44a858427708be2f7032d1a4c10e3640fb7c7bfd7a"
+          },
+          "GREEN-old-sandbox-wire-alignment": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_ci_impact.WorkflowContractTest.test_sandbox_retains_original_named_results_without_filtering_console_run",
+              "test_ci_impact.VitestSourceQualificationWiringTest"
+            ],
+            "seconds": 0.4585170000063954,
+            "result_sha256": "f5cb530772f4e112ca8e2034b09ffc2c71473491cf0bee8d3ff563635678ecec"
+          },
+          "GREEN-producer-controls": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests"
+            ],
+            "seconds": 33.125952000002144,
+            "result_sha256": "efec9b81b42261fec500b230b61c1fabe074f57f40107879de9a1b31f09f526b"
+          },
+          "GREEN-source-binding": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_original_vitest_invocation_retains_authenticated_source_binding_once"
+            ],
+            "seconds": 2.9799340999888955,
+            "result_sha256": "6d1b7069f8b41c11a9d2a48e616ae5b6ea20918daa8cddf33a3139d4361f97ee"
+          },
+          "GREEN-source-binding-corrected": {
+            "exit_code": 0,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_original_vitest_invocation_retains_authenticated_source_binding_once"
+            ],
+            "seconds": 3.6058970000012778,
+            "result_sha256": "a7aea74bd6fb23a5748126440092be289e39fe83a7a0cf550e3932d1e5129b6c"
+          },
+          "RED-final-source-uploader": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_final_ts_reports_authenticate_the_original_source_upload_and_owner"
+            ],
+            "seconds": 0.4429687000083504,
+            "result_sha256": "2abc497f85dbace5f626cfce3f6b43bde94e669fc297f6afcd3d218f4edb115c"
+          },
+          "RED-old-sandbox-wire-assertion": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_ci_impact.WorkflowContractTest.test_sandbox_retains_original_named_results_without_filtering_console_run"
+            ],
+            "seconds": 0.43198629999824334,
+            "result_sha256": "a1ce8ddae397adc0e144da615f55d7950db572089739f371e34e8278dbe7a9b6"
+          },
+          "RED-source-binding": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_original_vitest_invocation_retains_authenticated_source_binding_once"
+            ],
+            "seconds": 2.1446657000051346,
+            "result_sha256": "09bd66600431106be337dc7b3051a61197a8d9604600dd79fece4ae7917dd2f4"
+          },
+          "mutant/staged-byte-binding-RED": {
+            "exit_code": 1,
+            "timed_out": false,
+            "before_after_equal": true,
+            "selected": [
+              "test_major_qualification_report.VitestSourceProducerTests.test_source_namespace_stage_and_after_drift_do_not_become_a_stable_pass"
+            ],
+            "seconds": 5.42475760000525,
+            "result_sha256": "2f058eaad3205ca88e115a321975c3bd463ef44e3d432cbf829a2b559153d41d"
+          }
+        },
+        "interpretation": {
+          "first_RED": "Existing observe-vitest ran each inert original command once with correct argv/cwd but omitted supplied source_input_binding: two actual assertion failures. Original source/preimages and raw retained.",
+          "intermediate_failures": [
+            "First green attempt found one remaining Python-only stage equality constant; original output preserved, corrected targeted method green.",
+            "CI wiring initial run collected zero tests because private tools/ci-impact.py support leaf absent; setup stderr retained, same3 methods green after exact read-only support completion.",
+            "Original compatibility32 command:30PASS,1 outdated all-source-kinds Python-six assertionFAIL,1 missing private immutable contract dataERROR; only the2 affected originals rerun and PASS. Expected replacement fixture WinError5 raw is a passing negative control, not another failed test."
+          ],
+          "final_checks": [
+            "New producer controls6PASS32.701s; subsequently added Windows launch and final consumer roles each passed; corrected scope3PASS4.929s. All exact method/epochs recorded, no synthetic single passing command claimed.",
+            "Existing affected default API/Vitest/native-report-capacity/source binding controls: original30PASS plus2 corrected methodsPASS0.096s; no installed/native fixture executed.",
+            "New CI wiring3PASS; existing Sandbox wire assertion precisely aligned and4PASS; affected coverage/upload/advisory/merge-group controls5PASS0.015s.",
+            "Stage-byte binding guard removed only in separate mutant copy: unchanged negative method fails actualValueError-not-raised, no import/setup failure.",
+            "Python source compile3PASS; original v1/v2/v3/default Python176 route/API retained."
+          ],
+          "source_epoch": "Private candidate based on actual88c+reviewed wrapper/Git fixture overlays. Gov advanced62b while work proceeded; every command retains its actual before/after HEAD and private candidate hashes. Early capture result.actual_source was inherited base88c label; original before/after snapshots are authoritative, later capture writer explicitly labels candidate_base_at_copy vs actual_Gov_HEAD. No raw relabel.",
+          "not_executed": "No real Vitest/Node/Pi/SDK/native/Go/Docker/browser/provider/network/acquisition/install/model execution. Ordinary owned inert Python/Git files/processes only; Windows npm/npx files are inert data. No runtime/task/machine/installed/publication qualification.",
+          "source_profile_scope": "124 Pi /77 Sandbox fixed first-party inputs including actual12-module report/HW04 bootstrap cone and positive committed parent/child JS. Full tools-root physical membership validated except explicitly declared third-party/runtime outputs. No exhaustive ignored dependency, installed host or Docker/image inventory claim.",
+          "four_cells": [
+            "disposition:transitions:pi-qualification:disposable-home:01",
+            "disposition:transitions:pi-qualification:disposable-home:02",
+            "disposition:transitions:pi-qualification:disposable-home:03",
+            "disposition:transitions:S54:01"
+          ],
+          "remaining": "Nine original software19 scopes unmapped after earlier Python6 and these4. Superseded S54:04 prototype retained;04 not added. All whole machines/tasks/user/host/native/installed/publication holds remain.",
+          "integration": "Root sole writer; apply major_readiness ONLY bounded role hunk after current Docs owner; apply test_ci_impact only own bounded regions preserving Docs class successor; merge shared policy/selection additive fragments."
+        }
+      }
+    },
+    "posix_fixture": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\delivery.json",
+      "sha256": "7ee2a08b6aa2cfc75d98d3f06530746ea8b29cd0f46a6912feba418a277bca82",
+      "record": {
+        "format": "private-posix-inbox-fixture-repair/1",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "source_commit": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "origin": {
+          "run_id": 43798623253,
+          "job_id": 133073231207,
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-62b280-watch-rjgbrbro\\failed-job-133073231207.log",
+          "sha256": "055bd383cd689e4f5838bdb2bddf4d95a11aae7b124de766dbadd6d8fe47e743"
+        },
+        "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\candidate",
+        "subjects": [
+          {
+            "path": ".github/scripts/test_pi_package.py",
+            "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\candidate\\.github\\scripts\\test_pi_package.py",
+            "preimage_sha256": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+            "sha256": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            "bytes": 271251
+          }
+        ],
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\proposal.patch",
+          "sha256": "9add922a5854c94731a02541e2942cbf5ba01e45a67e176e875c9a546e3dd888"
+        },
+        "filemap": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\filemap.json",
+          "sha256": "5cba0cd0ce7b3e1bf4e23b27f712da5716ca2193b10f3ce3ac068e14be8375d6"
+        },
+        "actual_red": {
+          "argv": [
+            "C:\\Python314\\python.exe",
+            "-I",
+            "-S",
+            "-B",
+            "-X",
+            "utf8",
+            "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\run-pure.py",
+            "red"
+          ],
+          "names": [
+            "test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport",
+            "test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb",
+            "test_profile_transport_keeps_legacy_decoder_and_refuses_mismatches",
+            "test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files",
+            "test_system_directory_uses_typed_os_api_and_rejects_invalid_paths",
+            "test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine"
+          ],
+          "tests": 6,
+          "failures": 6,
+          "errors": 7,
+          "skips": 0,
+          "exit_code": 1,
+          "elapsed_seconds": 0.06338970000797417,
+          "guards": {
+            "actual_process_calls": 0,
+            "actual_dll_calls": 0,
+            "ctypes_still_lacks_WinDLL": true,
+            "subprocess_still_lacks_STARTUPINFO": true,
+            "subprocess_still_lacks_CREATE_NO_WINDOW": true
+          },
+          "test_source_sha256": "5f1ce5f16f949e7ea80f4ec0e184f3413d09715f5d760b9c4ceadbb62539684c",
+          "production_native_sha256": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+          "production_worker_sha256": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+          "qualification": false,
+          "scope": "Original six profile fixture methods under owned POSIX-absent Windows-symbol namespaces; no actual DLL/process/runtime/SDK/RPC/API execution."
+        },
+        "actual_green": {
+          "argv": [
+            "C:\\Python314\\python.exe",
+            "-I",
+            "-S",
+            "-B",
+            "-X",
+            "utf8",
+            "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\run-pure.py",
+            "green"
+          ],
+          "names": [
+            "test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport",
+            "test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb",
+            "test_profile_transport_keeps_legacy_decoder_and_refuses_mismatches",
+            "test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files",
+            "test_system_directory_uses_typed_os_api_and_rejects_invalid_paths",
+            "test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine"
+          ],
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "exit_code": 0,
+          "elapsed_seconds": 0.056674200008274056,
+          "guards": {
+            "actual_process_calls": 0,
+            "actual_dll_calls": 0,
+            "ctypes_still_lacks_WinDLL": true,
+            "subprocess_still_lacks_STARTUPINFO": true,
+            "subprocess_still_lacks_CREATE_NO_WINDOW": true
+          },
+          "test_source_sha256": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+          "production_native_sha256": "340caef91fb02513e27cacad3cc3117127f9b6696a01a8caef46c776ab492bea",
+          "production_worker_sha256": "afac0ee963365f41936438ce413b8973b8b020571a9dd343088a2df3da5684e6",
+          "qualification": false,
+          "scope": "Original six profile fixture methods under owned POSIX-absent Windows-symbol namespaces; no actual DLL/process/runtime/SDK/RPC/API execution."
+        },
+        "guards": {
+          "all_method_identities_preserved": true,
+          "original_test_method_count": 87,
+          "changed_fixture_methods": [
+            [
+              "DebuggerInboxTests",
+              "test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb"
+            ],
+            [
+              "DebuggerInboxTests",
+              "test_system_directory_uses_typed_os_api_and_rejects_invalid_paths"
+            ],
+            [
+              "DebuggerInboxTests",
+              "test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport"
+            ]
+          ],
+          "all_prior_assertion_ASTs_preserved": true,
+          "all_other_top_level_ASTs_preserved": true,
+          "production_files_byte_identical": true,
+          "syntax": "PASS"
+        },
+        "supporting_paths": {
+          "red_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\red.log",
+          "green_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\green.log",
+          "driver": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-posix-inbox-fixture-fix-m27bm2kd\\run-pure.py",
+          "driver_sha256": "5f0266c2cf09506be2f2d2c01c022421c082d522ab3ce68981fafb48c91ab633"
+        },
+        "fix": "Only the three affected new fixture methods: WinDLL mocks use create=True; inert SimpleNamespace STARTUPINFO factory and literal CREATE_NO_WINDOW flag exist around mocked Popen on both POSIX and Windows. Added explicit inherited handle-list/hidden creation-flag assertions; prior assertions unchanged.",
+        "limits": [
+          "Only the original six pure profile methods ran once for final GREEN. Original81/non-profile methods, actual owned Node/SDK/DLL/RPC/provider/network/installation/browser and full87 were not executed.",
+          "This Windows Python3.14 run uses owned namespaces actually lacking POSIX-absent symbols; it is a deterministic portability regression, not an actual LinuxPython3.15 runtime claim.",
+          "No production OS guard, timeout, transport/schema/root/hash/handle/cleanup policy changed. No skip/xfail, test population or partition change.",
+          "Original hosted failure and Docs sealed packet remain untouched; no Pi shutdown cause/fix or hosted qualification is inferred."
+        ]
+      }
+    },
+    "docs_reader": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\delivery.json",
+      "sha256": "d3f79f64f0e8da4fed202c866b2d5d5f1507a8cfbdc9878eed797e882d306d92",
+      "record": {
+        "format": "private-docs-workflow-reader-fix/1",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "source_epoch": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "subject": ".github/scripts/test_ci_impact.py:SiteBrowserPublicationWorkflowTest",
+        "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\candidate\\.github\\scripts\\test_ci_impact.py",
+        "candidate_sha256": "985d38913bb1c0d3faa029d18e873ee509b10e3e01ea45cac445b8d2fb51c203",
+        "preimage_full_sha256": "21874f32f4b1622bbeb449f7561ab790e09cd6c8735fe6c79d65c64301d3bbee",
+        "class_preimage_sha256": "68c163eb4e00ce33e0cadd0302c5630c04091e684873dface10e1eb5e653d051",
+        "class_candidate_sha256": "0bdcbfb3b0c3b165fe33d86428dacefbbf6ccdb2a7ed14607d6a4b178debf631",
+        "class_fragment": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\SiteBrowserPublicationWorkflowTest.pyfrag",
+        "class_fragment_sha256": "a8bae05f059167b92ffd878ced9a3a77f89473ed41f6f6704a5c3118d8af9214",
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\proposal.patch",
+          "sha256": "7525380dbc0a6ae352046fddd8110dff4a7b6df71720bc8b80e467c333854f2f"
+        },
+        "apply_policy": "Apply only this class/hunk; do not overwrite packaging actor changes elsewhere in the full module. Current target class preimage matches original at seal.",
+        "docs_yaml_unchanged_sha256": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+        "original_root_red": {
+          "result": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\original-docs-existing-workflow-owners.json",
+          "result_sha256": "bbaacb59939388a7bcd82b38991584415ba45cc8a29d799630a46e96226c50ec",
+          "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\original-docs-existing-workflow-owners.stderr",
+          "stderr_sha256": "19d47b8686f8d26c6f4b17d6b765a2f563b5811a2939ed243f6ff45ec2e5a22c",
+          "boundary": "Actual original17 checks: four SiteBrowser assertion failures; separate unrelated private cache setup error corrected by Root, not this source fix."
+        },
+        "actual_green": {
+          "argv": [
+            "C:\\Python314\\python.exe",
+            "-I",
+            "-S",
+            "-B",
+            "-X",
+            "utf8",
+            "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\run-class.py"
+          ],
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "exit_code": 0,
+          "elapsed_seconds": 0.02992180000001099,
+          "inert_knowledge_read_calls": 1,
+          "native_context_qualification": false,
+          "scope": "Only SiteBrowserPublicationWorkflowTest, actual physical Docs YAML/config/source and original read-only Git ignore check; no browser/build/Node/provider/native/network execution. One unchanged tech-stack read uses explicit inert seam."
+        },
+        "green_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-workflow-reader-fix-moatng64\\green.log",
+        "green_log_sha256": "7aa618d076d011be9c98a00de06465e9380f0085161af94fcbe706fd246e387b",
+        "guards": {
+          "outside_target_class_bytes_unchanged": true,
+          "old_six_method_names_preserved": true,
+          "four_old_method_ASTs_exact": [
+            "test_component_suite_is_discovered_and_success_gates_pages_upload",
+            "test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads",
+            "test_playwright_configuration_is_inside_the_typecheck_scope",
+            "test_browser_results_stay_in_ignored_non_publication_output"
+          ],
+          "old_component_mutation_tuple_and_diagnostic_twelve_mutant_dictionary_ASTs_unchanged": true,
+          "two_updated_methods": "Raw run-regex uses closed-role projection retaining original six command list/order; blanket per-job permission/header assertions now exact supported role predicates, with unknown/extra authority rejected.",
+          "syntax": "PASS",
+          "format_only_after_green_AST_identical": true
+        },
+        "details": [
+          "Uses the existing test_hook_ci_partition.step_blocks/command parser. Only full literal program-mode/observer/emitter/report-upload step roles project to the original six-command population; no generic metadata/shell/conditional exemption.",
+          "Exactly one qualified-dispatch-only no-rebuild header and original program-mode output binding are required. Ordinary browser/component/build/Pages upload remain success-gated; pinned setup/upload/retention identities and old twelve publication-bypass mutants stay checked.",
+          "New actual mutant controls reject widened/duplicate header, altered mode output, duplicate/unknown role, observer selection/branch change, token exposure, emitter guard/scalar change, report path/condition change, extra setup action and preparation/deploy authority changes.",
+          "New job permission acceptance is closed to build/qualified-pages read-only and deploy/deploy-qualified exact Pages/OIDC roles with main-only dispatch/dependency/action-only boundaries. Unknown jobs cannot inherit these allowances."
+        ],
+        "limits": [
+          "Only original six affected methods plus one new mutation method ran. No repeat of other eleven workflow owners or full test_ci_impact module.",
+          "One unchanged tech-stack context_text assertion uses the explicitly Root-authorized inert knowledge-read seam. All actual Docs/config/script text and the original read-only Git check-ignore assertion run against current Gov. No native-backed context proof is claimed.",
+          "No production Docs/config/helper was changed by this repair. No actual browser/Node/build/provider/API/native/deployment/installation or source recapture ran.",
+          "Initial private runner lacked unchanged ci-impact.py import support and exited before test bodies; controller-setup-failure.json retains this separately. After copying only that original support leaf, seven methods passed.",
+          "Frozen Docs/POSIX fixture packets remain immutable; Root sole Gov/index/ref/commit/review actor."
+        ]
+      }
+    },
+    "docs_authority_reader": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\delivery.json",
+      "sha256": "3c3e997bf9c29a5f4963277dc46e966dc9434885774cd7fbd17e08b443c6f100",
+      "record": {
+        "format": "single-method-docs-authority-reader-fix/1",
+        "source_epoch": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "subject": ".github/scripts/test_ci_impact.py:WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy",
+        "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\candidate\\.github\\scripts\\test_ci_impact.py",
+        "candidate_sha256": "32722e69e139a42358bb502f769edfe1a8cbdcc8bda6c67a9452a8209abf4766",
+        "method_preimage_sha256": "ba998433c70e0cbd3868f86bff32907fa7b0f0c42a8d6a149e550aac5a1140f7",
+        "method_candidate_sha256": "fd9ec26900ac22a41a99995c9097a0520e7c568b2cc9e692822d606ed80c6c05",
+        "method_fragment": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\method-candidate.pyfrag",
+        "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\proposal.patch",
+        "patch_sha256": "3efa1e3a29d3dbd07e31082b36f71e098de445a3addf7dad4d1cef1d3aabaa30",
+        "apply_policy": "Only this single method/hunk; preserve packaging Docker and other class changes. Current method preimage matches at seal.",
+        "original_red": {
+          "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\original-producer-union-ci-readers.json",
+          "sha256": "49f335bae33edff8e6305e2d858dbf1db778de165b149190e3ac0784f50b024e",
+          "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\original-producer-union-ci-readers.stderr",
+          "stderr_sha256": "49486ea299753454c76e2c4cded37bfcdc395737fa5043ca33daa28e57120add",
+          "scope": "Root66 actual checks64PASS2FAIL; only the Docs authority method failure is repaired here."
+        },
+        "green": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "seconds": 0.0012599000037880614,
+          "exit_code": 0,
+          "scope": "One original method plus six in-method fixed authority-refusal vectors; no other64/fullclass tests or native/context/runtime execution."
+        },
+        "green_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-docs-authority-reader-fix-5m429fv9\\green.log",
+        "guards": {
+          "all_other_ASTs_unchanged": true,
+          "all_old_assertion_calls_AST_preserved": true,
+          "method_names_or_test_counts_changed": false,
+          "syntax": "PASS"
+        },
+        "behavior": "Validate complete exact job authority with existing SiteBrowser helper before allowing only named deploy/deploy-qualified write roles; retain original main-event/global-read-only and every unknown-job no-Pages/OIDC assertion. Six new in-method negatives reject unknown privileged job, wrong main/event/dependency/action pin and extra deploy command.",
+        "limits": [
+          "One method only, no other64/fullclass replay. No native-backed context seam is needed by this method.",
+          "No production YAML/code, source evidence, statuses, Gov/index/refs or provider state changed. No actual browser/Node/Docker/Pi/native/SDK/API/network/install/runtime executed.",
+          "Root alone integrates shared-file hunks; original failing66 and capacity observation remain separate."
+        ]
+      }
+    },
+    "sandbox_docker_reader": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-union-reader-fix-wvj_n1it\\delivery.json",
+      "sha256": "1d526fab3981f2cde85bb94c02aad265101881fbe1ec61979dc8a9cfd804382f",
+      "record": {
+        "format": "codearbiter.scoped-test-delivery/1",
+        "state": "READY",
+        "apply_files": [],
+        "apply_methods": [
+          {
+            "id": "WorkflowContractTest.test_the_required_sandbox_job_fails_when_docker_is_unavailable",
+            "before_sha256": "ecbb21e00107ae899f25852a96122bbac20b6020ce33665d2a1206a02ce9bbac",
+            "after_sha256": "b8aad77fd57cf1b4b037ced9ced931f7c0aafab6f7e5fd0493a4ceca151816b3",
+            "before": "methods/test_the_required_sandbox_job_fails_when_docker_is_unavailable.before.py",
+            "after": "methods/test_the_required_sandbox_job_fails_when_docker_is_unavailable.after.py"
+          },
+          {
+            "id": "WorkflowContractTest.test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel",
+            "before_sha256": "fc04ef7e057e6d1eecf91d7289f81819e34990c34b3385ddc085d56af1f58313",
+            "after_sha256": "0d9a8a5655d109d703ecc55050ad83ec87ca854feb4e50f8d65fa6e2a198064e",
+            "before": "methods/test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel.before.py",
+            "after": "methods/test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel.after.py"
+          }
+        ],
+        "source_path": ".github/scripts/test_ci_impact.py",
+        "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-union-reader-fix-wvj_n1it\\final.patch",
+        "patch_sha256": "b123bffd5f104a4ae3d028d70b9c0b625e6c00d461930ad7f09b0e87e2fac349",
+        "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-union-reader-fix-wvj_n1it\\source-freeze.json",
+        "source_freeze_sha256": "866d596957a266c050ae914a1cebd502a7bbe67df3338db69380e636a77b431f",
+        "filemap": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-union-reader-fix-wvj_n1it\\filemap.json",
+        "filemap_sha256": "569816c7a55fcada68f6c650ffb70c1f0cd50de44993767a0d18b8073ce0199b",
+        "results": {
+          "original_missing_suite_sentinel": "genuine RED: AssertionError not raised, one executed oracle",
+          "final_two_methods": "2 PASS,0 skip,0.010s;16 negative mutation controls",
+          "before_after_sources_stable": true
+        },
+        "scope": "Exact owning observe-vitest original npm suite, Docker-required/preflight nonzero-before-suite and real-container sentinel-after-suite. Reject missing/duplicate/filtered/suppressed/skipped execution.",
+        "integration": "Splice only two exact tested method bodies after verifying each before hash; preserve all other methods, especially independent Docs WFC repair. Method-only projection omits two separator blank lines; full tested/projected ASTs identical.",
+        "limits": [
+          "No other64 checks rerun",
+          "No actual npm/Vitest/Docker/Node/browser/native/provider/API execution",
+          "Concurrent Docs-owned method/class must remain unchanged",
+          "Python direct unittest behavioral verification; no numeric coverage claim"
+        ]
+      }
+    }
+  },
+  "Root_actual_controls": {
+    "bounded_read_target_RED": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-bounded-read-target-red.json",
+      "sha256": "df864e6cd758037649e142bef241c47faaecd392bd76d1f6efc84c5e9ebbff5c",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_site_playwright_observation.DocsAuthorityTests.test_input_growth_during_read_never_consumes_unbounded_bytes"
+        ],
+        "exit_code": 1,
+        "seconds": 0.4458438000001479,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "d91bd9a39d5993de290089856a4619e3052289a34218ef2ed9adadaec19ef73c"
+      }
+    },
+    "bounded_read_owning_19_GREEN": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-bounded-read-owning-green.json",
+      "sha256": "1a785b078dc8594e924e14c7abe9739338b1cd4121a1e7f3d884006258de8037",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_site_playwright_observation.DocsAuthorityTests"
+        ],
+        "exit_code": 0,
+        "seconds": 2.5224125999957323,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dd3728862e11df9e8ee644c44a3f8cfd3af19f649568705a979d39a9a6e97e75"
+      }
+    },
+    "original_Docs_owner_17": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-existing-workflow-owners.json",
+      "sha256": "bbaacb59939388a7bcd82b38991584415ba45cc8a29d799630a46e96226c50ec",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.SiteCoverageEvidenceTest",
+          "test_ci_impact.SiteBrowserPublicationWorkflowTest",
+          "test_integration_candidate.WorkflowAdmission"
+        ],
+        "exit_code": 1,
+        "seconds": 0.7584679999999935,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "19d47b8686f8d26c6f4b17d6b765a2f563b5811a2939ed243f6ff45ec2e5a22c"
+      }
+    },
+    "unchanged_bytecode_method_controller_correction": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-bytecode-controller-correction.json",
+      "sha256": "fd3fbe9ec7e570aaf6552e7258e61ed0f18759e97d7bcfa2cdd30b010a5b62f9",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.SiteCoverageEvidenceTest.test_python_bytecode_cache_is_not_a_coverage_input"
+        ],
+        "exit_code": 0,
+        "seconds": 0.19025049998890609,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "3e283cd6489f6eb09740370af5448c01f2c1e3ac8b4a88c6b83980a1ba697b56",
+            ".github/major-test-selections.json": "550130c8de4259e78420aef564d499dba1dbdea4fdf1ea3f504d31a9b497da80",
+            ".github/scripts/major_readiness.py": "e5bf3c5e0dc77d6c1e38ad63e1db12a6f9ec5bc97d6134f0cc7577c42907bcdd",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e1e66e29993c907beaaba713d7b2d0960b586bc35c2deb7dd2177b1b7dcc0e7b"
+      }
+    },
+    "original_union_readers_66": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\producer-union-ci-readers.json",
+      "sha256": "49f335bae33edff8e6305e2d858dbf1db778de165b149190e3ac0784f50b024e",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest",
+          "test_ci_impact.VitestSourceQualificationWiringTest"
+        ],
+        "exit_code": 1,
+        "seconds": 1.1864783000055468,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "5979e263aef843045712039b1bc4f25161eff7c806db7173b9ed60b8a55abdc6",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "5979e263aef843045712039b1bc4f25161eff7c806db7173b9ed60b8a55abdc6",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "49486ea299753454c76e2c4cded37bfcdc395737fa5043ca33daa28e57120add"
+      }
+    },
+    "union_report_capacity": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\producer-union-report-capacity.json",
+      "sha256": "c063d952590d99dd418b537bce0b5767999b1980d6b28c3c03839b43d433ac7b",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_major_qualification_report.ReportTest.test_real_largest_owner_population_and_overlay_inventory_fit_retained_report_bound"
+        ],
+        "exit_code": 0,
+        "seconds": 0.19059220000053756,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "5979e263aef843045712039b1bc4f25161eff7c806db7173b9ed60b8a55abdc6",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "c44f74d6a03ddc425ec273ad117f366782284af232b0316f6ecea42eb67445aa",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "5979e263aef843045712039b1bc4f25161eff7c806db7173b9ed60b8a55abdc6",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "8b3a0be7ad6169d763888c072bd9485ce60a24002613f2a00c5fdb097ffe3e0d"
+      }
+    }
+  },
+  "actual_scope_notes": [
+    "Docs author18 focused PASS; legacy61 command60PASS/one missing-private-fixture ERROR, then unchanged capacity1PASS after literal support-copy correction. Eight unchanged whole-corpus controls excluded; no single61PASS claim.",
+    "Root owned-file growth oracle genuinely failed unbounded read; descriptor identity and bounded limit+1 reading fixed it. All19 Docs controls then PASS2.133s0skip. Initial controller stability snapshot omitted untracked new modules; final stage/peer binds their exact full bytes. No false whole-checkout freeze claim.",
+    "Root17 existing Docs/workflow owners had12PASS4readerFAIL1private-cache-prefix ERROR. Only unchanged cache method then PASS after private controller correction. Affected Docs class6original+1new mutation method PASS; one explicit inert tech-stack read seam, not native-backed context proof. No single17PASS claim.",
+    "Root66 combined CI owners had64PASS2FAIL. Docs authority1 and Sandbox Docker2 targeted successors resolve those failures and strengthen the former false-positive sentinel locator. These overlap earlier passes; no synthetic unique67 or single66PASS claim.",
+    "POSIX repair changes only three new fixture methods: original six methods under genuinely absent Windows symbols6FAIL7ERROR ->6PASS0skip; no actual DLL/process calls. Original87 method identities/assertions and production files preserved.",
+    "TS producer controls use actual owned Python/Git/inert launch fixtures, never a real TS/Node/Docker suite. Legacy32 command30PASS/2affectedFAIL, then only affected2PASS. Exact four-cell ceiling, source staging/byte mutation, uploader ownership, portable adjacent npx launch and original command/wiring controls pass; histories/support setup failures remain.",
+    "The four TS cells are exact Pi disposable-home01/02/03 and SandboxS54:01 via eight existing named assertions. Wrong04 prototype remains private history, no04route. Six runCli variants and one direct-entry interrupt-order oracle are distinct; no six real-child claim.",
+    "Python176 default source profile/API remains. New finite Pi124 and Sandbox77 first-party profiles declare actual tool/import cones and explicit third-party/generated-output limits. Original full Pi coverage/blob/default and original Ubuntu Sandbox Docker-gated suite each execute once in their owning job; no replatform/subset/replay.",
+    "Only exact three Pi coverage outputs receive bounded profile-specific generated-output treatment. Other dirty/untracked source/output/membership changes refuse; ordinary default source_identity and Python paths retain existing behavior.",
+    "Docs Playwright has a dedicated actual-schema reader, exact served/member/mode/byte identity, separate same-source Core and Docs run IDs and original uploaders. Producing metadata does not wait for own completed job/log; final reader still requires whole successful trusted runs.",
+    "Later explicit main-only qualified Pages transfer stages/readbacks exact original tar in the current run for the pinned deploy action; no rebuild, install or deployment executed here. Existing normal main/fork/queue/publication/installed guards remain.",
+    "No proof/status/task/scenario promotion, source renewal/hash restamp or human/model/parent/lifecycle acceptance. Future source-disposition derivation and other action-map gaps are not implemented by this batch."
+  ],
+  "remaining_route_action_map": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-routes-62b-by48uyv0\\delivery.json",
+    "sha256": "f604fc11ca7657ae459ad63e5ce234b0212eeeaee2a22e49c980b0fa0bb5fa11",
+    "record": {
+      "format": "readonly-program-routes-delivery/1",
+      "action_map": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-routes-62b-by48uyv0\\action-map.json",
+      "sha256": "a00fa49a8a46b3463198ce3961bea45ab7adf3a62f5604fe2b2be4a018d4385c",
+      "native_membership": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-routes-62b-by48uyv0\\native133-membership.json",
+      "native_membership_sha256": "6f88dceda3f2c0030ec4cf8d460d66c0db5c13cae0a3a636b8517c672a0e815c",
+      "remaining_software_cells": [
+        "disposition:machines:C33",
+        "disposition:transitions:C33:01",
+        "disposition:transitions:S18:07",
+        "disposition:transitions:S38:04",
+        "disposition:transitions:S51:01",
+        "disposition:transitions:S51:02",
+        "disposition:transitions:S52:06",
+        "disposition:transitions:S75:05",
+        "disposition:transitions:S75:08"
+      ],
+      "priority": "Typed source-conformance/N-A outcomes from existing strict authentication, without fake executed reports",
+      "qualification": false
+    }
+  },
+  "62b_subtotal_correction": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\62b-measured-applicability-subtotal-correction.json",
+    "sha256": "861d344c88a5a565b1ec0f0602ac7e38332153f9817ce44f9104f5973cf3897c",
+    "record": {
+      "source_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+      "qualification": false,
+      "original_owner_sha256": "9b305d4f14417ec701df591c2d0eab3982dfe5679717ddf65b512b808fcfdc49",
+      "groups": {
+        "software48-current-7ac01607": {
+          "rows": 48,
+          "applicability": {
+            "STALE": 39,
+            "APPLICABLE": 9
+          },
+          "ids": [
+            "disposition:added_transitions:WR-01",
+            "disposition:added_transitions:WR-02",
+            "disposition:added_transitions:WR-03",
+            "disposition:added_transitions:WR-04",
+            "disposition:added_transitions:WR-05",
+            "disposition:added_transitions:WR-06",
+            "disposition:added_transitions:WR-07",
+            "disposition:added_transitions:WR-08",
+            "disposition:added_transitions:WR-09",
+            "disposition:added_transitions:WR-10",
+            "disposition:added_transitions:WR-11",
+            "disposition:added_transitions:WR-12",
+            "disposition:added_transitions:WR-13",
+            "disposition:added_transitions:WR-14",
+            "disposition:added_transitions:WR-15",
+            "disposition:added_transitions:WR-16",
+            "disposition:added_transitions:WR-17",
+            "disposition:added_transitions:WR-18",
+            "disposition:added_transitions:WR-19",
+            "disposition:added_transitions:WR-20",
+            "disposition:added_transitions:WR-21",
+            "disposition:added_transitions:WR-22",
+            "disposition:findings:HOOK-F05",
+            "disposition:findings:SF15",
+            "disposition:machines:hooks:statusline-wiring",
+            "disposition:transitions:C36:02",
+            "disposition:transitions:C36:03",
+            "disposition:transitions:S73:01",
+            "disposition:transitions:S73:02",
+            "disposition:transitions:S73:03",
+            "disposition:transitions:S73:04",
+            "disposition:transitions:S73:05",
+            "disposition:transitions:S73:06",
+            "disposition:transitions:S73:07",
+            "disposition:transitions:S73:08",
+            "disposition:transitions:S73:09",
+            "disposition:transitions:S73:10",
+            "disposition:transitions:S74:03",
+            "disposition:transitions:S74:04",
+            "disposition:transitions:S74:08",
+            "disposition:transitions:S74:09",
+            "disposition:transitions:hooks:statusline-wiring:01",
+            "disposition:transitions:hooks:statusline-wiring:02",
+            "disposition:transitions:hooks:statusline-wiring:03",
+            "disposition:transitions:hooks:statusline-wiring:04",
+            "disposition:transitions:hooks:statusline-wiring:05",
+            "disposition:transitions:hooks:statusline-wiring:06",
+            "disposition:transitions:hooks:statusline-wiring:07"
+          ]
+        },
+        "source246-current-7ac": {
+          "rows": 246,
+          "applicability": {
+            "APPLICABLE": 43,
+            "STALE": 203
+          },
+          "ids": [
+            "disposition:findings:C-F03",
+            "disposition:machines:S34",
+            "disposition:machines:S35",
+            "disposition:machines:S36",
+            "disposition:machines:S37",
+            "disposition:machines:S38",
+            "disposition:machines:S47",
+            "disposition:machines:S48",
+            "disposition:machines:S49",
+            "disposition:machines:S50",
+            "disposition:machines:S51",
+            "disposition:machines:S52",
+            "disposition:machines:S54",
+            "disposition:machines:S69",
+            "disposition:machines:S71",
+            "disposition:machines:S72",
+            "disposition:machines:S73",
+            "disposition:machines:S74",
+            "disposition:machines:S77",
+            "disposition:machines:SW02",
+            "disposition:machines:hooks:append-conflict",
+            "disposition:machines:hooks:context-scout",
+            "disposition:machines:hooks:display-git-probes",
+            "disposition:machines:hooks:git-dispatch",
+            "disposition:machines:hooks:git-install",
+            "disposition:machines:hooks:hook-admission",
+            "disposition:machines:hooks:legacy-context-recovery",
+            "disposition:machines:hooks:protected-state",
+            "disposition:machines:hooks:read-context",
+            "disposition:machines:hooks:shell-parser",
+            "disposition:machines:hooks:task-lock-exclusion",
+            "disposition:transitions:C05:02",
+            "disposition:transitions:C05:03",
+            "disposition:transitions:C15:04",
+            "disposition:transitions:C15:05",
+            "disposition:transitions:C16:03",
+            "disposition:transitions:C17:01",
+            "disposition:transitions:C17:02",
+            "disposition:transitions:C17:03",
+            "disposition:transitions:C17:04",
+            "disposition:transitions:C17:05",
+            "disposition:transitions:C17:06",
+            "disposition:transitions:C17:07",
+            "disposition:transitions:C17:08",
+            "disposition:transitions:C17:09",
+            "disposition:transitions:C17:11",
+            "disposition:transitions:C34:01",
+            "disposition:transitions:C34:02",
+            "disposition:transitions:C34:03",
+            "disposition:transitions:S34:01",
+            "disposition:transitions:S34:02",
+            "disposition:transitions:S34:03",
+            "disposition:transitions:S34:04",
+            "disposition:transitions:S34:05",
+            "disposition:transitions:S34:06",
+            "disposition:transitions:S34:07",
+            "disposition:transitions:S35:01",
+            "disposition:transitions:S35:02",
+            "disposition:transitions:S35:03",
+            "disposition:transitions:S35:04",
+            "disposition:transitions:S35:05",
+            "disposition:transitions:S36:01",
+            "disposition:transitions:S36:02",
+            "disposition:transitions:S36:03",
+            "disposition:transitions:S36:04",
+            "disposition:transitions:S36:05",
+            "disposition:transitions:S36:06",
+            "disposition:transitions:S36:07",
+            "disposition:transitions:S37:01",
+            "disposition:transitions:S37:02",
+            "disposition:transitions:S37:03",
+            "disposition:transitions:S37:04",
+            "disposition:transitions:S37:05",
+            "disposition:transitions:S37:06",
+            "disposition:transitions:S37:07",
+            "disposition:transitions:S37:08",
+            "disposition:transitions:S37:09",
+            "disposition:transitions:S38:01",
+            "disposition:transitions:S38:02",
+            "disposition:transitions:S38:03",
+            "disposition:transitions:S38:05",
+            "disposition:transitions:S38:06",
+            "disposition:transitions:S47:05",
+            "disposition:transitions:S48:01",
+            "disposition:transitions:S48:02",
+            "disposition:transitions:S48:03",
+            "disposition:transitions:S48:04",
+            "disposition:transitions:S48:05",
+            "disposition:transitions:S48:08",
+            "disposition:transitions:S50:02",
+            "disposition:transitions:S50:03",
+            "disposition:transitions:S50:04",
+            "disposition:transitions:S50:05",
+            "disposition:transitions:S50:06",
+            "disposition:transitions:S51:03",
+            "disposition:transitions:S51:04",
+            "disposition:transitions:S51:06",
+            "disposition:transitions:S69:01",
+            "disposition:transitions:S69:02",
+            "disposition:transitions:S69:03",
+            "disposition:transitions:S69:04",
+            "disposition:transitions:S69:05",
+            "disposition:transitions:S69:06",
+            "disposition:transitions:S71:01",
+            "disposition:transitions:S71:02",
+            "disposition:transitions:S71:03",
+            "disposition:transitions:S71:04",
+            "disposition:transitions:S71:07",
+            "disposition:transitions:S72:07",
+            "disposition:transitions:S73:11",
+            "disposition:transitions:S74:01",
+            "disposition:transitions:S74:02",
+            "disposition:transitions:S74:05",
+            "disposition:transitions:S74:06",
+            "disposition:transitions:S74:07",
+            "disposition:transitions:S74:10",
+            "disposition:transitions:S77:01",
+            "disposition:transitions:S77:02",
+            "disposition:transitions:S77:03",
+            "disposition:transitions:S77:04",
+            "disposition:transitions:S77:05",
+            "disposition:transitions:S77:06",
+            "disposition:transitions:S77:07",
+            "disposition:transitions:S77:08",
+            "disposition:transitions:S77:09",
+            "disposition:transitions:SW01:02",
+            "disposition:transitions:SW01:03",
+            "disposition:transitions:SW01:04",
+            "disposition:transitions:SW01:05",
+            "disposition:transitions:SW01:06",
+            "disposition:transitions:SW01:07",
+            "disposition:transitions:SW01:08",
+            "disposition:transitions:SW01:09",
+            "disposition:transitions:SW01:10",
+            "disposition:transitions:SW01:11",
+            "disposition:transitions:SW01:12",
+            "disposition:transitions:SW01:13",
+            "disposition:transitions:SW01:14",
+            "disposition:transitions:SW01:15",
+            "disposition:transitions:SW01:17",
+            "disposition:transitions:SW01:18",
+            "disposition:transitions:SW01:19",
+            "disposition:transitions:SW01:20",
+            "disposition:transitions:SW01:21",
+            "disposition:transitions:SW01:22",
+            "disposition:transitions:SW01:23",
+            "disposition:transitions:SW01:24",
+            "disposition:transitions:T01:01",
+            "disposition:transitions:T01:02",
+            "disposition:transitions:T01:03",
+            "disposition:transitions:T01:04",
+            "disposition:transitions:T01:05",
+            "disposition:transitions:hooks:append-conflict:01",
+            "disposition:transitions:hooks:append-conflict:02",
+            "disposition:transitions:hooks:append-conflict:03",
+            "disposition:transitions:hooks:append-conflict:04",
+            "disposition:transitions:hooks:append-conflict:05",
+            "disposition:transitions:hooks:context-delivery:01",
+            "disposition:transitions:hooks:context-delivery:03",
+            "disposition:transitions:hooks:context-delivery:04",
+            "disposition:transitions:hooks:context-delivery:05",
+            "disposition:transitions:hooks:context-delivery:06",
+            "disposition:transitions:hooks:context-provenance:01",
+            "disposition:transitions:hooks:context-provenance:02",
+            "disposition:transitions:hooks:context-provenance:03",
+            "disposition:transitions:hooks:context-provenance:04",
+            "disposition:transitions:hooks:context-provenance:05",
+            "disposition:transitions:hooks:context-provenance:06",
+            "disposition:transitions:hooks:context-provenance:07",
+            "disposition:transitions:hooks:context-scout:01",
+            "disposition:transitions:hooks:context-scout:02",
+            "disposition:transitions:hooks:context-scout:03",
+            "disposition:transitions:hooks:context-scout:04",
+            "disposition:transitions:hooks:context-scout:05",
+            "disposition:transitions:hooks:context-scout:06",
+            "disposition:transitions:hooks:context-snapshot:02",
+            "disposition:transitions:hooks:context-snapshot:03",
+            "disposition:transitions:hooks:context-snapshot:04",
+            "disposition:transitions:hooks:context-snapshot:06",
+            "disposition:transitions:hooks:display-git-probes:01",
+            "disposition:transitions:hooks:display-git-probes:02",
+            "disposition:transitions:hooks:display-git-probes:03",
+            "disposition:transitions:hooks:git-dispatch:01",
+            "disposition:transitions:hooks:git-dispatch:02",
+            "disposition:transitions:hooks:git-dispatch:03",
+            "disposition:transitions:hooks:git-dispatch:04",
+            "disposition:transitions:hooks:git-dispatch:05",
+            "disposition:transitions:hooks:git-dispatch:06",
+            "disposition:transitions:hooks:git-dispatch:07",
+            "disposition:transitions:hooks:git-install:01",
+            "disposition:transitions:hooks:git-install:02",
+            "disposition:transitions:hooks:git-install:03",
+            "disposition:transitions:hooks:git-install:04",
+            "disposition:transitions:hooks:git-install:05",
+            "disposition:transitions:hooks:git-install:06",
+            "disposition:transitions:hooks:hook-admission:01",
+            "disposition:transitions:hooks:hook-admission:02",
+            "disposition:transitions:hooks:hook-admission:03",
+            "disposition:transitions:hooks:hook-admission:04",
+            "disposition:transitions:hooks:hook-admission:05",
+            "disposition:transitions:hooks:legacy-context-recovery:01",
+            "disposition:transitions:hooks:legacy-context-recovery:02",
+            "disposition:transitions:hooks:legacy-context-recovery:03",
+            "disposition:transitions:hooks:legacy-context-recovery:04",
+            "disposition:transitions:hooks:legacy-context-recovery:05",
+            "disposition:transitions:hooks:protected-state:01",
+            "disposition:transitions:hooks:protected-state:02",
+            "disposition:transitions:hooks:protected-state:03",
+            "disposition:transitions:hooks:protected-state:04",
+            "disposition:transitions:hooks:protected-state:05",
+            "disposition:transitions:hooks:protected-state:06",
+            "disposition:transitions:hooks:protected-state:07",
+            "disposition:transitions:hooks:push:01",
+            "disposition:transitions:hooks:push:02",
+            "disposition:transitions:hooks:push:03",
+            "disposition:transitions:hooks:push:05",
+            "disposition:transitions:hooks:read-context:01",
+            "disposition:transitions:hooks:read-context:02",
+            "disposition:transitions:hooks:read-context:03",
+            "disposition:transitions:hooks:read-context:04",
+            "disposition:transitions:hooks:read-context:05",
+            "disposition:transitions:hooks:read-context:06",
+            "disposition:transitions:hooks:shell-parser:01",
+            "disposition:transitions:hooks:shell-parser:02",
+            "disposition:transitions:hooks:shell-parser:03",
+            "disposition:transitions:hooks:shell-parser:04",
+            "disposition:transitions:hooks:shell-parser:05",
+            "disposition:transitions:hooks:task-lock-exclusion:01",
+            "disposition:transitions:hooks:task-lock-exclusion:02",
+            "disposition:transitions:hooks:task-lock-exclusion:03",
+            "disposition:transitions:hooks:task-lock-exclusion:04",
+            "disposition:transitions:hooks:task-lock-exclusion:05",
+            "disposition:transitions:hooks:tribunal-inventory:01",
+            "disposition:transitions:hooks:tribunal-inventory:03",
+            "disposition:transitions:hooks:tribunal-lock-leads:01",
+            "disposition:transitions:hooks:tribunal-lock-leads:02",
+            "disposition:transitions:hooks:tribunal-lock-leads:03",
+            "disposition:transitions:hooks:tribunal-lock-leads:04",
+            "disposition:transitions:hooks:tribunal-lock-leads:05",
+            "disposition:transitions:hooks:tribunal-run:01",
+            "disposition:transitions:hooks:tribunal-run:02",
+            "disposition:transitions:hooks:tribunal-run:04",
+            "disposition:transitions:hooks:tribunal-run:05",
+            "disposition:transitions:hooks:tribunal-run:06",
+            "disposition:transitions:hooks:tribunal-run:07",
+            "disposition:transitions:hooks:tribunal-run:08"
+          ]
+        }
+      },
+      "correction": "Next coherent metadata update must replace inherited live software48_current_applicability 48APPLICABLE with measured9APPLICABLE39STALE. Original overall788APP530STALE and source43APP203STALE are correct. Preserve old snapshots and actual62b CI; do not rerun/rewrite evidence."
+    }
+  },
+  "context_inspection": "Native knowledge owner read13 stale code-map records. Bounded changed source diffs for10 non-workflow paths inspected; first truncated response was completed by rereading build-host-packages/build-surface. Generic component claims still hold; workflow sources inspected directly. Rebaseline after this code commit before final push; no invented new normative content.",
+  "limits": [
+    "Exact final-head hosted CI and subsequent complete trusted integration push remain separate.",
+    "Historical source246/software48 epochs remain authentic; only original owner may measure current applicability.",
+    "Parent1098OPEN/DRAFT heldmain and publicationunauthorized; PiHTTP and human/model/lifecycle choices remain explicit."
+  ],
+  "physical_source_sha256": {
+    ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+    ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+    ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+    ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+    ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+    ".github/scripts/test_ci_impact.py": "cd20e0fe139e69a48941cb2df2f80e80b4b4a5ebdb50775f87026b073deae40c",
+    ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+    ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+    ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+    ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+    ".github/workflows/docs.yml": "13c02f630120a3a659a0623a8066e4bb6853f5cbb4cc411358e2e5d9eda49464",
+    "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+  },
+  "staged_integrity_observation": {
+    "actual_branch_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+    "verification_fixture_commit": "f8da686e003f982732f22443a988ce6ffeabc959",
+    "candidate": "candidate-v1:edf57406504c9f5e2a89337dd681479e1041a6c68292a31bef094ae00ebf3653",
+    "result": "PASSED",
+    "frozen": 105,
+    "records": 1318,
+    "applicability": {
+      "APPLICABLE": 781,
+      "STALE": 537
+    },
+    "seconds": 37.657,
+    "source_ref_moved": false
+  },
+  "current_finite_subtotals": {
+    "software48-current-7ac01607": {
+      "rows": 48,
+      "applicability": {
+        "STALE": 39,
+        "APPLICABLE": 9
+      }
+    },
+    "source246-current-7ac": {
+      "rows": 246,
+      "applicability": {
+        "STALE": 203,
+        "APPLICABLE": 43
+      }
+    }
+  },
+  "measurement_limit": "Only measured counters/prose change after owner validation; proof/ledger/source inputs/statuses unchanged. Private distinct Git epoch preserves immutable historical reads, no source ref moved or qualification.",
+  "review_trigger_correction": {
+    "original_review": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-producer-union-review-sgbw1g6h\\review.json",
+      "sha256": "f3eb2d417b51b850cb0e6e4b966951cf7d49b4b61b8dfcefe6e8a8e008abbf0b",
+      "record": {
+        "schema": "affected-independent-security-functional-coverage-review/1",
+        "recorded_utc": "2026-11-16T04:25:51.990816+00:00",
+        "reviewer": "crypto_evidence_review",
+        "independent_of_current_authors": true,
+        "verdict": "PASS",
+        "security_verdict": "PASS",
+        "auth_crypto_verdict": "PASS",
+        "functional_verdict": "PASS_WITH_MEDIUM_FINDING",
+        "coverage_verdict": "PASS_WITH_MEDIUM_FINDING",
+        "candidate": "candidate-v1:4a742f596eab09b16116e8b4b92ae78406b91cea5bcef02bcc5b18b489af4be1",
+        "source_head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+        "patch_sha256": "d7f7bcd398f81646ac7007d7db2fcab2fd6089564ee22a4acd5c76c0a5df4956",
+        "full_subjects": {
+          ".github/major-qualification-policy.json": {
+            "index_oid": "432d2d60e55c490c710c7b13a38eb06fc8fd0d39",
+            "sha256": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            "bytes": 5457
+          },
+          ".github/major-test-selections.json": {
+            "index_oid": "d2ee1a6bb6a49d3313dba972fb4cfcd5ba783b6a",
+            "sha256": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            "bytes": 47917
+          },
+          ".github/scripts/major_qualification_report.py": {
+            "index_oid": "150e33194d8dd2079872d2a9da72a78d0e3a7132",
+            "sha256": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            "bytes": 82091
+          },
+          ".github/scripts/major_readiness.py": {
+            "index_oid": "daa06dd27f114f4e12c02d5814ad53d055629788",
+            "sha256": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            "bytes": 71658
+          },
+          ".github/scripts/site_playwright_observation.py": {
+            "index_oid": "cba26b9b2d856faa5b3718553f9fcee47288fd3a",
+            "sha256": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            "bytes": 37177
+          },
+          ".github/scripts/test_ci_impact.py": {
+            "index_oid": "91751cf7016fd07ff0617fe15dbb1003e0c6f58d",
+            "sha256": "3cdf8e54e3c66a336f1ac535fad6a9c1bc7b2716c0a90019eb2572547baae58a",
+            "bytes": 291387
+          },
+          ".github/scripts/test_major_qualification_report.py": {
+            "index_oid": "c3b58ec49a534864d262113f7dce480006cfd871",
+            "sha256": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            "bytes": 127647
+          },
+          ".github/scripts/test_pi_package.py": {
+            "index_oid": "b3b629589ecbc5a5f9ebfeaef1571bbe8f5ed9b7",
+            "sha256": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            "bytes": 271251
+          },
+          ".github/scripts/test_site_playwright_observation.py": {
+            "index_oid": "7803dc2c92d44e4f698403f41e1c1c1236b95b59",
+            "sha256": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            "bytes": 34523
+          },
+          ".github/workflows/ci.yml": {
+            "index_oid": "d77a58a49f84774327e2d7fb68de0afb9b003f00",
+            "sha256": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            "bytes": 264564
+          },
+          ".github/workflows/docs.yml": {
+            "index_oid": "7716303d07ca780010d7a7d3d0fb1de2f5fcc7f5",
+            "sha256": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "bytes": 20500
+          },
+          "CHANGELOG.md": {
+            "index_oid": "f7f4f39f2ff8519b2ab27bfaa6f030fdc6631748",
+            "sha256": "19e9f3576945ce0fc964b6d6f4a6223d99cd504ac1fdaf8d4b295530237aa6c6",
+            "bytes": 217129
+          },
+          "docs/state-contracts-major/execution/CHECKPOINT.md": {
+            "index_oid": "7fce341c13ac47d3691a3956aebc414cab19b970",
+            "sha256": "f27df8163ba05431e5a7ef2853010009ee183964d825a521fad977ca69938953",
+            "bytes": 4115
+          },
+          "docs/state-contracts-major/execution/evidence/producer-union-development.json": {
+            "index_oid": "913b98b1c36b293112082de90d6c19d2587193dd",
+            "sha256": "6d5cc1eeb83523759ca42c8038ef803c72c3c317c5d8ea018bb57c0ab49a3178",
+            "bytes": 111139
+          },
+          "docs/state-contracts-major/execution/progress.json": {
+            "index_oid": "4f8425cdb8d1da0e8c3837b768cb5f758c5fc9e1",
+            "sha256": "aa4e6aa537b818f5499217831ee84809894eaa3941bcf81128c10c534d7c3416",
+            "bytes": 299383
+          },
+          "site/playwright.config.ts": {
+            "index_oid": "df36e9dd4af05c392baa753bcf97bb357f41e40e",
+            "sha256": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8",
+            "bytes": 1684
+          }
+        },
+        "policy_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+        "policy_records": 32,
+        "findings": [
+          {
+            "id": "DOCS-TRIGGER-INPUTS",
+            "severity": "MEDIUM",
+            "file": ".github/workflows/docs.yml",
+            "line": 24,
+            "control": "Owning workflow reachability contract; test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input; CTX-SECURITY-CONTROLS#CON-009 evidence distinction",
+            "description": "The new Docs observer and its owning tests are absent from both push and pull_request path lists. A change limited to .github/scripts/site_playwright_observation.py or test_site_playwright_observation.py does not start the only Site-check step executing those controls, and produces no same-source Docs observation. Current union does trigger Docs through its workflow/site edits. Final readiness stays closed when evidence is missing, so this is a coverage/availability defect, not a privilege or qualification bypass.",
+            "remediation": "Add the exact new helper and owning test inputs to both event path lists, include the policy/selection inputs consumed by the producer, and extend the existing trigger contract to fail on removal of any owning input."
+          }
+        ],
+        "flag_classifications": [
+          {
+            "file": ".github/scripts/test_major_qualification_report.py",
+            "line": 1678,
+            "classification": "NONSECRET_UNIT_FIXTURE",
+            "origin": "Literal PrivateFixtureValue canary in mock.patch.dict approved test-process environment; not token-shaped or usable authentication.",
+            "sink_lifetime": "Owned fixture child receives sanitized environment; actual test asserts token_present false; context restores process environment. No host credential read, raw-value diagnostic or persisted credential."
+          },
+          {
+            "file": ".github/scripts/test_site_playwright_observation.py",
+            "line": 547,
+            "classification": "NEGATIVE_TOKEN_BOUNDARY_ASSERTION",
+            "origin": "Literal GH_TOKEN environment-key label only.",
+            "sink_lifetime": "assertNotIn checks no token transport before completed Pages upload; no secret value."
+          }
+        ],
+        "verified_boundaries": [
+          "Separate same-source original Core and Docs runs, repository/workflow/run/attempt/numeric-job/artifact/uploader identities; producer-time completed upload metadata kept separate from final whole trusted main success.",
+          "Original browser command once, strict Playwright expected/passed/no-retry/no-skip observations; served path/mode/size/SHA256 manifest joins original Pages tar; bounded descriptor-stable file reads.",
+          "Later explicit main dispatch transfers and verifies the original qualified Pages tar; no rebuild; pages/id-token write only in exact pinned deploy roles. No deployment performed during review.",
+          "Original full Windows Pi coverage and Ubuntu Docker-gated Sandbox commands remain once; declared first-party profiles closed and staged/consumed byte bindings checked; no third-party completeness claim.",
+          "Ordinary observed children credential-blind; approved metadata read token only in intended emit/verification steps; actions/contents read only for producers. SHA256 integrity only, no disabled TLS or untrusted shell.",
+          "POSIX changes supply inert missing Windows API fixture seams only; no removed test identity or new platform skips.",
+          "All old policy bindings and 34 selection groups retained exactly; only intended seven Docs and four TS cells added.",
+          "Sixteen embedded receipt original bytes/SHA256/parsed records join; twelve current source hashes join; original failed62b run preserved.",
+          "Task/decision/pending-choice/evidence/blocker contents unchanged; old observations and superseded checkpoint/delivery state preserved; current applicability 781 APP/537 STALE/0 UNKNOWN with software48 9/39 and source246 43/203."
+        ],
+        "evidence_counts": {
+          "embedded_original_receipt_joins": 16,
+          "current_source_hash_joins": 12,
+          "staged_files": 16,
+          "original_frozen_files": 105,
+          "advanced_records": 1318,
+          "applicable": 781,
+          "stale": 537,
+          "unknown": 0
+        },
+        "retained_test_scope": "Read actual actor and Root receipts without replay: Docs original18 plus bounded-read RED and final19 PASS; TS bounded producer/launcher/uploader tests and mutant; POSIX six targeted methods PASS; individual existing-reader failures and scoped successors retained. No invented combined full-suite PASS.",
+        "fullfile_gitleaks_findings": 0,
+        "limits": [
+          "No tests, browser, Docker, native, SDK, provider or network probes were run for this review.",
+          "Current local review does not establish new exact-head hosted success, trusted normal qualification, installed/native promotion, task/scenario/human/model closure or publication.",
+          "Prior branch reviews and authentic failed hosted runs remain history; no unchanged full-branch review repeated.",
+          "The MEDIUM trigger finding is reported under the reviewer contract; no CRITICAL/HIGH finding establishes a hard security block. Parent owns source correction and final merge readiness.",
+          "Parent PR1098 main merge and publication remain held."
+        ]
+      }
+    },
+    "finding": "MEDIUM: helper/control-only changes skipped Docs because trigger lists lacked producer inputs. Security conclusions retained; original finding not treated as resolved admission.",
+    "correction": "Both push and PR now include exact13 producer/control paths plus program corpus glob; unrelated source commits may remain conservatively pending for a genuine same-source Docs run. No trigger/parser bypass or deployment permission change.",
+    "actual_RED": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-trigger-inputs-target-red.json",
+      "sha256": "af44b283b42776bd9c4140faf5db3751e963da7a47e88b0a04a3db3a7d05e63d",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input"
+        ],
+        "exit_code": 1,
+        "seconds": 0.18837059999350458,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "1eb85e59c623fd1b73cf9de8219dbe99080fa4580fbd18e94d59a0984c84d7fe",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "d6389f5c48f602663336ea63e55250010288ae133c13f6039c657773ff0f9ffb",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "CHANGELOG.md": "19e9f3576945ce0fc964b6d6f4a6223d99cd504ac1fdaf8d4b295530237aa6c6",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "f27df8163ba05431e5a7ef2853010009ee183964d825a521fad977ca69938953",
+            "docs/state-contracts-major/execution/evidence/producer-union-development.json": "6d5cc1eeb83523759ca42c8038ef803c72c3c317c5d8ea018bb57c0ab49a3178",
+            "docs/state-contracts-major/execution/progress.json": "aa4e6aa537b818f5499217831ee84809894eaa3941bcf81128c10c534d7c3416",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "1eb85e59c623fd1b73cf9de8219dbe99080fa4580fbd18e94d59a0984c84d7fe",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "d6389f5c48f602663336ea63e55250010288ae133c13f6039c657773ff0f9ffb",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "dcf45eabcdde0c1fad6418f2bbbbbdc43e41d0aa2941c390fadbe7d55c2b9bab",
+            "CHANGELOG.md": "19e9f3576945ce0fc964b6d6f4a6223d99cd504ac1fdaf8d4b295530237aa6c6",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "f27df8163ba05431e5a7ef2853010009ee183964d825a521fad977ca69938953",
+            "docs/state-contracts-major/execution/evidence/producer-union-development.json": "6d5cc1eeb83523759ca42c8038ef803c72c3c317c5d8ea018bb57c0ab49a3178",
+            "docs/state-contracts-major/execution/progress.json": "aa4e6aa537b818f5499217831ee84809894eaa3941bcf81128c10c534d7c3416",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "43c90410b6c6fea188ed15b28f894473d0fefa1a2007d44e4e86c97dddfa870b"
+      }
+    },
+    "actual_GREEN": {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-trigger-inputs-owning-green.json",
+      "sha256": "c8f532c41a71bf2f65dad8dad8609850d6fa1bf53dcf69ec4bb857a5d120bae1",
+      "record": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input"
+        ],
+        "exit_code": 0,
+        "seconds": 0.1765601999941282,
+        "before": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "1eb85e59c623fd1b73cf9de8219dbe99080fa4580fbd18e94d59a0984c84d7fe",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "cd20e0fe139e69a48941cb2df2f80e80b4b4a5ebdb50775f87026b073deae40c",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "13c02f630120a3a659a0623a8066e4bb6853f5cbb4cc411358e2e5d9eda49464",
+            "CHANGELOG.md": "19e9f3576945ce0fc964b6d6f4a6223d99cd504ac1fdaf8d4b295530237aa6c6",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "f27df8163ba05431e5a7ef2853010009ee183964d825a521fad977ca69938953",
+            "docs/state-contracts-major/execution/evidence/producer-union-development.json": "6d5cc1eeb83523759ca42c8038ef803c72c3c317c5d8ea018bb57c0ab49a3178",
+            "docs/state-contracts-major/execution/progress.json": "aa4e6aa537b818f5499217831ee84809894eaa3941bcf81128c10c534d7c3416",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "after": {
+          "head": "62b2800cab45cf43dbd9f868cc68680da244446c",
+          "index": "1eb85e59c623fd1b73cf9de8219dbe99080fa4580fbd18e94d59a0984c84d7fe",
+          "files": {
+            ".github/major-qualification-policy.json": "e95822c7a138c84446fab9ca4e497b8e07dcd0be9ff6a66db6f41be3ffb56a2e",
+            ".github/major-test-selections.json": "0625aece54b94e0fed55522e4015abc6d6c327a3cdb025f6f362b5e0015f3084",
+            ".github/scripts/major_qualification_report.py": "49c6feedb5981f9469d2891285bc21dd8e8161a56e60c238e118db4ca584c3b9",
+            ".github/scripts/major_readiness.py": "6bd01eb7b465ada38c07acff3fb1af0f59a0e329356e5391931e90ec5b90718c",
+            ".github/scripts/site_playwright_observation.py": "fc8248fa4c8a7eb7cd540007e02b16a1ffa723b0f59eea13b22465e5cba99c62",
+            ".github/scripts/test_ci_impact.py": "cd20e0fe139e69a48941cb2df2f80e80b4b4a5ebdb50775f87026b073deae40c",
+            ".github/scripts/test_major_qualification_report.py": "8a41e138a4f04890cb512d8bf241398ea6269cd7c4c76fd5c3c78e51962e3832",
+            ".github/scripts/test_pi_package.py": "0fd2e2c2fe907e90e2f88953af69d84d30b3fbe0c49ba33b704a61c41cf49627",
+            ".github/scripts/test_site_playwright_observation.py": "465badb20628e0eeb968c0fef3fc863a3d20b014edcefc2a1e8d56c3c92d9b2d",
+            ".github/workflows/ci.yml": "26cd1380bf4d55e51f0fcd4ca4aca069d0966a857d17784e8645c6fa26e03fa3",
+            ".github/workflows/docs.yml": "13c02f630120a3a659a0623a8066e4bb6853f5cbb4cc411358e2e5d9eda49464",
+            "CHANGELOG.md": "19e9f3576945ce0fc964b6d6f4a6223d99cd504ac1fdaf8d4b295530237aa6c6",
+            "docs/state-contracts-major/execution/CHECKPOINT.md": "f27df8163ba05431e5a7ef2853010009ee183964d825a521fad977ca69938953",
+            "docs/state-contracts-major/execution/evidence/producer-union-development.json": "6d5cc1eeb83523759ca42c8038ef803c72c3c317c5d8ea018bb57c0ab49a3178",
+            "docs/state-contracts-major/execution/progress.json": "aa4e6aa537b818f5499217831ee84809894eaa3941bcf81128c10c534d7c3416",
+            "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+          }
+        },
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "5cdbffd31b7242c44d28acfa6df9d4c4c928766eb021c07f23aba7494e68479e"
+      }
+    },
+    "controls": "One original owning method PASS0.005s with16 inputs x push/PR/both missing-input vectors (48). Existing voice paths, equality and exact duplicate counts retained. No other suite replay."
+  }
+}

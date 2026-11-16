@@ -856,7 +856,7 @@ def validate_artifact(artifact, req, archive_digest):
             "missing, expired, mismatched or unauthenticated artifact")
 
 
-def validate_upload(job, artifact, step_name):
+def validate_upload(job, artifact, step_name, *, job_log=None):
     """Bind an artifact to the exact successful upload step in its claimed job.
 
     Artifact metadata identifies a run, not its uploader job. Authenticate the
@@ -876,8 +876,8 @@ def validate_upload(job, artifact, step_name):
         require(start.tzinfo and end.tzinfo and created.tzinfo and end >= start, 'invalid upload time identity')
         # Artifact-service and runner clocks are independent. The original
         # timestamped step log below authenticates the exact uploader identity.
-        raw = api(f"actions/jobs/{job['id']}/logs", binary=True)
-        require(len(raw) <= 32 * 1024 * 1024, 'upload attribution log exceeds bound')
+        raw = api(f"actions/jobs/{job['id']}/logs", binary=True) if job_log is None else job_log
+        require(type(raw) is bytes and len(raw) <= 32 * 1024 * 1024, 'upload attribution log exceeds bound')
         selected = []
         for line in raw.decode('utf-8-sig').splitlines():
             stamp, _, message = line.partition(' ')
@@ -899,6 +899,11 @@ def validate_upload(job, artifact, step_name):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if isinstance(record, dict) and record.get("schema") == "codearbiter-major-readiness/2":
+        from site_playwright_observation import verify as verify_docs
+        return verify_docs(record=record, requirements=req, run=run, artifact=artifact,
+            archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,
+            payload_members=payload_members)
     validate_run(run, req)
     validate_artifact(artifact, req, archive_digest)
     require(artifact.get("name") == "major-readiness-" + req["source_commit"], "wrong readiness artifact")
@@ -1116,6 +1121,9 @@ def produce(req, artifacts, jobs):
     No project report file or caller-supplied pass flag is an input. Each job's
     artifact binds its actual command population and exact package artifact IDs.
     """
+    if "Site | [Build] - Astro Pages" in req["cell_jobs"].values():
+        from site_playwright_observation import produce as produce_docs
+        return produce_docs(req, artifacts, jobs)
     by_name = {a["name"]: a for a in artifacts}
     by_id = {a["id"]: a for a in artifacts}
     results, payloads = [], {}
@@ -1155,6 +1163,13 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver"):
+                        owner_name, upload_step = {
+                            "major-source-inputs-pi-windows-coverage": ("Coverage union (Pi)  <os: windows-latest>", "Upload Pi source-test inputs"),
+                            "major-source-inputs-sandbox-driver": ("[CHECK] | [SBX ] | Sandbox driver contract", "Upload Sandbox source-test inputs"),
+                        }[payload["name"]]
+                        require(job.get("name") == owner_name, "source-test payload original owner differs")
+                        validate_upload(job, payload, upload_step)
                     content = artifact_bytes(payload, req)
                     payloads[payload_id] = {"artifact_id": payload_id,
                         "archive_sha256": digest(content), "members": members(content)}
@@ -1178,6 +1193,34 @@ def produce(req, artifacts, jobs):
             "producer_job_id": producers[0]['id'],
             **req, "results": sorted(results, key=lambda r: r["cell"]),
             "artifacts": list(payloads.values())}
+
+
+def load_verified_receipt(repo, source, run_id):
+    """Authenticate original evidence once for release and exact-tar promotion."""
+    req, run, artifacts, jobs = collect(repo, source, run_id)
+    candidates = [x for x in artifacts if x["name"] == "major-readiness-" + source]
+    require(len(candidates) == 1, "exactly one retained major-readiness artifact required")
+    artifact = candidates[0]
+    archive = artifact_bytes(artifact, req)
+    with zipfile.ZipFile(io.BytesIO(archive)) as z:
+        members(archive)
+        require(z.namelist() == ["major-readiness.json"], "unexpected readiness archive contents")
+        require(z.getinfo("major-readiness.json").file_size <= 4 * 1024 * 1024, "readiness exceeds bound")
+        record = json.loads(z.read("major-readiness.json"))
+    observed_members = {}
+    core_record = record.get("core", {}) if record.get("schema") == "codearbiter-major-readiness/2" else record
+    for payload in core_record.get("artifacts", []):
+        metadata = next((x for x in artifacts if x["id"] == payload["artifact_id"]), None)
+        validate_artifact(metadata, req, payload.get("archive_sha256"))
+        content = artifact_bytes(metadata, req)
+        require(digest(content) == payload.get("archive_sha256"), "payload archive digest differs")
+        observed_members[payload["artifact_id"]] = members(content)
+    # Rebuild the record from the test jobs' original authenticated reports;
+    # a readiness uploader cannot invent a passed cell after those jobs ran.
+    require(record == produce(req, artifacts, jobs), "readiness differs from original qualification evidence")
+    result = verify(record=record, requirements=req, run=run, artifact=artifact,
+        archive_digest=digest(archive), jobs=jobs, build_artifacts=artifacts, payload_members=observed_members)
+    return record, result
 
 
 def main(argv=None):
@@ -1211,28 +1254,8 @@ def main(argv=None):
             a.output.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
             print("PREPUBLICATION_READY receipt produced from authenticated executed evidence")
             return 0
-        req, run, artifacts, jobs = collect(a.repo, a.source, a.ci_run_id)
-        candidates = [x for x in artifacts if x["name"] == "major-readiness-" + a.source]
-        require(len(candidates) == 1, "exactly one retained major-readiness artifact required")
-        artifact = candidates[0]
-        archive = artifact_bytes(artifact, req)
-        with zipfile.ZipFile(io.BytesIO(archive)) as z:
-            members(archive)
-            require(z.namelist() == ["major-readiness.json"], "unexpected readiness archive contents")
-            require(z.getinfo("major-readiness.json").file_size <= 4 * 1024 * 1024, "readiness exceeds bound")
-            record = json.loads(z.read("major-readiness.json"))
-        observed_members = {}
-        for payload in record.get("artifacts", []):
-            metadata = next((x for x in artifacts if x["id"] == payload["artifact_id"]), None)
-            validate_artifact(metadata, req, payload.get("archive_sha256"))
-            content = artifact_bytes(metadata, req)
-            require(digest(content) == payload.get("archive_sha256"), "payload archive digest differs")
-            observed_members[payload["artifact_id"]] = members(content)
-        # Rebuild the record from the test jobs' original authenticated reports;
-        # a readiness uploader cannot invent a passed cell after those jobs ran.
-        require(record == produce(req, artifacts, jobs), "readiness differs from original qualification evidence")
-        print(json.dumps(verify(record=record, requirements=req, run=run, artifact=artifact,
-            archive_digest=digest(archive), jobs=jobs, build_artifacts=artifacts, payload_members=observed_members)))
+        _, result = load_verified_receipt(a.repo, a.source, a.ci_run_id)
+        print(json.dumps(result))
         return 0
     except (ReadinessError, OSError, ValueError, KeyError, TypeError, zipfile.BadZipFile) as exc:
         print("::error::Major publication pending: " + str(exc), file=sys.stderr)
