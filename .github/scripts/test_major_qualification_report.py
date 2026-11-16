@@ -15,6 +15,7 @@ from unittest import mock
 import zipfile
 
 import major_qualification_report as owner
+from _git_fixture_diagnostics import run_git_phase
 
 
 class ReportTest(unittest.TestCase):
@@ -573,7 +574,8 @@ def source_payload_fixture():
         with mock.patch.dict(os.environ, env, clear=True):
             for arguments in (("init","-q"),("add","."),("-c","user.name=fixture","-c","user.email=fixture@example.invalid",
                               "-c","commit.gpgsign=false","commit","-qm","source payload fixture")):
-                subprocess.run([git,"-C",str(repo),*arguments],check=True,capture_output=True,timeout=15)
+                phase="init" if arguments[0]=="init" else "index" if arguments[0]=="add" else "commit"
+                run_git_phase([git,"-C",str(repo),*arguments],phase=phase,trace_dir=base)
             staged = base / "inputs"
             manifest = owner.prepare_source_payload(repo, staged, owner.SOURCE_JOB)
             identity = owner.source_identity(repo)
@@ -939,6 +941,347 @@ class LocalReadGitEnvironmentTests(unittest.TestCase):
                 with self.assertRaises(owner.readiness.ReadinessError):
                     owner.readiness.command(arguments[:-1]+["0"*40],repo,local_adr=True)
             self.assertFalse(list(repo.rglob("__pycache__")))
+
+
+
+
+class VitestInvocationTests(unittest.TestCase):
+    """One inert original-command process; never real Vitest/host evidence."""
+
+    def invocation_fixture(self, *, document=None, mode="write", exit_code=0, drift=False):
+        temporary = tempfile.TemporaryDirectory(prefix="ca-vitest-original-")
+        self.addCleanup(temporary.cleanup)
+        base = Path(temporary.name).resolve(strict=True)
+        repo = base / "repo"
+        project = repo / "plugins" / "fixture" / "tools"
+        project.mkdir(parents=True)
+        sample = project / "sample.test.ts"
+        sample.write_text("// inert protocol sample\n", encoding="utf-8")
+        counter, raw, observation, blob = [base / name for name in
+            ("counter.json", "vitest.json", "observation.json", "original.blob")]
+        runner = repo / "inert-vitest.py"
+        named = {"testResults": [{"name": str(sample), "assertionResults": [
+            {"fullName": "original owner keeps one named result", "status": "passed"}]}]}
+        if document is not None:
+            named = document(sample)
+        runner.write_text("import json,os,pathlib,sys\n"
+            f"counter=pathlib.Path({str(counter)!r})\n"
+            "calls=json.loads(counter.read_text()) if counter.exists() else []\n"
+            "calls.append({'argv':sys.argv[1:],'cwd':os.getcwd()});counter.write_text(json.dumps(calls))\n"
+            "outputs={};args=iter(sys.argv[1:])\n"
+            "for arg in args:\n"
+            " if arg.startswith('--outputFile'):\n"
+            "  key,value=arg.split('=',1) if '=' in arg else (arg,next(args))\n"
+            "  outputs[key]=pathlib.Path(value)\n"
+            "for key,path in outputs.items():\n"
+            " path.parent.mkdir(parents=True,exist_ok=True)\n"
+            f" if key in ('--outputFile','--outputFile.json') and {mode!r}=='missing':continue\n"
+            f" if key in ('--outputFile','--outputFile.json') and {mode!r}=='replaced':\n"
+            f"  other=path.with_name('replacement.json');other.write_text(json.dumps({named!r}));os.replace(other,path);continue\n"
+            f" if key in ('--outputFile','--outputFile.json') and {mode!r}=='hardlinked':os.link(path,path.with_name('extra-link'))\n"
+            f" if key in ('--outputFile','--outputFile.json') and {mode!r}=='oversize':\n"
+            f"  with path.open('wb') as stream:stream.truncate({owner.MAX_JSON + 1})\n"
+            "  continue\n"
+            f" path.write_text(json.dumps({named!r}) if key in ('--outputFile','--outputFile.json') else 'opaque original blob')\n"
+            f"if {drift!r}:pathlib.Path({str(sample)!r}).write_text('// changed source')\n"
+            f"raise SystemExit({exit_code})\n",
+            encoding="utf-8")
+        subprocess.run(["git", "init", "-q", str(repo)], check=True)
+        subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(repo), "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+                        "commit", "-qm", "inert original reporter fixture"], check=True)
+        return SimpleNamespace(base=base, repo=repo, project=project, counter=counter, raw=raw,
+                               output=observation, blob=blob, runner=runner, named=named)
+
+    def test_original_multi_reporter_invocations_are_preserved_and_run_once(self):
+        for style in ("sandbox", "pi"):
+            with self.subTest(original_style=style):
+                fixture = self.invocation_fixture()
+                flags = (["--reporter=default", "--reporter=github-actions", "--reporter=json",
+                          "--outputFile.json=" + str(fixture.raw)] if style == "sandbox" else
+                         ["--coverage", "--reporter=blob", "--reporter=default",
+                          "--outputFile.blob=" + str(fixture.blob)])
+                arguments = [sys.executable, "-B", str(fixture.runner), "run", *flags]
+                try:
+                    code = owner.observe_vitest(fixture.repo, arguments, fixture.raw, fixture.output)
+                except ValueError as error:
+                    count = len(json.loads(fixture.counter.read_text())) if fixture.counter.exists() else 0
+                    self.fail(f"original {style} invocation refused; actual_processes={count}; {error}")
+                self.assertEqual(code, 0)
+                calls = json.loads(fixture.counter.read_text())
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(calls[0]["cwd"], str(fixture.repo))
+                self.assertEqual(calls[0]["argv"][:len(arguments)-3], arguments[3:])
+                observed = owner.load_json(fixture.output)
+                self.assertEqual(observed["original_argv"], arguments)
+                self.assertEqual(observed["argv"][:len(arguments)], arguments)
+                self.assertTrue(observed["source_stable"])
+                self.assertEqual(observed["tests"], [{"id": "vitest:plugins/fixture/tools/sample.test.ts:original owner keeps one named result", "result": "passed"}])
+                if style == "sandbox":
+                    self.assertEqual(observed["argv"], arguments)
+                else:
+                    self.assertEqual(fixture.blob.read_text(), "opaque original blob")
+                    self.assertEqual(observed["argv"].count("--reporter=json"), 1)
+
+
+
+    def test_project_cwd_and_split_reporter_arguments_use_the_original_process(self):
+        fixture = self.invocation_fixture()
+        arguments = [sys.executable, "-B", str(fixture.runner), "run", "--coverage",
+                     "--reporter", "blob", "--reporter", "default", "--outputFile.blob", str(fixture.blob)]
+        self.assertEqual(owner.observe_vitest(fixture.repo, arguments, fixture.raw, fixture.output,
+                                              execution_cwd="plugins/fixture/tools"), 0)
+        calls = json.loads(fixture.counter.read_text())
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["cwd"], str(fixture.project))
+        self.assertEqual(calls[0]["argv"][:len(arguments)-3], arguments[3:])
+        observed = owner.load_json(fixture.output)
+        self.assertEqual(observed["cwd"], str(fixture.project))
+        self.assertEqual(observed["original_argv"], arguments)
+        self.assertEqual(observed["raw_results_sha256"], owner.hashlib.sha256(fixture.raw.read_bytes()).hexdigest())
+        self.assertEqual(fixture.blob.read_text(), "opaque original blob")
+
+    def test_cli_project_cwd_is_forwarded_without_changing_original_flags(self):
+        fixture = self.invocation_fixture()
+        original = [sys.executable, "-B", str(fixture.runner), "run", "--reporters=json",
+                    "--outputFile.json", str(fixture.raw)]
+        self.assertEqual(owner.main(["observe-vitest", "--repo", str(fixture.repo),
+            "--execution-cwd", str(fixture.project), "--raw-results", str(fixture.raw),
+            "--output", str(fixture.output), "--", *original]), 0)
+        observed = owner.load_json(fixture.output)
+        self.assertEqual(observed["argv"], original)
+        self.assertEqual(observed["original_argv"], original)
+        self.assertEqual(len(json.loads(fixture.counter.read_text())), 1)
+        self.assertEqual(observed["cwd"], str(fixture.project))
+
+    def test_duplicate_conflicting_json_ownership_refuses_before_execution(self):
+        variants = [lambda f: ["--reporter=json", "--reporter=json"],
+            lambda f: ["--reporter=json", "--reporters=json"],
+            lambda f: ["--reporter=json", "--outputFile="+str(f.raw), "--outputFile.json="+str(f.raw)],
+            lambda f: ["--outputFile.json="+str(f.raw), "--outputFile.json="+str(f.raw)],
+            lambda f: ["--reporter=json", "--outputFile.json="+str(f.base/"wrong.json")],
+            lambda f: ["--reporter=blob", "--outputFile.blob="+str(f.raw)],
+            lambda f: ["--reporter=blob", "--outputFile="+str(f.blob)],
+            lambda f: ["--reporter"], lambda f: ["--outputFile.json"]]
+        for index, variant in enumerate(variants):
+            with self.subTest(vector=index):
+                f = self.invocation_fixture()
+                with self.assertRaises(ValueError):
+                    owner.observe_vitest(f.repo, [sys.executable, "-B", str(f.runner), *variant(f)], f.raw, f.output)
+                self.assertFalse(f.counter.exists())
+                self.assertFalse(f.output.exists())
+
+    def test_stale_or_linked_json_and_observation_paths_refuse_before_execution(self):
+        for vector in ("stale-result", "stale-observation", "linked-result", "same-output"):
+            with self.subTest(vector=vector):
+                f = self.invocation_fixture()
+                target = f.output
+                if vector == "stale-result": f.raw.write_text(json.dumps(f.named))
+                if vector == "stale-observation": f.output.write_text("{}")
+                if vector == "linked-result":
+                    other=f.base/"foreign.json";other.write_text(json.dumps(f.named));f.raw.symlink_to(other)
+                if vector == "same-output": target=f.raw
+                with self.assertRaises(ValueError):
+                    owner.observe_vitest(f.repo, [sys.executable, "-B", str(f.runner)], f.raw, target)
+                self.assertFalse(f.counter.exists())
+
+    def test_missing_replaced_hardlinked_or_oversize_results_cannot_be_admitted(self):
+        for mode in ("missing", "replaced", "hardlinked", "oversize"):
+            with self.subTest(mode=mode):
+                f=self.invocation_fixture(mode=mode)
+                with self.assertRaises((ValueError, OSError)):
+                    owner.observe_vitest(f.repo, [sys.executable, "-B", str(f.runner)], f.raw, f.output)
+                self.assertEqual(len(json.loads(f.counter.read_text())), 1)
+                self.assertFalse(f.output.exists())
+
+        # Exercise the replacement-identity check itself even where Windows
+        # refuses renaming the wrapper-held open file before the child exits.
+        f=self.invocation_fixture()
+        f.raw.write_text(json.dumps(f.named))
+        original=f.raw.stat()
+        f.raw.rename(f.base/"old-owned.json")
+        f.raw.write_text(json.dumps(f.named))
+        descriptor=os.open(f.raw,os.O_RDONLY | getattr(os,"O_BINARY",0))
+        try:
+            with self.assertRaisesRegex(ValueError,"replaced, linked or exceeds bound"):
+                owner._vitest_owned_json(f.raw,descriptor,original)
+        finally:
+            os.close(descriptor)
+
+    def test_malformed_duplicate_or_outside_named_json_is_not_a_named_pass(self):
+        variants = [lambda sample: {"testResults": [{"name":str(sample),"assertionResults":[{"fullName":"same","status":"passed"}]*2}]},
+            lambda sample: {"testResults": [{"name":str(sample),"assertionResults":[{"fullName":"","status":"passed"}]}]},
+            lambda sample: {"testResults": [{"name":str(sample),"assertionResults":[{"fullName":"name","status":{}}]}]},
+            lambda sample: {"testResults": [{"name":str(sample.parents[4]/"outside.test.ts"),"assertionResults":[{"fullName":"name","status":"passed"}]}]},
+            lambda sample: {"testResults": []}, lambda sample: {"blobGraph":"not named JSON"}]
+        for index, document in enumerate(variants):
+            with self.subTest(vector=index):
+                f=self.invocation_fixture(document=document)
+                with self.assertRaises(ValueError):
+                    owner.observe_vitest(f.repo, [sys.executable, "-B", str(f.runner)], f.raw, f.output)
+                self.assertEqual(len(json.loads(f.counter.read_text())),1)
+                self.assertFalse(f.output.exists())
+
+    def test_pending_failed_exit_and_source_drift_remain_nonqualifying_observations(self):
+        for status, exit_code, drift in [("pending",0,False),("failed",7,False),("passed",0,True)]:
+            with self.subTest(status=status,exit_code=exit_code,drift=drift):
+                document=lambda sample:{"testResults":[{"name":str(sample),"assertionResults":[{"fullName":"original","status":status}]}]}
+                f=self.invocation_fixture(document=document,exit_code=exit_code,drift=drift)
+                self.assertEqual(owner.observe_vitest(f.repo,[sys.executable,"-B",str(f.runner)],f.raw,f.output),exit_code)
+                observed=owner.load_json(f.output)
+                self.assertEqual(observed["tests"][0]["result"],"skipped" if status=="pending" else status)
+                self.assertEqual(observed["exit_code"],exit_code)
+                self.assertEqual(observed["source_stable"],not drift)
+                self.assertEqual(len(json.loads(f.counter.read_text())),1)
+
+    def test_outside_nonexistent_and_reparse_project_cwd_refuse_before_execution(self):
+        for vector in ("outside","missing","file","linked"):
+            with self.subTest(vector=vector):
+                f=self.invocation_fixture()
+                cwd={"outside":f.base,"missing":f.repo/"missing","file":f.runner}.get(vector)
+                if vector=="linked":
+                    cwd=f.repo/"linked-project";cwd.symlink_to(f.project,target_is_directory=True)
+                with self.assertRaises(ValueError):
+                    owner.observe_vitest(f.repo,[sys.executable,"-B",str(f.runner)],f.raw,f.output,execution_cwd=cwd)
+                self.assertFalse(f.counter.exists())
+
+    def test_timeout_keeps_original_containment_and_never_writes_a_pass(self):
+        f=self.invocation_fixture()
+        process=SimpleNamespace(wait=mock.Mock(side_effect=subprocess.TimeoutExpired("owned inert",1200)))
+        with mock.patch.object(owner,"start_process",return_value=process) as start, \
+             mock.patch.object(owner,"terminate_tree",return_value="confirmed") as terminate:
+            with self.assertRaisesRegex(ValueError,"timed out; containment=confirmed"):
+                owner.observe_vitest(f.repo,[sys.executable,"-B",str(f.runner)],f.raw,f.output)
+        process.wait.assert_called_once_with(timeout=1200)
+        start.assert_called_once();terminate.assert_called_once_with(process)
+        self.assertFalse(f.output.exists())
+
+
+
+
+class SourceFixtureDiagnosticTests(unittest.TestCase):
+    def test_index_timeout_retains_closed_note_and_original_error_before_cleanup(self):
+        problem=subprocess.TimeoutExpired(["git","add","."],15,output=b"PRIVATE_STDOUT_CANARY",stderr=b"PRIVATE_STDERR_CANARY")
+        calls=[];trace_paths=[];real_run=subprocess.run
+        def run(argv,**kwargs):
+            calls.append((argv,kwargs))
+            if argv[-2:]==["add","."]:
+                value=kwargs.get("env",os.environ).get("GIT_TRACE2_EVENT")
+                if value:
+                    trace=Path(value);trace_paths.append(trace)
+                    trace.write_text(json.dumps({"event":"region_enter","category":"index","label":"do_read_index","t_rel":0.125,
+                        "argv":["PRIVATE_TRACE_CANARY"],"path":"PRIVATE_PATH_CANARY"})+"\n",newline="\n")
+                raise problem
+            return real_run(argv,**kwargs)
+        with mock.patch.object(subprocess,"run",side_effect=run):
+            with self.assertRaises(subprocess.TimeoutExpired) as caught:
+                with source_payload_fixture():self.fail("setup unexpectedly succeeded")
+        self.assertIs(caught.exception,problem)
+        self.assertEqual(len(calls),2)
+        self.assertEqual(calls[-1][0][-2:],["add","."])
+        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+        notes=getattr(problem,"__notes__",[])
+        self.assertTrue(notes,"fixture Git timeout lost the closed phase diagnostic before cleanup")
+        note=next(item for item in notes if item.startswith("Fixture Git diagnostic: "))
+        diagnostic=json.loads(note.removeprefix("Fixture Git diagnostic: "))
+        self.assertEqual(diagnostic["phase"],"index")
+        self.assertEqual(diagnostic["failure"],"timeout")
+        self.assertEqual(diagnostic["trace"]["events"][0]["event"],"region_enter")
+        for secret in ("PRIVATE_STDOUT_CANARY","PRIVATE_STDERR_CANARY","PRIVATE_TRACE_CANARY","PRIVATE_PATH_CANARY"):
+            self.assertNotIn(secret,note)
+        self.assertTrue(trace_paths)
+        self.assertTrue(all(not path.exists() for path in trace_paths))
+
+    def test_real_success_keeps_three_commands_and_trace_outside_clean_source(self):
+        real_run=subprocess.run;calls=[]
+        def run(argv,**kwargs):
+            if "-C" in argv and argv[-1:] in (["."],["source payload fixture"],["-q"]):
+                calls.append((list(argv),kwargs))
+            return real_run(argv,**kwargs)
+        with mock.patch.object(subprocess,"run",side_effect=run):
+            with source_payload_fixture() as fixture:
+                traces=sorted(fixture["base"].glob("fixture-git-*.trace.jsonl"))
+                self.assertEqual(len(traces),3)
+                self.assertTrue(all(path.parent==fixture["base"] and path.stat().st_size>0 for path in traces))
+                self.assertTrue(owner.source_identity(fixture["repo"])["clean"])
+        self.assertEqual(len(calls),3)
+        self.assertEqual([argv[-2:] for argv,_ in calls[:2]],[["init","-q"],["add","."]])
+        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+
+    def test_projection_drops_unsafe_fields_and_rejects_malformed_nonfinite_data(self):
+        import _git_fixture_diagnostics as diagnostics
+        safe={"event":"region_enter","category":"index","label":"do_read_index","t_rel":0.125,"nesting":1,
+              "argv":["PRIVATE_TRACE_CANARY"],"path":"PRIVATE_PATH_CANARY"}
+        projected=diagnostics._project((json.dumps(safe)+"\n").encode())
+        self.assertEqual(projected["events"],[{"event":"region_enter","category":"index","label":"do_read_index","t_rel":0.125,"nesting":1}])
+        self.assertEqual(len(projected["unknown_sha256"]),1)
+        for raw in (b'{"event":"region_enter","t_rel":NaN}',b'{"event":"region_enter","t_rel":Infinity}',
+                    b'{"event":"region_enter","t_rel":true}',b'{"event":"start","event":"exit"}',
+                    b'not-json-PRIVATE_TRACE_CANARY',b'{"event":["PRIVATE_TRACE_CANARY"]}'):
+            with self.subTest(raw_hash=owner.readiness.digest(raw)):
+                value=diagnostics._project(raw)
+                self.assertEqual(value["status"],"invalid")
+                self.assertEqual(value["events"],[])
+                self.assertNotIn("PRIVATE_TRACE_CANARY",json.dumps(value))
+        secret={"event":"data","category":"PRIVATE_CATEGORY_CANARY","label":"PRIVATE_LABEL_CANARY","value":"PRIVATE_VALUE_CANARY"}
+        value=diagnostics._project(json.dumps(secret).encode())
+        self.assertEqual(value["events"],[{"event":"data","category":"other","label":"other"}])
+        self.assertNotIn("CANARY",json.dumps(value))
+
+    def test_owned_reader_refuses_large_linked_and_reparse_sources_before_open(self):
+        import _git_fixture_diagnostics as diagnostics
+        with tempfile.TemporaryDirectory(prefix="ca-trace-owned-") as directory:
+            root=Path(directory);trace=root/"trace.jsonl"
+            trace.write_bytes(b"x"*(diagnostics.MAX_TRACE_BYTES+1))
+            with mock.patch.object(diagnostics.os,"open") as opened:
+                self.assertEqual(diagnostics._read_trace(trace,root)["status"],"over_limit")
+                opened.assert_not_called()
+            trace.unlink();other=root/"other";other.write_bytes(b'{"event":"start"}\n')
+            os.link(other,trace)
+            with mock.patch.object(diagnostics.os,"open") as opened:
+                self.assertEqual(diagnostics._read_trace(trace,root)["status"],"unavailable")
+                opened.assert_not_called()
+            trace.unlink();trace.write_bytes(b'{"event":"start"}\n')
+            original=Path.lstat
+            def lstat(path,*args,**kwargs):
+                info=original(path,*args,**kwargs)
+                if path==trace:
+                    return SimpleNamespace(st_mode=info.st_mode,st_nlink=info.st_nlink,st_size=info.st_size,
+                        st_file_attributes=0x400)
+                return info
+            with mock.patch.object(Path,"lstat",lstat),mock.patch.object(diagnostics.os,"open") as opened:
+                self.assertEqual(diagnostics._read_trace(trace,root)["status"],"unavailable")
+                opened.assert_not_called()
+
+    def test_event_and_note_caps_never_reflect_unknown_payloads(self):
+        import _git_fixture_diagnostics as diagnostics
+        record={"event":"region_enter","category":"index","label":"do_read_index","t_rel":0.5,"secret":"PRIVATE_TRACE_CANARY"}
+        raw=((json.dumps(record)+"\n")*(diagnostics.MAX_LINES+20)).encode()
+        value=diagnostics._project(raw)
+        self.assertEqual(value["status"],"truncated")
+        self.assertEqual(len(value["events"]),diagnostics.MAX_EVENTS)
+        self.assertLessEqual(len(value["unknown_sha256"]),8)
+        self.assertGreater(value["dropped"],0)
+        with mock.patch.object(diagnostics,"_read_trace",return_value=value):
+            note=diagnostics._failure_note(subprocess.TimeoutExpired("owned",15),"index",None,None,None)
+        self.assertLessEqual(len(note.encode()),diagnostics.MAX_NOTE_BYTES)
+        self.assertNotIn("PRIVATE_TRACE_CANARY",note)
+
+    def test_diagnostic_setup_or_note_failure_preserves_original_process_error(self):
+        import _git_fixture_diagnostics as diagnostics
+        for broken in ("_prepare_trace","_failure_note"):
+            problem=subprocess.CalledProcessError(7,["git","add","."],output=b"PRIVATE_STDOUT_CANARY",stderr=b"PRIVATE_STDERR_CANARY")
+            before=dict(os.environ)
+            with tempfile.TemporaryDirectory(prefix="ca-trace-failure-") as directory, \
+                 mock.patch.object(diagnostics,broken,side_effect=RuntimeError("PRIVATE_DIAG_CANARY")), \
+                 mock.patch.object(diagnostics.subprocess,"run",side_effect=problem) as run:
+                with self.assertRaises(subprocess.CalledProcessError) as caught:
+                    diagnostics.run_git_phase(["git","add","."],phase="index",trace_dir=directory)
+                self.assertIs(caught.exception,problem)
+                run.assert_called_once()
+                self.assertEqual(run.call_args.kwargs["timeout"],15)
+                self.assertEqual(dict(os.environ),before)
+                self.assertNotIn("CANARY","\n".join(getattr(problem,"__notes__",[])))
 
 
 if __name__ == "__main__":

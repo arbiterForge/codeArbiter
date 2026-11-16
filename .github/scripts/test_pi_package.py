@@ -1777,12 +1777,16 @@ class PiPackageTests(unittest.TestCase):
                 self.assertIsNone(process.poll())
                 self.assertEqual(int(process._handle), original_handle)
                 # Physical capability is observed, never inferred from the runner label.
-                if not native.CDB.exists():
+                try:
+                    available_profile, _, _ = native._tool_profile(time.monotonic() + native.SECONDS)
+                except (OSError, ValueError):
+                    available_profile = None
+                if available_profile is None:
                     unavailable = native.capture(process, Path(node))
                     self.assertEqual(unavailable["debugger"]["status"], "unavailable")
                     self.assertEqual(unavailable["after"]["state"], "running")
                 else:
-                    # Existing SDK only: no download, install, Pi or provider.
+                    # Existing closed SDK or inbox profile only: no installation.
                     # A present tool must demonstrate recognized frames here;
                     # unknown status cannot masquerade as capability proof.
                     actual = native.capture(process, Path(node))
@@ -1791,7 +1795,8 @@ class PiPackageTests(unittest.TestCase):
                     self.assertEqual(actual["after"]["state"], "running")
                     report = actual["debugger"]
                     self.assertEqual(report["status"], "captured")
-                    self.assertEqual(set(report["toolHashes"]), {"cdb.exe", "dbgeng.dll", "dbghelp.dll"})
+                    self.assertEqual(report["profile"], available_profile)
+                    self.assertEqual(set(report["toolHashes"]), set(native.TOOL_FILES[available_profile]))
                     for digest in report["toolHashes"].values():
                         self.assertRegex(digest, r"\A[0-9a-f]{64}\Z")
                     self.assertLessEqual(len(json.dumps(actual).encode("utf-8")), native.MAX_JSON)
@@ -5016,6 +5021,304 @@ def platform_package_suites():
             partition = "package"
         suites[partition].addTest(case)
     return suites
+
+
+class DebuggerInboxTests(unittest.TestCase):
+    def test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox = root / "protected-system"
+            inbox.mkdir()
+            for name in ("dbgeng.dll", "dbghelp.dll"):
+                (inbox / name).write_bytes(("inert " + name).encode())
+            image = root / "owned-node.exe"
+            image.write_bytes(b"inert image, never executed")
+            missing = root / "absent-sdk" / "cdb.exe"
+            kernel = SimpleNamespace(
+                duplicate_query=mock.Mock(return_value=77), close=mock.Mock(),
+                snapshot=mock.Mock(return_value={"pid": 33, "created": 44,
+                    "state": "running", "image": str(image)}), available=mock.Mock())
+            api = SimpleNamespace(GetSystemDirectoryW=mock.Mock(
+                side_effect=lambda buffer, count: self._fill_system_directory(buffer, count, inbox)))
+            process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                                      _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+            requests = []
+            class Backend:
+                check = staticmethod(sdk.Engine.check)
+                def __init__(self, path):
+                    self_test.assertEqual(path, inbox)
+                def policy(self):
+                    return sdk.POLICY
+                def call(self, *args):
+                    return 0
+                def threads(self, deadline):
+                    return [{"frames": [{"module": "node", "returnOffset": 16}]}], False
+                def close(self):
+                    return True
+            self_test = self
+            # Preserve the actual encoded request after the parent's stdin close.
+            class Input(io.BytesIO):
+                def close(self):
+                    if not self.closed and self.getvalue():
+                        requests.append(json.loads(self.getvalue()))
+                    super().close()
+            process.stdin = Input()
+            def collect(child, available, *, deadline):
+                self.assertIs(child, process)
+                response = sdk.run(requests[-1], native, engine_factory=Backend)
+                return "captured", json.dumps(response).encode()
+            with mock.patch.object(native, "CDB", missing), \
+                 mock.patch.object(native, "DEFAULT_CDB", missing, create=True), \
+                 mock.patch.object(native.ctypes, "WinDLL", return_value=api), \
+                 mock.patch.object(native, "WindowsKernel", return_value=kernel), \
+                 mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                 mock.patch.object(native, "_collect", side_effect=collect), \
+                 mock.patch.dict(os.environ, {"SystemRoot": str(root / "attacker"),
+                     "WINDIR": str(root / "attacker"), "PATH": str(root / "attacker"),
+                     "_NT_SYMBOL_PATH": "PrivateFixtureValue"}):
+                actual = native._debugger(33, kernel, time.monotonic() + 5,
+                    binding={"handle": 11, "created": 44, "image": str(image)})
+            self.assertEqual(actual["status"], "captured", "DLL-only inbox must reach the bound worker")
+            self.assertEqual(actual["profile"], "inbox-v1")
+            self.assertEqual(launch.call_count, 1)
+            self.assertEqual(set(actual["toolHashes"]), {"dbgeng.dll", "dbghelp.dll"})
+            self.assertEqual(actual["toolHashes"], {name: hashlib.sha256((inbox / name).read_bytes()).hexdigest()
+                                                    for name in ("dbgeng.dll", "dbghelp.dll")})
+            self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+            self.assertFalse((inbox / "cdb.exe").exists())
+            kernel.duplicate_query.assert_called_once_with(11)
+            self.assertEqual(kernel.close.call_args_list, [mock.call(77), mock.call(77)])
+            process._handle.Close.assert_called_once_with()
+
+    def test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files(self):
+        import _windows_rpc_timeout as native
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox, sdk_root = root / "inbox", root / "sdk"
+            inbox.mkdir()
+            sdk_root.mkdir()
+            for folder, names in ((inbox, native.TOOL_FILES["inbox-v1"]),
+                                  (sdk_root, native.TOOL_FILES["sdk-v1"])):
+                for name in names:
+                    (folder / name).write_bytes((folder.name + name).encode())
+            selected = sdk_root / "cdb.exe"
+            with mock.patch.object(native, "CDB", selected), \
+                 mock.patch.object(native, "DEFAULT_CDB", selected), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox) as system:
+                profile, actual, hashes = native._tool_profile(time.monotonic() + 5)
+                self.assertEqual((profile, actual), ("sdk-v1", sdk_root))
+                self.assertEqual(set(hashes), set(native.TOOL_FILES["sdk-v1"]))
+                system.assert_not_called()
+                for name in native.TOOL_FILES["sdk-v1"]:
+                    with self.subTest(missing_sdk_member=name):
+                        original = (sdk_root / name).read_bytes()
+                        (sdk_root / name).unlink()
+                        with self.assertRaises(OSError):
+                            native._tool_profile(time.monotonic() + 5)
+                        system.assert_not_called()
+                        (sdk_root / name).write_bytes(original)
+            with mock.patch.object(native, "CDB", root / "override-missing" / "cdb.exe"), \
+                 mock.patch.object(native, "_system_directory") as system:
+                with self.assertRaisesRegex(ValueError, "selected SDK unavailable"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+            missing = root / "default-missing" / "cdb.exe"
+            with mock.patch.object(native, "CDB", missing), \
+                 mock.patch.object(native, "DEFAULT_CDB", missing), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox):
+                profile, actual, hashes = native._tool_profile(time.monotonic() + 5)
+                self.assertEqual((profile, actual), ("inbox-v1", inbox))
+                self.assertEqual(set(hashes), {"dbgeng.dll", "dbghelp.dll"})
+                for name in native.TOOL_FILES["inbox-v1"]:
+                    with self.subTest(linked_inbox_member=name):
+                        target = root / ("target-" + name)
+                        (inbox / name).rename(target)
+                        (inbox / name).symlink_to(target)
+                        with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                            native._tool_profile(time.monotonic() + 5)
+                        (inbox / name).unlink()
+                        target.rename(inbox / name)
+                with self.assertRaisesRegex(ValueError, "identity bound"):
+                    native._tool_profile(time.monotonic() - 1)
+            linked = root / "linked-sdk"
+            linked.symlink_to(sdk_root, target_is_directory=True)
+            with mock.patch.object(native, "CDB", linked / "cdb.exe"), \
+                 mock.patch.object(native, "_system_directory") as system:
+                with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+            # A missing SDK leaf must not hide a reparse ancestor.
+            absent_below_link = linked / "missing" / "cdb.exe"
+            with mock.patch.object(native, "CDB", absent_below_link), \
+                 mock.patch.object(native, "DEFAULT_CDB", absent_below_link), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox) as system:
+                with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+
+    def test_system_directory_uses_typed_os_api_and_rejects_invalid_paths(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox = root / "protected"
+            inbox.mkdir()
+            for failure in (None, "zero", "oversize", "relative", "mismatch", "linked"):
+                with self.subTest(failure=failure):
+                    def query(buffer, count):
+                        if failure == "zero":
+                            return 0
+                        if failure == "oversize":
+                            return count
+                        path = Path("relative") if failure == "relative" else inbox
+                        if failure == "linked":
+                            path = root / "link"
+                            if not path.exists():
+                                path.symlink_to(inbox, target_is_directory=True)
+                        size = self._fill_system_directory(buffer, count, path)
+                        return size + int(failure == "mismatch")
+                    function = mock.Mock(side_effect=query)
+                    api = SimpleNamespace(GetSystemDirectoryW=function)
+                    with mock.patch.object(native.ctypes, "WinDLL", return_value=api) as loader, \
+                         mock.patch.dict(os.environ, {"SystemRoot": "PrivateFixtureValue", "WINDIR": "PrivateFixtureValue", "PATH": "PrivateFixtureValue"}):
+                        if failure is None:
+                            self.assertEqual(native._system_directory(), inbox)
+                        else:
+                            with self.assertRaises(ValueError):
+                                native._system_directory()
+                    loader.assert_called_once_with("kernel32", use_last_error=True, winmode=0x800)
+                    self.assertIs(function.restype, native.wintypes.UINT)
+                    self.assertEqual(function.argtypes, [native.wintypes.LPWSTR, native.wintypes.UINT])
+
+    def test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox, sdk_root, foreign = (root / name for name in ("inbox", "sdk", "foreign"))
+            for folder in (inbox, sdk_root, foreign):
+                folder.mkdir()
+                for name in native.TOOL_FILES["sdk-v1"]:
+                    (folder / name).write_bytes(("inert " + name).encode())
+            image = root / "image.exe"
+            image.write_bytes(b"inert")
+            snapshot = {"pid": 33, "created": 44, "state": "running", "image": str(image)}
+            kernel = SimpleNamespace(snapshot=mock.Mock(return_value=snapshot), close=mock.Mock())
+            backend = SimpleNamespace(policy=lambda: sdk.POLICY, check=sdk.Engine.check,
+                call=mock.Mock(return_value=0), threads=lambda deadline: ([{"frames": [{"module": "node", "returnOffset": 1}]}], False),
+                close=lambda: True)
+            for profile, folder in (("inbox-v1", inbox), ("sdk-v1", sdk_root)):
+                request = {"schemaVersion": 2, "profile": profile, "handle": 77, "pid": 33, "created": 44,
+                    "image": str(image), "sdk": str(folder), "hashes": {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
+                    for name in native.TOOL_FILES[profile]}, "deadline": time.monotonic() + 5}
+                for failure in (None, "profile", "root", "extra", "missing", "hash", "tamper", "pid", "created", "image", "state", "deadline", "network", "cleanup"):
+                    with self.subTest(profile=profile, failure=failure):
+                        changed = copy.deepcopy(request)
+                        changed["deadline"] = time.monotonic() + 5
+                        state = dict(snapshot)
+                        if failure == "profile": changed["profile"] = "PrivateFixtureValue"
+                        if failure == "root": changed["sdk"] = str(foreign)
+                        if failure == "extra": changed["hashes"]["other.dll"] = "a" * 64
+                        if failure == "missing": changed["hashes"].pop("dbghelp.dll")
+                        if failure == "hash": changed["hashes"]["dbgeng.dll"] = "b" * 64
+                        if failure == "tamper": (folder / "dbgeng.dll").write_bytes(b"tampered")
+                        if failure == "pid": state["pid"] = 99
+                        if failure == "created": state["created"] = 55
+                        if failure == "image": state["image"] = str(foreign / "dbgeng.dll")
+                        if failure == "state": state["state"] = "signaled"
+                        if failure == "deadline": changed["deadline"] = time.monotonic() - 1
+                        kernel.snapshot.return_value = state
+                        backend.policy = lambda: sdk.ALLOW_NETWORK if failure == "network" else sdk.POLICY
+                        backend.close = lambda: failure != "cleanup"
+                        factory = mock.Mock(return_value=backend)
+                        with mock.patch.object(native, "CDB", sdk_root / "cdb.exe"), \
+                             mock.patch.object(native, "_system_directory", return_value=inbox), \
+                             mock.patch.object(native, "WindowsKernel", return_value=kernel):
+                            actual = sdk.run(changed, native, engine_factory=factory)
+                        if failure == "tamper": (folder / "dbgeng.dll").write_bytes(b"inert dbgeng.dll")
+                        if failure is None:
+                            self.assertEqual(actual["status"], "captured")
+                            self.assertEqual(factory.call_args_list, [mock.call(folder)])
+                            self.assertEqual(actual["profile"], profile)
+                            self.assertIsNotNone(sdk.decode_result(json.dumps(actual).encode(), 33, 44, profile=profile))
+                        else:
+                            self.assertNotEqual(actual["status"], "captured")
+                            self.assertEqual(actual["threads"], [])
+                            if failure not in ("network", "cleanup"):
+                                factory.assert_not_called()
+                            if failure in ("pid", "created", "image", "state"):
+                                self.assertEqual(actual["status"], "identity_refused")
+                            if failure == "cleanup": self.assertEqual(actual["status"], "cleanup_unknown")
+                        self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+
+    def test_profile_transport_keeps_legacy_decoder_and_refuses_mismatches(self):
+        import _windows_dbgeng as sdk
+        old = {"schemaVersion": 1, "status": "captured", "threads": [{"frames": [
+            {"module": "node", "returnOffset": 16}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True,
+            "policy": sdk.POLICY, "detached": True, "hresult": 0}
+        self.assertEqual(sdk.decode_result(json.dumps(old).encode(), 33, 44), old)
+        self.assertIsNone(sdk.decode_result(json.dumps(old).encode(), 33, 44, profile="inbox-v1"))
+        current = {**old, "schemaVersion": 2, "profile": "inbox-v1"}
+        self.assertEqual(sdk.decode_result(json.dumps(current).encode(), 33, 44, profile="inbox-v1"), current)
+        self.assertIsNone(sdk.decode_result(json.dumps(current).encode(), 33, 44, profile="sdk-v1"))
+        for key, value in (("profile", "PrivateFixtureValue"), ("profile", None), ("schemaVersion", True),
+                           ("schemaVersion", 3), ("policy", sdk.POLICY | sdk.ALLOW_NETWORK),
+                           ("bound", False), ("detached", False), ("pid", 99), ("created", 55),
+                           ("threads", [{"frames": [{"module": "private", "returnOffset": 1}]}])):
+            with self.subTest(key=key, value_kind=type(value).__name__):
+                self.assertIsNone(sdk.decode_result(json.dumps({**current, key: value}).encode(), 33, 44, profile="inbox-v1"))
+        self.assertIsNone(sdk.decode_result(json.dumps({**current, "unexpected": 1}).encode(), 33, 44, profile="inbox-v1"))
+
+    def test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            hashes = {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]}
+            good = {"schemaVersion": 2, "profile": "inbox-v1", "status": "captured", "threads": [{"frames": [
+                {"module": "node", "returnOffset": 16}]}], "truncated": False,
+                "pid": 33, "created": 44, "bound": True, "attached": True,
+                "policy": sdk.POLICY, "detached": True, "hresult": 0}
+            legacy = {k: v for k, v in good.items() if k != "profile"}
+            legacy["schemaVersion"] = 1
+            vectors = (("captured", json.dumps(good).encode(), "captured"),
+                       ("captured", json.dumps({**good, "profile": "sdk-v1"}).encode(), "transport_failed"),
+                       ("captured", json.dumps(legacy).encode(), "transport_failed"),
+                       ("captured", b"PrivateFixtureValue", "transport_failed"),
+                       ("deadline", b"PrivateFixtureValue", "deadline"),
+                       ("output_limit", b"PrivateFixtureValue", "output_limit"))
+            for transport, raw, expected in vectors:
+                with self.subTest(expected=expected, raw_length=len(raw)):
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                        _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+                    with mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root, hashes)), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                         mock.patch.object(native, "_collect", return_value=(transport, raw)):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "image.exe")})
+                    self.assertEqual(actual["status"], expected)
+                    self.assertEqual(actual["profile"], "inbox-v1")
+                    self.assertEqual(launch.call_count, 1)
+                    if expected != "captured": self.assertEqual(actual["threads"], [])
+                    self.assertEqual(actual["truncated"], expected == "output_limit")
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+                    kernel.close.assert_called_once_with(77)
+                    process._handle.Close.assert_called_once_with()
+
+    @staticmethod
+    def _fill_system_directory(buffer, count, path):
+        value = str(path)
+        if len(value) >= count:
+            return len(value) + 1
+        buffer.value = value
+        return len(value)
 
 
 if __name__ == "__main__":

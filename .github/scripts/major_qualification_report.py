@@ -591,42 +591,177 @@ def admit_go(record, binding, source_tree):
 
 
 def admit_vitest(record, *, repo, before, after, argv, exit_code, run_id):
-    require(isinstance(record, dict) and isinstance(record.get("testResults"), list), "Vitest named outcomes missing")
-    rows = []
+    require(isinstance(record, dict) and isinstance(record.get("testResults"), list)
+            and len(record["testResults"]) <= MAX_TESTS, "Vitest named outcomes missing or exceed bound")
+    rows, identities = [], set()
     repo = Path(repo).resolve()
     for suite in record["testResults"]:
-        path = Path(suite["name"]).resolve().relative_to(repo).as_posix()
+        require(isinstance(suite, dict) and isinstance(suite.get("name"), str)
+                and 0 < len(suite["name"].encode("utf-8")) <= 4096
+                and isinstance(suite.get("assertionResults"), list), "malformed Vitest suite")
+        try:
+            path = Path(suite["name"]).resolve().relative_to(repo).as_posix()
+        except (OSError, ValueError):
+            raise ValueError("Vitest suite is outside source repository") from None
         for case in suite["assertionResults"]:
+            require(isinstance(case, dict) and isinstance(case.get("fullName"), str)
+                    and 0 < len(case["fullName"].encode("utf-8")) <= 2048
+                    and isinstance(case.get("status"), str) and len(rows) < MAX_TESTS,
+                    "malformed or unbounded Vitest named outcome")
             state = {"passed": "passed", "failed": "failed", "pending": "skipped",
                      "skipped": "skipped", "todo": "skipped", "disabled": "skipped"}.get(case["status"])
             require(state is not None, "unknown Vitest outcome")
-            rows.append({"id": "vitest:" + path + ":" + case["fullName"], "result": state})
+            identity = "vitest:" + path + ":" + case["fullName"]
+            require(identity not in identities, "duplicate Vitest named outcome")
+            identities.add(identity)
+            rows.append({"id": identity, "result": state})
     require(rows, "Vitest ran no named tests")
     return {"format": OBSERVATION, **before, "source_stable": before == after and before["clean"],
             "ci_run_id": run_id, "proof_kind": "source-test", "producer": "vitest-json-observer", "argv": argv,
             "exit_code": exit_code, "tests": rows}
 
 
-def observe_vitest(repo, arguments, raw_results, output):
-    """Add a JSON reporter to the one original owning Vitest invocation."""
-    require(arguments and raw_results and not Path(raw_results).exists() and not Path(raw_results).is_symlink()
-            and not Path(output).exists() and not Path(output).is_symlink(),
-            "new Vitest result and observation paths required")
-    require(not any(a.startswith(("--reporter", "--outputFile")) for a in arguments),
-            "the original invocation must use the one owned JSON reporter")
-    before = source_identity(repo)
-    command = [*arguments, "--reporter=json", "--outputFile=" + str(Path(raw_results).absolute())]
-    process = start_process(command, cwd=repo)
+def _vitest_cwd(repo, requested):
+    path = Path(requested) if requested is not None else repo
+    require(".." not in path.parts, "Vitest execution cwd must be an owned project directory")
+    path = path if path.is_absolute() else repo / path
     try:
-        code = process.wait(timeout=1200)
-    except subprocess.TimeoutExpired:
-        containment = terminate_tree(process)
-        raise ValueError("original Vitest run timed out; containment=" + containment) from None
-    after = source_identity(repo)
-    document = admit_vitest(load_json(raw_results), repo=repo, before=before, after=after,
-                            argv=command, exit_code=code, run_id=int(os.environ.get("GITHUB_RUN_ID", "0")))
-    new_output(output, document)
-    return code
+        relative = path.relative_to(repo)
+        current = repo
+        for component in (None, *relative.parts):
+            if component is not None:
+                current = current / component
+            info = current.lstat()
+            require(stat.S_ISDIR(info.st_mode) and not current.is_symlink()
+                    and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "Vitest execution cwd must not contain a link or reparse point")
+        return path.resolve(strict=True)
+    except (OSError, ValueError):
+        raise ValueError("Vitest execution cwd must be an owned project directory") from None
+
+
+def _vitest_new_path(value):
+    path = Path(value).absolute()
+    require(path.name not in ("", ".", "..") and ".." not in path.parts, "unsafe Vitest output path")
+    parent = path.parent
+    info = parent.lstat()
+    require(stat.S_ISDIR(info.st_mode) and not parent.is_symlink()
+            and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+            "Vitest output parent must be a regular directory")
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        pass
+    else:
+        raise ValueError("new Vitest result and observation paths required")
+    return parent.resolve(strict=True) / path.name, (info.st_dev, info.st_ino)
+
+
+def _vitest_command(arguments, raw_results, cwd):
+    require(isinstance(arguments, (list, tuple)) and arguments
+            and all(isinstance(arg, str) and arg and "\0" not in arg for arg in arguments),
+            "original Vitest argv required")
+    reporters, outputs = [], {}
+    index = 0
+    while index < len(arguments):
+        arg = arguments[index]
+        option, separator, value = arg.partition("=")
+        if option in ("--reporter", "--reporters") or option == "--outputFile" or option.startswith("--outputFile."):
+            if not separator:
+                index += 1
+                require(index < len(arguments) and not arguments[index].startswith("--"), "Vitest option value missing")
+                value = arguments[index]
+            require(value and "\0" not in value, "Vitest option value missing")
+            if option in ("--reporter", "--reporters"):
+                reporters.append(value)
+            else:
+                key = option.removeprefix("--outputFile")
+                require(key not in outputs, "duplicate Vitest output ownership")
+                outputs[key] = value
+        elif option.startswith(("--reporter", "--outputFile")):
+            raise ValueError("unsupported Vitest reporter/output option")
+        index += 1
+    require(reporters.count("json") <= 1, "duplicate JSON reporter ownership")
+    require(not ("" in outputs and len(outputs) > 1), "ambiguous generic/per-reporter output ownership")
+    if "" in outputs:
+        require(reporters.count("json") == 1 and not any(r not in ("json", "default", "verbose", "dot", "github-actions") for r in reporters),
+                "generic output cannot ambiguously select JSON")
+    selected = outputs.get(".json", outputs.get(""))
+    if selected is not None:
+        path = Path(selected)
+        path = path if path.is_absolute() else cwd / path
+        require(not path.exists() and not path.is_symlink(), "original JSON output is stale or linked")
+        require(path.resolve(strict=False) == raw_results, "original JSON output differs from owned result path")
+    for key, value in outputs.items():
+        if key in ("", ".json"):
+            continue
+        other = Path(value)
+        other = other if other.is_absolute() else cwd / other
+        require(other.resolve(strict=False) != raw_results, "another reporter shares JSON output")
+    command = list(arguments)
+    if "json" not in reporters:
+        command.append("--reporter=json")
+    if selected is None:
+        # Keep the original simple wrapper's generic output argument compatible.
+        key = "--outputFile=" if not reporters and not outputs else "--outputFile.json="
+        command.append(key + str(raw_results))
+    return command
+
+
+def _vitest_owned_json(path, descriptor, original):
+    info, opened = path.lstat(), os.fstat(descriptor)
+    for item in (info, opened):
+        require(stat.S_ISREG(item.st_mode) and item.st_nlink == 1
+                and not getattr(item, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+                and (item.st_dev, item.st_ino) == (original.st_dev, original.st_ino)
+                and item.st_size <= MAX_JSON, "Vitest result was replaced, linked or exceeds bound")
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    raw = bytearray()
+    while len(raw) <= MAX_JSON:
+        chunk = os.read(descriptor, min(1024 * 1024, MAX_JSON + 1 - len(raw)))
+        if not chunk:
+            break
+        raw.extend(chunk)
+    final, current = os.fstat(descriptor), path.lstat()
+    require(len(raw) <= MAX_JSON and len(raw) == info.st_size
+            and all((value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_nlink)
+                    == (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, 1)
+                    for value in (final, current)), "Vitest result changed while read")
+    return json.loads(raw, object_pairs_hook=unique), hashlib.sha256(raw).hexdigest()
+
+
+def observe_vitest(repo, arguments, raw_results, output, execution_cwd=None):
+    """Observe one original invocation, preserving its reporters and project cwd."""
+    require(arguments and raw_results and output, "Vitest invocation and new outputs required")
+    repo = Path(repo).resolve(strict=True)
+    cwd = _vitest_cwd(repo, execution_cwd)
+    raw_results, raw_parent = _vitest_new_path(raw_results)
+    output, observation_parent = _vitest_new_path(output)
+    require(raw_results != output, "result and observation output ownership conflict")
+    command = _vitest_command(arguments, raw_results, cwd)
+    before = source_identity(repo)
+    descriptor = os.open(raw_results, os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
+                         | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        original = os.fstat(descriptor)
+        process = start_process(command, cwd=cwd)
+        try:
+            code = process.wait(timeout=1200)
+        except subprocess.TimeoutExpired:
+            containment = terminate_tree(process)
+            raise ValueError("original Vitest run timed out; containment=" + containment) from None
+        after = source_identity(repo)
+        require(all((path.parent.stat().st_dev, path.parent.stat().st_ino) == expected
+                    for path, expected in ((raw_results, raw_parent), (output, observation_parent))),
+                "Vitest output parent changed")
+        record, raw_digest = _vitest_owned_json(raw_results, descriptor, original)
+        document = admit_vitest(record, repo=repo, before=before, after=after,
+                                argv=command, exit_code=code, run_id=int(os.environ.get("GITHUB_RUN_ID", "0")))
+        document.update(original_argv=list(arguments), cwd=str(cwd), raw_results_sha256=raw_digest)
+        new_output(output, document)
+        return code
+    finally:
+        os.close(descriptor)
 
 
 def validate_selections(document):
@@ -879,6 +1014,7 @@ def main(argv=None):
     parser.add_argument("--source-payload", type=Path)
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
+    parser.add_argument("--execution-cwd", type=Path)
     parser.add_argument("--job-name")
     parser.add_argument("--payload-root", action="append", default=[], help="artifact name=original consumed root")
     parser.add_argument("arguments", nargs="*")
@@ -891,7 +1027,7 @@ def main(argv=None):
             require(args.arguments, "Python entry point required")
             return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload)
         if args.operation == "observe-vitest":
-            return observe_vitest(args.repo, args.arguments, args.raw_results, args.output)
+            return observe_vitest(args.repo, args.arguments, args.raw_results, args.output, args.execution_cwd)
         if args.operation == "admit-go":
             require(len(args.observation) == 1 and args.native_binding, "native observation and original stamp required")
             binding = load_json(args.native_binding)

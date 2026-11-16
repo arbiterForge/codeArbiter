@@ -28,6 +28,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Preserve original multi-reporter qualification commands and bounded fixture diagnostics; capture timeout stacks with protected Windows inbox debugger libraries when the SDK is absent.
+
 - Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
 
 - Keep installed-host observers transparent to nested Git calls, preserve failed cold-check diagnostics, and disable Pi helper bytecode before package imports.

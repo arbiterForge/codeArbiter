@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { spawn, execFileSync, type ChildProcess } from "node:child_process";
-import { mkdtemp, mkdir, writeFile, readFile, rename, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, readFile, rename, rm, symlink } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, dirname } from "node:path";
+import { join, dirname, relative, isAbsolute } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createInterface } from "node:readline";
 import { treeKill } from "./exec.ts";
@@ -63,8 +64,8 @@ try {
 if(role==='throw') await withWorktreeLock(async()=>console.log('again'),options);
 `;
 
-async function fixture(withLinked = true) {
-  const root = await mkdtemp(join(tmpdir(), "farm-registry-owned-")); roots.push(root);
+async function fixture(withLinked = true, parent = tmpdir()) {
+  const root = realpathSync.native(await mkdtemp(join(parent, "farm-registry-owned-"))); roots.push(root);
   const repo = join(root,"repo"), home=join(root,"home"), scratch=join(root,"temp");
   await Promise.all([mkdir(repo),mkdir(home),mkdir(scratch)]);
   const env: NodeJS.ProcessEnv = {};
@@ -237,6 +238,38 @@ describe("bounded exclusive-open denial handling", () => {
         await expect(lock(async()=>{calls++;},{timeoutMs:40})).rejects.toThrow(/retained lock/);
         expect(openDenial.attempts).toBeGreaterThan(1);expect(calls).toBe(0);
         expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");
+      } finally {openDenial.path="";process.chdir(original);}
+    });
+  }
+});
+
+
+describe("owned alias fixture identity", () => {
+  for (const kind of ["source", "bundle"] as const) {
+    it(`${kind}: owned directory aliases still inject at the exact physical lock`, async () => {
+      const owned = realpathSync.native(await mkdtemp(join(tmpdir(),"farm-alias-owned-")));roots.push(owned);
+      const physical=join(owned,"physical"), alias=join(owned,"alias");
+      await mkdir(physical);
+      await symlink(physical,alias,process.platform==="win32"?"junction":"dir");
+      expect(realpathSync.native(alias)).toBe(realpathSync.native(physical));
+      expect(alias).not.toBe(physical);
+      const contained=relative(owned,realpathSync.native(alias));
+      expect(contained!=="" && !contained.startsWith("..") && !isAbsolute(contained)).toBe(true);
+      const f=await fixture(false,alias), original=process.cwd();let calls=0;
+      const exactPhysicalLock=join(realpathSync.native(join(f.repo,".git")),LOCK);
+      const lock=kind==="source"?withWorktreeLock:(await import("./farm.js")).withWorktreeLock;
+      Object.assign(openDenial,{path:f.lock,remaining:1,attempts:0,flags:[],code:"EPERM"});
+      try {
+        process.chdir(f.repo);
+        const result=await lock(async()=>{
+          calls++;expect(openDenial.attempts).toBe(2);
+          expect(f.lock).toBe(exactPhysicalLock);
+          expect(JSON.parse(await readFile(exactPhysicalLock,"utf8")).pid).toBe(process.pid);
+          return "alias-owned-once";
+        },{timeoutMs:200});
+        expect(result).toBe("alias-owned-once");expect(calls).toBe(1);
+        expect(openDenial.remaining).toBe(0);expect(openDenial.flags).toHaveLength(2);
+        await expect(readFile(exactPhysicalLock)).rejects.toMatchObject({code:"ENOENT"});
       } finally {openDenial.path="";process.chdir(original);}
     });
   }
