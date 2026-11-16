@@ -14,6 +14,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 ### Added
 
 - Add a trusted CI path that checks the retained Sandbox CLI's exec, copy-out and scoped destroy commands against its shipped package.
+- Add coverage for the CLI entrypoint's SIGINT handler, cancellation propagation and exit status.
 
 ### Changed
 
