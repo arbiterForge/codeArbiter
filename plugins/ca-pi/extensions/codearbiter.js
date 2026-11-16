@@ -7344,6 +7344,23 @@ var BROKER_ROUTE_PREFIX = "/v1";
 var MAX_REQUEST_TARGET_BYTES = 2048;
 var MAX_UPSTREAM_BASE_BYTES = 512;
 var UPSTREAM_PROTOCOLS = /* @__PURE__ */ new Set(["http:", "https:"]);
+function endpointTransportAllowed(raw, endpoint) {
+  if (!UPSTREAM_PROTOCOLS.has(endpoint.protocol)) return false;
+  return endpoint.protocol === "https:" || endpoint.hostname === "127.0.0.1" && /^http:\/\/127\.0\.0\.1(?::[0-9]+)?(?:\/|$)/iu.test(raw);
+}
+function redirectsToDisallowedHttp(status, location, childBase) {
+  if (![301, 302, 303, 307, 308].includes(status) || location === void 0) return false;
+  let target;
+  try {
+    target = new URL(location, childBase);
+  } catch {
+    return false;
+  }
+  if (target.protocol !== "http:") return false;
+  const reference = location.trim().replace(/\\/gu, "/");
+  const rawTarget = reference.startsWith("//") ? `http:${reference}` : /^http:\/\//iu.test(reference) ? reference : target.origin === new URL(childBase).origin ? target.href : reference;
+  return !endpointTransportAllowed(rawTarget, target);
+}
 var HOP_BY_HOP_HEADERS = /* @__PURE__ */ new Set([
   "connection",
   "keep-alive",
@@ -7424,7 +7441,7 @@ function boundedUpstream(baseUrl) {
   } catch {
     refuseBroker();
   }
-  if (!UPSTREAM_PROTOCOLS.has(url.protocol)) refuseBroker();
+  if (!endpointTransportAllowed(baseUrl, url)) refuseBroker();
   if (url.username !== "" || url.password !== "") refuseBroker();
   if (url.search !== "" || url.hash !== "") refuseBroker();
   return {
@@ -7534,6 +7551,11 @@ async function startInferenceBroker(options) {
     const forward = send(target, { method: request.method ?? "POST", headers, agent: false }, (upstreamResponse) => {
       if (response.writableEnded || response.destroyed) {
         upstreamResponse.destroy();
+        return;
+      }
+      if (redirectsToDisallowedHttp(upstreamResponse.statusCode ?? 502, upstreamResponse.headers.location, baseUrl)) {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
         return;
       }
       const responseHeaders = /* @__PURE__ */ Object.create(null);
@@ -7679,7 +7701,6 @@ var MAX_PROJECTED_NODES = 4096;
 var PURE_ENV_REFERENCE = /^\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)$/u;
 var PROJECTED_HEADER_NAME = /^[A-Za-z0-9_-]{1,128}$/u;
 var RESERVED_OBJECT_KEYS = /* @__PURE__ */ new Set(["__proto__", "constructor", "prototype"]);
-var ENDPOINT_PROTOCOLS = /* @__PURE__ */ new Set(["http:", "https:"]);
 var ENDPOINT_PATH_SEGMENT = /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/u;
 var MAX_ENDPOINT_BYTES = 512;
 var MAX_ENDPOINT_PATH_SEGMENTS = 8;
@@ -7892,7 +7913,7 @@ function endpointOnlyValue(value, endpoints) {
   if (Buffer.byteLength(value, "utf8") > MAX_ENDPOINT_BYTES) refuseProjection();
   if (value.includes("?") || value.includes("#")) refuseProjection();
   const endpoint = parsedEndpoint(value);
-  if (!ENDPOINT_PROTOCOLS.has(endpoint.protocol)) refuseProjection();
+  if (!endpointTransportAllowed(value, endpoint)) refuseProjection();
   if (endpoint.username !== "" || endpoint.password !== "") refuseProjection();
   if (endpoint.search !== "" || endpoint.hash !== "") refuseProjection();
   const segments = endpoint.pathname.split("/").filter((segment) => segment !== "");

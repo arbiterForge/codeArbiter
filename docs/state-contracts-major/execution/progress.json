@@ -3895,7 +3895,7 @@
     "After green child checks, true-merge into major/state-contracts under standing authority, then require separate full normal integration qualification. Hold1098 from main and publication.",
     "Continue actual remaining kernel recovery/caller effects and842baseline accounting reconciliation; retain installed/human/model and final source-evidence renewal boundaries."
   ],
-  "delivery_state": "PR1115_LOCAL_JOURNAL_FIX_NATIVE25_COLLECTOR_CAPTURE_GREEN_FINAL_SOURCE_REVIEW_AND_FRESH_CI_PENDING_PARENT1098_HELD",
+  "delivery_state": "PR1115_FE04_BUDGET_AND_SHIPPED_BUNDLE_REPAIR_LOCALLY_GREEN_FRESH_CI_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -4987,8 +4987,8 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "HTTPS policy implemented with6target/65owner tests and TSC locally green. Native29 source availability repaired; actual all-six outcomes remain required. Existing real builder tests await CI.",
-    "current_staged_integrity": "PENDING_FINAL_TRANSPORT_PORTABILITY_COHORT",
+    "followup": "Originalfe04 CI exposed stale25 budget consumer expectations and unregenerated shipped Pi parent. Exact45 readers now48PASS; unchanged owning build/repeat all4outputs byte-equal, only parent regenerated. Complete fresh CI/Docs remains required.",
+    "current_staged_integrity": "PENDING_FINAL_FE04_CONSUMER_BUNDLE_REPAIR",
     "source_or_status_renewal": true,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
@@ -5003,7 +5003,7 @@
       "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
     },
     "private_future_work": "N02:05 legacy caller fallback, N03:01/02 Recover own acknowledgement/cleanup effects, machine aggregates and final installed/human/model acceptance remain held. Native29 control success does not qualify runtime.",
-    "observations": "evidence/pr1115-transport-portability-development.json",
+    "observations": "evidence/pr1115-fe04-consumer-bundle-repair.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_LOCALLY_TRANSPORT_QUALIFICATION_PENDING",
@@ -5065,7 +5065,17 @@
       "platform_omission_vectors": 30,
       "qualification_renewal": false
     },
-    "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes."
+    "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes.",
+    "active_pr_observation": {
+      "head": "fe04c04971bad4799240309f94f89637849a0c5f",
+      "ci_run": 43912541989,
+      "docs_run": 43912541965,
+      "docs_conclusion": "success",
+      "ci_at_recording": "ORIGINAL_REQUIRED_FAILURES_PRESENT_WHOLE_CI_IN_PROGRESS",
+      "known_primary_causes": 2,
+      "recorded_at": "2026-11-16T17:19:54.359341+00:00",
+      "note": "Earlier last_exact_pr_head fields retain the last completed d218 observation; this active attempt is distinct."
+    }
   },
   "checkpoint_history": [
     {

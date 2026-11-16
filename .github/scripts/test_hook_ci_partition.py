@@ -54,7 +54,7 @@ RECOVERY_COMMANDS = (
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
 COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
-HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n"
+HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
         exclude:
@@ -250,7 +250,7 @@ def validate(
     require('      fail-fast: false\n' in pre,'Do not cancel sibling evidence on failure')
     require('    if: needs.changes.outputs.hooks == \'true\'\n' in pre,'Hook applicability changed')
     require('    runs-on: ${{ matrix.os }}\n' in pre,'Native operating systems must remain native')
-    require(HOOK_TIMEOUT in pre,'Only Windows contracts may use the bounded25-minute budget; other hook cells retain20minutes')
+    require(HOOK_TIMEOUT in pre,'Only Windows contracts may use the bounded45-minute budget; other hook cells retain20minutes')
     require('continue-on-error:' not in block,'Required hook checks cannot soften failures')
     require(pre.count(NATIVE_READER_ENV)==1,'Use the fixed same-job qualified native reader')
     roles=python_source_roles(block)
@@ -430,17 +430,21 @@ class PartitionContractTests(unittest.TestCase):
     def test_current_windows_contract_budget_has_only_the_observed_exception(self):
         text=(Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf-8')
         pre=job_block(text,'hooks').split('    steps:\n',1)[0]
-        self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n",pre)
+        self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n",pre)
 
     def test_budget_exception_cannot_change_host_partition_or_other_ceiling(self):
         for changed in (
             HOOK_TIMEOUT.replace('windows-latest','macos-latest'),
             HOOK_TIMEOUT.replace("'contracts'","'isolation'"),
-            HOOK_TIMEOUT.replace('25 || 20','25 || 25'),
+            HOOK_TIMEOUT.replace('45 || 20','45 || 45'),
+            HOOK_TIMEOUT.replace('45 || 20','25 || 20'),
+            '    timeout-minutes: 45\n',
             '    timeout-minutes: 25\n',
             '    timeout-minutes: 20\n',
         ):
-            with self.subTest(drift=changed): self.bad(HOOK_TIMEOUT,changed)
+            with self.subTest(drift=changed):
+                self.assertNotEqual(changed, HOOK_TIMEOUT)
+                self.bad(HOOK_TIMEOUT,changed)
 
     def test_current_job_environment_uses_only_legal_contexts(self):
         text=(Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf-8')
@@ -480,7 +484,10 @@ class PartitionContractTests(unittest.TestCase):
     def test_missing_hermetic_suite_fails(self): self.bad(ISOLATION,'python different.py')
     def test_repeated_plain_suite_fails(self): self.bad('python contract.py',DIRECT)
     def test_fail_fast_cannot_be_enabled(self): self.bad('fail-fast: false','fail-fast: true')
-    def test_timeout_ceiling_cannot_expand(self): self.bad(HOOK_TIMEOUT,HOOK_TIMEOUT.replace('25 || 20','30 || 20'))
+    def test_timeout_ceiling_cannot_expand(self):
+        changed=HOOK_TIMEOUT.replace('45 || 20','46 || 20')
+        self.assertNotEqual(changed, HOOK_TIMEOUT)
+        self.bad(HOOK_TIMEOUT,changed)
     def test_deleted_contract_command_fails(self): self.bad("      - name: contracts\n        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n        run: python contract.py\n",'')
     def test_replaced_contract_command_fails(self): self.bad('python contract.py','python replacement.py')
     def test_duplicated_contract_command_fails(self): self.bad('        run: python contract.py\n','        run: python contract.py\n      - name: duplicate\n        if: matrix.partition == \'all\' || matrix.partition == \'contracts\'\n        run: python contract.py\n')

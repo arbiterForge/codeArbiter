@@ -21,6 +21,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Regenerate the shipped parent bundle with the HTTPS admission and redirect controls.
 - Preserve exact audit file and directory identities on Windows; refuse rounded numeric IDs before any audit append.
 
 - Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
