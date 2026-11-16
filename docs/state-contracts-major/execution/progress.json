@@ -21,7 +21,7 @@
         "assigned_agent": "/root",
         "branch": "codex/state-contracts-observer-admission",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical source/index/progress writer for PR1115 journal admission, fixture budget, typed native diagnostics and scoped source disposition; other actors use private Temp."
+        "scope": "Sole canonical writer for PR1115 transport, native portability/qualification, real Sandbox cache acceptance and current reporting; other actors use private Temp."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -1545,21 +1545,30 @@
       "detail": "Commit docs/state-contracts-major/audit/codearbiter_audit_evidence.zip via logged H-09b binary override; /ca:override security-ceiling path requires B's own-words acknowledgement of the specific finding before the row is written.",
       "source": "B via Claude Code AskUserQuestion, 2026-11-12, after SMARTS worksheet summary (SMARTS-PROGRESS-EVIDENCE.md)",
       "date": "2026-11-12"
-    }
-  ],
-  "pending_user_decisions": [
+    },
     {
       "id": "PI-HTTP-ENDPOINT-POLICY",
-      "state": "AWAITING_USER",
-      "sources": [
-        "CON-004 current HTML security controls",
-        "Accepted ADR0018 endpoint acceptance",
-        "Accepted ADR0019 preserves0018 endpoint rules"
-      ],
-      "choice": "Require HTTPS outside bounded loopback via forward supersession, or preserve HTTP-compatible endpoints and clarify current policy/residual. No accepted ADR edited and no transport source changed.",
-      "affected_scope": "Pi upstream transport policy and dependent S10/S11 qualification; independent work continues under accepted scoped-conflict rule."
+      "state": "USER_DECIDED_ACCEPTED_PLANNED",
+      "decision": "Require HTTPS outside loopback; supersede the older endpoint rule",
+      "decided_by": "User during this Codex conversation",
+      "decided_at": "2026-11-16",
+      "adr": ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md",
+      "prior_question": {
+        "id": "PI-HTTP-ENDPOINT-POLICY",
+        "state": "AWAITING_USER",
+        "sources": [
+          "CON-004 current HTML security controls",
+          "Accepted ADR0018 endpoint acceptance",
+          "Accepted ADR0019 preserves0018 endpoint rules"
+        ],
+        "choice": "Require HTTPS outside bounded loopback via forward supersession, or preserve HTTP-compatible endpoints and clarify current policy/residual. No accepted ADR edited and no transport source changed.",
+        "affected_scope": "Pi upstream transport policy and dependent S10/S11 qualification; independent work continues under accepted scoped-conflict rule."
+      },
+      "implementation": "LOCAL_SOURCE_IMPLEMENTED_6_TARGET_65_OWNER_TESTS_AND_TSC_PASS_HOSTED_PENDING",
+      "runtime_qualification": false
     }
   ],
+  "pending_user_decisions": [],
   "new_required_work": [
     {
       "id": "CTX-HTML-01",
@@ -3822,9 +3831,9 @@
   ],
   "scoped_blockers": [
     {
-      "id": "PI-HTTP-ENDPOINT-POLICY",
+      "id": "PI-HTTPS-IMPLEMENTATION-QUALIFICATION",
       "scope": "Selected Pi upstream transport contract and S10/S11",
-      "detail": "Awaiting explicit user choice between currentCON004 HTTPS rule and acceptedADR0018/0019 HTTP compatibility. No side selected or source changed; independent work remains authorized."
+      "detail": "User choice implemented: provider/model and direct broker admission refuse external HTTP; child-visible HTTP redirects fail closed. Six targeted and65 owner tests/TSC pass locally. Original hosted/installed transport qualification remains pending."
     },
     {
       "id": "COLD-OBSERVER-M863-REFUSAL",
@@ -3881,9 +3890,10 @@
     }
   ],
   "next_actions": [
-    "Complete exact staged source review and original-owner integrity/intent checks, then push this one coherent journal/Native25/diagnostics cohort and follow complete fresh CI/Docs; no unchanged retry.",
-    "Commit reviewed journal/fixture/diagnostics cohort, follow full fresh child CI/Docs, merge all-green only into integration, then obtain a separate successful trusted integration run.",
-    "Reconcile remaining native/software acceptance and renew only original-owner measurements after final source freeze. Main/publication held for user testing; Pi HTTP policy awaits user choice."
+    "Complete exact staged source/security review and original-owner intent/integrity checks for transport, portable native controls and real Sandbox acceptance tests; push one coherent corrective head.",
+    "Require the entire fresh exact-head CI and Docs plus every check; preserve original failed runs and investigate actual failures without blind retries.",
+    "After green child checks, true-merge into major/state-contracts under standing authority, then require separate full normal integration qualification. Hold1098 from main and publication.",
+    "Continue actual remaining kernel recovery/caller effects and842baseline accounting reconciliation; retain installed/human/model and final source-evidence renewal boundaries."
   ],
   "delivery_state": "PR1115_LOCAL_JOURNAL_FIX_NATIVE25_COLLECTOR_CAPTURE_GREEN_FINAL_SOURCE_REVIEW_AND_FRESH_CI_PENDING_PARENT1098_HELD",
   "trusted_readiness_reference": null,
@@ -4959,7 +4969,7 @@
   ],
   "live_checkpoint": {
     "recorded_at": "2026-11-16T15:03:43.696196+00:00",
-    "controller_anchor": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "controller_anchor": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
     "delivery_pr": 1115,
     "previous_child": {
@@ -4977,14 +4987,14 @@
     "original_ci_run": 43829498560,
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
-    "followup": "Journal overlap guard, Native25 authority routes, source-fixture60s setup and typed native failure attribution are locally validated. Actual inert Node24 native capture passed; hosted Pi/Node22 mechanism remains UNKNOWN.",
-    "current_staged_integrity": "PENDING_FINAL_JOURNAL_DIAGNOSTIC_COHORT",
+    "followup": "HTTPS policy implemented with6target/65owner tests and TSC locally green. Native29 source availability repaired; actual all-six outcomes remain required. Existing real builder tests await CI.",
+    "current_staged_integrity": "PENDING_FINAL_TRANSPORT_PORTABILITY_COHORT",
     "source_or_status_renewal": true,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
-    "native_component_recipes": 25,
-    "remaining_native_runtime_unmapped": 93,
-    "remaining_software_original_unmapped": 1,
+    "native_component_recipes": 29,
+    "remaining_native_runtime_unmapped": 89,
+    "remaining_software_original_unmapped": 0,
     "whole_baseline_planned": {
       "findings": 49,
       "machines": 183,
@@ -4992,11 +5002,11 @@
       "total": 842,
       "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
     },
-    "private_future_work": "N03:04 diagnostic distinction and N03:05 unsafe embeddedpath/Unix privilege gaps held. Two debug finding proofs and UI/model/human acceptance remain unadmitted. S75 source-only N/A does not renew runtime evidence.",
-    "observations": "evidence/pr1115-journal-diagnostics-development/index.json",
+    "private_future_work": "N02:05 legacy caller fallback, N03:01/02 Recover own acknowledgement/cleanup effects, machine aggregates and final installed/human/model acceptance remain held. Native29 control success does not qualify runtime.",
+    "observations": "evidence/pr1115-transport-portability-development.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
-    "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
+    "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_LOCALLY_TRANSPORT_QUALIFICATION_PENDING",
     "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
     "staged_integrity_observation": {
       "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
@@ -5012,9 +5022,9 @@
       "seconds": 41.125,
       "source_ref_moved": false
     },
-    "last_exact_pr_head_result": "WHOLE_CI_FAILURE_TWO_PRIMARY_WINDOWS_FAILURES_DOCS_SUCCESS",
-    "original_pr_ci_run": 43881612076,
-    "original_pr_docs_run": 43881612131,
+    "last_exact_pr_head_result": "D218_WHOLE_CI_FAILURE_WINDOWS_JOB_BUDGET_AND_MACOS_ARM_RUNNER_ACQUISITION_DOCS_SUCCESS",
+    "original_pr_ci_run": 43895115379,
+    "original_pr_docs_run": 43895115603,
     "source_disposition_change": {
       "cell": "disposition:transitions:S75:08",
       "result": "NOT_APPLICABLE",
@@ -5022,9 +5032,10 @@
       "runtime_epoch_renewal": false
     },
     "last_exact_pr_head_counts": {
-      "successful": 89,
-      "failed": 3,
-      "skipped": 8
+      "successful": 80,
+      "failed": 2,
+      "cancelled": 2,
+      "skipped": 11
     },
     "native_local_validation": {
       "parents": 52,
@@ -5053,7 +5064,8 @@
       "platform_identity_vectors": 48,
       "platform_omission_vectors": 30,
       "qualification_renewal": false
-    }
+    },
+    "software_original_count_scope": "Exact original19 inventory:18 have current ordinary selection and policy job route; S75:08 has strict source-only N/A. This is routing accounting, not19 verified runtime outcomes."
   },
   "checkpoint_history": [
     {
@@ -5275,6 +5287,108 @@
           },
           "seconds": 39.93,
           "source_ref_moved": false
+        }
+      }
+    },
+    {
+      "superseded_at": "2026-11-16T16:45:09.903255+00:00",
+      "reason": "Retain prior journal cohort checkpoint; follow d218 terminal CI and user-decided transport policy with portable native qualification controls. No runtime proof renewal.",
+      "checkpoint": {
+        "recorded_at": "2026-11-16T15:03:43.696196+00:00",
+        "controller_anchor": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+        "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+        "delivery_pr": 1115,
+        "previous_child": {
+          "pr": 1114,
+          "state": "MERGED",
+          "exact_head": "25b6747e52f5591d55901ace71706200d646461d",
+          "ci_run": 43824929648,
+          "docs_run": 43824929589,
+          "checks": {
+            "successful": 92,
+            "expected_skipped": 8,
+            "failed": 0
+          }
+        },
+        "original_ci_run": 43829498560,
+        "original_docs_run": 43829498531,
+        "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
+        "followup": "Journal overlap guard, Native25 authority routes, source-fixture60s setup and typed native failure attribution are locally validated. Actual inert Node24 native capture passed; hosted Pi/Node22 mechanism remains UNKNOWN.",
+        "current_staged_integrity": "PENDING_FINAL_JOURNAL_DIAGNOSTIC_COHORT",
+        "source_or_status_renewal": true,
+        "ordinary_selection_groups": 53,
+        "ordinary_selection_cells": 54,
+        "native_component_recipes": 25,
+        "remaining_native_runtime_unmapped": 93,
+        "remaining_software_original_unmapped": 1,
+        "whole_baseline_planned": {
+          "findings": 49,
+          "machines": 183,
+          "transitions": 610,
+          "total": 842,
+          "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
+        },
+        "private_future_work": "N03:04 diagnostic distinction and N03:05 unsafe embeddedpath/Unix privilege gaps held. Two debug finding proofs and UI/model/human acceptance remain unadmitted. S75 source-only N/A does not renew runtime evidence.",
+        "observations": "evidence/pr1115-journal-diagnostics-development/index.json",
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "pending_pi_http_policy": "USER_DECIDED_HTTPS_OUTSIDE_BOUNDED_LOOPBACK_ADR0049_ACCEPTED_PLANNED",
+        "normal_terminal_receipt": "evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
+        "staged_integrity_observation": {
+          "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+          "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+          "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
+          "result": "PASSED",
+          "frozen": 105,
+          "records": 1318,
+          "applicability": {
+            "APPLICABLE": 523,
+            "STALE": 795
+          },
+          "seconds": 41.125,
+          "source_ref_moved": false
+        },
+        "last_exact_pr_head_result": "WHOLE_CI_FAILURE_TWO_PRIMARY_WINDOWS_FAILURES_DOCS_SUCCESS",
+        "original_pr_ci_run": 43881612076,
+        "original_pr_docs_run": 43881612131,
+        "source_disposition_change": {
+          "cell": "disposition:transitions:S75:08",
+          "result": "NOT_APPLICABLE",
+          "scope": "Only obsolete direct-write/no-transaction/no-rollback guarded tuple. Original history and four applicable runtime/recovery obligations retained.",
+          "runtime_epoch_renewal": false
+        },
+        "last_exact_pr_head_counts": {
+          "successful": 89,
+          "failed": 3,
+          "skipped": 8
+        },
+        "native_local_validation": {
+          "parents": 52,
+          "terminal_outcomes": 203,
+          "failed": 0,
+          "skipped": 0,
+          "host": "Windows",
+          "statement_coverage_percent": 71.14035087719299,
+          "changed_helper_statements": "12/12",
+          "qualification_renewal": false
+        },
+        "staged_integrity_observation_scope": "Previous retained cohort, not this in-flight source tree.",
+        "collector_local_validation": {
+          "pure_methods": 12,
+          "actual_inert_control": 1,
+          "actual_profile": "inbox-v1",
+          "actual_current_instruction_frames": 83,
+          "actual_threads": 12,
+          "detach_verified": true,
+          "Pi_Node22_cause": "UNKNOWN",
+          "qualification_renewal": false
+        },
+        "routing_local_validation": {
+          "focused_methods": 8,
+          "mandatory_missing_or_skip_vectors": 236,
+          "platform_identity_vectors": 48,
+          "platform_omission_vectors": 30,
+          "qualification_renewal": false
         }
       }
     }

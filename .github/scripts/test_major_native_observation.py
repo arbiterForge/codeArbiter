@@ -1,5 +1,5 @@
 """Closed native composition unit fixtures: no Go/helper/provider execution."""
-import copy, io, json, unittest, zipfile
+import copy, io, json, re, tempfile, unittest, zipfile
 from pathlib import Path
 from unittest import mock
 import major_readiness as readiness
@@ -722,6 +722,123 @@ NATIVE_SINGLE_JOB_EXPECTED = {'disposition:findings:N-F06': '[CHECK] | [CORE] | 
  'disposition:transitions:N39:03': '[CHECK] | [CORE] | Tested native candidate build <windows/amd64>'}
 
 
+# Independent four-clause mapping; fixture PASS is not runtime qualification.
+KERNEL_SCHEMA_EXPECTED = {cell: {platform: list(required) for platform in
+    ('darwin/amd64', 'darwin/arm64', 'linux/amd64', 'linux/arm64', 'windows/amd64', 'windows/arm64')}
+    for cell, required in {'disposition:transitions:N03:04': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-backup',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-stage',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/third-digest',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit'],
+ 'disposition:transitions:N03:05': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestInvalidJournalFilenameNamesEntry',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/long',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/newline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/nonhex',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/short',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/uppercase',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/wrong_type',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalRemovedBetweenListAndReadBlocksWithPath',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-case-folded',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-case-folded/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-case-folded/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-case-folded/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-first',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-first/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-first/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-first/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-reversed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-reversed/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-reversed/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission/ancestor-reversed/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnreadableFinalJournalNeverBecomesClean',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnreadableFinalJournalNeverBecomesClean/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnreadableFinalJournalNeverBecomesClean/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnreadableFinalJournalNeverBecomesClean/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/backup-parent-traversal',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/backup-parent-traversal/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/backup-parent-traversal/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/backup-parent-traversal/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/stage-parent-traversal',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/stage-parent-traversal/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/stage-parent-traversal/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/stage-parent-traversal/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/target-parent-backslash',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/target-parent-backslash/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/target-parent-backslash/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission/target-parent-backslash/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry/foreign-directory',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry/foreign-file',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/new-write',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/pending',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/recover',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPendingRejectsCorruptCompletedDigest',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPendingRejectsCorruptCompletedDigest/after_sha256',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPendingRejectsCorruptCompletedDigest/before_sha256',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPendingRejectsCorruptCompletedDigest/request_sha256',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnparseableFinalJournalNamesPathAndBlocksRecovery'],
+ 'disposition:transitions:N04:02': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOldSchemaCannotSilentlyContainNewObservations',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUnknownVersionFailsClosed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUntypedTombstoneDoesNotOwnHistory',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestObjectPathTablesKeepHistoricalGrammar',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestObjectPathTablesKeepHistoricalGrammar/0.3.0',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestObjectPathTablesKeepHistoricalGrammar/0.3.1',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestReviewReadPriorSchemaPreservesBytes',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestReviewReadPriorSchemaPreservesBytes/plan',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestReviewReadPriorSchemaPreservesBytes/spec'],
+ 'disposition:transitions:N04:03': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOldSchemaCannotSilentlyContainNewObservations',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT02OneTransitionStagesBoundIssue',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUnknownVersionFailsClosed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUntypedTombstoneDoesNotOwnHistory',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkRetryPreservesLaterEdit']}.items()}
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -1044,7 +1161,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED))
+        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED))
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -1089,7 +1206,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED))
+        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1247,8 +1364,8 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         except readiness.ReadinessError as error:
             self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
         self.assertEqual(selected, CLI_EXPECTED)
-        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
-        self.assertEqual(len(expected), 25)
+        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
+        self.assertEqual(len(expected), 29)
         self.assertEqual(native.RECIPES, expected)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         cells = policy['native_composite_cells']
@@ -1328,14 +1445,14 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             {'N02:01': 40, 'N02:02': 27, 'N02:03': 31, 'N02:04': 17, 'N03:03': 3})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 25)
+        self.assertEqual(len(policy['native_composite_cells']), 29)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(JOURNAL_EXPECTED).intersection(policy['cell_job_bindings']))
-        for held in ('disposition:transitions:N03:04', 'disposition:transitions:N03:05'):
+        for held in ('disposition:transitions:N02:05', 'disposition:transitions:N03:01', 'disposition:transitions:N03:02'):
             self.assertNotIn(held, policy['native_composite_cells'])
             with self.subTest(held=held), self.assertRaises(readiness.ReadinessError):
                 native.selected_recipes([held])
@@ -1415,3 +1532,280 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
                         readiness.ReadinessError, 'recipe differs'):
                     native.runtime_requirements(changed)
+
+
+    def test_kernel_schema_four_routes_keep_exact_clauses_and_sorted_twenty_nine_authority(self):
+        import major_native_observation as native
+        try:
+            selected = native.selected_recipes(sorted(KERNEL_SCHEMA_EXPECTED))
+        except readiness.ReadinessError as error:
+            self.fail('Complete kernel/schema clauses have no canonical route: ' + str(error))
+        self.assertEqual(selected, KERNEL_SCHEMA_EXPECTED)
+        counts = {cell.rsplit(':', 2)[1] + ':' + cell.rsplit(':', 1)[1]: len(recipe['windows/amd64'])
+            for cell, recipe in selected.items()}
+        self.assertEqual(counts, {'N03:04': 5, 'N03:05': 83, 'N04:02': 11, 'N04:03': 13})
+        old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
+        self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
+        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED})
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
+        self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
+        self.assertEqual(len(policy['native_composite_cells']), 29)
+        self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
+                         NATIVE_SINGLE_JOB_EXPECTED)
+        self.assertFalse(set(KERNEL_SCHEMA_EXPECTED).intersection(policy['cell_job_bindings']))
+        for held in ('disposition:transitions:N02:05', 'disposition:transitions:N03:01',
+                     'disposition:transitions:N03:02', 'disposition:machines:N02',
+                     'disposition:machines:N03', 'disposition:machines:N04'):
+            self.assertNotIn(held, policy['native_composite_cells'])
+            with self.subTest(held=held), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes([held])
+        self._select_cli_contracts(KERNEL_SCHEMA_EXPECTED)
+        record = self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(KERNEL_SCHEMA_EXPECTED))
+        self.assertEqual(len(record['native']['components']), 6)
+        unreadable = 'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestN03UnreadableFinalJournalNeverBecomesClean'
+        for row in record['native']['results']:
+            self.assertEqual({part['platform']: part['selectors'] for part in row['components']},
+                             KERNEL_SCHEMA_EXPECTED[row['cell']])
+            if row['cell'] == 'disposition:transitions:N03:05':
+                for part in row['components']:
+                    for suffix in ('', '/pending', '/recover', '/new-write'):
+                        self.assertIn(unreadable + suffix, part['selectors'])
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+
+    def test_kernel_schema_every_parent_child_and_original_complement_must_pass(self):
+        self._select_cli_contracts(KERNEL_SCHEMA_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), dict(self.data))
+        for cell, recipe in KERNEL_SCHEMA_EXPECTED.items():
+            for selector in recipe['windows/amd64']:
+                package, test = selector.split(':', 2)[1:]
+                for mode in ('missing', 'skip'):
+                    self.artifacts, self.data = copy.deepcopy(initial)
+                    def change(files):
+                        raw = json.loads(files['native-tests.json'])
+                        if '/' in test:
+                            parent = test.split('/', 1)[0]
+                            self.assertEqual([row['result'] for row in raw['observed']
+                                if row['package'] == package and row['test'] == parent], ['pass'])
+                        population = raw['subtests'] if '/' in test else raw['observed']
+                        found = [row for row in population if row['package'] == package and row['test'] == test]
+                        self.assertEqual(len(found), 1)
+                        if mode == 'missing':
+                            population.remove(found[0])
+                            if '/' not in test:
+                                raw['selected'] = [row for row in raw['selected']
+                                    if not (row['package'] == package and row['test'] == test)]
+                                raw['subtests'] = [row for row in raw['subtests']
+                                    if not (row['package'] == package and row['test'].startswith(test + '/'))]
+                        else:
+                            found[0]['result'] = 'skip'
+                        files['native-tests.json'] = json.dumps(raw).encode()
+                        stamp = json.loads(files['ci20-native-tested.json'])
+                        files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                    self.rewrite('windows/amd64', change)
+                    with self.subTest(cell=cell, selector=test, outcome=mode), self.assertRaisesRegex(
+                            readiness.ReadinessError, 'selected assertion|child'):
+                        self.produce()
+
+    def test_kernel_schema_original_platform_identity_and_unix_no_skip_are_required(self):
+        import major_native_observation as native
+        self._select_cli_contracts(KERNEL_SCHEMA_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), copy.deepcopy(self.jobs), dict(self.data), dict(self.job_artifacts))
+        for platform in sorted(self.raw):
+            for reason in ('archive', 'component', 'source', 'run', 'attempt', 'platform', 'upload', 'forged uploader'):
+                self.artifacts, self.jobs, self.data, self.job_artifacts = copy.deepcopy(initial)
+                runner = {value: key for key, value in binding_owner.RUNNERS.items()}[platform]
+                artifact = next(item for item in self.artifacts if item['name'] == 'ci20-native-tested-' + runner)
+                job = next(item for item in self.jobs if item['name'].endswith('<' + platform + '>'))
+                if reason == 'archive':
+                    self.artifacts.remove(artifact)
+                elif reason == 'component':
+                    job['name'] = job['name'].replace(platform, 'unknown/unknown')
+                elif reason == 'upload':
+                    job['steps'][0]['conclusion'] = 'skipped'
+                elif reason == 'forged uploader':
+                    self.job_artifacts[job['id']] = 30
+                else:
+                    key, value = {'source': ('source_commit', 'e' * 40), 'run': ('run_id', '8'),
+                        'attempt': ('run_attempt', '2'), 'platform': ('platform', 'unknown/unknown')}[reason]
+                    self.rewrite(platform, lambda files: self.json_edit(files, 'ci20-native-tested.json',
+                        lambda stamp: stamp.update(**{key: value})))
+                with self.subTest(platform=platform, reason=reason), self.assertRaises(
+                        (readiness.ReadinessError, ValueError)):
+                    self.produce()
+            # An actual Unix permission fixture may SKIP under privilege. A
+            # successful parent elsewhere or a runner label never substitutes.
+            if not platform.startswith('windows/'):
+                self.artifacts, self.jobs, self.data, self.job_artifacts = copy.deepcopy(initial)
+                def skip_unreadable(files):
+                    raw = json.loads(files['native-tests.json'])
+                    parent = 'TestN03UnreadableFinalJournalNeverBecomesClean'
+                    package = 'github.com/arbiterForge/codeArbiter/core/artifacts/internal/store'
+                    found = [row for row in raw['subtests'] if row['package'] == package and row['test'] == parent + '/pending']
+                    self.assertEqual(len(found), 1)
+                    self.assertEqual([row['result'] for row in raw['observed']
+                        if row['package'] == package and row['test'] == parent], ['pass'])
+                    found[0]['result'] = 'skip'
+                    files['native-tests.json'] = json.dumps(raw).encode()
+                    stamp = json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                self.rewrite(platform, skip_unreadable)
+                with self.subTest(platform=platform, unreadable='skip'), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'selected assertion|child'):
+                    self.produce()
+        for cell in KERNEL_SCHEMA_EXPECTED:
+            for platform in sorted(self.raw):
+                changed = copy.deepcopy(self.req)
+                changed['native_compositions'][cell].pop(platform)
+                with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'recipe differs'):
+                    native.runtime_requirements(changed)
+
+
+
+# This finite source check is tied to the native builder's Go1.27 gc/CGO0
+# profile. Real platform compiler/test observations remain authoritative.
+_NATIVE_PLATFORMS = ('darwin/amd64', 'darwin/arm64', 'linux/amd64', 'linux/arm64', 'windows/amd64', 'windows/arm64')
+_GO_OS_NAMES = frozenset(('aix', 'android', 'darwin', 'dragonfly', 'freebsd', 'hurd', 'illumos', 'ios', 'js', 'linux', 'nacl', 'netbsd', 'openbsd', 'plan9', 'solaris', 'wasip1', 'windows', 'zos'))
+_GO_ARCH_NAMES = frozenset(('386', 'amd64', 'amd64p32', 'arm', 'armbe', 'arm64', 'arm64be', 'loong64', 'mips', 'mipsle', 'mips64', 'mips64le', 'mips64p32', 'mips64p32le', 'ppc', 'ppc64', 'ppc64le', 'riscv', 'riscv64', 's390', 's390x', 'sparc', 'sparc64', 'wasm'))
+
+def _go_source_code(text):
+    # Mask literals/comments before recognizing top-level test declarations.
+    result = list(text); i = 0; state = None
+    while i < len(text):
+        char, pair = text[i], text[i:i + 2]
+        if state == 'line':
+            if char == '\n': state = None
+            else: result[i] = ' '
+        elif state == 'block':
+            if char != '\n': result[i] = ' '
+            if pair == '*/': result[i + 1] = ' '; state = None; i += 1
+        elif state in ('"', "'"):
+            if char != '\n': result[i] = ' '
+            if char == '\\':
+                if i + 1 < len(text): result[i + 1] = ' '
+                i += 1
+            elif char == state: state = None
+        elif state == '`':
+            if char != '\n': result[i] = ' '
+            if char == '`': state = None
+        elif pair in ('//', '/*'):
+            result[i] = result[i + 1] = ' '; state = 'line' if pair == '//' else 'block'; i += 1
+        elif char in ('"', "'", '`'): result[i] = ' '; state = char
+        i += 1
+    if state not in (None, 'line'): raise ValueError('unterminated Go source literal/comment')
+    return ''.join(result)
+
+def _go_source_platforms(filename, text):
+    if len(text.encode('utf-8')) > 1024 * 1024: raise ValueError('Go source check exceeds bound')
+    code = _go_source_code(text)
+    package = re.search(r'^package\s+\w+', code, re.M)
+    if package is None: raise ValueError('Go test package missing')
+    header = text[:package.start()]
+    expressions = re.findall(r'^//go:build (.+)$', header, re.M)
+    if len(expressions) > 1: raise ValueError('repeated Go build constraint')
+    if not expressions and re.search(r'^//\s*\+build\b', header, re.M):
+        raise ValueError('legacy-only Go build constraint needs explicit interpretation')
+    basename = filename.removesuffix('.go').removesuffix('_test')
+    parts = basename.split('_'); required = []
+    if len(parts) > 1 and parts[-1] in _GO_ARCH_NAMES: required.append(parts.pop())
+    if len(parts) > 1 and parts[-1] in _GO_OS_NAMES: required.append(parts.pop())
+    available = []
+    for platform in _NATIVE_PLATFORMS:
+        goos, arch = platform.split('/')
+        active = {goos, arch, 'gc', *('go1.' + str(v) for v in range(1, 28))}
+        if goos in ('linux', 'darwin'): active.add('unix')
+        if arch == 'amd64': active.add('amd64.v1')
+        if any(tag not in active for tag in required): continue
+        if expressions:
+            expression = expressions[0]
+            tokens = re.findall(r'[A-Za-z0-9_][A-Za-z0-9_.]*|&&|\|\||!|\(|\)', expression)
+            if len(tokens) > 128 or re.sub(r'\s+', '', expression) != ''.join(tokens):
+                raise ValueError('unsupported or unbounded Go build expression')
+            position = 0
+            def primary(depth=0):
+                nonlocal position
+                if depth > 16 or position >= len(tokens): raise ValueError('invalid Go build expression')
+                token = tokens[position]; position += 1
+                if token == '!': return not primary(depth + 1)
+                if token == '(':
+                    value = disjunction(depth + 1)
+                    if position >= len(tokens) or tokens[position] != ')': raise ValueError('unbalanced Go build expression')
+                    position += 1; return value
+                if token in ('&&', '||', ')'): raise ValueError('invalid Go build operand')
+                known = (_GO_OS_NAMES | _GO_ARCH_NAMES | {'unix', 'gc', 'gccgo', 'cgo', 'race', 'ignore', 'amd64.v1'})
+                if token not in known and not re.fullmatch(r'go1\.\d+', token):
+                    raise ValueError('unmodeled Go build tag')
+                return token in active
+            def conjunction(depth=0):
+                nonlocal position
+                value = primary(depth)
+                while position < len(tokens) and tokens[position] == '&&':
+                    position += 1; right = primary(depth); value = value and right
+                return value
+            def disjunction(depth=0):
+                nonlocal position
+                value = conjunction(depth)
+                while position < len(tokens) and tokens[position] == '||':
+                    position += 1; right = conjunction(depth); value = value or right
+                return value
+            matched = disjunction()
+            if position != len(tokens): raise ValueError('unconsumed Go build expression')
+            if not matched: continue
+        available.append(platform)
+    return available
+
+def _native_recipe_source_errors(root, recipes):
+    files = sorted(root.rglob('*_test.go'))
+    if len(files) > 512: raise ValueError('native test file population exceeds bound')
+    declarations = {}
+    for path in files:
+        if path.is_symlink() or path.stat().st_size > 1024 * 1024:
+            raise ValueError('Go test source must be bounded regular bytes')
+        text = path.read_text(encoding='utf-8')
+        names = re.findall(r'^func\s+(Test[A-Za-z0-9_]+)\s*\(', _go_source_code(text), re.M)
+        platforms = _go_source_platforms(path.name, text)
+        package = 'github.com/arbiterForge/codeArbiter/core/artifacts/' + path.parent.relative_to(root).as_posix()
+        for name in names:
+            for platform in platforms: declarations.setdefault((package, name, platform), []).append(path.relative_to(root).as_posix())
+    errors = []
+    for cell, recipe in sorted(recipes.items()):
+        for platform, required in sorted(recipe.items()):
+            if platform not in _NATIVE_PLATFORMS: raise ValueError('unmodeled native recipe platform')
+            for selector in sorted(set(required)):
+                prefix, package, test = selector.split(':', 2)
+                if prefix != 'go' or not re.fullmatch(r'Test[A-Za-z0-9_]+', test.split('/')[0]):
+                    raise ValueError('unsupported native parent selector')
+                parent = test.split('/')[0]
+                owners = declarations.get((package, parent, platform), [])
+                if len(owners) != 1:
+                    errors.append({'cell': cell, 'platform': platform, 'parent': parent, 'owners': owners})
+    return errors
+
+class NativeRecipeSourceMembershipTests(unittest.TestCase):
+    def test_every_required_parent_exists_under_its_actual_platform_build_constraints(self):
+        import major_native_observation as native
+        root = Path(__file__).resolve().parents[2] / 'core/artifacts'
+        self.assertEqual(_native_recipe_source_errors(root, native.RECIPES), [])
+
+    def test_source_membership_reader_checks_tags_suffixes_comments_and_unknown_syntax(self):
+        source = 'package fixture\nfunc TestOwned(t *testing.T) {}\n'
+        self.assertEqual(_go_source_platforms('owned_test.go', source), list(_NATIVE_PLATFORMS))
+        self.assertEqual(_go_source_platforms('owned_windows_arm64_test.go', source), ['windows/arm64'])
+        self.assertEqual(_go_source_platforms('owned_linux_test.go', source), ['linux/amd64', 'linux/arm64'])
+        self.assertEqual(_go_source_platforms('owned_test.go', '//go:build linux && !cgo\n\n' + source), ['linux/amd64', 'linux/arm64'])
+        self.assertEqual(_go_source_platforms('owned_test.go', '//go:build (darwin || windows) && gc\n\n' + source), ['darwin/amd64', 'darwin/arm64', 'windows/amd64', 'windows/arm64'])
+        for expression in ('linux ||', '(windows', 'linux unknown', 'linux | windows', 'private_custom_tag'):
+            with self.subTest(expression=expression), self.assertRaises(ValueError):
+                _go_source_platforms('owned_test.go', '//go:build ' + expression + '\n\n' + source)
+        with self.assertRaises(ValueError):
+            _go_source_platforms('owned_test.go', '// +build linux\n\n' + source)
+        with self.assertRaises(ValueError):
+            _go_source_platforms('owned_test.go', '//go:build linux\n//go:build windows\n\n' + source)
+        masked = _go_source_code('package fixture\n/*\nfunc TestForged(t *testing.T) {}\n*/\nvar text = `func TestString(t *testing.T) {}`\nfunc TestOwned(t *testing.T) {}\n')
+        self.assertEqual(re.findall(r'^func\s+(Test\w+)\(', masked, re.M), ['TestOwned'])
+        with tempfile.TemporaryDirectory(prefix='native-parent-membership-') as directory:
+            root = Path(directory); file = root / 'owned_linux_test.go'; file.write_text('//go:build linux\n\n' + source, encoding='utf-8')
+            name = 'go:github.com/arbiterForge/codeArbiter/core/artifacts/.:TestOwned'
+            recipe = {'inert': {'linux/amd64': [name], 'windows/amd64': [name]}}
+            self.assertEqual(_native_recipe_source_errors(root, recipe), [{'cell': 'inert', 'platform': 'windows/amd64', 'parent': 'TestOwned', 'owners': []}])

@@ -381,3 +381,138 @@ func TestN03UnreadableFinalJournalNeverBecomesClean(t *testing.T) {
 		t.Fatal("unreadable journal refusal changed owned bytes")
 	}
 }
+
+// Keep the attempted escape destination inside the same newly owned fixture,
+// but outside the child store. Both FS handles are closed by test cleanup.
+func journalBoundaryPathFixture(t *testing.T) (*FS, string) {
+	t.Helper()
+	workspace := fs(t)
+	root := filepath.Join(workspace.Root, "store")
+	if err := os.Mkdir(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	f, err := Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { f.Close() })
+	if err := os.WriteFile(filepath.Join(workspace.Root, "outside-sentinel.txt"), []byte("owned outside sentinel"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	return f, workspace.Root
+}
+
+func journalBoundaryAssertCorruptAdmissions(t *testing.T, f *FS, workspace, id string) {
+	t.Helper()
+	rel := journalPath(id)
+	for _, tc := range []struct {
+		name string
+		call func() error
+	}{
+		{"pending", func() error { _, err := f.Pending(); return err }},
+		{"recover", func() error { _, err := f.Recover(id, "complete"); return err }},
+		{"new-write", func() error {
+			_, err := f.Commit("path-refusal-new-001", canonical.BytesHash([]byte("new request")), []Edit{{Path: "fresh.txt", After: []byte("must not appear")}})
+			return err
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			before := journalBoundarySnapshot(t, workspace)
+			err := tc.call()
+			after := journalBoundarySnapshot(t, workspace)
+			changed := journalBoundaryChanges(before, after)
+			detail := fault.Public(err)
+			if detail.Code != "CORRUPT_JOURNAL" || detail.Field != rel || fault.Exit(err) != 7 {
+				t.Fatalf("unsafe journal admission diagnostic = %+v exit=%d; changed owned paths/hashes=%v", detail, fault.Exit(err), changed)
+			}
+			if !reflect.DeepEqual(before, after) {
+				t.Fatalf("unsafe journal changed target, evidence or outside sentinel; changed owned paths/hashes=%v", changed)
+			}
+		})
+	}
+}
+
+func TestN03UnsafeEmbeddedJournalPathsRefuseEveryAdmission(t *testing.T) {
+	for _, tc := range []struct{ name, field, value string }{
+		// The target's backslash is forbidden on every platform. Go's path.Dir
+		// sees no slash, so the existing stage stays otherwise exactly valid;
+		// an unrelated stage mismatch cannot hide a removed target-path guard.
+		{"target-parent-backslash", "path", `..\outside-sentinel.txt`},
+		{"stage-parent-traversal", "stage", "../outside-sentinel.txt"},
+		{"backup-parent-traversal", "backup", "../outside-sentinel.txt"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, workspace := journalBoundaryPathFixture(t)
+			id := "unsafe-path-journal-001"
+			journalBoundaryPrepared(t, f, id, "after-journal", journalBoundaryTargets(t, f))
+			journal, err := f.journal(id)
+			if err != nil {
+				t.Fatal(err)
+			}
+			model.M(model.A(journal["entries"])[0])[tc.field] = tc.value
+			corrupt, err := canonical.Marshal(journal)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(f.Root, filepath.FromSlash(journalPath(id))), corrupt, 0600); err != nil {
+				t.Fatal(err)
+			}
+			journalBoundaryAssertCorruptAdmissions(t, f, workspace, id)
+		})
+	}
+}
+
+func TestN03LegacyAncestorOverlapJournalRefusesEveryAdmission(t *testing.T) {
+	for _, tc := range []struct {
+		name        string
+		paths, dirs [2]string
+	}{
+		{"ancestor-first", [2]string{"branch", "branch/child.txt"}, [2]string{"", "branch/"}},
+		{"ancestor-reversed", [2]string{"branch/child.txt", "branch"}, [2]string{"branch/", ""}},
+		{"ancestor-case-folded", [2]string{"Branch", "branch/child.txt"}, [2]string{"", "branch/"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, workspace := journalBoundaryPathFixture(t)
+			id := "legacy-overlap-journal-001"
+			journalBoundaryPrepared(t, f, id, "after-journal", journalBoundaryTargets(t, f))
+			journal, err := f.journal(id)
+			if err != nil {
+				t.Fatal(err)
+			}
+			journal["format"] = "codearbiter.transaction/0.1.0"
+			delete(journal, "result")
+			legacy, err := canonical.Marshal(journal)
+			if err != nil {
+				t.Fatal(err)
+			}
+			journalFile := filepath.Join(f.Root, filepath.FromSlash(journalPath(id)))
+			if err := os.WriteFile(journalFile, legacy, 0600); err != nil {
+				t.Fatal(err)
+			}
+			before := journalBoundarySnapshot(t, workspace)
+			pending, err := f.Pending()
+			if err != nil || len(pending) != 1 || pending[0] != id {
+				t.Fatalf("otherwise valid legacy prepared journal refused: %v %v", pending, err)
+			}
+			if !reflect.DeepEqual(before, journalBoundarySnapshot(t, workspace)) {
+				t.Fatal("valid legacy scan changed owned bytes")
+			}
+			// Keep the stage derivation coherent with each changed target, so
+			// only ancestor disjointness fails; digest/shape/stage guards cannot
+			// make this pass if legacy decoder collision checking is removed.
+			for i, value := range model.A(journal["entries"]) {
+				entry := model.M(value)
+				entry["path"] = tc.paths[i]
+				entry["stage"] = tc.dirs[i] + fmt.Sprintf(".ca-artifact-%s-%d.new", id, i)
+			}
+			corrupt, err := canonical.Marshal(journal)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(journalFile, corrupt, 0600); err != nil {
+				t.Fatal(err)
+			}
+			journalBoundaryAssertCorruptAdmissions(t, f, workspace, id)
+		})
+	}
+}

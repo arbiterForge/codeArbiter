@@ -870,4 +870,40 @@ describe("Task 6 child environment", () => {
       await rm(operatorHome, { recursive: true, force: true });
     }
   });
+
+  test("ADR-0049 refuses HTTP outside the existing literal loopback at provider and model admission", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    // No endpoint here is contacted: these are configuration-admission inputs.
+    for (const baseUrl of [
+      "http://gateway.example/v1",
+      "http://10.0.0.1/v1",
+      "http://192.168.1.20/v1",
+      "http://169.254.1.1/v1",
+      "http://0.0.0.0/v1",
+      "http://localhost:8931/v1",
+      "http://127.0.0.1.example:8931/v1",
+      "http://127.1:8931/v1",
+      "http://2130706433:8931/v1",
+      "http://0x7f000001:8931/v1",
+      "http://127%2e0%2e0%2e1:8931/v1",
+      "http://127.0.0.2:8931/v1",
+    ]) {
+      for (const record of [
+        { baseUrl },
+        { baseUrl: "https://gateway.example/v1", models: [{ id: "gpt-test", baseUrl }] },
+      ]) {
+        const actual = await projectedModels({ providers: { openai: record } });
+        try {
+          expect(actual.document).toBeUndefined();
+          expect(actual.upstream).toBeUndefined(); // No built-in/provider fallback.
+          expect(actual.error).toBeInstanceOf(ChildConfigProjectionError);
+          expect((actual.error as Error).message).toBe("Pi child configuration projection refused.");
+          expect(String(actual.error)).not.toContain(baseUrl);
+        } finally {
+          await actual.cleanup();
+        }
+      }
+    }
+  });
+
 });

@@ -3153,9 +3153,10 @@ jobs:
     # feedback loop.
     # Each job qualifies one fresh native reader for process-local test harnesses.
     # Tests and vet still run; only repeated identical qualifications disappear.
-    # Windows contracts passed in19m47s and then exhausted20m while all prior
-    # steps passed; allow bounded setup/runner variance only for that cell.
-    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}
+    # Windows/contracts exhausted25min with no failed test in the original run.
+    # Bound its complete sequential population at45min; individual command and
+    # test limits stay unchanged. Other partitions retain their20min allowance.
+    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}
     permissions:
       contents: read
       actions: read

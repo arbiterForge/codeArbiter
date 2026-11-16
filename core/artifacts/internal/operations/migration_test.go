@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"encoding/json"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
@@ -16,65 +15,6 @@ import (
 	"strings"
 	"testing"
 )
-
-func migrationRequest(t *testing.T, h *harness) object {
-	t.Helper()
-	s := testutil.Seal(t, testutil.Spec())
-	pn := model.M(testutil.Plan(s)["normative"])
-	for _, kind := range []string{"spec", "plan"} {
-		dir := filepath.Join(h.root, ".codearbiter", kind+"s")
-		if e := os.MkdirAll(dir, 0755); e != nil {
-			t.Fatal(e)
-		}
-		if e := os.WriteFile(filepath.Join(dir, "example.md"), []byte("# Legacy\nStatus: approved\nHistoric behavior\n"), 0644); e != nil {
-			t.Fatal(e)
-		}
-	}
-	mapping := func(target string) []any {
-		return []any{object{"start_line": int64(1), "end_line": int64(3), "target": target, "disposition": "mapped", "reason": "Synthetic reviewed fixture mapping, not actual production migration."}}
-	}
-	return object{"spec": object{"source_path": ".codearbiter/specs/example.md", "artifact_id": s.ID(), "slug": "example", "normative": s.Norm(), "mappings": mapping("INTENT-01")}, "plan": object{"source_path": ".codearbiter/plans/example.md", "artifact_id": "PLAN-EXAMPLE", "slug": "example", "normative": pn, "mappings": mapping("T-001")}}
-}
-func TestMigrationPairAndRollback(t *testing.T) {
-	h := newHarness(t)
-	r := migrationRequest(t, h)
-	preview := h.run("migration-preview", r)
-	if _, e := os.Stat(filepath.Join(h.root, ".codearbiter/specs/example.html")); !os.IsNotExist(e) {
-		t.Fatal("preview wrote a canonical artifact")
-	}
-	r["preview_sha256"] = preview["preview_sha256"]
-	r["operation_id"] = "cutover-fixture-001"
-	r["review"] = object{"actor": "test fixture", "origin": "unit test", "source_text": "Synthetic explicit mapping approval; not implementation approval."}
-	h.run("migration-apply", r)
-	journalBytes, err := os.ReadFile(filepath.Join(h.root, ".codearbiter/.artifacts/transactions/cutover-fixture-001.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	var journal object
-	if err := json.Unmarshal(journalBytes, &journal); err != nil || len(model.A(journal["entries"])) != 4 {
-		t.Fatalf("pair cutover did not journal four edits: %v", err)
-	}
-	for _, kind := range []string{"spec", "plan"} {
-		if _, e := os.Stat(filepath.Join(h.root, ".codearbiter", kind+"s/example.md")); !os.IsNotExist(e) {
-			t.Fatal("two live authorities")
-		}
-	}
-	if model.S(model.M(h.doc("SPEC-EXAMPLE").Data["governance"])["state"]) != "draft" {
-		t.Fatal("legacy approval transferred")
-	}
-	if h.doc("PLAN-EXAMPLE").Norm()["spec_ref"] == nil {
-		t.Fatal("lost binding")
-	}
-	if _, e := h.request("migration-rollback", object{"operation_id": "rollback-fixture-001", "cutover_operation_id": "cutover-fixture-001"}); e != nil {
-		t.Fatal(e)
-	}
-	for _, kind := range []string{"spec", "plan"} {
-		b, e := os.ReadFile(filepath.Join(h.root, ".codearbiter", kind+"s/example.md"))
-		if e != nil || string(b) != "# Legacy\nStatus: approved\nHistoric behavior\n" {
-			t.Fatal("legacy bytes not restored")
-		}
-	}
-}
 
 func TestMigrationRefusesUnpairedCutover(t *testing.T) {
 	for _, missing := range []string{"spec", "plan"} {

@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Require HTTPS for Pi provider endpoints outside literal loopback, including broker authorization and child-visible redirect downgrade refusal.
+- Extend native journal and schema qualification routes with required parent/child outcomes from every declared platform.
 - Reject ancestor/descendant transaction targets before staging and during journal validation; preserve valid disjoint path prefixes.
 - Require full original six-platform parent and child evidence for five additional journal/recovery routes, preserving all earlier native selections.
 - Retain bounded native-debugger setup phases, validated failure/detach fields and stopped-instruction offsets without exposing raw debugger data.
