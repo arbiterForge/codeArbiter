@@ -218,6 +218,7 @@ EXPECTED_SUITES = {
     "test_artifact_package.py": {
         "test_darwin_stage_keeps_exact_hash_and_mode_guards_with_inert_bytes",
         "test_unknown_process_network_and_process_escape_still_refuse",
+        "test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",
         "test_valid_verifier_audit_never_runs_dynamic_platform_discovery",
         "test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
         "test_v2_builtin_subtypes_and_families_keep_no_messages",

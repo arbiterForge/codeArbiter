@@ -1,0 +1,15 @@
+{
+  "label": "green",
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "exit_code": 0,
+  "duration_seconds": 0.11263439999311231,
+  "failing_tests": [],
+  "error_tests": [],
+  "candidate_before": "3940fae036f0c6d0857a8492ddf340db72ae7270516f23afdb7fb6bbb6f09962",
+  "candidate_after": "3940fae036f0c6d0857a8492ddf340db72ae7270516f23afdb7fb6bbb6f09962",
+  "stderr_sha256": "638c2ace15b4143aa363c1512c61aef341f55460ba503b440b58f59cd2a36677",
+  "scope": "Actual owning SiteBrowser class and merge-group method; GREEN also original SDK route controls plus new negatives. Workflow source read from unchanged Gov, no app/browser/native/SDK replay. One Git check-ignore local read; one explicitly inert knowledge-read seam."
+}

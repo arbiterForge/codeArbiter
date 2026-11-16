@@ -235,6 +235,21 @@ def reviewed_mapped_work_event_guards(block: str) -> set[str]:
     return set(expected.values())
 
 
+def reviewed_sdk_source_event_guards(ci: str, block: str) -> set[str]:
+    """Exempt only the exact authenticated SDK report role, never its suite."""
+    if (not block.startswith("  ca-pi-checks:\n")
+            or workflow_jobs(ci).get("ca-pi-checks") != block):
+        raise ValueError("unknown SDK source-report owner")
+    owner = SdkFooterSourceWorkflowTests()
+    owner.assert_sdk_route(ci)
+    role = owner._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"]
+    predicate = re.findall(r"(?m)^        if: ([^\n]+)$", role)
+    conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    if len(predicate) != 1 or conditions.count(predicate[0]) != 1:
+        raise ValueError("SDK report predicate is missing, changed or reused")
+    return set(predicate)
+
+
 def candidate_suite_invocation_contract(source: str) -> None:
     """Read the actual once-only command/environment flow, never a spelling hint."""
     def require(condition, message):
@@ -3058,6 +3073,7 @@ class WorkflowContractTest(unittest.TestCase):
             source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
             vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
+            sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
@@ -3070,7 +3086,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards:
+                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
@@ -4198,7 +4214,26 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                                          '          path: ${{ runner.temp }}/docs-qualification.json\n'
                                          '          if-no-files-found: error\n'
                                          '          retention-days: 14\n'
-                                         '          overwrite: false'}
+                                         '          overwrite: false',
+     'Retain Docs qualification diagnostics': '      - name: Retain Docs qualification diagnostics\n'
+                                               '        if: ${{ !cancelled() && '
+                                               "steps.browser-gate.outcome == 'success' && "
+                                               "steps.program-mode.outputs.active == 'true' && "
+                                               "github.event_name == 'push' && "
+                                               'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                               'github.ref) }}\n'
+                                               '        uses: '
+                                               'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                               '        with:\n'
+                                               '          name: site-qualification-diagnostics\n'
+                                               '          path: |\n'
+                                               '            ${{ runner.temp '
+                                               '}}/docs-browser-observation.json\n'
+                                               '            ${{ runner.temp '
+                                               '}}/docs-qualification.json.refusal.json\n'
+                                               '          if-no-files-found: error\n'
+                                               '          retention-days: 5\n'
+                                               '          overwrite: false'}
     _SETUP_ROLES = ['      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1\n'
      '        with:\n'
      '          submodules: recursive\n'
@@ -4328,6 +4363,10 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                          "new roles cannot add, remove, repeat or suppress an original command")
         self.assertCountEqual(seen, list(diagnostics),
                               "both diagnostic uploads must occur exactly once")
+        self.assertLess(names.index("Emit Docs qualification report"),
+                        names.index("Retain Docs qualification diagnostics"))
+        self.assertLess(names.index("Retain Docs qualification diagnostics"),
+                        names.index("Upload Docs qualification report"))
         for name in ("Browser publication gate", "Upload Pages artifact"):
             self.assertEqual(names.count(name), 1, f"missing or duplicate {name}")
         gate = next(step for step in parts[1:]
@@ -4376,7 +4415,22 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self._assert_build_control_flow(build)
         evidence = next(step for step in re.split(r"(?m)(?=^      - )", build)
                         if step.startswith("      - name: Retain browser review evidence\n"))
+        diagnostic = self._PROGRAM_ROLES["Retain Docs qualification diagnostics"]
+        def mutate_diagnostic(before, after):
+            self.assertIn(before, diagnostic)
+            return build.replace(diagnostic, diagnostic.replace(before, after, 1), 1)
         mutations = {
+            "Docs diagnostic always": mutate_diagnostic("${{ !cancelled() &&", "${{ always() &&"),
+            "Docs diagnostic failed browser": mutate_diagnostic("steps.browser-gate.outcome == 'success'", "steps.browser-gate.outcome != 'success'"),
+            "Docs diagnostic PR event": mutate_diagnostic("github.event_name == 'push'", "github.event_name == 'pull_request'"),
+            "Docs diagnostic wrong artifact": mutate_diagnostic("name: site-qualification-diagnostics", "name: github-pages"),
+            "Docs diagnostic publication path": mutate_diagnostic("${{ runner.temp }}/docs-browser-observation.json", "site/dist"),
+            "Docs diagnostic unbounded path": mutate_diagnostic("${{ runner.temp }}/docs-qualification.json.refusal.json", "${{ runner.temp }}/**"),
+            "Docs diagnostic credential": mutate_diagnostic("        uses:", "        env:\n          GH_TOKEN: ${{ github.token }}\n        uses:"),
+            "Docs diagnostic executable": mutate_diagnostic("        uses:", "        run: npm run deploy\n        uses:"),
+            "Docs diagnostic overwrite": mutate_diagnostic("overwrite: false", "overwrite: true"),
+            "Docs diagnostic missing": build.replace(diagnostic, "", 1),
+            "Docs diagnostic duplicate": build.replace(diagnostic, diagnostic + "\n" + diagnostic, 1),
             "conditional job": build.replace("  build:\n", "  build:\n    if: always()\n", 1),
             "conditional browser": build.replace("        id: browser-gate\n",
                                                  "        id: browser-gate\n        if: false\n", 1),
@@ -5454,8 +5508,127 @@ class SuiteEntrypointTest(unittest.TestCase):
 
 
 class SdkFooterSourceWorkflowTests(unittest.TestCase):
+    _SOURCE_ROLES = {'Prepare Pi SDK footer source-test inputs': '      - name: Prepare Pi SDK footer source-test '
+                                                 'inputs\n'
+                                                 '        id: pi_sdk_source_prepare\n'
+                                                 '        working-directory: .\n'
+                                                 '        run: >-\n'
+                                                 '          python -B '
+                                                 '.github/scripts/major_qualification_report.py '
+                                                 'prepare-source\n'
+                                                 '          --repo . --source-profile '
+                                                 'pi-sdk-footer-v1\n'
+                                                 '          --job-name "[CHECK] | [PI  ] | '
+                                                 'Host-independent adapter contract"\n'
+                                                 '          --output "${{ runner.temp '
+                                                 '}}/pi-sdk-source-inputs"',
+     'Test release package contract': '      - name: Test release package contract\n'
+                                      '        id: pi_sdk_observed\n'
+                                      '        working-directory: .\n'
+                                      '        run: >-\n'
+                                      '          python -B '
+                                      '.github/scripts/major_qualification_report.py observe-python\n'
+                                      '          --repo . --source-profile pi-sdk-footer-v1\n'
+                                      '          --source-payload "${{ runner.temp '
+                                      '}}/pi-sdk-source-inputs"\n'
+                                      '          --output "${{ runner.temp '
+                                      '}}/pi-sdk-python-observation.json"\n'
+                                      '          -- .github/scripts/test_pi_package.py',
+     'Upload Pi SDK footer source-test inputs': '      - name: Upload Pi SDK footer source-test '
+                                                'inputs\n'
+                                                '        id: pi_sdk_source_upload\n'
+                                                '        if: ${{ !cancelled() && (success() || '
+                                                'failure()) && steps.pi_sdk_source_prepare.outcome == '
+                                                "'success' }}\n"
+                                                '        uses: '
+                                                'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                '        with:\n'
+                                                '          name: major-source-inputs-pi-sdk-footer\n'
+                                                '          path: ${{ runner.temp '
+                                                '}}/pi-sdk-source-inputs/\n'
+                                                '          if-no-files-found: error\n'
+                                                '          retention-days: 14\n'
+                                                '          include-hidden-files: true\n'
+                                                '          overwrite: false',
+     'Emit original Pi SDK footer source qualification report': '      - name: Emit original Pi SDK '
+                                                                'footer source qualification report\n'
+                                                                '        id: pi_sdk_emit\n'
+                                                                '        if: ${{ !cancelled() && '
+                                                                "github.event_name == 'push' && "
+                                                                "(github.ref == 'refs/heads/main' || "
+                                                                'github.ref == '
+                                                                "'refs/heads/major/state-contracts') "
+                                                                '&& '
+                                                                "hashFiles('.github/integration-candidate.json') "
+                                                                "!= '' && "
+                                                                'steps.pi_sdk_observed.outcome == '
+                                                                "'success' && "
+                                                                'steps.pi_sdk_source_upload.outcome == '
+                                                                "'success' }}\n"
+                                                                '        working-directory: ${{ '
+                                                                'github.workspace }}\n'
+                                                                '        shell: bash\n'
+                                                                '        env:\n'
+                                                                '          GH_TOKEN: ${{ github.token '
+                                                                '}}\n'
+                                                                '        run: |\n'
+                                                                '          python -B '
+                                                                '.github/scripts/major_qualification_report.py '
+                                                                'emit \\\n'
+                                                                '            --repo . --output '
+                                                                '"$RUNNER_TEMP/pi-sdk-qualification.json" '
+                                                                '\\\n'
+                                                                '            --job-name "[CHECK] | '
+                                                                '[PI  ] | Host-independent adapter '
+                                                                'contract" \\\n'
+                                                                '            --observation '
+                                                                '"pi-sdk-footer=$RUNNER_TEMP/pi-sdk-python-observation.json" '
+                                                                '\\\n'
+                                                                '            --payload-root '
+                                                                '"major-source-inputs-pi-sdk-footer=${{ '
+                                                                'github.workspace }}"\n'
+                                                                "          python -c 'import json,os; "
+                                                                'from pathlib import Path; '
+                                                                'r=json.loads((Path(os.environ["RUNNER_TEMP"])/"pi-sdk-qualification.json").read_text(encoding="utf-8")); '
+                                                                'j=r["job_id"]; assert type(j) is int '
+                                                                'and j>0; '
+                                                                'f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); '
+                                                                'print("artifact_name=major-qualification-"+str(j),file=f); '
+                                                                "f.close()'",
+     'Upload major qualification report': '      - name: Upload major qualification report\n'
+                                          "        if: steps.pi_sdk_emit.outcome == 'success'\n"
+                                          '        uses: '
+                                          'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                          '        with:\n'
+                                          '          name: ${{ steps.pi_sdk_emit.outputs.artifact_name '
+                                          '}}\n'
+                                          '          path: ${{ runner.temp '
+                                          '}}/pi-sdk-qualification.json\n'
+                                          '          if-no-files-found: error\n'
+                                          '          retention-days: 14\n'
+                                          '          include-hidden-files: false\n'
+                                          '          overwrite: false'}
+
     def assert_sdk_route(self,ci):
         jobs=workflow_jobs(ci);job=jobs["ca-pi-checks"]
+        from test_hook_ci_partition import step_blocks
+        self.assertEqual(re.findall(r"(?m)^    if: ([^\n]+)$", job),
+                         ["needs.changes.outputs.ca-pi == 'true'"])
+        self.assertNotRegex(job, r"(?m)^    continue-on-error:")
+        self.assertEqual(re.findall(r"(?m)^    permissions:\n(?:      [^\n]+\n)+", job),
+                         ["    permissions:\n      contents: read\n      actions: read\n"])
+        self.assertNotIn("secrets.", job)
+        selected = step_blocks(job)
+        positions = []
+        for name, expected in self._SOURCE_ROLES.items():
+            found = [(i, step) for i, step in enumerate(selected)
+                     if step.startswith("      - name: " + name + "\n")]
+            self.assertEqual(len(found), 1, "SDK source role missing or repeated")
+            index, step = found[0]
+            self.assertEqual(re.sub(r"(?m)\s+#.*$", "", step).rstrip(), expected,
+                             "SDK source role changed or gained authority")
+            positions.append(index)
+        self.assertEqual(positions, sorted(positions), "SDK source roles are out of order")
         self.assertIn('name: "[CHECK] | [PI  ] | Host-independent adapter contract"',job)
         self.assertIn('runs-on: ubuntu-latest',job)
         self.assertIn('      contents: read\n      actions: read',job)
@@ -5519,6 +5692,45 @@ class SdkFooterSourceWorkflowTests(unittest.TestCase):
                              ('GH_TOKEN: ${{ github.token }}','OTHER_TOKEN: ${{ github.token }}')):
             job=ci[start:end];broken=ci[:start]+job.replace(before,after,1)+ci[end:]
             with self.subTest(mutation=before),self.assertRaises(AssertionError):self.assert_sdk_route(broken)
+
+
+    def test_sdk_report_merge_group_exemption_requires_exact_original_role(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["ca-pi-checks"]
+        expected = reviewed_sdk_source_event_guards(ci, job)
+        self.assertEqual(len(expected), 1)
+        predicate = next(iter(expected))
+        mutations = {
+            "duplicate emitter": job.replace(self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"],
+                self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"] + "\n" + self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"], 1),
+            "original suite conditional": job.replace("        id: pi_sdk_observed\n", "        id: pi_sdk_observed\n        if: " + predicate + "\n", 1),
+            "emitter always": job.replace(predicate, "always()", 1),
+            "emitter predicate copied to other step": job + "\n      - name: Unknown evidence\n        if: " + predicate + "\n        run: echo skipped-verdict\n",
+            "source uploader failed accepted": job.replace("steps.pi_sdk_source_upload.outcome == 'success'", "steps.pi_sdk_source_upload.outcome != 'success'", 1),
+            "wrong source upload path": job.replace("path: ${{ runner.temp }}/pi-sdk-source-inputs/", "path: ${{ runner.temp }}/other/", 1),
+            "wrong source artifact": job.replace("name: major-source-inputs-pi-sdk-footer", "name: unrelated-inputs", 1),
+            "source upload overwrite": job.replace("overwrite: false", "overwrite: true", 1),
+            "job suppression": job.replace("  ca-pi-checks:\n", "  ca-pi-checks:\n    continue-on-error: true\n", 1),
+            "job write permission": job.replace("      contents: read\n", "      contents: write\n", 1),
+            "job path-scope changed": job.replace("    if: needs.changes.outputs.ca-pi == 'true'", "    if: true", 1),
+        }
+        for name, broken_job in mutations.items():
+            with self.subTest(mutation=name):
+                self.assertNotEqual(broken_job, job)
+                broken = ci.replace(job, broken_job, 1)
+                with self.assertRaises((AssertionError, ValueError)):
+                    reviewed_sdk_source_event_guards(broken, broken_job)
+        with self.assertRaises(ValueError):
+            reviewed_sdk_source_event_guards(ci, workflow_jobs(ci)["ca-pi-tools"])
+        # A copied producer predicate never exempts a different enforced job.
+        other = workflow_jobs(ci)["version-bump"]
+        changed = other + "\n      - name: Unknown SDK exception\n        if: " + predicate + "\n        run: echo skipped-verdict\n"
+        broken = ci.replace(other, changed, 1)
+        with mock.patch.object(sys.modules[__name__], "CI_WORKFLOW") as workflow:
+            workflow.read_text.return_value = broken
+            with self.assertRaises(AssertionError):
+                WorkflowContractTest("test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group").test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group()
+
 
 
 if __name__ == "__main__":

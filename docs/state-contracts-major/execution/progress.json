@@ -4959,9 +4959,9 @@
   ],
   "live_checkpoint": {
     "recorded_at": "2026-11-16T08:52:32.433783+00:00",
-    "controller_anchor": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "controller_anchor": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
     "integration_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
-    "delivery_pr": null,
+    "delivery_pr": 1115,
     "previous_child": {
       "pr": 1114,
       "state": "MERGED",
@@ -4978,7 +4978,7 @@
     "original_docs_run": 43829498531,
     "last_normal_result": "TERMINAL_FAILURE_ORIGINAL_DOCS_EMIT_AND_WINDOWS_COLD_CONFORMANCE_NO_QUALIFICATION",
     "followup": "Safe Docs refusal/input retention, actual native progress/history/advisory reporting controls, complete finite native recipes, actual owned Sandbox effects and portable supported-SDK footer component wiring.",
-    "current_staged_integrity": "PASSED_MEASURED_93_PATH_TREE_BEFORE_REPORTING_ONLY_EDIT",
+    "current_staged_integrity": "PENDING_CORRECTIVE_TREE_HOSTED_VALIDATION",
     "source_or_status_renewal": false,
     "ordinary_selection_groups": 53,
     "ordinary_selection_cells": 54,
@@ -4993,7 +4993,7 @@
       "meaning": "Accounting obligations awaiting complete implementation/test/evidence reconciliation; not842 confirmed missing features."
     },
     "private_future_work": "S75 exact obsolete guarded-contract proposal and two debug finding proof proposals remain unadmitted. Remaining UI/model/human/current-source proof work stays open.",
-    "observations": "evidence/remaining-effects-development/index.json",
+    "observations": "evidence/pr1115-corrective-development/index.json",
     "main_merge": "HELD_FOR_USER_TESTING",
     "publication": "NOT_AUTHORIZED",
     "pending_pi_http_policy": "UNCHANGED_AWAITING_USER_CHOICE",
@@ -5011,7 +5011,10 @@
       },
       "seconds": 41.125,
       "source_ref_moved": false
-    }
+    },
+    "last_exact_pr_head_result": "FOUR_PRIMARY_CI_FAILURE_CLASSES_RETAINED_CORRECTIVE_SOURCE_PREPARED",
+    "original_pr_ci_run": 43837681879,
+    "original_pr_docs_run": 43837682005
   },
   "checkpoint_history": [
     {

@@ -13,6 +13,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ### Added
 
+- Qualify owned Claude home persistence, hardened offline execution and retained partial bytes after interrupted copy through their original Sandbox test owner; retain the original failed copy fixture separately.
 - Add a trusted CI path that checks the retained Sandbox CLI's exec, copy-out and scoped destroy commands against its shipped package.
 - Add coverage for the CLI entrypoint's SIGINT handler, cancellation propagation and exit status.
 

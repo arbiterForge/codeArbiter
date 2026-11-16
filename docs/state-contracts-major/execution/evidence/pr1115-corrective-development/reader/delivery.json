@@ -1,0 +1,30 @@
+{
+  "schema": "private-pr1115-workflow-reader-fix/1",
+  "source_epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "paths": [
+    ".github/scripts/test_ci_impact.py"
+  ],
+  "preimage_sha256": "aa65bcd487e6a16e023371b83f2a37018804513ddd4297a88fac57d1f0b5a0ee",
+  "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1115-workflow-reader-fix-6avk2w7c\\candidate\\.github\\scripts\\test_ci_impact.py",
+  "candidate_sha256": "3940fae036f0c6d0857a8492ddf340db72ae7270516f23afdb7fb6bbb6f09962",
+  "patch_sha256": "afbc9d30679824e16f6ff7f4e7206c2b45f8c276b10b8812138b742912e22b77",
+  "filemap_sha256": "27ca1b14ce1e4ccd4c6d049782be7b913f0cbe2c504f045ba5582130b331ae47",
+  "RED": {
+    "tests": 8,
+    "failures": 4,
+    "errors": 0,
+    "seconds": 0.03925999999046326
+  },
+  "GREEN": {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skip": 0,
+    "seconds": 0.11263439999311231
+  },
+  "new_closed_negative_vectors": 24,
+  "workflows_unchanged": true,
+  "permissions_or_trust_changed": false,
+  "canonical_writes": false,
+  "scope_limits": "Pure workflow readers; no actual workflow/browser/SDK/runtime replay. One explicitly inert tech-stack read seam; local Git check-ignore read only. Original hosted4failures and all candidate refinements retained."
+}

@@ -1,0 +1,16 @@
+test_browser_gate_blocks_artifact_upload_and_keeps_pr_execution_read_only (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_browser_gate_blocks_artifact_upload_and_keeps_pr_execution_read_only) ... ok
+test_browser_results_stay_in_ignored_non_publication_output (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_browser_results_stay_in_ignored_non_publication_output) ... ok
+test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition) ... ok
+test_component_suite_is_discovered_and_success_gates_pages_upload (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_component_suite_is_discovered_and_success_gates_pages_upload) ... ok
+test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads)
+Mutations must not turn evidence retention into publication authorization. ... ok
+test_playwright_configuration_is_inside_the_typecheck_scope (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_playwright_configuration_is_inside_the_typecheck_scope) ... ok
+test_program_roles_refuse_unknown_duplicate_token_and_qualified_header_changes (scoped_ci_reader.SiteBrowserPublicationWorkflowTest.test_program_roles_refuse_unknown_duplicate_token_and_qualified_header_changes) ... ok
+test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group (scoped_ci_reader.WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group) ... ok
+test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles (scoped_ci_reader.SdkFooterSourceWorkflowTests.test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles) ... ok
+test_sdk_report_merge_group_exemption_requires_exact_original_role (scoped_ci_reader.SdkFooterSourceWorkflowTests.test_sdk_report_merge_group_exemption_requires_exact_original_role) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.113s
+
+OK

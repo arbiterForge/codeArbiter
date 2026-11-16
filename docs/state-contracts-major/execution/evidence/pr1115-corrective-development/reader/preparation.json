@@ -1,0 +1,24 @@
+{
+  "source_epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "bindings": [
+    {
+      "path": ".github/scripts/test_ci_impact.py",
+      "sha256": "aa65bcd487e6a16e023371b83f2a37018804513ddd4297a88fac57d1f0b5a0ee",
+      "epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+      "physical_literal_equal": true
+    },
+    {
+      "path": ".github/workflows/docs.yml",
+      "sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+      "physical_literal_equal": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "0fd11f9634bc608a3cc05e9e80e3cde9a9b28e44b7adf299ac64ec82c7612e09",
+      "epoch": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+      "physical_literal_equal": true
+    }
+  ],
+  "canonical_writes": false
+}
