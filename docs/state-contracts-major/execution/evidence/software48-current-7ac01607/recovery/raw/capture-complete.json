@@ -1,0 +1,13 @@
+{
+  "state": "ACTUAL_CAPTURE_SEALED",
+  "owner": "recovery",
+  "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "source_tree": "e604e5c7c7e0673cc0793933f13b8cb0b3a913d7",
+  "exit_code": 0,
+  "seconds": 20.356796799998847,
+  "PASS": 29,
+  "positive_inputs": 103,
+  "runtime_records": 10795,
+  "actual_imports": 21,
+  "HEAD_index_source_runtime_namespaces_stable": true
+}

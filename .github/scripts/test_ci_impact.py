@@ -21,6 +21,7 @@ import tomllib
 import unittest
 from unittest import mock
 from pathlib import Path
+from test_hook_ci_partition import reviewed_python_source_event_guards
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -905,6 +906,28 @@ class DescriptorSurfaceTest(unittest.TestCase):
         self.assertEqual(
             {check.scope for check in result.selected}, {"CA", "CDX", "PI"}
         )
+
+
+
+class ReviewedPythonSourceEventGuardTest(unittest.TestCase):
+    def block(self):
+        return workflow_jobs(CI_WORKFLOW.read_text(encoding='utf8'))['hooks']
+
+    def test_exact_metadata_role_is_the_only_event_exemption(self):
+        guards=reviewed_python_source_event_guards(self.block())
+        self.assertEqual(len(guards),1)
+        self.assertIn("github.event_name == 'push'",next(iter(guards)))
+        self.assertIn("steps.python_source_upload.outcome == 'success'",next(iter(guards)))
+
+    def test_unknown_metadata_name_or_reused_test_predicate_cannot_get_exemption(self):
+        block=self.block();predicate=next(iter(reviewed_python_source_event_guards(block)))
+        for changed in (
+            block.replace('Emit original Python source qualification report','Emit unrelated report',1),
+            block+'      - name: ordinary test\n        if: '+predicate+'\n        run: python unreviewed.py\n',
+            block.replace("github.event_name == 'push'", "github.event_name == 'pull_request'",1),
+        ):
+            with self.subTest(change=changed[-120:]),self.assertRaises(ValueError):
+                reviewed_python_source_event_guards(changed)
 
 
 class WorkflowContractTest(unittest.TestCase):
@@ -2769,6 +2792,7 @@ class WorkflowContractTest(unittest.TestCase):
         for job_id in enforced:
             block = jobs.get(job_id, "")
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
+            source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
@@ -2781,7 +2805,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards:
+                if condition in cold_guards or condition in source_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue

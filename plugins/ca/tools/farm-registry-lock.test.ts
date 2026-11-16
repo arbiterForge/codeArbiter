@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { spawn, execFileSync, type ChildProcess } from "node:child_process";
 import { mkdtemp, mkdir, writeFile, readFile, rename, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -7,6 +7,24 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { createInterface } from "node:readline";
 import { treeKill } from "./exec.ts";
 import { withWorktreeLock, prepareWorktree, removeWorktreeVerified, allowedWorktreeRoot, _resetAllowedWorktreeRoot } from "./farm.ts";
+
+
+// The only injected failure is one exact owned exclusive-open pathname. Every
+// successful acquisition still uses the original OS file handle and release.
+const openDenial = vi.hoisted(() => ({ path: "", remaining: 0, attempts: 0, flags: [] as number[], code: "EPERM" }));
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs/promises")>();
+  return { ...actual, open: async (...args: Parameters<typeof actual.open>) => {
+    if (args[0] === openDenial.path) {
+      openDenial.attempts++; openDenial.flags.push(Number(args[1]));
+      if (openDenial.remaining !== 0) {
+        if (openDenial.remaining > 0) openDenial.remaining--;
+        throw Object.assign(new Error("controlled exclusive open denial"), { code: openDenial.code });
+      }
+    }
+    return actual.open(...args);
+  } };
+});
 
 const tools = dirname(fileURLToPath(import.meta.url));
 const tsx = import.meta.resolve("tsx");
@@ -169,5 +187,57 @@ describe("cross-process Farm worktree administration",()=>{
       await thrown.wait(["primary-preserved"]);await thrown.wait(["again"]);
       expect(await thrown.exit).toBe(0);
     },15000);
+  }
+});
+
+
+describe("bounded exclusive-open denial handling", () => {
+  for (const kind of ["source", "bundle"] as const) {
+    it(`${kind}: transient EPERM waits for real ownership before one callback`, async () => {
+      const f=await fixture(false), original=process.cwd();let calls=0;
+      const lock=kind==="source" ? withWorktreeLock : (await import("./farm.js")).withWorktreeLock;
+      Object.assign(openDenial,{path:f.lock,remaining:1,attempts:0,flags:[],code:"EPERM"});
+      try {
+        process.chdir(f.repo);
+        const result=await lock(async()=>{
+          calls++;expect(openDenial.attempts).toBe(2);
+          const owner=JSON.parse(await readFile(f.lock,"utf8"));
+          expect(owner.pid).toBe(process.pid);expect(owner.token).toMatch(/^[a-f0-9]{32}$/);
+          return "owned-once";
+        },{timeoutMs:200});
+        expect(result).toBe("owned-once");expect(calls).toBe(1);
+        expect(openDenial.flags).toHaveLength(2);expect(openDenial.flags[0]).toBe(openDenial.flags[1]);
+        await expect(readFile(f.lock)).rejects.toMatchObject({code:"ENOENT"});
+      } finally {openDenial.path="";process.chdir(original);}
+    });
+
+    it(`${kind}: permanent EPERM is bounded and never runs or creates a claim`, async () => {
+      const f=await fixture(false), original=process.cwd();let calls=0;
+      const lock=kind==="source" ? withWorktreeLock : (await import("./farm.js")).withWorktreeLock;
+      Object.assign(openDenial,{path:f.lock,remaining:-1,attempts:0,flags:[],code:"EPERM"});
+      try {
+        process.chdir(f.repo);const began=performance.now();
+        await expect(lock(async()=>{calls++;},{timeoutMs:40})).rejects.toMatchObject({code:"EPERM"});
+        expect(performance.now()-began).toBeLessThan(1500);
+        expect(openDenial.attempts).toBeGreaterThan(1);expect(calls).toBe(0);
+        await expect(readFile(f.lock)).rejects.toMatchObject({code:"ENOENT"});
+      } finally {openDenial.path="";process.chdir(original);}
+    });
+
+    it(`${kind}: an unlisted denial stays immediate and foreign ownership remains untouched`, async () => {
+      const f=await fixture(false), original=process.cwd();let calls=0;
+      const lock=kind==="source" ? withWorktreeLock : (await import("./farm.js")).withWorktreeLock;
+      try {
+        process.chdir(f.repo);
+        Object.assign(openDenial,{path:f.lock,remaining:-1,attempts:0,flags:[],code:"EACCES"});
+        await expect(lock(async()=>{calls++;},{timeoutMs:200})).rejects.toMatchObject({code:"EACCES"});
+        expect(openDenial.attempts).toBe(1);expect(calls).toBe(0);
+        await writeFile(f.lock,"foreign-owned-fixture",{flag:"wx"});
+        Object.assign(openDenial,{remaining:1,attempts:0,flags:[],code:"EPERM"});
+        await expect(lock(async()=>{calls++;},{timeoutMs:40})).rejects.toThrow(/retained lock/);
+        expect(openDenial.attempts).toBeGreaterThan(1);expect(calls).toBe(0);
+        expect(await readFile(f.lock,"utf8")).toBe("foreign-owned-fixture");
+      } finally {openDenial.path="";process.chdir(original);}
+    });
   }
 });

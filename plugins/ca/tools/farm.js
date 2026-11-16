@@ -1993,10 +1993,13 @@ async function withCommonWorktreeLock(fn, opts) {
       handle = await open3(lock, fsConstants.O_RDWR | fsConstants.O_CREAT | fsConstants.O_EXCL | (fsConstants.O_NOFOLLOW ?? 0), 384);
       break;
     } catch (error) {
-      if (error.code !== "EEXIST") throw error;
+      const code = error.code;
+      if (code !== "EEXIST" && code !== "EPERM") throw error;
       opts.onContention?.();
-      if (performance.now() >= deadline)
+      if (performance.now() >= deadline) {
+        if (code === "EPERM") throw error;
         throw new Error("Git worktree administration busy or retained lock present; no lock owner was removed");
+      }
       await sleep(Math.min(25, Math.max(0, deadline - performance.now())));
     }
   }

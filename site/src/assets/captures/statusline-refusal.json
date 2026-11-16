@@ -23,7 +23,7 @@
     },
     {
       "path": "plugins/ca/hooks/_gitexec.py",
-      "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3"
+      "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
     },
     {
       "path": "plugins/ca/hooks/_hooklib.py",

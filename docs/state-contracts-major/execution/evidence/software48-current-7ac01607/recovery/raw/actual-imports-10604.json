@@ -1,0 +1,595 @@
+{
+  "format": "finite-software-import-and-child-observation/1",
+  "pid": 10604,
+  "executed_repository_modules": {
+    ".github/scripts/test_workflow_recovery.py": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+    "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db"
+  },
+  "loaded_repository_modules": {
+    "_workflowrecoverylib": {
+      "path": "core/pysrc/_workflowrecoverylib.py",
+      "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+    },
+    "_taskboardlib": {
+      "path": "core/pysrc/_taskboardlib.py",
+      "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+    },
+    "test_workflow_recovery": {
+      "path": ".github/scripts/test_workflow_recovery.py",
+      "sha256": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f"
+    },
+    "_gitexec": {
+      "path": "core/pysrc/_gitexec.py",
+      "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+    },
+    "hostapi": {
+      "path": "core/pysrc/hostapi.py",
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
+    },
+    "_pathnorm": {
+      "path": "core/pysrc/_pathnorm.py",
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906"
+    },
+    "_activationlib": {
+      "path": "core/pysrc/_activationlib.py",
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+    },
+    "_scopelib": {
+      "path": "core/pysrc/_scopelib.py",
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b"
+    },
+    "_protectedlib": {
+      "path": "core/pysrc/_protectedlib.py",
+      "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3"
+    },
+    "_sensitivelib": {
+      "path": "core/pysrc/_sensitivelib.py",
+      "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506"
+    },
+    "_hooklib": {
+      "path": "core/pysrc/_hooklib.py",
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+    },
+    "_replylib": {
+      "path": "core/pysrc/_replylib.py",
+      "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+    },
+    "_artifactpromptlib": {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9"
+    },
+    "_artifactmanifestlib": {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    "_artifactlib": {
+      "path": "core/pysrc/_artifactlib.py",
+      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b"
+    },
+    "_artifactauthoritylib": {
+      "path": "core/pysrc/_artifactauthoritylib.py",
+      "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c"
+    },
+    "work": {
+      "path": "core/pysrc/work.py",
+      "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722"
+    },
+    "_modelib": {
+      "path": "core/pysrc/_modelib.py",
+      "sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db"
+    },
+    "_arbiterstatelib": {
+      "path": "core/pysrc/_arbiterstatelib.py",
+      "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+    },
+    "taskwrite": {
+      "path": "core/pysrc/taskwrite.py",
+      "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+    },
+    "_worklib": {
+      "path": "core/pysrc/_worklib.py",
+      "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+    }
+  },
+  "observer_errors": [],
+  "parent_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\pycache",
+  "parent_no_user_site": 1,
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sys_path": [
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\observer",
+    "C:\\Python314\\python314.zip",
+    "C:\\Python314\\DLLs",
+    "C:\\Python314\\Lib",
+    "C:\\Python314",
+    "C:\\Python314\\Lib\\site-packages"
+  ],
+  "python_child_launches": [
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-4y4d34in",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-4y4d34in\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-4y4d34in\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-4y4d34in\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-qgkag204\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dejx7tr_\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-uiq1vzfa",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-h_x0zp04",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-sm15q784",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-4_d7m4nf",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-cbn3p_td",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-tz31bovm",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-untlbu46",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-recovery-crash-9f7ymb8s",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-dmf025jw\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-1p2qmuhs\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    },
+    {
+      "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-ptmjri8y",
+      "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site",
+      "python": "C:\\Python314\\python.exe",
+      "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-ptmjri8y\\private-bytecode",
+      "no_user_site": "1",
+      "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-ptmjri8y\\disposable-home",
+      "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\recovery-corrected\\profile\\tmp\\ca-workflow-recovery-ptmjri8y\\disposable-home",
+      "forbidden_present": {
+        "APPDATA": false,
+        "LOCALAPPDATA": false,
+        "XDG_CONFIG_HOME": false,
+        "XDG_CACHE_HOME": false,
+        "PYTHONPATH": false,
+        "FARM_API_KEY": false,
+        "CLAUDE_CODE_OAUTH_TOKEN": false,
+        "GITHUB_TOKEN": false,
+        "OPENAI_API_KEY": false
+      },
+      "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+    }
+  ],
+  "limits": "Passive source execution, final import registry and exact child-launch policy witness; no source/test/target replacement."
+}
