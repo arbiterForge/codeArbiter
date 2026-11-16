@@ -1,0 +1,268 @@
+{
+  "schema": "codearbiter-local-development-observation/1",
+  "recorded_at": "2026-11-16T19:27:35.290127+00:00",
+  "source_parent": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+  "scope": "Native40 finite recipe implementation and existing-operation characterizations; no ledger/status/proof renewal or whole-program qualification.",
+  "adoption": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native40-tested-adoption.json",
+    "sha256": "6efd5a0854af3f20c3828e73a8d3f51c7befd69fa04eca2bd3c98b1628f82c59",
+    "subjects": [
+      {
+        "path": "core/artifacts/internal/operations/engine_test.go",
+        "preimage_sha256": "830fc786c046ce5991a46f1b20cbd26c66b704cc0bfef9390fc74de841571f81",
+        "candidate_sha256": "9820856fbe30facc1fbcf685b7f82e4eed6753be7c0aaa0518dd15e5f8cddfc5",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-portability-validation-n0czmke0\\delivery.json",
+        "receipt_sha256": "411b064cbee3b6fbb4fa54cd7834dcd3bd0cd56d896936cbc538f75d650c9bf5"
+      },
+      {
+        "path": "core/artifacts/internal/operations/migration_test.go",
+        "preimage_sha256": "499df8011adee79bdbe6e0f6f1cb74e8b998d0878207cca61c5a5b92b77578de",
+        "candidate_sha256": "d17f607bfa5eed2b4ab73ab80ffa9a0f89146bc4e303881e95ca99e8a7c3f09b",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-portability-validation-n0czmke0\\delivery.json",
+        "receipt_sha256": "411b064cbee3b6fbb4fa54cd7834dcd3bd0cd56d896936cbc538f75d650c9bf5"
+      },
+      {
+        "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+        "preimage_sha256": "4692f963b84ac7d564c8e2986c8694fb4b6624d2d577f66d2d24d478cf2ca158",
+        "candidate_sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-portability-validation-n0czmke0\\delivery.json",
+        "receipt_sha256": "411b064cbee3b6fbb4fa54cd7834dcd3bd0cd56d896936cbc538f75d650c9bf5"
+      },
+      {
+        "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+        "preimage_sha256": null,
+        "candidate_sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-next-three-successor-n1aib5_i\\delivery.json",
+        "receipt_sha256": "096ccd183523b4426d42c9bfe04ead292cc16aa2c49b8a4ad244169d34e2b60d"
+      },
+      {
+        "path": "core/artifacts/internal/operations/sprint_active_writer_contract_test.go",
+        "preimage_sha256": null,
+        "candidate_sha256": "b0425fb841969dbb13ff96d15751b443bb33dde28599fee79d26d2c6a71df9ef",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-n19-active-writer-run-zbdqk3rn\\delivery.json",
+        "receipt_sha256": "c8434ca41c4fad039976880cbc476c3a5d9ae525239bffe40d0b4c94ae16230a"
+      },
+      {
+        "path": ".github/scripts/major_native_observation.py",
+        "preimage_sha256": "0e518f68eeb9ae08948ac7d0be065c585e434fd86da4fc0d1ab127d12e849a7f",
+        "candidate_sha256": "31df6868c60d56b0040c639b865431795c8ecf9f08b2c870b4c1cf1571243a03",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\delivery.json",
+        "receipt_sha256": "c9c05f9440f25021d9ee9ccad0c4b30cd6dc4ecf5912eb19672609253e69ef91"
+      },
+      {
+        "path": ".github/scripts/test_major_native_observation.py",
+        "preimage_sha256": "5484eb74066e69ad8ff7fdcac3cdf31176245ad56b27ac13d8f54a5dafe736ee",
+        "candidate_sha256": "c951c82e635b0cf18a65b47672640e623ba43eecf717114e04c937f84e8b59bf",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\delivery.json",
+        "receipt_sha256": "c9c05f9440f25021d9ee9ccad0c4b30cd6dc4ecf5912eb19672609253e69ef91"
+      },
+      {
+        "path": ".github/major-qualification-policy.json",
+        "preimage_sha256": "642bde4f2b0afdaf70376f1c5281c76670b49dee1d285361f813554101dd2dd9",
+        "candidate_sha256": "93d4061c9067e6fcc6ea4efe5b434067c15591e9ae2d28fdb618acfbfb31d98e",
+        "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\delivery.json",
+        "receipt_sha256": "c9c05f9440f25021d9ee9ccad0c4b30cd6dc4ecf5912eb19672609253e69ef91"
+      }
+    ]
+  },
+  "local_observations": {
+    "creation_review_acceptance": {
+      "receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-next-three-successor-n1aib5_i\\delivery.json",
+        "sha256": "096ccd183523b4426d42c9bfe04ead292cc16aa2c49b8a4ad244169d34e2b60d"
+      },
+      "source_epoch": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+      "source_representation": "2137+four adopted overlays+one new file; actual HEAD separately retained",
+      "parents": 6,
+      "children": 23,
+      "unique_PASS_outcomes": 29,
+      "captures": 2,
+      "one_fresh_29_run": false,
+      "parents_named": [
+        "TestN04CreateCatalogBoundsRefuseBeforeWriting",
+        "TestN04CreateInitialTypedStateAndDuplicateRefusals",
+        "TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+        "TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+        "TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+        "TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt"
+      ],
+      "combined_named_join": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-next-three-successor-n1aib5_i\\combined-unique-outcomes.json",
+        "sha256": "2aa10876a8d642135af00fd087aa888aca5619ec03de9ab115ef080b8def76bf"
+      },
+      "initial_failure_retained": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-next-three-run-33ahdbow\\failure-delivery.json",
+      "limits": [
+        "Count bound uses the real public catalog; byte bound isolates Engine.save using a synthetic Catalog.BytesTotal, not a64MiB public scanner exercise.",
+        "Failed-name and missing-name fixtures refuse at actual capture with INVALID_MODEL and OBSERVATION_UNVERIFIED; the distinct literal TaskPayload control covers MISSING_TEST/FAILED_VERIFICATION.",
+        "Explicit synthetic receipt and historical STALE fixtures characterize in-process semantics, never real user/model/host approval or execution of stored verification commands."
+      ]
+    },
+    "literal_parent_portability": {
+      "receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-portability-validation-n0czmke0\\delivery.json",
+        "sha256": "411b064cbee3b6fbb4fa54cd7834dcd3bd0cd56d896936cbc538f75d650c9bf5"
+      },
+      "source_epoch": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+      "named_results": [
+        {
+          "name": "TestCreateDoesNotShadowLegacy",
+          "status": "pass",
+          "elapsed": 0.02
+        },
+        {
+          "name": "TestDuplicateCanonicalAuthoritiesFailClosed",
+          "status": "pass",
+          "elapsed": 0.07
+        },
+        {
+          "name": "TestMissingOrSkippedNamedTests",
+          "status": "pass",
+          "elapsed": 0.6
+        }
+      ],
+      "test_elapsed_seconds": 4.838464100001147,
+      "operations_vet_exit": 0,
+      "operations_vet_elapsed_seconds": 2.216432800021721,
+      "all64_declarations_literal_equal": true,
+      "limits": "Existing linux||darwin||windows membership is source eligibility; actual new local execution was WindowsAMD64 only."
+    },
+    "closed_native40_route_admission": {
+      "receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\delivery.json",
+        "sha256": "c9c05f9440f25021d9ee9ccad0c4b30cd6dc4ecf5912eb19672609253e69ef91"
+      },
+      "proper_missing_route_RED": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\red-classification.json",
+        "sha256": "9b0a98817735c55e3b88d55c6f57b24cf678874b107bfe9dd92dda50452a91c1"
+      },
+      "red": {
+        "methods": 1,
+        "failures": 1,
+        "errors": 0,
+        "exit_code": 1,
+        "elapsed_seconds": 0.12758110000868328
+      },
+      "green": {
+        "methods": 13,
+        "subtests": 235,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "exit_code": 0,
+        "elapsed_seconds": 4.213972300000023,
+        "method_names": [
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_creation_review_accept_each_parent_child_and_old_complement_requires_pass",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_creation_review_accept_six_original_components_and_identity_are_mandatory",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_creation_review_accept_three_full_rows_preserve_exact_prior37_and_native16",
+          "test_major_native_observation.NativeRecipeSourceMembershipTests.test_creation_review_accept_sources_really_own_all_six_required_platforms",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_current_progress_recipes_keep_all_original_routes_and_complete_required_children",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_n11_current_contract_requires_nonempty_history_control_and_every_event_child",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_cli_route_joins_sorted_twenty_policy_and_all_original_components",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_journal_routes_keep_exact_five_full_clauses_and_sorted_twenty_five_authority",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_kernel_schema_four_routes_keep_exact_clauses_and_sorted_twenty_nine_authority",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_kernel_remainder_three_full_rows_keep_sorted_thirty_two_authority",
+          "test_major_native_observation.NativeCompositeAuthorityTests.test_readiness_receipt_five_full_rows_preserve_thirty_two_routes_and_native16",
+          "test_major_native_observation.NativeRecipeSourceMembershipTests.test_every_required_parent_exists_under_its_actual_platform_build_constraints",
+          "test_major_native_observation.NativeRecipeSourceMembershipTests.test_source_membership_reader_checks_tags_suffixes_comments_and_unknown_syntax"
+        ],
+        "result_ref": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native40-unit-pair-6p643b27\\green-result.json",
+          "sha256": "d9612f6b53bcc9aeda6863aa63a237339b9649e513c973ba65287338e265d672"
+        }
+      },
+      "recipes_before": 37,
+      "recipes_after": 40,
+      "new_cells": [
+        "N04:01",
+        "N10:01",
+        "N10:04"
+      ],
+      "required_selectors_per_platform": {
+        "N04:01": 12,
+        "N10:01": 39,
+        "N10:04": 17
+      },
+      "preserved": "All old37/native16 mappings; actual source/tag parser and authority functions; original six component/archive/source/run/attempt/platform/module/upload joins; final trusted-main whole-success rule.",
+      "limits": "Inert archive/API seams validate the closed reader; this capture did not execute Go/native or authenticate actual new hosted qualification."
+    },
+    "N19_separate": {
+      "receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-n19-active-writer-run-zbdqk3rn\\delivery.json",
+        "sha256": "c8434ca41c4fad039976880cbc476c3a5d9ae525239bffe40d0b4c94ae16230a"
+      },
+      "source_epoch": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+      "source_representation": "Full immutable0eb259 module files plus exactlyone new N19 test260; actual HEAD separately retained",
+      "parents": 1,
+      "children": 4,
+      "PASS_outcomes": 5,
+      "method": "TestN19MethodResetRefusesAffectedActiveWriterWithoutMutation",
+      "elapsed_seconds": 5.129152399982559,
+      "limits": "Separate direct in-process ACTIVE_WORK guard characterization, synthetic owned tree only; no Native41 route or N19 runtime/status/whole-machine promotion."
+    }
+  },
+  "original_hosted_attempt": {
+    "receipt": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-0ebdc80f-watch-m5m5ohmi\\terminal-disposition.json",
+      "sha256": "baab8d079d16953fddabdacae0101bfec86e24fc5bec764c88716e5dceda5906"
+    },
+    "pr": 1115,
+    "head": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+    "event": "pull_request",
+    "attempt": 1,
+    "ci_run": 43931636706,
+    "ci_conclusion": "failure",
+    "docs_run": 43931636476,
+    "docs_conclusion": "success",
+    "all95_checks_terminal": true,
+    "counts": {
+      "SKIPPED": 11,
+      "FAILURE": 3,
+      "SUCCESS": 81
+    },
+    "primary": {
+      "job_id": 133533780565,
+      "job_name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+      "classification": "EXECUTED_VERIFIER_PROCESS_ADMISSION_REFUSAL",
+      "projection": [
+        {
+          "child_script": "test_artifact_package.py",
+          "exit_code": 1
+        },
+        {
+          "failure": "cold installed-host workflow",
+          "exit_code": 1,
+          "stderr_bytes": "276",
+          "stderr_sha256": "2969b84e1cf7104133ff34e21f1edb519671d0383db0e13f9f14d83247636c5e",
+          "phase": "commit-proof",
+          "step": "enforce_runtime_event",
+          "error": "RuntimeError",
+          "code": "unclassified",
+          "host": "claude",
+          "family": "runtime",
+          "audit_event": "subprocess",
+          "audit_site": "resolved-other-refusal",
+          "audit_depth": "outer"
+        }
+      ],
+      "actual_executable_or_argv": "UNKNOWN",
+      "initiating_mechanism": "UNKNOWN"
+    },
+    "framework_discriminator": "Locally confirmed separate OS-discovery defect and repaired; original hosted target/mechanism remain UNKNOWN. See framework_repair.",
+    "limits": "The failed whole PR run is not qualification. Six passing coverage/builder leaves or Docs success do not override failed conformance/qualification/merge gates; historical HTTP503 log transport is not pipeline failure cause."
+  },
+  "retained_boundaries": {
+    "baseline_PLANNED": 839,
+    "baseline_accounting_changed": false,
+    "qualification_ledger_changed": false,
+    "runtime_proof_epochs_renewed": false,
+    "task_statuses_renewed": false,
+    "main_merge": "HELD_FOR_USER_TESTING",
+    "parent_PR1098": "OPEN_DRAFT_HELD",
+    "publication": "NOT_AUTHORIZED"
+  },
+  "next": "Final affected source/security review and original-owner checks, then fresh complete child CI/Docs and separate successful trusted normal qualification. No runtime/task/user/model acceptance promotion.",
+  "framework_repair": {
+    "path": "evidence/pr1115-windows-os-identity-repair.json",
+    "sha256": "bf8fa24fe5d8e0377e1d83c372ccc0341a81a405c5df1964673ec422ef78e6e7"
+  }
+}

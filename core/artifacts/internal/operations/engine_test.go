@@ -4,7 +4,6 @@ package operations
 
 import (
 	"bytes"
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
@@ -528,32 +527,6 @@ func TestPostSourceChangeRevalidation(t *testing.T) {
 	h.accept("CP-02")
 	if h.run("verification-status", object{"artifact_id": "PLAN-EXAMPLE"})["all_accepted_and_current"] != true {
 		t.Fatal("reverification required needless implementation")
-	}
-}
-func TestMissingOrSkippedNamedTests(t *testing.T) {
-	h := newHarness(t)
-	h.createPair()
-	h.approvePair()
-	h.start("T-001")
-	vr, _ := h.taskReceipts("T-001")
-	f, _ := store.Open(h.root)
-	defer f.Close()
-	r, e := authority.Load(f, vr)
-	if e != nil {
-		t.Fatal(e)
-	}
-	p := h.doc("PLAN-EXAMPLE")
-	s := h.doc("SPEC-EXAMPLE")
-	task := p.Symbols.ByID["T-001"].Value
-	payload := r.Payload()
-	model.M(model.A(payload["commands"])[0])["tests"] = empty()
-	r.Event["payload"] = payload
-	if e = evidence.TaskPayload(r, p, s, task, h.input()); fault.Code(e) != "MISSING_TEST" {
-		t.Fatal(e)
-	}
-	model.M(model.A(payload["commands"])[0])["tests"] = []any{object{"name": "TestEnvironmentOverrides", "status": "skip"}}
-	if e = evidence.TaskPayload(r, p, s, task, h.input()); fault.Code(e) != "FAILED_VERIFICATION" {
-		t.Fatal(e)
 	}
 }
 

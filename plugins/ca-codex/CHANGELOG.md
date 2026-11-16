@@ -18,6 +18,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Avoid Windows version-discovery shell commands during installed native selection and dispatch; retain native architecture, binary identity and process guards.
 - Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
 
 - Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.

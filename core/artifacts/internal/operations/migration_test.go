@@ -208,21 +208,3 @@ func TestNoIDReuseWithinBatch(t *testing.T) {
 		t.Fatal(e)
 	}
 }
-
-func TestCreateDoesNotShadowLegacy(t *testing.T) {
-	h := newHarness(t)
-	migrationRequest(t, h)
-	_, e := h.request("create", object{"operation_id": "legacy-shadow-001", "artifact_id": "SPEC-OTHER", "kind": "spec", "slug": "example", "title": "Other", "summary": "Must not shadow legacy source"})
-	if fault.Code(e) != "LEGACY_CONFLICT" {
-		t.Fatal(e)
-	}
-}
-func TestDuplicateCanonicalAuthoritiesFailClosed(t *testing.T) {
-	h := newHarness(t)
-	h.createPair()
-	os.WriteFile(filepath.Join(h.root, ".codearbiter/specs/example.md"), []byte("legacy duplicate"), 0644)
-	_, e := h.request("index", nil)
-	if fault.Code(e) != "AMBIGUOUS_ARTIFACT" {
-		t.Fatal(e)
-	}
-}

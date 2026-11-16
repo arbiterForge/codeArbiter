@@ -21,6 +21,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Avoid Windows version-discovery shell commands in the shared native bridge while retaining native architecture, binary identity and process guards.
 - Regenerate the shipped parent bundle with the HTTPS admission and redirect controls.
 - Preserve exact audit file and directory identities on Windows; refuse rounded numeric IDs before any audit append.
 

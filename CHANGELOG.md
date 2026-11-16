@@ -42,6 +42,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Select installed native binaries and dispatch requests using interpreter OS identity, avoiding Windows version-discovery shell commands while retaining native architecture and process guards.
 - Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
 
 - Render knowledge path lists correctly while retaining exact validated legacy HTML reads.

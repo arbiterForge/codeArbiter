@@ -743,3 +743,49 @@ func TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions(t *tes
 		})
 	}
 }
+
+func TestCreateDoesNotShadowLegacy(t *testing.T) {
+	h := newHarness(t)
+	migrationRequest(t, h)
+	_, e := h.request("create", object{"operation_id": "legacy-shadow-001", "artifact_id": "SPEC-OTHER", "kind": "spec", "slug": "example", "title": "Other", "summary": "Must not shadow legacy source"})
+	if fault.Code(e) != "LEGACY_CONFLICT" {
+		t.Fatal(e)
+	}
+}
+
+func TestDuplicateCanonicalAuthoritiesFailClosed(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	os.WriteFile(filepath.Join(h.root, ".codearbiter/specs/example.md"), []byte("legacy duplicate"), 0644)
+	_, e := h.request("index", nil)
+	if fault.Code(e) != "AMBIGUOUS_ARTIFACT" {
+		t.Fatal(e)
+	}
+}
+
+func TestMissingOrSkippedNamedTests(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	h.approvePair()
+	h.start("T-001")
+	vr, _ := h.taskReceipts("T-001")
+	f, _ := store.Open(h.root)
+	defer f.Close()
+	r, e := authority.Load(f, vr)
+	if e != nil {
+		t.Fatal(e)
+	}
+	p := h.doc("PLAN-EXAMPLE")
+	s := h.doc("SPEC-EXAMPLE")
+	task := p.Symbols.ByID["T-001"].Value
+	payload := r.Payload()
+	model.M(model.A(payload["commands"])[0])["tests"] = empty()
+	r.Event["payload"] = payload
+	if e = evidence.TaskPayload(r, p, s, task, h.input()); fault.Code(e) != "MISSING_TEST" {
+		t.Fatal(e)
+	}
+	model.M(model.A(payload["commands"])[0])["tests"] = []any{object{"name": "TestEnvironmentOverrides", "status": "skip"}}
+	if e = evidence.TaskPayload(r, p, s, task, h.input()); fault.Code(e) != "FAILED_VERIFICATION" {
+		t.Fatal(e)
+	}
+}

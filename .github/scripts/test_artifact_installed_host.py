@@ -26,7 +26,7 @@ import threading
 _BRIDGE_IMPORTS = frozenset({
     "_gitexec", "_artifactmanifestlib",
     "__future__", "ctypes", "hashlib", "json", "msvcrt", "os", "pathlib",
-    "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
+    "platform", "re", "stat", "subprocess", "sys", "tempfile", "threading", "typing",
 })
 _CTYPES_ATTRIBUTES = frozenset({
     "WinDLL", "c_uint16", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
@@ -60,7 +60,25 @@ def assert_offline_bridge(source: bytes) -> None:
     popen_calls = 0
     native_loads: list[ast.Call] = []
     reviewed_native_loads: set[int] = set()
+    parents = {id(child): node for node in ast.walk(tree) for child in ast.iter_child_nodes(node)}
     for node in ast.walk(tree):
+        # The interpreter OS label is the sole approved sys capability.
+        # Reject indirect module handles and every binding/write shape.
+        if isinstance(node, ast.Name) and node.id == "sys":
+            parent = parents.get(id(node))
+            if not (isinstance(node.ctx, ast.Load)
+                    and isinstance(parent, ast.Attribute) and parent.value is node
+                    and parent.attr == "platform" and isinstance(parent.ctx, ast.Load)):
+                raise AssertionError("installed bridge permits an unreviewed sys capability")
+        if ((isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == "sys")
+                or (isinstance(node, ast.arg) and node.arg == "sys")
+                or (isinstance(node, (ast.MatchAs, ast.MatchStar)) and node.name == "sys")
+                or (isinstance(node, ast.MatchMapping) and node.rest == "sys")
+                or (isinstance(node, ast.ExceptHandler) and node.name == "sys")
+                or (isinstance(node, (ast.Global, ast.Nonlocal)) and "sys" in node.names)
+                or (isinstance(node, ast.ImportFrom)
+                    and any(alias.name == "sys" or alias.asname == "sys" for alias in node.names))):
+            raise AssertionError("installed bridge rebinds the sys capability")
         if isinstance(node, ast.Import):
             if any(alias.asname is not None for alias in node.names):
                 raise AssertionError("installed bridge aliases an imported capability")
@@ -69,7 +87,7 @@ def assert_offline_bridge(source: bytes) -> None:
             imported = (node.module or "").split(".", 1)[0]
             if imported == "_gitexec" and [alias.name for alias in node.names] != ["root_bound_git_env"]:
                 raise AssertionError("installed bridge imports unreviewed Git capability")
-            if imported in {"ctypes", "msvcrt", "os", "subprocess"}:
+            if imported in {"ctypes", "msvcrt", "os", "subprocess", "sys"}:
                 raise AssertionError("installed bridge imports an unreviewed capability directly")
             imports.add(imported)
         elif isinstance(node, ast.Call):

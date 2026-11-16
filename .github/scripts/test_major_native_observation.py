@@ -991,6 +991,77 @@ READINESS_RECEIPT_EXPECTED = {cell: {platform: list(required)
                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory']}.items()}
 
 
+CREATION_REVIEW_ACCEPT_EXPECTED = {cell: {platform: list(required) for platform in ('darwin/amd64', 'darwin/arm64', 'linux/amd64', 'linux/arm64', 'windows/amd64', 'windows/arm64')}
+    for cell, required in {'disposition:transitions:N04:01': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema'],
+ 'disposition:transitions:N10:01': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness'],
+ 'disposition:transitions:N10:04': ['go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed',
+                                    'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review']}.items()}
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -1313,7 +1384,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED))
+        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED)|set(CREATION_REVIEW_ACCEPT_EXPECTED))
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -1358,7 +1429,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED))
+        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED)|set(CREATION_REVIEW_ACCEPT_EXPECTED))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1516,8 +1587,8 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         except readiness.ReadinessError as error:
             self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
         self.assertEqual(selected, CLI_EXPECTED)
-        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED}
-        self.assertEqual(len(expected), 37)
+        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED}
+        self.assertEqual(len(expected), 40)
         self.assertEqual(native.RECIPES, expected)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         cells = policy['native_composite_cells']
@@ -1597,10 +1668,10 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             {'N02:01': 40, 'N02:02': 27, 'N02:03': 31, 'N02:04': 17, 'N03:03': 3})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(JOURNAL_EXPECTED).intersection(policy['cell_job_bindings']))
@@ -1698,10 +1769,10 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(counts, {'N03:04': 5, 'N03:05': 83, 'N04:02': 11, 'N04:03': 13})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(KERNEL_SCHEMA_EXPECTED).intersection(policy['cell_job_bindings']))
@@ -1825,10 +1896,10 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
         self.assertEqual(len(old), 29)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(KERNEL_REMAINDER_EXPECTED).intersection(policy['cell_job_bindings']))
         for held in ('disposition:machines:N02', 'disposition:machines:N03', 'disposition:machines:N04'):
@@ -1924,10 +1995,10 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED}
         self.assertEqual(len(old), 32)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **READINESS_RECEIPT_EXPECTED})
+        self.assertEqual(native.RECIPES, {**old, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 37)
+        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(READINESS_RECEIPT_EXPECTED).intersection(policy['cell_job_bindings']))
         for held in ('disposition:machines:N07', 'disposition:machines:N10', 'disposition:machines:N12'):
@@ -2008,6 +2079,115 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
                         readiness.ReadinessError, 'recipe differs'):
                     native.runtime_requirements(changed)
+
+
+    def test_creation_review_accept_three_full_rows_preserve_exact_prior37_and_native16(self):
+        import major_native_observation as native
+        try:
+            selected = native.selected_recipes(sorted(CREATION_REVIEW_ACCEPT_EXPECTED))
+        except readiness.ReadinessError as error:
+            self.fail('Complete creation/review/acceptance clauses have no canonical route: ' + str(error))
+        self.assertEqual(selected, CREATION_REVIEW_ACCEPT_EXPECTED)
+        old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED,
+               **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED,
+               **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED}
+        self.assertEqual(len(old), 37)
+        self.assertFalse(set(old).intersection(CREATION_REVIEW_ACCEPT_EXPECTED))
+        self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
+        self.assertEqual(native.RECIPES, {**old, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
+        self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
+        self.assertEqual(len(policy['native_composite_cells']), 40)
+        self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
+        self.assertFalse(set(CREATION_REVIEW_ACCEPT_EXPECTED).intersection(policy['cell_job_bindings']))
+        for held in ('disposition:machines:N04', 'disposition:machines:N10', 'disposition:transitions:N04:04'):
+            with self.subTest(unselected=held), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes([held])
+        cells = sorted(native.RECIPES)
+        for invalid in (list(reversed(cells)), cells + [cells[0]], [*cells, 'disposition:transitions:N10:99']):
+            with self.subTest(noncanonical_selection=invalid), self.assertRaises(readiness.ReadinessError):
+                native.selected_recipes(invalid)
+        self._select_cli_contracts(CREATION_REVIEW_ACCEPT_EXPECTED)
+        record = self.produce()
+        self.assertEqual({row['cell'] for row in record['native']['results']}, set(CREATION_REVIEW_ACCEPT_EXPECTED))
+        self.assertEqual(len(record['native']['components']), 6)
+        for row in record['native']['results']:
+            self.assertEqual({part['platform']: part['selectors'] for part in row['components']}, CREATION_REVIEW_ACCEPT_EXPECTED[row['cell']])
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+        for key, value in (('conclusion', 'failure'), ('event', 'pull_request'), ('head_branch', 'major/state-contracts')):
+            with self.subTest(final_gate=key), self.assertRaises(readiness.ReadinessError):
+                self.verify(record, run={**self.run, key: value})
+
+    def test_creation_review_accept_each_parent_child_and_old_complement_requires_pass(self):
+        self._select_cli_contracts(CREATION_REVIEW_ACCEPT_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), dict(self.data))
+        required = sorted({selector for recipe in CREATION_REVIEW_ACCEPT_EXPECTED.values()
+                           for selector in recipe['windows/amd64']})
+        for selector in required:
+            package, test = selector.split(':', 2)[1:]
+            for mode in ('missing', 'skip'):
+                self.artifacts, self.data = copy.deepcopy(initial)
+                def change(files):
+                    raw = json.loads(files['native-tests.json'])
+                    if '/' in test:
+                        parent = test.split('/', 1)[0]
+                        self.assertEqual([row['result'] for row in raw['observed']
+                            if row['package'] == package and row['test'] == parent], ['pass'])
+                    population = raw['subtests'] if '/' in test else raw['observed']
+                    found = [row for row in population if row['package'] == package and row['test'] == test]
+                    self.assertEqual(len(found), 1)
+                    if mode == 'missing':
+                        population.remove(found[0])
+                        if '/' not in test:
+                            raw['selected'] = [row for row in raw['selected']
+                                if not (row['package'] == package and row['test'] == test)]
+                            raw['subtests'] = [row for row in raw['subtests']
+                                if not (row['package'] == package and row['test'].startswith(test + '/'))]
+                    else:
+                        found[0]['result'] = 'skip'
+                    files['native-tests.json'] = json.dumps(raw).encode()
+                    stamp = json.loads(files['ci20-native-tested.json'])
+                    files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+                self.rewrite('windows/amd64', change)
+                with self.subTest(selector=test, outcome=mode), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'selected assertion|child'):
+                    self.produce()
+
+    def test_creation_review_accept_six_original_components_and_identity_are_mandatory(self):
+        import major_native_observation as native
+        self._select_cli_contracts(CREATION_REVIEW_ACCEPT_EXPECTED)
+        initial = (copy.deepcopy(self.artifacts), copy.deepcopy(self.jobs), dict(self.data), dict(self.job_artifacts))
+        for platform in sorted(self.raw):
+            for reason in ('archive', 'component', 'source', 'run', 'attempt', 'platform', 'module', 'upload', 'forged uploader'):
+                self.artifacts, self.jobs, self.data, self.job_artifacts = copy.deepcopy(initial)
+                runner = {value: key for key, value in binding_owner.RUNNERS.items()}[platform]
+                artifact = next(item for item in self.artifacts if item['name'] == 'ci20-native-tested-' + runner)
+                job = next(item for item in self.jobs if item['name'].endswith('<' + platform + '>'))
+                if reason == 'archive':
+                    self.artifacts.remove(artifact)
+                elif reason == 'component':
+                    job['name'] = job['name'].replace(platform, 'unknown/unknown')
+                elif reason == 'upload':
+                    job['steps'][0]['conclusion'] = 'skipped'
+                elif reason == 'forged uploader':
+                    self.job_artifacts[job['id']] = 30
+                else:
+                    key, value = {'source': ('source_commit', 'e' * 40), 'run': ('run_id', '8'),
+                        'attempt': ('run_attempt', '2'), 'platform': ('platform', 'unknown/unknown'),
+                        'module': ('module_sha256', 'f' * 64)}[reason]
+                    self.rewrite(platform, lambda files: self.json_edit(files, 'ci20-native-tested.json',
+                        lambda stamp: stamp.update(**{key: value})))
+                with self.subTest(platform=platform, reason=reason), self.assertRaises(
+                        (readiness.ReadinessError, ValueError)):
+                    self.produce()
+        for cell in CREATION_REVIEW_ACCEPT_EXPECTED:
+            for platform in sorted(self.raw):
+                changed = copy.deepcopy(self.req)
+                changed['native_compositions'][cell].pop(platform)
+                with self.subTest(cell=cell, platform=platform), self.assertRaisesRegex(
+                        readiness.ReadinessError, 'recipe differs'):
+                    native.runtime_requirements(changed)
+
 
 
 # This finite source check is tied to the native builder's Go1.27 gc/CGO0
@@ -2217,3 +2397,51 @@ class NativeRecipeSourceMembershipTests(unittest.TestCase):
                 self.assertEqual({row['platform'] for row in errors}, set(_NATIVE_PLATFORMS))
                 self.assertTrue(all(not row['owners'] for row in errors))
                 target.write_bytes(body)
+
+    def test_creation_review_accept_sources_really_own_all_six_required_platforms(self):
+        root = Path(__file__).resolve().parents[2] / 'core/artifacts'
+        inputs = ('internal/operations/creation_review_scope_contract_test.go',
+                  'internal/operations/native_recipe_portable_contract_test.go')
+        parents = {'TestN04CreateInitialTypedStateAndDuplicateRefusals',
+                   'TestN04CreateCatalogBoundsRefuseBeforeWriting',
+                   'TestN10ReceiptedReviewRetainsRefsAndScopeBaseline',
+                   'TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence',
+                   'TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt',
+                   'TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope',
+                   'TestCreateDoesNotShadowLegacy', 'TestDuplicateCanonicalAuthoritiesFailClosed',
+                   'TestMissingOrSkippedNamedTests'}
+        recipes = {cell: {platform: [selector for selector in names
+                          if selector.split(':', 2)[2].split('/')[0] in parents]
+                          for platform, names in recipe.items()}
+                   for cell, recipe in CREATION_REVIEW_ACCEPT_EXPECTED.items()}
+        self.assertEqual(_native_recipe_source_errors(root, CREATION_REVIEW_ACCEPT_EXPECTED), [])
+        with tempfile.TemporaryDirectory(prefix='creation-review-accept-source-') as directory:
+            owned = Path(directory)
+            for relative in inputs:
+                original = root / relative
+                self.assertTrue(original.is_file() and not original.is_symlink())
+                target = owned / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(original.read_bytes())
+            self.assertEqual(_native_recipe_source_errors(owned, recipes), [])
+            for relative in inputs:
+                target = owned / relative
+                body = target.read_bytes()
+                target.unlink()
+                errors = _native_recipe_source_errors(owned, recipes)
+                self.assertTrue(errors)
+                self.assertEqual({row['platform'] for row in errors}, set(_NATIVE_PLATFORMS))
+                self.assertTrue(all(not row['owners'] for row in errors))
+                target.write_bytes(body)
+                target.write_bytes(body.replace(b'//go:build linux || darwin || windows', b'//go:build linux', 1))
+                errors = _native_recipe_source_errors(owned, recipes)
+                self.assertEqual({row['platform'] for row in errors}, {'darwin/amd64', 'darwin/arm64', 'windows/amd64', 'windows/arm64'})
+                target.write_bytes(body)
+                duplicate = target.with_name('duplicate_' + target.name)
+                duplicate.write_bytes(body)
+                errors = _native_recipe_source_errors(owned, recipes)
+                self.assertTrue(errors)
+                self.assertEqual({row['platform'] for row in errors}, set(_NATIVE_PLATFORMS))
+                self.assertTrue(all(len(row['owners']) == 2 for row in errors))
+                duplicate.unlink()
+            self.assertEqual(_native_recipe_source_errors(owned, recipes), [])
