@@ -2406,3 +2406,31 @@ Keep declared checks executable and required at their actual publication boundar
 Commit the exact ADR and this append, then use the shipped acceptance writer to bind its ten independently reviewed obligations to that real source commit. Preserve the acceptance source ancestry through delivery.
 
 ---
+
+## DECISION-0085 — adr-0049-https-outside-loopback — Require HTTPS outside bounded loopback
+
+**Date:** 2026-11-16
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** User explicitly accepted recommendation as their decision in the current Codex conversation: "Require HTTPS outside loopback; supersede the older endpoint rule".
+**Decision category:** endpoint-transport-policy
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** CON-004 requires HTTPS except narrowly bounded loopback test/broker paths.
+- **Scaffold position:** ADRs 0018/0019 retained broader HTTP endpoint acceptance.
+- **Status type:** open-decision-closure
+
+### Decision
+Require HTTPS outside bounded loopback. Supersede only the older plain-HTTP endpoint allowance through ADR-0049; preserve the other endpoint, credential and broker constraints. Accepted/Planned does not imply implementation or verification.
+
+### SMARTS rationale
+The user selected the rule already stated in CON-004 and rejected the offered HTTP-compatibility exception. This keeps the existing bounded loopback broker while making the external transport rule consistent; no comparative scores or additional policy choices are inferred.
+
+### Implementation implication
+Update Pi endpoint admission and transport/refusal tests under the new rule. Commit the accepted ADR and this append, independently review its complete obligations, then use the shipped acceptance writer from that real commit and preserve its source ancestry through a true merge.
+
+### Resolves same-level conflict between
+CON-004 and the HTTP endpoint allowance in ADR-0018 inherited by ADR-0019.
+
+---

@@ -1,0 +1,29 @@
+{
+  "kind": "ACTUAL_WHOLE_STORE_WINDOWS_VALIDATION",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "source_overlay_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\delivery.json",
+  "files": {
+    "actual-result.json": "c3fabc53ac6dc9d84692fbe3f4ab66109853c174de62adbd0874c7220f8a496c",
+    "actual.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual.stdout.jsonl": "52650200377e2f08835421c788178cf9141701b0c004a2c760f974ab6e4c8c34",
+    "after.json": "917a362321008f8546a2a904fd44b6b65ed2e2b1dd186d9ee50e807c5abf8dce",
+    "before.json": "917a362321008f8546a2a904fd44b6b65ed2e2b1dd186d9ee50e807c5abf8dce",
+    "changed-helper-coverage.json": "6b7cf15e0f5668baeed70009a8383821705bd8347d8ef2aeb837401ccd2f581d",
+    "compiler-build-trace.json": "b6403c32b7aeb1a9d8257165eecdfb0428ce6086dc87ee4a8830eafb0f33e3fb",
+    "controller-after.json": "12ed45ad1729a15878114258a0fdc47e9738737e28089719d8ae2b6b14047a43",
+    "controller.json": "d289ee95072647c6ad2354628f68249b54ce956bea0f77be66e7be941411303f",
+    "coverage-summary.json": "b572f696bd95d5c89db926452a36dcd50aa7afb0ed36ff39fdfee0a9062cdbe2",
+    "coverage.out": "d0abad1e648c7d3159def04037572c8903358cd555791c6a73015b26994108b1",
+    "environment.json": "eb38a95b252c352928b7f860df80c72c592b921fbe88bdbbe1075f6d1df874c7",
+    "execution-start.json": "d57bfd5560ccb28ecb8cc78a740daf540efbb0a501b51d196b64af02fe3ab919",
+    "named-outcomes.json": "c5a17d3fa00b6e4d78fbfb6befb31635d5c3173cea5a383a28b563bac3135856",
+    "run_once.py": "7d52e85428fe0bb16cacc4547eb190fe671511e29aea3334a94c90e4b7b62aed",
+    "scope.json": "21c80599f0e06bc9758ddc0000f5fae273607ece294ed97144e064815586e516",
+    "seal.py": "39e48b58352cc8812150cd7ddc5c15639652ecbc74c2af38c0e8903e66d87229",
+    "stability.json": "21f6bf569e4fbefdf2942492dc50215d29bc745a672d30e123b5205be79546db",
+    "summary.json": "5586d23f782899b98a6b29542211257cea5938a7302c82ee7a2f9952a31263cc"
+  },
+  "go_test_invocations": 1,
+  "canonical_writes": false,
+  "qualification": false
+}

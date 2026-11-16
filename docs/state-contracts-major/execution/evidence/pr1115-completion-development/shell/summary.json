@@ -1,0 +1,31 @@
+{
+  "state": "PASSED",
+  "elapsed_seconds": 69.43226240001968,
+  "phases": [
+    0,
+    7
+  ],
+  "primary_failure": null,
+  "source_tools_stable": true,
+  "cleanup": {
+    "containers": [
+      {
+        "Id": "8a1fd4f7c87472299bdfab7bdc95da1a94010326fe6542bc3d0ed6820a1d3433",
+        "Created": "2026-11-16T13:19:07.757244515Z",
+        "absent": true
+      }
+    ],
+    "volume": {
+      "name": "ca-sbx-vol-833f5338-1fe3-402f-bfe0-2f8b0e60cb28",
+      "absent": true
+    },
+    "errors": [],
+    "seconds": 0.5079971000086516
+  },
+  "scope": [
+    "Source/shippedbundle realPTYownedDocker fixture only; notclone/build/create/installed/wholelifecyclequalification.",
+    "Root receives complete toolchunks<=4096tokens each and total<=64KiB, outputcap is toolreturneddata not provenkernelbufferceiling.",
+    "Windows processgroup/taskkill cleanup bound10s+3s; noJobObject/fulltreeclaim. No credentials/provider/source/hostbind/socket, pull/build orfallbackPTY.",
+    "After natural exit use same original open HANDLE/GetProcessId/GetProcessTimes creation+nonzero exitTime. Post-exit image query was unavailable31; image hash verified before launch and after fixture, never inferred OSexit from JS."
+  ]
+}

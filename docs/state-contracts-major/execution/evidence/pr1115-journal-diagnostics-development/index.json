@@ -1,0 +1,347 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "qualification": false,
+  "claims": [
+    "Genuine ancestor-overlap RED precedes minimal shared guard correction. Same unchanged29selectedoutcomes GREEN. Full owning Windows store203PASS0SKIP; package statement coverage71.14035%, changedhelper12of12statements.",
+    "Separate source-fixture setup budget now60s; original product assertions and failure propagation preserved. Original failingcase+6diagnostic cases PASS. Root local selector/oldbudgetexpectation/indentation mistakes were corrected before finalrun; those intermediate receipts remain private and do not count as productRED.",
+    "Original bb66 wholeCI FAILED; Docs SUCCESS. Both primary failures, mergegateconsequence and passing coverage retained. Pi native-exit cause UNKNOWN.",
+    "Raw compiler/build-output captures, complete runtime/source manifests and privately owned execution controllers remain immutable at original finite locations referenced by delivery receipts. These development results do not renew any final qualification epoch.",
+    "Five source-complete journal routes now require every named parent/child and original six-platform source/run/attempt/archive/uploader outcome. Eight focused authority methods pass with236 missing/SKIP,48 identity and30 platform omission vectors. Original missing-route RED and initial malformed negative fixture are retained; no runtime qualification.",
+    "Actual local inert Node24 capture recognized83 stopped-instruction frames across12threads using inbox DLLs, detached with HRESULT0/network-off policy and preserved owned running identity. First private quoted-argv guard setup and alias precondition failures retained. No Pi/Node22 exit cause or natural-exit qualification claim."
+  ],
+  "files": [
+    {
+      "path": "original-bb66/final-summary.json",
+      "sha256": "c509f034376082d4c4c0aa12e45e0a09b71126b0b3aed7903141549db7722659",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\final-summary.json",
+      "original_sha256": "c509f034376082d4c4c0aa12e45e0a09b71126b0b3aed7903141549db7722659"
+    },
+    {
+      "path": "original-bb66/terminal-receipt.json",
+      "sha256": "c2d8335ceae5e5945d742bcd0b330ed2e93685881cbe0ae5235d4c7c500cde5a",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\terminal-receipt.json",
+      "original_sha256": "c2d8335ceae5e5945d742bcd0b330ed2e93685881cbe0ae5235d4c7c500cde5a"
+    },
+    {
+      "path": "original-bb66/selected-coverage-metrics.json",
+      "sha256": "9a8c19bdf1fd0f76c66cc25727a8607581d1616fe3a3f94ea09b26987da94e58",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\selected-coverage-metrics.json",
+      "original_sha256": "9a8c19bdf1fd0f76c66cc25727a8607581d1616fe3a3f94ea09b26987da94e58"
+    },
+    {
+      "path": "original-bb66/selected-program-controls.json",
+      "sha256": "bae0c7232b3152bc8eb7980af5d7e688d8f2e6d192fd3807a19cb0c24034628d",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\selected-program-controls.json",
+      "original_sha256": "bae0c7232b3152bc8eb7980af5d7e688d8f2e6d192fd3807a19cb0c24034628d"
+    },
+    {
+      "path": "original-bb66/original-assertion-shutdown-trace.json",
+      "sha256": "ac84d2e83ab999f4dd08b91ace712ffb7af7fea7a1cc5f52b36505d3ca02e7ea",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\original-assertion-shutdown-trace.json",
+      "original_sha256": "ac84d2e83ab999f4dd08b91ace712ffb7af7fea7a1cc5f52b36505d3ca02e7ea"
+    },
+    {
+      "path": "native-red/delivery.json",
+      "sha256": "9606664ff6b6f4ab70410f73a9483e8924f01eae3a5f572f6a33fc00e51f0865",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\delivery.json",
+      "original_sha256": "9606664ff6b6f4ab70410f73a9483e8924f01eae3a5f572f6a33fc00e51f0865"
+    },
+    {
+      "path": "native-red/summary.json",
+      "sha256": "381ab47466f78bd3ca5a319a529d910270700964a2844d45b7d717a4e6f309db",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\summary.json",
+      "original_sha256": "381ab47466f78bd3ca5a319a529d910270700964a2844d45b7d717a4e6f309db"
+    },
+    {
+      "path": "native-red/actual-result.json",
+      "sha256": "f0dff680d95af621721736d559e034d28db00599bcb402be97759c07cdb19931",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\actual-result.json",
+      "original_sha256": "f0dff680d95af621721736d559e034d28db00599bcb402be97759c07cdb19931"
+    },
+    {
+      "path": "native-red/format-record.json",
+      "sha256": "7e591c6e946479e6d196a6d6792ad7db6fbb26364b57b18ec4929b4b3a16ae44",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\format-record.json",
+      "original_sha256": "7e591c6e946479e6d196a6d6792ad7db6fbb26364b57b18ec4929b4b3a16ae44"
+    },
+    {
+      "path": "native-red/stability.json",
+      "sha256": "71c882abb123c98215b44d7d327f7be3496f4deec36341cccb2f10e098b009db",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\stability.json",
+      "original_sha256": "71c882abb123c98215b44d7d327f7be3496f4deec36341cccb2f10e098b009db"
+    },
+    {
+      "path": "native-red/causal-handoff.json",
+      "sha256": "d1168bbf7fc9d11a3d7770a239f5e859e32e03dc1a4ed1a8dc9aa687136ec0b1",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\causal-handoff.json",
+      "original_sha256": "d1168bbf7fc9d11a3d7770a239f5e859e32e03dc1a4ed1a8dc9aa687136ec0b1"
+    },
+    {
+      "path": "native-green/delivery.json",
+      "sha256": "944abbf9cc3a9ac0dad1e835c5463569a33b279799ea7491af8d05143bd2c3dd",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\delivery.json",
+      "original_sha256": "944abbf9cc3a9ac0dad1e835c5463569a33b279799ea7491af8d05143bd2c3dd"
+    },
+    {
+      "path": "native-green/summary.json",
+      "sha256": "30434bdf6ac4cfaa8cfcbf3b08c9f4f69c68ef8dc8c614d6e1605135dd3334d8",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\summary.json",
+      "original_sha256": "30434bdf6ac4cfaa8cfcbf3b08c9f4f69c68ef8dc8c614d6e1605135dd3334d8"
+    },
+    {
+      "path": "native-green/actual-result.json",
+      "sha256": "0840014546c0c09f78cd5be4dd9f25ed1d709e5a5075cfb1e766c6d24547cd26",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\actual-result.json",
+      "original_sha256": "0840014546c0c09f78cd5be4dd9f25ed1d709e5a5075cfb1e766c6d24547cd26"
+    },
+    {
+      "path": "native-green/production-overlay.json",
+      "sha256": "e38e90a831182e97fe4534757a9b1031355973cbf77dc1f641234411b62711f9",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\production-overlay.json",
+      "original_sha256": "e38e90a831182e97fe4534757a9b1031355973cbf77dc1f641234411b62711f9"
+    },
+    {
+      "path": "native-green/stability.json",
+      "sha256": "7926dcd74b3e9c0a4ba40a3c6e212e52a61a4cfe797a4c1f5e5630b64e6841e0",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\stability.json",
+      "original_sha256": "7926dcd74b3e9c0a4ba40a3c6e212e52a61a4cfe797a4c1f5e5630b64e6841e0"
+    },
+    {
+      "path": "native-store/delivery.json",
+      "sha256": "f1036304d9f5a8c37b4f033426f3966a662129c7e426dce58580df1d6b5340ac",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\delivery.json",
+      "original_sha256": "f1036304d9f5a8c37b4f033426f3966a662129c7e426dce58580df1d6b5340ac"
+    },
+    {
+      "path": "native-store/summary.json",
+      "sha256": "5586d23f782899b98a6b29542211257cea5938a7302c82ee7a2f9952a31263cc",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\summary.json",
+      "original_sha256": "5586d23f782899b98a6b29542211257cea5938a7302c82ee7a2f9952a31263cc"
+    },
+    {
+      "path": "native-store/named-outcomes.json",
+      "sha256": "c5a17d3fa00b6e4d78fbfb6befb31635d5c3173cea5a383a28b563bac3135856",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\named-outcomes.json",
+      "original_sha256": "c5a17d3fa00b6e4d78fbfb6befb31635d5c3173cea5a383a28b563bac3135856"
+    },
+    {
+      "path": "native-store/coverage-summary.json",
+      "sha256": "b572f696bd95d5c89db926452a36dcd50aa7afb0ed36ff39fdfee0a9062cdbe2",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\coverage-summary.json",
+      "original_sha256": "b572f696bd95d5c89db926452a36dcd50aa7afb0ed36ff39fdfee0a9062cdbe2"
+    },
+    {
+      "path": "native-store/changed-helper-coverage.json",
+      "sha256": "6b7cf15e0f5668baeed70009a8383821705bd8347d8ef2aeb837401ccd2f581d",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\changed-helper-coverage.json",
+      "original_sha256": "6b7cf15e0f5668baeed70009a8383821705bd8347d8ef2aeb837401ccd2f581d"
+    },
+    {
+      "path": "native-store/actual-result.json",
+      "sha256": "c3fabc53ac6dc9d84692fbe3f4ab66109853c174de62adbd0874c7220f8a496c",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\actual-result.json",
+      "original_sha256": "c3fabc53ac6dc9d84692fbe3f4ab66109853c174de62adbd0874c7220f8a496c"
+    },
+    {
+      "path": "native-store/stability.json",
+      "sha256": "21f6bf569e4fbefdf2942492dc50215d29bc745a672d30e123b5205be79546db",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\stability.json",
+      "original_sha256": "21f6bf569e4fbefdf2942492dc50215d29bc745a672d30e123b5205be79546db"
+    },
+    {
+      "path": "native-store/scope.json",
+      "sha256": "21c80599f0e06bc9758ddc0000f5fae273607ece294ed97144e064815586e516",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\scope.json",
+      "original_sha256": "21c80599f0e06bc9758ddc0000f5fae273607ece294ed97144e064815586e516"
+    },
+    {
+      "path": "fixture/final-run.json",
+      "sha256": "6b3b03b3a66181d285eaf67359f4084a874b2cef2c6e1c8c91992f3d501caa8b",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\bb66-fixture-budget-corrected.json",
+      "original_sha256": "6b3b03b3a66181d285eaf67359f4084a874b2cef2c6e1c8c91992f3d501caa8b"
+    },
+    {
+      "path": "fixture/final-stderr.json",
+      "sha256": "870a484eda56b52f4e5485877b2b85ffef1757a993b807a1ddf0b4d378779b96",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\bb66-fixture-budget-corrected.stderr",
+      "original_sha256": "090c76df45921c9066df31844f115c2958999df75ca4360871da1b246e48c0cb"
+    },
+    {
+      "path": "native-adoption.json",
+      "sha256": "5f15229b82a0405dd3011f71fdde433d100f69e2f44a640c897a7c2fc7bed119",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native-journal-overlap-root-adoption.json",
+      "original_sha256": "5f15229b82a0405dd3011f71fdde433d100f69e2f44a640c897a7c2fc7bed119"
+    },
+    {
+      "path": "collector/draft-delivery.json",
+      "sha256": "fa1c22276657a8f23189c413130d858d7586dbefcaf136f28638454f0956d1aa",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-draft\\delivery.json",
+      "original_sha256": "fa1c22276657a8f23189c413130d858d7586dbefcaf136f28638454f0956d1aa"
+    },
+    {
+      "path": "collector/initial-pure-delivery.json",
+      "sha256": "93f093e2e6b18c43417c321f2f89f461ed5fa92000d80feb7ea9bc4f4bbd05da",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\delivery.json",
+      "original_sha256": "93f093e2e6b18c43417c321f2f89f461ed5fa92000d80feb7ea9bc4f4bbd05da"
+    },
+    {
+      "path": "collector/fixture-successor-delivery.json",
+      "sha256": "82b9e899633139fb13185bb9bfd1e14ab0884630a968363cfdf39984d8b7fadc",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-fixture-r1\\delivery.json",
+      "original_sha256": "82b9e899633139fb13185bb9bfd1e14ab0884630a968363cfdf39984d8b7fadc"
+    },
+    {
+      "path": "collector/initial-red-outcome.json",
+      "sha256": "480ef1838ce81e9c76062fc61e3f2f91763573bdc797a2c7d59bdd018f195c0d",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\outcome.json",
+      "original_sha256": "480ef1838ce81e9c76062fc61e3f2f91763573bdc797a2c7d59bdd018f195c0d"
+    },
+    {
+      "path": "collector/initial-red-stderr.json",
+      "sha256": "62ce19c5b4ac5541136965e0f76b89d1bda8a6eebd2f2af902221c918b6895b5",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-red-tq785pmg\\stderr.log",
+      "original_sha256": "34651b43c4da62cc2875c3840791a8c39134a730dcb7753281ec0b46b9755e4a"
+    },
+    {
+      "path": "collector/initial-candidate-outcome.json",
+      "sha256": "07795b432329524989056eb884c26c69e1ad3e708312c2c64cad12c329452c3e",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\outcome.json",
+      "original_sha256": "07795b432329524989056eb884c26c69e1ad3e708312c2c64cad12c329452c3e"
+    },
+    {
+      "path": "collector/initial-candidate-stderr.json",
+      "sha256": "e50b620a0f26601b212428523267dfa760fc1dae7b6c2ef7bb33d2c151bc10c2",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure\\actual-candidate-6y5fvtus\\stderr.log",
+      "original_sha256": "149bdd55db5acdae4ea44cb5e23a155e67fb114880ec9331d878f3830dea3597"
+    },
+    {
+      "path": "collector/final-pure-outcome.json",
+      "sha256": "5440e93daeb1c4e85fca0535ee0afc4c8159862ada60a120aa26eb8321350ea5",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure-r1\\actual-candidate-nfjq7har\\outcome.json",
+      "original_sha256": "5440e93daeb1c4e85fca0535ee0afc4c8159862ada60a120aa26eb8321350ea5"
+    },
+    {
+      "path": "collector/final-pure-stderr.json",
+      "sha256": "d7feb6f8788a227bda9da59716283e1b4419b6b131bc9682e1666c3f565744e2",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-pure-r1\\actual-candidate-nfjq7har\\stderr.log",
+      "original_sha256": "7d756392dd7aa8be935c5a6315b80ca91e1e6bfef16d64197b5f1acfca48819d"
+    },
+    {
+      "path": "collector/root-adoption.json",
+      "sha256": "836bad1894ad7f0ad664f8e8556a0a4b35a573d8b12c7fdd9a8c59fe43da408d",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-attribution-root-adoption.json",
+      "original_sha256": "836bad1894ad7f0ad664f8e8556a0a4b35a573d8b12c7fdd9a8c59fe43da408d"
+    },
+    {
+      "path": "native25/delivery.json",
+      "sha256": "c602de679f844637432608972e16f22495b17a83796b4b35b92aeb9961d0ed33",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\delivery.json",
+      "original_sha256": "c602de679f844637432608972e16f22495b17a83796b4b35b92aeb9961d0ed33"
+    },
+    {
+      "path": "native25/actual-command.json",
+      "sha256": "3604331ff9ea841ec20f9a26fbfc221d0f90a195592ccd1c82a16decac8b32b3",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\actual-command.json",
+      "original_sha256": "3604331ff9ea841ec20f9a26fbfc221d0f90a195592ccd1c82a16decac8b32b3"
+    },
+    {
+      "path": "native25/actual-subtest-counts.json",
+      "sha256": "e85cd717a5824e6cc1a213e16641c9eb55a1743d5a6abda6be7e451dbe4e919a",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\actual-subtest-counts.json",
+      "original_sha256": "e85cd717a5824e6cc1a213e16641c9eb55a1743d5a6abda6be7e451dbe4e919a"
+    },
+    {
+      "path": "native25/green-names.json",
+      "sha256": "e8abed4aa9d6ea93e044a8f7b7ced2d185bf3f74b39924a362aa379173124dee",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-names.json",
+      "original_sha256": "e8abed4aa9d6ea93e044a8f7b7ced2d185bf3f74b39924a362aa379173124dee"
+    },
+    {
+      "path": "native25/green-result.json",
+      "sha256": "9047c5ddd4e7bb1dfcbf18d6b638fb42df384365750933d8d2e8aa63261450b2",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-result.json",
+      "original_sha256": "9047c5ddd4e7bb1dfcbf18d6b638fb42df384365750933d8d2e8aa63261450b2"
+    },
+    {
+      "path": "native25/stability.json",
+      "sha256": "409c17f547b201eef9b558965dedc280b11b72a892e30c44be7542cbfcc1b145",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\stability.json",
+      "original_sha256": "409c17f547b201eef9b558965dedc280b11b72a892e30c44be7542cbfcc1b145"
+    },
+    {
+      "path": "native25/green-stderr.json",
+      "sha256": "e953f230d641c17d99b7263f2473320d5efba3a898f21cabf7f0d7e018ac3aa8",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green.stderr",
+      "original_sha256": "c476ae1fef8a5d20e366eb443db7796baebb6ca7265e2002badcce479c60cf33"
+    },
+    {
+      "path": "native25/initial-failure-delivery.json",
+      "sha256": "b4235edd61c01c95b808db5d09c52c108519f2f94a2a84f7686e0f17da697e43",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-focused-pair-ywj3wzxq\\failure-delivery.json",
+      "original_sha256": "b4235edd61c01c95b808db5d09c52c108519f2f94a2a84f7686e0f17da697e43"
+    },
+    {
+      "path": "native25/root-adoption.json",
+      "sha256": "eb836ba10652acb805c745bf23ddae571b945d65c232932ce91fb3f6991db22f",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native25-root-adoption.json",
+      "original_sha256": "eb836ba10652acb805c745bf23ddae571b945d65c232932ce91fb3f6991db22f"
+    },
+    {
+      "path": "native25/route-counts.json",
+      "sha256": "4197bf9a15c4e5987e3fcee0a7edc1d33c380e40feff94f0880d1d5ffc6cb443",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native25-route-counts.json",
+      "original_sha256": "4197bf9a15c4e5987e3fcee0a7edc1d33c380e40feff94f0880d1d5ffc6cb443"
+    },
+    {
+      "path": "collector/zero-launch-history-delivery.json",
+      "sha256": "63fb6926ac0a69f0d8a8eb7ca9718575c367c23228cef76499d10df1687a2334",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert\\delivery.json",
+      "original_sha256": "63fb6926ac0a69f0d8a8eb7ca9718575c367c23228cef76499d10df1687a2334"
+    },
+    {
+      "path": "collector/alias-history-delivery.json",
+      "sha256": "62d70fe3583e3d497e634c69a7348c4c7fafcbfb318b2ad36499715bdb099550",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\delivery.json",
+      "original_sha256": "62d70fe3583e3d497e634c69a7348c4c7fafcbfb318b2ad36499715bdb099550"
+    },
+    {
+      "path": "collector/final-inert-delivery.json",
+      "sha256": "d952f68a26c7176aeaaad3d935067906019c3c73eaaa5c5b0aee2c118be5c1e0",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\delivery.json",
+      "original_sha256": "d952f68a26c7176aeaaad3d935067906019c3c73eaaa5c5b0aee2c118be5c1e0"
+    },
+    {
+      "path": "collector/inert-capture-0.json",
+      "sha256": "e104aabe26249fd4952340c6c0722365874df9423d084bf9057d5fa7c6c2ac82",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-0.json",
+      "original_sha256": "e104aabe26249fd4952340c6c0722365874df9423d084bf9057d5fa7c6c2ac82"
+    },
+    {
+      "path": "collector/inert-capture-1.json",
+      "sha256": "db3ae7e83b1581c1fa8cd1cd2df9627fa278d3776242a54693622b1aad7747b5",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-1.json",
+      "original_sha256": "db3ae7e83b1581c1fa8cd1cd2df9627fa278d3776242a54693622b1aad7747b5"
+    },
+    {
+      "path": "collector/inert-capture-2.json",
+      "sha256": "5064700bc7abc9cb88662feee127007ab8342294a26441fdae9cf05a15f45522",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-2.json",
+      "original_sha256": "5064700bc7abc9cb88662feee127007ab8342294a26441fdae9cf05a15f45522"
+    },
+    {
+      "path": "collector/inert-capture-3.json",
+      "sha256": "c06d43471d5d8db062fcfcda2c272df7f47d14585d04aabc23ae61ca41256c86",
+      "original_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-3.json",
+      "original_sha256": "c06d43471d5d8db062fcfcda2c272df7f47d14585d04aabc23ae61ca41256c86"
+    }
+  ],
+  "collector_increment": "IMPLEMENTED_PURE12PASS_AND_ACTUAL_LOCAL_NODE24_NATIVE_CAPTURE",
+  "source_disposition": "S75 obsolete guardedtuple only is separately strictauthenticated against immutablebb66; original proof bytes and both historical runtime proofs retained.",
+  "native_composite_recipes": 25,
+  "remaining_advanced_native_unmapped": 93,
+  "held_native_cells": {
+    "N03:04": "Frozen diagnostic distinction needs clarification; no forced product code change.",
+    "N03:05": "Explicit unsafe embedded journal-path assertion absent; Unix privilege can SKIP actual unreadable-file fixture."
+  }
+}

@@ -103,15 +103,148 @@ def ordinary_native_read_lock(repo):
         return False
 
 
-def source_identity(repo, profile=None):
-    status = git(repo, "status", "--porcelain=v1", "--untracked-files=all", "-z")
+def _source_git(repo, *args, index=None):
+    """Read the actual index without refresh; only the owned index is writable."""
+    env = local_read_git_env()
+    env["GIT_OPTIONAL_LOCKS"] = "0"
+    command = ["git", "--no-optional-locks", "--no-replace-objects", "--no-lazy-fetch"]
+    if index is not None:
+        env["GIT_INDEX_FILE"] = str(index)
+        command += ["-c", "core.splitIndex=false", "-c", "core.fsmonitor=false",
+                    "-c", "core.untrackedCache=false", "-c", "index.sparse=false",
+                    "-c", "core.sparseCheckout=false"]
+    result = subprocess.run([*command, "-C", str(repo), *args], env=env,
+                            capture_output=True, timeout=30, check=True)
+    require(len(result.stdout) <= MAX_JSON, "source status exceeds bound")
+    return result.stdout
+
+
+def _source_index_independent(raw, object_bytes):
+    """Reject split-index reads before Git can freshen real shared metadata.
+
+    Walk only the documented v2/v3/v4 entry/extension lengths. Git remains the
+    checksum/object/index validator; this does not compute Git object hashes.
+    """
+    end = len(raw) - object_bytes
+    require(object_bytes in (20, 32) and end >= 12 and raw[:4] == b"DIRC", "invalid source index header")
+    version, count = int.from_bytes(raw[4:8], "big"), int.from_bytes(raw[8:12], "big")
+    fixed = 42 + object_bytes
+    require(version in (2, 3, 4) and count <= (end - 12) // (fixed + 1), "unsupported source index layout")
+    cursor = 12
+    for _ in range(count):
+        start = cursor
+        require(cursor + fixed <= end, "truncated source index entry")
+        flags = int.from_bytes(raw[cursor + fixed - 2:cursor + fixed], "big")
+        cursor += fixed
+        if flags & 0x4000:
+            require(version >= 3 and cursor + 2 <= end, "invalid extended source index entry")
+            cursor += 2
+        if version == 4:
+            for number in range(10):
+                require(cursor < end, "truncated source index prefix")
+                value = raw[cursor]; cursor += 1
+                if not value & 0x80:
+                    break
+            else:
+                require(False, "unbounded source index prefix")
+        nul = raw.find(b"\0", cursor, end)
+        require(nul >= 0, "unterminated source index name")
+        if version != 4:
+            require(flags & 0xFFF == 0xFFF or nul - cursor == flags & 0xFFF, "invalid source index name length")
+        cursor = nul + 1
+        if version != 4:
+            padding = -(cursor - start) % 8
+            require(cursor + padding <= end and raw[cursor:cursor + padding] == b"\0" * padding,
+                    "invalid source index padding")
+            cursor += padding
+    while cursor < end:
+        require(cursor + 8 <= end, "truncated source index extension")
+        signature = raw[cursor:cursor + 4]
+        size = int.from_bytes(raw[cursor + 4:cursor + 8], "big")
+        cursor += 8
+        require(size <= end - cursor, "truncated source index extension")
+        require(signature != b"link", "split source index cannot be read without changing shared metadata")
+        cursor += size
+
+
+def _source_index_state(path, object_bytes=20, *, retain=False):
+    """Bind both the bytes and metadata of the real index, without changing it."""
+    path = Path(path)
+    before = path.lstat()
+    require(stat.S_ISREG(before.st_mode) and not path.is_symlink()
+            and not getattr(before, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+            and before.st_size <= 64 * 1024 * 1024, "source index must be a bounded regular file")
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+                info.st_mtime_ns, info.st_ctime_ns)
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        raw = stream.read(64 * 1024 * 1024 + 1)
+        finished = os.fstat(stream.fileno())
+    # Windows path/handle APIs can report different creation/ctime values for
+    # a Git-replaced index. Check each API's ctime for stability, and bind the
+    # descriptor to the path through device/inode/mode/size/mtime instead.
+    require(identity(before) == identity(path.lstat())
+            and identity(opened) == identity(finished)
+            and identity(before)[:5] == identity(opened)[:5]
+            and len(raw) == before.st_size, "source index changed during read")
+    _source_index_independent(raw, object_bytes)
+    state = identity(before), hashlib.sha256(raw).hexdigest()
+    return (state, raw) if retain else state
+
+
+def _source_indices(repo, *, retain=False):
+    actual = os.fsdecode(_source_git(repo, "rev-parse", "--path-format=absolute", "--git-path", "index").rstrip(b"\r\n"))
+    format_name = _source_git(repo, "rev-parse", "--show-object-format").strip()
+    require(format_name in (b"sha1", b"sha256"), "unknown source object format")
+    state = _source_index_state(actual, 20 if format_name == b"sha1" else 32, retain=retain)
+    if retain:
+        return (actual, state[0]), state[1]
+    return actual, state
+
+
+def source_checkout(repo, profile=None):
+    """Return identity and the same current-policy status used by diagnostics.
+
+    An index stat cache may have been produced under another text policy. A
+    fresh HEAD index forces a current-policy read; the real index is checked
+    independently so staged or unmerged changes cannot disappear in that view.
+    """
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
+    source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
+    tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
+    before, actual_raw = _source_indices(repo, retain=True)
+    with tempfile.TemporaryDirectory(prefix="ca-source-index-") as temporary:
+        private = Path(temporary).resolve(strict=True)
+        require(not private.is_relative_to(Path(repo).resolve(strict=True)), "source index must be outside checkout")
+        actual_copy = private / "actual-index"
+        with actual_copy.open("xb") as stream:
+            stream.write(actual_raw)
+        staged = _source_git(repo, "diff", "--cached", "--no-ext-diff", "--no-textconv",
+                             "--no-renames", "--name-status", "-z", source, "--", index=actual_copy)
+        owned_index = private / "HEAD-index"
+        _source_git(repo, "read-tree", source, index=owned_index)
+        status = _source_git(repo, "status", "--porcelain=v1", "--no-renames",
+                             "--untracked-files=all", "-z", index=owned_index)
+    require(before == _source_indices(repo)
+            and source == _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip(),
+            "source HEAD or index changed during observation")
+    # Preserve staged/conflict diagnostics even when worktree bytes equal HEAD.
+    parts = staged.split(b"\0")
+    require(parts[-1] == b"" and (len(parts) - 1) % 2 == 0, "invalid staged source status")
+    for label, path in zip(parts[:-1:2], parts[1:-1:2]):
+        require(label in (b"A", b"C", b"D", b"M", b"R", b"T", b"U", b"X", b"B")
+                and path, "invalid staged source status")
+        status += (b"UU " if label == b"U" else label + b"  ") + path + b"\0"
+    require(len(status) <= MAX_JSON, "source status exceeds bound")
     outputs = _pi_output_members(repo) if profile == "pi-tools-v1" else set()
-    require(profile is None or profile == SOURCE_PROFILE or profile in TS_PROFILE_PATHS, "unknown source identity profile")
-    clean = all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
-                or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.split("\0"))
-    return {"source_commit": git(repo, "rev-parse", "HEAD"),
-            "source_tree": git(repo, "rev-parse", "HEAD^{tree}"),
-            "clean": clean}
+    clean = not staged and all(not entry or (entry == "?? .codearbiter/.artifacts/store.lock" and ordinary_native_read_lock(repo))
+                or (entry.startswith("?? ") and entry[3:] in outputs) for entry in status.decode("utf-8").split("\0"))
+    return {"source_commit": source, "source_tree": tree, "clean": clean}, status
+
+
+def source_identity(repo, profile=None):
+    return source_checkout(repo, profile)[0]
 
 
 SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',
@@ -497,13 +630,128 @@ TS_PROFILE_PAYLOADS = {"pi-tools-v1": "major-source-inputs-pi-windows-coverage",
                        "sandbox-tools-v1": "major-source-inputs-sandbox-driver"}
 TS_PROFILE_UPLOADS = {"pi-tools-v1": "Upload Pi source-test inputs", "sandbox-tools-v1": "Upload Sandbox source-test inputs"}
 TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualification:disposable-home:" + number for number in ("01", "02", "03")),
-                    "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",))}
+                    "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",
+                        "disposition:transitions:S51:01", "disposition:transitions:S51:02",
+                        "disposition:transitions:S52:06"))}
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
+
+
+SDK_SOURCE_PROFILE = "pi-sdk-footer-v1"
+SDK_SOURCE_JOB = "[CHECK] | [PI  ] | Host-independent adapter contract"
+SDK_SOURCE_PAYLOAD = "major-source-inputs-pi-sdk-footer"
+SDK_SOURCE_UPLOAD = "Upload Pi SDK footer source-test inputs"
+SDK_SOURCE_CELLS = frozenset(("disposition:transitions:S18:07",))
+SDK_SOURCE_SCRIPT = ".github/scripts/test_pi_package.py"
+SDK_SOURCE_PATHS = frozenset(('.github/fixtures/pi-hosts/1.5.0/.npmrc',
+ '.github/fixtures/pi-hosts/1.5.0/package-lock.json',
+ '.github/fixtures/pi-hosts/1.5.0/package.json',
+ '.github/fixtures/pi-hosts/1.5.0/review.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/pi_cli_resolver.py',
+ '.github/scripts/pi_host_locks.py',
+ '.github/scripts/test_pi_package.py',
+ '.github/scripts/test_pi_platform_contract.py',
+ '.github/workflows/ci.yml',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca-pi/tools/src/activation.ts',
+ 'plugins/ca-pi/tools/src/activity.ts',
+ 'plugins/ca-pi/tools/src/approval-dialog.ts',
+ 'plugins/ca-pi/tools/src/approval-entry.ts',
+ 'plugins/ca-pi/tools/src/attestation.ts',
+ 'plugins/ca-pi/tools/src/audit-sink.ts',
+ 'plugins/ca-pi/tools/src/background-jobs.ts',
+ 'plugins/ca-pi/tools/src/bridge.ts',
+ 'plugins/ca-pi/tools/src/child-env.ts',
+ 'plugins/ca-pi/tools/src/child-extension.ts',
+ 'plugins/ca-pi/tools/src/command-ownership.ts',
+ 'plugins/ca-pi/tools/src/commands.ts',
+ 'plugins/ca-pi/tools/src/compaction.ts',
+ 'plugins/ca-pi/tools/src/compatibility.ts',
+ 'plugins/ca-pi/tools/src/contracts.ts',
+ 'plugins/ca-pi/tools/src/delegated-executor.ts',
+ 'plugins/ca-pi/tools/src/delegation-client.ts',
+ 'plugins/ca-pi/tools/src/delegation-contract.ts',
+ 'plugins/ca-pi/tools/src/delegation-journal.ts',
+ 'plugins/ca-pi/tools/src/delegation-session.ts',
+ 'plugins/ca-pi/tools/src/dispatch.ts',
+ 'plugins/ca-pi/tools/src/doctor.ts',
+ 'plugins/ca-pi/tools/src/extension.ts',
+ 'plugins/ca-pi/tools/src/farm.ts',
+ 'plugins/ca-pi/tools/src/footer-state.ts',
+ 'plugins/ca-pi/tools/src/footer.ts',
+ 'plugins/ca-pi/tools/src/git-facts.ts',
+ 'plugins/ca-pi/tools/src/inference-broker.ts',
+ 'plugins/ca-pi/tools/src/native-background.ts',
+ 'plugins/ca-pi/tools/src/native-plan.ts',
+ 'plugins/ca-pi/tools/src/notices.ts',
+ 'plugins/ca-pi/tools/src/parent-delegation.ts',
+ 'plugins/ca-pi/tools/src/path-boundary.ts',
+ 'plugins/ca-pi/tools/src/pi-api.d.ts',
+ 'plugins/ca-pi/tools/src/plan-mode.ts',
+ 'plugins/ca-pi/tools/src/policy.ts',
+ 'plugins/ca-pi/tools/src/process-tree.ts',
+ 'plugins/ca-pi/tools/src/redaction.ts',
+ 'plugins/ca-pi/tools/src/roles.ts',
+ 'plugins/ca-pi/tools/src/runner.ts',
+ 'plugins/ca-pi/tools/src/runtime-resolver.ts',
+ 'plugins/ca-pi/tools/src/session-identity.ts',
+ 'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+ 'plugins/ca-pi/tools/src/sidebar-data.ts',
+ 'plugins/ca-pi/tools/src/sidebar-manager.ts',
+ 'plugins/ca-pi/tools/src/sidebar.ts',
+ 'plugins/ca-pi/tools/src/status.ts',
+ 'plugins/ca-pi/tools/src/tool-guard.ts',
+ 'plugins/ca-pi/tools/src/windows-supervisor.ts',
+ 'plugins/ca/tools/redactor.ts'))
+
+
+def _sdk_source_members(repo):
+    """The fixed SDK source namespace cannot acquire an unbound sibling/import."""
+    root = Path(repo) / "plugins/ca-pi/tools/src"
+    found, pending, count = set(), [root], 0
+    while pending:
+        folder = pending.pop(); count += 1
+        info = folder.lstat()
+        require(count <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "SDK source namespace is unsafe or unbounded")
+        for path in folder.iterdir():
+            info = path.lstat()
+            require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "SDK source namespace contains a link")
+            if stat.S_ISDIR(info.st_mode): pending.append(path)
+            else:
+                require(stat.S_ISREG(info.st_mode), "SDK source namespace contains nonregular data")
+                found.add(path.relative_to(repo).as_posix())
+                require(len(found) <= 2048, "SDK source namespace exceeds bound")
+    require(found == {name for name in SDK_SOURCE_PATHS if name.startswith("plugins/ca-pi/tools/src/")},
+            "SDK source physical membership differs")
+
+
+def _sdk_python_command(argv):
+    require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv)
+            and (argv[1].replace("\\", "/") == SDK_SOURCE_SCRIPT
+                 or argv[1].replace("\\", "/").endswith("/" + SDK_SOURCE_SCRIPT)),
+            "SDK source observation requires the original unfiltered Python command")
 
 
 def source_profile(profile=SOURCE_PROFILE):
     if profile == SOURCE_PROFILE:
         return {"paths": SOURCE_PATHS, "job": SOURCE_JOB, "payload": SOURCE_PAYLOAD, "upload": SOURCE_UPLOAD}
+    if profile == SDK_SOURCE_PROFILE:
+        return {"paths": SDK_SOURCE_PATHS, "job": SDK_SOURCE_JOB, "payload": SDK_SOURCE_PAYLOAD, "upload": SDK_SOURCE_UPLOAD}
     require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
     return {"paths": TS_PROFILE_PATHS[profile], "job": TS_PROFILE_JOBS[profile],
             "payload": TS_PROFILE_PAYLOADS[profile], "upload": TS_PROFILE_UPLOADS[profile], "root": TS_PROFILE_ROOTS[profile]}
@@ -603,7 +851,7 @@ def _source_root_members(repo):
 def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
-    require(type(relative) is str and (relative in SOURCE_PATHS
+    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS
             or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
     require(type(expected) is bytes and type(actual) is bytes
@@ -627,6 +875,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     identity = source_identity(repo, profile)
     require(identity["clean"], "source payload checkout is not clean")
     if profile == SOURCE_PROFILE: _source_root_members(repo)
+    elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
     entries = []
@@ -666,7 +915,7 @@ def validate_source_manifest(record, req, job_name, members):
     paths = spec["paths"]
     fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
     require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
-            and record["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
+            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
             and job_name == record["producer_job_name"] == spec["job"]
             and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
             and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
@@ -757,12 +1006,15 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     binding = observed.get("source_input_binding")
     spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
     require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
-            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, *TS_PROFILE_PATHS)
+            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS)
             and binding["payload_name"] == spec["payload"]
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
             "source test payload binding missing or differs")
-    if binding["profile"] != SOURCE_PROFILE:
+    if binding["profile"] == SDK_SOURCE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
+        _sdk_python_command(observed.get("argv"))
+    elif binding["profile"] != SOURCE_PROFILE:
         require(observed.get("producer") == "vitest-json-observer", "TS source profile requires original Vitest observer")
     record = payload.get("documents", {}).get(SOURCE_MANIFEST)
     validate_source_manifest(record, req, job_name, payload.get("members", []))
@@ -770,15 +1022,21 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
             == binding["manifest_sha256"], "source test manifest digest differs")
 
 
-def observe_python(repo, script, arguments, output, source_payload=None):
+def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
     relative = script.relative_to(repo).as_posix()
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
-    before = source_identity(repo)
-    source_binding = source_observation_binding(repo, source_payload, before) if source_payload else None
+    source_profile(profile)
+    if profile == SDK_SOURCE_PROFILE:
+        require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
+                "SDK source profile requires its original unfiltered Python entry point and payload")
+    else:
+        require(profile == SOURCE_PROFILE, "Python observer requires a closed Python source profile")
+    before = source_identity(repo, profile)
+    source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
@@ -831,11 +1089,11 @@ def observe_python(repo, script, arguments, output, source_payload=None):
         sys.argv[:] = original_argv
         sys.path[:] = original_path
         os.chdir(original_cwd)
-    after = source_identity(repo)
+    after = source_identity(repo, profile)
     stable = before == after and before["clean"]
     if source_payload:
         try:
-            stable = stable and source_observation_binding(repo, source_payload, after) == source_binding
+            stable = stable and source_observation_binding(repo, source_payload, after, profile) == source_binding
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
             stable = False
     document = {"format": OBSERVATION, **before,
@@ -1311,6 +1569,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
                 if profile == SOURCE_PROFILE:
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
+                elif profile == SDK_SOURCE_PROFILE:
+                    require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
                 else:
                     require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
                 admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
@@ -1461,7 +1721,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)
@@ -1475,7 +1735,7 @@ def main(argv=None):
             return 0
         if args.operation == "observe-python":
             require(args.arguments, "Python entry point required")
-            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload)
+            return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload, args.source_profile)
         if args.operation == "observe-vitest":
             return observe_vitest(args.repo, args.arguments, args.raw_results, args.output, args.execution_cwd, args.source_payload)
         if args.operation == "admit-go":
@@ -1524,7 +1784,7 @@ def main(argv=None):
                 require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
             else:
                 payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
-                    if name in (SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
+                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

@@ -1,0 +1,14 @@
+{
+  "exit_code": 1,
+  "seconds": 7.2357919000060065,
+  "timed_out": false,
+  "containment": "exited",
+  "stdout_sha256": "e2a035a320a38fecbe2dd849596776f96a95516bc47d23ace532ce1d2a945dce",
+  "stderr_sha256": "552e9160a7528e988d76f10c08fc7da1599d50ff08a77e8883070bdac7ff9b39",
+  "windows_containment_limit": "Existing process-group/taskkill contract; no stronger Job Object rundown claim.",
+  "product_source_stable": true,
+  "private_source_stable": true,
+  "runtime_stable": true,
+  "tools_stable": true,
+  "transport_stable": true
+}

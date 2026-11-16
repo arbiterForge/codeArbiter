@@ -1,0 +1,7 @@
+{
+  "schema": "literal-utf8-development-capture/1",
+  "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a980-pi-rpc-bounded-replay\\stderr.log",
+  "original_sha256": "870affc102f2dbddb93f8e1476d18ea7590b5125c55a1dba9930e0cca36e2279",
+  "original_bytes": 469,
+  "utf8_text": "test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments (test_pi_package.PiPackageTests.test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments) ... ok\r\ntest_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases (test_pi_package.PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 2 tests in 3.876s\r\n\r\nOK\r\n"
+}

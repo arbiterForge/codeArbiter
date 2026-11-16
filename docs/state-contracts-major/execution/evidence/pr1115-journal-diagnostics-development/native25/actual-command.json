@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\run-owned.py",
+    "green"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796",
+  "environment": {
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\appdata",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\localappdata",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\tmp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\tmp",
+    "PATH": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\empty-path",
+    "PYTHONPYCACHEPREFIX": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green-profile\\bytecode",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "exit_code": 0,
+  "duration_seconds": 4.822624799999176,
+  "timed_out": false,
+  "exceeded": [],
+  "outputs": {
+    "stdout": {
+      "size": 130,
+      "sha256": "1b981eff20b8856eadc109a541e085458cdc6e5226271c8be5158ffcb4cee0a3"
+    },
+    "stderr": {
+      "size": 1899,
+      "sha256": "c476ae1fef8a5d20e366eb443db7796baebb6ca7265e2002badcce479c60cf33"
+    }
+  }
+}

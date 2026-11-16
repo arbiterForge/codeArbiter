@@ -1,0 +1,98 @@
+{
+  "kind": "ACTUAL_PRODUCT_REGRESSION_STOPPED",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "actual": {
+    "argv": [
+      "C:/Program Files/Go/bin/go.exe",
+      "test",
+      "-x",
+      "-json",
+      "./internal/store",
+      "-run",
+      "^(TestN02CommitAdmissionAndPrepublicationCleanup|TestN02PreparedTargetCASRefusesConcurrentBytes|TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome|TestN03TerminalRecoveryReplayPreservesBytes|TestN03RecoveryPreflightPreservesAllTargetsAndEvidence|TestN03UnreadableFinalJournalNeverBecomesClean)$",
+      "-count=1",
+      "-timeout=90s",
+      "-failfast"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts",
+    "pid": 56772,
+    "returncode": 1,
+    "duration_seconds": 2.4577704000112135,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "containment": "exited",
+    "spawn_error_type": null,
+    "reader_errors": [],
+    "stdout_sha256": "346069ac7a3c69e6781be296d2bc31276dd4fe234513a606ffdba46a7ca1b218",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 186751,
+    "stderr_bytes": 0,
+    "qualification": false
+  },
+  "classification": "Product admission guard defect; test compiled and initial valid refusal controls passed. No missing fixture method, malformed setup or manufactured exception.",
+  "failed_selector": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-overlap",
+  "guard_basis": "Frozen N02:01 valid safe disjoint edits; invalid admission must refuse without target/staging/journal changes.",
+  "request": "Two owned create edits with nil before: nested -> a and nested/child.txt -> b; canonical request hash and valid operation id admit-ancestor-001.",
+  "observed": "Expected INVALID_TRANSACTION, actual COMMIT_OUTCOME_UNKNOWN after creating nested directory, two stage files and a durable transaction journal. Complete changed owned path/before-after hash pairs are in summary.json and actual.stdout.jsonl; no unmodified external/user data involved.",
+  "causal_trace": [
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "symbol": "collidesWithTarget",
+      "fact": "Only strings.EqualFold(prior,candidate); ancestor components are not checked."
+    },
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "symbol": "Commit admission",
+      "fact": "Both individually valid targets pass equality-only overlap guard and absent-before CAS."
+    },
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "symbol": "Commit stage/publication",
+      "fact": "Second target stage requires directory nested, making first target name a directory before attempted first replacement; prepared journal is published."
+    },
+    {
+      "path": "core/artifacts/internal/store/fs_portable.go",
+      "symbol": "replace(createOnly)",
+      "fact": "Creating first file at nested collides with now-existing directory; caller has durable journal and returns outcome unknown. Actual changed-tree hashes witness the wrong phase."
+    }
+  ],
+  "next_minimal_fix_proposal": "Under a new checked fix context, reject case-folded exact OR component-separated ancestor/descendant collisions in the shared target-disjointness owner before any storage effects; preserve valid branch versus branching/child.txt. This helper is also used by validJournal, so review that intended fail-closed journal-validation effect. Do not change retry/uncertainty recovery or delete existing failed material.",
+  "execution_scope": {
+    "gofmt_runs": 1,
+    "go_test_runs": 1,
+    "go_run_duration_seconds": 2.4577704000112135,
+    "GOMAXPROCS": "2",
+    "compiler_trace": "-x actual full stderr retained",
+    "compiler_trace_present": false,
+    "linker_trace_present": false,
+    "parent_attempted": 1,
+    "passed_children": 5,
+    "failed_child": 1,
+    "unobserved_due_failfast": "Reversed/case-folded overlap, prefix-lookalike, remaining admission cases and other five parents were not executed; no success inferred.",
+    "source_runtime_stable": {
+      "root_module": true,
+      "private_module": true,
+      "tool_and_GOROOT_source": true,
+      "sealed_cache_origin": true
+    }
+  },
+  "retention": "Actual returncode/time/raw streams saved before after-snapshot validation; full Root252/private255/tool+GOROOT/original-cache maps in before.json/after.json; formatted test subjects bound below; immutable original drafts/plan preserved.",
+  "formatted_test_subjects": [
+    {
+      "path": "core/artifacts/internal/store/journal_contract_boundary_test.go",
+      "sha256": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+      "bytes": 14284
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_unix_test.go",
+      "sha256": "b86ae151a3a826c21fa70a415d1089525a5652889d144df9b36fce28f4847cef",
+      "bytes": 806
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_windows_test.go",
+      "sha256": "63414ff54ccba5ee28580f81d0d88a616c3205267e78e305804560b15968c8a1",
+      "bytes": 1289
+    }
+  ],
+  "no_followup_execution_or_mutation": "Stopped after this first actual RED. No rerun, product/canonical/index/ref/marker/ledger/proof/status changes, provider/network/install/Node/SDK/CLI replay."
+}

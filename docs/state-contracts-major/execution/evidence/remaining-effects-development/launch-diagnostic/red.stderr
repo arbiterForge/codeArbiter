@@ -1,0 +1,71 @@
+test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) ... 
+  test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='windows-command') ... FAIL
+  test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-git') ... FAIL
+  test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-python') ... FAIL
+  test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-native') ... FAIL
+  test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-other') ... FAIL
+
+======================================================================
+FAIL: test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='windows-command')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-launch-discriminator-fix-3f2jxq0u\candidate\.github\scripts\test_artifact_package.py", line 2517, in test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload
+    self.assertEqual(record["audit_site"], expected_site)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'launch-guard' != 'windows-command-refusal'
+- launch-guard
++ windows-command-refusal
+
+
+======================================================================
+FAIL: test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-git')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-launch-discriminator-fix-3f2jxq0u\candidate\.github\scripts\test_artifact_package.py", line 2517, in test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload
+    self.assertEqual(record["audit_site"], expected_site)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'launch-guard' != 'resolved-git-refusal'
+- launch-guard
++ resolved-git-refusal
+
+
+======================================================================
+FAIL: test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-python')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-launch-discriminator-fix-3f2jxq0u\candidate\.github\scripts\test_artifact_package.py", line 2517, in test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload
+    self.assertEqual(record["audit_site"], expected_site)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'launch-guard' != 'resolved-python-refusal'
+- launch-guard
++ resolved-python-refusal
+
+
+======================================================================
+FAIL: test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-native')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-launch-discriminator-fix-3f2jxq0u\candidate\.github\scripts\test_artifact_package.py", line 2517, in test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload
+    self.assertEqual(record["audit_site"], expected_site)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'launch-guard' != 'resolved-native-refusal'
+- launch-guard
++ resolved-native-refusal
+
+
+======================================================================
+FAIL: test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) (name='resolved-other')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-launch-discriminator-fix-3f2jxq0u\candidate\.github\scripts\test_artifact_package.py", line 2517, in test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload
+    self.assertEqual(record["audit_site"], expected_site)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'launch-guard' != 'resolved-other-refusal'
+- launch-guard
++ resolved-other-refusal
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.057s
+
+FAILED (failures=5)

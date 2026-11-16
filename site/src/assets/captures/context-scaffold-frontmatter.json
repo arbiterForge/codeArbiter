@@ -18,7 +18,7 @@
     },
     {
       "path": "plugins/ca/hooks/_artifactlib.py",
-      "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b"
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187"
     },
     {
       "path": "plugins/ca/hooks/_artifactmanifestlib.py",

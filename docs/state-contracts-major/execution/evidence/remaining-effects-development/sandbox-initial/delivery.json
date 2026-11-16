@@ -1,0 +1,19 @@
+{
+  "format": "codearbiter.private-runtime-delivery/1",
+  "state": "PARTIAL_FIRST_REAL_LIMITATION_STOPPED_NO_RETRY",
+  "summary": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-owned-effects-run-sbdvtkd_\\actual-summary.json",
+    "sha256": "50fbe36e8be58f7051a3a269fb5777f56e55e89868ed908b57f4e41a5397892c"
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-owned-effects-run-sbdvtkd_\\filemap.json",
+    "sha256": "08e8233899e63320f5b3db2d7ebadfc6773bb5ff282ee8fed09dfbc3797e7b50"
+  },
+  "prepared_tests_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-real-effects-prepare-nohd52d5\\delivery.json",
+    "sha256": "ee600cb3955c44f30a57c157e6a6159e9610a5a09ee42e5b78842f22b3a74aa7"
+  },
+  "no_retry": true,
+  "no_gov_mutation": true,
+  "next": "Root may review the real two effect observations separately. Any further cp diagnostic or assertion/source change needs its own bounded next step; no silent second copy attempt."
+}

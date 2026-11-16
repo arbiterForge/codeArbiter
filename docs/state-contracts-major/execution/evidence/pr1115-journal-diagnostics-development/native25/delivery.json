@@ -1,0 +1,55 @@
+{
+  "kind": "NATIVE25_PARENT_OMISSION_FIXTURE_SUCCESSOR_ACTUAL_GREEN",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "original_draft_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-journal-route-draft-vom0hz75\\delivery.json",
+  "original_red_and_setup_failure": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-focused-pair-ywj3wzxq\\failure-delivery.json",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_native_observation.py",
+      "preimage_sha256": "843fcbed655c36ff5b474d6a48bdf1d70568fe6fa149bb8a135b5f345d81a76f",
+      "candidate_sha256": "8cdecc9b0e72de52aa0973a5448b4d8c8fc6f343920aa87f48c28d7ae14dafe9",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\scripts\\major_native_observation.py"
+    },
+    {
+      "path": ".github/scripts/test_major_native_observation.py",
+      "preimage_sha256": "344d8154740ec9095f77a108e6c4f2874390c5956180e443f1fdcfedc2becb83",
+      "candidate_sha256": "bc190cb58bb72bd1462aa0d8e54566988f0ac92c2bf78bfab23a9c3d16f2dc3b",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\scripts\\test_major_native_observation.py"
+    },
+    {
+      "path": ".github/major-qualification-policy.json",
+      "preimage_sha256": "2c3789ccd3f9441ae9be4c87ae12735d34a35a873d788505f68022395a849f7f",
+      "candidate_sha256": "2edadf1f1ceb41f25df5e2abd8bf2b0ebcd836aa558eba35dc3dcdb1d5258568",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\major-qualification-policy.json"
+    }
+  ],
+  "changes_from_original_draft": "Only missing top-level parent fixture additionally removes same-package same-parent slash descendants. Individual child omission/SKIP parent-PASS assertions and product validators unchanged.",
+  "actual_green": {
+    "exit_code": 0,
+    "duration_seconds": 4.822624799999176,
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "subtests": 339
+  },
+  "original_genuine_missingroute_red_reused_without_repeat": true,
+  "source_private_runtime_stable": true,
+  "files": {
+    "actual-command.json": "3604331ff9ea841ec20f9a26fbfc221d0f90a195592ccd1c82a16decac8b32b3",
+    "actual-subtest-counts.json": "e85cd717a5824e6cc1a213e16641c9eb55a1743d5a6abda6be7e451dbe4e919a",
+    "after.json": "f208231804abe8b37fd7a7b756f253d6cd4b1a590a1ddcb76c291408a3a0b186",
+    "before.json": "f208231804abe8b37fd7a7b756f253d6cd4b1a590a1ddcb76c291408a3a0b186",
+    "fixture-only-successor.patch": "16f3fd95e2aabe2451c9877fb4e82feb3ecc7de6de8707752b765a94fd317db1",
+    "green-names.json": "e8abed4aa9d6ea93e044a8f7b7ced2d185bf3f74b39924a362aa379173124dee",
+    "green-result.json": "9047c5ddd4e7bb1dfcbf18d6b638fb42df384365750933d8d2e8aa63261450b2",
+    "green.stderr": "c476ae1fef8a5d20e366eb443db7796baebb6ca7265e2002badcce479c60cf33",
+    "green.stdout": "1b981eff20b8856eadc109a541e085458cdc6e5226271c8be5158ffcb4cee0a3",
+    "proposal.patch": "5d8173a34c7defa986d662d06ae35caf9fb969104e1fc1cb37345aa44bf55be5",
+    "run-owned.py": "00070fbfd78ac0dcdb7880b01e2a408a1687c302c7489ecfd753a0991272d26b",
+    "stability.json": "409c17f547b201eef9b558965dedc280b11b72a892e30c44be7542cbfcc1b145"
+  },
+  "qualification": false,
+  "canonical_writes": false,
+  "actual_native_provider_runtime_execution": false
+}

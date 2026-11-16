@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"encoding/json"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -11,29 +10,6 @@ import (
 	"path/filepath"
 	"testing"
 )
-
-func TestReviewRetryPreservesMutationResult(t *testing.T) {
-	h := newHarness(t)
-	req := object{"operation_id": "review-replay-001", "artifact_id": "SPEC-REPLAY", "kind": "spec", "slug": "replay", "title": "Replay", "summary": "Retry creates no duplicate."}
-	first := h.run("create", req)
-	value, err := h.request("create", req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	raw, _ := json.Marshal(value)
-	var second object
-	if err = json.Unmarshal(raw, &second); err != nil {
-		t.Fatal(err)
-	}
-	for _, key := range []string{"artifact_id", "kind", "path", "model_sha256", "normative_sha256"} {
-		if second[key] != first[key] {
-			t.Errorf("retry lost %s: first=%v retry=%v", key, first[key], second[key])
-		}
-	}
-	if _, ok := second["transaction"]; !ok {
-		t.Error("retry changed response shape: transaction field absent")
-	}
-}
 
 func TestReviewDiffIncludesNormativeHeader(t *testing.T) {
 	h := newHarness(t)

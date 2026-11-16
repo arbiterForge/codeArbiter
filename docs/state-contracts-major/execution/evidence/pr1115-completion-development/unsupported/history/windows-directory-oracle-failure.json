@@ -1,0 +1,111 @@
+{
+  "format": "private-unsupported-wasm-single-thread/1",
+  "state": "FAILED_RETAINED_STOPPED",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "compile_reused": {
+    "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\delivery.json",
+    "sha256": "e7c6268c227b8638a8d385bd56d0feec4819aa6efe402e905ce9ac5007f7cdca",
+    "wasm": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\output\\store-fallback.test.wasm",
+      "bytes": 5570185,
+      "sha256": "2fa3d866a2b9e4811f924487a8fbcbd2a1ca180c0feae609eae8c7f6919dfba9"
+    },
+    "trace_addendum": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\trace-path-addendum.json",
+      "sha256": "3f95b7becba5c5909f834747fe094b4e977874f4f5461a52914cd2091a6095b5"
+    }
+  },
+  "unit": {
+    "argv": [
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "--stack-size=8192",
+      "C:\\Program Files\\Go\\lib\\wasm\\wasm_exec_node.js",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\output\\store-fallback.test.wasm",
+      "-test.run=^TestUnsupportedBackendOpenRefusesWithoutEffects$",
+      "-test.count=1",
+      "-test.timeout=20s",
+      "-test.failfast",
+      "-test.v"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\candidate\\core\\artifacts",
+    "exit_code": 1,
+    "elapsed_seconds": 0.10820490002515726,
+    "timeout_seconds": 30,
+    "timed_out": false,
+    "overflowed": false,
+    "containment": "exited",
+    "setup_error": null,
+    "streams": {
+      "stdout": {
+        "observed_bytes": 426,
+        "retained_bytes": 426,
+        "observed_sha256": "e83e098ab774824cf4ca7e252996b9ed7698218718872e6049ebec4e84bf49d0",
+        "reader_error": null
+      },
+      "stderr": {
+        "observed_bytes": 0,
+        "retained_bytes": 0,
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reader_error": null
+      }
+    }
+  },
+  "validation": {
+    "unit_pass": false,
+    "exact_one_named_pass": false,
+    "executed_test_names": [
+      "TestUnsupportedBackendOpenRefusesWithoutEffects"
+    ],
+    "source_stable": true,
+    "candidate_stable": true,
+    "goroot_stable": true,
+    "tools_stable": true,
+    "artifact_stable": true,
+    "helper_stable": true
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\before.json",
+      "sha256": "39cad4aa86ad6b899a0f8bd446948dc39fbe326b4bd012684d49c9a530ebb69c",
+      "bytes": 2794852
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\after.json",
+      "sha256": "44b2bc8dc0a78961730660955e269d91fdb3238e500bccd5ee3156f4fd11ffb9",
+      "bytes": 2791704
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\unit-outcome.json",
+      "sha256": "69850b9f4f17dea21809438212440eb89ba05f7b5a9428dc16f89a767835ae19",
+      "bytes": 1195
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\unit.stdout.log",
+      "sha256": "e83e098ab774824cf4ca7e252996b9ed7698218718872e6049ebec4e84bf49d0",
+      "bytes": 426
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\unit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\validation.json",
+      "sha256": "5328d9d99da34ffffa2df4d6fe57ae313fd03e3ccc1263f30aa6b1b6b9db679b",
+      "bytes": 298
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\execute.py",
+      "sha256": "9306f7e2913a3c8f1ad814c8bfec1691c81526793683e047a495ffb4227beae5",
+      "bytes": 5913
+    }
+  ],
+  "scope": "Actual compiled fs_other.go under js/wasm source unit only if selected named assertion executes and passes. Supported six-platform/native unsupported OS/installed/NT08/SEQ31 whole qualification not claimed.",
+  "history": [
+    "Original226 module-only compile1 missing embeddeddata; Node NOTRUN; retained unchanged.",
+    "Corrected250 compilePASS then runtime-init exit2 with zero tests; retained unchanged."
+  ],
+  "no_go_commands": true,
+  "no_canonical_writes": true,
+  "qualification": false
+}

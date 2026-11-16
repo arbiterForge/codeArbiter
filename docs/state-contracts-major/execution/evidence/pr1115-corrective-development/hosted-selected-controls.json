@@ -1,0 +1,99 @@
+{
+  "schema": "exact-pr-selected-controls/1",
+  "head": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "ci_run_id": 43837681879,
+  "event": "pull_request",
+  "attempt": 1,
+  "program_integrity_http_controls": [
+    {
+      "job": 133198511353,
+      "job_id": 133198293712,
+      "bytes": 144191,
+      "sha256": "126e54ad79865c7ea04b3b1f943779b57873fc888e768e836e10a5b972199dfd",
+      "state": "READ"
+    },
+    {
+      "job": 133198511369,
+      "job_id": 133198293712,
+      "bytes": 144191,
+      "sha256": "126e54ad79865c7ea04b3b1f943779b57873fc888e768e836e10a5b972199dfd",
+      "state": "READ"
+    },
+    {
+      "job": 133198511558,
+      "job_id": 133198293712,
+      "bytes": 144191,
+      "sha256": "126e54ad79865c7ea04b3b1f943779b57873fc888e768e836e10a5b972199dfd",
+      "state": "READ"
+    }
+  ],
+  "coverage": {
+    "pi": {
+      "job": 133202315194,
+      "hosts": [
+        "ubuntu-latest",
+        "windows-latest"
+      ],
+      "lines": 86.95,
+      "branches": 81.94,
+      "status": "PASS"
+    },
+    "repository_tools": {
+      "job": 133201446578,
+      "hosts": [
+        "ubuntu-latest",
+        "windows-latest"
+      ],
+      "lines": 74.94,
+      "branches": 74.15,
+      "status": "PASS"
+    },
+    "native": {
+      "job": 133204471565,
+      "platforms": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+      ],
+      "go_version": "go1.27.1",
+      "source_sha256": "58648e6edb866becc1eae7c806474ec3b3e720c3667a3d234cd63a87f2e546dc",
+      "statements": 84.3356,
+      "unmeasured": [
+        "lines",
+        "branches"
+      ],
+      "status": "COMPLETE",
+      "minimum": 70
+    }
+  },
+  "sandbox_product": {
+    "job": 133198510989,
+    "suite_files": 29,
+    "tests": 414,
+    "failures": 0,
+    "new_effects": 3,
+    "partial_copy": {
+      "observedPartial": 950272,
+      "retained": 1441792,
+      "expectedBytes": 67108864,
+      "code": 130,
+      "aborted": true
+    }
+  },
+  "sdk_product": {
+    "job": 133198510949,
+    "original_unfiltered_tests": 88,
+    "suite_seconds": 119.972,
+    "source_prepare_upload": "success",
+    "qualification_emit": "skipped-on-PR"
+  },
+  "whole_workflow_verdict": "BLOCK_PENDING_TERMINAL_WITH_KNOWN_FAILURES",
+  "qualification_admitted": false,
+  "limits": [
+    "Selected original jobs and actual outcomes only, never whole-run success or normal integration qualification.",
+    "Current-head hosted numeric gates pass; any successor relevant source changes require its own exact hosted binding."
+  ]
+}

@@ -352,6 +352,19 @@ jobs:
           python -B ../.github/scripts/site_playwright_observation.py emit --repo ..
           --observation "$RUNNER_TEMP/docs-browser-observation.json"
           --output "$RUNNER_TEMP/docs-qualification.json"
+      - name: Retain Docs qualification diagnostics
+        # Original inputs and safe source coordinates survive a refused report.
+        # This artifact grants no qualification or deployment authority.
+        if: ${{ !cancelled() && steps.browser-gate.outcome == 'success' && steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-qualification-diagnostics
+          path: |
+            ${{ runner.temp }}/docs-browser-observation.json
+            ${{ runner.temp }}/docs-qualification.json.refusal.json
+          if-no-files-found: error
+          retention-days: 5
+          overwrite: false
       - name: Upload Docs qualification report
         if: steps.docs-report.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

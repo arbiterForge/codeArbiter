@@ -131,6 +131,24 @@ class PackageTests(unittest.TestCase):
                 "unreviewed native-library access",
             ),
             (bridge + b"\neval('1 + 1')\n", "dynamic code/import escape"),
+            (bridge + b"\nimport sys as alternate\n", "aliases an imported capability"),
+            (bridge + b"\nfrom sys import platform\n", "unreviewed capability directly"),
+            (bridge + b"\nsys.modules\n", "unreviewed sys capability"),
+            (bridge + b"\ngetattr(sys, 'modules')\n", "unreviewed sys capability"),
+            (bridge + b"\nvars(sys)\n", "unreviewed sys capability"),
+            (bridge + b"\nconsume(sys)\n", "unreviewed sys capability"),
+            (bridge + b"\nsys['platform']\n", "unreviewed sys capability"),
+            (bridge + b"\nsys.platform = 'win32'\n", "unreviewed sys capability"),
+            (bridge + b"\ndel sys.platform\n", "unreviewed sys capability"),
+            (bridge + b"\nsys = object()\n", "unreviewed sys capability"),
+            (bridge + b"\ndef sys(): pass\n", "rebinds the sys capability"),
+            (bridge + b"\ndef caller(sys): return sys.platform\n", "rebinds the sys capability"),
+            (bridge + b"\nfrom platform import sys\n", "rebinds the sys capability"),
+            (bridge + b"\ntry: pass\nexcept Exception as sys: pass\n", "rebinds the sys capability"),
+            (bridge + b"\ndef caller():\n global sys\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch None:\n case sys: pass\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch []:\n case [*sys]: pass\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch {}:\n case {**sys}: pass\n", "rebinds the sys capability"),
         )
         for candidate, diagnostic in cases:
             with self.subTest(diagnostic=diagnostic), self.assertRaisesRegex(
@@ -2432,7 +2450,7 @@ else:
     def test_unknown_process_network_and_process_escape_still_refuse(self):
         result = self.audited_platform_child("denials")
         self.assertEqual(result, {"denials": [
-            {"error": "RuntimeError", "event": "subprocess", "site": "launch-guard"},
+            {"error": "RuntimeError", "event": "subprocess", "site": "resolved-other-refusal"},
             {"error": "RuntimeError", "event": "network", "site": "network-guard"},
             {"error": "RuntimeError", "event": "process-escape", "site": "process-guard"},
         ]})
@@ -2469,6 +2487,133 @@ else:
                 with self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process"):
                     verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
                         binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+
+
+    def test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload(self):
+        import importlib.util
+        import types
+        from unittest import mock
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_launch_diagnostic", source)
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        verifier._FAILURE_HOST = "claude"
+        with tempfile.TemporaryDirectory(prefix="ca-inert-launch-diagnostic-") as temporary:
+            root = Path(temporary).resolve(strict=True)
+            pinned = root / "pinned" / "ca-artifact.exe"
+            pinned.parent.mkdir()
+            pinned.write_bytes(b"inert bytes; never executed")
+            rejected = root / "rejected"
+            rejected.mkdir()
+            cases = [
+                ("windows-command", "PrivateProcessCanary.exe", "windows-command-refusal"),
+                ("resolved-git", "git.exe", "resolved-git-refusal"),
+                ("resolved-python", "python.exe", "resolved-python-refusal"),
+                ("resolved-native", "ca-artifact.exe", "resolved-native-refusal"),
+                ("resolved-other", "PrivateProcessCanary.exe", "resolved-other-refusal"),
+            ]
+            callbacks = []
+            with mock.patch.object(verifier.sys, "addaudithook", side_effect=callbacks.append):
+                verifier.install_runtime_guard(pinned, binary_sha256=hashlib.sha256(pinned.read_bytes()).hexdigest(), permit_verifier_children=False)
+            self.assertEqual(len(callbacks), 1)
+            callback = callbacks[0]
+            for name, basename, expected_site in cases:
+                with self.subTest(name=name):
+                    unknown = rejected / basename
+                    unknown.write_bytes(b"inert rejected bytes; never executed")
+                    if name == "windows-command":
+                        details = (None, subprocess.list2cmdline([str(unknown), "PrivateArgCanary"]), None, {})
+                    else:
+                        details = (str(unknown), [str(unknown), "PrivateArgCanary"], None, {})
+                    # This proxy selects only the policy's Windows string
+                    # representation. It does not change pathlib's host OS.
+                    with mock.patch.object(verifier, "os", types.SimpleNamespace(name="nt", environ={})), self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process") as raised:
+                        callback("subprocess.Popen", details)
+                    record = verifier.failure_record(raised.exception, phase="author-dispatch")
+                    self.assertEqual(record["audit_event"], "subprocess")
+                    self.assertEqual(record["audit_depth"], "outer")
+                    self.assertEqual(record["audit_site"], expected_site)
+                    self.assertEqual(record["error"], "RuntimeError")
+                    raw = json.dumps(record, sort_keys=True).encode()
+                    self.assertEqual(verifier.decode_failure(raw), record)
+                    for private in (str(root), "PrivateProcessCanary", "PrivateArgCanary", "inert rejected"):
+                        self.assertNotIn(private, raw.decode())
+                    legacy = {**record, "audit_site": "launch-guard"}
+                    self.assertEqual(verifier.decode_failure(json.dumps(legacy).encode()), legacy)
+                    self.assertIsNone(verifier.decode_failure(json.dumps({**record, "audit_site": "PrivateSiteCanary"}).encode()))
+            # Both pinned-binary launch representations remain allowed. The
+            # callback is invoked as a plain function, never installed live.
+            with mock.patch.object(verifier, "os", types.SimpleNamespace(name="nt", environ={})):
+                callback("subprocess.Popen", (None, subprocess.list2cmdline([str(pinned)]), None, {}))
+                callback("subprocess.Popen", (str(pinned), [str(pinned)], None, {}))
+            with self.assertRaisesRegex(RuntimeError, "forbids network access"):
+                callback("socket.connect", (None, ("127.0.0.1", 9)))
+
+    def test_installed_native_windows_selection_needs_no_version_shell(self):
+        import platform
+        import types
+        from unittest import mock
+        import importlib.util
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_windows_version_guard", source)
+        guard = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(guard)
+        guard._FAILURE_HOST = "claude"
+        with tempfile.TemporaryDirectory(prefix="ca-inert-version-") as temporary:
+            root = Path(temporary).resolve(strict=True)
+            binary = root / "ca-artifact-windows-arm64.exe"
+            binary.write_bytes(b"inert native identity; never executed")
+            command = root / "cmd.exe"
+            command.write_bytes(b"inert shell identity; never executed")
+            callbacks = []
+            with mock.patch.object(guard.sys, "addaudithook", side_effect=callbacks.append):
+                guard.install_runtime_guard(binary, binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), permit_verifier_children=False)
+            self.assertEqual(len(callbacks), 1)
+            callback = callbacks[0]
+            observations = []
+            launch_calls = []
+            def no_process(*args, **kwargs):
+                # The real stdlib chooses this fixed version query. Its
+                # effect is replaced BEFORE any process creation. The audit
+                # event uses owned inert executable bytes, never a real shell.
+                launch_calls.append({"fixed_ver": args == ("ver",), "shell": kwargs.get("shell") is True})
+                callback("subprocess.Popen", (str(command), [str(command), "/c", "ver"], root, {}))
+                self.fail("strict guard unexpectedly admitted the inert shell event")
+            for boundary in ("native-selection", "exchange-dispatch"):
+                # Fresh uname cache reproduces a new verifier interpreter;
+                # WMI absence is the only injected version-discovery failure.
+                with mock.patch.object(platform.sys, "platform", "win32"), \
+                     mock.patch.object(platform.os, "uname", side_effect=AttributeError("inert Windows has no uname"), create=True), \
+                     mock.patch.object(platform, "_uname_cache", None), \
+                     mock.patch.object(platform, "_wmi_query", side_effect=OSError("inert WMI unavailable"), create=True), \
+                     mock.patch.object(platform.sys, "getwindowsversion", return_value=types.SimpleNamespace(product_type=1), create=True), \
+                     mock.patch.object(_artifactlib, "_windows_native_architecture", return_value="arm64") as native_arch, \
+                     mock.patch.object(subprocess, "Popen", side_effect=no_process), \
+                     mock.patch.object(_artifactlib, "_bounded_child", return_value=(0, b'{"protocol":"codearbiter.artifact-api/0.1.0","operation":"capabilities","ok":true,"result":{}}', b"")) as exchange:
+                    error = None
+                    try:
+                        if boundary == "native-selection":
+                            value = _artifactlib._host_platform()
+                        else:
+                            client = object.__new__(_artifactlib.ArtifactClient)
+                            client.root, client.installation, client.timeout = root, root, 1
+                            client.initialize_store = False
+                            fd = os.open(binary, os.O_RDONLY)
+                            with mock.patch.object(client, "_open_binary", return_value=fd), \
+                                 mock.patch.object(client, "_binary_name", return_value=binary.name):
+                                value = client._exchange("capabilities", {}, False)
+                    except RuntimeError as refused:
+                        error = guard.failure_record(refused, phase="commit-proof")
+                    observations.append({"boundary": boundary, "outcome": "refused" if error else "returned", "audit_site": error["audit_site"] if error else None, "native_arch_calls": native_arch.call_count, "native_exchange_calls": exchange.call_count})
+            self._version_discovery_observation = {"boundaries": observations, "launch_calls": launch_calls, "actual_child_processes": 0, "actual_DLL_calls": 0, "original_hosted_target": "UNKNOWN"}
+            # Desired API behavior is selection/dispatch, not Windows version
+            # discovery. This assertion must genuinely fail on current source.
+            self.assertEqual(observations, [
+                {"boundary": "native-selection", "outcome": "returned", "audit_site": None, "native_arch_calls": 1, "native_exchange_calls": 0},
+                {"boundary": "exchange-dispatch", "outcome": "returned", "audit_site": None, "native_arch_calls": 0, "native_exchange_calls": 1},
+            ], "installed native selection/dispatch attempted an unnecessary version shell")
+            self.assertEqual(launch_calls, [])
+
 
 
 if __name__ == "__main__":

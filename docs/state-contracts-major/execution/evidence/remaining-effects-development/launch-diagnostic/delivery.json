@@ -1,0 +1,41 @@
+{
+  "schema": "private-cold-launch-discriminator-fix/1",
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "paths": [
+    ".github/scripts/test_artifact_installed_host.py",
+    ".github/scripts/test_artifact_package.py"
+  ],
+  "patch_sha256": "8a1c04c7654b3ef6604e49fde11084b7aa996bcadd70d0b3a9bf27ce75ec63d0",
+  "filemap_sha256": "5c848cb266654d6f9e93955f0cfc4b2d33fdbf48303552949f6edd3a66211334",
+  "candidate": {
+    ".github/scripts/test_artifact_installed_host.py": "eb230f183c67fb3bd12153104a9e25846de17f31eed96a2496dac8c428a7b4bf",
+    ".github/scripts/test_artifact_package.py": "c6267d3ed0d9f4b473f88b444dc7688c5c46e9798b3f13063939776c08cef389"
+  },
+  "actual_target_RED": {
+    "tests": 1,
+    "refusal_subcase_failures": 5,
+    "errors": 0,
+    "seconds": 0.05714909998641815
+  },
+  "actual_target_GREEN": {
+    "tests": 1,
+    "refusal_subcase_failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 0.057166099999449216
+  },
+  "guards_unchanged": true,
+  "legacy_readers_accept_old_records": true,
+  "old_process_based_method_not_executed": true,
+  "no_package_native_setup": true,
+  "original_hosted_launch_cause": "UNKNOWN",
+  "diagnostic_loss_defect": "CONFIRMED_AND_TARGET_FIXED_PRIVATELY",
+  "qualification": false,
+  "canonical_writes": false,
+  "limits": [
+    "Actual installed/host/native workflow was not replayed.",
+    "Pure AST-selected owning test method directly invokes captured actual policy callback; module-wide native-building setup and process-based old cases intentionally excluded.",
+    "One existing expectation changes only from generic to refined diagnostic site; all permission/guard decisions remain AST-equivalent.",
+    "Root sole integration/review/commit/provider owner."
+  ]
+}

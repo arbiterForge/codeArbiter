@@ -1,0 +1,76 @@
+[
+  {
+    "label": "crlf-checkout",
+    "warm_status_hex": "",
+    "actual_private_env_config": {
+      "GIT_CONFIG_GLOBAL": "nul",
+      "GIT_CONFIG_NOSYSTEM": "1",
+      "GIT_CONFIG_COUNT": null
+    },
+    "index_before_sha256": "42c13e3a5908a5f17246627903c02607c254db9dfd724feb8e9ace9351561396",
+    "active_status_before_staging": "",
+    "source_identity_before_staging": {
+      "source_commit": "10d980825b35227976a79e6d30a1352f29f12db8",
+      "source_tree": "5471b7cd673a3522b408d703b01977cd5cf6adcd",
+      "clean": true
+    },
+    "snapshot_before_staging": {
+      "accepted": true,
+      "clean": true
+    },
+    "fresh_index_status": " M plugins/ca/tools/.env.example<NUL> M site/example.html<NUL>",
+    "staged_before": "",
+    "staged_after": "plugins/ca/tools/.env.example\n",
+    "source_identity_with_real_stage": {
+      "source_commit": "10d980825b35227976a79e6d30a1352f29f12db8",
+      "source_tree": "5471b7cd673a3522b408d703b01977cd5cf6adcd",
+      "clean": false
+    },
+    "worktree_bytes_unchanged": true,
+    "input_bytes": {
+      ".gitattributes": "2d9c782e18939db60f3ff4127a2e707c0c6aa93ef04f0971b02645389df1d72e",
+      "core/pysrc/helper.py": "53230d7748427a401532143bbc1c127a094b5e262934515812997eb56e674061",
+      "plugins/ca/tools/.env.example": "926a718af9c08671164db74dc311eed940376b102130a7f87e1662e35f675d04",
+      "site/example.html": "4012dd8d25e6dc0035f1c5158793693b5be3748e8d7cd606fddeafba626a95ee",
+      "retained.raw": "d154c9684cdbecd2ae2a88032a131a866a9e8e7559e5a08686dbf1fc45a97661"
+    },
+    "expected_crlf_example": true
+  },
+  {
+    "label": "lf-checkout",
+    "warm_status_hex": "",
+    "actual_private_env_config": {
+      "GIT_CONFIG_GLOBAL": "nul",
+      "GIT_CONFIG_NOSYSTEM": "1",
+      "GIT_CONFIG_COUNT": null
+    },
+    "index_before_sha256": "68255078ed9801ae84d384b664d17eca55d882405bfe33dcd0b02ae2fc679166",
+    "active_status_before_staging": "",
+    "source_identity_before_staging": {
+      "source_commit": "78f015bd26dc9ca7d65333975cfc7ffbf2bd693d",
+      "source_tree": "5471b7cd673a3522b408d703b01977cd5cf6adcd",
+      "clean": true
+    },
+    "snapshot_before_staging": {
+      "accepted": true,
+      "clean": true
+    },
+    "fresh_index_status": "",
+    "staged_before": "",
+    "staged_after": "plugins/ca/tools/.env.example\n",
+    "source_identity_with_real_stage": {
+      "source_commit": "78f015bd26dc9ca7d65333975cfc7ffbf2bd693d",
+      "source_tree": "5471b7cd673a3522b408d703b01977cd5cf6adcd",
+      "clean": false
+    },
+    "worktree_bytes_unchanged": true,
+    "input_bytes": {
+      ".gitattributes": "2d9c782e18939db60f3ff4127a2e707c0c6aa93ef04f0971b02645389df1d72e",
+      "core/pysrc/helper.py": "53230d7748427a401532143bbc1c127a094b5e262934515812997eb56e674061",
+      "plugins/ca/tools/.env.example": "ebebb9cb506bfcfb59f2ae149f4addc73fb24f266f483b83df26612896457b93",
+      "site/example.html": "20b6f51238d4f0919ab573a71dd26796a91e6453579d1c3f86880c0dbde25f79",
+      "retained.raw": "d154c9684cdbecd2ae2a88032a131a866a9e8e7559e5a08686dbf1fc45a97661"
+    },
+    "expected_crlf_example": false
+  }
+]

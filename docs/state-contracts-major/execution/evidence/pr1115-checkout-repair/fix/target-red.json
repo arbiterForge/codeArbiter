@@ -1,0 +1,37 @@
+{
+  "phase": "target-red",
+  "selectors": [
+    "test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard"
+  ],
+  "argv": [
+    "C:/Users/brenn/AppData/Local/Temp/ca-198-checkout-shared-fix-515d2215/run_focused.py",
+    "target-red",
+    "test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard"
+  ],
+  "returncode": 1,
+  "duration_seconds": 1.0212911999842618,
+  "tests_run": 1,
+  "failures": 1,
+  "errors": 0,
+  "skips": 0,
+  "source_before": {
+    ".github/scripts/major_qualification_report.py": "2d01a07572df34a944b04625946f3a1efb7ebb2cbfd30972c073867d2969c952",
+    ".github/scripts/retained_archive_cli_observation.py": "f2a119b0db18da1c33f694c87fcc4a8d0ad9f46b3543630db4c1982cccfcf977",
+    ".github/scripts/test_retained_archive_cli_observation.py": "bf6ce1f49ed6d27a590276e6ffb91e3c87e06b1f057e60bc4bdc8c830873c3cd",
+    ".github/scripts/test_major_qualification_report.py": "9ed30eb5afc659a9a2f96fac21165b1d58440957d075f8e063641c43e9e82c02"
+  },
+  "source_after": {
+    ".github/scripts/major_qualification_report.py": "2d01a07572df34a944b04625946f3a1efb7ebb2cbfd30972c073867d2969c952",
+    ".github/scripts/retained_archive_cli_observation.py": "f2a119b0db18da1c33f694c87fcc4a8d0ad9f46b3543630db4c1982cccfcf977",
+    ".github/scripts/test_retained_archive_cli_observation.py": "bf6ce1f49ed6d27a590276e6ffb91e3c87e06b1f057e60bc4bdc8c830873c3cd",
+    ".github/scripts/test_major_qualification_report.py": "9ed30eb5afc659a9a2f96fac21165b1d58440957d075f8e063641c43e9e82c02"
+  },
+  "source_stable": true,
+  "complete_output": "test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard) ... \n  test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard) (checkout='crlf') ... FAIL\n\n======================================================================\nFAIL: test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard) (checkout='crlf')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py\", line 703, in test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard\n    self.assertEqual(identity[\"clean\"], clean, \"A cached foreign-policy stat must not stand in for a current-policy worktree read\")\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: True != False : A cached foreign-policy stat must not stand in for a current-policy worktree read\n\n----------------------------------------------------------------------\nRan 1 test in 1.021s\n\nFAILED (failures=1)\n",
+  "imports": {
+    "test_retained_archive_cli_observation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py",
+    "_gitexec": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_gitexec.py",
+    "major_qualification_report": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "retained_archive_cli_observation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\candidate\\.github\\scripts\\retained_archive_cli_observation.py"
+  }
+}

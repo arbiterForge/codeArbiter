@@ -1483,6 +1483,323 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 
 class PiPackageTests(unittest.TestCase):
+    def test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement(self):
+        """Real supported SDK owner/render component; no CLI, agent or model turn."""
+        import stat
+        node, cli = live_pi_cli()
+        cli = cli.resolve(strict=True)
+
+        def manifest_at(directory, name, version=None):
+            manifest = directory / "package.json"
+            info = manifest.lstat()
+            self.assertTrue(stat.S_ISREG(info.st_mode) and not manifest.is_symlink())
+            self.assertLessEqual(info.st_size, 64 * 1024)
+            value = read_json(manifest)
+            self.assertEqual(value.get("name"), name)
+            if version is not None:
+                self.assertEqual(value.get("version"), version)
+            return value
+
+        roots = []
+        for directory in list(cli.parents)[:4]:
+            manifest = directory / "package.json"
+            if manifest.is_file() and read_json(manifest).get("name") == "@earendil-works/pi-coding-agent":
+                roots.append(directory)
+        self.assertEqual(len(roots), 1, "one installed supported SDK adjacent to the admitted launcher required")
+        sdk = roots[0]
+        manifest_at(sdk, "@earendil-works/pi-coding-agent", "1.5.0")
+        node_modules = sdk.parent.parent
+        self.assertEqual(node_modules.name, "node_modules")
+        prefix = node_modules.parent
+        reviewed = REPO / ".github/fixtures/pi-hosts/1.5.0"
+        self.assertEqual((prefix / "package-lock.json").read_bytes(), (reviewed / "package-lock.json").read_bytes())
+
+        def dependency(name, version):
+            candidates = [sdk / "node_modules" / name, node_modules / name]
+            matches = [p.resolve(strict=True) for p in candidates if (p / "package.json").is_file()]
+            self.assertEqual(len(set(matches)), 1, "one reviewed SDK dependency location required")
+            result = matches[0]
+            self.assertTrue(result.is_relative_to(node_modules.resolve()))
+            manifest_at(result, name, version)
+            return result
+
+        tui = dependency("@earendil-works/pi-tui", "1.5.0")
+        jiti = dependency("jiti", "2.7.0")
+        node = Path(node).resolve(strict=True)
+
+        def installed_inventory():
+            entries = []
+            for directory, folders, files in os.walk(node_modules, followlinks=False):
+                for name in sorted(folders + files):
+                    item = Path(directory) / name
+                    info = item.lstat()
+                    relative = item.relative_to(node_modules).as_posix()
+                    self.assertFalse(getattr(info, "st_file_attributes", 0) & 0x400,
+                                     "SDK reparse entry refused")
+                    if item.is_symlink():
+                        # npm's POSIX .bin aliases are data, never invoked by this probe.
+                        self.assertEqual(item.parent, node_modules / ".bin")
+                        self.assertTrue(item.resolve(strict=True).is_relative_to(node_modules.resolve()))
+                        self.assertTrue(item.resolve(strict=True).is_file())
+                        entries.append({"path": relative, "kind": "bin-symlink", "target": os.readlink(item)})
+                    elif stat.S_ISDIR(info.st_mode):
+                        entries.append({"path": relative, "kind": "directory"})
+                    else:
+                        self.assertTrue(stat.S_ISREG(info.st_mode))
+                        self.assertLessEqual(info.st_size, 256 * 1024 * 1024)
+                        entries.append({"path": relative, "kind": "file",
+                                        "sha256": hashlib.sha256(item.read_bytes()).hexdigest()})
+                    self.assertLessEqual(len(entries), 32768)
+            return sorted(entries, key=lambda row: row["path"])
+
+        before = installed_inventory()
+        node_hash = hashlib.sha256(node.read_bytes()).hexdigest()
+        source_paths = (
+            "plugins/ca-pi/tools/src/audit-sink.ts", "plugins/ca-pi/tools/src/bridge.ts",
+            "plugins/ca-pi/tools/src/footer-state.ts", "plugins/ca-pi/tools/src/footer.ts",
+            "plugins/ca-pi/tools/src/path-boundary.ts", "plugins/ca-pi/tools/src/redaction.ts",
+            "plugins/ca-pi/tools/src/status.ts", "plugins/ca/tools/redactor.ts",
+        )
+        source_before = {p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}
+        with tempfile.TemporaryDirectory(prefix="ca-pi-footer-sdk-") as raw:
+            profile = Path(raw).resolve(strict=True)
+            for name in ("appdata", "localappdata", "xdg", "cache", "temp", "jiti", "agent", "work", "result"):
+                (profile / name).mkdir()
+            output = profile / "result"
+            configuration = output / "config.json"
+            config = {"repo": str(REPO), "sdk": str(sdk), "tui": str(tui), "jiti": str(jiti),
+                      "profile": str(profile), "cwd": str(profile / "work"), "output": str(output)}
+            configuration.write_text(json.dumps(config), encoding="utf-8")
+            environment = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT")
+                           if key in os.environ}
+            environment.update(HOME=str(profile), USERPROFILE=str(profile), APPDATA=str(profile / "appdata"),
+                               LOCALAPPDATA=str(profile / "localappdata"), XDG_CONFIG_HOME=str(profile / "xdg"),
+                               XDG_CACHE_HOME=str(profile / "cache"), TEMP=str(profile / "temp"),
+                               TMP=str(profile / "temp"), TMPDIR=str(profile / "temp"),
+                               PI_CODING_AGENT_DIR=str(profile / "agent"), JITI_CACHE_DIR=str(profile / "jiti"),
+                               NO_COLOR="1", PATH=str(node.parent), CA_PI_FOOTER_CONFIG=str(configuration))
+            script = output / "footer-probe.mjs"
+            script.write_text(r'''import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath, pathToFileURL} from 'node:url';
+import {createRequire, registerHooks, syncBuiltinESMExports} from 'node:module';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import childProcess from 'node:child_process';
+import net from 'node:net';
+import tls from 'node:tls';
+import http from 'node:http';
+import https from 'node:https';
+import dns from 'node:dns';
+import workerThreads from 'node:worker_threads';
+
+const config = JSON.parse(fs.readFileSync(process.env.CA_PI_FOOTER_CONFIG, 'utf8'));
+const output = config.output;
+const originalRead = fs.readFileSync.bind(fs);
+const originalWrite = fs.writeFileSync.bind(fs);
+const digest = value => createHash('sha256').update(value).digest('hex');
+const report = {format:'codearbiter.pi-footer-sdk-component/1', stage:'guards', phases:[],
+  peripheralAttempts:[], modules:[], sourceReads:[], cleanup:{}, result:'RUNNING'};
+const loaded = new Set();
+const sourceReads = new Map();
+let terminal, mode, lifecycle, deferredLifecycle, jiti, theme;
+const persist = () => originalWrite(path.join(output,'sdk-observation.json'),JSON.stringify(report,null,2)+'\n');
+function forbidden(operation) {
+  return function () {
+    report.peripheralAttempts.push(operation);
+    persist();
+    throw new Error('forbidden peripheral operation: '+operation);
+  };
+}
+for (const key of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])
+  childProcess[key]=forbidden('child_process.'+key);
+net.Socket.prototype.connect=forbidden('net.Socket.connect');
+net.Server.prototype.listen=forbidden('net.Server.listen');
+net.connect=forbidden('net.connect'); net.createConnection=forbidden('net.createConnection');
+tls.connect=forbidden('tls.connect');
+for (const [name, module] of [['http',http],['https',https]])
+  for (const key of ['request','get']) module[key]=forbidden(name+'.'+key);
+for (const key of ['lookup','resolve','resolve4','resolve6','reverse']) {
+  dns[key]=forbidden('dns.'+key);
+  if (key in dns.promises) dns.promises[key]=forbidden('dns.promises.'+key);
+}
+globalThis.fetch=forbidden('fetch');
+globalThis.WebSocket=forbidden('WebSocket');
+process.dlopen=forbidden('process.dlopen');
+workerThreads.Worker=forbidden('Worker');
+syncBuiltinESMExports();
+function noteRead(filename, data) {
+  if (typeof filename==='number') return;
+  try {
+    const p = filename instanceof URL ? fileURLToPath(filename) : String(filename);
+    if (/\.(?:[cm]?js|ts|json)$/.test(p)) sourceReads.set(path.resolve(p),digest(data));
+  } catch { /* The original file operation still determines its own outcome. */ }
+}
+fs.readFileSync=function(filename,...args) {
+  const data=originalRead(filename,...args); noteRead(filename,data); return data;
+};
+const promiseRead=fs.promises.readFile.bind(fs.promises);
+fs.promises.readFile=async function(filename,...args) {
+  const data=await promiseRead(filename,...args); noteRead(filename,data); return data;
+};
+syncBuiltinESMExports();
+registerHooks({
+  resolve(specifier,context,next) { const result=next(specifier,context); loaded.add(result.url); return result; },
+  load(url,context,next) { const result=next(url,context); loaded.add(url); return result; }
+});
+class ByteTerminal {
+  columns=120; rows=40; kittyProtocolActive=false; started=false; stopped=false; chunks=[]; bytes=0;
+  start(input,resize) { this.started=true; this.input=input; this.resize=resize; }
+  stop() { this.stopped=true; this.input=undefined; this.resize=undefined; }
+  async drainInput() {}
+  write(value) { this.bytes+=Buffer.byteLength(value); assert(this.bytes<=262144,'terminal capture cap'); this.chunks.push(value); }
+  moveBy() {} hideCursor() {} showCursor() {} clearLine() {} clearFromCursor() {} clearScreen() {}
+  setTitle() {} setProgress() {} setProgramStatus() {} restoreOnExit() {}
+}
+function phase(name) {
+  const lines=mode.footerContainer.render(120);
+  const before=terminal.chunks.length;
+  mode.renderer.renderNow(true);
+  const frame=terminal.chunks.slice(before).join('');
+  const readback={name, callbackCount:mode.footerDataProvider.branchChangeCallbacks.size,
+    isNative:mode.footerContainer.children.length===1 && mode.footerContainer.children[0]===mode.footer,
+    custom:mode.customFooter!==undefined, health:lifecycle?.health(), lines, frame};
+  report.phases.push(readback); persist(); return readback;
+}
+try {
+  report.stage='imports'; persist();
+  const sdk=config.sdk;
+  const imp=relative=>import(pathToFileURL(path.join(sdk,relative)).href);
+  const {InteractiveMode}=await imp('dist/modes/interactive/interactive-mode.js');
+  const {SettingsManager}=await imp('dist/core/settings-manager.js');
+  const {SessionManager}=await imp('dist/core/session-manager.js');
+  theme=await imp('dist/modes/interactive/theme/theme.js');
+  const tui=await import(pathToFileURL(path.join(config.tui,'dist/index.js')).href);
+  const {createJiti}=await import(pathToFileURL(path.join(config.jiti,'lib/jiti.mjs')).href);
+  jiti=createJiti(import.meta.url,{fsCache:path.join(config.profile,'jiti'),moduleCache:true});
+  const {PiFooterLifecycle}=await jiti.import(path.join(config.repo,'plugins/ca-pi/tools/src/status.ts'));
+  const manager=SessionManager.inMemory(config.cwd);
+  const settings=SettingsManager.inMemory({theme:'dark'});
+  const session={settingsManager:settings,sessionManager:manager,state:{},autoCompactionEnabled:false,
+    resourceLoader:{getThemes:()=>({themes:[]})},getContextUsage:()=>({tokens:0,contextWindow:0,percent:null})};
+  const registrations={};
+  const runtimeHost={session,setBeforeSessionInvalidate:fn=>{registrations.invalidate=fn;},
+    setRebindSession:fn=>{registrations.rebind=fn;}};
+  terminal=new ByteTerminal(); report.stage='constructor'; persist();
+  mode=new InteractiveMode(runtimeHost,{terminal,tuiMode:'inline',initialThemeSetting:'dark'});
+  assert(mode.renderer instanceof tui.TuiMainScreen);
+  assert.equal(mode.footer.constructor.name,'FooterComponent');
+  assert.equal(mode.footerDataProvider.constructor.name,'FooterDataProvider');
+  mode.renderer.addChild(mode.footerContainer);
+  mode.renderer.start();
+  const baselineCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+  report.baselineCallbacks=baselineCallbacks;
+  const metrics={visibleWidth:tui.visibleWidth,truncateToWidth:tui.truncateToWidth};
+  const parent={getSessionName:()=>manager.getSessionName(),getThinkingLevel:()=> 'off'};
+  const noBridge=new Proxy({}, {get:()=>forbidden('bridge')});
+  lifecycle=new PiFooterLifecycle(parent,noBridge,async()=>metrics);
+  const context=()=>({cwd:config.cwd,hasUI:true,mode:'tui',ui:mode.createExtensionUIContext(),
+    sessionManager:manager,isProjectTrusted:()=>false});
+  const a=context(), b=context(); assert.notEqual(a.ui,b.ui);
+  report.stage='owned-disposal';
+  const nativeLines=phase('native-before').lines;
+  lifecycle.dispose(); assert.equal(mode.footerContainer.children[0],mode.footer);
+  await lifecycle.start(a);
+  const owned=phase('owned');
+  assert.equal(owned.callbackCount,baselineCallbacks+1); assert(owned.custom); assert(!owned.isNative);
+  assert(owned.lines.join('\n').includes('╭')); assert(owned.frame.includes('╭'));
+  lifecycle.dispose();
+  const restored=phase('owned-disposed');
+  assert.equal(restored.callbackCount,baselineCallbacks); assert(restored.isNative); assert(!restored.custom);
+  assert.deepEqual(restored.lines,nativeLines); assert.equal(lifecycle.currentTui(),undefined);
+  assert.deepEqual(lifecycle.health(),{expected:false,initialized:false});
+  lifecycle.dispose(); const repeated=phase('repeat-disposed'); assert.deepEqual(repeated.lines,nativeLines);
+  assert.equal(repeated.callbackCount,baselineCallbacks);
+  report.stage='foreign-replacement';
+  await lifecycle.start(b);
+  const foreign=new tui.Text('other extension footer',0,0);
+  b.ui.setFooter(()=>foreign);
+  const foreignBefore=phase('foreign-installed');
+  assert.equal(mode.customFooter,foreign); assert.equal(foreignBefore.callbackCount,baselineCallbacks);
+  lifecycle.dispose(); const foreignAfter=phase('foreign-preserved');
+  assert.equal(mode.customFooter,foreign); assert.deepEqual(foreignAfter.lines,foreignBefore.lines);
+  assert(foreignAfter.frame.includes('other extension footer'));
+  report.stage='stale-generation';
+  for (const [name,next] of [['same-context',a],['distinct-context',b]]) {
+    await lifecycle.start(a); const old=mode.customFooter;
+    await lifecycle.start(next); const current=mode.customFooter;
+    assert.notEqual(old,current); old.dispose(); old.dispose();
+    const retained=phase(name+'-stale-disposed');
+    assert.equal(mode.customFooter,current); assert.equal(retained.callbackCount,baselineCallbacks+1);
+    assert.deepEqual(lifecycle.health(),{expected:true,initialized:true});
+    lifecycle.dispose(); current.dispose();
+    const final=phase(name+'-current-disposed');
+    assert(final.isNative); assert.equal(final.callbackCount,baselineCallbacks); assert.deepEqual(final.lines,nativeLines);
+  }
+  report.stage='deferred-metrics';
+  let resolveMetrics;
+  deferredLifecycle=new PiFooterLifecycle(parent,noBridge,()=>new Promise(resolve=>{resolveMetrics=resolve;}));
+  const pending=deferredLifecycle.start(context());
+  deferredLifecycle.dispose(); resolveMetrics(metrics); await pending;
+  const deferred=phase('deferred-disposed');
+  assert(deferred.isNative); assert.equal(deferred.callbackCount,baselineCallbacks);
+  assert.deepEqual(deferred.lines,nativeLines);
+  assert.deepEqual(deferredLifecycle.health(),{expected:false,initialized:false});
+  assert.equal(report.peripheralAttempts.length,0,'caught forbidden peripheral attempt');
+  report.result='PASSED';
+} catch (error) {
+  report.result='FAILED'; report.error={name:error?.name,message:String(error?.message),stack:String(error?.stack)};
+  process.exitCode=1;
+} finally {
+  try {
+    deferredLifecycle?.dispose(); lifecycle?.dispose();
+    if (mode) {
+      mode.setExtensionFooter(undefined);
+      report.cleanup.callbackCountBeforeProviderDispose=mode.footerDataProvider.branchChangeCallbacks.size;
+      mode.footerDataProvider.dispose(); mode.themeController.dispose(); theme?.stopThemeWatcher();
+      mode.renderer.stop();
+      report.cleanup.providerDisposed=mode.footerDataProvider.disposed;
+      report.cleanup.remainingCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+      report.cleanup.terminalStopped=terminal.stopped;
+      report.cleanup.rendererStopped=mode.renderer.stopped;
+    }
+    if(terminal) originalWrite(path.join(output,'terminal-capture.json'),JSON.stringify({encoding:'base64',
+      bytes:terminal.bytes,data:Buffer.from(terminal.chunks.join('')).toString('base64')})+'\n');
+  } catch(error) { report.cleanup.error={name:error?.name,message:String(error?.message)}; report.result='FAILED'; process.exitCode=1; }
+  const require=createRequire(import.meta.url);
+  for(const key of Object.keys(require.cache)) loaded.add(pathToFileURL(key).href);
+  if(jiti) for(const key of Object.keys(jiti.cache)) loaded.add(pathToFileURL(key).href);
+  report.modules=[...loaded].sort().map(url=>{
+    if(!url.startsWith('file:')) return {url};
+    const filename=fileURLToPath(url);
+    try{return {url,sha256:digest(originalRead(filename))};}catch{return {url,unreadable:true};}
+  });
+  report.sourceReads=[...sourceReads].sort(([a],[b])=>a.localeCompare(b)).map(([p,sha256])=>({path:p,sha256}));
+  if(report.peripheralAttempts.length) {report.result='FAILED';process.exitCode=1;}
+  report.stageAtCompletion=report.stage; persist();
+}
+''', encoding="utf-8", newline="\n")
+            started = time.monotonic()
+            done = subprocess.run([str(node), str(script)], cwd=profile / "work", env=environment,
+                                  capture_output=True, timeout=30, check=False)
+            # Preserve original outcomes before assertions, even if the SDK refused setup.
+            (output / "node.stdout.bin").write_bytes(done.stdout)
+            (output / "node.stderr.bin").write_bytes(done.stderr)
+            (output / "outcome.json").write_text(json.dumps({"returncode": done.returncode,
+                "elapsed_seconds": time.monotonic() - started, "argv": [str(node), str(script)]}), encoding="utf-8")
+            self.assertEqual(installed_inventory(), before)
+            self.assertEqual(hashlib.sha256(node.read_bytes()).hexdigest(), node_hash)
+            self.assertEqual({p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}, source_before)
+            self.assertEqual(done.returncode, 0, "real SDK footer component probe failed")
+            observed = read_json(output / "sdk-observation.json")
+            self.assertEqual(observed["result"], "PASSED")
+            self.assertEqual(observed["peripheralAttempts"], [])
+            self.assertEqual(len(observed["phases"]), 11)
+            self.assertTrue(observed["cleanup"]["terminalStopped"])
+            self.assertTrue(observed["cleanup"]["rendererStopped"])
+            self.assertTrue(observed["cleanup"]["providerDisposed"])
+            self.assertEqual(observed["cleanup"]["remainingCallbacks"], 0)
+
     def test_rpc_native_shutdown_stack_projection_is_closed_and_bounded(self):
         import _windows_dbgeng as sdk
         self.assertEqual(sdk.project_frame(b"NODE", 0x1010, 0x1000, True),
@@ -1805,12 +2122,17 @@ class PiPackageTests(unittest.TestCase):
                         self.assertEqual(set(thread), {"frames"})
                         self.assertLessEqual(len(thread["frames"]), 24)
                         for frame in thread["frames"]:
-                            self.assertEqual(set(frame), {"module", "returnOffset"})
+                            self.assertEqual(set(frame), {"module", "returnOffset", "instructionModule", "instructionOffset"})
                             self.assertIn(frame["module"], native.MODULES | {"Other"})
                             self.assertTrue(frame["returnOffset"] is None or
                                             type(frame["returnOffset"]) is int and 0 <= frame["returnOffset"] < 2**64)
+                            self.assertIn(frame["instructionModule"], native.MODULES | {"Other"})
+                            self.assertTrue(frame["instructionOffset"] is None or
+                                            type(frame["instructionOffset"]) is int and 0 <= frame["instructionOffset"] < 2**64)
                     if report["status"] == "captured":
                         self.assertTrue(any(row["frames"] for row in report["threads"]))
+                        self.assertTrue(any(frame["instructionModule"] != "Other"
+                            for row in report["threads"] for frame in row["frames"]))
                     # Closed status only; never raw debugger text/symbols/paths.
                     print("owned-node-native-debugger-status=" + report["status"])
                     self.assertIsNone(process.poll(), "debugger quit must preserve the owned Node")
@@ -5024,6 +5346,181 @@ def platform_package_suites():
 
 
 class DebuggerInboxTests(unittest.TestCase):
+    def test_collector_provider_attribution_distinguishes_missing_refused_and_deadline(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            selected = root / "cdb.exe"
+            kernel = SimpleNamespace()
+            original_digest = native._digest
+            for failure in ("missing", "refused", "deadline", "os-error"):
+                with self.subTest(failure=failure):
+                    if selected.exists():
+                        if selected.is_dir(): selected.rmdir()
+                        else: selected.unlink()
+                    if failure == "refused": selected.mkdir()
+                    elif failure in ("deadline", "os-error"): selected.write_bytes(b"inert, never loaded")
+                    def digest(path, deadline):
+                        if failure == "os-error": raise OSError("PrivateFixtureValue")
+                        return original_digest(path, deadline)
+                    with mock.patch.object(native, "CDB", selected), \
+                         mock.patch.object(native, "DEFAULT_CDB", selected), \
+                         mock.patch.object(native, "_digest", side_effect=digest), \
+                         mock.patch.object(native, "_system_directory") as inbox, \
+                         mock.patch.object(native.subprocess, "Popen") as launch:
+                        actual = native._debugger(33, kernel,
+                            time.monotonic() - 1 if failure == "deadline" else time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], "unavailable")
+                    self.assertIn("diagnostic", actual)
+                    self.assertEqual(actual["diagnostic"]["phase"], "provider-hash-cdb")
+                    self.assertEqual(actual["diagnostic"]["failure"], failure)
+                    self.assertIsNone(actual["profile"])
+                    self.assertIsNone(actual["worker"])
+                    self.assertTrue(0 <= actual["diagnostic"]["elapsedMs"] <= 2**31 - 1)
+                    self.assertTrue(0 <= actual["diagnostic"]["remainingMs"] <= 5000)
+                    if failure == "deadline": self.assertEqual(actual["diagnostic"]["remainingMs"], 0)
+                    inbox.assert_not_called()
+                    launch.assert_not_called()
+                    self.assertNotIn(str(root), json.dumps(actual))
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+
+    def test_current_instruction_projection_uses_actual_stack_frame_offsets(self):
+        import _windows_dbgeng as sdk
+        engine = object.__new__(sdk.Engine)
+        large = False
+        def call(name, index, types, *args):
+            if (name, index) == ("systems", 9):
+                sdk.C.cast(args[0], sdk.C.POINTER(sdk.U32)).contents.value = 16 if large else 1
+            elif (name, index) == ("systems", 11):
+                for index in range(args[1]): args[2][index] = index + 7
+            elif (name, index) == ("control", 31):
+                for index in range(24 if large else 1):
+                    args[3][index].InstructionOffset = 0x1011
+                    args[3][index].ReturnOffset = 0x2022
+                sdk.C.cast(args[5], sdk.C.POINTER(sdk.U32)).contents.value = 24 if large else 1
+            else:
+                self.assertEqual((name, index), ("systems", 6))
+            return 0
+        engine.call = call
+        engine.frame = lambda address: sdk.project_frame(
+            b"node" if address == 0x2022 else b"kernelbase", address,
+            0x2000 if address == 0x2022 else 0x1000, True)
+        actual, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertFalse(truncated)
+        self.assertEqual(actual, [{"frames": [{"module": "node", "returnOffset": 0x22,
+            "instructionModule": "kernelbase", "instructionOffset": 0x11}]}])
+        legacy, _ = engine.threads(time.monotonic() + 5)
+        self.assertEqual(legacy, [{"frames": [{"module": "node", "returnOffset": 0x22}]}])
+        large = True
+        capped, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertTrue(truncated)
+        self.assertLessEqual(len(capped), 16)
+        self.assertTrue(all(len(row["frames"]) <= 24 for row in capped))
+        self.assertLessEqual(len(json.dumps(capped, separators=(",", ":")).encode()), sdk.MAX_JSON - 2048)
+
+    @staticmethod
+    def _attribution_worker_result():
+        import _windows_dbgeng as sdk
+        return {"schemaVersion": 3, "profile": "inbox-v1", "status": "captured",
+            "threads": [{"frames": [{"module": "node", "returnOffset": 16,
+                "instructionModule": "kernelbase", "instructionOffset": 32}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True, "policy": sdk.POLICY,
+            "detached": True, "hresult": 0, "phase": "detach", "elapsedMs": 4}
+
+    def test_worker_v3_attribution_and_legacy_readers_remain_closed(self):
+        import _windows_dbgeng as sdk
+        good = self._attribution_worker_result()
+        self.assertEqual(sdk.decode_result(json.dumps(good).encode(), 33, 44,
+                                         profile="inbox-v1", version=3), good)
+        legacy = copy.deepcopy(good)
+        for key in ("phase", "elapsedMs"): legacy.pop(key)
+        for frame in legacy["threads"][0]["frames"]:
+            frame.pop("instructionModule"); frame.pop("instructionOffset")
+        legacy["schemaVersion"] = 2
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1"), legacy)
+        self.assertIsNone(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1", version=3))
+        legacy.pop("profile"); legacy["schemaVersion"] = 1
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44), legacy)
+        mutations = []
+        for key, value in (("phase", "PrivateFixtureValue"), ("elapsedMs", True),
+                           ("elapsedMs", 2**31), ("unexpected", "PrivateFixtureValue"),
+                           ("policy", sdk.POLICY | sdk.ALLOW_NETWORK), ("detached", False)):
+            mutations.append({**good, key: value})
+        for key, value in (("instructionModule", "PrivateFixtureValue"), ("instructionOffset", True),
+                           ("instructionOffset", 2**64), ("unexpected", "PrivateFixtureValue")):
+            changed = copy.deepcopy(good)
+            changed["threads"][0]["frames"][0][key] = value
+            mutations.append(changed)
+        unknown = copy.deepcopy(good)
+        unknown["threads"][0]["frames"][0].update(instructionModule="Other", instructionOffset=None)
+        self.assertEqual(sdk.decode_result(json.dumps(unknown).encode(), 33, 44), unknown)
+        unknown["threads"][0]["frames"][0]["instructionOffset"] = 1
+        mutations.append(unknown)
+        for changed in mutations:
+            with self.subTest(changed_keys=list(changed)):
+                self.assertIsNone(sdk.decode_result(json.dumps(changed).encode(), 33, 44, profile="inbox-v1", version=3))
+
+    def test_parent_preserves_validated_worker_failure_and_detach_fields(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            for detached in (True, False):
+                with self.subTest(detached=detached):
+                    good = {**self._attribution_worker_result(), "status": "engine_failed" if detached else "cleanup_unknown",
+                            "threads": [], "hresult": 0x80004005, "phase": "attach", "detached": detached}
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                        _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                           side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                             {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                         mock.patch.object(native, "_collect", return_value=("captured", json.dumps(good).encode())):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], good["status"])
+                    self.assertEqual(actual["worker"], {key: good[key] for key in
+                        ("bound", "attached", "detached", "hresult", "policy", "phase", "elapsedMs")})
+                    self.assertEqual(actual["diagnostic"]["failure"], "engine" if detached else "cleanup")
+                    self.assertEqual(actual["threads"], [])
+                    self.assertEqual(launch.call_count, 1)
+                    self.assertNotIn(str(root), json.dumps(actual))
+
+    def test_worker_fixed_phase_distinguishes_provider_policy_and_stack_failure(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        root = Path("inert-profile")
+        request = {"schemaVersion": 3, "profile": "inbox-v1", "handle": 77, "pid": 33,
+            "created": 44, "image": "inert-node.exe", "sdk": str(root),
+            "hashes": {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]},
+            "deadline": time.monotonic() + 5}
+        kernel = SimpleNamespace(snapshot=lambda handle: {"pid": 33, "created": 44,
+            "state": "running", "image": request["image"]}, close=mock.Mock())
+        owner = SimpleNamespace(IdentityDeadline=native.IdentityDeadline, WindowsKernel=lambda: kernel, _regular=lambda path, **kwargs: path,
+                                _bound_tool_profile=lambda *args: root)
+        for failure in ("provider-bind", "policy", "stack"):
+            owner._bound_tool_profile = mock.Mock(side_effect=native.IdentityDeadline("PrivateFixtureValue")) if failure == "provider-bind" else lambda *args: root
+            backend = SimpleNamespace(policy=lambda: sdk.ALLOW_NETWORK if failure == "policy" else sdk.POLICY,
+                check=sdk.Engine.check, call=mock.Mock(return_value=0),
+                threads=mock.Mock(side_effect=sdk.EngineFailure(0x80004005)), close=lambda: True)
+            actual = sdk.run(request, owner, engine_factory=lambda path: backend)
+            self.assertEqual(actual["status"], "deadline" if failure == "provider-bind" else "engine_failed")
+            self.assertEqual(actual["phase"], failure)
+            self.assertEqual(actual["detached"], failure != "provider-bind")
+            self.assertEqual(actual["hresult"], None if failure == "provider-bind" else 0x80070005 if failure == "policy" else 0x80004005)
+            self.assertIsNotNone(sdk.decode_result(json.dumps(actual).encode(), 33, 44, profile="inbox-v1", version=3))
+            self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+            if failure != "stack": backend.threads.assert_not_called()
+            else: backend.threads.assert_called_once_with(mock.ANY, include_instruction=True)
+
     def test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb(self):
         import _windows_rpc_timeout as native
         import _windows_dbgeng as sdk
@@ -5055,8 +5552,11 @@ class DebuggerInboxTests(unittest.TestCase):
                     return sdk.POLICY
                 def call(self, *args):
                     return 0
-                def threads(self, deadline):
-                    return [{"frames": [{"module": "node", "returnOffset": 16}]}], False
+                def threads(self, deadline, *, include_instruction=False):
+                    row = {"module": "node", "returnOffset": 16}
+                    if include_instruction:
+                        row.update(instructionModule="kernelbase", instructionOffset=32)
+                    return [{"frames": [row]}], False
                 def close(self):
                     return True
             self_test = self
@@ -5290,15 +5790,18 @@ class DebuggerInboxTests(unittest.TestCase):
             root = Path(directory).resolve()
             collector_temp = tempfile.TemporaryDirectory
             hashes = {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]}
-            good = {"schemaVersion": 2, "profile": "inbox-v1", "status": "captured", "threads": [{"frames": [
-                {"module": "node", "returnOffset": 16}]}], "truncated": False,
-                "pid": 33, "created": 44, "bound": True, "attached": True,
-                "policy": sdk.POLICY, "detached": True, "hresult": 0}
-            legacy = {k: v for k, v in good.items() if k != "profile"}
+            good = self._attribution_worker_result()
+            previous = copy.deepcopy(good)
+            previous.pop("phase"); previous.pop("elapsedMs")
+            previous["schemaVersion"] = 2
+            for frame in previous["threads"][0]["frames"]:
+                frame.pop("instructionModule"); frame.pop("instructionOffset")
+            legacy = {k: v for k, v in previous.items() if k != "profile"}
             legacy["schemaVersion"] = 1
             vectors = (("captured", json.dumps(good).encode(), "captured"),
                        ("captured", json.dumps({**good, "profile": "sdk-v1"}).encode(), "transport_failed"),
                        ("captured", json.dumps(legacy).encode(), "transport_failed"),
+                       ("captured", json.dumps(previous).encode(), "transport_failed"),
                        ("captured", b"PrivateFixtureValue", "transport_failed"),
                        ("deadline", b"PrivateFixtureValue", "deadline"),
                        ("output_limit", b"PrivateFixtureValue", "output_limit"))

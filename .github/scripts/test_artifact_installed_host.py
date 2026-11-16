@@ -26,7 +26,7 @@ import threading
 _BRIDGE_IMPORTS = frozenset({
     "_gitexec", "_artifactmanifestlib",
     "__future__", "ctypes", "hashlib", "json", "msvcrt", "os", "pathlib",
-    "platform", "re", "stat", "subprocess", "tempfile", "threading", "typing",
+    "platform", "re", "stat", "subprocess", "sys", "tempfile", "threading", "typing",
 })
 _CTYPES_ATTRIBUTES = frozenset({
     "WinDLL", "c_uint16", "c_uint32", "c_void_p", "c_wchar_p", "get_last_error",
@@ -60,7 +60,25 @@ def assert_offline_bridge(source: bytes) -> None:
     popen_calls = 0
     native_loads: list[ast.Call] = []
     reviewed_native_loads: set[int] = set()
+    parents = {id(child): node for node in ast.walk(tree) for child in ast.iter_child_nodes(node)}
     for node in ast.walk(tree):
+        # The interpreter OS label is the sole approved sys capability.
+        # Reject indirect module handles and every binding/write shape.
+        if isinstance(node, ast.Name) and node.id == "sys":
+            parent = parents.get(id(node))
+            if not (isinstance(node.ctx, ast.Load)
+                    and isinstance(parent, ast.Attribute) and parent.value is node
+                    and parent.attr == "platform" and isinstance(parent.ctx, ast.Load)):
+                raise AssertionError("installed bridge permits an unreviewed sys capability")
+        if ((isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == "sys")
+                or (isinstance(node, ast.arg) and node.arg == "sys")
+                or (isinstance(node, (ast.MatchAs, ast.MatchStar)) and node.name == "sys")
+                or (isinstance(node, ast.MatchMapping) and node.rest == "sys")
+                or (isinstance(node, ast.ExceptHandler) and node.name == "sys")
+                or (isinstance(node, (ast.Global, ast.Nonlocal)) and "sys" in node.names)
+                or (isinstance(node, ast.ImportFrom)
+                    and any(alias.name == "sys" or alias.asname == "sys" for alias in node.names))):
+            raise AssertionError("installed bridge rebinds the sys capability")
         if isinstance(node, ast.Import):
             if any(alias.asname is not None for alias in node.names):
                 raise AssertionError("installed bridge aliases an imported capability")
@@ -69,7 +87,7 @@ def assert_offline_bridge(source: bytes) -> None:
             imported = (node.module or "").split(".", 1)[0]
             if imported == "_gitexec" and [alias.name for alias in node.names] != ["root_bound_git_env"]:
                 raise AssertionError("installed bridge imports unreviewed Git capability")
-            if imported in {"ctypes", "msvcrt", "os", "subprocess"}:
+            if imported in {"ctypes", "msvcrt", "os", "subprocess", "sys"}:
                 raise AssertionError("installed bridge imports an unreviewed capability directly")
             imports.add(imported)
         elif isinstance(node, ast.Call):
@@ -242,6 +260,11 @@ _FAILURE_AUDIT_SITE_EVENTS = {
     "process-guard": {"process-escape"}, "library-guard": {"native-library"},
     "process-probe": {"subprocess"}, "binary-guard": {"subprocess"},
     "verifier-guard": {"subprocess"}, "launch-guard": {"subprocess"},
+    "windows-command-refusal": {"subprocess"},
+    "resolved-git-refusal": {"subprocess"},
+    "resolved-python-refusal": {"subprocess"},
+    "resolved-native-refusal": {"subprocess"},
+    "resolved-other-refusal": {"subprocess"},
     "event-entry": _FAILURE_AUDIT_EVENTS - {"none"},
 }
 
@@ -509,6 +532,22 @@ def native_git_probe_allowed(executable, argv, cwd, environment) -> bool:
     return False
 
 
+def _resolved_launch_refusal_site(launched: Path, *, binary: Path, python: Path) -> str:
+    """Classify an already refused target; never confer launch permission.
+
+    Only fixed categories cross the diagnostic boundary. No basename, path,
+    argv, environment or exception text is retained, and no new I/O occurs.
+    """
+    name = launched.name.casefold()
+    if name in {"git", "git.exe"}:
+        return "resolved-git-refusal"
+    if name in {"python", "python.exe", "python3", "python3.exe", python.name.casefold()}:
+        return "resolved-python-refusal"
+    if name in {"ca-artifact", "ca-artifact.exe", binary.name.casefold()}:
+        return "resolved-native-refusal"
+    return "resolved-other-refusal"
+
+
 def enforce_runtime_event(
     event: str,
     details: tuple,
@@ -571,7 +610,7 @@ def enforce_runtime_event(
             ):
                 raise RuntimeError("verifier child launch escaped its constrained environment")
             return
-        _audit_site = "launch-guard"
+        _audit_site = "windows-command-refusal"
         raise RuntimeError("installed-host verification blocked an unreviewed process")
     launched = Path(executable).resolve(strict=True)
     arguments = [str(value) for value in argv]
@@ -610,7 +649,7 @@ def enforce_runtime_event(
         ):
             raise RuntimeError("verifier child launch escaped its constrained environment")
         return
-    _audit_site = "launch-guard"
+    _audit_site = _resolved_launch_refusal_site(launched, binary=binary, python=python)
     raise RuntimeError("installed-host verification blocked an unreviewed process")
 
 

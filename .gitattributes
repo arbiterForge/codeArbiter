@@ -161,3 +161,8 @@ site/**/*.json    text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs text eol=lf
+
+# Preserve whitespace present in these original failure captures, including a
+# unittest subcase label's trailing space and Docker stderr's final blank line.
+/docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.stderr whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/stderr.log whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol

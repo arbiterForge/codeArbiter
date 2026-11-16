@@ -562,9 +562,9 @@ class HostWorkflowAdmissionTest(unittest.TestCase):
         value = self.registry()
         del value["hooks"]["SubagentStop"][0]["hooks"][0]["commandWindows"]
         self.save_registry(value)
-        with mock.patch.object(_artifactlib.platform, "system", return_value="Windows"):
+        with mock.patch.object(_artifactlib.sys, "platform", "win32"):
             self.assert_missing_resources(client)
-        with mock.patch.object(_artifactlib.platform, "system", return_value="Linux"):
+        with mock.patch.object(_artifactlib.sys, "platform", "linux"):
             self.assertEqual(self.select(client)["format"], "html")
 
     def test_admission_rejects_linked_helper_ancestors(self):

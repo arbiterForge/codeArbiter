@@ -1,0 +1,76 @@
+{
+  "format": "codearbiter.private-runtime-result/1",
+  "state": "PASSED_SINGLE_CORRECTED_COPY_CASE",
+  "outcomes": [
+    {
+      "file": "C:/Users/brenn/AppData/Local/Temp/ca-sandbox-copy-layer-successor-_xbccwuy/project/plugins/ca-sandbox/tools/cp.test.ts",
+      "fullName": "owned offline effect acceptance [docker] retains real partial docker cp bytes after cancellation without rollback metadata",
+      "status": "passed"
+    }
+  ],
+  "filtered_cases": 9,
+  "old_home_offline_cases_replayed": false,
+  "source_context": {
+    "prepared_context": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+    "observed_head_before": "2f65fda443816d84b0ee4283f9fc237df728b663",
+    "observed_head_after": "2f65fda443816d84b0ee4283f9fc237df728b663",
+    "canonical_cp_preimage": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+    "executed_candidate_cp_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+  },
+  "actual_copy_readback": {
+    "format": "sandbox-owned-effect/1",
+    "case": "partial-copy",
+    "id": "2d62dd9ae0063663dedd1d2bc9208fd727d144bfd13e83496dae67af1e718a92",
+    "observedPartial": 523776,
+    "retained": 589312,
+    "expectedBytes": 67108864,
+    "code": 130,
+    "aborted": true,
+    "timedOut": false,
+    "overflowed": false,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrSha256": "8a45ed9f23b688f6381dedd2e8f7247c7b76f07196492c04fff8ecf4596da5f9",
+    "prefixMatches": true
+  },
+  "process": {
+    "exit_code": 0,
+    "seconds": 1.8920494000049075,
+    "timed_out": false,
+    "containment": "exited",
+    "stdout_sha256": "32cf7af64201c5db22b13cc5c126ac7991d789549198d95c6e1b26b4e529e14d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "windows_containment_limit": "Existing process-group/taskkill contract; no stronger Job Object rundown claim.",
+    "product_source_stable": true,
+    "private_source_stable": true,
+    "runtime_stable": true,
+    "tools_stable": true,
+    "transport_stable": true
+  },
+  "runtime_inventory": {
+    "entries": 1719,
+    "files": 1474,
+    "directories": 245,
+    "links": 0
+  },
+  "sidecar": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-run-lq82qixk\\copy-result-private.json",
+    "sha256": "dec976329461e5e2a583740e2ad1c01d66efe3805d3217262049218ca7c73ece",
+    "bytes": 622,
+    "decoded_stdout_bytes": 0,
+    "decoded_stderr_bytes": 62,
+    "all_captured_string_bytes_roundtrip_verified": true,
+    "privacy": "Full captured strings remain private base64; no decoded unknown text emitted; not original undecoded CLI-byte-stream claim."
+  },
+  "cleanup": "Single actual test passed only after independent cleanup budget, exact label/full-ID/name inspect, rm, ps absence, original host Temp inode/path checks and removal. No volume/mount existed for this copy-only fixture. Individual Docker command outputs not separately retained; no stronger global/process-tree claim.",
+  "history": {
+    "original_two_pass_and_tmpfs_failed_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-owned-effects-run-sbdvtkd_\\delivery.json",
+    "sha256": "0b8e04697e43f78db13bf11ae8b9614597f6593e844c55125dbd68fb4d587d68",
+    "interpretation": "Original two actual home/offline PASS remain their original file/runtime epoch. Original tmpfs copy code1/error text unknown is preserved; this is a separately authorized corrected source fixture, not a replay relabel."
+  },
+  "limits": [
+    "Controlled copy container used ordinary writable image layer and deliberately omitted read-only-root/tmpfs only there; nonroot1000/offline/cap-drop/no-new-privileges/PID/CPU/memory/no-auth/no-mount bounds retained. Production flags and the two previous hardened cases were not weakened.",
+    "One real cpOut attempt observed partial output then aborted, leaving bytes and no product rollback/recovery fields. Its private test-only diagnostic artifact does not add product recovery metadata.",
+    "No provider/model/real Claude CLI/SDK/native subject/Go/build/image pull/install/network egress/global config/Gov/index/ref/proof/ledger/status action. No task/machine/installed/hosted/publication qualification claimed.",
+    "No TSC executed. Current file has one actual selected case; first two were genuinely observed only in the prior unchanged-body capture. Future exact committed-source integration/CI remains Root-owned."
+  ]
+}

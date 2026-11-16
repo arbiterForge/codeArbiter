@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_major_qualification_report.SourceFixtureDiagnosticTests",
+    "test_major_qualification_report.BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed"
+  ],
+  "exit_code": 0,
+  "seconds": 10.602573200012557,
+  "before": {
+    "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "index": "6794c454f231a43d2595dcd66e0a3dbaed0ade492fb5edeadd4cb9519cec3cd0",
+    "files": {
+      ".github/scripts/_git_fixture_diagnostics.py": "b4f74ae97346e86e361995acdbe7218f3fb55badc7def35b51f60c62565fbd88",
+      ".github/scripts/test_major_qualification_report.py": "aa93f66ce22c5170aba4bc4121d16493902a282c7c4e0c406716cf951c317a80"
+    }
+  },
+  "after": {
+    "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "index": "6794c454f231a43d2595dcd66e0a3dbaed0ade492fb5edeadd4cb9519cec3cd0",
+    "files": {
+      ".github/scripts/_git_fixture_diagnostics.py": "b4f74ae97346e86e361995acdbe7218f3fb55badc7def35b51f60c62565fbd88",
+      ".github/scripts/test_major_qualification_report.py": "aa93f66ce22c5170aba4bc4121d16493902a282c7c4e0c406716cf951c317a80"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "090c76df45921c9066df31844f115c2958999df75ca4360871da1b246e48c0cb"
+}

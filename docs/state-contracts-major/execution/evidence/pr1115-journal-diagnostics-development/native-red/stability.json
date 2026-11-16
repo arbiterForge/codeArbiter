@@ -1,0 +1,6 @@
+{
+  "root_module": true,
+  "private_module": true,
+  "tool_and_GOROOT_source": true,
+  "sealed_cache_origin": true
+}

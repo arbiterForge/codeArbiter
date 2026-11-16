@@ -1,0 +1,201 @@
+{
+  "format": "codearbiter.pi-footer-sdk-component-delivery/1",
+  "source_commit": "25b6747e52f5591d55901ace71706200d646461d",
+  "state": "PASSED_LOCAL_SDK_COMPONENT_ONLY",
+  "new_test": "PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement",
+  "candidate": {
+    "source_commit": "25b6747e52f5591d55901ace71706200d646461d",
+    "path": ".github/scripts/test_pi_package.py",
+    "before_sha256": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+    "candidate_sha256": "5e2d19fd72862f103cbf8f8bac8685193a508595e6cbaad001efedc7a3ecc911",
+    "unchanged_original_functions": 159,
+    "new_method": "PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement",
+    "probe_sha256": "dd7fef9154fde9511e9c4d9837cde50425e6264556224e83fdff5ac818705e28"
+  },
+  "actual": {
+    "owning_method": {
+      "selected": 1,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "passed": true,
+      "elapsed_seconds": 0.9545308999950066
+    },
+    "node": {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\footer-probe.mjs"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-sdk-probe-d8445524\\profile\\work",
+      "timeout_seconds": 30,
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.8817597999877762
+    },
+    "supervisor": {
+      "returncode": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "elapsed_seconds": 1.343133600006695
+    },
+    "phase_count": 11,
+    "actual_module_observations": 1514,
+    "actual_source_reads": 1481,
+    "imported_first_party_files": 8,
+    "sdk_inventory_entries": 16607,
+    "python_runtime_entries": 11339,
+    "stable": true,
+    "peripheral_attempts": [],
+    "cleanup": {
+      "callbackCountBeforeProviderDispose": 0,
+      "providerDisposed": true,
+      "remainingCallbacks": 0,
+      "terminalStopped": true,
+      "rendererStopped": true
+    }
+  },
+  "seams": [
+    "Actual unbundled supported SDK1.5 InteractiveMode constructor, UI context/setter, provider/native footer/container/renderer.",
+    "In-memory real SDK SessionManager and SettingsManager; data-only session/runtime-host registration callbacks, no AgentSession loop.",
+    "Owned virtual Terminal byte transport, not physical screen. Actual production PiFooterLifecycle loaded via cached Jiti; real SDK width metrics.",
+    "Bridge/network/process/native-dlopen/Worker guards reject and record attempted operations even if caught. No attempts observed."
+  ],
+  "limits": [
+    "One new existing-owner method;159 original function ASTs unchanged. No product changes or qualification/ledger/status writes.",
+    "No Pi CLI/RPC/helper/native/Go/provider/model/network/install/acquisition or operator home/configuration read.",
+    "No installed artifact/extension-loader discovery, physical parent/human consent, full machine/task or publication claim.",
+    "Current S18:07 historical UI-port TESTED proof/history unchanged; this is additional local SDK-owner/render evidence.",
+    "SDK/import graph capture is explicit hooks/cache/source-read observation, not OS/DLL/engine internal code completeness.",
+    "Git status produced existing long-path warnings; literal causal sources/Git and full inventoried SDK/Python data matched."
+  ],
+  "canonical_writes": [],
+  "application_patch": null,
+  "files": [
+    {
+      "path": "test-only.patch",
+      "sha256": "872916fef159067082b51cb3697ae2af9d23b2a8ae98616857d9f20dc90ea73e",
+      "bytes": 14475
+    },
+    {
+      "path": "candidate/.github/scripts/test_pi_package.py",
+      "sha256": "5e2d19fd72862f103cbf8f8bac8685193a508595e6cbaad001efedc7a3ecc911",
+      "bytes": 285782
+    },
+    {
+      "path": "preimage.py",
+      "sha256": "c272104e6bcadb2942763048ce153dd924b1747385970b0d17f152c6f3baa2ce",
+      "bytes": 271891
+    },
+    {
+      "path": "source-freeze.json",
+      "sha256": "2a46d00f801629820b2b9308a8232db8cbf05fc8ca4e4567696cf71f5b0dccfb",
+      "bytes": 542
+    },
+    {
+      "path": "probe.mjs",
+      "sha256": "dd7fef9154fde9511e9c4d9837cde50425e6264556224e83fdff5ac818705e28",
+      "bytes": 11566
+    },
+    {
+      "path": "prepare.py",
+      "sha256": "dcc9a3aa5ea0bd4e30bb932273c15d5479215eaa7037f54c4dc013033519a2b6",
+      "bytes": 4163
+    },
+    {
+      "path": "capture.py",
+      "sha256": "79983234a9a1938f6052d00420d89a8ecbd65c863e4d0bb0f61609e37b084b8d",
+      "bytes": 6646
+    },
+    {
+      "path": "seal.py",
+      "sha256": "bc66c343822b65a144244417a38c6d558d4de6f46805c1fc062dc27f24c03f04",
+      "bytes": 6692
+    },
+    {
+      "path": "config.json",
+      "sha256": "89d186fdd95e930492bd617628bf2383596f5139d35fa73e3a9e672df6db6cf9",
+      "bytes": 983
+    },
+    {
+      "path": "command.json",
+      "sha256": "dc0f6a126ccc3507380491e1003d8de7aec49d10d0c9f69c7136126b166e558e",
+      "bytes": 2351
+    },
+    {
+      "path": "before.json",
+      "sha256": "1a61e19fe90125f70a8d4755f75985f893dd4bc0909747ef3d0c72da8f9ab41e",
+      "bytes": 5134925
+    },
+    {
+      "path": "after.json",
+      "sha256": "1a61e19fe90125f70a8d4755f75985f893dd4bc0909747ef3d0c72da8f9ab41e",
+      "bytes": 5134925
+    },
+    {
+      "path": "source-runtime-stability.json",
+      "sha256": "9b2c498ac4a1b054a0b0a1ddaf23f673672d206b7758d407cdc17be08e3cbe23",
+      "bytes": 253
+    },
+    {
+      "path": "supervisor-result.json",
+      "sha256": "6debe824f8e9b86ecf3abf2798ccda062bebd683d3e58a1ad92a1f285dae06a3",
+      "bytes": 111
+    },
+    {
+      "path": "node-outcome.json",
+      "sha256": "29720c1331f20eabddf268ec72aa6a29589fd7d78c7e60548b3c36a1963b4684",
+      "bytes": 439
+    },
+    {
+      "path": "unittest-result.json",
+      "sha256": "aaf91c1b62e9455289f46c339f9a83413e2619e0b49f6a7011da4b74078abf0e",
+      "bytes": 142
+    },
+    {
+      "path": "python-imports.json",
+      "sha256": "7f64837de463cea5edf7cd86d929e11a8399bd0626a64ba75dd4e7c8b3f172b9",
+      "bytes": 26966
+    },
+    {
+      "path": "sdk-observation.json",
+      "sha256": "689c69d0d690c5b2c93ac070774c49ac79f474becbc7602635b54d85942d2a30",
+      "bytes": 751685
+    },
+    {
+      "path": "actual-import-source-joins.json",
+      "sha256": "0f92b503fa9447ba057e269c0b6b6852b37977ccf710fe6a5678be3809b0f679",
+      "bytes": 1406
+    },
+    {
+      "path": "terminal-capture.json",
+      "sha256": "a097dda0184b48a025bbd377162e7faa47a5236f0604723450f1d667da69d369",
+      "bytes": 5429
+    },
+    {
+      "path": "node.stdout.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "node.stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "original.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "original.stderr.log",
+      "sha256": "d8279aa14670d2a6a816977ff8ccf3f63f2b9ca75b16cfdad042bd3edf646a87",
+      "bytes": 383
+    },
+    {
+      "path": "git-status-warnings.json",
+      "sha256": "fa7d0dc54d8149f7bbb11260db68078cf4a13413cef39196a2dd16c962537280",
+      "bytes": 1045
+    }
+  ]
+}

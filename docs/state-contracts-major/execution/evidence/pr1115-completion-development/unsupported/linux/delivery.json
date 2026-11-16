@@ -1,0 +1,383 @@
+{
+  "format": "private-linux-wasm-runtime/1",
+  "state": "PASSED",
+  "summary": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\summary.json",
+    "sha256": "4ae6bc0af81e145f71dc29b256d37009fb316c2e521656207dadfd054913995c"
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\after.json",
+      "sha256": "196e8f90011dd8fcacd97289a7df24d5bff9d9b7fcd8b9c6fc22066bce948765",
+      "bytes": 35156
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\before.json",
+      "sha256": "9843b3221495bc68e37f2e6932d52633a6b4bcdd9396bf3495247bcefaa28087",
+      "bytes": 37417
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-0-outcome.json",
+      "sha256": "e9e1e89544fa57f81c40c6feb59dc9576e859ffbe208f39a660df0929b444194",
+      "bytes": 986
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-0.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-0.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-1-outcome.json",
+      "sha256": "707bb5f2dd9bf725975e5429cdec441a2e1fb3e50883313f0b624743af418db7",
+      "bytes": 985
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-absent-1.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-0-outcome.json",
+      "sha256": "cc2ab6bead5c0e7febfae2a8a1c2b22307574feabd8fa017a30ead40c3d69231",
+      "bytes": 984
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-0.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-0.stdout.log",
+      "sha256": "7aaa5ae9b8078623428f4e91c8b6d3d654bae0b481318f9c76a4b3aff2338469",
+      "bytes": 65
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-1-outcome.json",
+      "sha256": "664be1e7b0a840e5b73912d508af565e682090a98706af1780fbbb7094df3701",
+      "bytes": 984
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-discover-1.stdout.log",
+      "sha256": "a8e0ac27fdf36f5a365ea308fcce559de738aab7af873b75564dd73372bcd87a",
+      "bytes": 65
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-0-outcome.json",
+      "sha256": "fe3d4908c721c4656f0eacbad218fb5f7c3b61da15f2d508030d2de898f77bf2",
+      "bytes": 931
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-0.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-0.stdout.log",
+      "sha256": "35b625232f2ee00a8de51878bab857521029601302e55789df38bd51c07a3a79",
+      "bytes": 9414
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-1-outcome.json",
+      "sha256": "97982b0903b3db89d0bbb8c542cff6a55b18986c1ea7ae1b5c98d3c14f8612dc",
+      "bytes": 933
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-inspect-1.stdout.log",
+      "sha256": "ba449c635917643c515e2570db98da261c436d22278d78961606c49f6a0889d1",
+      "bytes": 15953
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-0-outcome.json",
+      "sha256": "bf901b612afc76a6d8b2f6584602c227cb43a2c413b1a207521561552c6e2a02",
+      "bytes": 939
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-0.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-0.stdout.log",
+      "sha256": "7aaa5ae9b8078623428f4e91c8b6d3d654bae0b481318f9c76a4b3aff2338469",
+      "bytes": 65
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-1-outcome.json",
+      "sha256": "ed87007b8ecfeea4610047bdc54514c4993a5ecba7536105839908a56659b288",
+      "bytes": 940
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-remove-1.stdout.log",
+      "sha256": "a8e0ac27fdf36f5a365ea308fcce559de738aab7af873b75564dd73372bcd87a",
+      "bytes": 65
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-absent-outcome.json",
+      "sha256": "9403b56c21b031e6eb42babb7f79a6fa0c92eee093aabd03b320ca9650e522a8",
+      "bytes": 970
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-absent.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-absent.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-discover-outcome.json",
+      "sha256": "ef5e93bf7e6fa678161cded20f3e76c200a9c8b3a76b242c83c94b16b8a14ae5",
+      "bytes": 975
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-discover.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-discover.stdout.log",
+      "sha256": "06f5c94eff3692cb5e70c9031e9ff3a29b3021fcf0d37c417337ead5184a10cd",
+      "bytes": 55
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-inspect-outcome.json",
+      "sha256": "561d0774d10c508db164f7ccce85f9490ecaadcee8cf8c117b5c27988225b85e",
+      "bytes": 947
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-inspect.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-inspect.stdout.log",
+      "sha256": "dc694a56d4f96902f20cef83bc484cfdad0ddf550706e09551575ed1ba04e821",
+      "bytes": 433
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-remove-outcome.json",
+      "sha256": "6aa2e82589ed57131477674f4e185c476ff90782e1ca1c50492c1672586cf453",
+      "bytes": 940
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-remove.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup-volume-remove.stdout.log",
+      "sha256": "06f5c94eff3692cb5e70c9031e9ff3a29b3021fcf0d37c417337ead5184a10cd",
+      "bytes": 55
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\cleanup.json",
+      "sha256": "f001a2197acd5c3e4c107ad071ddf14e62858f16048ed24c90fd7aaa686fe255",
+      "bytes": 299
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\execute.py",
+      "sha256": "5dc398dc70d88efabb3a8a5e14c2ee3dbb3fa338df5c777055e7e2d905a14b95",
+      "bytes": 17126
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\image-preflight-outcome.json",
+      "sha256": "983593cda11b6bc0d0c8b785d9f16872fb592c0ae6d0deafb63cbfe1f1840fa2",
+      "bytes": 971
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\image-preflight.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\image-preflight.stdout.log",
+      "sha256": "7f35687550d3bf9a21fda094ddbb211d3f413f91366e2a41fe6e0332c52452fc",
+      "bytes": 1941
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\image.json",
+      "sha256": "e6f113998d758e3357b6ef1a7cec26e6d63f2c31d8e5d8db4e7b1832fdc9f687",
+      "bytes": 237
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-0-outcome.json",
+      "sha256": "6c01ea402fb548eca7f33ea453c4d5759827ee857a5608f24d36e64f093a014b",
+      "bytes": 978
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-0.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-0.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-1-outcome.json",
+      "sha256": "61f84e9bfedfed3e61059231130a29e046f837aa7e664781ab153b4c028c9a77",
+      "bytes": 979
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\name-absent-1.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed-inspect-outcome.json",
+      "sha256": "fc5d308599d0e2bc046d671b87ddea08a7c1cd48e9beeaf90cc3cc7a4cb7ea67",
+      "bytes": 928
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed-inspect.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed-inspect.stdout.log",
+      "sha256": "ba449c635917643c515e2570db98da261c436d22278d78961606c49f6a0889d1",
+      "bytes": 15953
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed-outcome.json",
+      "sha256": "8d0c45cd8486e72c8752eeb2180752fd53470fb0486bab61e6924a9f0dab1e7a",
+      "bytes": 5283
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed-readback.json",
+      "sha256": "6e8901475b14772259cae1fdd104540ff9ce36c004ad1962b829c8fd548b388a",
+      "bytes": 783
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\seed.stdout.log",
+      "sha256": "ae4cdca91620f7f92362d592379e328b2d4562bfff071e010526c06f1d31c310",
+      "bytes": 643
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\summary.json",
+      "sha256": "4ae6bc0af81e145f71dc29b256d37009fb316c2e521656207dadfd054913995c",
+      "bytes": 4954
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit-inspect-outcome.json",
+      "sha256": "726f5f2e96ecb85627672ae102a4ec18bd722be7f959f42adb96a11c9b72f926",
+      "bytes": 926
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit-inspect.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit-inspect.stdout.log",
+      "sha256": "35b625232f2ee00a8de51878bab857521029601302e55789df38bd51c07a3a79",
+      "bytes": 9414
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit-outcome.json",
+      "sha256": "cf98537eee18cb387b4e87afd8520ac412e7f9cd947ea9d2759a5ef29d5c8a9a",
+      "bytes": 2069
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit.stdout.log",
+      "sha256": "96e0bf49d5da978f142e9d9085dcef65136c2e82128180a5b9ea155148ff8e08",
+      "bytes": 129
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-absent-outcome.json",
+      "sha256": "c79ef0a6f1ac74c4d72f5204d6ec0ea941f1f242c7aa2128deb76fa3e16894d0",
+      "bytes": 964
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-absent.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-absent.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-create-outcome.json",
+      "sha256": "37e272c233313a6d5e7d9371450a48063a708c0c338c286c28d4ce2f8ef7d356",
+      "bytes": 1021
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-create.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-create.stdout.log",
+      "sha256": "06f5c94eff3692cb5e70c9031e9ff3a29b3021fcf0d37c417337ead5184a10cd",
+      "bytes": 55
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-inspect-outcome.json",
+      "sha256": "5877419c3329f8f7f68a16c9f999e78b78b219fca72e98c0adbb093528e5bc79",
+      "bytes": 940
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-inspect.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume-inspect.stdout.log",
+      "sha256": "dc694a56d4f96902f20cef83bc484cfdad0ddf550706e09551575ed1ba04e821",
+      "bytes": 433
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\volume.json",
+      "sha256": "b18e230629f6dd356588deea52b7337f294753beecf0c2f896e62a8f8b0013fa",
+      "bytes": 242
+    }
+  ],
+  "limits": "Actual unchanged compiled unsupported js/wasm unit on cached Linux Node20 only. No native unsupported OS, supported-six/installed/fullNT08/NF08/SEQ31 qualification.",
+  "canonical_writes": false,
+  "qualification": false
+}

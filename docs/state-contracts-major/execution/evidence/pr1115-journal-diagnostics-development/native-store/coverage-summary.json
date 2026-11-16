@@ -1,0 +1,8 @@
+{
+  "mode": "mode: atomic",
+  "total_statements": 1140,
+  "covered_statements": 811,
+  "percentage": 71.14035087719299,
+  "profile_sha256": "d0abad1e648c7d3159def04037572c8903358cd555791c6a73015b26994108b1",
+  "kind": "Actual Windows store-package statement coverage only, not branch/line/all-platform coverage."
+}

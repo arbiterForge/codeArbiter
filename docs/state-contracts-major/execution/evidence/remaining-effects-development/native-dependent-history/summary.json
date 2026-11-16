@@ -1,0 +1,30 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 14.124899300004472,
+  "outer_timeout": false,
+  "source_unchanged": true,
+  "runtime_unchanged": true,
+  "Gov_module_unchanged": true,
+  "terminal_outcomes": [
+    {
+      "Action": "pass",
+      "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/ancestor-block",
+      "Elapsed": 2.03
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-pending",
+      "Elapsed": 2.34
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-blocked",
+      "Elapsed": 2.33
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops",
+      "Elapsed": 6.7
+    }
+  ]
+}

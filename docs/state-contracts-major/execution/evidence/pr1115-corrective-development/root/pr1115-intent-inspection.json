@@ -1,0 +1,32 @@
+{
+  "source_commit": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "targets": [
+    {
+      "target": "ca",
+      "changelog": "CHANGELOG.md",
+      "intent_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "changed_paths": []
+    },
+    {
+      "target": "ca-codex",
+      "changelog": "plugins/ca-codex/CHANGELOG.md",
+      "intent_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "changed_paths": []
+    },
+    {
+      "target": "ca-sandbox",
+      "changelog": "plugins/ca-sandbox/CHANGELOG.md",
+      "intent_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "changed_paths": [
+        "plugins/ca-sandbox/tools/cp.test.ts"
+      ]
+    },
+    {
+      "target": "ca-pi",
+      "changelog": "plugins/ca-pi/CHANGELOG.md",
+      "intent_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "changed_paths": []
+    }
+  ],
+  "scope": "Original owner intent-path primitives only; no eligibility/publication/pre-tag/run claim."
+}

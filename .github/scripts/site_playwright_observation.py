@@ -463,23 +463,68 @@ def verify(*, record, requirements, **kwargs):
             'ci_run_id': req['ci_run_id'], 'docs_run_id': expected['run_id']}
 
 
-def emit(repo, observed, output):
+def emit(repo, observed, output, *, diagnostic=None):
+    def phase(value):
+        if diagnostic is not None:
+            diagnostic['phase'] = value
+    phase('environment')
     reports.validate_emitter_environment()
+    phase('source-identity')
     identity = reports.source_identity(repo)
+    phase('selection-map')
     validate_selection_map(reports.load_json(Path(repo) / '.github/major-test-selections.json'))
+    phase('run-identity')
     source, run_id = os.environ['GITHUB_SHA'], int(os.environ['GITHUB_RUN_ID'])
     need(identity['clean'] and identity['source_commit'] == source, 'Docs emitting source differs')
     run = owner.api('actions/runs/' + str(run_id))
     _run(run, source, run_id, producing=True)
+    phase('job-and-artifacts')
     job, artifacts = _context(run)
     payloads = [artifact for artifact in artifacts if artifact.get('name') == 'github-pages']
     need(len(payloads) == 1, 'exact original Pages payload missing')
     req = {**identity, 'ci_run_id': run_id}
     payload = payloads[0]
+    phase('pages-archive')
     archive = owner.artifact_bytes(payload, req)
-    record = report_from_observation(reports.load_json(observed), req, run, job, payload, archive)
+    phase('observation-read')
+    observation = reports.load_json(observed)
+    phase('report-validation')
+    record = report_from_observation(observation, req, run, job, payload, archive)
+    phase('report-write')
     reports.new_output(output, record)
     return job['id']
+
+
+def retain_refusal(output, phase, error):
+    """Retain fixed source coordinates, never exception text, locals or inputs.
+
+    This is a failure diagnostic, never a qualification report. The exact
+    workflow source identifies the predicate at the retained module and line.
+    Failure to retain it must not replace or forgive the original refusal.
+    """
+    location = None
+    modules = {Path(module.__file__).resolve(): Path(module.__file__).name
+               for module in (owner, reports, pages)}
+    modules[Path(__file__).resolve()] = 'site_playwright_observation.py'
+    trampolines = {owner.require.__code__, pages._need.__code__, reports.require.__code__}
+    trace = error.__traceback__
+    while trace is not None:
+        module = modules.get(Path(trace.tb_frame.f_code.co_filename).resolve())
+        if module is not None and trace.tb_frame.f_code not in trampolines:
+            location = {'module': module, 'line': trace.tb_lineno}
+        trace = trace.tb_next
+    path = Path(output).absolute()
+    # Refuse linked/aliased ancestors; do not redirect a diagnostic through an
+    # existing link or overwrite an outcome retained by an uncertain retry.
+    if path.parent.resolve(strict=True) != path.parent:
+        return
+    for parent in (path.parent, *path.parent.parents):
+        info = parent.lstat()
+        if parent.is_symlink() or getattr(info, 'st_file_attributes', 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            return
+    reports.new_output(path.with_name(path.name + '.refusal.json'), {
+        'format': 'codearbiter-docs-refusal/1', 'qualified': False,
+        'phase': phase, 'location': location})
 
 
 def prepare_promotion(repo, source, core_run_id, output):
@@ -612,6 +657,7 @@ def main(argv=None):
     parser.add_argument('--core-run-id', type=int)
     parser.add_argument('--lineage', type=Path)
     args = parser.parse_args(argv)
+    diagnostic = {'phase': 'arguments'}
     try:
         if args.operation == 'observe':
             need(args.browser_binary is not None, 'original browser binary required')
@@ -625,13 +671,19 @@ def main(argv=None):
             verify_transfer(args.repo, args.lineage, args.output)
             return 0
         need(args.observation is not None, 'original browser observation required')
-        job_id = emit(args.repo, args.observation, args.output)
+        job_id = emit(args.repo, args.observation, args.output, diagnostic=diagnostic)
+        diagnostic['phase'] = 'output-channel'
         # This is a numeric API job identity, never the logical GITHUB_JOB key.
         with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
             output.write('job_id=' + str(job_id) + '\n')
         return 0
     except (owner.ReadinessError, ValueError, OSError, KeyError, TypeError,
-            zipfile.BadZipFile, tarfile.TarError, RecursionError):
+            zipfile.BadZipFile, tarfile.TarError, RecursionError) as error:
+        if args.operation == 'emit':
+            try:
+                retain_refusal(args.output, diagnostic['phase'], error)
+            except (OSError, ValueError, TypeError, RecursionError):
+                pass  # A diagnostic is best-effort; the original boundary fails.
         print('::error::Docs qualification unavailable; original boundary refused', file=__import__('sys').stderr)
         return 1
 

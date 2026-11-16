@@ -1,0 +1,47 @@
+{
+  "function": "collidesWithTarget",
+  "line_start": 58,
+  "line_end": 75,
+  "profile_sha256": "d0abad1e648c7d3159def04037572c8903358cd555791c6a73015b26994108b1",
+  "coverage_kind": "Actual atomic statement coverage only, not branch or all-input/Unicode proof",
+  "statements": 12,
+  "covered_statements": 12,
+  "percentage": 100.0,
+  "blocks": [
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:59.2,60.29",
+      "statements": 2,
+      "hits": 1398
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:61.3,64.31",
+      "statements": 4,
+      "hits": 130904
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:65.4,65.49",
+      "statements": 1,
+      "hits": 130946
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:66.5,67.10",
+      "statements": 2,
+      "hits": 130899
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:70.3,70.14",
+      "statements": 1,
+      "hits": 130904
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:71.4,72.1",
+      "statements": 1,
+      "hits": 5
+    },
+    {
+      "region": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/store/transaction.go:74.2,74.14",
+      "statements": 1,
+      "hits": 1393
+    }
+  ]
+}

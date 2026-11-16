@@ -14,6 +14,8 @@ POLICY = 0x8 | 0x1000 | 0x8000 | 0x80000
 ALLOW_NETWORK = 0x4
 MAX_JSON = 32 << 10
 U32, U64, PTR, HR = C.c_uint32, C.c_uint64, C.c_void_p, C.c_int32
+PHASES = frozenset(("input", "identity", "provider-bind", "engine-create", "policy",
+                    "attach", "wait", "stack", "detach"))
 
 
 class GUID(C.Structure):
@@ -54,7 +56,7 @@ def project_frame(name: bytes, address: int, base: int, unique: bool) -> dict:
     return {"module": module, "returnOffset": address - base} if module in MODULES else unknown
 
 
-def decode_result(raw: bytes, pid: int, created: int, *, profile=None) -> dict | None:
+def decode_result(raw: bytes, pid: int, created: int, *, profile=None, version=None) -> dict | None:
     """The worker cannot expand the parent's public diagnostic vocabulary."""
     try:
         if len(raw) > MAX_JSON:
@@ -64,14 +66,21 @@ def decode_result(raw: bytes, pid: int, created: int, *, profile=None) -> dict |
                   "bound", "attached", "policy", "detached", "hresult"}
         if type(data) is not dict or type(data.get("schemaVersion")) is not int:
             return None
-        version = data["schemaVersion"]
-        if version == 2:
+        actual_version = data["schemaVersion"]
+        if version is not None and actual_version != version:
+            return None
+        if actual_version in (2, 3):
             fields.add("profile")
             if (type(data.get("profile")) is not str or data["profile"] not in {"sdk-v1", "inbox-v1"}
                     or (profile is not None and data["profile"] != profile)):
                 return None
-        elif version != 1 or profile is not None:
+        elif actual_version != 1 or profile is not None:
             return None
+        if actual_version == 3:
+            fields.update(("phase", "elapsedMs"))
+            if (type(data.get("phase")) is not str or data["phase"] not in PHASES
+                    or type(data.get("elapsedMs")) is not int or not 0 <= data["elapsedMs"] <= 2**31 - 1):
+                return None
         if (set(data) != fields
                 or type(data["pid"]) is not int or type(data["created"]) is not int
                 or data["pid"] != pid or data["created"] != created
@@ -88,7 +97,10 @@ def decode_result(raw: bytes, pid: int, created: int, *, profile=None) -> dict |
             if type(thread) is not dict or set(thread) != {"frames"} or type(thread["frames"]) is not list or len(thread["frames"]) > 24:
                 return None
             for frame in thread["frames"]:
-                if type(frame) is not dict or set(frame) != {"module", "returnOffset"}:
+                frame_fields = {"module", "returnOffset"}
+                if actual_version == 3:
+                    frame_fields.update(("instructionModule", "instructionOffset"))
+                if type(frame) is not dict or set(frame) != frame_fields:
                     return None
                 if frame["module"] == "Other":
                     if frame["returnOffset"] is not None:
@@ -98,6 +110,16 @@ def decode_result(raw: bytes, pid: int, created: int, *, profile=None) -> dict |
                     return None
                 else:
                     known = True
+                if actual_version == 3:
+                    if frame["instructionModule"] == "Other":
+                        if frame["instructionOffset"] is not None:
+                            return None
+                    elif (frame["instructionModule"] not in MODULES
+                          or type(frame["instructionOffset"]) is not int
+                          or not 0 <= frame["instructionOffset"] < 2**64):
+                        return None
+                    else:
+                        known = True
         if data["status"] == "captured" and not (known and data["bound"] and data["attached"]
                 and data["detached"] and data["hresult"] == 0
                 and data["policy"] & POLICY == POLICY and not data["policy"] & ALLOW_NETWORK):
@@ -167,13 +189,13 @@ class Engine:
             return project_frame(b"", address, 0, False)
         return project_frame(name.value, address, base.value, True)
 
-    def threads(self, deadline):
+    def threads(self, deadline, *, include_instruction=False):
         total = U32()
         self.check(self.call("systems", 9, [C.POINTER(U32)], C.byref(total)))
         count = min(total.value, 16)
         ids = (U32 * count)()
         self.check(self.call("systems", 11, [U32, U32, C.POINTER(U32), C.POINTER(U32)], 0, count, ids, None))
-        result, truncated = [], total.value > 16
+        result, truncated, full = [], total.value > 16, False
         for ident in ids:
             if time.monotonic() >= deadline:
                 raise TimeoutError()
@@ -189,9 +211,23 @@ class Engine:
             for frame in frames[:filled.value]:
                 if time.monotonic() >= deadline:
                     raise TimeoutError()
-                projected.append(self.frame(int(frame.ReturnOffset)))
+                row = self.frame(int(frame.ReturnOffset))
+                if include_instruction:
+                    instruction = self.frame(int(frame.InstructionOffset))
+                    row.update(instructionModule=instruction["module"],
+                               instructionOffset=instruction["returnOffset"])
+                projected.append(row)
+                # The new PC projection doubles each frame. Leave bounded room
+                # for worker identity and the parent's closed sidecar envelope.
+                if include_instruction and len(json.dumps(result + [{"frames": projected}],
+                        separators=(",", ":")).encode("utf-8")) > MAX_JSON - 2048:
+                    projected.pop()
+                    truncated, full = True, True
+                    break
             result.append({"frames": projected})
             truncated |= filled.value == 24
+            if full:
+                break
         return result, truncated
 
     def close(self):
@@ -216,6 +252,7 @@ class EngineFailure(Exception):
 
 
 def run(request, native, *, engine_factory=Engine):
+    started = time.monotonic()
     result = {"schemaVersion": 1, "status": "input_refused", "threads": [], "truncated": False,
               "pid": 0, "created": 0, "bound": False, "attached": False,
               "policy": 0, "detached": False, "hresult": None}
@@ -225,11 +262,13 @@ def run(request, native, *, engine_factory=Engine):
         version = 1
         if type(request) is dict and "schemaVersion" in request:
             version = request["schemaVersion"]
-            if (type(version) is not int or version != 2 or type(request.get("profile")) is not str
+            if (type(version) is not int or version not in (2, 3) or type(request.get("profile")) is not str
                     or request["profile"] not in {"sdk-v1", "inbox-v1"}):
                 return result
             fields.update(("schemaVersion", "profile"))
-            result.update(schemaVersion=2, profile=request["profile"])
+            result.update(schemaVersion=version, profile=request["profile"])
+            if version == 3:
+                result.update(phase="input", elapsedMs=0)
         if (type(request) is not dict or set(request) != fields
                 or any(type(request[k]) is not int or request[k] <= 0 for k in ("handle", "pid", "created"))
                 or request["handle"] >= 2**64 or request["pid"] > 0xFFFFFFFF or request["created"] >= 2**64
@@ -238,6 +277,8 @@ def run(request, native, *, engine_factory=Engine):
             return result
         result.update(pid=request["pid"], created=request["created"])
         inherited = request["handle"]
+        if version == 3:
+            result["phase"] = "identity"
         kernel = native.WindowsKernel()
         snapshot = kernel.snapshot(inherited)
         if (snapshot["pid"] != request["pid"] or snapshot["created"] != request["created"]
@@ -246,7 +287,9 @@ def run(request, native, *, engine_factory=Engine):
             return result
         result["bound"] = True
         deadline = min(request["deadline"], time.monotonic() + 5.0)
-        if version == 2:
+        if version == 3:
+            result["phase"] = "provider-bind"
+        if version in (2, 3):
             sdk = native._bound_tool_profile(request["profile"], request["sdk"], request["hashes"], deadline)
         else:
             # Historical requests retain their original three-file SDK checks.
@@ -261,30 +304,47 @@ def run(request, native, *, engine_factory=Engine):
                     return result
         if time.monotonic() >= deadline:
             raise TimeoutError()
+        if version == 3:
+            result["phase"] = "engine-create"
         engine = engine_factory(sdk)
+        if version == 3:
+            result["phase"] = "policy"
         result["policy"] = engine.policy()
         if result["policy"] & POLICY != POLICY or result["policy"] & ALLOW_NETWORK:
             raise EngineFailure(0x80070005)
         if time.monotonic() >= deadline:
             raise TimeoutError()
+        if version == 3:
+            result["phase"] = "attach"
         engine.check(engine.call("client", 12, [U64, U32, U32], 0, snapshot["pid"], 1))
         result["attached"] = True
         remaining = max(0, min(5000, int((deadline - time.monotonic()) * 1000)))
+        if version == 3:
+            result["phase"] = "wait"
         wait = engine.call("control", 93, [U32, U32], 0, remaining)
         if wait == 1:
             raise TimeoutError()
         engine.check(wait)
-        result["threads"], result["truncated"] = engine.threads(deadline)
-        result["status"] = "captured" if any(f["module"] != "Other" for t in result["threads"] for f in t["frames"]) else "unrecognized"
+        if version == 3:
+            result["phase"] = "stack"
+            result["threads"], result["truncated"] = engine.threads(deadline, include_instruction=True)
+        else:
+            result["threads"], result["truncated"] = engine.threads(deadline)
+        result["status"] = "captured" if any(f["module"] != "Other" or
+            (version == 3 and f["instructionModule"] != "Other")
+            for t in result["threads"] for f in t["frames"]) else "unrecognized"
         result["hresult"] = 0
     except TimeoutError:
         result.update(status="deadline", threads=[])
     except EngineFailure as error:
         result.update(status="engine_failed", threads=[], hresult=error.hr)
-    except Exception:
-        result.update(status="engine_failed", threads=[])
+    except Exception as error:
+        result.update(status="deadline" if version == 3 and isinstance(error,
+            getattr(native, "IdentityDeadline", ())) else "engine_failed", threads=[])
     finally:
         if engine is not None:
+            if version == 3 and result["status"] in ("captured", "unrecognized"):
+                result["phase"] = "detach"
             try:
                 result["detached"] = engine.close()
             except Exception:
@@ -296,6 +356,8 @@ def run(request, native, *, engine_factory=Engine):
                 kernel.close(inherited)
             except Exception:
                 result.update(status="cleanup_unknown", threads=[])
+        if result.get("schemaVersion") == 3:
+            result["elapsedMs"] = min(2**31 - 1, max(0, round((time.monotonic() - started) * 1000)))
     return result
 
 

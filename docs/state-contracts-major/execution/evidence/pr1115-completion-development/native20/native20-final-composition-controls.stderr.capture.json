@@ -1,0 +1,7 @@
+{
+  "schema": "literal-utf8-development-capture/1",
+  "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-final-composition-controls.stderr",
+  "original_sha256": "89fc2477c175d6032c23a4ab731b2319aea791976e36805e225db8b85d31542d",
+  "original_bytes": 106,
+  "utf8_text": "...\r\n----------------------------------------------------------------------\r\nRan 3 tests in 0.662s\r\n\r\nOK\r\n"
+}

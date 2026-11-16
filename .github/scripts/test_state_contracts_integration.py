@@ -660,7 +660,7 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         self.assertEqual(re.findall(r"(?m)^        if: (.*)$", job), [self.TRANSPORT_IF])
         self.assertEqual(job.count("      - name: " + self.TRANSPORT_STEP + "\n"), 1)
         hooks = self.job(text, "hooks")
-        self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 25 || 20 }}\n", hooks)
+        self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n", hooks)
         for command in self.COMMANDS:
             self.assertNotIn(command, hooks)
         aggregate = self.job(text, "ci-passed")

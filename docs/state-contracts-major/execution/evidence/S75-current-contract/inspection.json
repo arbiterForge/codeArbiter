@@ -1,0 +1,172 @@
+{
+  "schema": "codearbiter-source-contract-inspection/1",
+  "observed_at": "2026-11-16T07:08:17.705035+00:00",
+  "source_commit": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "cell": "disposition:transitions:S75:08",
+  "frozen_transition": {
+    "transition_id": "S75:08",
+    "machine_id": "S75",
+    "owner": "packaging",
+    "baseline": {
+      "event": "I/O failure",
+      "guard": "direct writes may be partial",
+      "to": "partial output",
+      "effects": "No cross-file transaction/rollback; rerun after repairing source/filesystem.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "tools/build-surface.py",
+          "symbol": "registry validation, render_all, check_all, write_all",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+          "lines": "121-1306"
+        }
+      ],
+      "from": "writing",
+      "transition_id": "S75:08"
+    },
+    "task_ids": [
+      "BUILD-G01",
+      "BUILD-G02",
+      "HW-19",
+      "HW-20",
+      "HW-21",
+      "HW-27",
+      "Q-01"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+      "SEQ-29",
+      "SEQ-31",
+      "SEQ-01",
+      "SEQ-02",
+      "SEQ-16",
+      "SEQ-05",
+      "SEQ-21",
+      "SEQ-09",
+      "SEQ-10",
+      "SEQ-08",
+      "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+  },
+  "accepted_task": {
+    "id": "BUILD-G01",
+    "title": "Stage and validate owned generated outputs before replacement",
+    "owner": "packaging",
+    "status": "PLANNED",
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "required_before_promotion": true,
+    "required_before_publication": true,
+    "required_for_final_settlement": true,
+    "decision_dependencies": [],
+    "dependencies": [
+      "P-02"
+    ],
+    "completion_dependencies": [],
+    "coordination_links": [
+      {
+        "task_id": "Q-01",
+        "kind": "downstream-program-gate",
+        "reason": "Validated generated candidate consumed by whole-program qualification."
+      }
+    ],
+    "finding_ids": [
+      "SF13"
+    ],
+    "source_paths": [
+      "tools/build-surface.py",
+      "tools/sync-core.py",
+      "site/scripts/generator/generate.ts",
+      "site/scripts/generate-academy.ts",
+      "site/scripts/pagefind-build.ts",
+      "site/scripts/pagefind-build.test.ts",
+      "site/scripts/generate-academy.test.ts"
+    ],
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/sync-core.py",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-academy.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/pagefind-build.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/pagefind-build.test.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-academy.test.ts"
+    ],
+    "proposed_paths": [],
+    "implementation": [
+      "Inventory each generator owned output root and late validation boundary; distinguish whole-root generation from projections mixed with handwritten files.",
+      "Render into a fresh owned staging tree, validate complete content/schema/links there, and replace only owned outputs using the platform-appropriate safe promotion procedure.",
+      "For mixed/manual trees where one atomic rename is impractical, use explicit manifest/staging validation and failure-as-unusable gates without deleting handwritten files.",
+      "Fix Pagefind old-output removal before rename; retain prior complete index until promotion succeeds or expose failed output as unusable.",
+      "Ensure package/release consumers reject failed/incomplete generation rather than trusting leftover files; rerun deterministic canonical input safely."
+    ],
+    "tests": {
+      "acceptance": [
+        "Injected render/validate/rename failure preserves previous complete owned output or clearly blocks consumption of a partial projection.",
+        "A clean rerun converges to the same canonical output; successful package uses one complete generation."
+      ],
+      "rejection_and_failure": [
+        "Foreign/symlinked target root, mixed ownership, failed rename and incomplete output cannot be marked build-ready."
+      ],
+      "concurrency_and_interruption": [
+        "Two builders targeting same root serialize/refuse safely; consumer never observes an advertised ready mixture.",
+        "Interrupted staging cleanup affects only owned temporary paths."
+      ]
+    },
+    "acceptance": [
+      "Targeted generator fault tests and complete build/packaging verification for changed output owners.",
+      "Explicit manifest of handwritten versus generated surfaces."
+    ],
+    "rollback": [
+      "Restore previous complete output; keep canonical sources and owned staging for diagnosis when needed.",
+      "Never wipe a mixed output root to make rollback easy."
+    ],
+    "detailed_specification": {
+      "file": "surfaces-tasks.json",
+      "task_id": "BUILD-G01"
+    },
+    "evidence_rule": "PLANNED is an instruction, not implementation or qualification. Read the owner ledger for every preserved invariant, test command, migration rule and source qualification."
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/build-surface.py": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "observations": {
+    "write_all_final_return": "return publish_files(repo, 'surface', updates, removals)",
+    "write_all_calls": [
+      "load_host_descriptors",
+      "tuple",
+      "publish_files",
+      "by_name.get",
+      "render_all",
+      "os.path.join",
+      "validate_targets",
+      "expected.items",
+      "removals.extend",
+      "SurfaceError",
+      "os.path.join",
+      "os.path.join",
+      "rel.replace",
+      "os.path.join",
+      "rel.replace",
+      "_read_bytes",
+      "rel.replace",
+      "_disk_files",
+      "set"
+    ],
+    "write_all_source": "def write_all(repo, hosts=None):\n    \"\"\"Render every selected host before a single owned output changes.\"\"\"\n    descriptors = load_host_descriptors(repo)\n    hosts = tuple(hosts or (item.name for item in descriptors))\n    by_name = {item.name: item for item in descriptors}\n    updates, removals = {}, []\n    for host in hosts:\n        descriptor = by_name.get(host)\n        if descriptor is None:\n            raise SurfaceError(f\"unknown render host {host!r}\")\n        expected = render_all(repo, host, descriptors=descriptors)\n        plugin = os.path.join(repo, descriptor.plugin_dir)\n        validate_targets(repo, (os.path.join(plugin, rel.replace(\"/\", os.sep)) for rel in expected))\n        for rel, data in expected.items():\n            path = os.path.join(plugin, rel.replace(\"/\", os.sep))\n            try:\n                if _read_bytes(path) == data:\n                    continue\n            except OSError:\n                pass\n            updates[path] = data\n        removals.extend(os.path.join(plugin, rel.replace(\"/\", os.sep))\n                        for rel in _disk_files(repo, descriptor) - set(expected))\n    return publish_files(repo, \"surface\", updates, removals)",
+    "publisher_source": "def publish_files(root, namespace, updates, removals=()):\n    root = Path(os.path.abspath(root))\n    _guard_ancestors(root)\n    marker = root / (\".generated-\" + namespace + \".lock\")\n    # Exclusive creation serializes writers. A failed exclusive create never\n    # removes another writer's marker or journal.\n    with marker.open(\"x\", encoding=\"utf-8\") as lock:\n        lock.write(\"publication pending; do not consume generated output\\n\")\n        lock.flush()\n        os.fsync(lock.fileno())\n    staging = None\n    retain = False\n    applied = []\n    old = {}\n    try:\n        changes = {_target(root, path): data for path, data in updates.items()}\n        deleted = {_target(root, path) for path in removals}\n        if deleted & changes.keys():\n            raise OSError(\"generated target both written and removed\")\n        if any(not isinstance(data, bytes) for data in changes.values()):\n            raise TypeError(\"generated bytes must be fully rendered before publication\")\n        staging = Path(tempfile.mkdtemp(prefix=\".generated-\" + namespace + \"-\", dir=root))\n        pending = {}\n        for index, target in enumerate(sorted(changes.keys() | deleted)):\n            before = target.read_bytes() if target.exists() else None\n            old[target] = before\n            if before is not None:\n                (staging / f\"{index}.old\").write_bytes(before)\n            if target in changes:\n                staged = staging / f\"{index}.new\"\n                staged.write_bytes(changes[target])\n                if staged.read_bytes() != changes[target]:\n                    raise OSError(f\"staged byte mismatch: {target}\")\n                pending[target] = staged\n        (staging / \"journal.json\").write_text(json.dumps([\n            {\"path\": str(path.relative_to(root)), \"existed\": old[path] is not None}\n            for path in sorted(old)], indent=2), encoding=\"utf-8\")\n        marker.write_text(str(staging), encoding=\"utf-8\")\n        for target in sorted(old):\n            _target(root, target)  # recheck immediately before each effect\n            target.parent.mkdir(parents=True, exist_ok=True)\n            if target in pending:\n                os.replace(pending[target], target)\n            elif target.exists():\n                target.unlink()\n            applied.append(target)\n        return len(old)\n    except BaseException:\n        for target in reversed(applied):\n            try:\n                _target(root, target)\n                if old[target] is None:\n                    target.unlink(missing_ok=True)\n                else:\n                    recovery = staging / \"rollback\"\n                    recovery.write_bytes(old[target])\n                    os.replace(recovery, target)\n            except BaseException:\n                retain = True\n        raise\n    finally:\n        if not retain:\n            if staging is not None:\n                shutil.rmtree(staging)\n            marker.unlink()"
+  },
+  "conclusion": "Only the historical direct-write/no-transaction/no-rollback guarded tuple is obsolete. The I/O failure event, possible partial projection and four introduced failure/recovery runtime obligations remain applicable.",
+  "limits": [
+    "Source conformance only, no runtime execution or qualification.",
+    "Private preparation; canonical ledger, proofs, progress, Git index and refs untouched.",
+    "No status promotion and no claim that historical behavior passed current tests."
+  ]
+}

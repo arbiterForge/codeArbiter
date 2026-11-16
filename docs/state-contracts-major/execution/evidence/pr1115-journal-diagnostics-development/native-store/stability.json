@@ -1,0 +1,6 @@
+{
+  "root_module": true,
+  "private_module": true,
+  "Go_tools_and_GOROOT_source": true,
+  "original_green_cache": true
+}

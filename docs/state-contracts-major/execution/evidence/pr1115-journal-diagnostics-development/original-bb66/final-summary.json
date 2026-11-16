@@ -1,0 +1,271 @@
+{
+  "schema": "exact-pr-watch-final-summary/1",
+  "recorded_at": "2026-11-16T14:38:51.958832+00:00",
+  "verdict": "BLOCK",
+  "expected_head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "observed_head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "base": "major/state-contracts",
+  "ci": {
+    "id": 43881612076,
+    "head_sha": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "docs": {
+    "id": 43881612131,
+    "head_sha": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "all_checks_terminal": true,
+  "counts": {
+    "SKIPPED": 8,
+    "FAILURE": 3,
+    "SUCCESS": 89
+  },
+  "required_gate": "FAILURE",
+  "primary_failures": [
+    {
+      "job": 133348956928,
+      "owner": "PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",
+      "phase": "Repeated enabled-alias RPC case in platform cohort: parent OS wait timed out30s after stdin EOF. Dedicated RPC step10 passed.",
+      "native_exit_mechanism": "UNKNOWN",
+      "closed_trace": "Matched PID804; JS process_exit(0)1842ms; reallyExitCallEntered=true; debugger unavailable/profile null."
+    },
+    {
+      "job": 133348957027,
+      "owner": "BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed",
+      "phase": "source_payload_fixture:865 to run_git_phase:154; fixture indexing operation exceeded15s before prepare_source_payload.",
+      "underlying_host_delay": "UNKNOWN",
+      "module": "107 tests, one error,316.398s"
+    }
+  ],
+  "consequences": [
+    {
+      "job": 133369662964,
+      "name": "Merge readiness",
+      "state": "FAILURE",
+      "reason": "Required upstream Windows Hook and Pi checks failed."
+    }
+  ],
+  "program_controls": {
+    "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "run": 43881612076,
+    "attempt": 1,
+    "verdict": "PASS",
+    "controls": [
+      {
+        "original_program_job": 133348957066,
+        "original_log_sha256": "5ef2e71bc15c16fa1caf11a8ed7b034b2c9347671862d907004401975d72822b",
+        "job_id": 133348654303,
+        "bytes": 206447,
+        "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+        "state": "READ"
+      },
+      {
+        "original_program_job": 133348956912,
+        "original_log_sha256": "842a3b20395964da1d0316ea83bdb793f4f57e8b1a2306c17377de5529f38db2",
+        "job_id": 133348654303,
+        "bytes": 206447,
+        "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+        "state": "READ"
+      },
+      {
+        "original_program_job": 133348956644,
+        "original_log_sha256": "8167c3e6bdcc0ecc9617184f0d81a63e07f37c06ae0235086f0b8fe866aea8ff",
+        "job_id": 133348654303,
+        "bytes": 206447,
+        "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+        "state": "READ"
+      }
+    ]
+  },
+  "coverage": {
+    "source": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "run": 43881612076,
+    "attempt": 1,
+    "typescript_unions": [
+      {
+        "job": 133353371078,
+        "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+        "supported_hosts": 2,
+        "metrics": [
+          {
+            "metric": "statements",
+            "percent": 81.9,
+            "covered": 7156,
+            "total": 8737
+          },
+          {
+            "metric": "branches",
+            "percent": 81.94,
+            "covered": 6486,
+            "total": 7915
+          },
+          {
+            "metric": "functions",
+            "percent": 84.91,
+            "covered": 1143,
+            "total": 1346
+          },
+          {
+            "metric": "lines",
+            "percent": 86.95,
+            "covered": 6084,
+            "total": 6997
+          }
+        ],
+        "log_sha256": "698f155b39666f5f00fdf51bda4ed4f89201bf526cb521f4c9ad0f541de35927",
+        "threshold": 70,
+        "status": "COMPLETE_SUPPORTED_HOST_UNION",
+        "declared_threshold_metrics": [
+          "lines",
+          "branches"
+        ],
+        "other_metrics_reporting_only": [
+          "statements",
+          "functions"
+        ]
+      },
+      {
+        "job": 133358005240,
+        "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+        "supported_hosts": 2,
+        "metrics": [
+          {
+            "metric": "statements",
+            "percent": 73.37,
+            "covered": 1684,
+            "total": 2295
+          },
+          {
+            "metric": "branches",
+            "percent": 74.15,
+            "covered": 1406,
+            "total": 1896
+          },
+          {
+            "metric": "functions",
+            "percent": 67.3,
+            "covered": 212,
+            "total": 315
+          },
+          {
+            "metric": "lines",
+            "percent": 74.94,
+            "covered": 1433,
+            "total": 1912
+          }
+        ],
+        "log_sha256": "0c421b48a1e228b44701be2c5a178d26cd986ae375e5c690bee01b01dab0743c",
+        "threshold": 70,
+        "status": "COMPLETE_SUPPORTED_HOST_UNION",
+        "declared_threshold_metrics": [
+          "lines",
+          "branches"
+        ],
+        "other_metrics_reporting_only": [
+          "statements",
+          "functions"
+        ]
+      }
+    ],
+    "whole_run_qualification": false,
+    "native_union": {
+      "job": 133354030496,
+      "status": "COMPLETE",
+      "metric": "statements",
+      "statements": {
+        "covered": 11851,
+        "percent": 84.3428,
+        "total": 14051
+      },
+      "source_sha256": "aa36dbbbbed3447cb633b0aaa4a3dc4f445d71c8df8c2b6a39c67f1f9c402a4a",
+      "platforms": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+      ],
+      "missing_platforms": [],
+      "not_measured": [
+        "lines",
+        "branches"
+      ],
+      "minimum": 70,
+      "log_sha256": "6134352cf14f040c98f4a7c5b5839460d957337d8f845b11bd849efe80b09250"
+    }
+  },
+  "native_individual_outcomes": {
+    "six_adapters_and_conformance": "SUCCESS",
+    "six_cold_packages": "SUCCESS",
+    "qualification": false
+  },
+  "refs": {
+    "terminal-receipt.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\terminal-receipt.json",
+      "sha256": "c2d8335ceae5e5945d742bcd0b330ed2e93685881cbe0ae5235d4c7c500cde5a",
+      "bytes": 25702
+    },
+    "selected-program-controls.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\selected-program-controls.json",
+      "sha256": "bae0c7232b3152bc8eb7980af5d7e688d8f2e6d192fd3807a19cb0c24034628d",
+      "bytes": 1107
+    },
+    "selected-coverage-metrics.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\selected-coverage-metrics.json",
+      "sha256": "9a8c19bdf1fd0f76c66cc25727a8607581d1616fe3a3f94ea09b26987da94e58",
+      "bytes": 2946
+    },
+    "original-coverage-read-receipts.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\original-coverage-read-receipts.json",
+      "sha256": "772f1764b013d31b45cd02db09ff528099fa1264fd60f4ee033fd8a1296274c0",
+      "bytes": 7845
+    },
+    "first-failure-closed.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\first-failure-closed.json",
+      "sha256": "f9ff5a2544ae33da9a7dab580a67a57024736da26b6dbecf09b3e66733fe9d9a",
+      "bytes": 1677
+    },
+    "hook-windows-failure-closed.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\hook-windows-failure-closed.json",
+      "sha256": "f9171f4fe1d4fe426ad759182263c834b485650205adcdf1f7f2708ad47ea4d8",
+      "bytes": 2602
+    },
+    "hook-windows-closed-trace.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\hook-windows-closed-trace.json",
+      "sha256": "9331fa4a5ecc2c88dce918b0a805b5fd9a85ec29f4b9b255ec8f46abfafd02f1",
+      "bytes": 958
+    },
+    "original-pi-artifact-authentication.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\original-pi-artifact-authentication.json",
+      "sha256": "a74c45c838b5fab0cc70af08210b6f4ad003f17412d963c77dc37be13a1638a1",
+      "bytes": 3371
+    },
+    "original-assertion-shutdown-trace.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\original-assertion-shutdown-trace.json",
+      "sha256": "ac84d2e83ab999f4dd08b91ace712ffb7af7fea7a1cc5f52b36505d3ca02e7ea",
+      "bytes": 1074
+    },
+    "artifact-preparation-successor.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-bb66e3-watch-vkppvvbe\\artifact-preparation-successor.json",
+      "sha256": "11e9196600ef769f58f4f7a728bccf49c2fa4bc60ebe226274c4e21c50ad1ac4",
+      "bytes": 338
+    }
+  },
+  "limits": [
+    "Entire CI failed; passing individual jobs/coverage do not qualify this source.",
+    "No retry/rerun/cancel/merge/runtime probe or canonical/index/ref/marker write.",
+    "Original a980 attempts/native-exit uncertainty remain separate; parent1098main/publication held."
+  ]
+}

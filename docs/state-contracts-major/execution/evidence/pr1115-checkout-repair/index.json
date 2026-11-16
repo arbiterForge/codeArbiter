@@ -1,0 +1,122 @@
+{
+  "schema": "codearbiter-major-development-observations/1",
+  "recorded_at": "2026-11-16T10:40:32.146707+00:00",
+  "source_anchor": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "original_pr": 1115,
+  "original_ci_run": 43842033549,
+  "original_docs_run": 43842033398,
+  "original_hosted": "All100 terminal:90SUCCESS,2FAILURE,8SKIPPED. Windows retained archive observation primary failure; merge gate consequence. Full Docs SUCCESS. Six native and six cold-package jobs SUCCESS. Original hosted index bytes/timing not retained; exact original failure causality remains unproven.",
+  "confirmed_defect": "Owned real CRLF Git checkout with foreign-policy warmed stat cache falsely returns clean under credential-blind private Git policy. Fresh HEAD index under same policy sees actual differences. No environment-carrier cause inferred.",
+  "repair": "Shared source_checkout uses fresh owned HEAD index for worktree status and separate owned byte-identical ordinary-index copy for staged/conflict diff. HEAD and real-index bytes/metadata are bound before/after. All real-index-consuming Git commands removed; only rev-parse discovery reads real metadata. Split index safely refused before shared-base metadata can be touched. Diagnostics consume identical observed status. Existing native empty-lock and exact Pi-output exceptions preserved.",
+  "verification": {
+    "red": "Named deterministic foreign-policy-cache regression:1test,1target assertionFAIL,0errors,1.021s against original198helper.",
+    "green": "Final4source subjects bound:13controlsPASS,0skip,13.813s, includes authentic index switch-to-split immediately before diff and shared metadata unchanged.",
+    "compatibility": "Root on applied successor:34testsPASS,36.034s,source/index stable. Docs/SDK/Sandbox/closed profile compatibility only; no native/SDK/Node replay.",
+    "lint": "Python AST parse and git diff --check required before commit. Python numeric coverage exempt under existing policy; behavioral regression supplied.",
+    "hosted": "Fresh exact-head entire CI+Docs pending; no merge authorized by local PASS alone."
+  },
+  "nonclaims": [
+    "No live ledger/task/qualification proof renewed.",
+    "No original27d normal-run defect claimed fixed.",
+    "No split-index support claimed.",
+    "No parent1098 merge to main or publication."
+  ],
+  "files": [
+    {
+      "path": "diagnosis/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-cache-diagnosis-5573bb06\\delivery.json",
+      "bytes": 1169,
+      "sha256": "19c76ce59c5a9df7749bd1e59dd5db6dabe6b983eabdbb3e01293831a6647ae2"
+    },
+    {
+      "path": "diagnosis/causal-handoff.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-cache-diagnosis-5573bb06\\causal-handoff.json",
+      "bytes": 6307,
+      "sha256": "50fde950f565f445b87b5dbb4437b4acae6a9ed51034bb4260699485887be3db"
+    },
+    {
+      "path": "diagnosis/owned-comparisons.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-cache-diagnosis-5573bb06\\owned-comparisons.json",
+      "bytes": 3098,
+      "sha256": "bb588a09c084d5d7a0f4175011702a6789ea7d7a33e369ff1b23810067930785"
+    },
+    {
+      "path": "diagnosis/exact-original-target.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-cache-diagnosis-5573bb06\\exact-original-target.json",
+      "bytes": 669,
+      "sha256": "cc99498d4edc3fe34ff26efd59e44b3e84c4f1e1af04fda6c2047ac19505d838"
+    },
+    {
+      "path": "fix/predecessor-delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\delivery.json",
+      "bytes": 5355,
+      "sha256": "5ce89fea6272e89ccb726e31b37377b7e5b5bba30973094f745c78c4b36c5db7"
+    },
+    {
+      "path": "fix/target-red.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\target-red.json",
+      "bytes": 4204,
+      "sha256": "7da42585f8d38d1e5aad60ff5c6d7b6508a90a770956933c0bbeede7f1b6c214"
+    },
+    {
+      "path": "fix/predecessor-green.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\final-bound-green.json",
+      "bytes": 8375,
+      "sha256": "9da7080549b567f6afc8d1d7a93940573011b4257c2599f02eb71ae0aec686ac"
+    },
+    {
+      "path": "fix/primary-source-bindings.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-shared-fix-515d2215\\primary-source-bindings.json",
+      "bytes": 932,
+      "sha256": "b584286c6a874d1dbd215b6dbf415ae1eae515afec06cae9e132855d060ecf6b"
+    },
+    {
+      "path": "fix/successor-delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\delivery.json",
+      "bytes": 3676,
+      "sha256": "4e75bec388edc11220d0272ef0f4e55313adbe9ce83508417e4926aeeea49bab"
+    },
+    {
+      "path": "fix/successor-green.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\successor-green.json",
+      "bytes": 8422,
+      "sha256": "45ab7ac25a182fe10c60867a02d2e9d566d663df8ddffdf3d493e7761ae99d99"
+    },
+    {
+      "path": "root/profile-compatibility.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\shared-checkout-successor-profile-compatibility.json",
+      "bytes": 2106,
+      "sha256": "2ae2ba6ca79e0a7f95d6be82e570760690cbb29144a4096a1750ac9225edd68b"
+    },
+    {
+      "path": "root/profile-compatibility.stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\shared-checkout-successor-profile-compatibility.stderr",
+      "bytes": 345,
+      "sha256": "0dbae2e59cbcc7a840657780a10ace524bfdf876034ca6d00da15910d72ea4bf"
+    },
+    {
+      "path": "root/strategy.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\198-checkout-repair-strategy.json",
+      "bytes": 2074,
+      "sha256": "e791e60e5401ce7561ff877d59a644862c312b63dde286307bb1449c5df464fc"
+    },
+    {
+      "path": "hosted/terminal-receipt.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-198451-watch-jtopdkza\\terminal-receipt.json",
+      "bytes": 25702,
+      "sha256": "c7cf727c9a7685419a5ea86fac8b4f821911c30922d594f5ceb53bba1f79fca6"
+    },
+    {
+      "path": "hosted/terminal-failure-summary.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-198451-watch-jtopdkza\\terminal-failure-summary.json",
+      "bytes": 5402,
+      "sha256": "f48d1efee1478e2f3755e173d53fcafdd48e62957df39567434e004902d1d1fc"
+    },
+    {
+      "path": "hosted/selected-controls.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-198451-watch-jtopdkza\\selected-controls.json",
+      "bytes": 6285,
+      "sha256": "8a05365995e4966e43f97563334fe0f9ee99c305898c017cd2d1c0217a0fba10"
+    }
+  ]
+}

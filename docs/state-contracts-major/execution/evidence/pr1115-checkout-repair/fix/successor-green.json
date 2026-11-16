@@ -1,0 +1,71 @@
+{
+  "phase": "successor-green",
+  "selectors": [
+    "test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests",
+    "test_major_qualification_report.SourceIdentityFreshIndexTests",
+    "test_major_qualification_report.SourceIdentityTest",
+    "test_major_qualification_report.VitestSourceProducerTests.test_pi_generated_outputs_are_exact_bounded_exclusions_only_for_that_profile",
+    "test_major_qualification_report.LocalReadGitEnvironmentTests.test_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env",
+    "test_major_qualification_report.LocalReadGitEnvironmentTests.test_report_and_immutable_reader_pass_blind_local_environment"
+  ],
+  "argv": [
+    "C:/Users/brenn/AppData/Local/Temp/ca-198-checkout-index-copy-successor-3db428ab/run_focused.py",
+    "successor-green",
+    "test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests",
+    "test_major_qualification_report.SourceIdentityFreshIndexTests",
+    "test_major_qualification_report.SourceIdentityTest",
+    "test_major_qualification_report.VitestSourceProducerTests.test_pi_generated_outputs_are_exact_bounded_exclusions_only_for_that_profile",
+    "test_major_qualification_report.LocalReadGitEnvironmentTests.test_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env",
+    "test_major_qualification_report.LocalReadGitEnvironmentTests.test_report_and_immutable_reader_pass_blind_local_environment"
+  ],
+  "returncode": 0,
+  "duration_seconds": 13.813235600013286,
+  "tests_run": 13,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "source_before": {
+    ".github/scripts/major_qualification_report.py": "24c38c6bdffd65f7534a25fd16dac03f2a430a8820d09ca6143376da8dc85144",
+    ".github/scripts/retained_archive_cli_observation.py": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+    ".github/scripts/test_retained_archive_cli_observation.py": "0ded50bd9ec7d2016cd0727cfb4591a55d67bb84c647abc8d4e00ca4e5681848",
+    ".github/scripts/test_major_qualification_report.py": "c76397ea94702c77f8bff61773460e3291213ed75c1fa0a8c55ead30c40e4680"
+  },
+  "source_after": {
+    ".github/scripts/major_qualification_report.py": "24c38c6bdffd65f7534a25fd16dac03f2a430a8820d09ca6143376da8dc85144",
+    ".github/scripts/retained_archive_cli_observation.py": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+    ".github/scripts/test_retained_archive_cli_observation.py": "0ded50bd9ec7d2016cd0727cfb4591a55d67bb84c647abc8d4e00ca4e5681848",
+    ".github/scripts/test_major_qualification_report.py": "c76397ea94702c77f8bff61773460e3291213ed75c1fa0a8c55ead30c40e4680"
+  },
+  "source_stable": true,
+  "candidate_before": {
+    ".github/scripts/major_qualification_report.py": "5dec64dc71e650b77587b496bc868d2c2403ba4ff14538b62040e2356e7c301d",
+    ".github/scripts/retained_archive_cli_observation.py": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+    ".github/scripts/test_retained_archive_cli_observation.py": "0ded50bd9ec7d2016cd0727cfb4591a55d67bb84c647abc8d4e00ca4e5681848",
+    ".github/scripts/test_major_qualification_report.py": "cb8f30a75d8539d68aec159bdc7a78aa350ec679998cb71dbb5a8d33e5c30c32"
+  },
+  "candidate_after": {
+    ".github/scripts/major_qualification_report.py": "5dec64dc71e650b77587b496bc868d2c2403ba4ff14538b62040e2356e7c301d",
+    ".github/scripts/retained_archive_cli_observation.py": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+    ".github/scripts/test_retained_archive_cli_observation.py": "0ded50bd9ec7d2016cd0727cfb4591a55d67bb84c647abc8d4e00ca4e5681848",
+    ".github/scripts/test_major_qualification_report.py": "cb8f30a75d8539d68aec159bdc7a78aa350ec679998cb71dbb5a8d33e5c30c32"
+  },
+  "candidate_stable": true,
+  "tools_before": {
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Program Files\\Git\\cmd\\git.EXE": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+  },
+  "tools_after": {
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Program Files\\Git\\cmd\\git.EXE": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+  },
+  "tools_stable": true,
+  "environment_classification": "fresh OS/PATH/private-profile allowlist; no credentials, user-site, bytecode or injected Git config; tests introduce inert canaries only",
+  "complete_output": "test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_private_git_policy_refuses_crlf_checkout_but_fresh_lf_checkout_preserves_exact_bytes) ... ok\ntest_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard (test_retained_archive_cli_observation.CheckoutPolicyCharacterizationTests.test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard) ... ok\ntest_HEAD_or_real_index_race_refuses_instead_of_returning_clean (test_major_qualification_report.SourceIdentityFreshIndexTests.test_HEAD_or_real_index_race_refuses_instead_of_returning_clean) ... ok\ntest_failed_private_read_and_unreadable_actual_index_never_fall_back_to_cached_clean (test_major_qualification_report.SourceIdentityFreshIndexTests.test_failed_private_read_and_unreadable_actual_index_never_fall_back_to_cached_clean) ... ok\ntest_index_path_and_descriptor_metadata_must_each_stay_stable (test_major_qualification_report.SourceIdentityFreshIndexTests.test_index_path_and_descriptor_metadata_must_each_stay_stable) ... ok\ntest_ordinary_index_versions_and_bounded_extension_scan_keep_actual_Git_validation (test_major_qualification_report.SourceIdentityFreshIndexTests.test_ordinary_index_versions_and_bounded_extension_scan_keep_actual_Git_validation) ... ok\ntest_source_read_is_credential_blind_and_only_private_index_commands_disable_caches (test_major_qualification_report.SourceIdentityFreshIndexTests.test_source_read_is_credential_blind_and_only_private_index_commands_disable_caches) ... ok\ntest_split_index_refuses_before_Git_can_refresh_real_shared_metadata (test_major_qualification_report.SourceIdentityFreshIndexTests.test_split_index_refuses_before_Git_can_refresh_real_shared_metadata) ... ok\ntest_staged_and_conflict_changes_refuse_when_HEAD_worktree_is_clean (test_major_qualification_report.SourceIdentityFreshIndexTests.test_staged_and_conflict_changes_refuse_when_HEAD_worktree_is_clean) ... ok\ntest_only_exact_untracked_ordinary_empty_native_read_lock_is_nonsource_metadata (test_major_qualification_report.SourceIdentityTest.test_only_exact_untracked_ordinary_empty_native_read_lock_is_nonsource_metadata) ... ok\ntest_pi_generated_outputs_are_exact_bounded_exclusions_only_for_that_profile (test_major_qualification_report.VitestSourceProducerTests.test_pi_generated_outputs_are_exact_bounded_exclusions_only_for_that_profile) ... ok\ntest_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env (test_major_qualification_report.LocalReadGitEnvironmentTests.test_local_env_scrubs_config_carriers_and_root_selectors_without_changing_default_env) ... ok\ntest_report_and_immutable_reader_pass_blind_local_environment (test_major_qualification_report.LocalReadGitEnvironmentTests.test_report_and_immutable_reader_pass_blind_local_environment) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 13.813s\n\nOK\n",
+  "imports": {
+    "test_retained_archive_cli_observation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py",
+    "_gitexec": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_gitexec.py",
+    "major_qualification_report": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "test_major_qualification_report": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "retained_archive_cli_observation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-198-checkout-index-copy-successor-3db428ab\\candidate\\.github\\scripts\\retained_archive_cli_observation.py"
+  }
+}

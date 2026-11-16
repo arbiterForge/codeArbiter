@@ -844,6 +844,90 @@
         "disposition:transitions:S38:04"
       ],
       "scope": "Original whole work_github conformance child, real admitted current native input, seven API/native/identity fixture error/retry/no-resend/independent-continuation assertions. Mechanical local software behavior only; no real GitHub, installed-host, task or whole-machine qualification."
+    },
+    {
+      "id": "software-sandbox-s51-01",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --token, because argv is world-readable",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract exits with the usage code when the token is absent, and says where it comes from",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses requires both the image and the home volume",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --source-volume before a container can exist",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) THROWS when the token volume would be co-mounted with an untrusted-code run",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] prepares a credential-blind owned home and retains its bytes across restart",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses accepts the minimal invocation and defaults to the guaranteed posture",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses refuses an unknown flag rather than ignoring it",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses refuses any other egress posture, naming why",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) requires a non-empty image, token, and home volume"
+      ],
+      "cells": [
+        "disposition:transitions:S51:01"
+      ],
+      "scope": "Full finite S51:01 software fixture clause: original CLI/environment/config/source-volume refusals plus actual dedicated caller-owned Docker home, uid1000, no host-auth/source binds, real home write and restart readback. Caller ownership/image/store review is an explicit fixture precondition, not claimed mechanical authentication. Node filesystem fixture only; no Claude CLI/provider/installed/task or whole-machine qualification."
+    },
+    {
+      "id": "software-sandbox-s51-02",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardening parity with run.ts (architecture-002) carries every shared hardening flag the ordinary sandbox emits",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) passes only the token name in argv, never the reusable value",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) NEVER passes --privileged and NEVER mounts the docker socket",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) defaults egress to offline (the hard default \u2014 Spike B caveat)",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) REFUSES an arbitrary wide-open network policy (no escaping the hard default)",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:#377 - a token-bearing box never runs NET_ADMIN without its firewall supplies the token only to the Docker run process environment",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] runs the real Claude builder offline with scoped dummy env and effective hardening",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract exits with the usage code when the token is absent, and says where it comes from",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --source-volume before a container can exist",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] prepares a credential-blind owned home and retains its bytes across restart"
+      ],
+      "cells": [
+        "disposition:transitions:S51:02"
+      ],
+      "scope": "Full finite S51:02 offline branch: original token/hardening/policy/argument guards plus actual production runClaudeInside running container, scoped fixed dummy env, owned home mount/readback, no external interfaces, uid/caps/no-new-privileges/read-only/resource observations. No actual Anthropic allowlist/provider, real OAuth/Claude CLI, installed host or task qualification."
+    },
+    {
+      "id": "software-sandbox-s52-06",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) assembles `cp <id>:<containerPath> <hostDest>` in the pull direction",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) never produces the reverse direction (host source before container dest)",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) refuses an empty container id, container path, or host dest",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) throws (via the mount chokepoint) on a -v host:container bind copy-in",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) throws on an explicit type=bind copy-in spec",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) the rejection comes from mounts.ts (cp does not hand-roll its own check)",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] retains real partial docker cp bytes after cancellation without rollback metadata",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:cpOut [docker] \u2014 pulls a file from /work to the host (AC-10) copies /work/<f> out to a host dest with identical bytes"
+      ],
+      "cells": [
+        "disposition:transitions:S52:06"
+      ],
+      "scope": "Full finite S52:06 software copy clause: original explicit outward argv/empty-path/reverse-bind guards, original successful real cp-out byte equality, and actual controlled ordinary-image-layer cp cancellation retaining partial host bytes. Copy-only fixture deliberately permits its own ordinary writable layer while retaining nonroot/offline/caps/resources and no mounts/auth; it does not weaken production hardening. No transactional rollback or product recovery metadata claim; no whole machine/task/installed qualification."
+    },
+    {
+      "id": "pi-sdk-footer-owner",
+      "job": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "payload_name": "major-source-inputs-pi-sdk-footer",
+      "observation": "pi-sdk-footer",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_pi_package.py:__main__.PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement"
+      ],
+      "cells": [
+        "disposition:transitions:S18:07"
+      ],
+      "scope": "Actual supported Pi1.5 SDK owner/provider/native footer/container/TUI renderer with data-only session and virtual terminal; owned/repeated disposal, foreign replacement, stale same/distinct UI contexts and deferred metrics. Source SDK-component only; no real CLI/extension loader/package installation, physical screen, provider/model/human/author or whole-machine/task claim."
     }
   ]
 }

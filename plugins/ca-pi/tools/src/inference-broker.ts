@@ -54,6 +54,32 @@ const MAX_REQUEST_TARGET_BYTES = 2_048;
 const MAX_UPSTREAM_BASE_BYTES = 512;
 const UPSTREAM_PROTOCOLS = new Set(["http:", "https:"]);
 
+/** ADR-0049: HTTPS outside the existing literal numeric loopback. The raw
+ * authority matters: URL normalizes abbreviated/integer/hex/encoded hosts. */
+export function endpointTransportAllowed(raw: string, endpoint: URL): boolean {
+  if (!UPSTREAM_PROTOCOLS.has(endpoint.protocol)) return false;
+  return endpoint.protocol === "https:"
+    || (endpoint.hostname === "127.0.0.1" && /^http:\/\/127\.0\.0\.1(?::[0-9]+)?(?:\/|$)/iu.test(raw));
+}
+
+/** The child reads an HTTP loopback response even when its upstream was HTTPS.
+ * Preserve HTTPS/relative redirects; never relay a redirect to disallowed HTTP. */
+function redirectsToDisallowedHttp(status: number, location: string | undefined, childBase: string): boolean {
+  if (![301, 302, 303, 307, 308].includes(status) || location === undefined) return false;
+  let target: URL;
+  try { target = new URL(location, childBase); }
+  catch { return false; } // Preserve the existing response for an unparseable Location.
+  if (target.protocol !== "http:") return false;
+  // WHATWG HTTP URLs treat backslashes as separators too. This is validation
+  // only; the response's original Location is never rewritten.
+  const reference = location.trim().replace(/\\/gu, "/");
+  const rawTarget = reference.startsWith("//") ? `http:${reference}`
+    : /^http:\/\//iu.test(reference) ? reference
+      : target.origin === new URL(childBase).origin ? target.href : reference;
+  return !endpointTransportAllowed(rawTarget, target);
+}
+
+
 /** Hop-by-hop headers are connection-scoped by RFC 9110 and must not be relayed in either
  * direction; `host` belongs to the connection the same way, and on the request path is rewritten
  * to the upstream authority because the child's value names this loopback listener. */
@@ -221,7 +247,7 @@ function boundedUpstream(baseUrl: string): { origin: string; basePath: string; s
   let url: URL;
   try { url = new URL(baseUrl); }
   catch { refuseBroker(); }
-  if (!UPSTREAM_PROTOCOLS.has(url.protocol)) refuseBroker();
+  if (!endpointTransportAllowed(baseUrl, url)) refuseBroker();
   if (url.username !== "" || url.password !== "") refuseBroker();
   if (url.search !== "" || url.hash !== "") refuseBroker();
   return {
@@ -360,6 +386,11 @@ export async function startInferenceBroker(options: InferenceBrokerOptions): Pro
     const forward = send(target, { method: request.method ?? "POST", headers, agent: false }, (upstreamResponse) => {
       if (response.writableEnded || response.destroyed) {
         upstreamResponse.destroy();
+        return;
+      }
+      if (redirectsToDisallowedHttp(upstreamResponse.statusCode ?? 502, upstreamResponse.headers.location, baseUrl)) {
+        upstreamResponse.destroy();
+        failClosed(response, 502);
         return;
       }
       const responseHeaders: Record<string, string | string[]> = Object.create(null) as Record<string, string | string[]>;

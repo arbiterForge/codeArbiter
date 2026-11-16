@@ -14,6 +14,7 @@ from pathlib import Path
 import platform
 import re
 import stat
+import sys
 import subprocess
 import tempfile
 import threading
@@ -430,7 +431,7 @@ def _installed_workflow_preflight(installation: Path) -> dict[str, object]:
         return result
 
     token = "${CLAUDE_PLUGIN_ROOT}" if host == "claude" else "${PLUGIN_ROOT}"
-    command_field = "commandWindows" if host == "codex" and platform.system() == "Windows" else "command"
+    command_field = "commandWindows" if host == "codex" and sys.platform == "win32" else "command"
 
     def registered(event: str, tool: str | None, script: str) -> bool:
         groups = hooks.get(event)
@@ -1008,7 +1009,7 @@ def _windows_native_architecture() -> str | None:
 
 def _host_platform() -> tuple[str, str]:
     """The installed binary's platform cell, or UNSUPPORTED_PLATFORM."""
-    system = {"Linux":"linux", "Darwin":"darwin", "Windows":"windows"}.get(platform.system())
+    system = {"linux":"linux", "darwin":"darwin", "win32":"windows"}.get(sys.platform)
     if system == "windows":
         arch = _windows_native_architecture()
     else:
@@ -1154,9 +1155,9 @@ class ArtifactClient:
         fd = self._open_binary()
         try:
             # Execute the verified open descriptor, not a raceable pathname.
-            if platform.system() == "Linux":
+            if sys.platform == "linux":
                 executable = f"/proc/self/fd/{fd}"
-            elif platform.system() == "Darwin":
+            elif sys.platform == "darwin":
                 with tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as temporary:
                     try:
                         directory = Path(os.path.realpath(temporary))

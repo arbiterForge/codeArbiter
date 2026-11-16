@@ -28,6 +28,25 @@ TOOL_FILES = {"sdk-v1": ("cdb.exe", "dbgeng.dll", "dbghelp.dll"),
 MODULES = frozenset(("node", "ntdll", "kernel32", "kernelbase", "ucrtbase", "vcruntime140", "msvcp140"))
 
 
+class IdentityDeadline(ValueError):
+    """A fixed category; no failing filename or exception message is retained."""
+
+
+def _failure_kind(error: Exception) -> str:
+    if isinstance(error, IdentityDeadline):
+        return "deadline"
+    if isinstance(error, FileNotFoundError):
+        return "missing"
+    if isinstance(error, ValueError):
+        return "refused"
+    return "os-error" if isinstance(error, OSError) else "unexpected"
+
+
+def _phase(progress, name):
+    if progress is not None:
+        progress["phase"] = name
+
+
 def _regular(path: Path, *, directory: bool = False) -> Path:
     """No aliases/reparse ancestors, including an SDK or artifact directory."""
     absolute = path.absolute()
@@ -47,7 +66,9 @@ def _digest(path: Path, deadline: float) -> str:
     with _regular(path).open("rb") as stream:
         while chunk := stream.read(65536):
             total += len(chunk)
-            if total > 128 << 20 or time.monotonic() >= deadline:
+            if time.monotonic() >= deadline:
+                raise IdentityDeadline("identity bound")
+            if total > 128 << 20:
                 raise ValueError("identity bound")
             digest.update(chunk)
     return digest.hexdigest()
@@ -68,9 +89,10 @@ def _system_directory() -> Path:
     return _regular(path, directory=True)
 
 
-def _tool_profile(deadline: float) -> tuple[str, Path, dict]:
+def _tool_profile(deadline: float, *, _progress=None) -> tuple[str, Path, dict]:
     # Only absence of the default SDK directory permits the inbox profile.
     # A selected override, incomplete SDK or reparse/tamper failure never does.
+    _phase(_progress, "provider-directory")
     try:
         CDB.parent.lstat()
     except FileNotFoundError:
@@ -84,10 +106,16 @@ def _tool_profile(deadline: float) -> tuple[str, Path, dict]:
             if (not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode)
                     or getattr(info, "st_file_attributes", 0) & 0x400):
                 raise ValueError("unsupported file identity")
+        _phase(_progress, "provider-inbox-directory")
         profile, directory = "inbox-v1", _system_directory()
     else:
         profile, directory = "sdk-v1", _regular(CDB.parent, directory=True)
-    return profile, directory, {name: _digest(directory / name, deadline) for name in TOOL_FILES[profile]}
+    hashes = {}
+    for name in TOOL_FILES[profile]:
+        _phase(_progress, {"cdb.exe": "provider-hash-cdb", "dbgeng.dll": "provider-hash-dbgeng",
+                           "dbghelp.dll": "provider-hash-dbghelp"}[name])
+        hashes[name] = _digest(directory / name, deadline)
+    return profile, directory, hashes
 
 
 def _bound_tool_profile(profile, directory, hashes, deadline) -> Path:
@@ -225,30 +253,39 @@ def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic,
 
 def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict) -> dict:
     from _windows_dbgeng import decode_result
+    started = time.monotonic()
     result = {"status": "unavailable", "threads": [], "truncated": False,
               "temporarilySuspends": False, "toolHashes": None,
-              "publisherSignature": "not-verified", "toolVersion": "not-observed", "profile": None}
+              "publisherSignature": "not-verified", "toolVersion": "not-observed", "profile": None,
+              "worker": None, "diagnostic": {"phase": "provider-select", "failure": None,
+                  "elapsedMs": 0, "remainingMs": max(0, min(5000, round((deadline - started) * 1000)))}}
+    diagnostic = result["diagnostic"]
     try:
-        profile, sdk, hashes = _tool_profile(deadline)
-    except Exception:
+        profile, sdk, hashes = _tool_profile(deadline, _progress=diagnostic)
+    except Exception as error:
+        diagnostic.update(failure=_failure_kind(error),
+                          elapsedMs=min(2**31 - 1, max(0, round((time.monotonic() - started) * 1000))))
         return result
     result["toolHashes"] = hashes
     result["profile"] = profile
     process, duplicate = None, None
     try:
+        _phase(diagnostic, "worker-prepare")
         with tempfile.TemporaryDirectory(prefix="ca-rpc-native-") as directory:
             root = _regular(Path(directory), directory=True)
             worker = _regular(Path(__file__).with_name("_windows_dbgeng.py"))
             duplicate = kernel.duplicate_query(binding["handle"])
-            request = {"schemaVersion": 2, "profile": profile,
+            request = {"schemaVersion": 3, "profile": profile,
                        "handle": duplicate, "pid": pid, "created": binding["created"],
                        "image": binding["image"], "sdk": str(sdk), "hashes": hashes,
                        "deadline": deadline}
             encoded = json.dumps(request, separators=(",", ":")).encode("utf-8")
             if len(encoded) > 4096 or time.monotonic() >= deadline:
+                diagnostic["failure"] = "deadline" if time.monotonic() >= deadline else "refused"
                 return {**result, "status": "deadline"}
             startup = subprocess.STARTUPINFO()
             startup.lpAttributeList = {"handle_list": [duplicate]}
+            _phase(diagnostic, "worker-launch")
             process = subprocess.Popen([sys.executable, "-I", "-B", str(worker), "--worker"],
                 cwd=root, env=_worker_environment(root), startupinfo=startup, close_fds=True,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0,
@@ -259,25 +296,39 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
             if process.stdin.write(encoded) != len(encoded):
                 raise OSError("worker input incomplete")
             process.stdin.close()
+            _phase(diagnostic, "worker-transport")
             status, raw = _collect(process, kernel.available, deadline=deadline)
             if status != "captured":
                 result.update(status=status, truncated=status == "output_limit")
+                diagnostic["failure"] = {"deadline": "deadline", "output_limit": "output-limit",
+                    "cleanup_unknown": "cleanup", "debugger_failed": "worker-exit"}.get(status, "transport")
             else:
-                decoded = decode_result(raw, pid, binding["created"], profile=profile)
+                _phase(diagnostic, "worker-decode")
+                decoded = decode_result(raw, pid, binding["created"], profile=profile, version=3)
                 if decoded is None:
                     result["status"] = "transport_failed"
+                    diagnostic["failure"] = "decode"
                 else:
                     result.update(status=decoded["status"], threads=decoded["threads"],
                                   truncated=decoded["truncated"], temporarilySuspends=decoded["attached"])
+                    result["worker"] = {key: decoded[key] for key in
+                        ("bound", "attached", "detached", "hresult", "policy", "phase", "elapsedMs")}
+                    _phase(diagnostic, "worker-result")
+                    if decoded["status"] != "captured":
+                        diagnostic["failure"] = {"deadline": "deadline", "cleanup_unknown": "cleanup",
+                            "identity_refused": "refused", "input_refused": "refused",
+                            "unrecognized": "unrecognized"}.get(decoded["status"], "engine")
             del raw  # Unexpected SDK/worker text is never a retained diagnostic.
-    except Exception:
+    except Exception as error:
         result.update(status="transport_failed", threads=[])
+        diagnostic["failure"] = _failure_kind(error)
     finally:
         if duplicate is not None:
             try:
                 kernel.close(duplicate)
             except Exception:
                 result.update(status="cleanup_unknown", threads=[])
+                diagnostic["failure"] = diagnostic["failure"] or "cleanup"
         if process is not None:
             try:
                 if process.poll() is None:
@@ -290,6 +341,8 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
                 process._handle.Close()
             except Exception:
                 result.update(status="cleanup_unknown", threads=[])
+                diagnostic["failure"] = diagnostic["failure"] or "cleanup"
+        diagnostic["elapsedMs"] = min(2**31 - 1, max(0, round((time.monotonic() - started) * 1000)))
     return result
 
 
@@ -300,7 +353,7 @@ def _state(snapshot: dict) -> dict:
 def capture(process, expected_node: Path, *, _kernel=None, _debugger=None) -> dict:
     started = time.monotonic()
     deadline = started + SECONDS
-    result = {"schemaVersion": 1, "outcome": "original-failure", "identity": "unknown",
+    result = {"schemaVersion": 2, "outcome": "original-failure", "identity": "unknown",
               "before": {"state": "unknown", "exitCode": None}, "after": {"state": "unknown", "exitCode": None},
               "processId": None, "creationTime": None, "nodeSha256": None, "debugger": {"status": "not-attempted", "threads": [], "truncated": False}}
     handle = None

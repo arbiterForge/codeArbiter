@@ -1,0 +1,20 @@
+{
+  "mode": "candidate",
+  "exit_code": 0,
+  "elapsed_seconds": 0.6074334000004455,
+  "timed_out": false,
+  "output_limited": false,
+  "streams": {
+    "stdout": {
+      "observed_bytes": 0,
+      "retained_bytes": 0,
+      "limited": false
+    },
+    "stderr": {
+      "observed_bytes": 2196,
+      "retained_bytes": 2196,
+      "limited": false
+    }
+  },
+  "reader_threads_exited": true
+}

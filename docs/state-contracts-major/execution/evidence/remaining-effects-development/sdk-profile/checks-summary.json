@@ -1,0 +1,84 @@
+{
+  "RED": {
+    "selected_methods": [
+      "SdkPythonSourceProfileTests.test_public_closed_sdk_profile_observes_one_original_python_invocation"
+    ],
+    "testsRun": 1,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0,
+    "successful": false,
+    "seconds": 0.5020596999966074
+  },
+  "first_GREEN": {
+    "selected_methods": [
+      "SdkPythonSourceProfileTests"
+    ],
+    "testsRun": 6,
+    "failures": 0,
+    "errors": 1,
+    "skips": 0,
+    "successful": false,
+    "seconds": 15.431619700000738
+  },
+  "corrected_final_reader": {
+    "selected_methods": [
+      "SdkPythonSourceProfileTests.test_final_reader_requires_original_sdk_upload_exact_owner_and_completed_job"
+    ],
+    "testsRun": 1,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 0.012982899992493913
+  },
+  "final_sdk": {
+    "selected_methods": [
+      "SdkPythonSourceProfileTests"
+    ],
+    "testsRun": 6,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 15.127246999996714
+  },
+  "compatibility": {
+    "selected_methods": [
+      "BoundSourcePayloadTests.test_running_source_producer_never_reads_its_own_unavailable_job_log",
+      "BoundSourcePayloadTests.test_python_source_profile_cannot_qualify_other_software_or_tasks",
+      "ReportTest.test_changing_a_proof_kind_string_does_not_create_an_installed_observer",
+      "VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells",
+      "SandboxOwnedEffectsRoutingTests.test_canonical_three_cells_require_complete_guard_and_real_effect_unions",
+      "SandboxOwnedEffectsRoutingTests.test_all_named_guards_and_effects_must_pass_under_original_bound_source_profile"
+    ],
+    "testsRun": 6,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 13.826109200002975
+  },
+  "workflow": {
+    "selected_methods": [
+      "SdkFooterSourceWorkflowTests"
+    ],
+    "testsRun": 1,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 0.03081160000874661
+  },
+  "cap_mutant": {
+    "selected_methods": [
+      "SdkPythonSourceProfileTests.test_sdk_one_cell_cap_and_python_identity_refuse_skip_duplicate_and_relabel"
+    ],
+    "testsRun": 1,
+    "failures": 3,
+    "errors": 0,
+    "skips": 0,
+    "successful": false,
+    "seconds": 6.603375099992263
+  }
+}

@@ -369,18 +369,10 @@ class _SourceCheckoutError(ValueError):
     """A source refusal with diagnostics produced by this immutable owner."""
 
 
-def _dirty_source_diagnostic(repo, source):
+def _dirty_source_diagnostic(repo, source, status):
     """Retain public tracked names; hash unknown names without reading content."""
-    env = dict(os.environ)
-    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
-                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
-                 "GIT_GRAFT_FILE", "GIT_REPLACE_REF_BASE", "GIT_SHALLOW_FILE"):
-        env.pop(name, None)
-    command = ["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo)]
-    status = subprocess.run([*command, "status", "--porcelain=v1", "--untracked-files=all", "-z"],
-                            env=env, capture_output=True, timeout=30, check=True).stdout
-    tree = subprocess.run([*command, "ls-tree", "-rz", "--name-only", source],
-                          env=env, capture_output=True, timeout=30, check=True).stdout
+    import major_qualification_report as reports
+    tree = reports.git(repo, "ls-tree", "-rz", "--name-only", source, raw=True)
     require(len(status) <= 1024 * 1024 and len(tree) <= 4 * 1024 * 1024,
             "source diagnostic inventory exceeds bound")
     tracked = set(tree.split(b"\0")); parts = iter(status.split(b"\0")); entries = []
@@ -403,11 +395,11 @@ def _dirty_source_diagnostic(repo, source):
 
 def _source_snapshot(repo):
     import major_qualification_report as reports
-    identity = reports.source_identity(repo)
+    identity, status = reports.source_checkout(repo)
     if not identity["clean"]:
         error = _SourceCheckoutError("observer source checkout is not clean")
         try:
-            error.source_checkout_diagnostic = _dirty_source_diagnostic(repo, identity["source_commit"])
+            error.source_checkout_diagnostic = _dirty_source_diagnostic(repo, identity["source_commit"], status)
         except (OSError, ValueError, UnicodeError, subprocess.SubprocessError):
             pass  # Diagnostic collection must not replace the original refusal.
         raise error

@@ -1,0 +1,42 @@
+{
+  "exit_code": 1,
+  "duration_seconds": 11.536559100000886,
+  "outer_timeout": false,
+  "source_unchanged": true,
+  "top_level": [
+    {
+      "Action": "pass",
+      "Test": "TestN09StartLiveStateCASAndReplayBoundaries",
+      "Elapsed": 0.73
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN09OrdinaryReviewRepeatHistoryAndSourceStateRefusals",
+      "Elapsed": 0.55
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN09OrdinaryReconcileAllLabelsTargetsAndHistory",
+      "Elapsed": 3.41
+    },
+    {
+      "Action": "fail",
+      "Test": "TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation",
+      "Elapsed": 0.6
+    }
+  ],
+  "terminal_subtests": 41,
+  "failures": [
+    {
+      "Action": "fail",
+      "Test": "TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation/missing-empty-retired-reason",
+      "Elapsed": 0.07
+    },
+    {
+      "Action": "fail",
+      "Test": "TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation",
+      "Elapsed": 0.6
+    }
+  ],
+  "skips": []
+}

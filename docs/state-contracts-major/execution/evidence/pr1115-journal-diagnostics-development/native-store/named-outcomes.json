@@ -1,0 +1,1017 @@
+[
+  {
+    "Action": "pass",
+    "Test": "TestUnsupportedPlatformDiagnosticIsTruthful",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestSupportedBackendDeclarationMatchesBuiltBackend",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-stage-1/complete",
+    "Elapsed": 0.17
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-stage-1/rollback",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-journal/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-journal/rollback",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-replace-0/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-replace-0/rollback",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-replace-1/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery/after-replace-1/rollback",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestProcessDeathRecovery",
+    "Elapsed": 0.42
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalPublicationCrash/before-journal-publish",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalPublicationCrash/during-journal-publish",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalPublicationCrash/after-journal-publish",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalPublicationCrash",
+    "Elapsed": 0.08
+  },
+  {
+    "Action": "pass",
+    "Test": "TestNativeWindowsOperationalFaultsAreBounded/access_denied",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestNativeWindowsOperationalFaultsAreBounded/disk_full",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestNativeWindowsOperationalFaultsAreBounded/handle_disk_full",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestNativeWindowsOperationalFaultsAreBounded",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/invalid-id",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/zero-edits",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/too-many",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/duplicate",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/case-alias",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-overlap",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-reversed",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-case-folded",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/unsafe-path",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/nil-before-after",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/oversized-after",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/before-mismatch",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/valid-prefix-lookalike",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/exact-512",
+    "Elapsed": 1.46
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/prepublication-cleanup",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02CommitAdmissionAndPrepublicationCleanup",
+    "Elapsed": 1.52
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02PreparedTargetCASRefusesConcurrentBytes",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03TerminalRecoveryReplayPreservesBytes/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03TerminalRecoveryReplayPreservesBytes/rollback",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03TerminalRecoveryReplayPreservesBytes",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/third-digest",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-stage",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence/missing-backup",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/pending",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/recover",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03UnreadableFinalJournalNeverBecomesClean/new-write",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestN03UnreadableFinalJournalNeverBecomesClean",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObstructedTransactionNamesOffendingEntry/foreign-file",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObstructedTransactionNamesOffendingEntry/foreign-directory",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObstructedTransactionNamesOffendingEntry",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestMissingBeforeImageNamesExpectedPath",
+    "Elapsed": 0.06
+  },
+  {
+    "Action": "pass",
+    "Test": "TestChangedBeforeImageNamesPathWithoutChangingBytes",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedBeforeImageNamesPathAndPreservesBytes",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOrphanHistoryNamesEntryWithoutChangingIt",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedJournalAfterSizeBlocksReplayAndRecovery/pending",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedJournalAfterSizeBlocksReplayAndRecovery/replay",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedJournalAfterSizeBlocksReplayAndRecovery/recover",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedJournalAfterSizeBlocksReplayAndRecovery/snapshot",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedJournalAfterSizeBlocksReplayAndRecovery",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestUnparseableFinalJournalNamesPathAndBlocksRecovery",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/pending",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/recover",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedFinalJournalReportsCorruptionAndBlocksWrites/new-write",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOversizedFinalJournalReportsCorruptionAndBlocksWrites",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestInvalidJournalFilenameNamesEntry",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreparedJournalNamesEntryInSnapshotDiagnostic",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalRemovedBetweenListAndReadBlocksWithPath",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/request_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/before_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0/after_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.1.0",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/request_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/before_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/uppercase",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/nonhex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/short",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/long",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/newline",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0/after_sha256/wrong_type",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar/codearbiter.transaction/0.2.0",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalDigestGrammar",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPendingRejectsCorruptCompletedDigest/request_sha256",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPendingRejectsCorruptCompletedDigest/before_sha256",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPendingRejectsCorruptCompletedDigest/after_sha256",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPendingRejectsCorruptCompletedDigest",
+    "Elapsed": 0.09
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJournalScansBoundAncestorChecks",
+    "Elapsed": 0.7
+  },
+  {
+    "Action": "pass",
+    "Test": "TestJunctionComponentsAreRefusedExplicitly",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestWindowsLockNativeLayouts",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRejectsGenericReparseAttributes/.codearbiter",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRejectsGenericReparseAttributes/.codearbiter/.artifacts",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRejectsGenericReparseAttributes/.codearbiter/.artifacts/store.lock",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRejectsGenericReparseAttributes",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPinsExistingRoot",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/shared-readers",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/observation-writer",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/writer-observation",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/index-observation",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/observation-index",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/index-writer",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/observation-pins-.codearbiter",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/observation-pins-.codearbiter/.artifacts",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion/observation-pins-.codearbiter/.artifacts/store.lock",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockPreservesExclusion",
+    "Elapsed": 0.29
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockDetectsPhaseReplacement/arbiter",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockDetectsPhaseReplacement/metadata",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockDetectsPhaseReplacement/lock",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockDetectsPhaseReplacement",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen/lock-after-root-open",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen/lock-after-directory-open:.codearbiter",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen/lock-after-directory-open:.codearbiter/.artifacts",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen/lock-after-file-open",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen/lock-before-acquire",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockClosesEveryPartialOpen",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/writer-pins-existing-mutex",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/missing-metadata",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/missing-artifacts",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/missing-lock",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/metadata-file",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/lock-directory",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/metadata-junction",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState/lock-symlink",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestObservationLockRefusesMissingUnsafeAndSwappedState",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestTransactionalCAS",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPartialJournalStageRequiresManualReconciliation",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/EACCES",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/EPERM",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/EIO",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/ENOSPC",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/permission_sentinel",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic/EROFS",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestUnknownIOFailureIsNotReclassified",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/read",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/create",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/mkdir",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/exists",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/list",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/open_directory",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/stat",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/remove",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics/replace",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics/entries",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics/open_subdirectory",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics/has",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestClosedParentCurrentHasBoundedPublicDiagnostic",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-stage-0/complete",
+    "Elapsed": 0.05
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-stage-0/rollback",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-journal/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-journal/rollback",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-replace-0/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-replace-0/rollback",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-replace-1/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-replace-1/rollback",
+    "Elapsed": 0.04
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-complete/complete",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery/after-complete/rollback",
+    "Elapsed": 0.03
+  },
+  {
+    "Action": "pass",
+    "Test": "TestReplaceRecovery",
+    "Elapsed": 0.33
+  },
+  {
+    "Action": "pass",
+    "Test": "TestRecoveryConflictPreservesExternalEdit",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPathEscapeAndSymlink",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestWriterLock",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestCreateRaceDoesNotOverwrite",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestDirScanRefusesLinksAndEscapes",
+    "Elapsed": 0.01
+  },
+  {
+    "Action": "pass",
+    "Test": "TestDirEntryTypeSwappedAfterListing",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestDirRejectsNonSingleComponentNames",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestDirEntriesIsIdempotent",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestOpenDirRegularFileIsUnsafeNotAbsent",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadRefusesSymlink",
+    "Elapsed": 0.02
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/unchanged/ReadEntry",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/unchanged/Read",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/mtime_only/ReadEntry",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/mtime_only/Read",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/size/ReadEntry",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/size/Read",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/identity_only/ReadEntry",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange/identity_only/Read",
+    "Elapsed": 0
+  },
+  {
+    "Action": "pass",
+    "Test": "TestPortableReadDetectsMidReadChange",
+    "Elapsed": 0.02
+  }
+]

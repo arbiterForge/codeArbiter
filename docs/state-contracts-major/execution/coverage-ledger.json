@@ -1843,8 +1843,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+     "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a"
+    }
+   ],
+   "candidate_contract_note": "Finite source guard/effect/retry conformance of all4 clauses; existing edge states/history and runtime epochs unchanged. No runtime/task/installed/model/user acceptance."
   },
   "N06": {
    "owner": "native",
@@ -1853,8 +1861,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+     "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a"
+    }
+   ],
+   "candidate_contract_note": "Finite source guard/effect/retry conformance of all4 clauses; existing edge states/history and runtime epochs unchanged. No runtime/task/installed/model/user acceptance. Existing accepted NT-05 typed-retirement exception replaces only historical N-F10 orphan-retirement failure prose, as already declared by N06:03/N-F10; not literal preservation of that old bug."
   },
   "N07": {
    "owner": "native",
@@ -1875,8 +1891,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+     "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a"
+    }
+   ],
+   "candidate_contract_note": "Finite source guard/effect/retry conformance of all3 clauses; existing edge states/history and runtime epochs unchanged. No runtime/task/installed/model/user acceptance."
   },
   "N09": {
    "owner": "native",
@@ -2266,8 +2290,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N19": {
    "owner": "native",
@@ -2275,8 +2307,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N20": {
    "owner": "native",
@@ -2512,8 +2552,16 @@
    "task_ids": [
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+     "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+     "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6"
+    }
+   ],
+   "candidate_contract_note": "Finite complete source guard/effect/retry conformance only. Historical edge receipts remain unchanged; no executed, native-platform, installed, host, model, user or NT-12 acceptance claim."
   },
   "N26": {
    "owner": "native",
@@ -36809,13 +36857,14 @@
     "HW-27",
     "Q-01"
    ],
-   "status": "TESTED",
+   "status": "NOT_APPLICABLE",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
-     "ref": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/surface-publication.json",
-     "sha256": "630d62619ccbe53ce2573b553ec5ecdcb27c6f795ac2e163a4679c4a07db64d2"
+     "kind": "conformance-check",
+     "commit": "2f65fda443816d84b0ee4283f9fc237df728b663",
+     "ref": "docs/state-contracts-major/execution/evidence/S75-current-contract/proof.json",
+     "ref_commit": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+     "sha256": "0830da403c8741ab9aa2ad2f846bec07dbffb07d2394c29aa73cd09783a521df"
     }
    ],
    "evidence_history": [
@@ -36825,8 +36874,17 @@
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/surface-publication-508b.json",
      "sha256": "149a7fdff1a78b77d279fa25c4d5246604c230987fde6c25f72524d1f140e1f4",
      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+    },
+    {
+     "kind": "test",
+     "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+     "ref": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/surface-publication.json",
+     "sha256": "630d62619ccbe53ce2573b553ec5ecdcb27c6f795ac2e163a4679c4a07db64d2",
+     "ref_commit": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861"
     }
-   ]
+   ],
+   "contract": "docs/state-contracts-major/contracts/transition-coverage.json#S75:08.baseline/direct-writes-may-be-partial/no-cross-file-transaction-or-rollback",
+   "rationale": "Only the historical direct-write/no-transaction/no-rollback guarded tuple is obsolete. The I/O failure event, possible partial projection and four introduced failure/recovery runtime obligations remain applicable. Accepted BUILD-G01 requires restoration or an explicitly unusable projection; frozen historical intake and previous runtime evidence remain retained."
   },
   "S76:01": {
    "owner": "packaging",

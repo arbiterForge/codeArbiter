@@ -1,0 +1,132 @@
+{
+  "format": "private-inert-attribution-successor/1",
+  "state": "FIRST_IDENTITY_CONTROL_FAILED_NO_TYPED_WORKER",
+  "unit": {
+    "selected": 1,
+    "failed": 1,
+    "errors": 0,
+    "seconds": 0.01
+  },
+  "actual_native_capability": "NOT_ATTEMPTED",
+  "actual_owned_node_launches": 1,
+  "actual_typed_worker_launches": 0,
+  "result": {
+    "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7",
+    "outcome": {
+      "exit_code": 1,
+      "elapsed_seconds": 0.4533485999854747,
+      "timed_out": false,
+      "output_limited": false,
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "retained_bytes": 0,
+          "limited": false
+        },
+        "stderr": {
+          "observed_bytes": 1025,
+          "retained_bytes": 1025,
+          "limited": false
+        }
+      },
+      "reader_threads_exited": true,
+      "forced_containment": null
+    },
+    "physical_stable": true,
+    "material_stable": true,
+    "runtime_stable": true,
+    "node_stable": true,
+    "runtime_files": 10795
+  },
+  "call_classification_correction": {
+    "raw": "Original wrapper labelled first nonmatched result foreign-identity.",
+    "correct": "Call0 is the first mocked-debugger-hook identity control; its actual query-failed is NOT a foreign executable observation. Raw capture/observer bytes remain unchanged.",
+    "basis": "Exact original test body first native.capture(process, Path(node), _debugger=debugger), then immediate matched assertion failed."
+  },
+  "supported_precondition_gap": "Approved C locator has .cache reparse ancestor; strict _regular(expected_node) refuses it. Same hash physical D path has no reparse ancestors. Exact swallowed query step was not retained.",
+  "smallest_future_action": "Use only the pinned resolved D locator as private input after Root reviews; no product no-reparse guard or assertions changed.",
+  "cleanup_limit": "Original test finally ran without a further cleanup exception and supervisor returned normally; no independent final process-state snapshot was retained. No forced-containment fallback ran.",
+  "history": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-native-attribution-inert/delivery.json",
+    "sha256": "63fb6926ac0a69f0d8a8eb7ca9718575c367c23228cef76499d10df1687a2334"
+  },
+  "canonical_writes": false,
+  "repeated": false,
+  "filemap": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\observe.py",
+      "sha256": "023fc89316cef91e9eeeda1363476dfd76c4a601af5abdadacd6cbc932578383",
+      "bytes": 3598
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\run.py",
+      "sha256": "6513664a5dda955628e158ecaedabe4f93dd04fcf0ada237b9c0a9912b02aae9",
+      "bytes": 5980
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\guard-only.patch",
+      "sha256": "e0d99baa1da9cf8d6fb15e70dfa0b41f10328ce14f8fa75785f183e565cc353a",
+      "bytes": 1768
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\latest.json",
+      "sha256": "241a7c37f5e51daac0d35e210777da48b9e580cb49a2ba78f47416b67e1814a8",
+      "bytes": 692
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\path-metadata.json",
+      "sha256": "fbe2ff2eb484317ecb5cae296c8963c609c274dbab58f2b18e38ef78fae9cdb7",
+      "bytes": 2097
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\physical-path-proposal.json",
+      "sha256": "20af69c39911ceeda07319ccba456b12ddd48697fce1a8f94da1a458141b22ea",
+      "bytes": 1760
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\after.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\before.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\capture-0.json",
+      "sha256": "7bfc69fd5f34df87ed4e4952981bd5dd2a8c135300cdd1a3ce9f1bf34a39b17d",
+      "bytes": 437
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\config.json",
+      "sha256": "31f7e69668f76b533ae35b85388cdeddd2a3cacc4ea67e730e97d4e77c950a73",
+      "bytes": 483
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\execution.json",
+      "sha256": "67f2420a56c3a1466b317b09b13f4f64eb44f14b45520d469eef52dd254285c7",
+      "bytes": 1244
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\observation.json",
+      "sha256": "0d028ae91ad9e5237ef9732c60f8116f5f57d08efd7b9797afc01bfb645df253",
+      "bytes": 31552
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\outcome.json",
+      "sha256": "f95af03f71cd6abf701a966ff8d0ac71c3a2b9700d92ab14058872dde40697d3",
+      "bytes": 399
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\stderr.log",
+      "sha256": "6726c31a051ad718503e6de2ce92ab807d840b0f6cdf2708449ab8b8733857ff",
+      "bytes": 1025
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r1\\actual-once-ma7lx6q7\\stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

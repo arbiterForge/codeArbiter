@@ -216,4 +216,22 @@ describe("#455 broker listener lifetime", () => {
     }
     expect(await listenerAlive(broker.baseUrl)).toBe(false);
   });
+
+  test("ADR-0049 external HTTP refusal closes the broker without spawning a child or falling back", async () => {
+    const { runPiChild } = await import("../src/runner.ts") as RunnerModule;
+    const request = await materializedRequest();
+    await writeFile(resolve(request.parentEnv.PI_CODING_AGENT_DIR!, "models.json"), JSON.stringify({
+      providers: { openai: { baseUrl: "http://gateway.example/v1" } },
+    }), "utf8");
+    lifecycleMocks.spawn.mockImplementation(() => { throw new Error("unexpected HTTP child launch"); });
+    const result = await runPiChild(request as never, new AbortController().signal);
+    expect(result).toEqual({
+      terminal: "degraded",
+      diagnostic: "Pi child isolation failed safely (isolation-config); no inline promotion is available; run /ca-doctor.",
+    });
+    expect(lifecycleMocks.spawn).not.toHaveBeenCalled();
+    expect(lifecycleMocks.bound).toHaveLength(1);
+    expect(await listenerAlive(lifecycleMocks.bound[0]!.baseUrl)).toBe(false);
+  });
+
 });

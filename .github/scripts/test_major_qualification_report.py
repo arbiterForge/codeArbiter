@@ -343,6 +343,196 @@ class SourceIdentityTest(unittest.TestCase):
             self.assertFalse(owner.ordinary_native_read_lock(repo))
 
 
+
+class SourceIdentityFreshIndexTests(unittest.TestCase):
+    def fixture(self):
+        from test_retained_archive_cli_observation import observer_checkout_fixture
+        return observer_checkout_fixture({"GIT_CONFIG_COUNT": "2", "GIT_CONFIG_KEY_0": "core.autocrlf", "GIT_CONFIG_VALUE_0": "false",
+                                          "GIT_CONFIG_KEY_1": "core.eol", "GIT_CONFIG_VALUE_1": "lf"})
+
+    def tree_state(self, root):
+        return {p.relative_to(root).as_posix(): (p.read_bytes(), p.stat().st_dev, p.stat().st_ino,
+                 p.stat().st_mode, p.stat().st_mtime_ns, p.stat().st_ctime_ns)
+                for p in root.rglob("*") if p.is_file()}
+
+    def test_staged_and_conflict_changes_refuse_when_HEAD_worktree_is_clean(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        for kind in ("staged", "conflict"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                repo = f["repo"]; env = local_read_git_env()
+                def git(*args, data=None):
+                    return subprocess.run(["git", "-C", str(repo), *args], input=data, env=env,
+                                          capture_output=True, check=True, timeout=15).stdout
+                target = "plugins/ca/tools/.env.example"
+                blob = git("rev-parse", "HEAD:core/pysrc/helper.py").decode().strip()
+                if kind == "staged":
+                    git("update-index", "--cacheinfo", "100644", blob, target)
+                else:
+                    rows = "0 " + "0" * len(blob) + "\t" + target + "\n"
+                    rows += "".join("100644 " + blob + " " + str(stage) + "\t" + target + "\n" for stage in (1, 2, 3))
+                    git("update-index", "--index-info", data=rows.encode())
+                before = self.tree_state(repo)
+                identity, status = owner.source_checkout(repo)
+                self.assertFalse(identity["clean"])
+                self.assertIn(target.encode(), status)
+                if kind == "conflict": self.assertIn(b"UU ", status)
+                self.assertEqual(self.tree_state(repo), before)
+
+    def test_source_read_is_credential_blind_and_only_private_index_commands_disable_caches(self):
+        from retained_archive_cli_observation import private_environment
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            repo = f["repo"]
+            protected = repo.parent / "protected.gitconfig"
+            protected.write_text("[safe]\n\tdirectory = " + str(repo).replace("\\", "/") + "\n", encoding="utf8")
+            calls=[]; actual=owner.subprocess.run
+            def observe(argv, **kwargs):
+                calls.append((list(argv), dict(kwargs["env"])))
+                return actual(argv, **kwargs)
+            values={"GH_TOKEN":"inert-source-canary", "GITHUB_TOKEN":"inert-source-canary",
+                    "UNRELATED_SECRET":"inert-source-canary", "GIT_CONFIG_COUNT":"1",
+                    "GIT_CONFIG_KEY_0":"http.extraheader", "GIT_CONFIG_VALUE_0":"inert-source-canary",
+                    "GIT_CONFIG_GLOBAL":str(protected), "GIT_DIR":"foreign-root", "GIT_INDEX_FILE":"foreign-index"}
+            before=self.tree_state(repo)
+            with mock.patch.dict(os.environ, values), mock.patch.object(owner.subprocess,"run",side_effect=observe):
+                self.assertTrue(owner.source_identity(repo)["clean"])
+                self.assertEqual(os.environ["GH_TOKEN"], "inert-source-canary")
+            private=[]
+            for argv, env in calls:
+                self.assertIn("--no-optional-locks",argv)
+                self.assertEqual(env["GIT_OPTIONAL_LOCKS"],"0")
+                self.assertEqual(env["GIT_CONFIG_GLOBAL"],str(protected))
+                for key in ("GH_TOKEN","GITHUB_TOKEN","UNRELATED_SECRET","GIT_CONFIG_COUNT","GIT_CONFIG_KEY_0","GIT_CONFIG_VALUE_0","GIT_DIR"):
+                    self.assertNotIn(key,env)
+                if "GIT_INDEX_FILE" in env:
+                    private.append((argv,env))
+                    self.assertFalse(Path(env["GIT_INDEX_FILE"]).is_relative_to(repo))
+                    for setting in ("core.splitIndex=false","core.fsmonitor=false","core.untrackedCache=false","index.sparse=false","core.sparseCheckout=false"):
+                        self.assertIn(setting,argv)
+                else:
+                    self.assertNotIn("-c",argv)
+                    self.assertEqual(argv[argv.index("-C")+2],"rev-parse")
+            self.assertEqual(len(private),3)
+            self.assertEqual({next(name for name in ("diff","read-tree","status") if name in argv) for argv,_ in private},{"diff","read-tree","status"})
+            self.assertEqual(self.tree_state(repo),before)
+            # Switch the real index to an authentic split representation after
+            # descriptor validation, immediately before the staged diff. Only
+            # the owned byte-identical ordinary copy may be consumed by Git.
+            ordinary=(repo/".git/index").read_bytes()
+            from _gitexec import local_read_git_env
+            subprocess.run(["git","-C",str(repo),"update-index","--split-index"],env=local_read_git_env(),check=True,capture_output=True,timeout=15)
+            split=(repo/".git/index").read_bytes()
+            (repo/".git/index").write_bytes(ordinary)
+            shared={p.name:(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in (repo/".git").glob("sharedindex.*")}
+            self.assertTrue(shared)
+            actual_git=owner._source_git
+            def switch_index(root,*args,index=None):
+                if args[0]=="diff": (Path(root)/".git/index").write_bytes(split)
+                return actual_git(root,*args,index=index)
+            with mock.patch.object(owner,"_source_git",side_effect=switch_index),self.assertRaisesRegex(ValueError,"split source index"):
+                owner.source_identity(repo)
+            self.assertEqual({p.name:(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in (repo/".git").glob("sharedindex.*")},shared)
+            self.assertEqual({name:(repo/name).read_bytes() for name in f["before"]},f["before"])
+
+    def test_HEAD_or_real_index_race_refuses_instead_of_returning_clean(self):
+        from retained_archive_cli_observation import private_environment
+        for kind in ("HEAD", "index"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                actual=owner._source_git; changed=False
+                def racing(repo,*args,index=None):
+                    nonlocal changed
+                    result=actual(repo,*args,index=index)
+                    if index is not None and args[0]=="status": changed=True
+                    if changed and kind=="HEAD" and args==("rev-parse","HEAD"):
+                        return b"f"*40+b"\n"
+                    if changed and kind=="index":
+                        with (Path(repo)/".git/index").open("ab") as stream: stream.write(b"owned-race")
+                        changed=False
+                    return result
+                with mock.patch.object(owner,"_source_git",side_effect=racing), self.assertRaises((ValueError, subprocess.CalledProcessError)):
+                    owner.source_identity(f["repo"])
+
+    def test_split_index_refuses_before_Git_can_refresh_real_shared_metadata(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            repo=f["repo"]; env=local_read_git_env()
+            subprocess.run(["git","-C",str(repo),"update-index","--split-index"],env=env,check=True,capture_output=True,timeout=15)
+            before=self.tree_state(repo)
+            with mock.patch.object(owner,"_source_git",wraps=owner._source_git) as git,self.assertRaisesRegex(ValueError,"split source index"):
+                owner.source_identity(repo)
+            self.assertTrue(all(call.args[1]=="rev-parse" for call in git.call_args_list))
+            self.assertEqual(self.tree_state(repo),before)
+
+    def test_ordinary_index_versions_and_bounded_extension_scan_keep_actual_Git_validation(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+        for version in (2,3,4):
+            with self.subTest(version=version),self.fixture() as f,private_environment(f["repo"].parent/"control-home"):
+                repo=f["repo"]; env=local_read_git_env()
+                def git(*args):
+                    return subprocess.run(["git","-C",str(repo),*args],env=env,check=True,capture_output=True,timeout=15).stdout
+                (repo/"link").write_bytes(b"ordinary tracked filename, not an index extension\n")
+                git("add","link")
+                git("-c","user.name=fixture","-c","user.email=fixture@example.invalid","-c","commit.gpgsign=false","commit","-qm","ordinary link filename")
+                git("update-index","--index-version",str(version))
+                if version==3: git("update-index","--skip-worktree","core/pysrc/helper.py")
+                self.assertEqual(int.from_bytes((repo/".git/index").read_bytes()[4:8],"big"),version)
+                before=self.tree_state(repo)
+                self.assertTrue(owner.source_identity(repo)["clean"])
+                self.assertEqual(self.tree_state(repo),before)
+        for size in (20,32):
+            header=b"DIRC"+(2).to_bytes(4,"big")+bytes(4)
+            # Pure parser vectors only; Git, not this scanner, validates the
+            # trailing digest. No SHA-1 calculation or synthetic admission.
+            owner._source_index_independent(header+bytes(size),size)
+            for raw in (header+b"link"+bytes(4+size),
+                        header+b"TREE"+(100).to_bytes(4,"big")+bytes(size),
+                        b"BAD!"+header[4:]+bytes(size),
+                        b"DIRC"+(5).to_bytes(4,"big")+bytes(4+size),
+                        b"DIRC"+(2).to_bytes(4,"big")+bytes([255])*4+bytes(size),
+                        b"DIRC"+(4).to_bytes(4,"big")+(1).to_bytes(4,"big")+bytes(42+size)+bytes([128])*10+bytes(1+size),
+                        header+b"TREE"+bytes(3+size)):
+                with self.subTest(size=size),self.assertRaises(ValueError):
+                    owner._source_index_independent(raw,size)
+            with self.assertRaises(ValueError): owner._source_index_independent(header+bytes(size),16)
+
+    def test_failed_private_read_and_unreadable_actual_index_never_fall_back_to_cached_clean(self):
+        from retained_archive_cli_observation import private_environment
+        for kind in ("read-tree", "status", "index"):
+            with self.subTest(kind=kind), self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+                actual=owner._source_git
+                def failure(repo,*args,index=None):
+                    if index is not None and args[0]==kind:
+                        raise subprocess.CalledProcessError(128,["git",kind])
+                    return actual(repo,*args,index=index)
+                if kind=="index":
+                    with mock.patch.object(owner,"_source_index_state",side_effect=OSError("owned unavailable index")),self.assertRaises(OSError):
+                        owner.source_identity(f["repo"])
+                else:
+                    with mock.patch.object(owner,"_source_git",side_effect=failure),self.assertRaises(subprocess.CalledProcessError):
+                        owner.source_identity(f["repo"])
+
+    def test_index_path_and_descriptor_metadata_must_each_stay_stable(self):
+        from retained_archive_cli_observation import private_environment
+        with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
+            index=f["repo"] / ".git/index"
+            actual=owner.os.fstat
+            def stat_with_distinct_creation(fd):
+                value=actual(fd)
+                return SimpleNamespace(**{key:getattr(value,key) for key in ("st_dev","st_ino","st_mode","st_size","st_mtime_ns")},st_ctime_ns=value.st_ctime_ns+1)
+            with mock.patch.object(owner.os,"fstat",side_effect=stat_with_distinct_creation):
+                self.assertTrue(owner._source_index_state(index))
+            changed=0
+            def changing_descriptor(fd):
+                nonlocal changed
+                changed+=1;value=actual(fd)
+                return SimpleNamespace(**{key:getattr(value,key) for key in ("st_dev","st_ino","st_mode","st_size","st_mtime_ns")},st_ctime_ns=value.st_ctime_ns+changed)
+            with mock.patch.object(owner.os,"fstat",side_effect=changing_descriptor),self.assertRaisesRegex(ValueError,"source index changed during read"):
+                owner._source_index_state(index)
+            with mock.patch.object(Path,"is_symlink",return_value=True),self.assertRaisesRegex(ValueError,"bounded regular file"):
+                owner._source_index_state(index)
+
 class ActualPythonObserverTest(unittest.TestCase):
     def test_actual_native_read_creates_only_owned_lock_without_invalidating_source(self):
         from test_artifact_authoring import build_installation
@@ -1317,7 +1507,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
         self.assertIs(caught.exception,problem)
         self.assertEqual(len(calls),2)
         self.assertEqual(calls[-1][0][-2:],["add","."])
-        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+        self.assertTrue(all(options["timeout"]==60 and options["check"] and options["capture_output"] for _,options in calls))
         notes=getattr(problem,"__notes__",[])
         self.assertTrue(notes,"fixture Git timeout lost the closed phase diagnostic before cleanup")
         note=next(item for item in notes if item.startswith("Fixture Git diagnostic: "))
@@ -1344,7 +1534,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
                 self.assertTrue(owner.source_identity(fixture["repo"])["clean"])
         self.assertEqual(len(calls),3)
         self.assertEqual([argv[-2:] for argv,_ in calls[:2]],[["init","-q"],["add","."]])
-        self.assertTrue(all(options["timeout"]==15 and options["check"] and options["capture_output"] for _,options in calls))
+        self.assertTrue(all(options["timeout"]==60 and options["check"] and options["capture_output"] for _,options in calls))
 
     def test_projection_drops_unsafe_fields_and_rejects_malformed_nonfinite_data(self):
         import _git_fixture_diagnostics as diagnostics
@@ -1417,7 +1607,7 @@ class SourceFixtureDiagnosticTests(unittest.TestCase):
                     diagnostics.run_git_phase(["git","add","."],phase="index",trace_dir=directory)
                 self.assertIs(caught.exception,problem)
                 run.assert_called_once()
-                self.assertEqual(run.call_args.kwargs["timeout"],15)
+                self.assertEqual(run.call_args.kwargs["timeout"],60)
                 self.assertEqual(dict(os.environ),before)
                 self.assertNotIn("CANARY","\n".join(getattr(problem,"__notes__",[])))
 
@@ -1762,7 +1952,8 @@ class VitestSourceProducerTests(unittest.TestCase):
                     if failure == "dirty": bad["source_stable"] = False
                     if failure == "nonzero": bad["exit_code"] = 1
                     if failure == "other-cell":
-                        selected["cells"] = required["cells"] = ["disposition:transitions:S51:01"]
+                        # S51:01/02 and S52:06 have explicit finite routes; 03 remains outside both profiles.
+                        selected["cells"] = required["cells"] = ["disposition:transitions:S51:03"]
                         required["cell_jobs"] = {required["cells"][0]: f["spec"]["job"]}
                     with self.subTest(failure=failure), self.assertRaises(ValueError): build(bad, consumed, selected, required)
 
@@ -2418,6 +2609,439 @@ class MappedNativeConsumerWorkflowTests(unittest.TestCase):
             self.assertIn(old,text)
             with self.subTest(old=old):
                 with self.assertRaises(AssertionError):self.check_workflow(text.replace(old,new))
+
+
+class SandboxOwnedEffectsRoutingTests(unittest.TestCase):
+    """Pure admission/map controls, never Docker/Vitest runtime qualification."""
+    EXPECTED = {'disposition:transitions:S51:01': ['vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --token, because '
+                                    'argv is world-readable',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract passes the token from the '
+                                    'ENVIRONMENT, not from argv',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract exits with the usage code '
+                                    'when the token is absent, and says where it comes from',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses requires both the image '
+                                    'and the home volume',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --source-volume '
+                                    'before a container can exist',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME '
+                                    '(no host bind of ~/.claude), so state persists',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) THROWS when the '
+                                    'token volume would be co-mounted with an untrusted-code run',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] prepares a credential-blind owned home and retains '
+                                    'its bytes across restart',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses accepts the minimal '
+                                    'invocation and defaults to the guaranteed posture',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses refuses an unknown flag '
+                                    'rather than ignoring it',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses refuses any other egress '
+                                    'posture, naming why',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) requires a '
+                                    'non-empty image, token, and home volume'],
+ 'disposition:transitions:S51:02': ['vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardening parity with run.ts (architecture-002) carries every shared '
+                                    'hardening flag the ordinary sandbox emits',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) passes only the token name in '
+                                    'argv, never the reusable value',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) NEVER passes --privileged and '
+                                    'NEVER mounts the docker socket',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— env-token auth, no host bind (AC-12) defaults egress to offline (the '
+                                    'hard default — Spike B caveat)',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs '
+                                    '— hardened posture is enforced, not optional (AC-12) REFUSES an '
+                                    'arbitrary wide-open network policy (no escaping the hard default)',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:#377 - a '
+                                    'token-bearing box never runs NET_ADMIN without its firewall supplies '
+                                    'the token only to the Docker run process environment',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] runs the real Claude builder offline with scoped '
+                                    'dummy env and effective hardening',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract passes the token from the '
+                                    'ENVIRONMENT, not from argv',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'runClaudeInsideCli — the process contract exits with the usage code '
+                                    'when the token is absent, and says where it comes from',
+                                    'vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 '
+                                    'parseClaudeCli — what the entry point refuses REFUSES --source-volume '
+                                    'before a container can exist',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] prepares a credential-blind owned home and retains '
+                                    'its bytes across restart'],
+ 'disposition:transitions:S52:06': ['vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) assembles `cp <id>:<containerPath> <hostDest>` in the '
+                                    'pull direction',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) never produces the reverse direction (host source '
+                                    'before container dest)',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs — pull-only '
+                                    'direction (AC-10) refuses an empty container id, container path, or '
+                                    'host dest',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) throws (via the mount '
+                                    'chokepoint) on a -v host:container bind copy-in',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) throws on an explicit '
+                                    'type=bind copy-in spec',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind — '
+                                    'host->container bind is impossible (AC-10) the rejection comes from '
+                                    'mounts.ts (cp does not hand-roll its own check)',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect '
+                                    'acceptance [docker] retains real partial docker cp bytes after '
+                                    'cancellation without rollback metadata',
+                                    'vitest:plugins/ca-sandbox/tools/cp.test.ts:cpOut [docker] — pulls a '
+                                    'file from /work to the host (AC-10) copies /work/<f> out to a host dest '
+                                    'with identical bytes']}
+    JOB = "[CHECK] | [SBX ] | Sandbox driver contract"
+
+    def _assert_canonical_groups(self, groups):
+        self.assertEqual(len(groups), 3)
+        self.assertEqual({cell for group in groups for cell in group["cells"]}, set(self.EXPECTED))
+        for group in groups:
+            self.assertEqual(len(group["cells"]), 1)
+            cell = group["cells"][0]
+            self.assertEqual(group["job"], self.JOB)
+            self.assertEqual(group["payload_name"], "major-source-inputs-sandbox-driver")
+            self.assertEqual(group["observation"], "sandbox-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(len(group["selectors"]), len(set(group["selectors"])))
+            self.assertEqual(set(group["selectors"]), set(self.EXPECTED[cell]))
+
+    def _groups(self):
+        groups = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        selected = [copy.deepcopy(group) for group in groups if set(group["cells"]) & set(self.EXPECTED)]
+        self._assert_canonical_groups(selected)
+        return selected
+
+    def test_canonical_three_cells_require_complete_guard_and_real_effect_unions(self):
+        groups = self._groups()
+        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"],
+                         frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"})
+        self.assertEqual(owner.TS_PROFILE_CELLS["pi-tools-v1"], frozenset(
+            "disposition:transitions:pi-qualification:disposable-home:" + number
+            for number in ("01", "02", "03")))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        for cell in self.EXPECTED:
+            self.assertEqual(policy["cell_job_bindings"][cell], self.JOB)
+        for index, group in enumerate(groups):
+            for selector in group["selectors"]:
+                # Removing any guard OR real-effect selector is a semantic map
+                # regression, even if all remaining runtime names would pass.
+                bad = copy.deepcopy(groups); bad[index]["selectors"].remove(selector)
+                with self.subTest(cell=group["cells"][0], missing=selector), self.assertRaises(AssertionError):
+                    self._assert_canonical_groups(bad)
+        self.assertFalse(any("installed:" in cell or cell.startswith("task:") or ":machines:" in cell
+                             for group in groups for cell in group["cells"]))
+
+    def test_all_named_guards_and_effects_must_pass_under_original_bound_source_profile(self):
+        groups = self._groups()
+        with vitest_source_fixture("sandbox-tools-v1") as fixture:
+            payload = VitestSourceProducerTests.authenticate(self, fixture)
+            selectors = sorted({name for group in groups for name in group["selectors"]})
+            # Inert data seams for the pure reader. These are deliberately not
+            # observations from the actual Docker fixture or a live CI job.
+            observed = {"format": owner.OBSERVATION, **fixture["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": fixture["command"], "exit_code": 0,
+                "tests": [{"id": name, "result": "passed"} for name in selectors],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": "sandbox-tools-v1",
+                    "payload_name": fixture["spec"]["payload"],
+                    "manifest_sha256": owner.readiness.digest((fixture["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+            req = {**fixture["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                   "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            def build(observation=observed, consumed=payload, selected=groups, required=req):
+                return owner.build_report(required, job_name=self.JOB, job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": selected},
+                    observations={"sandbox-tools": observation},
+                    payloads={fixture["spec"]["payload"]: consumed})
+            result = build()
+            self.assertEqual({row["cell"] for row in result["results"]}, set(self.EXPECTED))
+            for selector in selectors:
+                for state in ("missing", "skipped", "failed", "duplicate"):
+                    changed = copy.deepcopy(observed)
+                    row = next(row for row in changed["tests"] if row["id"] == selector)
+                    if state == "missing": changed["tests"].remove(row)
+                    elif state == "duplicate": changed["tests"].append(dict(row))
+                    else: row["result"] = state
+                    with self.subTest(selector=selector, state=state), self.assertRaises(ValueError): build(changed)
+            for failure in ("source", "run", "unstable", "exit", "producer", "profile", "manifest", "uploader", "role"):
+                changed, consumed, selected = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups)
+                if failure == "source": changed["source_commit"] = "f" * 40
+                if failure == "run": changed["ci_run_id"] = 8
+                if failure == "unstable": changed["source_stable"] = False
+                if failure == "exit": changed["exit_code"] = 1
+                if failure == "producer": changed["producer"] = "claimed-docker-pass"
+                if failure == "profile": changed["source_input_binding"]["profile"] = "unknown-sandbox-profile"
+                if failure == "manifest": consumed["source_manifest_sha256"] = "0" * 64
+                if failure == "uploader": consumed["source_upload_job_id"] = True
+                if failure == "role": selected[0]["payload_name"] = "foreign-native-archive"
+                with self.subTest(failure=failure), self.assertRaises(ValueError): build(changed, consumed, selected)
+            for cell in ("disposition:transitions:S51:03", "disposition:machines:S51", "task:SBX-D04", "installed:sandbox:linux"):
+                changed = copy.deepcopy(groups[0]); changed["cells"] = [cell]
+                required = {**req, "cells": [cell], "cell_jobs": {cell: self.JOB}}
+                with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=[changed], required=required)
+
+SDK_PYTHON_FIXTURE_PATHS = frozenset(('.github/fixtures/pi-hosts/1.5.0/.npmrc',
+ '.github/fixtures/pi-hosts/1.5.0/package-lock.json',
+ '.github/fixtures/pi-hosts/1.5.0/package.json',
+ '.github/fixtures/pi-hosts/1.5.0/review.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/scripts/pi_cli_resolver.py',
+ '.github/scripts/pi_host_locks.py',
+ '.github/scripts/test_pi_package.py',
+ '.github/scripts/test_pi_platform_contract.py',
+ '.github/workflows/ci.yml',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca-pi/tools/src/activation.ts',
+ 'plugins/ca-pi/tools/src/activity.ts',
+ 'plugins/ca-pi/tools/src/approval-dialog.ts',
+ 'plugins/ca-pi/tools/src/approval-entry.ts',
+ 'plugins/ca-pi/tools/src/attestation.ts',
+ 'plugins/ca-pi/tools/src/audit-sink.ts',
+ 'plugins/ca-pi/tools/src/background-jobs.ts',
+ 'plugins/ca-pi/tools/src/bridge.ts',
+ 'plugins/ca-pi/tools/src/child-env.ts',
+ 'plugins/ca-pi/tools/src/child-extension.ts',
+ 'plugins/ca-pi/tools/src/command-ownership.ts',
+ 'plugins/ca-pi/tools/src/commands.ts',
+ 'plugins/ca-pi/tools/src/compaction.ts',
+ 'plugins/ca-pi/tools/src/compatibility.ts',
+ 'plugins/ca-pi/tools/src/contracts.ts',
+ 'plugins/ca-pi/tools/src/delegated-executor.ts',
+ 'plugins/ca-pi/tools/src/delegation-client.ts',
+ 'plugins/ca-pi/tools/src/delegation-contract.ts',
+ 'plugins/ca-pi/tools/src/delegation-journal.ts',
+ 'plugins/ca-pi/tools/src/delegation-session.ts',
+ 'plugins/ca-pi/tools/src/dispatch.ts',
+ 'plugins/ca-pi/tools/src/doctor.ts',
+ 'plugins/ca-pi/tools/src/extension.ts',
+ 'plugins/ca-pi/tools/src/farm.ts',
+ 'plugins/ca-pi/tools/src/footer-state.ts',
+ 'plugins/ca-pi/tools/src/footer.ts',
+ 'plugins/ca-pi/tools/src/git-facts.ts',
+ 'plugins/ca-pi/tools/src/inference-broker.ts',
+ 'plugins/ca-pi/tools/src/native-background.ts',
+ 'plugins/ca-pi/tools/src/native-plan.ts',
+ 'plugins/ca-pi/tools/src/notices.ts',
+ 'plugins/ca-pi/tools/src/parent-delegation.ts',
+ 'plugins/ca-pi/tools/src/path-boundary.ts',
+ 'plugins/ca-pi/tools/src/pi-api.d.ts',
+ 'plugins/ca-pi/tools/src/plan-mode.ts',
+ 'plugins/ca-pi/tools/src/policy.ts',
+ 'plugins/ca-pi/tools/src/process-tree.ts',
+ 'plugins/ca-pi/tools/src/redaction.ts',
+ 'plugins/ca-pi/tools/src/roles.ts',
+ 'plugins/ca-pi/tools/src/runner.ts',
+ 'plugins/ca-pi/tools/src/runtime-resolver.ts',
+ 'plugins/ca-pi/tools/src/session-identity.ts',
+ 'plugins/ca-pi/tools/src/sidebar-compositor.ts',
+ 'plugins/ca-pi/tools/src/sidebar-data.ts',
+ 'plugins/ca-pi/tools/src/sidebar-manager.ts',
+ 'plugins/ca-pi/tools/src/sidebar.ts',
+ 'plugins/ca-pi/tools/src/status.ts',
+ 'plugins/ca-pi/tools/src/tool-guard.ts',
+ 'plugins/ca-pi/tools/src/windows-supervisor.ts',
+ 'plugins/ca/tools/redactor.ts'))
+
+
+@contextmanager
+def sdk_python_source_fixture():
+    """Real private Git/source transport, inert Python only; never SDK qualification."""
+    with tempfile.TemporaryDirectory(prefix="ca-sdk-python-profile-") as temporary:
+        base=Path(temporary).resolve(); repo=base/"repo";repo.mkdir()
+        # The closed path set is maintained production data, not a fixture override.
+        paths = getattr(owner,"SDK_SOURCE_PATHS",SDK_PYTHON_FIXTURE_PATHS)
+        for relative in paths:
+            target=repo/relative;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((Path(os.environ.get("CA_SDK_CANONICAL_ROOT", owner.ROOT))/relative).read_bytes())
+        counter=base/"counter"
+        method="test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement"
+        # Explicitly synthetic observer control: this method name is not evidence of SDK execution.
+        program=("import unittest,pathlib\nclass PiPackageTests(unittest.TestCase):\n"
+                 f" def {method}(self):\n"
+                 f"  p=pathlib.Path({str(counter)!r});p.write_text(p.read_text()+'x' if p.exists() else 'x')\n"
+                 "if __name__=='__main__':unittest.main()\n")
+        (repo/".github/scripts/test_pi_package.py").write_text(program,encoding="utf-8",newline="\n")
+        git=shutil.which("git");assert git
+        environment={key:value for key,value in os.environ.items() if key.upper() in ("SYSTEMROOT","WINDIR","SYSTEMDRIVE","COMSPEC","PATHEXT")}
+        environment.update(PATH=os.pathsep.join([str(Path(git).parent),str(Path(sys.executable).parent)]),
+                           HOME=str(base),USERPROFILE=str(base),GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM="1",
+                           GIT_AUTHOR_NAME="fixture",GIT_AUTHOR_EMAIL="fixture@invalid",GIT_COMMITTER_NAME="fixture",GIT_COMMITTER_EMAIL="fixture@invalid",
+                           GITHUB_RUN_ID="7",PYTHONDONTWRITEBYTECODE="1")
+        with mock.patch.dict(os.environ,environment,clear=True):
+            for arguments in (["init"],["config","core.autocrlf","false"],["add","."],["-c","commit.gpgsign=false","commit","-qm","SDK source fixture"]):
+                phase="init" if arguments[0] in ("init","config") else "index" if arguments[0]=="add" else "commit"
+                run_git_phase([git,"-C",str(repo),*arguments],phase=phase,trace_dir=base)
+            staged=base/"staged"
+            yield {"base":base,"repo":repo,"staged":staged,"counter":counter,
+                   "profile":"pi-sdk-footer-v1","job":"[CHECK] | [PI  ] | Host-independent adapter contract",
+                   "payload":"major-source-inputs-pi-sdk-footer","cell":"disposition:transitions:S18:07"}
+
+
+class SdkPythonSourceProfileTests(unittest.TestCase):
+    def prepare(self,f):
+        return owner.prepare_source_payload(f["repo"],f["staged"],f["job"],f["profile"])
+
+    def original(self,f):
+        output=f["base"]/"observed.json"
+        self.assertEqual(owner.observe_python(f["repo"],".github/scripts/test_pi_package.py",[],output,
+                         f["staged"],profile=f["profile"]),0)
+        return owner.load_json(output)
+
+    def authenticate(self,f,job=None,mutate=None):
+        files={p.relative_to(f["staged"]).as_posix():p.read_bytes() for p in f["staged"].rglob("*") if p.is_file()}
+        if mutate:mutate(files)
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:
+            for name,value in files.items():archive.writestr(name,value)
+        identity=owner.source_identity(f["repo"],f["profile"])
+        req={**identity,"ci_run_id":7,"cells":[f["cell"]],"cell_jobs":{f["cell"]:f["job"]}}
+        job=job if job is not None else {"id":9,"name":f["job"],"status":"in_progress","conclusion":None,
+             "steps":[{"name":"Upload Pi SDK footer source-test inputs","status":"completed","conclusion":"success"}]}
+        with mock.patch.object(owner.readiness,"artifact_bytes",return_value=raw.getvalue()) as archive_read, \
+             mock.patch.object(owner.readiness,"validate_upload",side_effect=AssertionError("active own job log is unavailable")) as own_log:
+            payload=owner.authenticated_payload({"id":8,"name":f["payload"]},req,f["repo"],source_job=job)
+            archive_read.assert_called_once();own_log.assert_not_called()
+        return req,payload
+
+    def selection(self,f,observed):
+        return {"schema":owner.SELECTIONS,"groups":[{"id":"sdk","job":f["job"],"payload_name":f["payload"],
+          "observation":"sdk","proof_kind":"source-test","selectors":[observed["tests"][0]["id"]],"cells":[f["cell"]],
+          "scope":"Pure synthetic source-observer admission test; no actual SDK claim"}]}
+
+    def build(self,f,observed,selection=None):
+        req,payload=self.authenticate(f)
+        selection=selection or self.selection(f,observed)
+        req.update(cells=selection["groups"][0]["cells"],cell_jobs={cell:f["job"] for cell in selection["groups"][0]["cells"]})
+        return owner.build_report(req,job_name=f["job"],job_id=9,selections=selection,
+                                  observations={"sdk":observed},payloads={f["payload"]:payload})
+
+    def test_public_closed_sdk_profile_observes_one_original_python_invocation(self):
+        with sdk_python_source_fixture() as f:
+            try:self.prepare(f)
+            except ValueError as error:self.fail("Existing owning source transport refuses the finite SDK Python profile: "+str(error))
+            observed=self.original(f)
+            self.assertEqual(f["counter"].read_text(encoding="utf-8"),"x")
+            self.assertEqual(observed["producer"],"python-test-result-observer")
+            self.assertEqual(observed["source_input_binding"]["profile"],f["profile"])
+            self.assertEqual(observed["tests"],[{"id":"python:.github/scripts/test_pi_package.py:__main__.PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement","result":"passed"}])
+            report=self.build(f,observed)
+            self.assertEqual([row["cell"] for row in report["results"]],[f["cell"]])
+            self.assertEqual(report["results"][0]["executed_population"],1)
+
+    def test_sdk_original_script_arguments_and_unknown_profile_refuse_before_effect(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f)
+            for script,arguments,profile in ((".github/scripts/pi_cli_resolver.py",[],f["profile"]),
+                (".github/scripts/test_pi_package.py",["--rpc-commands"],f["profile"]),
+                (".github/scripts/test_pi_package.py",["PiPackageTests.test_one"],f["profile"]),
+                (".github/scripts/test_pi_package.py",[],"pi-sdk-footer-other")):
+                with self.subTest(script=script,arguments=arguments,profile=profile),self.assertRaises(ValueError):
+                    owner.observe_python(f["repo"],script,arguments,f["base"]/"not-created.json",f["staged"],profile=profile)
+            self.assertFalse(f["counter"].exists())
+            self.assertFalse((f["base"]/"not-created.json").exists())
+
+    def test_sdk_one_cell_cap_and_python_identity_refuse_skip_duplicate_and_relabel(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f);observed=self.original(f);selection=self.selection(f,observed)
+            for cell in ("disposition:transitions:S18:06","disposition:machines:S18","task:PI-D07","installed:pi:linux:1.5.0"):
+                bad=copy.deepcopy(selection);bad["groups"][0]["cells"]=[cell]
+                with self.subTest(cell=cell),self.assertRaises(ValueError):self.build(f,observed,bad)
+            for failure in ("skipped","failed","missing","duplicate","vitest","arguments","source","run"):
+                bad=copy.deepcopy(observed)
+                if failure=="missing":bad["tests"]=[]
+                elif failure=="duplicate":bad["tests"]*=2
+                elif failure=="vitest":bad["producer"]="vitest-json-observer"
+                elif failure=="arguments":bad["argv"].append("--rpc-commands")
+                elif failure=="source":bad["source_commit"]="e"*40
+                elif failure=="run":bad["ci_run_id"]=8
+                else:bad["tests"][0]["result"]=failure
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.build(f,bad,selection)
+
+    def test_completed_prior_upload_is_required_but_active_own_job_log_is_not(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f);self.authenticate(f)
+            original={"id":9,"name":f["job"],"status":"in_progress","conclusion":None,
+                      "steps":[{"name":"Upload Pi SDK footer source-test inputs","status":"completed","conclusion":"success"}]}
+            for failure in ("no-step","failed-step","active-step","wrong-job","completed-own-job","wrong-source","extra-member"):
+                job=copy.deepcopy(original)
+                if failure=="no-step":job["steps"]=[]
+                elif failure=="failed-step":job["steps"][0]["conclusion"]="failure"
+                elif failure=="active-step":job["steps"][0]["status"]="in_progress"
+                elif failure=="wrong-job":job["name"]="another job"
+                elif failure=="completed-own-job":job["status"]="completed"
+                def mutate(files):
+                    if failure=="wrong-source":
+                        value=json.loads(files[owner.SOURCE_MANIFEST]);value["source_commit"]="e"*40
+                        files[owner.SOURCE_MANIFEST]=json.dumps(value).encode()
+                    elif failure=="extra-member":files["unexpected.json"]=b"{}"
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.authenticate(f,job,mutate)
+
+    def test_sdk_source_namespace_and_dirty_inputs_never_become_stable(self):
+        with sdk_python_source_fixture() as f:
+            self.prepare(f)
+            unknown=f["repo"]/"plugins/ca-pi/tools/src/untracked-shadow.ts";unknown.write_text("export {};",encoding="utf-8")
+            with self.assertRaises(ValueError):owner.source_input_snapshot(f["repo"],f["profile"])
+            self.assertEqual(unknown.read_text(encoding="utf-8"),"export {};")
+            unknown.unlink()
+            member=f["repo"]/"plugins/ca-pi/tools/src/status.ts";member.write_bytes(member.read_bytes()+b"\n// changed\n")
+            with self.assertRaises(ValueError):owner.source_input_snapshot(f["repo"],f["profile"])
+            self.assertFalse(f["counter"].exists())
+
+    def test_final_reader_requires_original_sdk_upload_exact_owner_and_completed_job(self):
+        cell="disposition:transitions:S18:07";job_name="[CHECK] | [PI  ] | Host-independent adapter contract"
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("source-member",b"inert")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":"major-source-inputs-pi-sdk-footer"};artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":job_name,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],"cell_jobs":{cell:job_name},"required_artifact_names":[source["name"]]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in ("source_commit","source_tree","ci_run_id")},"job_id":9,
+          "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+          "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python",".github/scripts/test_pi_package.py"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[mock.call(job,artifact,"Upload major qualification report"),
+                mock.call(job,source,"Upload Pi SDK footer source-test inputs")])
+            for failure in ("wrong-owner","in-progress","upload-refused"):
+                modified=copy.deepcopy(jobs);requirements=copy.deepcopy(req)
+                attribution.side_effect=None
+                if failure=="wrong-owner":
+                    modified[0]["name"]="other";requirements["cell_jobs"][cell]="other"
+                elif failure=="in-progress":modified[0].update(status="in_progress",conclusion=None)
+                else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
+                with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(requirements,[source,artifact],modified)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

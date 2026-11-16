@@ -1,0 +1,168 @@
+{
+  "format": "private-unsupported-wasm-unit/1",
+  "state": "FAILED_RETAINED_STOPPED",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "draft": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-boundary-plan-c03bb9ae\\fs_other_boundary_test.go",
+    "sha256": "28e3dbea39cd63209f21362011644c64abc4a8ce00c66456fde56f37c9053856"
+  },
+  "compile": {
+    "argv": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-c",
+      "-mod=readonly",
+      "-p=2",
+      "-x",
+      "-work",
+      "-o",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\output\\store-fallback.test.wasm",
+      "./internal/store"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\candidate\\core\\artifacts",
+    "exit_code": 0,
+    "elapsed_seconds": 6.320302100008121,
+    "timeout_seconds": 90,
+    "timed_out": false,
+    "overflowed": false,
+    "containment": "exited",
+    "setup_error": null,
+    "streams": {
+      "stdout": {
+        "observed_bytes": 0,
+        "retained_bytes": 0,
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reader_error": null
+      },
+      "stderr": {
+        "observed_bytes": 793615,
+        "retained_bytes": 793615,
+        "observed_sha256": "c6350e6ab519e3d892d9f12b3fdb44630191387982a263a5620ce591ef600d07",
+        "reader_error": null
+      }
+    }
+  },
+  "unit": {
+    "argv": [
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "--stack-size=8192",
+      "C:\\Program Files\\Go\\lib\\wasm\\wasm_exec_node.js",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\output\\store-fallback.test.wasm",
+      "-test.run=^TestUnsupportedBackendOpenRefusesWithoutEffects$",
+      "-test.count=1",
+      "-test.timeout=20s",
+      "-test.failfast",
+      "-test.v"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\candidate\\core\\artifacts",
+    "exit_code": 2,
+    "elapsed_seconds": 0.0867813000222668,
+    "timeout_seconds": 30,
+    "timed_out": false,
+    "overflowed": false,
+    "containment": "exited",
+    "setup_error": null,
+    "streams": {
+      "stdout": {
+        "observed_bytes": 0,
+        "retained_bytes": 0,
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reader_error": null
+      },
+      "stderr": {
+        "observed_bytes": 2191,
+        "retained_bytes": 2191,
+        "observed_sha256": "1ec660fa90943124ad38cad5e4b0eff64cf3cca786eb13bb372f07e48824483b",
+        "reader_error": null
+      }
+    }
+  },
+  "validation": {
+    "compile_pass": true,
+    "unit_pass": false,
+    "source_stable": true,
+    "candidate_stable": true,
+    "goroot_stable": true,
+    "tools_stable": true,
+    "helper_stable": true,
+    "node_stable": true,
+    "module_inputs": 250,
+    "goroot_files": 15639,
+    "explicit_trace_files": 0,
+    "executed_test_names": [],
+    "limits": "Unsupported js/wasm source unit only; not native unsupported OS, supported six platforms, installed native, whole NT08/NF08/SEQ31 or status qualification.",
+    "exact_one_named_pass": false
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\before.json",
+      "sha256": "826bf8e1b528a1931e14ad64edbb6c081be644361f290f73bea62255e1d09dbe",
+      "bytes": 2794839
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\after.json",
+      "sha256": "fc9663b93d1b4b8b78f259d9df36737aba0b59053c22a4b682c2dd5d752163ed",
+      "bytes": 2791753
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\compile-outcome.json",
+      "sha256": "ebb4cdb3875111623b03ed6e4d36b0fe2ffe9366fc2410c308e6773f52d6528e",
+      "bytes": 1013
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\compile.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\compile.stderr.log",
+      "sha256": "c6350e6ab519e3d892d9f12b3fdb44630191387982a263a5620ce591ef600d07",
+      "bytes": 793615
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\compiler-source-trace.json",
+      "sha256": "f80fcf3a8773745f38eb276661d331126eadb0cdc593b93b021cec70207028fb",
+      "bytes": 768795
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\validation.json",
+      "sha256": "279ba03cf7f8c61f0aa5d3979ebd389776f24b8f629a58cf16d629ce2be879a4",
+      "bytes": 509
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\execute.py",
+      "sha256": "1aa732998b56156f183beed0b4bd77df7cd0f6cbced8bb10e94c366f63f8e6b0",
+      "bytes": 12792
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\wasm.json",
+      "sha256": "37df9a5744c19ac328ebe0d73d4211793e4271dcda779d4f2c3d04fa019267d6",
+      "bytes": 195
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\unit-outcome.json",
+      "sha256": "90be9e28a7dc9d918b5a238855b2edb8a6d888400a3369c3d43f26bb27dd082a",
+      "bytes": 1196
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\unit.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\unit.stderr.log",
+      "sha256": "1ec660fa90943124ad38cad5e4b0eff64cf3cca786eb13bb372f07e48824483b",
+      "bytes": 2191
+    }
+  ],
+  "prior_failed_capture": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-native-unsupported-wasm-run/delivery.json",
+    "sha256": "d74b2b2c57e04c9bde81266b72e3591a2467f8fb17c65df3f243068b82062709",
+    "classification": "226 Go/module-only fixture omitted go:embed data; compile1; Node NOT RUN; no product failure"
+  },
+  "full_module_bindings_sha256": "cdd67b0e3984b4337367475ac35d22e4eb05412aa52035e64e98416008b9e8a8",
+  "no_canonical_writes": true,
+  "no_status_promotion": true,
+  "failure_policy": "First actual failure retained; no retry/fix/alternate target.",
+  "qualification": false
+}

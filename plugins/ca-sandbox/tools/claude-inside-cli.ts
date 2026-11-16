@@ -3,16 +3,14 @@
  *
  * WHY THIS IS A SEPARATE BINARY, not a `sandbox` subcommand.
  *
- * This starts a container holding a LIVE Claude Code OAuth token. The
- * `sandbox-claude-inside` skill wraps that in five BLOCK gates: posture, image,
- * token, run, teardown. Wiring it into `sandbox.js` as `sandbox with-claude`
- * would let anyone start a token-bearing box with one ungated command, which
- * turns those gates from enforcement into advice.
+ * Separate placement is a packaging boundary. The `sandbox-claude-inside`
+ * skill guides posture, image, token, run and teardown; executable placement
+ * does not mechanically enforce those five phases.
  *
- * So it ships as its own artifact. The routine is the only sanctioned caller,
- * and reaching for it directly is a deliberate act rather than a subcommand
- * someone finds in `--help`. The cost is a second declared payload artifact and
- * its own CI staleness gate, which is the trade the maintainer chose.
+ * The CLI validates arguments, accepted network policies and environment-token
+ * presence. Runtime guards reject token/source-volume co-mounts and apply the
+ * selected network policy and container hardening. These guards do not verify
+ * that a caller followed the skill's review phases.
  *
  * WHY IT EXISTS AT ALL. Before this, the feature was documented and had no
  * shipped code path whatsoever: `runClaudeInside` had zero callers, so esbuild
@@ -120,9 +118,11 @@ export function usage(): string {
     `The OAuth token is read from ${TOKEN_ENV_VAR} in the environment. It is never`,
     "accepted on the command line: an argument list is world-readable.",
     "",
-    "Sanctioned caller: the `sandbox-claude-inside` skill, whose five BLOCK gates",
-    "(posture, image, token, run, teardown) are the reason this is not a",
-    "`sandbox` subcommand.",
+    "Use the `sandbox-claude-inside` skill for five agent-guided phases:",
+    "posture, image, token, run and teardown. Separate executable placement",
+    "does not enforce those phases.",
+    "Machine guards validate arguments and environment-token presence, refuse",
+    "token/source co-mounts, and apply the selected network policy and hardening.",
   ].join("\n");
 }
 

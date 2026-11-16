@@ -16,6 +16,12 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Require HTTPS for Pi provider endpoints outside literal loopback, including broker authorization and child-visible redirect downgrade refusal.
+- Extend native journal and schema qualification routes with required parent/child outcomes from every declared platform.
+- Reject ancestor/descendant transaction targets before staging and during journal validation; preserve valid disjoint path prefixes.
+- Require full original six-platform parent and child evidence for five additional journal/recovery routes, preserving all earlier native selections.
+- Retain bounded native-debugger setup phases, validated failure/detach fields and stopped-instruction offsets without exposing raw debugger data.
+- Give owned source-fixture Git commands a bounded 60-second setup allowance and worktree cleanup checks an explicit integration-test budget.
 - Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
 
 - Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
@@ -36,6 +42,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Select installed native binaries and dispatch requests using interpreter OS identity, avoiding Windows version-discovery shell commands while retaining native architecture and process guards.
 - Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
 
 - Render knowledge path lists correctly while retaining exact validated legacy HTML reads.
