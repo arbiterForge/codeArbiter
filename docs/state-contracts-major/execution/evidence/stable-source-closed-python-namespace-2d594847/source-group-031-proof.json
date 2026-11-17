@@ -1,0 +1,81 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2d594847888619a98aa964ad1757a31a788aa5c4",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/test_context_native.py": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/build-artifacts.py": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+    "tools/go-test-timings.json": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+    "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+  },
+  "disposition_ids": [
+    "disposition:machines:S68",
+    "disposition:transitions:S68:01",
+    "disposition:transitions:S68:02",
+    "disposition:transitions:S68:03",
+    "disposition:transitions:S68:04",
+    "disposition:transitions:S68:05",
+    "disposition:transitions:S68:06",
+    "disposition:transitions:S68:07"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-031-inspection.json",
+      "sha256": "2f8b764115ab5f4007a6fe5bbc6da4b3c2dda2da20e2aab61c073b9431068640"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+      "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+    "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+    "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-031-inspection.json",
+  "scope": "Finite conditional source guard/effect/retry acceptance only. No authentic production artifact, runtime receipt, installed/native/remote publication or task/scenario/program qualification.",
+  "limits": [
+    "No tests/build/native/browser/provider/API/install/publication effects.",
+    "Positive source exposures are not retrospective loaded-module/native membership/absence/installed inventory observations.",
+    "Historical runtime evidence and unselected records remain original; no relabelled epoch.",
+    "Candidate/module/tool/OS/remote effects remain conditional caller boundaries, not proven observations.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ]
+}

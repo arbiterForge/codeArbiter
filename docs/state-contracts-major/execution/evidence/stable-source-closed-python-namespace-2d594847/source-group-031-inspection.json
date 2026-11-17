@@ -1,0 +1,651 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "2d594847888619a98aa964ad1757a31a788aa5c4",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-031",
+  "positive_input_join": {
+    ".github/scripts/_contextverificationlib.py": {
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "bytes": 23733,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "bytes": 23733
+      }
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "bytes": 15795,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+        "bytes": 15795
+      }
+    },
+    ".github/scripts/test_context_native.py": {
+      "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      "bytes": 13892,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+        "bytes": 13892
+      }
+    },
+    "core/artifact-release-manifest.json": {
+      "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "bytes": 864,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "bytes": 864
+      }
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "bytes": 4249,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+        "bytes": 4249
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/build-artifacts.py": {
+      "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "bytes": 15051,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+        "bytes": 15051
+      }
+    },
+    "tools/go-test-timings.json": {
+      "sha256": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+      "bytes": 14907,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3e09091efa43e1b1c9da2e2ad0b74bd91be07386dbe2cf90e5a77791ece5f75c",
+        "bytes": 14907
+      }
+    },
+    "tools/go_test_parallel.py": {
+      "sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+      "bytes": 14234,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+        "bytes": 14234
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "scope": "Finite hosted native binding sources and exact local context test. Dynamic directories are the actual declared candidate and record populations.",
+    "namespace": {
+      "profile": {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows"
+      },
+      "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+      "current_source": "2d594847888619a98aa964ad1757a31a788aa5c4",
+      "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+      "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+      "entries_before": 281,
+      "entries_now": 284,
+      "added": [
+        {
+          "path": ".github/scripts/site_vitest_observation.py",
+          "sha256_at_review": "98b5620ce215a73d72c6af137e3a63547b0254886dd2d6c8502861affc530608",
+          "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+        },
+        {
+          "path": ".github/scripts/test_pi_payload_identity.py",
+          "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+          "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+        },
+        {
+          "path": ".github/scripts/test_site_vitest_observation.py",
+          "sha256_at_review": "d72a94774f9efa10ae6e1b73cb87900567b6acfc248ddb03f9dc9817b08c0293",
+          "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+        }
+      ],
+      "negative_scope": "No old namespace member, mode or object class changed. Physical and lexical resolution inside reviewed paths names existing sources, tools, plugins or scratch/candidate scopes, and never uses the new names. Their bytes are identified at review, while the strict namespace digest binds names, object classes and modes."
+    },
+    "referenced_script_roles": {
+      ".github/scripts/_contextverificationlib.py": {
+        "role": "Bounded rglob of exact caller-owned Go module and staged plugin root, plus empty isolated PATH. It does not select scripts.",
+        "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "reviewed_discovery_calls": [
+          {
+            "line": 68,
+            "call": "root.rglob(\"*\")"
+          },
+          {
+            "line": 351,
+            "call": "plugin.rglob(\"*\")"
+          },
+          {
+            "line": 440,
+            "call": "empty.iterdir()"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/ci20_native_binding.py": {
+        "role": "Enumerates the tested artifact candidate directory and exact six named retained runner directories. Module membership binds core/artifacts only.",
+        "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+        "reviewed_discovery_calls": [
+          {
+            "line": 114,
+            "call": "candidate.iterdir()"
+          },
+          {
+            "line": 244,
+            "call": "root.iterdir()"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/test_context_native.py": {
+        "role": "Explicit Go and installed runner inputs. No dynamic directory import/test discovery.",
+        "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+        "reviewed_discovery_calls": [],
+        "new_name_references": []
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:S68",
+      "frozen_record": {
+        "machine_id": "S68",
+        "name": "Native artifact candidate build and protected qualification",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "11880f19b4e503b0c54534e94a7b6604e484c90974870a93c8963fba05c8da1e",
+      "group": "source-group-031",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Native artifact candidate build and protected qualification. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:01",
+      "frozen_record": {
+        "transition_id": "S68:01",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "build",
+          "guard": "supported native OS/architecture; offline local Go settings",
+          "to": "native tests running",
+          "effects": "Run Go tests (30m configured gate) and vet; then reproducible-flag Go build.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "unbuilt",
+          "transition_id": "S68:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "918214db647cbf87aaa7754c5363aaef641091241640d54989a40426a4368728",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:02",
+      "frozen_record": {
+        "transition_id": "S68:02",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "build --skip-tests",
+          "guard": "development cross/native build",
+          "to": "unqualified candidate",
+          "effects": "Build binary and write release manifest with native_tested=false; cannot promote as qualified payload.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "unbuilt",
+          "transition_id": "S68:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e2fa35e7248c9d79c6108201fcd3374e3f8c315ec8daa7717f04b49b62f87b74",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:03",
+      "frozen_record": {
+        "transition_id": "S68:03",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "tests/vet/build succeed",
+          "guard": "actual host target matches selected Go target",
+          "to": "native-tested candidate",
+          "effects": "Write binary and five-key release manifest with digest/native_tested=true.",
+          "failure_retry": "This candidate flag alone is not protected CI qualification or upstream-host proof.",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "native tests running",
+          "transition_id": "S68:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "4da8e9b075af3c2928ec68a01e3287192cc52fa7e3f46ed2d6373342afe5a2ad",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:04",
+      "frozen_record": {
+        "transition_id": "S68:04",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "qualify-existing",
+          "guard": "GITHUB_ACTIONS, protected job/workflow/run/SHA, checked-out HEAD exact, platform matches",
+          "to": "qualification eligible",
+          "effects": "Read candidate identity and binary digest; bind native host Go or explicit same-run off-host stamp.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "candidate",
+          "transition_id": "S68:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "497a889e2802da4da29311099752e349da978a9c1d4afc54c8a6c3827ab7d96c",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:05",
+      "frozen_record": {
+        "transition_id": "S68:05",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "optional context observation",
+          "guard": "exact six finite case identities, module/tool hashes, exit zero and expected subtests/source digests",
+          "to": "qualification eligible",
+          "effects": "Attach validated context_native observation; no raw claim-only case acceptance.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "qualification eligible",
+          "transition_id": "S68:05"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7e73259c8e3f2b9802c99e38f32b13d1622e12b02b249078b8657649a36b278d",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:06",
+      "frozen_record": {
+        "transition_id": "S68:06",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "write receipt",
+          "guard": "new destination in existing directory",
+          "to": "qualified receipt",
+          "effects": "Exclusive-create independent qualification receipt; include source/workflow/run/platform/digest/test identities.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "qualification eligible",
+          "transition_id": "S68:06"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "aa698be3384eb57e704ebc0956633f1250be8ce17e6eda0413facf1cf09e5af4",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S68:07",
+      "frozen_record": {
+        "transition_id": "S68:07",
+        "machine_id": "S68",
+        "owner": "packaging",
+        "baseline": {
+          "event": "test/tool/source/context/platform/output guard fails",
+          "guard": "precondition violated",
+          "to": "refused",
+          "effects": "Stop; candidate directory may contain prior or partial outputs but no valid new qualification receipt is claimed.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-artifacts.py",
+              "symbol": "main, write_qualification, load_context_observation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-artifacts.py",
+              "lines": "1-243"
+            }
+          ],
+          "from": "any phase",
+          "transition_id": "S68:07"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "14958a85d96986dbfd9a512f1b6fc97b3422bb25a321d0e2fdeab616951bfd40",
+      "group": "source-group-031",
+      "assessment": "Build/qualify-existing still requires original tool/source/platform and exact finite context identities. New opt-in observation records preserve original execution/timeout and strict child population; no skip-test/native_tested flag alone, new unit additions or changed module hash qualifies a native/installed cohort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/native-builder/preserved.json",
+          "sha256": "e19e07e04338e1842e38d248431ed221b22f84b4d77f7af31db091ba6004937e",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "native-observation-only",
+      "paths": [
+        "tools/build-artifacts.py",
+        "tools/go_test_parallel.py"
+      ],
+      "assessment": "Opt-in npm binding observations require actual tests and a fresh external directory; inherited observation env is cleared. Optional subtest retention keeps original command, timeout, chunk API and top-level membership. Named terminal identities and child population are bounded; duplicate/foreign/nonpassing children refuse observation. No second test execution, skip/deadline relaxation or native-run renewal."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}
