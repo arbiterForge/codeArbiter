@@ -289,6 +289,56 @@ class TestUninstall(_WireStatuslineTest):
         self.assertEqual(restored["statusLine"], prior)
         self.assertNotIn(ws.OWNER_KEY, restored)
 
+    def test_legacy_backup_without_owner_preserves_later_third_party_statusline(self):
+        absent = object()
+        replacements = ({"type": "command", "command": "new-user-line", "padding": 4},
+                        "new-user-string-line", None, absent)
+        old_spinner = {"mode": "append", "verbs": ["old user spinner"]}
+        new_spinner = {"mode": "append", "verbs": ["new user spinner"]}
+        for replacement in replacements:
+            for spinner in ("none", "owned", "replaced"):
+                with self.subTest(replacement=replacement, spinner=spinner):
+                    content = {ws.BACKUP_KEY: {"type": "command", "command": "stale-old-line"},
+                               "theme": "user-theme", "nested": {"keep": [1, True, None]}}
+                    if replacement is not absent:
+                        content["statusLine"] = replacement
+                    if spinner != "none":
+                        content.update({"spinnerVerbs": ws.ARBITER_SPINNER_VERBS if spinner == "owned" else new_spinner,
+                            ws.SPINNER_OWNER_KEY: ws.ARBITER_SPINNER_VERBS,
+                            ws.SPINNER_BACKUP_KEY: old_spinner})
+                    spath = _make_settings(self.tmp.name, content)
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    actual = _read(spath)
+                    expected = {"theme": "user-theme", "nested": {"keep": [1, True, None]}}
+                    if replacement is not absent:
+                        expected["statusLine"] = replacement
+                    if spinner != "none":
+                        expected["spinnerVerbs"] = old_spinner if spinner == "owned" else new_spinner
+                    self.assertEqual(actual, expected,
+                        "legacy backup is not evidence of ownership of a later user choice")
+                    before = _read_bytes(spath)
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    self.assertEqual(_read_bytes(spath), before, "settled uninstall must be idempotent")
+
+    def test_legacy_owned_statusline_without_stamp_still_restores_backup(self):
+        commands = ('python "' + os.path.join(self.root, "hooks", "statusline.py") + '"',
+                    '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"')
+        prior = {"type": "command", "command": "exact-prior", "extra": [1, None]}
+        for command in commands:
+            for current in (command, {"type": "command", "command": command}):
+                with self.subTest(command=command, current=current):
+                    spath = _make_settings(self.tmp.name, {"statusLine": current,
+                        ws.BACKUP_KEY: prior, "keep": {"nested": True}})
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    self.assertEqual(_read(spath), {"statusLine": prior, "keep": {"nested": True}})
+
+    def test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement(self):
+        replacement = {"type": "command", "command": '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'}
+        spath = _make_settings(self.tmp.name, {"statusLine": replacement,
+            ws.OWNER_KEY: "different-owned-command", ws.BACKUP_KEY: "old-line", "keep": 7})
+        ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+        self.assertEqual(_read(spath), {"statusLine": replacement, "keep": 7})
+
     def test_stale_owner_marker_never_overwrites_user_replacement(self):
         owned = '"python" "C:\\source\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'
         replacement = {"type": "command", "command": "user-new-line", "padding": 4}

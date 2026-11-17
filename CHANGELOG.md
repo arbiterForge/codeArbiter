@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
+- Refuse link-audit paths that escape the output directory, including Windows separators.
 - Require HTTPS for Pi provider endpoints outside literal loopback, including broker authorization and child-visible redirect downgrade refusal.
 - Extend native journal and schema qualification routes with required parent/child outcomes from every declared platform.
 - Reject ancestor/descendant transaction targets before staging and during journal validation; preserve valid disjoint path prefixes.

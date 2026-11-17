@@ -366,3 +366,72 @@ describe("auditDist links to redirect pages", () => {
     expect(messages).toHaveLength(2);
   });
 });
+
+
+describe("auditDist root-absolute dot segments", () => {
+  it.each(["/codeArbiter", ""])(
+    "rejects root-absolute dot-segment escapes even when a sibling exists (base %j)",
+    (base) => {
+      const ownedRoot = mkdtempSync(join(tmpdir(), "link-audit-containment-"));
+      const dist = join(ownedRoot, "dist");
+      mkdirSync(dist);
+      writeFileSync(join(ownedRoot, "outside.html"), "<html>outside dist</html>");
+      const target = `${base}/../outside.html`;
+      writeFileSync(join(dist, "index.html"), `<a href="${target}">escape</a>`);
+      try {
+        const result = auditDist(dist, base);
+        expect(result.pageCount).toBe(1);
+        expect(result.checked).toBe(1);
+        expect(result.failures).toHaveLength(1);
+        expect(result.failures[0].message).toContain(target);
+      } finally {
+        rmSync(ownedRoot, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it.each(["/codeArbiter", ""])(
+    "keeps in-base dot normalization, query/fragment and relative links valid (base %j)",
+    (base) => {
+      const dist = makeDist({ pages: {
+        "index.html": `<a href="${base}/unused/../target.html?view=full#details">absolute</a>` +
+          `<a href="./target.html?view=full#details">relative</a>`,
+        "target.html": "<html>in-dist target</html>",
+      } });
+      try {
+        const result = auditDist(dist, base);
+        expect(result.pageCount).toBe(2);
+        expect(result.checked).toBe(2);
+        expect(result.failures).toEqual([]);
+        expect(missingRequiredAssets(dist)).toEqual([]);
+      } finally {
+        rmSync(dist, { recursive: true, force: true });
+      }
+    },
+  );
+});
+
+
+describe("auditDist filesystem containment", () => {
+  it.each([
+    ["/codeArbiter", "/codeArbiter/..\\outside.html"],
+    ["", "/..\\outside.html"],
+    ["/codeArbiter", "..\\outside.html"],
+    ["", "..\\outside.html"],
+  ])("refuses a backslash sibling escape (base %j, target %j)", (base, target) => {
+    const ownedRoot = mkdtempSync(join(tmpdir(), "link-audit-containment-"));
+    const dist = join(ownedRoot, "dist");
+    mkdirSync(dist);
+    writeFileSync(join(ownedRoot, "outside.html"), "<html>outside dist</html>");
+    writeFileSync(join(dist, "index.html"), `<a href="${target}">escape</a>`);
+    try {
+      const result = auditDist(dist, base);
+      expect(result.pageCount).toBe(1);
+      expect(result.checked).toBe(1);
+      expect(result.failures).toHaveLength(1);
+      expect(result.failures[0].message).toContain(target);
+    } finally {
+      rmSync(ownedRoot, { recursive: true, force: true });
+    }
+  });
+});

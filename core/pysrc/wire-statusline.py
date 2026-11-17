@@ -411,12 +411,17 @@ def cmd_uninstall(settings, path, script_abs):
         save_settings(path, settings)
         print("codeArbiter statusline was replaced; preserved the current line.")
         return
-    if not is_ours(current, settings) and BACKUP_KEY not in settings:
-        # Spinner ownership is independent of statusLine ownership (HW-05):
-        # an orphaned spinner backup is still settled by its own rule.
-        if _uninstall_spinner_verbs(settings) is not None:
+    if not is_ours(current, settings):
+        # A legacy backup proves a past install, not ownership of the current
+        # line. Preserve a later user replacement or removal; settle only our
+        # stale bookkeeping and the independently owned spinner (HW-05).
+        stale = BACKUP_KEY in settings or OWNER_KEY in settings
+        settings.pop(BACKUP_KEY, None)
+        settings.pop(OWNER_KEY, None)
+        spinner_changed = _uninstall_spinner_verbs(settings) is not None
+        if stale or spinner_changed:
             save_settings(path, settings)
-        print("codeArbiter statusline is not wired here; nothing to do.")
+        print("codeArbiter statusline is not wired here; preserved the current setting.")
         return
     if BACKUP_KEY in settings:
         prior = settings.pop(BACKUP_KEY)
