@@ -1262,6 +1262,123 @@
         "disposition:findings:C-F02"
       ],
       "scope": "Finite manual/automatic release source selection, explicit older-successful-source report, no-success/non-main/expired/missing/approved-candidate refusals and read-only route-observer boundaries. Original unfiltered release-workflow outcome only; not actual publication or whole R02/R03/Q02 qualification."
+    },
+    {
+      "id": "finite-hookf01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf01",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F01"
+      ],
+      "scope": "Actual prompt/mode persona revisit, no-op, generation/session and storage-failure fixture behavior; no live host or universal double-denial redelivery."
+    },
+    {
+      "id": "finite-hookf03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf03",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F03"
+      ],
+      "scope": "Actual check_payload predicate and actual PiHost/package identity on owned files only; no doctor.main, native/npm, host probe or installed health."
+    },
+    {
+      "id": "finite-cf05",
+      "job": "[CHECK] | [REPO] | Impact planner contract",
+      "payload_name": "major-source-inputs-impact-single-owner",
+      "observation": "finite-cf05",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+        "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy"
+      ],
+      "cells": [
+        "disposition:findings:C-F05"
+      ],
+      "scope": "Actual workflow input/event and deploy-authority declaration controls; no Pages deployment."
+    },
+    {
+      "id": "finite-cf06",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-cf06",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event",
+        "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly"
+      ],
+      "cells": [
+        "disposition:findings:C-F06"
+      ],
+      "scope": "Typed injected outcomes and required-affirmative/source/refusal contract; no actual branch/tag/Codex protection observation."
+    },
+    {
+      "id": "finite-cf07",
+      "job": "[CHECK] | [REPO] | Impact planner contract",
+      "payload_name": "major-source-inputs-impact-single-owner",
+      "observation": "finite-cf07",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump"
+      ],
+      "cells": [
+        "disposition:findings:C-F07"
+      ],
+      "scope": "Owned Git base absent/valid/invalid/unresolved manifest distinction; no release qualification."
+    },
+    {
+      "id": "finite-tf02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output"
+      ],
+      "cells": [
+        "disposition:findings:T-F02"
+      ],
+      "scope": "Actual SMARTS predicate/producer-refusal on inert output fixtures; model reasoning quality and whole T01 remain unassessed."
     }
   ]
 }

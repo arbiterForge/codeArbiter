@@ -4087,5 +4087,282 @@ class ReleaseSelectionFiniteFindingTests(unittest.TestCase):
             with self.assertRaises(ValueError): owner.prepare_source_payload(f["repo"], f["base"] / "refused", f["job"], f["profile"])
 
 
+
+class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
+    """Inert source/report fixture assertions; never executes the represented owners."""
+    EXPECTED = {'disposition:findings:HOOK-F01': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_prompt_submit.py',
+                                   'observation': 'finite-hookf01',
+                                   'selectors': ['python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery'],
+                                   'scope': 'Actual prompt/mode persona revisit, no-op, generation/session '
+                                            'and storage-failure fixture behavior; no live host or universal '
+                                            'double-denial redelivery.'},
+ 'disposition:findings:HOOK-F03': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_pi_payload_identity.py',
+                                   'observation': 'finite-hookf03',
+                                   'selectors': ['python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent'],
+                                   'scope': 'Actual check_payload predicate and actual PiHost/package '
+                                            'identity on owned files only; no doctor.main, native/npm, host '
+                                            'probe or installed health.'},
+ 'disposition:findings:C-F05': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_ci_impact.py',
+                                'observation': 'finite-cf05',
+                                'selectors': ['python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input',
+                                              'python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy'],
+                                'scope': 'Actual workflow input/event and deploy-authority declaration '
+                                         'controls; no Pages deployment.'},
+ 'disposition:findings:C-F06': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': '.github/scripts/test_verdictlib.py',
+                                'observation': 'finite-cf06',
+                                'selectors': ['python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly'],
+                                'scope': 'Typed injected outcomes and required-affirmative/source/refusal '
+                                         'contract; no actual branch/tag/Codex protection observation.'},
+ 'disposition:findings:C-F07': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_payload_version_gate.py',
+                                'observation': 'finite-cf07',
+                                'selectors': ['python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump'],
+                                'scope': 'Owned Git base absent/valid/invalid/unresolved manifest '
+                                         'distinction; no release qualification.'},
+ 'disposition:findings:T-F02': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': 'tools/test_measurement_contracts.py',
+                                'observation': 'finite-tf02',
+                                'selectors': ['python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives',
+                                              'python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output'],
+                                'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; '
+                                         'model reasoning quality and whole T01 remain unassessed.'}}
+
+    def test_a_six_existing_single_owner_findings_have_closed_original_profiles(self):
+        expected_jobs = {
+            "hooks-single-owner-findings-v1": "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+            "impact-single-owner-findings-v1": "[CHECK] | [REPO] | Impact planner contract",
+        }
+        for profile, job in expected_jobs.items():
+            with self.subTest(profile=profile):
+                try:
+                    spec = owner.source_profile(profile)
+                except ValueError as error:
+                    self.fail("actual source-profile boundary lacks the original single-owner finding route: " + str(error))
+                self.assertEqual(spec["job"], job)
+                self.assertTrue(spec["paths"])
+                self.assertTrue(all(row["script"] in spec["paths"] for row in self.EXPECTED.values() if row["profile"] == profile))
+
+    def fixture(self, cell):
+        recipe=self.EXPECTED[cell];spec=owner.source_profile(recipe['profile'])
+        req={'source_commit':'a'*40,'source_tree':'b'*40,'ci_run_id':7,
+             'cells':[cell],'cell_jobs':{cell:spec['job']}}
+        rows=[{'path':p,'sha256':'c'*64,'bytes':1,'git_mode':'100644'} for p in sorted(spec['paths'])]
+        manifest={'format':owner.SOURCE_FORMAT,'profile':recipe['profile'],'source_commit':req['source_commit'],
+                  'source_tree':req['source_tree'],'workflow':'.github/workflows/ci.yml','ci_run_id':7,
+                  'producer_job_name':spec['job'],'members':rows}
+        payload={'artifact_id':8,'archive_sha256':'d'*64,'source_manifest_sha256':'e'*64,
+                 'source_upload_job_id':9,'documents':{owner.SOURCE_MANIFEST:manifest},
+                 'members':[{'path':r['path'],'sha256':r['sha256']} for r in rows]+[
+                     {'path':owner.SOURCE_MANIFEST,'sha256':'e'*64}]}
+        observed={'format':owner.OBSERVATION,'source_commit':req['source_commit'],'source_tree':req['source_tree'],
+                  'ci_run_id':7,'source_stable':True,'proof_kind':'source-test',
+                  'producer':'python-test-result-observer','argv':['python',recipe['script']],'exit_code':0,
+                  'tests':[{'id':x,'result':'passed'} for x in recipe['selectors']],
+                  'source_input_binding':{'format':owner.SOURCE_BINDING,'profile':recipe['profile'],
+                     'payload_name':spec['payload'],'manifest_sha256':'e'*64}}
+        group={'id':recipe['observation'],'job':spec['job'],'payload_name':spec['payload'],
+               'observation':recipe['observation'],'proof_kind':'source-test','cells':[cell],
+               'selectors':list(recipe['selectors']),'scope':recipe['scope']}
+        def build(o=observed,g=group,r=req,p=payload,job=spec['job']):
+            return owner.build_report(r,job_name=job,job_id=9,
+                selections={'schema':owner.SELECTIONS,'groups':[g]},
+                observations={recipe['observation']:o},payloads={spec['payload']:p})
+        return recipe,spec,req,payload,observed,group,build
+
+    def test_b_complete_original_finite_compositions_and_policy_are_consumed(self):
+        selections=owner.load_json(owner.ROOT/'.github/major-test-selections.json')
+        policy=owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            with self.subTest(cell=cell):
+                report=build();result,=report['results']
+                self.assertEqual(result['cell'],cell)
+                self.assertEqual(result['executed_population'],len(recipe['selectors']))
+                self.assertEqual(result['selected_population'],len(recipe['selectors']))
+                self.assertEqual(report['schema'],'codearbiter-major-qualification/2')
+                actual,=[g for g in selections['groups'] if g['cells']==[cell]]
+                self.assertEqual(actual,group)
+                self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
+
+    def test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory(self):
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            for selector in recipe['selectors']:
+                for state in ('missing','duplicate','failed','skipped','reduced-map'):
+                    o,g=copy.deepcopy(observed),copy.deepcopy(group)
+                    row=next(r for r in o['tests'] if r['id']==selector)
+                    if state=='missing':o['tests'].remove(row)
+                    elif state=='duplicate':o['tests'].append(dict(row))
+                    elif state=='reduced-map':g['selectors'].remove(selector)
+                    else:row['result']=state
+                    with self.subTest(cell=cell,selector=selector,state=state),self.assertRaises(ValueError):build(o,g)
+
+    def test_d_original_source_script_profile_job_and_payload_never_cross_authority(self):
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            for mutation in ('source','tree','run','unstable','exit','filtered','script','profile','payload','manifest',
+                             'uploader','foreign-cell','composite','extra-selector','wrong-job','missing-member'):
+                o,g,r,p=map(copy.deepcopy,(observed,group,req,payload))
+                if mutation=='source':o['source_commit']='f'*40
+                elif mutation=='tree':o['source_tree']='f'*40
+                elif mutation=='run':o['ci_run_id']=8
+                elif mutation=='unstable':o['source_stable']=False
+                elif mutation=='exit':o['exit_code']=1
+                elif mutation=='filtered':o['argv'].append('-k')
+                elif mutation=='script':o['argv'][-1]='.github/scripts/test_major_readiness.py'
+                elif mutation=='profile':o['source_input_binding']['profile']=owner.SOURCE_PROFILE
+                elif mutation=='payload':g['payload_name']='foreign'
+                elif mutation=='manifest':p['source_manifest_sha256']='f'*64
+                elif mutation=='uploader':p['source_upload_job_id']=10
+                elif mutation=='foreign-cell':g['cells']=['disposition:findings:HOOK-F02'];r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                elif mutation=='composite':g['cells'].append('task:HW-27');r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                elif mutation=='extra-selector':g['selectors'].append('python:foreign.py:unexecuted')
+                elif mutation=='wrong-job':g['job']='foreign'
+                else:p['members'].pop(0)
+                with self.subTest(cell=cell,mutation=mutation),self.assertRaises(ValueError):build(o,g,r,p)
+
+    def test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit(self):
+        recipe,spec,req,payload,observed,group,build=self.fixture('disposition:findings:C-F05')
+        nested='python:'+recipe['script']+':__main__.OwnedNestedExample.test_expected_refusal'
+        observed['tests'].extend([{'id':nested,'result':'failed'},{'id':nested,'result':'skipped'}])
+        result,=build()['results']
+        self.assertEqual(result['executed_population'],len(recipe['selectors']))
+        self.assertEqual(len(observed['tests']),len(recipe['selectors'])+2)
+        observed['exit_code']=1
+        with self.assertRaises(ValueError):build()
+
+    def test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution(self):
+        with tempfile.TemporaryDirectory(prefix='ca-six-profile-refusal-') as td:
+            base=Path(td).resolve();script='.github/scripts/test_prompt_submit.py';path=base/script
+            path.parent.mkdir(parents=True);path.write_text('# inert boundary only\n')
+            other=base/'.github/scripts/test_major_readiness.py';other.write_text('# inert foreign boundary\n')
+            with mock.patch.object(owner.runpy,'run_path',side_effect=AssertionError('must not execute')):
+                for name,args,payload in ((script,['-k','partial'],base/'payload'),(script,[],None),
+                                           (other.relative_to(base).as_posix(),[],base/'payload')):
+                    with self.subTest(script=name,args=args),self.assertRaises(ValueError):
+                        owner.observe_python(base,name,args,base/'absent.json',payload,'hooks-single-owner-findings-v1')
+            self.assertFalse((base/'absent.json').exists())
+
+    def test_g_final_reader_authenticates_each_original_upload_after_whole_run_success(self):
+        for profile in ('hooks-single-owner-findings-v1','impact-single-owner-findings-v1'):
+            cell=next(c for c,r in self.EXPECTED.items() if r['profile']==profile)
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            raw=io.BytesIO()
+            with zipfile.ZipFile(raw,'w') as archive:archive.writestr('source-member',b'inert')
+            content=raw.getvalue();members=owner.readiness.members(content)
+            source={'id':8,'name':spec['payload']};artifact={'id':10,'name':'major-qualification-9'}
+            job={'id':9,'name':spec['job'],'status':'completed','conclusion':'success'}
+            req['required_artifact_names']=[source['name']]
+            report={'schema':'codearbiter-major-qualification/2',**{k:req[k] for k in ('source_commit','source_tree','ci_run_id')},'job_id':9,
+                'payloads':[{'artifact_id':8,'archive_sha256':owner.readiness.digest(content),'members':members}],
+                'results':[{'cell':cell,'result':'PASSED','commands':[{'argv':observed['argv'],'exit_code':0}],
+                    'selected_population':1,'executed_population':1,'payload_artifact_id':8}]}
+            with mock.patch.object(owner.readiness,'read_artifact_json',return_value=report), \
+                 mock.patch.object(owner.readiness,'artifact_bytes',return_value=content), \
+                 mock.patch.object(owner.readiness,'validate_upload') as upload:
+                owner.readiness.produce(req,[source,artifact],[job,{'id':11,'name':'major readiness producer'}])
+                self.assertEqual(upload.call_args_list,[mock.call(job,artifact,'Upload major qualification report'),mock.call(job,source,spec['upload'])])
+                for mutation in ('wrong-owner','in-progress','upload-refused'):
+                    jobs=[copy.deepcopy(job),{'id':11,'name':'major readiness producer'}];q=copy.deepcopy(req);upload.side_effect=None
+                    if mutation=='wrong-owner':jobs[0]['name']='foreign';q['cell_jobs'][cell]='foreign'
+                    elif mutation=='in-progress':jobs[0].update(status='in_progress',conclusion=None)
+                    else:upload.side_effect=owner.readiness.ReadinessError('original uploader refused')
+                    with self.subTest(profile=profile,mutation=mutation),self.assertRaises(owner.readiness.ReadinessError):
+                        owner.readiness.produce(q,[source,artifact],jobs)
+
+    def test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once(self):
+        profile='hooks-single-owner-findings-v1';spec=owner.source_profile(profile)
+        canonical=Path(os.environ.get('CA_HOOKS_CANONICAL_ROOT',owner.ROOT))
+        with tempfile.TemporaryDirectory(prefix='ca-single-owner-source-') as td:
+            base=Path(td).resolve();repo=base/'repo';repo.mkdir()
+            for relative in spec['paths']:
+                source=owner.ROOT/relative
+                if not source.is_file():source=canonical/relative
+                target=repo/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+            git=shutil.which('git');self.assertIsNotNone(git)
+            env={k:v for k,v in os.environ.items() if k.upper() in ('SYSTEMROOT','WINDIR','SYSTEMDRIVE','COMSPEC','PATHEXT','PATH')}
+            env.update(HOME=str(base),USERPROFILE=str(base),TEMP=str(base),TMP=str(base),
+                GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM='1',GIT_OPTIONAL_LOCKS='0',GIT_TERMINAL_PROMPT='0',
+                GIT_AUTHOR_NAME='fixture',GIT_AUTHOR_EMAIL='fixture@invalid',GIT_COMMITTER_NAME='fixture',GIT_COMMITTER_EMAIL='fixture@invalid',
+                GITHUB_RUN_ID='7',PYTHONDONTWRITEBYTECODE='1')
+            with mock.patch.dict(os.environ,env,clear=True):
+                for args in (['init'],['config','core.autocrlf','false'],['add','.'],['-c','commit.gpgsign=false','commit','-qm','source fixture']):
+                    run_git_phase([git,'-C',str(repo),*args],phase='init' if args[0] in ('init','config') else 'index' if args[0]=='add' else 'commit',trace_dir=base)
+                staged=base/'inputs';owner.prepare_source_payload(repo,staged,spec['job'],profile)
+                output=base/'observation.json'
+                with mock.patch.object(owner.runpy,'run_path',wraps=owner.runpy.run_path) as original:
+                    self.assertEqual(owner.observe_python(repo,'.github/scripts/test_pi_payload_identity.py',[],output,staged,profile),0)
+                    self.assertEqual(original.call_count,1)
+                observed=owner.load_json(output)
+                self.assertEqual({r['id'] for r in observed['tests']},set(self.EXPECTED['disposition:findings:HOOK-F03']['selectors']))
+                self.assertTrue(all(r['result']=='passed' for r in observed['tests']))
+                archive=io.BytesIO()
+                with zipfile.ZipFile(archive,'w') as z:
+                    for path in staged.rglob('*'):
+                        if path.is_file():z.writestr(path.relative_to(staged).as_posix(),path.read_bytes())
+                req={**owner.source_identity(repo,profile),'ci_run_id':7}
+                job={'id':9,'name':spec['job'],'status':'in_progress','conclusion':None,
+                     'steps':[{'name':spec['upload'],'status':'completed','conclusion':'success'}]}
+                with mock.patch.object(owner.readiness,'artifact_bytes',return_value=archive.getvalue()), \
+                     mock.patch.object(owner.readiness,'validate_upload',side_effect=AssertionError('producer job has no completed log')):
+                    payload=owner.authenticated_payload({'id':8,'name':spec['payload']},req,repo,source_job=job)
+                    owner.admit_source_observation(observed,payload,req,spec['job'],9)
+                    bad=copy.deepcopy(job);bad['steps'][0]['conclusion']='failure'
+                    with self.assertRaises(ValueError):owner.authenticated_payload({'id':8,'name':spec['payload']},req,repo,source_job=bad)
+                extra=repo/'core/pysrc/unbound_finding_shadow.py';extra.write_text('# inert namespace refusal\n')
+                with self.assertRaises(ValueError):owner.source_input_snapshot(repo,profile)
+                extra.unlink()
+                path=staged/'.github/scripts/test_pi_payload_identity.py';path.write_bytes(path.read_bytes()+b'\n# changed stage\n')
+                with self.assertRaises(ValueError):owner.source_observation_binding(repo,staged,owner.source_identity(repo,profile),profile)
+
+    def test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources(self):
+        with tempfile.TemporaryDirectory(prefix='ca-finding-members-') as td:
+            base=Path(td).resolve()
+            for profile,spec in owner.PYTHON_FINDING_PROFILES.items():
+                repo=base/profile;repo.mkdir()
+                for relative in spec['paths']:
+                    path=repo/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'inert namespace fixture\n')
+                owner._finding_python_members(repo,profile)
+                extra=repo/'.github/scripts/unbound_finding_shadow.py';extra.write_text('# extra\n')
+                with self.subTest(profile=profile,mutation='extra'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
+                extra.unlink()
+                path=repo/'tools/test_measurement_contracts.py';path.unlink()
+                with self.subTest(profile=profile,mutation='missing'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,0 +1,486 @@
+{
+ "source_epoch": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4 plus explicit private subject overlays",
+ "cells": [
+  {
+   "cell": "disposition:findings:HOOK-F01",
+   "profile": "hooks-single-owner-findings-v1",
+   "script": ".github/scripts/test_prompt_submit.py",
+   "observation": "finite-hookf01",
+   "scope": "Actual prompt/mode persona revisit, no-op, generation/session and storage-failure fixture behavior; no live host or universal double-denial redelivery.",
+   "selector_count": 13,
+   "witnesses": [
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 657,
+     "line_end": 659,
+     "span_sha256": "278e17aa97b493925cd8a4ce8289190d31dcc41cc2047af0ebe9d59986d0e71d"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 661,
+     "line_end": 663,
+     "span_sha256": "ad2a0d95fa906c155cab3f143ce16b4f8a6e55ba114f30f8e1b232773ac12cdc"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 665,
+     "line_end": 667,
+     "span_sha256": "d4c5ce12b0b08702f8a321fd981c0babd187cf2dcb8aaf34a4e3c66cf0513965"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 669,
+     "line_end": 671,
+     "span_sha256": "a16125c00a916a4568600260d2823d7e1977aacc7f9efe95eb7d2a9c1841e062"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 673,
+     "line_end": 682,
+     "span_sha256": "0ec19b5404f5dbc72c0405161bc87da1e09101eb8f9647cc6898eb97971e6ecf"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 684,
+     "line_end": 690,
+     "span_sha256": "71133036af9b67d553ba70c15fe8b89d335c9cbca38546ba219fd38b810ba224"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 692,
+     "line_end": 698,
+     "span_sha256": "583875384181b52a4b5da21ca96a9ce3dca4ac0c5887c8222781cf5f506a8e2a"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 700,
+     "line_end": 703,
+     "span_sha256": "1eb8aa2c211d5328dbd56f8baed57c72429a0b04c8845254ebda36cadd1316ae"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 705,
+     "line_end": 726,
+     "span_sha256": "44d7425e9b271f42e8760c66f2c38bd2eadff0d0de89116f727c70a880b72d9e"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 728,
+     "line_end": 792,
+     "span_sha256": "f2e948d5a40c2c8e68d7fe814cd2c5b3e19c110ee3a7e232f8e43ee6b43a9087"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 794,
+     "line_end": 832,
+     "span_sha256": "45632c33226469b11b89474a0abc68aa08de10f978b8b0e95bf6c084148c6dc8"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 834,
+     "line_end": 839,
+     "span_sha256": "4924767ba71ac139c1296e6f23dd8174c4e93a0d4cebcc0dc70e6e9fdfd70afb"
+    },
+    {
+     "selector": "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery",
+     "path": ".github/scripts/test_prompt_submit.py",
+     "line_start": 841,
+     "line_end": 849,
+     "span_sha256": "8d96f2cafe57ce5dfd193ad30b24bffb1ec0993c3c3db6576ebf75fb3752efa4"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:findings:HOOK-F03",
+   "profile": "hooks-single-owner-findings-v1",
+   "script": ".github/scripts/test_pi_payload_identity.py",
+   "observation": "finite-hookf03",
+   "scope": "Actual check_payload predicate and actual PiHost/package identity on owned files only; no doctor.main, native/npm, host probe or installed health.",
+   "selector_count": 4,
+   "witnesses": [
+    {
+     "selector": "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe",
+     "path": ".github/scripts/test_pi_payload_identity.py",
+     "line_start": 50,
+     "line_end": 55,
+     "span_sha256": "d0a5e1bf7450b8ed7633b78784f01c284a4e045b294d364ae9ed8efe2efc4c3d"
+    },
+    {
+     "selector": "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse",
+     "path": ".github/scripts/test_pi_payload_identity.py",
+     "line_start": 57,
+     "line_end": 67,
+     "span_sha256": "1eb23329a483655005d9f2f99f3a4322acfc0d516f3f24579d5da583b7932a32"
+    },
+    {
+     "selector": "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills",
+     "path": ".github/scripts/test_pi_payload_identity.py",
+     "line_start": 69,
+     "line_end": 77,
+     "span_sha256": "ff155ff2f2cdc8c7b52579d74c27cb8d440dcec18ebdc9a628159993959e5ab4"
+    },
+    {
+     "selector": "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent",
+     "path": ".github/scripts/test_pi_payload_identity.py",
+     "line_start": 79,
+     "line_end": 88,
+     "span_sha256": "f51000b8569ae8089936fa447d6f10b9a41256b82e4104ef0eca2ea894009fa3"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:findings:C-F05",
+   "profile": "impact-single-owner-findings-v1",
+   "script": ".github/scripts/test_ci_impact.py",
+   "observation": "finite-cf05",
+   "scope": "Actual workflow input/event and deploy-authority declaration controls; no Pages deployment.",
+   "selector_count": 2,
+   "witnesses": [
+    {
+     "selector": "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+     "path": ".github/scripts/test_ci_impact.py",
+     "line_start": 2285,
+     "line_end": 2336,
+     "span_sha256": "bf86c7d9e3ba4722baebf6733dd9d8c79498ad3491ea588df14b253b8f9a2d6a"
+    },
+    {
+     "selector": "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy",
+     "path": ".github/scripts/test_ci_impact.py",
+     "line_start": 2338,
+     "line_end": 2367,
+     "span_sha256": "fd9ec26900ac22a41a99995c9097a0520e7c568b2cc9e692822d606ed80c6c05"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:findings:C-F06",
+   "profile": "hooks-single-owner-findings-v1",
+   "script": ".github/scripts/test_verdictlib.py",
+   "observation": "finite-cf06",
+   "scope": "Typed injected outcomes and required-affirmative/source/refusal contract; no actual branch/tag/Codex protection observation.",
+   "selector_count": 13,
+   "witnesses": [
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 43,
+     "line_end": 50,
+     "span_sha256": "d79dba86b85ce652c6aa97455b814e4006bb97ceec021cdce2e44980fdaa3e69"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 52,
+     "line_end": 55,
+     "span_sha256": "e29f58a011c758e06037e082c301b32242fb7e2f5e3afe2402aabd0209640fa6"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 61,
+     "line_end": 69,
+     "span_sha256": "49202d12b9a582124d4929b922dd091689057fdd28758fd3284572c728387599"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 71,
+     "line_end": 76,
+     "span_sha256": "28f5435a6d190f9fb9c0e95596a987bd67fb3fce19c14bdfa6400e6b568a0a94"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 78,
+     "line_end": 87,
+     "span_sha256": "0ce1a55e651ac10de47b081a91f06fc258fa8a5da606a2d600b23b4b4a86e7f3"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 89,
+     "line_end": 92,
+     "span_sha256": "0f760d2e3dbab0d0be551c86e79d86f07e98c1767b7ed034a2196a8c2e4b8625"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 94,
+     "line_end": 103,
+     "span_sha256": "f53a3aa697894ddd397d89f55695a48c5a1b25a35bf7ec3ce2188ccd28d3545f"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 123,
+     "line_end": 131,
+     "span_sha256": "362e47c2678b689fa85ce80b67fb1450f3b25320cd202e32c1c0a292dbcc0335"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 133,
+     "line_end": 137,
+     "span_sha256": "bd2a0567fbdc37b585a9c63b007a79e1bb3eb2a4ea2fbeb2e07415181bd5b220"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 139,
+     "line_end": 157,
+     "span_sha256": "5b29685a9129f4b211d154918c4eabcc1bdb6ac878aae79b17fd25546bce3122"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 159,
+     "line_end": 168,
+     "span_sha256": "97cf49906fd0dbb8b0212e4c882ae8f65e9e19b32cd6b44bbc9f852d6eb8ef09"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 170,
+     "line_end": 179,
+     "span_sha256": "8cde8a1e8050b6b94e4cc7e81262943e5278b3f44c7cec8b1fae8d49b40eac55"
+    },
+    {
+     "selector": "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly",
+     "path": ".github/scripts/test_verdictlib.py",
+     "line_start": 181,
+     "line_end": 197,
+     "span_sha256": "8937d38fb4efd629505d9cc0b0074cd5ec0fe5434764b7a91901a497b8befb54"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:findings:C-F07",
+   "profile": "impact-single-owner-findings-v1",
+   "script": ".github/scripts/test_payload_version_gate.py",
+   "observation": "finite-cf07",
+   "scope": "Owned Git base absent/valid/invalid/unresolved manifest distinction; no release qualification.",
+   "selector_count": 5,
+   "witnesses": [
+    {
+     "selector": "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes",
+     "path": ".github/scripts/test_payload_version_gate.py",
+     "line_start": 149,
+     "line_end": 163,
+     "span_sha256": "5a3350ee383b24d677018da126cd822fa74f2c31b1348f93f3a13b7977e4afd9"
+    },
+    {
+     "selector": "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing",
+     "path": ".github/scripts/test_payload_version_gate.py",
+     "line_start": 207,
+     "line_end": 212,
+     "span_sha256": "9d0dbd629025041d7c7b9142427ddd5ba5005b096e45e364e980058df7609ad2"
+    },
+    {
+     "selector": "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction",
+     "path": ".github/scripts/test_payload_version_gate.py",
+     "line_start": 228,
+     "line_end": 249,
+     "span_sha256": "334748fc2246c6535ea829f23ab360cbb9cfa03ef85453d637ba2cbf57ea7cf7"
+    },
+    {
+     "selector": "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes",
+     "path": ".github/scripts/test_payload_version_gate.py",
+     "line_start": 134,
+     "line_end": 140,
+     "span_sha256": "2a23e251e4293aa30cbb1dd1f6f2653ab6f2b86cbee0ad3e427013c6c329096a"
+    },
+    {
+     "selector": "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump",
+     "path": ".github/scripts/test_payload_version_gate.py",
+     "line_start": 142,
+     "line_end": 147,
+     "span_sha256": "b1e3361713c7b382d8e1d8553a8af9db277c507d122080a99f56aab16aafaf71"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:findings:T-F02",
+   "profile": "hooks-single-owner-findings-v1",
+   "script": "tools/test_measurement_contracts.py",
+   "observation": "finite-tf02",
+   "scope": "Actual SMARTS predicate/producer-refusal on inert output fixtures; model reasoning quality and whole T01 remain unassessed.",
+   "selector_count": 2,
+   "witnesses": [
+    {
+     "selector": "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+     "path": "tools/test_measurement_contracts.py",
+     "line_start": 55,
+     "line_end": 62,
+     "span_sha256": "beeb6118560b6a44121566f7c14c599c48772f5e11c00435183d2591a6685510"
+    },
+    {
+     "selector": "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+     "path": "tools/test_measurement_contracts.py",
+     "line_start": 64,
+     "line_end": 75,
+     "span_sha256": "3845391786c05abe4935dd1ff16ece246dfc60f6b59b1f4cf2873711dceada7c"
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "Source-level unit assertion contracts only. Full linked tasks/model behavior/installed runtime/lifecycle remain separate.",
+  "No represented original suite executed locally except newly owned safe Pi identity module."
+ ],
+ "literal_finding_contract": {
+  "path": "docs/state-contracts-major/contracts/finding-dispositions.json",
+  "sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+  "records": [
+   {
+    "finding_id": "HOOK-F01",
+    "title": "Returning to an already delivered mode suppresses the current persona",
+    "baseline_status": "focused isolated runtime probe + implementation read",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "HW-01",
+     "HW-27"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-01"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   {
+    "finding_id": "HOOK-F03",
+    "title": "Pi doctor rejects the actual scoped package identity",
+    "baseline_status": "actual checkout payload checked through check_payload",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "HW-03",
+     "HW-27"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-16"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/doctor.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/_host.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/package.json"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   {
+    "finding_id": "C-F05",
+    "title": "Dedicated docs voice gate does not select PRs changing only its two rule implementation files",
+    "baseline_status": "source-confirmed trigger asymmetry",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "R-05"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   {
+    "finding_id": "C-F06",
+    "title": "A successful exit sometimes means unavailable or optional skip, not verified protection/runtime",
+    "baseline_status": "source-confirmed evidence distinction",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "R-06"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-25"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   {
+    "finding_id": "C-F07",
+    "title": "Payload first-introduction classification conflates absent base manifest and invalid base version",
+    "baseline_status": "source-confirmed branch conflation, no current base defect asserted",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "R-06"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-25"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   {
+    "finding_id": "T-F02",
+    "title": "Live SMARTS exercise tests literal lens-name presence rather than its stated material-comparison contract",
+    "baseline_status": "pure local oracle probe reproduced; subprocess-result issue source-confirmed",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "T-01"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-26"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   }
+  ]
+ }
+}

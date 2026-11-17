@@ -1,0 +1,73 @@
+{
+ ".github/scripts/major_qualification_report.py": {
+  "existing_declarations": 44,
+  "changed": [
+   "source_checkout",
+   "source_profile",
+   "_source_byte_mismatch",
+   "source_input_snapshot",
+   "validate_source_manifest",
+   "admit_source_observation",
+   "observe_python",
+   "build_report",
+   "main"
+  ],
+  "added": [
+   "_finding_python_command",
+   "_finding_python_members"
+  ]
+ },
+ ".github/scripts/test_major_qualification_report.py": {
+  "existing_declarations": 180,
+  "changed": [],
+  "added": [
+   "SingleOwnerPythonFindingProfileTests.fixture",
+   "SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles",
+   "SingleOwnerPythonFindingProfileTests.test_b_complete_original_finite_compositions_and_policy_are_consumed",
+   "SingleOwnerPythonFindingProfileTests.test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory",
+   "SingleOwnerPythonFindingProfileTests.test_d_original_source_script_profile_job_and_payload_never_cross_authority",
+   "SingleOwnerPythonFindingProfileTests.test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit",
+   "SingleOwnerPythonFindingProfileTests.test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution",
+   "SingleOwnerPythonFindingProfileTests.test_g_final_reader_authenticates_each_original_upload_after_whole_run_success",
+   "SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once",
+   "SingleOwnerPythonFindingProfileTests.test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources"
+  ]
+ },
+ ".github/scripts/major_readiness.py": {
+  "existing_declarations": 47,
+  "changed": [
+   "produce"
+  ],
+  "added": []
+ },
+ ".github/scripts/test_hook_ci_partition.py": {
+  "existing_declarations": 69,
+  "changed": [
+   "python_source_roles",
+   "validate"
+  ],
+  "added": [
+   "SingleOwnerFindingWorkflowTests.current",
+   "SingleOwnerFindingWorkflowTests.test_exact_six_source_owners_keep_original_invocations_and_closed_authority",
+   "SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job",
+   "SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape",
+   "impact_source_roles",
+   "reviewed_impact_source_event_guards"
+  ]
+ },
+ ".github/scripts/test_ci_impact.py": {
+  "existing_declarations": 212,
+  "changed": [
+   "WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group",
+   "ArtifactEngineCIContractTest.test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard"
+  ],
+  "added": []
+ },
+ ".github/scripts/test_state_contracts_integration.py": {
+  "existing_declarations": 53,
+  "changed": [
+   "IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only"
+  ],
+  "added": []
+ }
+}

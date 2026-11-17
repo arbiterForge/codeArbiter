@@ -1,0 +1,163 @@
+{
+  "plan": {
+    "source_head": "b4d8fcf9ffd4078b57b7abfe700f09a5ce3ebaef",
+    "owner_sha256": "97fb2e2456572ed6fddbd8889b7c904aceea0409d8f2fcbc0a9e47126bb1dc4a",
+    "tool_hashes": {
+      "cdb.exe": "e8f7d1e2986e541c82eb7917460e8118e7a262c16e402a5b1333b01f147a0fc3",
+      "dbgeng.dll": "f70a0ae7ebd1c37da334d6b3c388aba107b54b4de869bdbd54a270251145e649",
+      "dbghelp.dll": "3ce12537291b46af6914ea6865f176d9528cd7707c752fca8be96ad2a7562220"
+    },
+    "scope": "Exactly2fresh owned Python helpers, same5s hard bound, only actual SDK Engine initialization, policy and close. No target process/attach/stack, no Node/Pi/provider/install/network command, no Root source/index/ref mutation. SDK signatures verified separately ValidMicrosoft; original approval for private SDK/local probes reused."
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_ms": 192,
+      "rows": [
+        {
+          "phase": "constructor-enter",
+          "ms": 0
+        },
+        {
+          "phase": "load-dbghelp.dll-enter",
+          "ms": 0
+        },
+        {
+          "phase": "load-dbghelp.dll-return",
+          "ms": 1
+        },
+        {
+          "phase": "load-dbgeng.dll-enter",
+          "ms": 1
+        },
+        {
+          "phase": "load-dbgeng.dll-return",
+          "ms": 6
+        },
+        {
+          "phase": "debug-create-enter",
+          "ms": 6
+        },
+        {
+          "phase": "debug-create-return",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 124
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 124
+        },
+        {
+          "phase": "constructor-return",
+          "ms": 124
+        },
+        {
+          "phase": "closed-policy-applied",
+          "ms": 124
+        },
+        {
+          "phase": "close-success",
+          "ms": 124
+        }
+      ],
+      "stderr_bytes": 0,
+      "containment": "owned-helper-reaped"
+    },
+    {
+      "trial": 2,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_ms": 169,
+      "rows": [
+        {
+          "phase": "constructor-enter",
+          "ms": 0
+        },
+        {
+          "phase": "load-dbghelp.dll-enter",
+          "ms": 0
+        },
+        {
+          "phase": "load-dbghelp.dll-return",
+          "ms": 0
+        },
+        {
+          "phase": "load-dbgeng.dll-enter",
+          "ms": 1
+        },
+        {
+          "phase": "load-dbgeng.dll-return",
+          "ms": 2
+        },
+        {
+          "phase": "debug-create-enter",
+          "ms": 2
+        },
+        {
+          "phase": "debug-create-return",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-enter",
+          "ms": 106
+        },
+        {
+          "phase": "query-interface-return",
+          "ms": 106
+        },
+        {
+          "phase": "constructor-return",
+          "ms": 106
+        },
+        {
+          "phase": "closed-policy-applied",
+          "ms": 106
+        },
+        {
+          "phase": "close-success",
+          "ms": 106
+        }
+      ],
+      "stderr_bytes": 0,
+      "containment": "owned-helper-reaped"
+    }
+  ],
+  "limits": "Two local observer-initialization samples do not reproduce remote Node exit or prove remote SDK initialization cause."
+}

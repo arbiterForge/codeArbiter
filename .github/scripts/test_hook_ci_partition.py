@@ -73,169 +73,335 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
 # Finite reviewed roles: original suites stay in the legacy digest; metadata
 # does not become a merge-queue test. Exact blocks keep commands, guards,
 # credentials and uploader pins reviewable, as for native qualification above.
-PYTHON_SOURCE_ROLES = {
-    'Prepare hook finding source-test inputs': r"""      - name: Prepare hook finding source-test inputs
-        id: hook_finding_source_prepare
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py prepare-source
-          --repo . --source-profile hooks-finding-contracts-v1
-          --output "${{ runner.temp }}/hook-finding-source-inputs"
-          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
-""",
-    'Observe original review funnel contract': r"""      - name: Observe original review funnel contract
-        id: hook_review_observed
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py observe-python
-          --repo . --source-profile hooks-finding-contracts-v1
-          --source-payload "${{ runner.temp }}/hook-finding-source-inputs"
-          --output "${{ runner.temp }}/python-hook-review-observation.json"
-          -- .github/scripts/test_review_funnel.py
-""",
-    'Prepare Python source-test inputs': r"""      - name: Prepare Python source-test inputs
-        id: python_source_prepare
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py prepare-source
-          --repo . --output "${{ runner.temp }}/python-source-inputs"
-          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
-""",
-    'Observe original interrupted output publication tests': r"""      - name: Observe original interrupted output publication tests
-        id: python_publisher_observed
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py observe-python
-          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
-          --output "${{ runner.temp }}/python-publisher-observation.json"
-          -- .github/scripts/test_generated_output.py
-""",
-    'Prepare Q02 implementation source-test inputs': r"""      - name: Prepare Q02 implementation source-test inputs
-        id: q02_source_prepare
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py prepare-source
-          --repo . --source-profile major-readiness-implementation-v1
-          --output "${{ runner.temp }}/q02-source-inputs"
-          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
-""",
-    'Observe original Q02 readiness implementation tests': r"""      - name: Observe original Q02 readiness implementation tests
-        id: q02_readiness_observed
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py observe-python
-          --repo . --source-profile major-readiness-implementation-v1
-          --source-payload "${{ runner.temp }}/q02-source-inputs"
-          --output "${{ runner.temp }}/python-q02-readiness-observation.json"
-          -- .github/scripts/test_major_readiness.py
-""",
-    'Observe original Q02 publication guard tests': r"""      - name: Observe original Q02 publication guard tests
-        id: q02_release_observed
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py observe-python
-          --repo . --source-profile major-readiness-implementation-v1
-          --source-payload "${{ runner.temp }}/q02-source-inputs"
-          --output "${{ runner.temp }}/python-q02-release-observation.json"
-          -- .github/scripts/test_release_workflow.py
-""",
-    'Observe original skill-proof freshness tests': r"""      - name: Observe original skill-proof freshness tests
-        id: python_proof_observed
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py observe-python
-          --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
-          --output "${{ runner.temp }}/python-proof-observation.json"
-          -- .github/scripts/test_check_skill_proof_fresh.py
-""",
-    'Upload hook finding source-test inputs': r"""      - name: Upload hook finding source-test inputs
-        id: hook_finding_source_upload
-        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.hook_finding_source_prepare.outcome == 'success' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: major-source-inputs-hooks-findings-windows-contracts
-          path: ${{ runner.temp }}/hook-finding-source-inputs/
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-          overwrite: false
-""",
-    'Upload Python source-test inputs': r"""      - name: Upload Python source-test inputs
-        id: python_source_upload
-        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: major-source-inputs-hooks-windows-contracts
-          path: ${{ runner.temp }}/python-source-inputs/
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-          overwrite: false
-""",
-    'Upload Q02 implementation source-test inputs': r"""      - name: Upload Q02 implementation source-test inputs
-        id: q02_source_upload
-        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.q02_source_prepare.outcome == 'success' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: major-source-inputs-q02-implementation
-          path: ${{ runner.temp }}/q02-source-inputs/
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-          overwrite: false
-""",
-    'Retain original Python source-test observations': r"""      - name: Retain original Python source-test observations
-        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: python-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/python-*-observation.json
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
-""",
-    'Emit original Python source qualification report': r"""      - name: Emit original Python source qualification report
-        id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' }}
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python -B .github/scripts/major_qualification_report.py emit \
-            --repo . --output "${{ runner.temp }}/qualification.json" \
-            --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
-            --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
-            --observation "hook-review=${{ runner.temp }}/python-hook-review-observation.json" \
-            --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
-            --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
-            --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
-            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
-            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \
-            --payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"
-          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
-""",
-    'Upload major qualification report': r"""      - name: Upload major qualification report
-        if: steps.python_qualification_emit.outcome == 'success'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ${{ steps.python_qualification_emit.outputs.artifact_name }}
-          path: ${{ runner.temp }}/qualification.json
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: false
-          overwrite: false
-
-""",
-}
+PYTHON_SOURCE_ROLES = {'Prepare hook finding source-test inputs': '      - name: Prepare hook finding source-test inputs\n'
+                                            '        id: hook_finding_source_prepare\n'
+                                            "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                            "'contracts'\n"
+                                            '        shell: bash\n'
+                                            '        run: >-\n'
+                                            '          python -B .github/scripts/major_qualification_report.py '
+                                            'prepare-source\n'
+                                            '          --repo . --source-profile hooks-finding-contracts-v1\n'
+                                            '          --output "${{ runner.temp }}/hook-finding-source-inputs"\n'
+                                            '          --job-name "[CHECK] | [CORE] | Hook contract  <os: '
+                                            'windows-latest · partition: contracts>"\n',
+ 'Observe original review funnel contract': '      - name: Observe original review funnel contract\n'
+                                            '        id: hook_review_observed\n'
+                                            "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                            "'contracts'\n"
+                                            '        shell: bash\n'
+                                            '        run: >-\n'
+                                            '          python -B .github/scripts/major_qualification_report.py '
+                                            'observe-python\n'
+                                            '          --repo . --source-profile hooks-finding-contracts-v1\n'
+                                            '          --source-payload "${{ runner.temp '
+                                            '}}/hook-finding-source-inputs"\n'
+                                            '          --output "${{ runner.temp '
+                                            '}}/python-hook-review-observation.json"\n'
+                                            '          -- .github/scripts/test_review_funnel.py\n',
+ 'Prepare single-owner hook source-test inputs': '      - name: Prepare single-owner hook source-test inputs\n'
+                                                 '        id: single_hook_prepare\n'
+                                                 "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                 "'contracts'\n"
+                                                 '        shell: bash\n'
+                                                 '        run: >-\n'
+                                                 '          python -B .github/scripts/major_qualification_report.py '
+                                                 'prepare-source\n'
+                                                 '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                                                 '          --output "${{ runner.temp '
+                                                 '}}/single-owner-hook-source-inputs"\n'
+                                                 '          --job-name "[CHECK] | [CORE] | Hook contract  <os: '
+                                                 'windows-latest · partition: contracts>"\n',
+ 'Observe original persona transition tests': '      - name: Observe original persona transition tests\n'
+                                              '        id: single_hookf01_observed\n'
+                                              "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                              "'contracts'\n"
+                                              '        shell: bash\n'
+                                              '        run: >-\n'
+                                              '          python -B .github/scripts/major_qualification_report.py '
+                                              'observe-python\n'
+                                              '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                                              '          --source-payload "${{ runner.temp '
+                                              '}}/single-owner-hook-source-inputs"\n'
+                                              '          --output "${{ runner.temp '
+                                              '}}/python-finite-hookf01-observation.json"\n'
+                                              '          -- .github/scripts/test_prompt_submit.py\n',
+ 'Prepare Python source-test inputs': '      - name: Prepare Python source-test inputs\n'
+                                      '        id: python_source_prepare\n'
+                                      "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+                                      '        shell: bash\n'
+                                      '        run: >-\n'
+                                      '          python -B .github/scripts/major_qualification_report.py '
+                                      'prepare-source\n'
+                                      '          --repo . --output "${{ runner.temp }}/python-source-inputs"\n'
+                                      '          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · '
+                                      'partition: contracts>"\n',
+ 'Observe original interrupted output publication tests': '      - name: Observe original interrupted output '
+                                                          'publication tests\n'
+                                                          '        id: python_publisher_observed\n'
+                                                          "        if: matrix.os == 'windows-latest' && "
+                                                          "matrix.partition == 'contracts'\n"
+                                                          '        shell: bash\n'
+                                                          '        run: >-\n'
+                                                          '          python -B '
+                                                          '.github/scripts/major_qualification_report.py '
+                                                          'observe-python\n'
+                                                          '          --repo . --source-payload "${{ runner.temp '
+                                                          '}}/python-source-inputs"\n'
+                                                          '          --output "${{ runner.temp '
+                                                          '}}/python-publisher-observation.json"\n'
+                                                          '          -- .github/scripts/test_generated_output.py\n',
+ 'Prepare Q02 implementation source-test inputs': '      - name: Prepare Q02 implementation source-test inputs\n'
+                                                  '        id: q02_source_prepare\n'
+                                                  "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                  "'contracts'\n"
+                                                  '        shell: bash\n'
+                                                  '        run: >-\n'
+                                                  '          python -B .github/scripts/major_qualification_report.py '
+                                                  'prepare-source\n'
+                                                  '          --repo . --source-profile '
+                                                  'major-readiness-implementation-v1\n'
+                                                  '          --output "${{ runner.temp }}/q02-source-inputs"\n'
+                                                  '          --job-name "[CHECK] | [CORE] | Hook contract  <os: '
+                                                  'windows-latest · partition: contracts>"\n',
+ 'Observe original Q02 readiness implementation tests': '      - name: Observe original Q02 readiness implementation '
+                                                        'tests\n'
+                                                        '        id: q02_readiness_observed\n'
+                                                        "        if: matrix.os == 'windows-latest' && matrix.partition "
+                                                        "== 'contracts'\n"
+                                                        '        shell: bash\n'
+                                                        '        run: >-\n'
+                                                        '          python -B '
+                                                        '.github/scripts/major_qualification_report.py observe-python\n'
+                                                        '          --repo . --source-profile '
+                                                        'major-readiness-implementation-v1\n'
+                                                        '          --source-payload "${{ runner.temp '
+                                                        '}}/q02-source-inputs"\n'
+                                                        '          --output "${{ runner.temp '
+                                                        '}}/python-q02-readiness-observation.json"\n'
+                                                        '          -- .github/scripts/test_major_readiness.py\n',
+ 'Observe original Q02 publication guard tests': '      - name: Observe original Q02 publication guard tests\n'
+                                                 '        id: q02_release_observed\n'
+                                                 "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                 "'contracts'\n"
+                                                 '        shell: bash\n'
+                                                 '        run: >-\n'
+                                                 '          python -B .github/scripts/major_qualification_report.py '
+                                                 'observe-python\n'
+                                                 '          --repo . --source-profile '
+                                                 'major-readiness-implementation-v1\n'
+                                                 '          --source-payload "${{ runner.temp }}/q02-source-inputs"\n'
+                                                 '          --output "${{ runner.temp '
+                                                 '}}/python-q02-release-observation.json"\n'
+                                                 '          -- .github/scripts/test_release_workflow.py\n',
+ 'Observe original typed verdict tests': '      - name: Observe original typed verdict tests\n'
+                                         '        id: single_cf06_observed\n'
+                                         "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                         "'contracts'\n"
+                                         '        shell: bash\n'
+                                         '        run: >-\n'
+                                         '          python -B .github/scripts/major_qualification_report.py '
+                                         'observe-python\n'
+                                         '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                                         '          --source-payload "${{ runner.temp '
+                                         '}}/single-owner-hook-source-inputs"\n'
+                                         '          --output "${{ runner.temp }}/python-finite-cf06-observation.json"\n'
+                                         '          -- .github/scripts/test_verdictlib.py\n',
+ 'Observe original skill-proof freshness tests': '      - name: Observe original skill-proof freshness tests\n'
+                                                 '        id: python_proof_observed\n'
+                                                 "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                 "'contracts'\n"
+                                                 '        shell: bash\n'
+                                                 '        run: >-\n'
+                                                 '          python -B .github/scripts/major_qualification_report.py '
+                                                 'observe-python\n'
+                                                 '          --repo . --source-payload "${{ runner.temp '
+                                                 '}}/python-source-inputs"\n'
+                                                 '          --output "${{ runner.temp '
+                                                 '}}/python-proof-observation.json"\n'
+                                                 '          -- .github/scripts/test_check_skill_proof_fresh.py\n',
+ 'Observe original scoped Pi payload identity tests': '      - name: Observe original scoped Pi payload identity '
+                                                      'tests\n'
+                                                      '        id: single_hookf03_observed\n'
+                                                      "        if: matrix.os == 'windows-latest' && matrix.partition "
+                                                      "== 'contracts'\n"
+                                                      '        shell: bash\n'
+                                                      '        run: >-\n'
+                                                      '          python -B '
+                                                      '.github/scripts/major_qualification_report.py observe-python\n'
+                                                      '          --repo . --source-profile '
+                                                      'hooks-single-owner-findings-v1\n'
+                                                      '          --source-payload "${{ runner.temp '
+                                                      '}}/single-owner-hook-source-inputs"\n'
+                                                      '          --output "${{ runner.temp '
+                                                      '}}/python-finite-hookf03-observation.json"\n'
+                                                      '          -- .github/scripts/test_pi_payload_identity.py\n',
+ 'Observe original measurement contract tests': '      - name: Observe original measurement contract tests\n'
+                                                '        id: single_tf02_observed\n'
+                                                "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                "'contracts'\n"
+                                                '        shell: bash\n'
+                                                '        run: >-\n'
+                                                '          python -B .github/scripts/major_qualification_report.py '
+                                                'observe-python\n'
+                                                '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                                                '          --source-payload "${{ runner.temp '
+                                                '}}/single-owner-hook-source-inputs"\n'
+                                                '          --output "${{ runner.temp '
+                                                '}}/python-finite-tf02-observation.json"\n'
+                                                '          -- tools/test_measurement_contracts.py\n',
+ 'Upload single-owner hook source-test inputs': '      - name: Upload single-owner hook source-test inputs\n'
+                                                '        id: single_hook_upload\n'
+                                                '        if: ${{ !cancelled() && (success() || failure()) && matrix.os '
+                                                "== 'windows-latest' && matrix.partition == 'contracts' && "
+                                                "steps.single_hook_prepare.outcome == 'success' }}\n"
+                                                '        uses: '
+                                                'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # '
+                                                'v7.0.2\n'
+                                                '        with:\n'
+                                                '          name: major-source-inputs-hooks-single-owner\n'
+                                                '          path: ${{ runner.temp }}/single-owner-hook-source-inputs/\n'
+                                                '          if-no-files-found: error\n'
+                                                '          retention-days: 14\n'
+                                                '          include-hidden-files: true\n'
+                                                '          overwrite: false\n',
+ 'Upload hook finding source-test inputs': '      - name: Upload hook finding source-test inputs\n'
+                                           '        id: hook_finding_source_upload\n'
+                                           '        if: ${{ !cancelled() && (success() || failure()) && matrix.os == '
+                                           "'windows-latest' && matrix.partition == 'contracts' && "
+                                           "steps.hook_finding_source_prepare.outcome == 'success' }}\n"
+                                           '        uses: '
+                                           'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n'
+                                           '        with:\n'
+                                           '          name: major-source-inputs-hooks-findings-windows-contracts\n'
+                                           '          path: ${{ runner.temp }}/hook-finding-source-inputs/\n'
+                                           '          if-no-files-found: error\n'
+                                           '          retention-days: 14\n'
+                                           '          include-hidden-files: true\n'
+                                           '          overwrite: false\n',
+ 'Upload Python source-test inputs': '      - name: Upload Python source-test inputs\n'
+                                     '        id: python_source_upload\n'
+                                     '        if: ${{ !cancelled() && (success() || failure()) && matrix.os == '
+                                     "'windows-latest' && matrix.partition == 'contracts' && "
+                                     "steps.python_source_prepare.outcome == 'success' }}\n"
+                                     '        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # '
+                                     'v7.0.2\n'
+                                     '        with:\n'
+                                     '          name: major-source-inputs-hooks-windows-contracts\n'
+                                     '          path: ${{ runner.temp }}/python-source-inputs/\n'
+                                     '          if-no-files-found: error\n'
+                                     '          retention-days: 14\n'
+                                     '          include-hidden-files: true\n'
+                                     '          overwrite: false\n',
+ 'Upload Q02 implementation source-test inputs': '      - name: Upload Q02 implementation source-test inputs\n'
+                                                 '        id: q02_source_upload\n'
+                                                 '        if: ${{ !cancelled() && (success() || failure()) && '
+                                                 "matrix.os == 'windows-latest' && matrix.partition == 'contracts' && "
+                                                 "steps.q02_source_prepare.outcome == 'success' }}\n"
+                                                 '        uses: '
+                                                 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # '
+                                                 'v7.0.2\n'
+                                                 '        with:\n'
+                                                 '          name: major-source-inputs-q02-implementation\n'
+                                                 '          path: ${{ runner.temp }}/q02-source-inputs/\n'
+                                                 '          if-no-files-found: error\n'
+                                                 '          retention-days: 14\n'
+                                                 '          include-hidden-files: true\n'
+                                                 '          overwrite: false\n',
+ 'Retain original Python source-test observations': '      - name: Retain original Python source-test observations\n'
+                                                    '        if: ${{ !cancelled() && (success() || failure()) && '
+                                                    "matrix.os == 'windows-latest' && matrix.partition == 'contracts' "
+                                                    "&& steps.python_source_prepare.outcome == 'success' }}\n"
+                                                    '        uses: '
+                                                    'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 '
+                                                    '# v7.0.2\n'
+                                                    '        with:\n'
+                                                    '          name: python-source-observations-${{ github.sha }}-${{ '
+                                                    'github.run_id }}-${{ github.run_attempt }}\n'
+                                                    '          path: ${{ runner.temp }}/python-*-observation.json\n'
+                                                    '          if-no-files-found: error\n'
+                                                    '          retention-days: 14\n'
+                                                    '          include-hidden-files: false\n'
+                                                    '          overwrite: false\n',
+ 'Emit original Python source qualification report': '      - name: Emit original Python source qualification report\n'
+                                                     '        id: python_qualification_emit\n'
+                                                     "        if: ${{ !cancelled() && matrix.os == 'windows-latest' && "
+                                                     "matrix.partition == 'contracts' && github.event_name == 'push' "
+                                                     "&& (github.ref == 'refs/heads/main' || github.ref == "
+                                                     "'refs/heads/major/state-contracts') && "
+                                                     "hashFiles('.github/integration-candidate.json') != '' && "
+                                                     "steps.python_publisher_observed.outcome == 'success' && "
+                                                     "steps.python_proof_observed.outcome == 'success' && "
+                                                     "steps.python_source_upload.outcome == 'success' && "
+                                                     "steps.q02_readiness_observed.outcome == 'success' && "
+                                                     "steps.q02_release_observed.outcome == 'success' && "
+                                                     "steps.q02_source_upload.outcome == 'success' && "
+                                                     "steps.hook_review_observed.outcome == 'success' && "
+                                                     "steps.hook_finding_source_upload.outcome == 'success' && "
+                                                     "steps.single_hook_prepare.outcome == 'success' && "
+                                                     "steps.single_hookf01_observed.outcome == 'success' && "
+                                                     "steps.single_hookf03_observed.outcome == 'success' && "
+                                                     "steps.single_cf06_observed.outcome == 'success' && "
+                                                     "steps.single_tf02_observed.outcome == 'success' && "
+                                                     "steps.single_hook_upload.outcome == 'success' }}\n"
+                                                     '        shell: bash\n'
+                                                     '        env:\n'
+                                                     '          GH_TOKEN: ${{ github.token }}\n'
+                                                     '        run: |\n'
+                                                     '          python -B '
+                                                     '.github/scripts/major_qualification_report.py emit \\\n'
+                                                     '            --repo . --output "${{ runner.temp '
+                                                     '}}/qualification.json" \\\n'
+                                                     '            --job-name "[CHECK] | [CORE] | Hook contract  <os: '
+                                                     'windows-latest · partition: contracts>" \\\n'
+                                                     '            --observation "publisher=${{ runner.temp '
+                                                     '}}/python-publisher-observation.json" \\\n'
+                                                     '            --observation "hook-review=${{ runner.temp '
+                                                     '}}/python-hook-review-observation.json" \\\n'
+                                                     '            --observation "skill-proof=${{ runner.temp '
+                                                     '}}/python-proof-observation.json" \\\n'
+                                                     '            --observation "q02-readiness=${{ runner.temp '
+                                                     '}}/python-q02-readiness-observation.json" \\\n'
+                                                     '            --observation "q02-release=${{ runner.temp '
+                                                     '}}/python-q02-release-observation.json" \\\n'
+                                                     '            --observation "finite-hookf01=${{ runner.temp '
+                                                     '}}/python-finite-hookf01-observation.json" \\\n'
+                                                     '            --observation "finite-hookf03=${{ runner.temp '
+                                                     '}}/python-finite-hookf03-observation.json" \\\n'
+                                                     '            --observation "finite-cf06=${{ runner.temp '
+                                                     '}}/python-finite-cf06-observation.json" \\\n'
+                                                     '            --observation "finite-tf02=${{ runner.temp '
+                                                     '}}/python-finite-tf02-observation.json" \\\n'
+                                                     '            --payload-root '
+                                                     '"major-source-inputs-hooks-windows-contracts=${{ '
+                                                     'github.workspace }}" \\\n'
+                                                     '            --payload-root '
+                                                     '"major-source-inputs-q02-implementation=${{ github.workspace }}" '
+                                                     '\\\n'
+                                                     '            --payload-root '
+                                                     '"major-source-inputs-hooks-findings-windows-contracts=${{ '
+                                                     'github.workspace }}" \\\n'
+                                                     '            --payload-root '
+                                                     '"major-source-inputs-hooks-single-owner=${{ github.workspace '
+                                                     '}}"\n'
+                                                     "          python -c 'import json,os; from pathlib import Path; "
+                                                     'record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); '
+                                                     'job_id=record["job_id"]; assert type(job_id) is int and job_id > '
+                                                     '0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); '
+                                                     'print("artifact_name=major-qualification-"+str(job_id),file=out); '
+                                                     "out.close()'\n",
+ 'Upload major qualification report': '      - name: Upload major qualification report\n'
+                                      "        if: steps.python_qualification_emit.outcome == 'success'\n"
+                                      '        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 '
+                                      '# v7.0.2\n'
+                                      '        with:\n'
+                                      '          name: ${{ steps.python_qualification_emit.outputs.artifact_name }}\n'
+                                      '          path: ${{ runner.temp }}/qualification.json\n'
+                                      '          if-no-files-found: error\n'
+                                      '          retention-days: 14\n'
+                                      '          include-hidden-files: false\n'
+                                      '          overwrite: false\n'
+                                      '\n'}
 
 def require(ok: bool, message: str) -> None:
     if not ok:
@@ -297,7 +463,10 @@ def python_source_roles(block: str) -> dict[str,str]:
                        ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
                        ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
-                       ('Run hosted release-workflow contract tests','test_release_workflow.py')):
+                       ('Run hosted release-workflow contract tests','test_release_workflow.py'),
+                       ('Run prompt-seam interceptor contract (ADR-0030)', 'test_prompt_submit.py'),
+                       ('Run typed qualification-outcome contract tests', 'test_verdictlib.py')
+                       ):
         selected=[step for step in steps if step.startswith('      - name: '+name+'\n')]
         require(len(selected)==1 and command(selected[0])=='python .github/scripts/'+entry
                 and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
@@ -315,6 +484,149 @@ def reviewed_python_source_event_guards(block: str) -> set[str]:
             'Python metadata predicate reused by an ordinary test')
     return {predicate}
 
+
+IMPACT_SOURCE_ROLES = {'Prepare single-owner Impact source-test inputs': '      - name: Prepare single-owner Impact source-test inputs\n'
+                                                   '        id: single_impact_prepare\n'
+                                                   '        shell: bash\n'
+                                                   '        run: >-\n'
+                                                   '          python -B .github/scripts/major_qualification_report.py '
+                                                   'prepare-source\n'
+                                                   '          --repo . --source-profile '
+                                                   'impact-single-owner-findings-v1\n'
+                                                   '          --output "${{ runner.temp '
+                                                   '}}/single-owner-impact-source-inputs"\n'
+                                                   '          --job-name "[CHECK] | [REPO] | Impact planner '
+                                                   'contract"\n',
+ 'Observe original impact planner contract tests': '      - name: Observe original impact planner contract tests\n'
+                                                   '        id: single_cf05_observed\n'
+                                                   '        shell: bash\n'
+                                                   '        run: >-\n'
+                                                   '          python -B .github/scripts/major_qualification_report.py '
+                                                   'observe-python\n'
+                                                   '          --repo . --source-profile '
+                                                   'impact-single-owner-findings-v1\n'
+                                                   '          --source-payload "${{ runner.temp '
+                                                   '}}/single-owner-impact-source-inputs"\n'
+                                                   '          --output "${{ runner.temp '
+                                                   '}}/python-finite-cf05-observation.json"\n'
+                                                   '          -- .github/scripts/test_ci_impact.py\n',
+ 'Observe original payload-version gate tests': '      - name: Observe original payload-version gate tests\n'
+                                                '        id: single_cf07_observed\n'
+                                                '        shell: bash\n'
+                                                '        run: >-\n'
+                                                '          python -B .github/scripts/major_qualification_report.py '
+                                                'observe-python\n'
+                                                '          --repo . --source-profile impact-single-owner-findings-v1\n'
+                                                '          --source-payload "${{ runner.temp '
+                                                '}}/single-owner-impact-source-inputs"\n'
+                                                '          --output "${{ runner.temp '
+                                                '}}/python-finite-cf07-observation.json"\n'
+                                                '          -- .github/scripts/test_payload_version_gate.py\n',
+ 'Upload single-owner Impact source-test inputs': '      - name: Upload single-owner Impact source-test inputs\n'
+                                                  '        id: single_impact_upload\n'
+                                                  '        if: ${{ !cancelled() && (success() || failure()) && '
+                                                  "steps.single_impact_prepare.outcome == 'success' }}\n"
+                                                  '        uses: '
+                                                  'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # '
+                                                  'v7.0.2\n'
+                                                  '        with:\n'
+                                                  '          name: major-source-inputs-impact-single-owner\n'
+                                                  '          path: ${{ runner.temp '
+                                                  '}}/single-owner-impact-source-inputs/\n'
+                                                  '          if-no-files-found: error\n'
+                                                  '          retention-days: 14\n'
+                                                  '          include-hidden-files: true\n'
+                                                  '          overwrite: false\n',
+ 'Retain original Impact source-test observations': '      - name: Retain original Impact source-test observations\n'
+                                                    '        if: ${{ !cancelled() && (success() || failure()) && '
+                                                    "steps.single_impact_prepare.outcome == 'success' }}\n"
+                                                    '        uses: '
+                                                    'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 '
+                                                    '# v7.0.2\n'
+                                                    '        with:\n'
+                                                    '          name: impact-source-observations-${{ github.sha }}-${{ '
+                                                    'github.run_id }}-${{ github.run_attempt }}\n'
+                                                    '          path: ${{ runner.temp '
+                                                    '}}/python-finite-cf0*-observation.json\n'
+                                                    '          if-no-files-found: error\n'
+                                                    '          retention-days: 14\n'
+                                                    '          include-hidden-files: false\n'
+                                                    '          overwrite: false\n',
+ 'Emit original Impact source qualification report': '      - name: Emit original Impact source qualification report\n'
+                                                     '        id: single_impact_emit\n'
+                                                     "        if: ${{ !cancelled() && github.event_name == 'push' && "
+                                                     "(github.ref == 'refs/heads/main' || github.ref == "
+                                                     "'refs/heads/major/state-contracts') && "
+                                                     "hashFiles('.github/integration-candidate.json') != '' && "
+                                                     "steps.single_impact_prepare.outcome == 'success' && "
+                                                     "steps.single_cf05_observed.outcome == 'success' && "
+                                                     "steps.single_cf07_observed.outcome == 'success' && "
+                                                     "steps.single_impact_upload.outcome == 'success' }}\n"
+                                                     '        shell: bash\n'
+                                                     '        env:\n'
+                                                     '          GH_TOKEN: ${{ github.token }}\n'
+                                                     '        run: |\n'
+                                                     '          python -B '
+                                                     '.github/scripts/major_qualification_report.py emit \\\n'
+                                                     '            --repo . --output "${{ runner.temp '
+                                                     '}}/qualification.json" \\\n'
+                                                     '            --job-name "[CHECK] | [REPO] | Impact planner '
+                                                     'contract" \\\n'
+                                                     '            --observation "finite-cf05=${{ runner.temp '
+                                                     '}}/python-finite-cf05-observation.json" \\\n'
+                                                     '            --observation "finite-cf07=${{ runner.temp '
+                                                     '}}/python-finite-cf07-observation.json" \\\n'
+                                                     '            --payload-root '
+                                                     '"major-source-inputs-impact-single-owner=${{ github.workspace '
+                                                     '}}"\n'
+                                                     "          python -c 'import json,os; from pathlib import Path; "
+                                                     'record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); '
+                                                     'job_id=record["job_id"]; assert type(job_id) is int and job_id > '
+                                                     '0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); '
+                                                     'print("artifact_name=major-qualification-"+str(job_id),file=out); '
+                                                     "out.close()'\n",
+ 'Upload major qualification report': '      - name: Upload major qualification report\n'
+                                      "        if: steps.single_impact_emit.outcome == 'success'\n"
+                                      '        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 '
+                                      '# v7.0.2\n'
+                                      '        with:\n'
+                                      '          name: ${{ steps.single_impact_emit.outputs.artifact_name }}\n'
+                                      '          path: ${{ runner.temp }}/qualification.json\n'
+                                      '          if-no-files-found: error\n'
+                                      '          retention-days: 14\n'
+                                      '          include-hidden-files: false\n'
+                                      '          overwrite: false\n'
+                                      '\n'
+                                      '\n'}
+
+def impact_source_roles(block: str) -> dict[str,str]:
+    steps=step_blocks(block)
+    found={name:[step for step in steps if step.startswith('      - name: '+name+'\n')] for name in IMPACT_SOURCE_ROLES}
+    if not any(found.values()):return {}
+    for name,expected in IMPACT_SOURCE_ROLES.items():
+        require(found[name]==[expected],'Impact source role changed or repeated: '+name)
+    pre=block.split('    steps:\n',1)[0]
+    require(pre.split('    permissions:\n',1)[1]=='      contents: read\n      actions: read\n','Impact metadata permissions changed')
+    require(re.findall(r'(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$',block)==['          GH_TOKEN: ${{ github.token }}'],
+            'Impact credentials escaped metadata emission')
+    require(block.count('${{ github.token }}')==1 and 'secrets.' not in block,'Impact token authority changed')
+    checkout=[s for s in steps if 'uses: actions/checkout@' in s]
+    require(len(checkout)==1 and 'persist-credentials: false' in checkout[0],'Impact checkout retains credentials')
+    require([steps.index(value) for value in IMPACT_SOURCE_ROLES.values()]==sorted(steps.index(value) for value in IMPACT_SOURCE_ROLES.values()),'Impact source role ordering changed')
+    for script in ('.github/scripts/test_ci_impact.py','.github/scripts/test_payload_version_gate.py'):
+        owners=[s for s in steps if command(s) and ('-- '+script) in command(s)]
+        require(len(owners)==1 and owners[0] in IMPACT_SOURCE_ROLES.values(),'Impact original owner absent or repeated')
+        require(not any(command(s)=='python '+script for s in steps),'Impact original suite repeated')
+    return {name:rows[0] for name,rows in found.items()}
+
+
+def reviewed_impact_source_event_guards(block: str) -> set[str]:
+    roles=impact_source_roles(block)
+    require(roles,'Impact original source roles missing')
+    predicate=re.findall(r'^        if: (.*)$',roles['Emit original Impact source qualification report'],re.M)[0]
+    require(re.findall(r'(?m)^\s+if: (.*)$',block).count(predicate)==1,
+            'Impact metadata predicate reused by an ordinary test')
+    return {predicate}
 
 def command_digest(commands: list[str]) -> str:
     payload = json.dumps(commands, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
@@ -375,7 +687,9 @@ def validate(
                                                'python .github/scripts/test_generated_output.py',
                                                'python .github/scripts/test_check_skill_proof_fresh.py',
                                                'python .github/scripts/test_major_readiness.py',
-                                               'python .github/scripts/test_release_workflow.py')
+                                               'python .github/scripts/test_release_workflow.py',
+                                               'python .github/scripts/test_prompt_submit.py',
+                                               'python .github/scripts/test_verdictlib.py')
         if not observed_original:
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['native_setup']==1,'Expected exactly one ordinary native qualification')
@@ -756,6 +1070,72 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
         self.assertEqual(set(NPM_PURE_COMMAND.split()[2:]) | set(NPM_PRODUCER_COMMAND.split()[2:]),set(classes))
         self.assertEqual(sum(map(len,classes.values())),24)
 
+
+class SingleOwnerFindingWorkflowTests(unittest.TestCase):
+    def current(self):
+        return (Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+
+    def test_exact_six_source_owners_keep_original_invocations_and_closed_authority(self):
+        text=self.current();hooks=job_block(text,'hooks');impact=job_block(text,'ci-impact')
+        validate(text);hroles=python_source_roles(hooks);iroles=impact_source_roles(impact)
+        self.assertTrue(iroles)
+        for script in ('test_prompt_submit.py','test_verdictlib.py'):
+            original='python .github/scripts/'+script
+            self.assertEqual(sum(command(s)==original for s in step_blocks(hooks)),1)
+            self.assertEqual(sum(bool(command(s) and command(s).endswith('-- .github/scripts/'+script)) for s in step_blocks(hooks)),1)
+        for script in ('.github/scripts/test_pi_payload_identity.py','tools/test_measurement_contracts.py'):
+            selected=[s for s in step_blocks(hooks) if command(s) and command(s).endswith('-- '+script)]
+            self.assertEqual(len(selected),1)
+            self.assertIn(selected[0],hroles.values())
+            self.assertNotIn('test_pi_doctor.py',command(selected[0]))
+        self.assertEqual(len(reviewed_impact_source_event_guards(impact)),1)
+
+    def test_new_measurement_owner_and_actual_imports_select_its_required_hook_job(self):
+        import fnmatch
+        root=Path(__file__).resolve().parents[2]
+        script=root/'tools/test_measurement_contracts.py'
+        tree=ast.parse(script.read_text(encoding='utf8'))
+        imports={node.args[0].value for node in ast.walk(tree) if isinstance(node,ast.Call)
+                 and isinstance(node.func,ast.Name) and node.func.id=='load' and len(node.args)==1
+                 and isinstance(node.args[0],ast.Constant) and isinstance(node.args[0].value,str)}
+        self.assertTrue(imports)
+        subjects={'tools/test_measurement_contracts.py'}|{'tools/'+name+'.py' for name in imports}
+        def selected(text):
+            hooks=text.split('            hooks:\n',1)[1].split('            impact:\n',1)[0]
+            patterns=re.findall(r"^              - '([^']+)'$",hooks,re.M)
+            self.assertFalse([path for path in sorted(subjects) if not any(fnmatch.fnmatchcase(path,pattern) for pattern in patterns)],
+                             'new unfiltered owner or an actual imported subject skips its hook controls')
+        text=self.current();selected(text)
+        for path in subjects:
+            literal="              - '"+path+"'\n"
+            self.assertIn(literal,text)
+            with self.subTest(path=path),self.assertRaises(AssertionError):selected(text.replace(literal,'',1))
+
+    def test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape(self):
+        text=self.current();impact=job_block(text,'ci-impact')
+        predicate=next(iter(reviewed_impact_source_event_guards(impact)))
+        with self.assertRaises(ValueError):
+            reviewed_impact_source_event_guards(impact+'      - name: unreviewed ordinary test\n        if: '+predicate+'\n        run: python unreviewed.py\n')
+        for name,role in IMPACT_SOURCE_ROLES.items():
+            for replacement in ('',role+role):
+                with self.subTest(role=name,mutation='omitted-or-repeated'),self.assertRaises(ValueError):
+                    reviewed_impact_source_event_guards(impact.replace(role,replacement,1))
+        for name,role in IMPACT_SOURCE_ROLES.items():
+            if 'observe-python' in role:
+                for before,after in (('-- .github/scripts/','-- -k one .github/scripts/'),
+                                     ('        shell: bash','        env:\n          GH_TOKEN: ${{ github.token }}\n        shell: bash'),
+                                     ('--source-profile impact-single-owner-findings-v1','--source-profile python-tools-v1')):
+                    self.assertIn(before,role)
+                    with self.subTest(role=name,field=before),self.assertRaises(ValueError):
+                        reviewed_impact_source_event_guards(impact.replace(role,role.replace(before,after,1),1))
+        hooks=job_block(text,'hooks')
+        names=('Prepare single-owner hook source-test inputs','Observe original persona transition tests',
+               'Observe original scoped Pi payload identity tests','Observe original typed verdict tests',
+               'Observe original measurement contract tests','Upload single-owner hook source-test inputs')
+        for name in names:
+            role=PYTHON_SOURCE_ROLES[name]
+            for replacement in ('',role+role,role.replace("matrix.os == 'windows-latest'","matrix.os != 'windows-latest'",1)):
+                with self.subTest(role=name),self.assertRaises(ValueError):python_source_roles(hooks.replace(role,replacement,1))
 
 def main() -> int:
     results=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))

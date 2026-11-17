@@ -300,6 +300,12 @@ jobs:
               - '.github/scripts/test_immutable_git_blobs.py'
               - '.github/workflows/ci.yml'
             hooks:
+              # The unfiltered measurement owner and its actual imported subjects.
+              - 'tools/farm-first-pass.py'
+              - 'tools/live-smarts-exercise.py'
+              - 'tools/statusline-bench.py'
+              - 'tools/statusline-screenshot.py'
+              - 'tools/test_measurement_contracts.py'
               - 'tools/build-artifacts.py'
               - 'tools/go_test_parallel.py'
               - '.codearbiter/context/**'
@@ -1847,8 +1853,13 @@ jobs:
     needs: changes
     if: needs.changes.outputs.impact == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.x"
@@ -1858,8 +1869,23 @@ jobs:
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
-      - name: Validate impact-map fallback, receipt, and name contracts
-        run: python .github/scripts/test_ci_impact.py
+      - name: Prepare single-owner Impact source-test inputs
+        id: single_impact_prepare
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile impact-single-owner-findings-v1
+          --output "${{ runner.temp }}/single-owner-impact-source-inputs"
+          --job-name "[CHECK] | [REPO] | Impact planner contract"
+      - name: Observe original impact planner contract tests
+        id: single_cf05_observed
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile impact-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-impact-source-inputs"
+          --output "${{ runner.temp }}/python-finite-cf05-observation.json"
+          -- .github/scripts/test_ci_impact.py
       - name: Validate strict parallel native qualification and shard coverage
         run: python .github/scripts/test_ci20_native_pipeline.py
       - name: Validate the site CVE gate's accepted-advisory judge
@@ -1872,19 +1898,66 @@ jobs:
         # lockfile bump must NOT demand a version advance, and a committed
         # esbuild artifact must.
         run: python .github/scripts/test_payload_scope.py
-      - name: Validate the payload-version gate
-        # Issue #530. payload_scope.py above answers "did anything an installed
-        # user can observe change?"; this answers "may that change ride the
-        # current version?" - and it used to answer it with a git TAG lookup,
-        # while `claude plugin update` keys on the MANIFEST VERSION. Runs the
-        # rule against real throwaway repositories in both directions, including
-        # the untagged-but-already-shipped case that produced the issue.
-        run: python .github/scripts/test_payload_version_gate.py
+      - name: Observe original payload-version gate tests
+        id: single_cf07_observed
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile impact-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-impact-source-inputs"
+          --output "${{ runner.temp }}/python-finite-cf07-observation.json"
+          -- .github/scripts/test_payload_version_gate.py
       - name: Validate the integration candidate-version rule
         # Program task P-01. Same-candidate evolution is admitted only for PRs
         # whose CI base is major/state-contracts; main and merge_group keep
         # the strict immediate-base rule above.
         run: python .github/scripts/test_integration_candidate.py
+      - name: Upload single-owner Impact source-test inputs
+        id: single_impact_upload
+        if: ${{ !cancelled() && (success() || failure()) && steps.single_impact_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-impact-single-owner
+          path: ${{ runner.temp }}/single-owner-impact-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original Impact source-test observations
+        if: ${{ !cancelled() && (success() || failure()) && steps.single_impact_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: impact-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/python-finite-cf0*-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original Impact source qualification report
+        id: single_impact_emit
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.single_impact_prepare.outcome == 'success' && steps.single_cf05_observed.outcome == 'success' && steps.single_cf07_observed.outcome == 'success' && steps.single_impact_upload.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "${{ runner.temp }}/qualification.json" \
+            --job-name "[CHECK] | [REPO] | Impact planner contract" \
+            --observation "finite-cf05=${{ runner.temp }}/python-finite-cf05-observation.json" \
+            --observation "finite-cf07=${{ runner.temp }}/python-finite-cf07-observation.json" \
+            --payload-root "major-source-inputs-impact-single-owner=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
+      - name: Upload major qualification report
+        if: steps.single_impact_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.single_impact_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
 
   codex-resource-contract:
     name: "[CHECK] | [CDX ] | Skill resource evidence contract"
@@ -3406,12 +3479,31 @@ jobs:
         # from binding over nothing. Also proves every hook's §N citation
         # resolves in all three modes.
         run: python .github/scripts/test_persona_composition.py
+      - name: Prepare single-owner hook source-test inputs
+        id: single_hook_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --output "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Run prompt-seam interceptor contract (ADR-0030)
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # #437. The flip must produce NO model turn, and the Codex envelope is
         # additionalProperties:false with exactly seven keys - a shape borrowed
         # from any other event is rejected outright.
         run: python .github/scripts/test_prompt_submit.py
+      - name: Observe original persona transition tests
+        id: single_hookf01_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-hookf01-observation.json"
+          -- .github/scripts/test_prompt_submit.py
       - name: Run durable workflow-recovery contract (HW-10)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # D-RECOVERY. The closed recovery contract and its generated runtime
@@ -3625,11 +3717,21 @@ jobs:
           --output "${{ runner.temp }}/python-q02-release-observation.json"
           -- .github/scripts/test_release_workflow.py
       - name: Run typed qualification-outcome contract tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # R-06: a green exit from the tag, branch-protection, Codex-host and
         # payload checks can mean skipped/unavailable; required consumers
         # accept only affirmative observations.
         run: python .github/scripts/test_verdictlib.py
+      - name: Observe original typed verdict tests
+        id: single_cf06_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-cf06-observation.json"
+          -- .github/scripts/test_verdictlib.py
       - name: Run bounded verifier-subprocess contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # R-07: Codex host commands and the Pi benchmark readiness wait have
@@ -3697,6 +3799,37 @@ jobs:
           --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
           --output "${{ runner.temp }}/python-proof-observation.json"
           -- .github/scripts/test_check_skill_proof_fresh.py
+      - name: Observe original scoped Pi payload identity tests
+        id: single_hookf03_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-hookf03-observation.json"
+          -- .github/scripts/test_pi_payload_identity.py
+      - name: Observe original measurement contract tests
+        id: single_tf02_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-tf02-observation.json"
+          -- tools/test_measurement_contracts.py
+      - name: Upload single-owner hook source-test inputs
+        id: single_hook_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.single_hook_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-single-owner
+          path: ${{ runner.temp }}/single-owner-hook-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
       - name: Upload hook finding source-test inputs
         id: hook_finding_source_upload
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.hook_finding_source_prepare.outcome == 'success' }}
@@ -3742,7 +3875,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3755,9 +3888,14 @@ jobs:
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
             --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
             --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
+            --observation "finite-hookf01=${{ runner.temp }}/python-finite-hookf01-observation.json" \
+            --observation "finite-hookf03=${{ runner.temp }}/python-finite-hookf03-observation.json" \
+            --observation "finite-cf06=${{ runner.temp }}/python-finite-cf06-observation.json" \
+            --observation "finite-tf02=${{ runner.temp }}/python-finite-tf02-observation.json" \
             --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
             --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \
-            --payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"
+            --payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}" \
+            --payload-root "major-source-inputs-hooks-single-owner=${{ github.workspace }}"
           python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
       - name: Upload major qualification report
         if: steps.python_qualification_emit.outcome == 'success'

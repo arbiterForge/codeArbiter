@@ -1,0 +1,6 @@
+{
+  "source_commit": "b4d8fcf9ffd4078b57b7abfe700f09a5ce3ebaef",
+  "original_peer": "docs/state-contracts-major/execution/evidence/hook-f04-owner-ebdc/peer.json",
+  "correction": "The author clarified that its 56/54 AST count includes fixture/helper methods, rather than nested definitions as Root speculated in one review sentence. Actual top-level test-only inventory is 52 methods, 50 unchanged. The same two named test methods changed. The pure/native split remains 23 plus 1 methods. No code, review verdict or observed check outcome changes.",
+  "history": "Retain the original author and peer records; append this factual clarification with the next coherent program delivery."
+}

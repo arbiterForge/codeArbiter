@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Retain exact original Python observations for six finite findings, including Pi payload identity and measurement refusal checks, with closed source and CI authority bindings.
 - Run the three new native-launch finding admission controls with their existing pure Hook owner while preserving the native producer split.
 - Report bounded setup phases when release guard tests time out, retaining their original deadlines and outcomes.
 - Collect finite Farm finding observations from the existing test run with exact source, named-case, upload and trusted-job bindings.

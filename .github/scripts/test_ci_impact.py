@@ -21,7 +21,7 @@ import tomllib
 import unittest
 from unittest import mock
 from pathlib import Path
-from test_hook_ci_partition import reviewed_python_source_event_guards
+from test_hook_ci_partition import reviewed_python_source_event_guards, reviewed_impact_source_event_guards, impact_source_roles
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -3072,6 +3072,7 @@ class WorkflowContractTest(unittest.TestCase):
             block = jobs.get(job_id, "")
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
+            impact_guards = reviewed_impact_source_event_guards(block) if job_id == "ci-impact" else set()
             vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
             sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
@@ -3087,7 +3088,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards:
+                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards or condition in impact_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
@@ -4585,7 +4586,9 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn("tools/ci-impact.py", selected)
             job = workflow_jobs(text)["ci-impact"]
             self.assertIn("if: needs.changes.outputs.impact == 'true'", job)
-            self.assertIn("python .github/scripts/test_ci_impact.py", job)
+            roles = impact_source_roles(job)
+            self.assertIn("Observe original impact planner contract tests", roles)
+            self.assertIn("-- .github/scripts/test_ci_impact.py", roles["Observe original impact planner contract tests"])
             missing = [subject for subject in sorted(subjects)
                        if not any(fnmatch.fnmatchcase(subject, pattern) for pattern in selected)]
             self.assertEqual(missing, [], "edits skip their existing fast registry guard")

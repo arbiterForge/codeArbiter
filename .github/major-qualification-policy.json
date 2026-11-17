@@ -88,7 +88,13 @@
     "installed:sandbox:docker": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
     "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:findings:C-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
-    "disposition:findings:HOOK-F04": "major qualification / native"
+    "disposition:findings:HOOK-F04": "major qualification / native",
+    "disposition:findings:HOOK-F01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:HOOK-F03": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:C-F05": "[CHECK] | [REPO] | Impact planner contract",
+    "disposition:findings:C-F06": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:C-F07": "[CHECK] | [REPO] | Impact planner contract",
+    "disposition:findings:T-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
   },
   "native_composite_cells": [
     "disposition:findings:N-F02",

@@ -1328,6 +1328,13 @@ def produce(req, artifacts, jobs):
                         require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
                                 "hook finding source-test payload original owner differs")
                         validate_upload(job, payload, "Upload hook finding source-test inputs")
+                    elif payload.get("name") in ("major-source-inputs-hooks-single-owner", "major-source-inputs-impact-single-owner"):
+                        owner_name, upload_step = {
+                            "major-source-inputs-hooks-single-owner": ("[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>", "Upload single-owner hook source-test inputs"),
+                            "major-source-inputs-impact-single-owner": ("[CHECK] | [REPO] | Impact planner contract", "Upload single-owner Impact source-test inputs"),
+                        }[payload["name"]]
+                        require(job.get("name") == owner_name, "single-owner source-test payload original owner differs")
+                        validate_upload(job, payload, upload_step)
                     elif payload.get("name") == "major-source-inputs-q02-implementation":
                         require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
                                 "Q02 source-test payload original owner differs")
