@@ -1,0 +1,292 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:plan-file",
+  "disposition:transitions:hooks:plan-file:01"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:plan-file",
+   "frozen_row_sha256": "58b890c283bd3e7f51eef7691b5ca2723f20aad231fd191f9fe4e6bbaf2c5c7c",
+   "clause_ids": [
+    "disposition:transitions:hooks:plan-file:01",
+    "disposition:transitions:hooks:plan-file:02",
+    "disposition:transitions:hooks:plan-file:03",
+    "disposition:transitions:hooks:plan-file:04",
+    "disposition:transitions:hooks:plan-file:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 64,
+     "end": 70,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "82862b2799b1508bc1865990bd73e107369f2965a09762af9ce971c423f98590",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 73,
+     "end": 94,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "ef8877b81f644511f527ad6614171d5ba73edef05bdbaf0d0f3c31179b507cf0",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 188,
+     "end": 238,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "68ea65e7619874fba5ad97ea43f8dd67a0e1501d0e056b81760fdf480f8a1b67",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 415,
+     "end": 449,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "57676c74cdbb3019a26ac52c720adedbae1fbfe2a77581ebcf9de283fd229062",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 257,
+     "end": 274,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a8da500262502451cb4717ff6403c985bf2caf8253ab673e845b9aff94ff5caf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 296,
+     "end": 344,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "76a93582d40305ead987d672dc47fad8fba073e2a30711640a814c0b614c890c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 607,
+     "end": 697,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a826cbdea3683c902df473cc1d01766169d058acc4e68f76f7e0b522349d689d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 462,
+     "end": 475,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "c96725944af4122d889d3a5b4ea61017757042556e23927dbbbdc42d5e71b8a2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 478,
+     "end": 498,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "5bd2d6f2a0d0eec368a8df44e7c521c63d23e557ff40d7298457fc81e96157e3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 399,
+     "end": 412,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "d16ff8ac8014bec04fadb798894f2ae386d33856350bf56550bebf6d1bfc4578",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 525,
+     "end": 529,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "233774f4cd71dae8512153cbcc5da886b77a1ff1e3c47c5eb968b1d082381158",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 516,
+     "end": 522,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "09c41dec2c216451beb112433af45861da896d9b22419cfa7bc05f596626fcb9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 503,
+     "end": 513,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "f1d016e3ef8d6303f8bc988ff28ae1427eb6cc224c1e8fb83f8f0ae524dbd4ac",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 571,
+     "end": 604,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "0f2af5c42bd026441ede4f2e69248deb1b7158bdf019039391c58121ec4a7a02",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 532,
+     "end": 543,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "70930a46f2111c68cfbd8f358a3c068f631a05ab1b29f2c0ecf9bd26f3954867",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 546,
+     "end": 557,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "70a0ab6381cce90368e57763f2087af74278118d8a590eaecdc423d82ae52e03",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 469,
+     "end": 473,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "b53e6b3b1b266bce468bb48b43dcadd238af1937e1f396ea0d2855a8aaacfa56",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:plan-file:01",
+   "frozen_row_sha256": "b9c7167aa071dc0268334e884b137e0748ad3feb49db965c33ccccfadfe16d20",
+   "clause_ids": [
+    "disposition:transitions:hooks:plan-file:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 64,
+     "end": 70,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "82862b2799b1508bc1865990bd73e107369f2965a09762af9ce971c423f98590",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 73,
+     "end": 94,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "ef8877b81f644511f527ad6614171d5ba73edef05bdbaf0d0f3c31179b507cf0",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 188,
+     "end": 238,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "68ea65e7619874fba5ad97ea43f8dd67a0e1501d0e056b81760fdf480f8a1b67",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 415,
+     "end": 449,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "57676c74cdbb3019a26ac52c720adedbae1fbfe2a77581ebcf9de283fd229062",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 257,
+     "end": 274,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a8da500262502451cb4717ff6403c985bf2caf8253ab673e845b9aff94ff5caf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 296,
+     "end": 344,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "76a93582d40305ead987d672dc47fad8fba073e2a30711640a814c0b614c890c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "start": 607,
+     "end": 697,
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a826cbdea3683c902df473cc1d01766169d058acc4e68f76f7e0b522349d689d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 462,
+     "end": 475,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "c96725944af4122d889d3a5b4ea61017757042556e23927dbbbdc42d5e71b8a2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 478,
+     "end": 498,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "5bd2d6f2a0d0eec368a8df44e7c521c63d23e557ff40d7298457fc81e96157e3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

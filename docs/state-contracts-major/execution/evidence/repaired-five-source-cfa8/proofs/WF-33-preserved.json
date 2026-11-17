@@ -1,0 +1,489 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: current source-only literal26-clause reinspection after audited mode repair; actual prior independent source/code review reuse"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+  "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+  "core/pysrc/prompt-submit.py": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+  "core/pysrc/statusline.py": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+  "core/surface/arbiter.md": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+  "core/surface/includes/dangerous-mode.md": "8faf286b0c480fefc351cb722a07f4d94b6955d8609ea1428c7c48c278e8a67c",
+  "core/surface/includes/ops-mode.md": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f",
+  "core/surface/includes/pi-host-notes.md": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+  "core/surface/includes/safety-core.md": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-33",
+  "disposition:transitions:WF-33:01",
+  "disposition:transitions:WF-33:02",
+  "disposition:transitions:WF-33:03",
+  "disposition:transitions:WF-33:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-33",
+   "frozen_row_sha256": "c90e621bd8a29eeebbb6c50ae39983a8632e3c4304c0d4e361559514bc1292dc",
+   "clause_ids": [
+    "disposition:transitions:WF-33:01",
+    "disposition:transitions:WF-33:02",
+    "disposition:transitions:WF-33:03",
+    "disposition:transitions:WF-33:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/includes/dangerous-mode.md",
+     "start": 6,
+     "end": 57,
+     "file_sha256": "8faf286b0c480fefc351cb722a07f4d94b6955d8609ea1428c7c48c278e8a67c",
+     "span_sha256": "6e3706b7ae3af913de18a35f82992026422d9895c165d94f7d8ba57fe66d2a52"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 251,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "7b8a81e7f3d0b0946d3aa9bfef05924c7396949beea5648d53d93f4259649fa3"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 554,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "d9896282098a25944e78dee7332e28df980d91e6cf95342ee6c094b2b6efb822"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 15,
+     "end": 24,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "42531355dac13e5cc0ebd017f44ad94353aadfcdc47efdf064094bfc644603e5"
+    },
+    {
+     "path": "core/surface/includes/ops-mode.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f",
+     "span_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 570,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "6d620df9a770cebccf14c4b836a5f682900d3b39ae8f1ae4a552a101304f97a6"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 63,
+     "end": 85,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "8c104aaf86386653addb49a85d97c7df320dc68fc504c1b238b9a14c4a65f18e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 288,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "720e836a0fd4237bb3b9393dc451c6c0e7f6daccfb0c99046fc15d8f402f9bd0"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 192,
+     "end": 265,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "451bae0d9e13bc699f29268bc504cc7cfe334b428032939637082f03df1db16c"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 270,
+     "end": 343,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "416e7b255172f94ea256dd35e097194fcf2f97b11fd630f4814f9039c2ce4edf"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 851,
+     "end": 884,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "b5968024e33f57e91cde33c967666eabb3aeab1e72a326eccf9ea6eae98ea1cf"
+    },
+    {
+     "path": "core/surface/arbiter.md",
+     "start": 1,
+     "end": 153,
+     "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+     "span_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses, including retained advanced children, are mapped to current/pinned owners and essential callee spans. Exact accepted repairs and honest limitations are explicit per clause. This authored source-only assessment does not renew runtime evidence or close actual task/host/human acceptance.",
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+   "intake_variances": [
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ]
+  },
+  {
+   "cell": "disposition:transitions:WF-33:01",
+   "frozen_row_sha256": "95d9a4dc07147c2d304a293943999d32d51b5ab86282a072a5d1892261c59e88",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/dangerous-mode.md",
+     "start": 6,
+     "end": 57,
+     "file_sha256": "8faf286b0c480fefc351cb722a07f4d94b6955d8609ea1428c7c48c278e8a67c",
+     "span_sha256": "6e3706b7ae3af913de18a35f82992026422d9895c165d94f7d8ba57fe66d2a52"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 251,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "7b8a81e7f3d0b0946d3aa9bfef05924c7396949beea5648d53d93f4259649fa3"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 554,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "d9896282098a25944e78dee7332e28df980d91e6cf95342ee6c094b2b6efb822"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 15,
+     "end": 24,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "42531355dac13e5cc0ebd017f44ad94353aadfcdc47efdf064094bfc644603e5"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "semantic_assessment": "Dangerous is a user-selected persona posture, not hook-engine disablement. Actual mode writes require verified per-session state and ledger-backed entry before effective nondefault composition; distinct textual display is declared. Residual safety and real host/tool permission controls remain separate.",
+   "intake_variances": [
+    "A badge is a display observation, not evidence that every side effect is unrestricted or that a partial audit-backed transition settled. Actual installed-host rendering/consent is not proved here.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:02",
+   "frozen_row_sha256": "a375f12984fdf22647b4c9f248b36a3d0ef7821ff03bf2b21f595dfc3f04a68d",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/ops-mode.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f",
+     "span_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 570,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "6d620df9a770cebccf14c4b836a5f682900d3b39ae8f1ae4a552a101304f97a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 15,
+     "end": 24,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "42531355dac13e5cc0ebd017f44ad94353aadfcdc47efdf064094bfc644603e5"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 63,
+     "end": 85,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "8c104aaf86386653addb49a85d97c7df320dc68fc504c1b238b9a14c4a65f18e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "semantic_assessment": "Ops permits only the declared advisory local runtime carve-out; tracked/index/history/publication changes and irreversible external operations retain routing/safety controls. Verified settled mode state selects its own OPS display; Pi plan/execute and trust/tool policy are distinct axes.",
+   "intake_variances": [
+    "No owned-process supervisor, OS sandbox, readiness probe, cross-session authority or unrestricted author capability follows from persona mode.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:03",
+   "frozen_row_sha256": "476e3df45639bc09d51a094b16256eeb28ab7ffdfaba0ad35d6489e97f49b81a",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 288,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "720e836a0fd4237bb3b9393dc451c6c0e7f6daccfb0c99046fc15d8f402f9bd0"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 192,
+     "end": 265,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "451bae0d9e13bc699f29268bc504cc7cfe334b428032939637082f03df1db16c"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 570,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "6d620df9a770cebccf14c4b836a5f682900d3b39ae8f1ae4a552a101304f97a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "semantic_assessment": "Return to arbiter uses the verified mode owner and last-delivered (mode,generation) record, so an emitted A-to-B-to-A transition owes A again. It composes safety plus matching body or neither; mode output and display stay distinct from proof the model retained text. Unreadable records fail toward redundant delivery.",
+   "intake_variances": [
+    "The accepted HW01 repair supersedes the frozen ever-delivered cache bug. Failed delivery-record update attempts invalidation; if storage denies both update and removal the stale record may survive and dedup is explicitly unconfirmed, never guaranteed durable recovery.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:04",
+   "frozen_row_sha256": "19ea1507c91ff25cde629711a06d3619fd041997624e85fdf4df05c5478757a3",
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 192,
+     "end": 265,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "451bae0d9e13bc699f29268bc504cc7cfe334b428032939637082f03df1db16c"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 270,
+     "end": 343,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "416e7b255172f94ea256dd35e097194fcf2f97b11fd630f4814f9039c2ce4edf"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 851,
+     "end": 884,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "b5968024e33f57e91cde33c967666eabb3aeab1e72a326eccf9ea6eae98ea1cf"
+    },
+    {
+     "path": "core/surface/arbiter.md",
+     "start": 1,
+     "end": 153,
+     "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+     "span_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 63,
+     "end": 85,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "8c104aaf86386653addb49a85d97c7df320dc68fc504c1b238b9a14c4a65f18e"
+    }
+   ],
+   "semantic_assessment": "Compaction generation and last-delivery comparison refresh the persona when generation changes. Generation-write failure attempts marker invalidation; read failures default conservatively. Maintained orchestration keeps actual intent, stops/work/history in scope, while restored text creates no approval, completion or host authority.",
+   "intake_variances": [
+    "Double storage denial can defeat both generation update and marker removal. The accepted bounded recovery claim explicitly excludes this durable-failure case; source conformance is not assurance of arbitrary compaction survival."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "scope": "Authored reasoned source-only preservation of selected PLANNED cells; no actual execution, installed/runtime acceptance, host consent, model/benchmark or publication claim.",
+ "limits": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}

@@ -1,0 +1,101 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source author only, no independent self-approval"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "plugins/ca-pi/tools/test/live-pi-host.ts": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b"
+ },
+ "disposition_ids": [
+  "disposition:machines:pi-qualification:runtime-discovery"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/source-bindings.json",
+   "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json",
+   "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited-evidence-inventory.json",
+   "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/baseline-current-joins.json",
+   "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:pi-qualification:runtime-discovery",
+   "frozen_row_sha256": "2c3c5dca4ab24ac572af2d37df5141e4b9da34d85d835526e03a4b6bf9096ac6",
+   "clause_ids": [
+    "disposition:transitions:pi-qualification:runtime-discovery:01",
+    "disposition:transitions:pi-qualification:runtime-discovery:02",
+    "disposition:transitions:pi-qualification:runtime-discovery:03",
+    "disposition:transitions:pi-qualification:runtime-discovery:04"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 13-35",
+     "start": 13,
+     "end": 35,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "eb1a51981a614e5cab3b77ea1c1468c331b7a376506ae4e926cc6b18f153a43f",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 36-47",
+     "start": 36,
+     "end": 47,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "09009adec8d524bf1823f448bdbd062897dff8c6172ea6e0a7a4ce9123dc9fba",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 48-65",
+     "start": 48,
+     "end": 65,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "ef08f096c7c022bdeac6b381499273dd3f9a073370d2324e92bf1f2e4e8c9989",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 68-76",
+     "start": 68,
+     "end": 76,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "16e68d126628acd9339fd35f193adcbf25663fdaaaed28f18547104ebcf242ef",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "semantic_assessment": "All 4 literal clauses assessed by the named current/pinned source witnesses and explicit accepted-task corrections/limits in clause-inspection. Advanced observations remain entire historical records, not renewed.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  }
+ ],
+ "scope": "pi-qualification:runtime-discovery literal current/pinned guard/effect/retry source inspection, not runtime qualification.",
+ "limits": [
+  "No tests, product imports, site generation, Node/Pi/native product execution, API/network/provider/install or canonical/index/ref/ledger/markers/status writes.",
+  "All eight advanced Pi rows and history/proof bytes retained exactly; no old observation epoch rewritten.",
+  "HW-23/HW-24 intentional changes explicitly identified; no preservation of old defect or advertised global parser exactness.",
+  "Root owns independent review and unchanged strict prospective source admission; no runtime/task/scenario completion."
+ ]
+}

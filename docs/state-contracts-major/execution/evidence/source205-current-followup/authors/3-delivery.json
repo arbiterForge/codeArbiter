@@ -1,0 +1,74 @@
+{
+ "schema": "codearbiter.source-conformance-delivery/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "result": "AUTHORED_SOURCE_REINSPECTION_PROPOSAL_ONLY",
+ "proposed_cells": 22,
+ "clauses_assessed": 26,
+ "prior_review_reuse": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-root-binding-review-gae69c82\\review.json",
+ "files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\adoption-filemap.json",
+   "sha256": "689b4bbacc5468a1bdf4641307dcc5c4ec3f2f50bcac43b25963b4306e6dc31f",
+   "bytes": 3218
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\cas-proposal.json",
+   "sha256": "23fd755f37359d8c7ecf0f6c2d0fc04b4020279372aad4e48a22d07b41976042",
+   "bytes": 46146
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46",
+   "bytes": 108291
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\clauses.json",
+   "sha256": "7cea91c50aa3993fcf7c0af1040c0ac558a2915360afc265944d0ea2a65015ff",
+   "bytes": 74840
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe",
+   "bytes": 2162
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d",
+   "bytes": 8270
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\SX06-preserved.json",
+   "sha256": "d7f28cbb76e452e3f2df570f53a6581f87df61fca2aa82680c8d12790fb4d3a0",
+   "bytes": 15693
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\T05-preserved.json",
+   "sha256": "e270ce6afaa11554672094b230232770095a6a9c5d9fd9347b8d9a1338bad084",
+   "bytes": 6580
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-31-preserved.json",
+   "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad",
+   "bytes": 25701
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-33-preserved.json",
+   "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c",
+   "bytes": 26398
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-34-preserved.json",
+   "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd",
+   "bytes": 21900
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9",
+   "bytes": 35429
+  }
+ ],
+ "strict_owner": "PENDING_ROOT",
+ "limits": [
+  "Current reasoned SOURCE-ONLY reinspection only. This is not a replay/renewal of original runtime evidence or a new independent review of Root by Root. Previous actual independent source/code reviews are explicitly reused only for unaffected semantics; actual changed source/functions/limits read now. Strict prospective owner admission pending."
+ ]
+}

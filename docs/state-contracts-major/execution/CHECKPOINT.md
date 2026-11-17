@@ -1,5 +1,15 @@
 # State-contract program checkpoint
 
+PR #1118 merged into `major/state-contracts` at `d4822a56` after its original exact-head CI and Docs passed: 88 checks passed, 11 skipped. Fresh premerge verification also checked every reported context and the required merge gate. #1098 remains draft and held from `main` for Brennon testing; publication is unauthorized.
+
+The next child contains committed mode exit/entry audit pairs and regular-file work adoption acquisition, generated across all three hosts. Actual original regressions, focused checks and independent code reviews are retained at their exact epochs. Recovery retains its queue, dual-storage-denial, crash/concurrency and platform/ancestor limits. The public Farm warning now agrees with existing run-ID refusal. These repairs are implemented; they are not future implementation tasks.
+
+205 additional source-only mappings bring the selected current-source total to 717. Remaining PLANNED accounting is 117: 49 findings, 12 hook machines and 56 transitions. All old advanced rows and task/runtime histories remain intact. This is source/evidence accounting, not 117 missing features or task/scenario/installed/human qualification. [Current observations](evidence/source205-current-followup/development.json).
+
+The original trusted normal run for `d4822a56` has started. Its exact-package installed qualification remains pending; the older Ac82 Linux Pi run failed the input guard after ten bytecode additions despite actual RPC/parent-TUI execution. The detached no-bytecode repair does not prove the sole historical writer. A new child source epoch still requires its own applicable hosted and installed qualification.
+
+## Previous retained checkpoint
+
 PR #1117 merged into `major/state-contracts` at `ac826ed2` after exact-head CI and Docs passed: 92 checks passed, 8 skipped. Its true merge preserves source ancestry. The original normal integration Docs run passed; CI remains running with a confirmed Linux installed Pi failure. The failing phase is under original log/artifact inspection. Main #1098 stays held for Brennon testing.
 
 This local follow-up fixes legacy statusline uninstall overwriting a later user choice and link-audit filesystem escape, including Windows separators. Named original regressions and independent reviews are retained; all 82 statusline module tests pass, and the reviewed link-audit candidate has 40 passing focused tests plus scoped type checking. No installed/global-host acceptance follows from owned fixtures. Farm run-ID recovery wording and the Codex persona manual hint are corrected through their maintained owners.

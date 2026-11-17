@@ -1,0 +1,556 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+  "core/pysrc/_adrlifecyclegit.py": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+  "core/pysrc/adr-merge-method.py": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:adr-lifecycle",
+  "disposition:transitions:hooks:adr-lifecycle:01",
+  "disposition:transitions:hooks:adr-lifecycle:02",
+  "disposition:transitions:hooks:adr-lifecycle:03",
+  "disposition:transitions:hooks:adr-lifecycle:04",
+  "disposition:transitions:hooks:adr-lifecycle:05",
+  "disposition:transitions:hooks:adr-lifecycle:06",
+  "disposition:transitions:hooks:adr-lifecycle:07",
+  "disposition:transitions:hooks:adr-lifecycle:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:adr-lifecycle",
+   "frozen_row_sha256": "b6e72362cc0abe03cc111122014fc5a13b347b4f53f52c97c790c44839c639fa",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:01",
+    "disposition:transitions:hooks:adr-lifecycle:02",
+    "disposition:transitions:hooks:adr-lifecycle:03",
+    "disposition:transitions:hooks:adr-lifecycle:04",
+    "disposition:transitions:hooks:adr-lifecycle:05",
+    "disposition:transitions:hooks:adr-lifecycle:06",
+    "disposition:transitions:hooks:adr-lifecycle:07",
+    "disposition:transitions:hooks:adr-lifecycle:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 31,
+     "end": 105,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "74a184a7966f6d9dc9a7f4a6116a19653841f70cbfe4f24bb4f6273ff0548947",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 126,
+     "end": 165,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "daa6e4f67d4ceadcdefa7d727d759f558fd38bf77beba7a33652707ccbc7ef26",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 296,
+     "end": 340,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "ec89335f65b5a34a7cce3b3a8753b42d5f0bb35e6bd797721a25f4b8b498c36e",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 343,
+     "end": 361,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "cffc6904e14b81bbd4666c1310e6bcd85d065f492af8aff95bd16f7a3ca4cdef",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 168,
+     "end": 242,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "5089b0b7ef05ec323fa4bb5f065150f6a5470933d171721948edf3a9f53d0cf7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 431,
+     "end": 538,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "d9782fb7eacec0460b6597381209fe7d2c2ecd61af711a27c9703769d790c4c2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 364,
+     "end": 394,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "98bcfdda0716f6cab9fcc59b69b5fc22c69f995a8ba5a46f9462a8f31962c938",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 170,
+     "end": 210,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "d164e149ea54e3b03c9b13eddf4d48b6c770d7ac6d631feec8edc7a85ec44126",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 397,
+     "end": 428,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "ea9fac735beae3a36a33374e8ad2caa8a4d28459fc71a39d562340493d76f2a3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 541,
+     "end": 561,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "66cb969d0424ea044d8308996b0726bdba5e92ba80bfbe823497998ee0deb412",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 145,
+     "end": 167,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "b4ce8c7beb12e572dad910394e3432d303fac0fdf30673bd9a9545b85769644e",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 66,
+     "end": 112,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "e06eabb38a4f5879f79abd2a6631c2b9d69d58b35d86b104e32bed7596a8a9ab",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 573,
+     "end": 645,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "c26b92babdfd49bc0f03d22fd68c5c81f171a50669d0188bbbf135101819ae78",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 564,
+     "end": 570,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "039be6e02a5385b9995d680fe0ad3ed1be7998215493e6216fb84ddd50babc1d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 283,
+     "end": 286,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "4d703122da091170a071881b48bef436739d69fefd4fd4b1a93ab1993f41efc3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 21,
+     "end": 41,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "610f5cceac99ae030706ed142c7e41bced2eaec4a0674e1a9f83c5776c37c6f9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 116,
+     "end": 142,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "0df7f43cce8c7e6946eb47669e08cf4114594c0026356a681764ba4b045311cb",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/adr-merge-method.py",
+     "start": 14,
+     "end": 30,
+     "file_sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+     "span_sha256": "c926abaaafbd804b5d1c43873c18e2509abf4af761fa636c95e440cffcb720e3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:01",
+   "frozen_row_sha256": "cd8493ae819e74f7788736b57231a48b84fe08cc3fa4d55f8c7fd9f5f0f1c826",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 31,
+     "end": 105,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "74a184a7966f6d9dc9a7f4a6116a19653841f70cbfe4f24bb4f6273ff0548947",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 126,
+     "end": 165,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "daa6e4f67d4ceadcdefa7d727d759f558fd38bf77beba7a33652707ccbc7ef26",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 296,
+     "end": 340,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "ec89335f65b5a34a7cce3b3a8753b42d5f0bb35e6bd797721a25f4b8b498c36e",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 343,
+     "end": 361,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "cffc6904e14b81bbd4666c1310e6bcd85d065f492af8aff95bd16f7a3ca4cdef",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 168,
+     "end": 242,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "5089b0b7ef05ec323fa4bb5f065150f6a5470933d171721948edf3a9f53d0cf7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:02",
+   "frozen_row_sha256": "d608776eaf149d53acfc94246d9c6b55054b138e7cf4717a50746898a8d3db2e",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 431,
+     "end": 538,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "d9782fb7eacec0460b6597381209fe7d2c2ecd61af711a27c9703769d790c4c2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 364,
+     "end": 394,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "98bcfdda0716f6cab9fcc59b69b5fc22c69f995a8ba5a46f9462a8f31962c938",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 170,
+     "end": 210,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "d164e149ea54e3b03c9b13eddf4d48b6c770d7ac6d631feec8edc7a85ec44126",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:03",
+   "frozen_row_sha256": "ba6be682b1323e4389b9356e369698d51449407490b663d08946c0768ee73b11",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 431,
+     "end": 538,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "d9782fb7eacec0460b6597381209fe7d2c2ecd61af711a27c9703769d790c4c2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 397,
+     "end": 428,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "ea9fac735beae3a36a33374e8ad2caa8a4d28459fc71a39d562340493d76f2a3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 541,
+     "end": 561,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "66cb969d0424ea044d8308996b0726bdba5e92ba80bfbe823497998ee0deb412",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 145,
+     "end": 167,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "b4ce8c7beb12e572dad910394e3432d303fac0fdf30673bd9a9545b85769644e",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 66,
+     "end": 112,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "e06eabb38a4f5879f79abd2a6631c2b9d69d58b35d86b104e32bed7596a8a9ab",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:04",
+   "frozen_row_sha256": "150e7c13ca26b7249a93389002b12791c78f4292d6fe84ccfa9a472ed94e2b9b",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 431,
+     "end": 538,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "d9782fb7eacec0460b6597381209fe7d2c2ecd61af711a27c9703769d790c4c2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 397,
+     "end": 428,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "ea9fac735beae3a36a33374e8ad2caa8a4d28459fc71a39d562340493d76f2a3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 573,
+     "end": 645,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "c26b92babdfd49bc0f03d22fd68c5c81f171a50669d0188bbbf135101819ae78",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:05",
+   "frozen_row_sha256": "e27427e0a62b434c2bb2676b4d72c00c8b647073e0e38d91013494ec9cae6c22",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 431,
+     "end": 538,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "d9782fb7eacec0460b6597381209fe7d2c2ecd61af711a27c9703769d790c4c2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 573,
+     "end": 645,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "c26b92babdfd49bc0f03d22fd68c5c81f171a50669d0188bbbf135101819ae78",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:06",
+   "frozen_row_sha256": "512e121c9eaa46c4e71b8c21695920766ed0d5f143639cdf8c69d7b6b8827f0e",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 573,
+     "end": 645,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "c26b92babdfd49bc0f03d22fd68c5c81f171a50669d0188bbbf135101819ae78",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 564,
+     "end": 570,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "039be6e02a5385b9995d680fe0ad3ed1be7998215493e6216fb84ddd50babc1d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:07",
+   "frozen_row_sha256": "d750f98c32e407d097c630d87e131e36eb93c24776d14ceb58bf721603a506c4",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 283,
+     "end": 286,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "4d703122da091170a071881b48bef436739d69fefd4fd4b1a93ab1993f41efc3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 21,
+     "end": 41,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "610f5cceac99ae030706ed142c7e41bced2eaec4a0674e1a9f83c5776c37c6f9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 116,
+     "end": 142,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "0df7f43cce8c7e6946eb47669e08cf4114594c0026356a681764ba4b045311cb",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 145,
+     "end": 167,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "b4ce8c7beb12e572dad910394e3432d303fac0fdf30673bd9a9545b85769644e",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 66,
+     "end": 112,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "e06eabb38a4f5879f79abd2a6631c2b9d69d58b35d86b104e32bed7596a8a9ab",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 170,
+     "end": 210,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "d164e149ea54e3b03c9b13eddf4d48b6c770d7ac6d631feec8edc7a85ec44126",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:adr-lifecycle:08",
+   "frozen_row_sha256": "b4f485eae89d7c024fe9b2b56be6b360e128d274ef579b9b80e6a85ed8d4a19b",
+   "clause_ids": [
+    "disposition:transitions:hooks:adr-lifecycle:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 21,
+     "end": 41,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "610f5cceac99ae030706ed142c7e41bced2eaec4a0674e1a9f83c5776c37c6f9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 66,
+     "end": 112,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "e06eabb38a4f5879f79abd2a6631c2b9d69d58b35d86b104e32bed7596a8a9ab",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclegit.py",
+     "start": 170,
+     "end": 210,
+     "file_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+     "span_sha256": "d164e149ea54e3b03c9b13eddf4d48b6c770d7ac6d631feec8edc7a85ec44126",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/adr-merge-method.py",
+     "start": 14,
+     "end": 30,
+     "file_sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+     "span_sha256": "c926abaaafbd804b5d1c43873c18e2509abf4af761fa636c95e440cffcb720e3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

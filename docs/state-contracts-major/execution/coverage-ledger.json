@@ -1763,8 +1763,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-32": {
    "owner": "hooks-workflows",
@@ -1791,8 +1799,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-33-preserved.json",
+     "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34": {
    "owner": "hooks-workflows",
@@ -1801,8 +1817,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-35": {
    "owner": "hooks-workflows",
@@ -3254,8 +3278,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host": {
    "owner": "hooks-workflows",
@@ -3264,8 +3296,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode": {
    "owner": "hooks-workflows",
@@ -3277,8 +3317,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit": {
    "owner": "hooks-workflows",
@@ -3291,8 +3339,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona": {
    "owner": "hooks-workflows",
@@ -3304,8 +3360,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup": {
    "owner": "hooks-workflows",
@@ -3319,8 +3383,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:read-context": {
    "owner": "hooks-workflows",
@@ -3460,8 +3532,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:security-producers": {
    "owner": "hooks-workflows",
@@ -3470,8 +3550,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+     "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:push": {
    "owner": "hooks-workflows",
@@ -3481,8 +3569,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-push-preserved.json",
+     "sha256": "3b593b3c78f6e5ee03b4bb4225803f6d32ac391aad863c4fca63ee73411cdb38"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:approval-single": {
    "owner": "hooks-workflows",
@@ -3579,8 +3675,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:verifier": {
    "owner": "hooks-workflows",
@@ -3591,8 +3695,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review": {
    "owner": "hooks-workflows",
@@ -3603,8 +3715,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review": {
    "owner": "hooks-workflows",
@@ -3615,8 +3735,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:debug-handoff": {
    "owner": "hooks-workflows",
@@ -3645,8 +3773,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route": {
    "owner": "hooks-workflows",
@@ -3656,8 +3792,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer": {
    "owner": "hooks-workflows",
@@ -3667,8 +3811,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-provenance": {
    "owner": "hooks-workflows",
@@ -3676,8 +3828,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-provenance-preserved.json",
+     "sha256": "8d26629b7f2d651447977f7beb0426c29742601b551c1d333efe90551a55797a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-snapshot": {
    "owner": "hooks-workflows",
@@ -3685,8 +3845,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-snapshot-preserved.json",
+     "sha256": "49889a123fa759ad8a2c45911a05561671d9f36f73a9d6cd04983c9de13ba990"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-scout": {
    "owner": "hooks-workflows",
@@ -3720,8 +3888,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-delivery": {
    "owner": "hooks-workflows",
@@ -3729,8 +3905,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-delivery-preserved.json",
+     "sha256": "3b6331ee9984806a116a53b32122f1c9c498c9bc715b02009c885f422139bbc5"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge": {
    "owner": "hooks-workflows",
@@ -3741,8 +3925,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:work-owner": {
    "owner": "hooks-workflows",
@@ -3754,8 +3946,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-owner-preserved.json",
+     "sha256": "c1dfd895470978e4b90486e7c9caaba521e84d5ce503d5e09dde6f5363239f07"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:taskwrite": {
    "owner": "hooks-workflows",
@@ -3790,8 +3990,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-adoption-preserved.json",
+     "sha256": "986513d9ab8525619e1364521b59a50830d712c3402683951b54e09845276729"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:legacy-advisories": {
    "owner": "hooks-workflows",
@@ -3799,8 +4007,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-legacy-advisories-preserved.json",
+     "sha256": "09ccd1461ffa574b31db490462266fba8118c259101294096598a73ab43ecafd"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:plan-file": {
    "owner": "hooks-workflows",
@@ -3809,8 +4025,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-plan-file-preserved.json",
+     "sha256": "b89297f36fae078ac411e111f93e3b1a0ca11c6ec244b6e654523eea92dec9f3"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:append-conflict": {
    "owner": "hooks-workflows",
@@ -3871,8 +4095,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:cleanup-eligibility": {
    "owner": "hooks-workflows",
@@ -3880,8 +4112,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-cleanup-eligibility-preserved.json",
+     "sha256": "cb079f12fb6d45e59b0d631c9c3afcbc1291f797c7e91618982b9242fa409acf"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:cleanup-journal": {
    "owner": "hooks-workflows",
@@ -3890,8 +4130,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-cleanup-journal-preserved.json",
+     "sha256": "3a0148add145ad2e71b2365d32c8ca7f9d45eee7a911f9ecd81d0efd9f35f2fb"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:prune-plan": {
    "owner": "hooks-workflows",
@@ -6679,8 +6927,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/SX06-preserved.json",
+     "sha256": "d7f28cbb76e452e3f2df570f53a6581f87df61fca2aa82680c8d12790fb4d3a0"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "SX07": {
    "owner": "site-and-release",
@@ -6775,8 +7031,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/T05-preserved.json",
+     "sha256": "e270ce6afaa11554672094b230232770095a6a9c5d9fd9347b8d9a1338bad084"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "T06": {
    "owner": "release-and-tooling",
@@ -6925,8 +7189,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:catalog-graph": {
    "owner": "hooks-workflows",
@@ -6972,8 +7244,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:public-catalog": {
    "owner": "hooks-workflows",
@@ -6984,8 +7264,16 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-public-catalog-preserved.json",
+     "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:rendering": {
    "owner": "hooks-workflows",
@@ -7062,8 +7350,16 @@
     "HW-26",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/pi-qualification-runtime-discovery-preserved.json",
+     "sha256": "1190ce1049184a9d8fdea7b417c5b93ff6a096c560bda65628977a97c6e0e47e"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "pi-qualification:disposable-home": {
    "owner": "hooks-workflows",
@@ -7073,8 +7369,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/pi-qualification-disposable-home-preserved.json",
+     "sha256": "53bd78cd2029a19c9033006c143923aadd0afe8e290716674ab19154ed9f7d4d"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   }
  },
  "transitions": {
@@ -9943,8 +10247,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:02": {
    "owner": "hooks-workflows",
@@ -9953,8 +10265,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:03": {
    "owner": "hooks-workflows",
@@ -9963,8 +10283,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:04": {
    "owner": "hooks-workflows",
@@ -9973,8 +10301,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:05": {
    "owner": "hooks-workflows",
@@ -9983,8 +10319,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:06": {
    "owner": "hooks-workflows",
@@ -9993,8 +10337,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-31:07": {
    "owner": "hooks-workflows",
@@ -10003,8 +10355,16 @@
     "FARM-R01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-31-preserved.json",
+     "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-32:01": {
    "owner": "hooks-workflows",
@@ -10067,8 +10427,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-33-preserved.json",
+     "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-33:02": {
    "owner": "hooks-workflows",
@@ -10077,8 +10445,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-33-preserved.json",
+     "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-33:03": {
    "owner": "hooks-workflows",
@@ -10087,8 +10463,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-33-preserved.json",
+     "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-33:04": {
    "owner": "hooks-workflows",
@@ -10097,8 +10481,16 @@
     "PI-D06",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-33-preserved.json",
+     "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34:01": {
    "owner": "hooks-workflows",
@@ -10107,8 +10499,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34:02": {
    "owner": "hooks-workflows",
@@ -10117,8 +10517,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34:03": {
    "owner": "hooks-workflows",
@@ -10127,8 +10535,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34:04": {
    "owner": "hooks-workflows",
@@ -10137,8 +10553,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-34:05": {
    "owner": "hooks-workflows",
@@ -10147,8 +10571,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/WF-34-preserved.json",
+     "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "WF-35:01": {
    "owner": "hooks-workflows",
@@ -17886,8 +18318,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:02": {
    "owner": "hooks-workflows",
@@ -17895,8 +18335,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:03": {
    "owner": "hooks-workflows",
@@ -17904,8 +18352,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:04": {
    "owner": "hooks-workflows",
@@ -17913,8 +18369,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:05": {
    "owner": "hooks-workflows",
@@ -17922,8 +18386,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:06": {
    "owner": "hooks-workflows",
@@ -17931,8 +18403,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:07": {
    "owner": "hooks-workflows",
@@ -17940,8 +18420,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:activation:08": {
    "owner": "hooks-workflows",
@@ -17949,8 +18437,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+     "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:01": {
    "owner": "hooks-workflows",
@@ -17959,8 +18455,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:02": {
    "owner": "hooks-workflows",
@@ -17969,8 +18473,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:03": {
    "owner": "hooks-workflows",
@@ -17979,8 +18491,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:04": {
    "owner": "hooks-workflows",
@@ -17989,8 +18509,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:05": {
    "owner": "hooks-workflows",
@@ -17999,8 +18527,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:host:06": {
    "owner": "hooks-workflows",
@@ -18009,8 +18545,16 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+     "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:01": {
    "owner": "hooks-workflows",
@@ -18022,8 +18566,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:02": {
    "owner": "hooks-workflows",
@@ -18035,8 +18587,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:03": {
    "owner": "hooks-workflows",
@@ -18048,8 +18608,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:04": {
    "owner": "hooks-workflows",
@@ -18061,8 +18629,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:05": {
    "owner": "hooks-workflows",
@@ -18074,8 +18650,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:06": {
    "owner": "hooks-workflows",
@@ -18087,8 +18671,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode:07": {
    "owner": "hooks-workflows",
@@ -18100,8 +18692,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+     "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:01": {
    "owner": "hooks-workflows",
@@ -18114,8 +18714,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:02": {
    "owner": "hooks-workflows",
@@ -18128,8 +18736,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:03": {
    "owner": "hooks-workflows",
@@ -18142,8 +18758,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:04": {
    "owner": "hooks-workflows",
@@ -18156,8 +18780,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:05": {
    "owner": "hooks-workflows",
@@ -18170,8 +18802,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:06": {
    "owner": "hooks-workflows",
@@ -18184,8 +18824,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:07": {
    "owner": "hooks-workflows",
@@ -18198,8 +18846,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:mode-audit:08": {
    "owner": "hooks-workflows",
@@ -18212,8 +18868,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+     "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:01": {
    "owner": "hooks-workflows",
@@ -18225,8 +18889,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:02": {
    "owner": "hooks-workflows",
@@ -18238,8 +18910,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:03": {
    "owner": "hooks-workflows",
@@ -18251,8 +18931,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:04": {
    "owner": "hooks-workflows",
@@ -18264,8 +18952,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:05": {
    "owner": "hooks-workflows",
@@ -18277,8 +18973,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:persona:06": {
    "owner": "hooks-workflows",
@@ -18290,8 +18994,16 @@
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+     "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:01": {
    "owner": "hooks-workflows",
@@ -18305,8 +19017,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:02": {
    "owner": "hooks-workflows",
@@ -18320,8 +19040,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:03": {
    "owner": "hooks-workflows",
@@ -18335,8 +19063,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:04": {
    "owner": "hooks-workflows",
@@ -18350,8 +19086,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:05": {
    "owner": "hooks-workflows",
@@ -18365,8 +19109,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:06": {
    "owner": "hooks-workflows",
@@ -18380,8 +19132,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:startup:07": {
    "owner": "hooks-workflows",
@@ -18395,8 +19155,16 @@
     "HOST-D01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+     "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:read-context:01": {
    "owner": "hooks-workflows",
@@ -19152,8 +19920,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:02": {
    "owner": "hooks-workflows",
@@ -19163,8 +19939,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:03": {
    "owner": "hooks-workflows",
@@ -19174,8 +19958,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:04": {
    "owner": "hooks-workflows",
@@ -19185,8 +19977,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:05": {
    "owner": "hooks-workflows",
@@ -19196,8 +19996,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:06": {
    "owner": "hooks-workflows",
@@ -19207,8 +20015,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:07": {
    "owner": "hooks-workflows",
@@ -19218,8 +20034,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:commit-gates:08": {
    "owner": "hooks-workflows",
@@ -19229,8 +20053,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+     "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:security-producers:01": {
    "owner": "hooks-workflows",
@@ -19239,8 +20071,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+     "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:security-producers:02": {
    "owner": "hooks-workflows",
@@ -19249,8 +20089,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+     "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:security-producers:03": {
    "owner": "hooks-workflows",
@@ -19259,8 +20107,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+     "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:security-producers:04": {
    "owner": "hooks-workflows",
@@ -19269,8 +20125,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+     "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:push:01": {
    "owner": "hooks-workflows",
@@ -19385,8 +20249,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-push-preserved.json",
+     "sha256": "3b593b3c78f6e5ee03b4bb4225803f6d32ac391aad863c4fca63ee73411cdb38"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:push:05": {
    "owner": "hooks-workflows",
@@ -20052,8 +20924,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:02": {
    "owner": "hooks-workflows",
@@ -20064,8 +20944,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:03": {
    "owner": "hooks-workflows",
@@ -20076,8 +20964,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:04": {
    "owner": "hooks-workflows",
@@ -20088,8 +20984,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:05": {
    "owner": "hooks-workflows",
@@ -20100,8 +21004,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:06": {
    "owner": "hooks-workflows",
@@ -20112,8 +21024,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:authority-request:07": {
    "owner": "hooks-workflows",
@@ -20124,8 +21044,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+     "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:verifier:01": {
    "owner": "hooks-workflows",
@@ -20136,8 +21064,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:02": {
    "owner": "hooks-workflows",
@@ -20148,8 +21084,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:03": {
    "owner": "hooks-workflows",
@@ -20160,8 +21104,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:04": {
    "owner": "hooks-workflows",
@@ -20172,8 +21124,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:05": {
    "owner": "hooks-workflows",
@@ -20184,8 +21144,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:06": {
    "owner": "hooks-workflows",
@@ -20196,8 +21164,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-verifier-preserved.json",
+     "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:verifier:07": {
    "owner": "hooks-workflows",
@@ -20256,8 +21232,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review:02": {
    "owner": "hooks-workflows",
@@ -20268,8 +21252,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review:03": {
    "owner": "hooks-workflows",
@@ -20280,8 +21272,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review:04": {
    "owner": "hooks-workflows",
@@ -20292,8 +21292,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review:05": {
    "owner": "hooks-workflows",
@@ -20304,8 +21312,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:codex-review:06": {
    "owner": "hooks-workflows",
@@ -20316,8 +21332,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-codex-review-preserved.json",
+     "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:01": {
    "owner": "hooks-workflows",
@@ -20328,8 +21352,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:02": {
    "owner": "hooks-workflows",
@@ -20340,8 +21372,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:03": {
    "owner": "hooks-workflows",
@@ -20352,8 +21392,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:04": {
    "owner": "hooks-workflows",
@@ -20364,8 +21412,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:05": {
    "owner": "hooks-workflows",
@@ -20376,8 +21432,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:claude-review:06": {
    "owner": "hooks-workflows",
@@ -20388,8 +21452,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-claude-review-preserved.json",
+     "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:debug-handoff:01": {
    "owner": "hooks-workflows",
@@ -20472,8 +21544,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:native-client:02": {
    "owner": "hooks-workflows",
@@ -20503,8 +21583,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:native-client:04": {
    "owner": "hooks-workflows",
@@ -20515,8 +21603,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:native-client:05": {
    "owner": "hooks-workflows",
@@ -20527,8 +21623,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:native-client:06": {
    "owner": "hooks-workflows",
@@ -20539,8 +21643,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:native-client:07": {
    "owner": "hooks-workflows",
@@ -20551,8 +21663,16 @@
     "DIST-M01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-native-client-preserved.json",
+     "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:01": {
    "owner": "hooks-workflows",
@@ -20562,8 +21682,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:02": {
    "owner": "hooks-workflows",
@@ -20573,8 +21701,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:03": {
    "owner": "hooks-workflows",
@@ -20584,8 +21720,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:04": {
    "owner": "hooks-workflows",
@@ -20595,8 +21739,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:05": {
    "owner": "hooks-workflows",
@@ -20606,8 +21758,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:authoring-route:06": {
    "owner": "hooks-workflows",
@@ -20617,8 +21777,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-authoring-route-preserved.json",
+     "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:01": {
    "owner": "hooks-workflows",
@@ -20628,8 +21796,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:02": {
    "owner": "hooks-workflows",
@@ -20639,8 +21815,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:03": {
    "owner": "hooks-workflows",
@@ -20650,8 +21834,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:04": {
    "owner": "hooks-workflows",
@@ -20661,8 +21853,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:05": {
    "owner": "hooks-workflows",
@@ -20672,8 +21872,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-writer:06": {
    "owner": "hooks-workflows",
@@ -20683,8 +21891,16 @@
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-writer-preserved.json",
+     "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-provenance:01": {
    "owner": "hooks-workflows",
@@ -20874,8 +22090,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-provenance-preserved.json",
+     "sha256": "8d26629b7f2d651447977f7beb0426c29742601b551c1d333efe90551a55797a"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-snapshot:01": {
    "owner": "hooks-workflows",
@@ -20883,8 +22107,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-snapshot-preserved.json",
+     "sha256": "49889a123fa759ad8a2c45911a05561671d9f36f73a9d6cd04983c9de13ba990"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-snapshot:02": {
    "owner": "hooks-workflows",
@@ -20970,8 +22202,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-snapshot-preserved.json",
+     "sha256": "49889a123fa759ad8a2c45911a05561671d9f36f73a9d6cd04983c9de13ba990"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-snapshot:06": {
    "owner": "hooks-workflows",
@@ -21161,8 +22401,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:command-evidence:02": {
    "owner": "hooks-workflows",
@@ -21170,8 +22418,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:command-evidence:03": {
    "owner": "hooks-workflows",
@@ -21179,8 +22435,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:command-evidence:04": {
    "owner": "hooks-workflows",
@@ -21188,8 +22452,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:command-evidence:05": {
    "owner": "hooks-workflows",
@@ -21197,8 +22469,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:command-evidence:06": {
    "owner": "hooks-workflows",
@@ -21206,8 +22486,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json",
+     "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-delivery:01": {
    "owner": "hooks-workflows",
@@ -21241,8 +22529,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-context-delivery-preserved.json",
+     "sha256": "3b6331ee9984806a116a53b32122f1c9c498c9bc715b02009c885f422139bbc5"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:context-delivery:03": {
    "owner": "hooks-workflows",
@@ -21357,8 +22653,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:02": {
    "owner": "hooks-workflows",
@@ -21369,8 +22673,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:03": {
    "owner": "hooks-workflows",
@@ -21381,8 +22693,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:04": {
    "owner": "hooks-workflows",
@@ -21393,8 +22713,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:05": {
    "owner": "hooks-workflows",
@@ -21405,8 +22733,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:06": {
    "owner": "hooks-workflows",
@@ -21417,8 +22753,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:07": {
    "owner": "hooks-workflows",
@@ -21429,8 +22773,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:08": {
    "owner": "hooks-workflows",
@@ -21441,8 +22793,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:09": {
    "owner": "hooks-workflows",
@@ -21453,8 +22813,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:knowledge:10": {
    "owner": "hooks-workflows",
@@ -21465,8 +22833,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+     "ref": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-knowledge-preserved.json",
+     "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74"
+    }
+   ],
+   "candidate_contract_note": "Source-only pinned/current named clause and callee inspection with explicit analytical limits in docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json; no runtime/task/host/model qualification."
   },
   "hooks:work-owner:01": {
    "owner": "hooks-workflows",
@@ -21536,8 +22912,16 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-owner-preserved.json",
+     "sha256": "c1dfd895470978e4b90486e7c9caaba521e84d5ce503d5e09dde6f5363239f07"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:work-owner:04": {
    "owner": "hooks-workflows",
@@ -21964,8 +23348,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-adoption-preserved.json",
+     "sha256": "986513d9ab8525619e1364521b59a50830d712c3402683951b54e09845276729"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:work-adoption:02": {
    "owner": "hooks-workflows",
@@ -21973,8 +23365,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-adoption-preserved.json",
+     "sha256": "986513d9ab8525619e1364521b59a50830d712c3402683951b54e09845276729"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:work-adoption:03": {
    "owner": "hooks-workflows",
@@ -21982,8 +23382,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-adoption-preserved.json",
+     "sha256": "986513d9ab8525619e1364521b59a50830d712c3402683951b54e09845276729"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:legacy-advisories:01": {
    "owner": "hooks-workflows",
@@ -22093,8 +23501,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-legacy-advisories-preserved.json",
+     "sha256": "09ccd1461ffa574b31db490462266fba8118c259101294096598a73ab43ecafd"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:plan-file:01": {
    "owner": "hooks-workflows",
@@ -22103,8 +23519,16 @@
     "HW-11",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-plan-file-preserved.json",
+     "sha256": "b89297f36fae078ac411e111f93e3b1a0ca11c6ec244b6e654523eea92dec9f3"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:plan-file:02": {
    "owner": "hooks-workflows",
@@ -22449,8 +23873,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:02": {
    "owner": "hooks-workflows",
@@ -22458,8 +23890,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:03": {
    "owner": "hooks-workflows",
@@ -22467,8 +23907,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:04": {
    "owner": "hooks-workflows",
@@ -22476,8 +23924,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:05": {
    "owner": "hooks-workflows",
@@ -22485,8 +23941,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:06": {
    "owner": "hooks-workflows",
@@ -22494,8 +23958,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:07": {
    "owner": "hooks-workflows",
@@ -22503,8 +23975,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:adr-lifecycle:08": {
    "owner": "hooks-workflows",
@@ -22512,8 +23992,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+     "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:cleanup-eligibility:01": {
    "owner": "hooks-workflows",
@@ -22606,8 +24094,16 @@
    "task_ids": [
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-cleanup-eligibility-preserved.json",
+     "sha256": "cb079f12fb6d45e59b0d631c9c3afcbc1291f797c7e91618982b9242fa409acf"
+    }
+   ],
+   "candidate_contract_note": "Finite source-only literal responsibility at committed0d73 with accepted mode/reader repairs, reviewed analytical scope corrections and explicit storage/platform limits; no runtime, task, host, effect, CI, cleanup or publication qualification."
   },
   "hooks:cleanup-journal:01": {
    "owner": "hooks-workflows",
@@ -44521,8 +46017,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/proofs/SX06-preserved.json",
+     "sha256": "d7f28cbb76e452e3f2df570f53a6581f87df61fca2aa82680c8d12790fb4d3a0"
+    }
+   ],
+   "candidate_contract_note": "Exact26 literal guard/effect/retry mappings with current/pinned owner/callee hashes and accepted repair/limit accounting: docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json. Authored source-only preservation; no new runtime/task/human/installed qualification. Current repaired-owner source reinspection; old runtime epochs untouched."
   },
   "SX06:07": {
    "owner": "site-and-release",
@@ -45920,8 +47424,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:discovery:02": {
    "owner": "hooks-workflows",
@@ -45931,8 +47443,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:discovery:03": {
    "owner": "hooks-workflows",
@@ -45942,8 +47462,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:discovery:04": {
    "owner": "hooks-workflows",
@@ -45953,8 +47481,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:discovery:05": {
    "owner": "hooks-workflows",
@@ -45964,8 +47500,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:discovery:06": {
    "owner": "hooks-workflows",
@@ -45975,8 +47519,16 @@
     "HW-19",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-discovery-preserved.json",
+     "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:catalog-graph:01": {
    "owner": "hooks-workflows",
@@ -46261,8 +47813,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:02": {
    "owner": "hooks-workflows",
@@ -46271,8 +47831,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:03": {
    "owner": "hooks-workflows",
@@ -46281,8 +47849,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:04": {
    "owner": "hooks-workflows",
@@ -46291,8 +47867,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:05": {
    "owner": "hooks-workflows",
@@ -46301,8 +47885,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:06": {
    "owner": "hooks-workflows",
@@ -46311,8 +47903,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:hook-extractor:07": {
    "owner": "hooks-workflows",
@@ -46321,8 +47921,16 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-hook-extractor-preserved.json",
+     "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:public-catalog:01": {
    "owner": "hooks-workflows",
@@ -46333,8 +47941,16 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-public-catalog-preserved.json",
+     "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:public-catalog:02": {
    "owner": "hooks-workflows",
@@ -46345,8 +47961,16 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-public-catalog-preserved.json",
+     "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:public-catalog:03": {
    "owner": "hooks-workflows",
@@ -46357,8 +47981,16 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-public-catalog-preserved.json",
+     "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:public-catalog:04": {
    "owner": "hooks-workflows",
@@ -46369,8 +48001,16 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+     "ref": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/proofs/generator-public-catalog-preserved.json",
+     "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635"
+    }
+   ],
+   "candidate_contract_note": "Source-only literal current/pinned clause inspection and accepted HW-23/HW-24 distinctions; exact limits in docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json. No actual generation/runtime/host/task/scenario qualification."
   },
   "generator:rendering:01": {
    "owner": "hooks-workflows",

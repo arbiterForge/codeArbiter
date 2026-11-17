@@ -1,0 +1,1217 @@
+{
+ "schema": "codearbiter.source-retained-history/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "rows": [
+  {
+   "section": "transitions",
+   "id": "hooks:push:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-17",
+     "HW-23",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Same finite source-clausePRESERVED scope; exact7eba owner/caller bytes and safe34ed interpretation delta inspected. Originald594 record retained at7eba history, no runtime/currentinstalled/testpromotion.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/preserved.json",
+      "sha256": "c590556737bacd80f9d579621ce28f737e59efd53f27ba86a8191c17e54f5cfe",
+      "ref_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/preserved.json",
+      "sha256": "a888077179b654f64050e240df9af05ec5b6d3de05823738dc53ba3911dda409",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "457e899b70d72d88cad65c9c7f287a2c6b87a613d7cac56bf741ea58afb3e526",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+     "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+     "bytes": 49859,
+     "git_oid": "0e79292145bb157f0935ff1de0f7392dd39fcfd3"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:push:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-17",
+     "HW-23",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Same finite source-clausePRESERVED scope; exact7eba owner/caller bytes and safe34ed interpretation delta inspected. Originald594 record retained at7eba history, no runtime/currentinstalled/testpromotion.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/preserved.json",
+      "sha256": "c590556737bacd80f9d579621ce28f737e59efd53f27ba86a8191c17e54f5cfe",
+      "ref_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/preserved.json",
+      "sha256": "a888077179b654f64050e240df9af05ec5b6d3de05823738dc53ba3911dda409",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "457e899b70d72d88cad65c9c7f287a2c6b87a613d7cac56bf741ea58afb3e526",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+     "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+     "bytes": 49859,
+     "git_oid": "0e79292145bb157f0935ff1de0f7392dd39fcfd3"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:push:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-17",
+     "HW-23",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Same finite source-clausePRESERVED scope; exact7eba owner/caller bytes and safe34ed interpretation delta inspected. Originald594 record retained at7eba history, no runtime/currentinstalled/testpromotion.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/preserved.json",
+      "sha256": "c590556737bacd80f9d579621ce28f737e59efd53f27ba86a8191c17e54f5cfe",
+      "ref_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/preserved.json",
+      "sha256": "a888077179b654f64050e240df9af05ec5b6d3de05823738dc53ba3911dda409",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "457e899b70d72d88cad65c9c7f287a2c6b87a613d7cac56bf741ea58afb3e526",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+     "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+     "bytes": 49859,
+     "git_oid": "0e79292145bb157f0935ff1de0f7392dd39fcfd3"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:push:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-17",
+     "HW-23",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Same finite source-clausePRESERVED scope; exact7eba owner/caller bytes and safe34ed interpretation delta inspected. Originald594 record retained at7eba history, no runtime/currentinstalled/testpromotion.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/hook-protection-shell-push/preserved.json",
+      "sha256": "c590556737bacd80f9d579621ce28f737e59efd53f27ba86a8191c17e54f5cfe",
+      "ref_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/preserved.json",
+      "sha256": "a888077179b654f64050e240df9af05ec5b6d3de05823738dc53ba3911dda409",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "457e899b70d72d88cad65c9c7f287a2c6b87a613d7cac56bf741ea58afb3e526",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+     "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+     "bytes": 49859,
+     "git_oid": "0e79292145bb157f0935ff1de0f7392dd39fcfd3"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:07",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:08",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:09",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:work-owner:10",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-10",
+     "HW-12",
+     "HW-13",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac"
+     }
+    ]
+   },
+   "row_sha256": "2d89628219c010098aec6f0a6c4e52e63ee232748796569cf520b9569aad1bfa",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+     "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+     "bytes": 7709,
+     "git_oid": "b63a698b13405a7f7bcab3ffb575ee5708be8cfa"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:legacy-advisories:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "f1e4dc365c8762a3f3e5d9271f6b7ac08aebea198283df1d310f38567f9b1de3",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+     "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+     "bytes": 3230,
+     "git_oid": "b05d262b2cb662a5d6b2f983bd615c58d5f9d2bc"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:plan-file:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-11",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+      "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "4e90c8961f552c6e75147e6d7a755b24e42775d8a13620a4439b2e6aeba7aed8",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+     "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5",
+     "bytes": 1753,
+     "git_oid": "855ba867f76532bb16c42f6603b85b7c7b09862f"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:plan-file:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-11",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+      "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "4e90c8961f552c6e75147e6d7a755b24e42775d8a13620a4439b2e6aeba7aed8",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+     "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5",
+     "bytes": 1753,
+     "git_oid": "855ba867f76532bb16c42f6603b85b7c7b09862f"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:plan-file:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-11",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+      "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "4e90c8961f552c6e75147e6d7a755b24e42775d8a13620a4439b2e6aeba7aed8",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+     "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5",
+     "bytes": 1753,
+     "git_oid": "855ba867f76532bb16c42f6603b85b7c7b09862f"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:plan-file:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-11",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+      "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "4e90c8961f552c6e75147e6d7a755b24e42775d8a13620a4439b2e6aeba7aed8",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/plan-file/preserved.json",
+     "sha256": "0ed681f0ebad12f2993cd9aead5b19d6aaa13e0e75429460e730ff9759190ba5",
+     "bytes": 1753,
+     "git_oid": "855ba867f76532bb16c42f6603b85b7c7b09862f"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-eligibility:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+      "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "49693607ba8c983b9483476bc5650b495c6f888436f668dcb1209c3046c65b8e",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+     "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd",
+     "bytes": 1980,
+     "git_oid": "acf5d2cbc31923366e011900035f2e4954ab521c"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-eligibility:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+      "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "49693607ba8c983b9483476bc5650b495c6f888436f668dcb1209c3046c65b8e",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+     "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd",
+     "bytes": 1980,
+     "git_oid": "acf5d2cbc31923366e011900035f2e4954ab521c"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-eligibility:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+      "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "49693607ba8c983b9483476bc5650b495c6f888436f668dcb1209c3046c65b8e",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+     "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd",
+     "bytes": 1980,
+     "git_oid": "acf5d2cbc31923366e011900035f2e4954ab521c"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-eligibility:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+      "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "49693607ba8c983b9483476bc5650b495c6f888436f668dcb1209c3046c65b8e",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+     "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd",
+     "bytes": 1980,
+     "git_oid": "acf5d2cbc31923366e011900035f2e4954ab521c"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-eligibility:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+      "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance."
+   },
+   "row_sha256": "49693607ba8c983b9483476bc5650b495c6f888436f668dcb1209c3046c65b8e",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/cleanup-eligibility/preserved.json",
+     "sha256": "374954d58186a8d5eb8f94acd0f01625cefdcddf0d195fa2e2812190790a5cdd",
+     "bytes": 1980,
+     "git_oid": "acf5d2cbc31923366e011900035f2e4954ab521c"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:cleanup-journal:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Pending repository-qualified intent is locked/written before branch guard or injected deletion. Same-tip/proof/current/default/protected/occupancy guards retain refusal; ordinary delete first, exact pr_delivery alone permits fresh same-tip/occupancy-checked forced retry. Post-read absent/applied differs from unreadable/unknown and still-present/failed. Reconcile never blindly reruns still-present pending; compact retains every pending/unknown plus latest50terminal records."
+   },
+   "row_sha256": "9cfa4f461e72843065b478e12e369678a4617a7dc7b2aa6d5dfcf95eb5c6c26d",
+   "original_evidence_joins": [
+    {
+     "path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+     "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+     "bytes": 4644,
+     "git_oid": "719717dd24259d549a1a9f3342f52fe8e893a7fd"
+    }
+   ]
+  }
+ ],
+ "rule": "All34 advanced whole objects and original evidence bytes retained; no TESTED/runtime or task epoch renewal."
+}

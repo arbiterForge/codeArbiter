@@ -1,0 +1,91 @@
+{
+ "schema": "codearbiter.source-conformance-delivery/1",
+ "state": "PRIVATE_SOURCE_ONLY_SUCCESSOR_FOR_INDEPENDENT_REVIEW",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "pinned_source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families_inspected": [
+  "hooks:activation",
+  "hooks:host",
+  "hooks:mode",
+  "hooks:mode-audit",
+  "hooks:persona",
+  "hooks:startup",
+  "hooks:commit-gates",
+  "hooks:security-producers",
+  "hooks:push",
+  "hooks:authority-request",
+  "hooks:work-owner",
+  "hooks:work-adoption",
+  "hooks:legacy-advisories",
+  "hooks:plan-file",
+  "hooks:adr-lifecycle",
+  "hooks:cleanup-eligibility",
+  "hooks:cleanup-journal"
+ ],
+ "complete_machine_proposals": 17,
+ "literal_clauses_assessed": 111,
+ "proposed_rows": 94,
+ "newly_supported_prior_held_cells": [
+  "disposition:machines:hooks:mode",
+  "disposition:transitions:hooks:mode:03",
+  "disposition:machines:hooks:mode-audit",
+  "disposition:transitions:hooks:mode-audit:04",
+  "disposition:machines:hooks:work-adoption",
+  "disposition:transitions:hooks:work-adoption:01",
+  "disposition:transitions:hooks:work-adoption:02",
+  "disposition:transitions:hooks:work-adoption:03"
+ ],
+ "held_cells": [],
+ "advanced_rows_retained": 34,
+ "current_accepted_scope_findings": [],
+ "adoption_file_count": 22,
+ "adoption_filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\adoption-filemap.json",
+  "sha256": "c1978ced2d9ae754f9e7cc79a67db5745d4f6bb0d87488cceb5befd9dca89f82",
+  "bytes": 8712
+ },
+ "cas_proposal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\cas-proposal.json",
+  "sha256": "b0ef52b253365b039929f9724a652b8c66cd1323195cfe11390b2cafdf78f2c4",
+  "bytes": 150174
+ },
+ "matrix": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\clause-inspection.json",
+  "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593",
+  "bytes": 257843
+ },
+ "source_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\source-bindings.json",
+  "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4",
+  "bytes": 48229
+ },
+ "intake": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\intake-and-limits.json",
+  "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7",
+  "bytes": 12531
+ },
+ "retained_history": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\retained-history.json",
+  "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b",
+  "bytes": 49264
+ },
+ "review_reuse": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\review-reuse-and-reinspection.json",
+  "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe",
+  "bytes": 3845
+ },
+ "packet_joins": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\packet-joins.json",
+  "sha256": "c94c7902df2dd73fdd3857ae1f4c8216c3f540737b1a7f35ed149c8454323fa7",
+  "bytes": 884
+ },
+ "input_references": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\input-references.json",
+  "sha256": "3261a6e4d1f45fd32833aa38060d5a217ad69c2f8b68b7f46b5b9ba595476519",
+  "bytes": 1060
+ },
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes.",
+ "authoring_adjustment": "Before delivery, inherited historical gap prose in current intake was replaced by actual repaired-source scope. Original packets/reviews remain immutable; local authoring draft receipts retained. No behavior, source or runtime epoch changed.",
+ "adoption_content_bytes": 708313
+}

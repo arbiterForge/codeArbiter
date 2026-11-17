@@ -1,0 +1,356 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:authoring-route",
+  "disposition:transitions:hooks:authoring-route:01",
+  "disposition:transitions:hooks:authoring-route:02",
+  "disposition:transitions:hooks:authoring-route:03",
+  "disposition:transitions:hooks:authoring-route:04",
+  "disposition:transitions:hooks:authoring-route:05",
+  "disposition:transitions:hooks:authoring-route:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:authoring-route",
+   "frozen_row_sha256": "8373f5d2553f01cf1d766197b6c11717f9dce9cc0aeba021d963df2351b3f360",
+   "clause_ids": [
+    "disposition:transitions:hooks:authoring-route:01",
+    "disposition:transitions:hooks:authoring-route:02",
+    "disposition:transitions:hooks:authoring-route:03",
+    "disposition:transitions:hooks:authoring-route:04",
+    "disposition:transitions:hooks:authoring-route:05",
+    "disposition:transitions:hooks:authoring-route:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_select_authoring_route",
+     "start": 512,
+     "end": 553,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "a269437267c74471b54add2ada5b4f775fff4f6ec89ea245937b798713f80790",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_resolve_workflow_pair",
+     "start": 319,
+     "end": 359,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "4c7063f12c88d595898bb8720304e70f36031a93925e74f4deace212d0a2e900",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_require_authoring_capability",
+     "start": 490,
+     "end": 509,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "258f66448274b7c9c4ffb705824a74822f28af0288693644fbfa26f0bf83ca51",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_workflow_path_exists",
+     "start": 282,
+     "end": 316,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "659ea956b5d38d76124c0a4c02c32322eff00dbbff0bb49423806826be7f02fe",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_preflight_plan_authoring",
+     "start": 556,
+     "end": 645,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "ac9faa16759c0e8a80cb8609d0f48441c4d9a32033c832398c692fbf197c5b3d",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_preflight_current_acceptance",
+     "start": 648,
+     "end": 832,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "29c0ebcc49537177452e2d76035d084cbc95dd7e414b2941e9d8f86b102ce202",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._check_index_page",
+     "start": 1240,
+     "end": 1277,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "04ffd5b72255a8d7f52b17572684a1e32ccc8c2ac35bcaae299b74095a662ffc",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._check_outline_page",
+     "start": 1280,
+     "end": 1305,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "ac0e05843c4f7a69b94865cdf0a900e4650f1ac1e9f0bbdbe70cfffeb9ab3b0d",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.index",
+     "start": 1307,
+     "end": 1319,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "dbc89910d0c048b7cd5524dafca810182ab0a6567f1fee4abdb56a45976e2aa3",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.outline",
+     "start": 1321,
+     "end": 1331,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "9fb93799fd32193d1803fb1e27e86e36b9bf46b6160865ad26766adb19a98fba",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.contextual_pages",
+     "start": 1333,
+     "end": 1346,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "3087c67876f549cddb26ee69560d31ca418cb7c97bf551d40ac1c152fc896994",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "contextual_pages alone checks advancing cursor/completeness, not every cross-page model field; the route consumer and native contextual ticket own remaining coherence. No arbitrary partial page set is called complete."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:01",
+   "frozen_row_sha256": "f4c3d0565c0e5672f78b3239db195f5a630c3e4efbed041adaa215213563afb4",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_select_authoring_route",
+     "start": 512,
+     "end": 553,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "a269437267c74471b54add2ada5b4f775fff4f6ec89ea245937b798713f80790",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Typed workflow/lane checks precede selection; small lane returns inline immediately before slug/namespace validation, with no spec/plan path or durable mutation.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:02",
+   "frozen_row_sha256": "8b68b48c349c63e080019d1f4df3ddb54d10b8ba8807f2a55044e20608e27b50",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_resolve_workflow_pair",
+     "start": 319,
+     "end": 359,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "4c7063f12c88d595898bb8720304e70f36031a93925e74f4deace212d0a2e900",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_select_authoring_route",
+     "start": 512,
+     "end": 553,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "a269437267c74471b54add2ada5b4f775fff4f6ec89ea245937b798713f80790",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_require_authoring_capability",
+     "start": 490,
+     "end": 509,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "258f66448274b7c9c4ffb705824a74822f28af0288693644fbfa26f0bf83ca51",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "An absent full namespace selects HTML, and only an exact installation-pinned ArtifactClient bound to the repository with current default-enabled operations capability permits that route. Capability refusal carries repair guidance and never automatically falls back to Markdown.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:03",
+   "frozen_row_sha256": "a18208c1f1e906bddac21fd9123d64ab06a95fff34bc84eb824d1b2b31d81de3",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_workflow_path_exists",
+     "start": 282,
+     "end": 316,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "659ea956b5d38d76124c0a4c02c32322eff00dbbff0bb49423806826be7f02fe",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_resolve_workflow_pair",
+     "start": 319,
+     "end": 359,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "4c7063f12c88d595898bb8720304e70f36031a93925e74f4deace212d0a2e900",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "The resolver inspects canonical same-slug Markdown/HTML spec/plan paths without following linked/reparse owners. Duplicate variants, mixed representations, orphan plan and unsafe paths refuse; a sole existing pair retains its format.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:04",
+   "frozen_row_sha256": "ac023bebeecc21a2dab62815d8caf0656e18ee524c2b0e867c7d2ebc55274fa9",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_preflight_plan_authoring",
+     "start": 556,
+     "end": 645,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "ac9faa16759c0e8a80cb8609d0f48441c4d9a32033c832398c692fbf197c5b3d",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Plan authoring requires the unchanged canonical single HTML spec/no plan route, exact artifact/normative identity, installed capability and structural validate result with matching model. It deliberately does not require approval, completeness, user consent or reviewer availability at draft creation.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:05",
+   "frozen_row_sha256": "03b41c835fce8dbf72c62f453813905db3fd6695d3e9d8ff52b1944cde8218b0",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_preflight_current_acceptance",
+     "start": 648,
+     "end": 832,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "29c0ebcc49537177452e2d76035d084cbc95dd7e414b2941e9d8f86b102ce202",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Current acceptance requires exact sole HTML pair, native approved/verified identities, matching index/model/normative hashes, all tasks ACCEPTED with current evidence, complete contextual pages bound to approved spec, and final identity/status/route rechecks. Caller labels cannot substitute for current native results.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authoring-route:06",
+   "frozen_row_sha256": "a6a158903557e87fff9323e3ea2ab2eb378afb9df757eb0e3802893646ad749c",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._check_index_page",
+     "start": 1240,
+     "end": 1277,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "04ffd5b72255a8d7f52b17572684a1e32ccc8c2ac35bcaae299b74095a662ffc",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._check_outline_page",
+     "start": 1280,
+     "end": 1305,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "ac0e05843c4f7a69b94865cdf0a900e4650f1ac1e9f0bbdbe70cfffeb9ab3b0d",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.index",
+     "start": 1307,
+     "end": 1319,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "dbc89910d0c048b7cd5524dafca810182ab0a6567f1fee4abdb56a45976e2aa3",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.outline",
+     "start": 1321,
+     "end": 1331,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "9fb93799fd32193d1803fb1e27e86e36b9bf46b6160865ad26766adb19a98fba",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.contextual_pages",
+     "start": 1333,
+     "end": 1346,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "3087c67876f549cddb26ee69560d31ca418cb7c97bf551d40ac1c152fc896994",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_preflight_current_acceptance",
+     "start": 648,
+     "end": 832,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "29c0ebcc49537177452e2d76035d084cbc95dd7e414b2941e9d8f86b102ce202",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Index/outline pagination retains stable catalog/model/normative/revision and validates totals/forward offsets with finite iteration bounds. Contextual reads require completeness or an advancing cursor and finite 8193-page bound; the acceptance consumer validates required receipt/context identities and final snapshot.",
+   "intake_variances": [
+    "contextual_pages alone checks advancing cursor/completeness, not every cross-page model field; the route consumer and native contextual ticket own remaining coherence. No arbitrary partial page set is called complete."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:authoring-route finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

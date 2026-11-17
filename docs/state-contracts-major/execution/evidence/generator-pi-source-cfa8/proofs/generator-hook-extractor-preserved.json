@@ -1,0 +1,384 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source author only, no independent self-approval"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "site/scripts/generator/extract-hook-gates.ts": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+  "site/scripts/generator/render-hooks-reference.ts": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+  "site/scripts/generator/source-ref.ts": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1"
+ },
+ "disposition_ids": [
+  "disposition:machines:generator:hook-extractor",
+  "disposition:transitions:generator:hook-extractor:01",
+  "disposition:transitions:generator:hook-extractor:02",
+  "disposition:transitions:generator:hook-extractor:03",
+  "disposition:transitions:generator:hook-extractor:04",
+  "disposition:transitions:generator:hook-extractor:05",
+  "disposition:transitions:generator:hook-extractor:06",
+  "disposition:transitions:generator:hook-extractor:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/source-bindings.json",
+   "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json",
+   "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited-evidence-inventory.json",
+   "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/baseline-current-joins.json",
+   "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:generator:hook-extractor",
+   "frozen_row_sha256": "44c957a4287d4acc0dde204acb49b672a2772fce46ca73522531773bc6026bb7",
+   "clause_ids": [
+    "disposition:transitions:generator:hook-extractor:01",
+    "disposition:transitions:generator:hook-extractor:02",
+    "disposition:transitions:generator:hook-extractor:03",
+    "disposition:transitions:generator:hook-extractor:04",
+    "disposition:transitions:generator:hook-extractor:05",
+    "disposition:transitions:generator:hook-extractor:06",
+    "disposition:transitions:generator:hook-extractor:07"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 60-118",
+     "start": 60,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "cffcc7431976401f1a056cdc16038a112b2ae9d5d0d6a01c7bd59af97db7f55f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 246-270",
+     "start": 246,
+     "end": 270,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "c478ea1dd0e9532d47d397dcb1568974469cc6c4fc91b28a41340d5604788351",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 192-197",
+     "start": 192,
+     "end": 197,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "1b35f37339e0f1e5df34109d94c39b81d2570e6360c7a36ffa8fbe0e826550f7",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 273-303",
+     "start": 273,
+     "end": 303,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "e82fce23e2a66aea9e07fc93a49583b765f3581f784e95f3fc763abe2962dc2f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 197-239",
+     "start": 197,
+     "end": 239,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "6760976fae5977dab7bd9c7751f30e1b315f5305af217872c54909f2232f22f0",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 305-331",
+     "start": 305,
+     "end": 331,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "db7339b915f5f622886d0724bc2a3af425811456242912ed91c5837ab2b6b854",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 79-118",
+     "start": 79,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "a7283d2813cc0c0e86e61edc969b78847d64a1af73265c8ac084a2e8a9b675d5",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 129-190",
+     "start": 129,
+     "end": 190,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "b41e4d11ff7d2c899f424bb2162730bc624c8231dcc26cd2bee9f83a89df7da6",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 333-349",
+     "start": 333,
+     "end": 349,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "57f361da624a7027bd2191aa3f50cc9229ca55549e6c22e23bcdeab27d206f6c",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 356-370",
+     "start": 356,
+     "end": 370,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "246cce1fa78000b361783120f595d94788c0e3f06e8eb1f63bbf5a6ca192039a",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 25-65",
+     "start": 25,
+     "end": 65,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "52e9bdfacc372fb58d437e7f3caff20cb23532b932de6ec73ed6a6237746a8f7",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 69-187",
+     "start": 69,
+     "end": 187,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "5c5beb74d650e89c79e584e46417685bee873af949227c44a3d32659c55e223d",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "semantic_assessment": "All 7 literal clauses assessed by the named current/pinned source witnesses and explicit accepted-task corrections/limits in clause-inspection. Advanced observations remain entire historical records, not renewed.",
+   "intake_variances": [
+    "Accepted HW-23 adds the mask check to the literal pass; frozen claim that this pass ignores codeMask is historical and is not preserved as a current defect.",
+    "HW-23 now carries dynamic fragment descriptions instead of silently presenting static text as the entire runtime message.",
+    "HW-23 removes every-runtime-gate/never-drift claims and renders dynamic/omitted coverage explicitly; historical analytical wording is not current advertised equivalence."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:01",
+   "frozen_row_sha256": "e1bbb921159c1242dca2d9a960d37997228d05c62c22c597a282bcbe7cdcf556",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 60-118",
+     "start": 60,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "cffcc7431976401f1a056cdc16038a112b2ae9d5d0d6a01c7bd59af97db7f55f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 246-270",
+     "start": 246,
+     "end": 270,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "c478ea1dd0e9532d47d397dcb1568974469cc6c4fc91b28a41340d5604788351",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "semantic_assessment": "The lexical mask consumes # comments, escaped one/triple quote strings and up to two recognized prefix letters, marking their spans noncode; an unterminated literal consumes EOF. It is a finite scanner, not Python syntax/dataflow validation or evaluation of f-string expressions.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:02",
+   "frozen_row_sha256": "93bc7e29c83e57300a7a718f8864e6a4f3c6233aff60e921db4c9e808e3ffc02",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 192-197",
+     "start": 192,
+     "end": 197,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "1b35f37339e0f1e5df34109d94c39b81d2570e6360c7a36ffa8fbe0e826550f7",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 273-303",
+     "start": 273,
+     "end": 303,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "e82fce23e2a66aea9e07fc93a49583b765f3581f784e95f3fc763abe2962dc2f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "semantic_assessment": "Literal double-quoted H-digit tags are accepted only where computed codeMask marks the call start as code. scanMessage captures static fragments plus bounded dynamic descriptions; claimed spans advance the regex cursor. No complete runtime-message equality follows.",
+   "intake_variances": [
+    "Accepted HW-23 adds the mask check to the literal pass; frozen claim that this pass ignores codeMask is historical and is not preserved as a current defect."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:03",
+   "frozen_row_sha256": "6a504ef7789061b95acb5d86ec46d7d005492cde08ef4bde6afb73ecb3f33bc9",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 197-239",
+     "start": 197,
+     "end": 239,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "6760976fae5977dab7bd9c7751f30e1b315f5305af217872c54909f2232f22f0",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 305-331",
+     "start": 305,
+     "end": 331,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "db7339b915f5f622886d0724bc2a3af425811456242912ed91c5837ab2b6b854",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "semantic_assessment": "A code-position bare identifier call not already claimed is resolved by the nearest preceding exact single-line simple/conditional literal-tag assignment within30 lines. A conditional emits one call-site per tag with the same static template. This raw-line pattern search is not scope-aware or general dataflow; unresolved calls remain for skipped census.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:04",
+   "frozen_row_sha256": "636a5b3e8c6d108276808f3c2787ac0cc9ac82a6a029e9137441784863a3b446",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 79-118",
+     "start": 79,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "a7283d2813cc0c0e86e61edc969b78847d64a1af73265c8ac084a2e8a9b675d5",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 129-190",
+     "start": 129,
+     "end": 190,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "b41e4d11ff7d2c899f424bb2162730bc624c8231dcc26cd2bee9f83a89df7da6",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "semantic_assessment": "At argument-parenthesis depth1 recognized literal bodies contribute common-unescaped static text. Nonliteral glue and nested call text are disclosed as whitespace-normalized dynamic fragments, each capped at80 JavaScript string code units (77 plus ellipsis). Nested literal arguments are not evaluated into output; f-string placeholders remain source text.",
+   "intake_variances": [
+    "HW-23 now carries dynamic fragment descriptions instead of silently presenting static text as the entire runtime message."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:05",
+   "frozen_row_sha256": "0b4f445d3aed968dfefbe007b06b9d2ae2bd73b5de8cac581f48727f7d9a5bec",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 333-349",
+     "start": 333,
+     "end": 349,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "57f361da624a7027bd2191aa3f50cc9229ca55549e6c22e23bcdeab27d206f6c",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 356-370",
+     "start": 356,
+     "end": 370,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "246cce1fa78000b361783120f595d94788c0e3f06e8eb1f63bbf5a6ca192039a",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "semantic_assessment": "The final any-call regex ignores noncode starts, def prefixes and claimed spans, and reports the remaining file/1-based-line pairs as skipped. Only sorted top-level .py files are scanned; no recursive/helper completeness or runtime absence claim follows.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:06",
+   "frozen_row_sha256": "8c3058d7c34999ad6fe5726501d56c4dd79f80cf979c7d1296ae3f5126ca453c",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 25-65",
+     "start": 25,
+     "end": 65,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "52e9bdfacc372fb58d437e7f3caff20cb23532b932de6ec73ed6a6237746a8f7",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    }
+   ],
+   "semantic_assessment": "buildEventMap reads recognized hooks/<basename>.py command text and deduplicates event/matcher labels. eventsFor maps _bashguardlib through pre-bash and git-enforce to the explicit Git backstop label. Unmapped helpers receive no event label; text recognition is not proof a host registered or invoked a hook.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:hook-extractor:07",
+   "frozen_row_sha256": "ab0b51dda91c431a3181657db5a88dc5460b6459f0f8280aaec1d11a0ec3d19a",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 69-187",
+     "start": 69,
+     "end": 187,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "5c5beb74d650e89c79e584e46417685bee873af949227c44a3d32659c55e223d",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "semantic_assessment": "The renderer natural-sorts tags, combines blocking/advisory kinds and event sets, quotes static template fragments, identifies dynamic fragments and emits sourceRef/line links plus skipped census. The intro expressly describes a bounded static scan; a zero skipped count concerns only calls found by that scan. Version strings label output without release or runtime equivalence evidence.",
+   "intake_variances": [
+    "HW-23 removes every-runtime-gate/never-drift claims and renders dynamic/omitted coverage explicitly; historical analytical wording is not current advertised equivalence."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  }
+ ],
+ "scope": "generator:hook-extractor literal current/pinned guard/effect/retry source inspection, not runtime qualification.",
+ "limits": [
+  "No tests, product imports, site generation, Node/Pi/native product execution, API/network/provider/install or canonical/index/ref/ledger/markers/status writes.",
+  "All eight advanced Pi rows and history/proof bytes retained exactly; no old observation epoch rewritten.",
+  "HW-23/HW-24 intentional changes explicitly identified; no preservation of old defect or advertised global parser exactness.",
+  "Root owns independent review and unchanged strict prospective source admission; no runtime/task/scenario completion."
+ ]
+}

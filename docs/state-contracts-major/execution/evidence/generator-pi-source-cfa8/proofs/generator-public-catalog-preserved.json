@@ -1,0 +1,290 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source author only, no independent self-approval"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/includes/farm.md": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+  "plugins/ca/tools/farm.ts": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+  "site/scripts/generator/configuration-reference.ts": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+  "site/scripts/generator/forge-status.ts": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+  "site/scripts/generator/render-source-embed.ts": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+  "site/scripts/generator/source-ref.ts": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+  "site/scripts/version-facts.ts": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+ },
+ "disposition_ids": [
+  "disposition:machines:generator:public-catalog",
+  "disposition:transitions:generator:public-catalog:01",
+  "disposition:transitions:generator:public-catalog:02",
+  "disposition:transitions:generator:public-catalog:03",
+  "disposition:transitions:generator:public-catalog:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/source-bindings.json",
+   "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json",
+   "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited-evidence-inventory.json",
+   "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/baseline-current-joins.json",
+   "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:generator:public-catalog",
+   "frozen_row_sha256": "8be34c999be9b0dea1745eefc29134698ac3370b95ca33e144429a458c85b71f",
+   "clause_ids": [
+    "disposition:transitions:generator:public-catalog:01",
+    "disposition:transitions:generator:public-catalog:02",
+    "disposition:transitions:generator:public-catalog:03",
+    "disposition:transitions:generator:public-catalog:04"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "symbol": "literal source lines 66-179",
+     "start": 66,
+     "end": 179,
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "680ac3e45309d9a990de32138b62a7c510751e5403cf059ff349283ca7623ff4",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "symbol": "literal source lines 1-298",
+     "start": 1,
+     "end": 298,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "git_oid": "238e157b760c9dcb870e14102841958a6c4c0429"
+    },
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "symbol": "literal source lines 1-453",
+     "start": 1,
+     "end": 453,
+     "file_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "span_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "git_oid": "e7f61360cf52298eb63fd5e6381dcacc1aa5fcef"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "symbol": "literal source lines 29-38",
+     "start": 29,
+     "end": 38,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "d2b7ffef8d218ecc5b68c24720a21991ed57ac28ecb27a55e43c6d1a00488c48",
+     "git_oid": "a967762c4acf905d5ed93c963efc0f1366400a51"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "symbol": "literal source lines 3454-3487",
+     "start": 3454,
+     "end": 3487,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "ee3c4e41ff9b721e879a35a89012c2fcfc67d1cb96de46a5d7f3995d52e296a1",
+     "git_oid": "e1bef569ef858b9733a881f191d113e87104f3fc"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 260-268",
+     "start": 260,
+     "end": 268,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "798e3fe48065d24d0e155f99b6f0b489ff4ab24594b339b9cfd2afbe5a4573e2",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 423-432",
+     "start": 423,
+     "end": 432,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "29da3f703e1d3cb6ee379994bce6d1b2562577e70019c899f431674021d61bf4",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    },
+    {
+     "path": "site/scripts/generator/render-source-embed.ts",
+     "symbol": "literal source lines 20-100",
+     "start": 20,
+     "end": 100,
+     "file_sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+     "span_sha256": "ee7c6949239df2c7f07a473475202bf23cec63606a1d67415b9a3ee79cbc4d52",
+     "git_oid": "00024093b974b4d1bf9c620f93a3b16d22d5acf3"
+    }
+   ],
+   "semantic_assessment": "All 4 literal clauses assessed by the named current/pinned source witnesses and explicit accepted-task corrections/limits in clause-inspection. Advanced observations remain entire historical records, not renewed.",
+   "intake_variances": [
+    "The stale overwrite caution identified at3766 is corrected by the committed cfa8 one-field docs change; no prior held proposal or failed behavior is relabelled as runtime success.",
+    "The displayed plugin-version label is separate from the commit/main URL revision and is not released-artifact evidence. Stale tag-pinned implementation comments do not override the actual sourceRef URL construction."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:public-catalog:01",
+   "frozen_row_sha256": "3c2b151dcf10aa2483d81115ed2ac46f5ddfb5873714c14eb645a1aa86955c31",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "symbol": "literal source lines 66-179",
+     "start": 66,
+     "end": 179,
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "680ac3e45309d9a990de32138b62a7c510751e5403cf059ff349283ca7623ff4",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "symbol": "literal source lines 1-298",
+     "start": 1,
+     "end": 298,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "git_oid": "238e157b760c9dcb870e14102841958a6c4c0429"
+    }
+   ],
+   "semantic_assessment": "The maintained Forge declarations derive preview command/flag badges; sibling preview plugins are excluded and unknown command lookup returns null. Pi requires invokes repositoryVersionFacts when the getter is read. That helper loads/checks source facts once per process and caches the result; it is not a fresh release or runtime probe per render. Missing/malformed required facts can propagate errors. The manually maintained allowlist is not a release-maturity or installed-support validator.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:public-catalog:02",
+   "frozen_row_sha256": "31750a82fe20abbb2d27f175ad0dc4a59258eca42d7d978567f404e8b4a66a3b",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "symbol": "literal source lines 1-453",
+     "start": 1,
+     "end": 453,
+     "file_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "span_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "git_oid": "e7f61360cf52298eb63fd5e6381dcacc1aa5fcef"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "symbol": "literal source lines 29-38",
+     "start": 29,
+     "end": 38,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "d2b7ffef8d218ecc5b68c24720a21991ed57ac28ecb27a55e43c6d1a00488c48",
+     "git_oid": "a967762c4acf905d5ed93c963efc0f1366400a51"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "symbol": "literal source lines 3454-3487",
+     "start": 3454,
+     "end": 3487,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "ee3c4e41ff9b721e879a35a89012c2fcfc67d1cb96de46a5d7f3995d52e296a1",
+     "git_oid": "e1bef569ef858b9733a881f191d113e87104f3fc"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 260-268",
+     "start": 260,
+     "end": 268,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "798e3fe48065d24d0e155f99b6f0b489ff4ab24594b339b9cfd2afbe5a4573e2",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 423-432",
+     "start": 423,
+     "end": 432,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "29da3f703e1d3cb6ee379994bce6d1b2562577e70019c899f431674021d61bf4",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    }
+   ],
+   "semantic_assessment": "Five fixed group tables render maintained defaults, accepted values, purpose and caution; executable defaults are explicitly not extracted. At committed cfa8 the FARM_RUN_ID caution now accurately states existing-ID refusal before receipt stream truncation, receipt-only inspection or an explicit unused new identity. createRunDirectory exclusively creates the run directory and main calls it before stream initialization. This is source conformance, not an executed Farm observation.",
+   "intake_variances": [
+    "The stale overwrite caution identified at3766 is corrected by the committed cfa8 one-field docs change; no prior held proposal or failed behavior is relabelled as runtime success."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:public-catalog:03",
+   "frozen_row_sha256": "e1451cea35f3c07ba84f760c2da76a4859a8270a9292bb122d56102ce6e068ee",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "semantic_assessment": "repositorySourceRef accepts trimmed40-hex GITHUB_SHA case-insensitively, otherwise returns literal main. No tag lookup, commit existence check, release authentication or publication attestation is performed.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:public-catalog:04",
+   "frozen_row_sha256": "431106f25162bdb317530614113572d541bc72f3dd6b1ec934019386023bfef4",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/render-source-embed.ts",
+     "symbol": "literal source lines 20-100",
+     "start": 20,
+     "end": 100,
+     "file_sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+     "span_sha256": "ee7c6949239df2c7f07a473475202bf23cec63606a1d67415b9a3ee79cbc4d52",
+     "git_oid": "00024093b974b4d1bf9c620f93a3b16d22d5acf3"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "semantic_assessment": "Source embeds show v<pluginVersion> as a label but build URLs from the supplied or selected commit/main sourceRef. chooseFence protects embedded backtick runs and preserves raw source payload text. Stale tag-pinned comments do not change this actual URL contract.",
+   "intake_variances": [
+    "The displayed plugin-version label is separate from the commit/main URL revision and is not released-artifact evidence. Stale tag-pinned implementation comments do not override the actual sourceRef URL construction."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  }
+ ],
+ "scope": "generator:public-catalog literal current/pinned guard/effect/retry source inspection, not runtime qualification.",
+ "limits": [
+  "No tests, product imports, site generation, Node/Pi/native product execution, API/network/provider/install or canonical/index/ref/ledger/markers/status writes.",
+  "All eight advanced Pi rows and history/proof bytes retained exactly; no old observation epoch rewritten.",
+  "HW-23/HW-24 intentional changes explicitly identified; no preservation of old defect or advertised global parser exactness.",
+  "Root owns independent review and unchanged strict prospective source admission; no runtime/task/scenario completion."
+ ]
+}

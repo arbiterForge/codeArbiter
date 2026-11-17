@@ -1,0 +1,345 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+  "core/pysrc/prompt-submit.py": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:persona",
+  "disposition:transitions:hooks:persona:01",
+  "disposition:transitions:hooks:persona:02",
+  "disposition:transitions:hooks:persona:03",
+  "disposition:transitions:hooks:persona:04",
+  "disposition:transitions:hooks:persona:05",
+  "disposition:transitions:hooks:persona:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:persona",
+   "frozen_row_sha256": "afb9bbac39a313de3fe8cb9b2b8cec3a2cdfc9e5879e1f1c38b4803d123153a4",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:01",
+    "disposition:transitions:hooks:persona:02",
+    "disposition:transitions:hooks:persona:03",
+    "disposition:transitions:hooks:persona:04",
+    "disposition:transitions:hooks:persona:05",
+    "disposition:transitions:hooks:persona:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 110,
+     "end": 188,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "4bf6cd75507734f0d0ec9cf89795cf31444d009f49f19d884d9626723dfd4e57",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 417,
+     "end": 492,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "edef32aeb85e033a2607367a0b0154803ed85829d97ad5e39a63ac7e52cae689",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 527,
+     "end": 603,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "d6409598433307c67df19c7e125d2e2900b24a4b35a5b8d25e6a73620655cfd4",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 225,
+     "end": 263,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "54c3c7732bb459eba3624a29cdca6aea95e8fb3c0c116223007551a98f804aae",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 451,
+     "end": 492,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2e92a329be9b6f6026dd3b234a0ecb148f3d0fbd966b481b918b6c2155a227ec",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 225,
+     "end": 305,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "8154d74841e8c72054956c42998213338d0e4f79378e1876e88ca5b5d5b6ed85",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 270,
+     "end": 341,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "253e935d52ff19a925fd44b71b53a7ded75678af057c6d82d88e15d277037ec7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 606,
+     "end": 620,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "7cb4216c2c17871ac9d3463150e748290e040353bc7940f563c9114a1c089988",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 1244,
+     "end": 1292,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "0bf6c9bb06bf4456e1bbe74f73b59b35abb0de132802c1b050888d285325ab72",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 606,
+     "end": 632,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "f054ab65c2e60403750afad55a233867020b3b8debe8435deeee6fbd9a687343",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 348,
+     "end": 444,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "b22d505be416ddecd72a1a7aa5b005c4a00e2bcab10a6af0025dd6ad33d0ce06",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 499,
+     "end": 524,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "5a27d3eef7b311f4942a5fd4f15e5aa94fc9169b515079fe474bf07f6e57e84d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:01",
+   "frozen_row_sha256": "e739f01b53e989cf9911965e136c41522eff6fee3d16ea1ebfe2f7be08faebd8",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 110,
+     "end": 188,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "4bf6cd75507734f0d0ec9cf89795cf31444d009f49f19d884d9626723dfd4e57",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 417,
+     "end": 492,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "edef32aeb85e033a2607367a0b0154803ed85829d97ad5e39a63ac7e52cae689",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 527,
+     "end": 603,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "d6409598433307c67df19c7e125d2e2900b24a4b35a5b8d25e6a73620655cfd4",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:02",
+   "frozen_row_sha256": "d561b52f86fbd3dcdcfd96370e5d1c9d085a9f1075d609ff575e2f933805d552",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 225,
+     "end": 263,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "54c3c7732bb459eba3624a29cdca6aea95e8fb3c0c116223007551a98f804aae",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 451,
+     "end": 492,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2e92a329be9b6f6026dd3b234a0ecb148f3d0fbd966b481b918b6c2155a227ec",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:03",
+   "frozen_row_sha256": "d623b828e27ffc902509ef83d72f7e6814c9f92e6aeae849de114b51dd30c3db",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 225,
+     "end": 305,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "8154d74841e8c72054956c42998213338d0e4f79378e1876e88ca5b5d5b6ed85",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 451,
+     "end": 492,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2e92a329be9b6f6026dd3b234a0ecb148f3d0fbd966b481b918b6c2155a227ec",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:04",
+   "frozen_row_sha256": "e83ce02c5d5cab22ba34669d1389556584afb1336eba98396e5f149fdf984651",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 270,
+     "end": 341,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "253e935d52ff19a925fd44b71b53a7ded75678af057c6d82d88e15d277037ec7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 606,
+     "end": 620,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "7cb4216c2c17871ac9d3463150e748290e040353bc7940f563c9114a1c089988",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 1244,
+     "end": 1292,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "0bf6c9bb06bf4456e1bbe74f73b59b35abb0de132802c1b050888d285325ab72",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:05",
+   "frozen_row_sha256": "4eb7e3a693c199ebf58ecde7ea5fae01f68c02a928ea0991450adb8deffb6cf8",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 606,
+     "end": 632,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "f054ab65c2e60403750afad55a233867020b3b8debe8435deeee6fbd9a687343",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:persona:06",
+   "frozen_row_sha256": "1c5b1d6a35fe359587b16637d75e81dea242962fcb8878170762d11a53b1ecc8",
+   "clause_ids": [
+    "disposition:transitions:hooks:persona:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 348,
+     "end": 444,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "b22d505be416ddecd72a1a7aa5b005c4a00e2bcab10a6af0025dd6ad33d0ce06",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 499,
+     "end": 524,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "5a27d3eef7b311f4942a5fd4f15e5aa94fc9169b515079fe474bf07f6e57e84d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

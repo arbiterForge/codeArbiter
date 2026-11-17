@@ -1,0 +1,170 @@
+{
+ "schema": "codearbiter.private-source-proposal-independent-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "reviewer": "/root/acceptance_security_review",
+ "author": "/root/ci_repair_review",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\delivery.json",
+ "delivery_sha256": "b5e22a7b7e90e62dee1deb59f05e188e3fc07ed7281da0c8c8cfed9c6fecfca8",
+ "full_subjects": {
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\adoption-filemap.json": {
+   "sha256": "8697efa28a4ebac84ac57088e84444936564677ff2fae7249fe05923753bbe4b",
+   "bytes": 5908
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\authored-clause-data.json": {
+   "sha256": "898db5e76c01a42948c7192165ce8a08ec349c8e024b2cd30f946d49208b9679",
+   "bytes": 39351
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\baseline-current-joins.json": {
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f",
+   "bytes": 8601
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\build-metadata.py": {
+   "sha256": "4cfccb5ca56e242e239fc8ac5abec101bf3181ef690b6b0d2ca69b4fa477fb58",
+   "bytes": 17493
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\cas-proposal.json": {
+   "sha256": "65c5195014f14420dd31c03cf235c0be1627de74d96314121c740f0e24f83600",
+   "bytes": 127390
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\clause-inspection.json": {
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115",
+   "bytes": 371132
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\01-predecessor.json": {
+   "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334",
+   "bytes": 44029
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\02-predecessor.json": {
+   "sha256": "f890791dada7ea5dad8fd5da3afb00e1f7c430539760a2daf8e9cc923b825c71",
+   "bytes": 53366
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\03-predecessor.json": {
+   "sha256": "0bd0dbc7603b09ee20da7b930468ba47410fc29c6de4248d3112ab8e9db8d580",
+   "bytes": 93317
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\04-predecessor.json": {
+   "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d",
+   "bytes": 4063
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\05-predecessor.json": {
+   "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+   "bytes": 49859
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited-evidence-inventory.json": {
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc",
+   "bytes": 27039
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-authoring-route-preserved.json": {
+   "sha256": "6674ba6b36b3a8eaba031ba7454f958cebc86f085882692ece65f9669f00a48d",
+   "bytes": 18117
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-claude-review-preserved.json": {
+   "sha256": "b95828c7eb78563e9b0faa7ef0dd006a7d353368bd1b0d02571e672235211434",
+   "bytes": 18200
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-codex-review-preserved.json": {
+   "sha256": "1d33c660b4937e44f2cfb08a4403b0bea26ac3bed9ecd8a228cba29b39cdaae4",
+   "bytes": 19407
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-command-evidence-preserved.json": {
+   "sha256": "8021191ebd9150d71ae6da434f75044e64fd54ee40e1f04e5d8bd897bd76d9bd",
+   "bytes": 15111
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-context-delivery-preserved.json": {
+   "sha256": "3b6331ee9984806a116a53b32122f1c9c498c9bc715b02009c885f422139bbc5",
+   "bytes": 7746
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-context-provenance-preserved.json": {
+   "sha256": "8d26629b7f2d651447977f7beb0426c29742601b551c1d333efe90551a55797a",
+   "bytes": 11822
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-context-snapshot-preserved.json": {
+   "sha256": "49889a123fa759ad8a2c45911a05561671d9f36f73a9d6cd04983c9de13ba990",
+   "bytes": 13362
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-context-writer-preserved.json": {
+   "sha256": "eb54ad83b0b0bc1e64bb0786158432876799e592879fa0f8020505b10aee1971",
+   "bytes": 21017
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-knowledge-preserved.json": {
+   "sha256": "b402aa54f1e0a786e6fc7eabb8e1be95ad615ea1815d260d33d31872b5c9fe74",
+   "bytes": 28909
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-native-client-preserved.json": {
+   "sha256": "b4901058d4eff6714fe12551ffbf0cd8f14650c6554eabe20f960baf9c02983a",
+   "bytes": 20852
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\proofs\\hooks-verifier-preserved.json": {
+   "sha256": "d467fdb94a1ed1248bd0b97f0fa3ced5fbb81c8a2a7514a70b6391e3326019b0",
+   "bytes": 23927
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\source-bindings.json": {
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a",
+   "bytes": 24903
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\summary.json": {
+   "sha256": "b96c5919071d60879a6b5a71dc5dbda0acfd16e65e2221013ae54d73a587412c",
+   "bytes": 1271
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\validation.json": {
+   "sha256": "f3f352f344817d3226851d26fa79dc1f0f69640b517c8ae2663111521dac22ef",
+   "bytes": 650
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\delivery.json": {
+   "sha256": "b5e22a7b7e90e62dee1deb59f05e188e3fc07ed7281da0c8c8cfed9c6fecfca8",
+   "bytes": 9079
+  }
+ },
+ "coverage": {
+  "families": [
+   "hooks:verifier",
+   "hooks:codex-review",
+   "hooks:claude-review",
+   "hooks:native-client",
+   "hooks:authoring-route",
+   "hooks:context-writer",
+   "hooks:context-provenance",
+   "hooks:context-snapshot",
+   "hooks:command-evidence",
+   "hooks:context-delivery",
+   "hooks:knowledge"
+  ],
+  "literal_clauses": 74,
+  "proposed_PLANNED_CAS_cells": 67,
+  "retained_advanced_full_rows": 18,
+  "current_and_pinned_witness_spans": 355,
+  "current_source_bindings": 26,
+  "unique_retained_current_evidence_joins": 5,
+  "independently_checked": "Full literal matrix against canonical frozen rows; current source guard/effect/retry control flow and essential caller boundaries; exact source/pinned/physical/hash spans; every proposed whole-row CAS and proof/raw-evidence join; unchanged advanced rows and historical epoch retention."
+ },
+ "semantic_assessment": {
+  "authority": "Explicit verification/review request lifecycle remains separately selected evidence production. Actual host correlation, first final, required decision coverage, immutable observation and current publication binding are not inferred from caller verdicts or source review. Existing terminal requests are not restarted in place. No source finding found in the finite inspected clauses.",
+  "native_client": "Pinned manifest/binary/source identity and bounded envelope controls match source. OS magic is not ISA decoding; timeout produces reconcile-before-retry rather than automatic durable-operation inspection. Only guarded NO_LOCAL_STORE initializes/retries once. Explicit constructor timeout remains trusted caller input.",
+  "authoring": "Full-route structural preflight and optional historical current-acceptance proof query are distinct from ordinary authorized work. _preflight_current_acceptance is an explicit historical proof query as maintained finishing/commit/execution callers state; this PASS does not reinstate it as an ordinary task/commit permission gate.",
+  "context": "Python preview is read-only; native preview stores retained proposal; native apply delegates document/provenance transaction to owning contextdocument layer. Identity/coverage/semantic status, source/target freshness and final byte effects remain separate. No transient-effect absence, crash-durability, global concurrency or permission grant is claimed.",
+  "command_delivery": "Pure command and actor-delivery consumers validate reported shape and exact supplied bindings; they do not independently authenticate host provenance, execute commands or prove semantic consumption. Instructions are blocked on conflicts/overflow, rather than truncated.",
+  "knowledge": "Native reads, CAS add/update/retire, current-source token cutover, stable promotion origin and separate partial-success stages match current Python control flow. Legacy provenance rebaseline is a functional hash-map update; native knowledge rebaseline persists selected HEAD/date. Neither creates reviewed semantic truth."
+ },
+ "reuse": {
+  "policy": "Previously read installed security-reviewer/reviewer contract and complete security-controls policy retained; no policy snapshot changed or new code production in this proposal.",
+  "source": "Reused same-6d8 authority arm/save/load/publish/recover/parse-decision/launch join inspections from immediately preceding hook unit, after exact immutable SHA256 joins; inspected the additional verifier/reviewer/client/context/knowledge control flow for this proposal.",
+  "executed_evidence": "Prior TESTED/PRESERVED evidence retained by exact bytes and full row objects only; no execution renewed."
+ },
+ "joins_receipt": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel67-independent-review-dkt5yhr3\\joins.json",
+  "sha256": "428da67d61a8dcaf0cee1fd5275f10aae1bc6eeb359486cd211f5cbc87b63529",
+  "bytes": 17616
+ },
+ "input_inventory": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel67-independent-review-dkt5yhr3\\input-references.json",
+  "sha256": "74b14fd3ebc45e2ce7e4b550e375057f40d029fa6db6c060d886a5eff78945f7",
+  "bytes": 637
+ },
+ "limits": [
+  "Private source-only proposal, not staged candidate; no actual index identity, security marker, runtime/test/native/host/provider/model/user acceptance or task promotion claimed.",
+  "No tests, original-owner validator, API/network, dependency/install, build, native execution or reviewer fleet replay. All writes confined to this fresh Temp review directory.",
+  "Parent alone owns original strict admission, canonical integration, CI and later qualification."
+ ]
+}

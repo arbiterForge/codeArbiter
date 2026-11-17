@@ -1,0 +1,2192 @@
+{
+ "schema": "codearbiter.literal-clause-source-inspection/1",
+ "actor": "/root: current source-only repair reinspection with prior independent literal review and actual code-peer reuse",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "WF-31",
+  "WF-33",
+  "WF-34",
+  "SX06",
+  "T05"
+ ],
+ "clause_count": 26,
+ "source_bindings_sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9",
+ "rows": [
+  {
+   "cell": "disposition:transitions:SX06:01",
+   "frozen_row_sha256": "148c9c8667afcbc9d4cb6355cb0d3a9b3b826fa1f0934dca21d120e7355da81a",
+   "frozen_baseline": {
+    "from": "Authored metadata",
+    "event": "Resolve navigation",
+    "guard": "Unique known entries, complete metadata, valid tracks and explicit next lesson",
+    "to": "Ordered navigation / failure",
+    "effects": "Build guide/concept/Academy/reference projections; keep reading position separate from completion.",
+    "failure_retry": "Missing prerequisites can be external labels; missing next lesson is not inferred. Unknown inventory or duplicate membership fails the relevant owner.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Guide/concept/reference/Academy projections validate known metadata and duplicate identities, retain authored next links and explicit unknown/missing failure paths. Navigation/order/progress positions do not mean completion or permission to skip prerequisites.",
+   "witnesses": [
+    {
+     "path": "site/scripts/academy-wayfinding.ts",
+     "start": 1,
+     "end": 47,
+     "file_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+     "span_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31"
+    },
+    {
+     "path": "site/scripts/guide-directory.ts",
+     "start": 1,
+     "end": 60,
+     "file_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+     "span_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717"
+    },
+    {
+     "path": "site/scripts/concept-directory.ts",
+     "start": 33,
+     "end": 43,
+     "file_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+     "span_sha256": "9c382ae4306774fa8639dc4187519bf98f8184fa9166287e608d137825954e08"
+    },
+    {
+     "path": "site/scripts/reference-sidebar.ts",
+     "start": 45,
+     "end": 113,
+     "file_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+     "span_sha256": "e1a187e503e6ec9efbb436f84bb7f3da6017714acc3ba16bb6329873cd199c93"
+    },
+    {
+     "path": "site/scripts/journey-navigation.ts",
+     "start": 1,
+     "end": 62,
+     "file_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+     "span_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:02",
+   "frozen_row_sha256": "58e2699aedb699cd783ae73863b80b9a5ab22393061b253d5d2175fcd1dd46be",
+   "frozen_baseline": {
+    "from": "Topic map",
+    "event": "Validate closure",
+    "guard": "Known pages/lessons, nonempty nonduplicate lists, every lesson mapped",
+    "to": "Resolved topic graph / failure",
+    "effects": "Join real page titles and lesson references; return per-lesson pages.",
+    "failure_retry": "Unknown/unmapped membership throws with explicit problems.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Topic-map parsing uses an own-property-safe map and rejects malformed lists, unknown pages/lessons, empty/duplicate lists and unmapped lessons before constructing navigation. Source title/read errors remain named generation failures.",
+   "witnesses": [
+    {
+     "path": "site/scripts/topic-map.ts",
+     "start": 36,
+     "end": 132,
+     "file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+     "span_sha256": "4b5b4fed41f919dd1fab3a8ce7258dd16aed310ad77e3590660fd53d06a648ca"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:03",
+   "frozen_row_sha256": "132f9cbee9f66b9fda7c1b88644b8145d2f02eabc5d2eeffeffd06b854a51aeb",
+   "frozen_baseline": {
+    "from": "Content AST",
+    "event": "Transform links/tables",
+    "guard": "Root-absolute unprefixed local links; unwrapped eligible table",
+    "to": "Projected AST",
+    "effects": "Prefix base idempotently; wrap tables and add row labels only to unambiguous authored-guide tables.",
+    "failure_retry": "Complex tables retain scrolling form; no invented column association.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Base-link rewriting is idempotent for exact/directory base prefixes and skips fragments/protocol-relative/non-root values. Only unambiguous simple guide tables receive row labels; complex/reference/Academy tables retain native scroll shells and original content, avoiding guessed associations.",
+   "witnesses": [
+    {
+     "path": "site/scripts/rehype-base-links.ts",
+     "start": 29,
+     "end": 77,
+     "file_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+     "span_sha256": "85c1520103c0653a1bc2eb7098f560db800b3458d794a84d9e4482911e3653d9"
+    },
+    {
+     "path": "site/scripts/rehype-table-shell.ts",
+     "start": 13,
+     "end": 99,
+     "file_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+     "span_sha256": "d7ae71034ca33424dff2a2ef3909d5f564cfdb6aa63309a2adaf99e74bf5ca83"
+    },
+    {
+     "path": "site/base.mjs",
+     "start": 20,
+     "end": 64,
+     "file_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+     "span_sha256": "7167fef64c0e991a95d577712991818c8641b543d40429c9d73952d0dc9d9fc4"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:04",
+   "frozen_row_sha256": "8a146352a879fb71f72894e6e9b92c4e4289e319f379a1d1e1d091b3d1d06e68",
+   "frozen_baseline": {
+    "from": "Reviewed diagram model",
+    "event": "Render SVG",
+    "guard": "Validated graph and safe labels/namespaces",
+    "to": "Generated diagrams",
+    "effects": "Render the explicit teaching graph, then sequentially write declared assets.",
+    "failure_retry": "Illustrative/historical diagrams do not execute workflow transitions; interrupted generation can leave a mixed output set.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Execution-map validation checks roles, IDs, source anchors, ordered handoffs and connectivity before SVG rendering. Authored strings are XML-escaped and labels bounded; generated diagram writes are sequential, so mixed old/new output can remain after an I/O failure. These are illustrative/source-traced diagrams, not runtime enforcement.",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/model.ts",
+     "start": 501,
+     "end": 549,
+     "file_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+     "span_sha256": "6f707e25d86bd7ff5568a3ef3952669af54aa31d09e038a5e55a37aca9f00a5a"
+    },
+    {
+     "path": "site/scripts/execution-maps/render.ts",
+     "start": 14,
+     "end": 109,
+     "file_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+     "span_sha256": "6f80da412c6ef498c1a9991384343535d6bfc8dc7d4aee693fd8cfa1a01f2798"
+    },
+    {
+     "path": "site/scripts/execution-maps/locations.ts",
+     "start": 1,
+     "end": 19,
+     "file_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+     "span_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 29,
+     "end": 69,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "7005fb4750c62e849d74627882da8291f667267d05f3cfa3a9de476cd8f8aff1"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 134,
+     "end": 175,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "b7d9bfde8944bcba5c14449fe4c3e8327db4a8bb4ae690c5df7536f4fcd35340"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 496,
+     "end": 540,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "5b617237cb00304aa5db560182c6f85714e73d3a25099c8306c9ea03ec22a1b5"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:05",
+   "frozen_row_sha256": "22f390db4848263a7c92aa0aff7407d40d65a11d7c96f658268c3cd1bf90a01c",
+   "frozen_baseline": {
+    "from": "Diagram files",
+    "event": "Audit style/geometry",
+    "guard": "Required root marker/title/description, font/color inventory and measured label bounds",
+    "to": "Pass / violations",
+    "effects": "Report violations and exit1 for CLI failure.",
+    "failure_retry": "This checks the declared visual grammar, not semantic truth of the workflow diagram.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Diagram audit rejects missing root/title/description, prohibited filters, unknown font stacks/colors, undersized labels and conservative width overflow, reporting CLI nonzero for violations. A passing lexical/style audit does not establish semantic truth or browser/accessibility rendering.",
+   "witnesses": [
+    {
+     "path": "site/scripts/diagram-audit.ts",
+     "start": 1,
+     "end": 146,
+     "file_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+     "span_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:06",
+   "frozen_row_sha256": "917688964c4df357c836419c23c3ebf81b9c4d50d5418d948cd3a559922bc1b0",
+   "frozen_baseline": {
+    "from": "Built dist",
+    "event": "Audit internal targets",
+    "guard": "Nonempty HTML inventory and required assets",
+    "to": "Pass / link failures",
+    "effects": "Classify external/fragment skip, contained resolution, outside-base, missing and redirect target; cache redirect observations per file.",
+    "failure_retry": "Zero pages fails. The regex scan checks double-quoted href/src targets; it is not a full browser navigation proof.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The built-dist gate requires nonempty HTML and favicon/hashed-logo assets. It skips documented external/pure fragment forms, normalizes root/relative URL dot segments and checks lexical host-filesystem containment before reads; missing targets and redirect stubs are failures, cached once per file. CLI refuses missing dist or any failure.",
+   "witnesses": [
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 34,
+     "end": 86,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "ad0a67e38889235af28f1f0a3635e070f319cfbd67bc30e1a0395bf71d2fd7bd"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 98,
+     "end": 150,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "68a3c6bcd7907ae19a86edab3a8e0e62bc2d549804754027f5a1eaa46ca37961"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 165,
+     "end": 229,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "3b468f7cde10ef213c0699c6bf04a9853bcc846df87d0ed943b87d15295f4bba"
+    },
+    {
+     "path": "site/scripts/link-audit.ts",
+     "start": 13,
+     "end": 44,
+     "file_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+     "span_sha256": "dc3719a58c03fa8d811c39490b6f8a5270389d50a28f000d1d996dba99f3df2c"
+    },
+    {
+     "path": "site/base.mjs",
+     "start": 20,
+     "end": 64,
+     "file_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+     "span_sha256": "7167fef64c0e991a95d577712991818c8641b543d40429c9d73952d0dc9d9fc4"
+    }
+   ],
+   "intake_variances": [
+    "The accepted repair closes root-dot and host-separator sibling escapes while preserving existing regex double-quoted href/src coverage. It is not a realpath/symlink confinement guarantee, a browser URL parser, fragment validator or live served-site qualification."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:07",
+   "frozen_row_sha256": "ad3257e3e352fea1e44b5a8b4b0c0302a2c3bd04cbb080766dcd46c5fc59c0f2",
+   "frozen_baseline": {
+    "from": "Pure teaching cases",
+    "event": "Validate teaching data",
+    "guard": "Correct identity, known sources, local continuation links and complete cases",
+    "to": "Valid data / errors",
+    "effects": "Check structural teaching invariants.",
+    "failure_retry": "Pinned quotes and tests are drift alerts; they do not authenticate choices or prove implementation.",
+    "source": [
+     {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+     },
+     {
+      "path": "site/scripts/concept-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+     },
+     {
+      "path": "site/scripts/guide-directory.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+     },
+     {
+      "path": "site/scripts/journey-navigation.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+     },
+     {
+      "path": "site/scripts/reference-sidebar.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+     },
+     {
+      "path": "site/scripts/topic-map.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+     },
+     {
+      "path": "site/scripts/link-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+     },
+     {
+      "path": "site/scripts/link-audit/lib.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+     },
+     {
+      "path": "site/scripts/rehype-base-links.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+     },
+     {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+     },
+     {
+      "path": "site/scripts/diagram-audit.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+     },
+     {
+      "path": "site/scripts/generate-diagrams.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/render.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+     },
+     {
+      "path": "site/scripts/execution-maps/locations.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+     },
+     {
+      "path": "site/scripts/decision-evidence.ts",
+      "symbol": "Complete module",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+     }
+    ],
+    "transition_id": "SX06:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Teaching records keep pinned source identities, known owner keys, complete case/support/missing/inspection fields and local continuations. Illustrative SMARTS/lifecycle/audit examples explicitly preserve limits; quote/source tests are drift alerts, never authenticated human decisions or executed policy proof.",
+   "witnesses": [
+    {
+     "path": "site/scripts/decision-evidence.ts",
+     "start": 1,
+     "end": 32,
+     "file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+     "span_sha256": "4b6db9f30105a9c62310536d998c3d723ed174fe931ec9f42df89ba9ed1c8e3d"
+    },
+    {
+     "path": "site/scripts/decision-evidence.ts",
+     "start": 73,
+     "end": 168,
+     "file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+     "span_sha256": "c9eb7c1cd1f420a449e4ce588251fbe1205bcf4599465c5a2cb04d7e89ac47e9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:T05:01",
+   "frozen_row_sha256": "60c00a22aca14e0fa235f822715fec0bdc4ee0d2ba04f73e5d255276569df30d",
+   "frozen_baseline": {
+    "from_state": "absent target",
+    "from": "absent target",
+    "event": "create parity fixture",
+    "guard": "one target path and optional --bare; target does not exist",
+    "to": "files created",
+    "effects": "Bare mode creates ordinary baseline file only; governed mode creates enabled context, seed audit/ADR/security/tech files and markers directory.",
+    "failure_retry": "Existing path refuses clobber; I/O failure leaves partial target and returns failure.",
+    "source": [
+     {
+      "path": "tools/codex-parity-fixture.py",
+      "symbol": "main",
+      "lines": [
+       117,
+       177
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+     }
+    ],
+    "transition_id": "T05:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The fixture scaffolder requires one absent target and refuses clobbering. Bare output contains only baseline source; governed output writes context/audit/ADR/security/tech fixtures plus marker directory. Partial files can remain after I/O failure; scaffolding does not prove host enforcement.",
+   "witnesses": [
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 1,
+     "end": 128,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "4db4ec433f24bfec59ac60f9025c9b9696d0d987d28103c27ed8d830fe4ecc9b"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 130,
+     "end": 150,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "c3eaa12532c5f012edae00c8553bd166bbf226e03b552ccba155929a98b47025"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:T05:02",
+   "frozen_row_sha256": "3b34bd0c0ef8ddbdfcab80ce511f4e261927e2239c097df08451acb2281663fa",
+   "frozen_baseline": {
+    "from_state": "files created",
+    "from": "files created",
+    "event": "Git init/add/commit",
+    "guard": "each Git command succeeds",
+    "to": "seeded commit",
+    "effects": "Initialize repository and create fixture-authored initial commit.",
+    "failure_retry": "Nonzero init/add/commit returns failure; no automatic rollback of files/repository.",
+    "source": [
+     {
+      "path": "tools/codex-parity-fixture.py",
+      "symbol": "main",
+      "lines": [
+       117,
+       177
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+     }
+    ],
+    "transition_id": "T05:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Git init, add and fixture commit are separate checked subprocess results; each failure returns1 with its original diagnostic and there is no rollback of previously created fixture state.",
+   "witnesses": [
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 116,
+     "end": 121,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "fbec76fa327efef4928f7a4123c3187386f0a15649c6f3cf407e01f71abcd000"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 151,
+     "end": 164,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "11d6e53dab825a41363b5c12713d00a7fbe6f12c22c466fdb98c8ce2a427297d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:T05:03",
+   "frozen_row_sha256": "96bdcaff6cf1283be7e6332a6b0026e185ab1a961c2885039e05c2881202b02b",
+   "frozen_baseline": {
+    "from_state": "seeded commit",
+    "from": "seeded commit",
+    "event": "print next steps",
+    "guard": "fixture mode known",
+    "to": "manual verification pending",
+    "effects": "Tell operator to open hosts and perform guided parity/onboarding checks.",
+    "failure_retry": "Creation does not prove enforcement or host parity. Governed-mode next step still says persona session-start injection; root audit covers documentation drift.",
+    "source": [
+     {
+      "path": "tools/codex-parity-fixture.py",
+      "symbol": "main",
+      "lines": [
+       117,
+       177
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+     }
+    ],
+    "transition_id": "T05:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Success prints a manual two-host onboarding/parity handoff. The corrected hint requests prompt-submit persona delivery when due and separately checks SessionStart state/daily briefing, instead of promising SessionStart persona injection. It neither runs those hosts nor establishes live parity.",
+   "witnesses": [
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 165,
+     "end": 182,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "49342ae9bd4acd6b500f504a1f9e43b82c0e670329e46c2cd76fbf16b926acfe"
+    }
+   ],
+   "intake_variances": [
+    "Accepted documentation correction supersedes the frozen stale SessionStart persona hint; the existing advanced T05 edge object/history remains byte-for-byte unchanged."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:01",
+   "frozen_row_sha256": "84f9c14603077f2dd11cfeb2483c9266bfa53478281fe5e275057e3d803016b2",
+   "frozen_baseline": {
+    "from": "Farm requested",
+    "event": "Select artifact/host path",
+    "guard": "Legacy plan on supported backend; explicit opt-in",
+    "to": "Preview farm lane",
+    "effects": "Create one current-slice plan with real narrow RED tests and validated schema.",
+    "failure_retry": "HTML-backed ordinary farm remains disabled; implemented projection is not promotion/dispatch permission. Codex unavailable backend is disclosed.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The workflow remains explicitly opt-in preview on a supported legacy backend, requires a current-slice plan and narrow real RED, and retains HTML ordinary-farm disablement. A materialized/projected HTML artifact and a supported host label do not authorize dispatch or supply unavailable Codex execution.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 1,
+     "end": 52,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "37b1dd4d0d47549160cb8286f14f9b52b6d60e4b3176dc36f77426fe217385d7"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 1,
+     "end": 15,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "819d4a88ffcf2fb40dd527043273d81e1b07350bb4c577d79a536a6f00bd7f9c"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 1,
+     "end": 71,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:02",
+   "frozen_row_sha256": "aa50fc27cc95484622d216978c676bfec7844ad8b79c9fa608366f746ab48e8c",
+   "frozen_baseline": {
+    "from": "Farm lane",
+    "event": "Choose provider/model",
+    "guard": "Explicit override, valid recent cache, or measured canary",
+    "to": "Selected provider assertions",
+    "effects": "Canary isolated frozen base; choose passing candidate and report measured basis; otherwise documented cache/unmeasured fallback.",
+    "failure_retry": "Single canary is not general qualification; unknown provider identity is not invented. No silent host/provider substitution.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Explicit model override wins; otherwise the workflow requests a measured bounded canary/recent exact-plan cache and isolates experiments from a fixed base. Failed/unavailable canary can fall back to a cache or unmeasured choice only with that provenance disclosed, not a fabricated measurement or identity substitution.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 239,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "256eacab6095c18a02cda79e2ff2a7fc9bda5ed2d10ab64d98de81bca79903e8"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 17,
+     "end": 47,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "1bb981f2a08c29d5904a59a515404479ec32e54191a1f86d9ebc9860bde7d29e"
+    }
+   ],
+   "intake_variances": [
+    "Model/backend observations remain future execution. ADR0049 narrows non-loopback endpoints to HTTPS; it does not create permission to disclose or use credentials."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:03",
+   "frozen_row_sha256": "d5dfcf2e4ef04c89acd6801f72ea88dd841ba1b0376ffb6b0b4a11eb4b65caa2",
+   "frozen_baseline": {
+    "from": "Selected provider",
+    "event": "Dispatch",
+    "guard": "Exact plan/binding, credentials and current authorization",
+    "to": "Farm executing",
+    "effects": "Use one shared built backend; interpret stream as progress and run-scoped report as final source.",
+    "failure_retry": "Distinct receipts do not make shared Git branch/worktree/task IDs concurrent-safe.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The caller resolves repository/plan/branch, checks authenticated model access, builds and invokes one shared farm backend, and distinguishes JSONL progress from the authoritative run-scoped report. Report and stream completeness are separate; atomic report publication does not make concurrent Git indexes safe.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 215,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a18a927b0e20efa8480eb69f92d00ab858f8a9c7c7084101f230a827b633c927"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 325,
+     "end": 385,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a98760260a1cf5c0e630387e753e8c08008e6db7f9142989b5fedcfcc77372ac"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 49,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "888309924b0c7625a6cb20a8df66783f16c03804caaee769532f854175b79abc"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 124,
+     "end": 143,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "c180c762d37e2f74dedd18e36b257ceb477b8fc684788300489e7de336294f2b"
+    }
+   ],
+   "intake_variances": [
+    "Current effect receipts add separate complete/errors accounting without granting dispatch or stronger Git concurrency/durability guarantees."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:04",
+   "frozen_row_sha256": "7e20a65c252e1b198694439493151b447bf21dba201fcee223ea44d635becbd9",
+   "frozen_baseline": {
+    "from": "Farm result green",
+    "event": "Consume result",
+    "guard": "Actual gates passed but independent assessment still pending",
+    "to": "Review/verification pending",
+    "effects": "Spec/fresh verification per task and combined quality barrier per scope; retain warnings and actual usage completeness.",
+    "failure_retry": "Green worker result is not accepted work; mutation rejection is not proof of intent/gaming.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Green worker results undergo the task-spec/current-verification and once-per-scope quality phases before acceptance; mutation evidence carries measured/unavailable and known-usage labels. Passing tests/mutant rejection is not by itself acceptance or proof against gaming.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 30,
+     "end": 133,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d904ca69f5126e446201e6075755eea85ad2f63f382dd0013330fa06f9c44d8b"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 139,
+     "end": 190,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "8492f806bfba54c54ce541a290e8676626e59ec7b26b888c16bd38ae590067c4"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 145,
+     "end": 169,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "ed9284fa49679227fd8da119e7ce3f764ddad979c667857b134fd1f6ba934c8e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:05",
+   "frozen_row_sha256": "be956d4ab25962577b76e3f0bfafd13832c00950f75b8a1ac8d588ece9c2a964",
+   "frozen_baseline": {
+    "from": "Farm result escalated/blocked",
+    "event": "Choose next step",
+    "guard": "Failure reason and upstream dependencies inspected",
+    "to": "Affected retry/escalation",
+    "effects": "Handle actual drift, test tamper, gate or merge failure with retained work/evidence.",
+    "failure_retry": "Circuit-breaker abort is surfaced; no hidden whole-batch premium redispatch.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Failure/escalation retains task-level causes and upstream fix/retry ownership. Breaker abort is surfaced with recorded observations and no silent premium whole-batch redispatch. Foreground consumption preserves ordered progress, with final authoritative report reconciliation.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 139,
+     "end": 190,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "8492f806bfba54c54ce541a290e8676626e59ec7b26b888c16bd38ae590067c4"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 389,
+     "end": 421,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d7f1cca035d43256fa1980485be066a239c80a174382cf255b8bf0e8ca577311"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 116,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "e54dcde1392b818ddd1287c3b2b58ae3ff54d2f8123e86c759de398caecf8806"
+    }
+   ],
+   "intake_variances": [
+    "Current text corrects the unsupported inference that the breaker alone proves model incapability; no new model/price conclusion is inferred."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:06",
+   "frozen_row_sha256": "0f0228ad9efe915ee89e27f688f32877fda283e0933f14bec97c9f1c59ad5b02",
+   "frozen_baseline": {
+    "from": "Run exits3",
+    "event": "Authoritative report publication failed",
+    "guard": "Task commits/merges may already have occurred",
+    "to": "Unverified receipt state",
+    "effects": "Current prose says inspect run directory and re-dispatch. Implementation can reset prior integration/task refs on new invocation.",
+    "failure_retry": "Recommendation: separate receipt recovery from author retry; inspect actual refs/results first. Redispatch is not idempotent recovery.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The former receipt-failure redispatch instruction is replaced by receipt-only recovery: exclusive run/resource identities, exact repository/branch/commit/tree observations, independent recovered receipt, no author/reset/deletion or replacement original streams. Unknown refs/cleanup stay unknown, and new author work requires explicit fresh unused identities.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 425,
+     "end": 435,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "60d0ab1ef0c492ddf210668bdf40027cce9216a9686c409251ea1a8488da5d66"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 93,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "2111803579a64351e4c29cf3d4ecc4f88b07c453acee570f4f4807aa20474e5b"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 170,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "f2b2efee474ee3a3d726c7666c3982c8459bea3d7934db254b09c44d5aa7edd1"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 1,
+     "end": 53,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "cbaac97f66344711ff6c75634f369bc6e2c2fc8e1dc645bc7de2b4da75bf312d"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 58,
+     "end": 128,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "0e26cd54ff1cdbc814f36f160214b341aae16a20c1e472a9d3dbd6eb223af9d3"
+    }
+   ],
+   "intake_variances": [
+    "Accepted Farm recovery repair supersedes the frozen historical reset/redispatch defect. The conformance claim covers the repaired source boundary, not any actual recovered effect or crash-durable publication."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:07",
+   "frozen_row_sha256": "c9356f6040ae1dd801df17007a5409220d8e44937bb88b096f393274f242b3c7",
+   "frozen_baseline": {
+    "from": "Preview qualification",
+    "event": "Promote stable opt-in",
+    "guard": "Fresh exact revisions/model set satisfy all declared qualification evidence",
+    "to": "Eligible promotion decision",
+    "effects": "Retain complete fresh packet and normal integrated review/check evidence.",
+    "failure_retry": "Historical runs earn zero current credit; material implementation/provider change invalidates affected qualification; opt-in is not default or HTML enablement.",
+    "source": [
+     {
+      "path": "core/surface/includes/farm.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/farm.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/references/farm-plan.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+     }
+    ],
+    "transition_id": "WF-31:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Promotion remains a fresh exact-revision/model campaign across five slices/three repositories/fifty tasks and Windows/POSIX with two models, stated completion/escalation/attempt/incident/cost floors. Old campaign data earns no current credit, and neither preview stability nor projection enables ordinary HTML farm.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 7,
+     "end": 28,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "98ec5ad882dccfc2f9d355c18bba3e21de0cd38b52c101831cf0add14b1a0935"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 1,
+     "end": 15,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "819d4a88ffcf2fb40dd527043273d81e1b07350bb4c577d79a536a6f00bd7f9c"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 10,
+     "end": 13,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "de880c610840d6bcef10f679d586dc958532f3bdc3eea40a7407a6140500ef7e"
+    }
+   ],
+   "intake_variances": [
+    "These are acceptance requirements, not completed measurements or authorization to execute an expensive campaign."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:01",
+   "frozen_row_sha256": "95d9a4dc07147c2d304a293943999d32d51b5ab86282a072a5d1892261c59e88",
+   "frozen_baseline": {
+    "from": "arbiter posture",
+    "event": "Select dangerous",
+    "guard": "Actual host input captured by mode owner",
+    "to": "dangerous posture",
+    "effects": "Change composed persona and prominent visual tell; retain real hook/host constraints.",
+    "failure_retry": "The posture does not disable the hook engine or confer unrestricted side-effect authority.",
+    "source": [
+     {
+      "path": "core/surface/includes/dangerous-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/dangerous-mode.md"
+     },
+     {
+      "path": "core/surface/includes/ops-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/ops-mode.md"
+     },
+     {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/pi-host-notes.md"
+     },
+     {
+      "path": "core/surface/arbiter.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/arbiter.md"
+     }
+    ],
+    "transition_id": "WF-33:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dangerous is a user-selected persona posture, not hook-engine disablement. Actual mode writes require verified per-session state and ledger-backed entry before effective nondefault composition; distinct textual display is declared. Residual safety and real host/tool permission controls remain separate.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/dangerous-mode.md",
+     "start": 6,
+     "end": 57,
+     "file_sha256": "8faf286b0c480fefc351cb722a07f4d94b6955d8609ea1428c7c48c278e8a67c",
+     "span_sha256": "6e3706b7ae3af913de18a35f82992026422d9895c165d94f7d8ba57fe66d2a52"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 251,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "7b8a81e7f3d0b0946d3aa9bfef05924c7396949beea5648d53d93f4259649fa3"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 554,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "d9896282098a25944e78dee7332e28df980d91e6cf95342ee6c094b2b6efb822"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 15,
+     "end": 24,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "42531355dac13e5cc0ebd017f44ad94353aadfcdc47efdf064094bfc644603e5"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "intake_variances": [
+    "A badge is a display observation, not evidence that every side effect is unrestricted or that a partial audit-backed transition settled. Actual installed-host rendering/consent is not proved here.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:02",
+   "frozen_row_sha256": "a375f12984fdf22647b4c9f248b36a3d0ef7821ff03bf2b21f595dfc3f04a68d",
+   "frozen_baseline": {
+    "from": "arbiter/dangerous posture",
+    "event": "Select ops",
+    "guard": "Actual mode transition settles",
+    "to": "ops posture",
+    "effects": "Use advisory behavior and distinct badge while retaining residual safety rules.",
+    "failure_retry": "Mode text and Pi plan/execute policy are separate axes; neither should imply the other changed.",
+    "source": [
+     {
+      "path": "core/surface/includes/dangerous-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/dangerous-mode.md"
+     },
+     {
+      "path": "core/surface/includes/ops-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/ops-mode.md"
+     },
+     {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/pi-host-notes.md"
+     },
+     {
+      "path": "core/surface/arbiter.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/arbiter.md"
+     }
+    ],
+    "transition_id": "WF-33:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Ops permits only the declared advisory local runtime carve-out; tracked/index/history/publication changes and irreversible external operations retain routing/safety controls. Verified settled mode state selects its own OPS display; Pi plan/execute and trust/tool policy are distinct axes.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/ops-mode.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f",
+     "span_sha256": "49fe6f85e30416026681efe7ac0bb5c5c89565f7c117ba5e0666d6298ff0860f"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 570,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "6d620df9a770cebccf14c4b836a5f682900d3b39ae8f1ae4a552a101304f97a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 15,
+     "end": 24,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "42531355dac13e5cc0ebd017f44ad94353aadfcdc47efdf064094bfc644603e5"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 63,
+     "end": 85,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "8c104aaf86386653addb49a85d97c7df320dc68fc504c1b238b9a14c4a65f18e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "intake_variances": [
+    "No owned-process supervisor, OS sandbox, readiness probe, cross-session authority or unrestricted author capability follows from persona mode.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:03",
+   "frozen_row_sha256": "476e3df45639bc09d51a094b16256eeb28ab7ffdfaba0ad35d6489e97f49b81a",
+   "frozen_baseline": {
+    "from": "Nondefault posture",
+    "event": "Return to arbiter",
+    "guard": "Mode transition committed and delivery observed",
+    "to": "arbiter posture",
+    "effects": "Restore the applicable persona and mode display.",
+    "failure_retry": "Actual cache bug can suppress reinjection on A\u2192B\u2192A; code-owned lifecycle in hooks ledger contains reproduced edge.",
+    "source": [
+     {
+      "path": "core/surface/includes/dangerous-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/dangerous-mode.md"
+     },
+     {
+      "path": "core/surface/includes/ops-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/ops-mode.md"
+     },
+     {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/pi-host-notes.md"
+     },
+     {
+      "path": "core/surface/arbiter.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/arbiter.md"
+     }
+    ],
+    "transition_id": "WF-33:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Return to arbiter uses the verified mode owner and last-delivered (mode,generation) record, so an emitted A-to-B-to-A transition owes A again. It composes safety plus matching body or neither; mode output and display stay distinct from proof the model retained text. Unreadable records fail toward redundant delivery.",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 288,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "720e836a0fd4237bb3b9393dc451c6c0e7f6daccfb0c99046fc15d8f402f9bd0"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 398,
+     "end": 508,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "0eb0498e752bd51c82ecb3c39475ad144e34f2953568bc08f670b528c35dca29"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 192,
+     "end": 265,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "451bae0d9e13bc699f29268bc504cc7cfe334b428032939637082f03df1db16c"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/statusline.py",
+     "start": 570,
+     "end": 583,
+     "file_sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+     "span_sha256": "6d620df9a770cebccf14c4b836a5f682900d3b39ae8f1ae4a552a101304f97a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer.ts",
+     "start": 253,
+     "end": 269,
+     "file_sha256": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+     "span_sha256": "bb5570f7f1de4e598eb60fb03e344ce52d22380ac921ee9878516f6329fcf689"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850"
+    }
+   ],
+   "intake_variances": [
+    "The accepted HW01 repair supersedes the frozen ever-delivered cache bug. Failed delivery-record update attempts invalidation; if storage denies both update and removal the stale record may survive and dedup is explicitly unconfirmed, never guaranteed durable recovery.",
+    "Actual0d73 repair records an attributable prior mode exit and new entry as one staged pair, with distinct same-second transition identity and exact saved replay. Implicit default/corrupt/unbacked prior markers do not fabricate an exit. Current pending enter is settled before old ledger backing can imply a no-op. Existing bounded queue, marker-before-journal crash gap, shared-writer race and dual-storage denial remain explicit; global old debt cannot prove this transition persisted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-33:04",
+   "frozen_row_sha256": "19ea1507c91ff25cde629711a06d3619fd041997624e85fdf4df05c5478757a3",
+   "frozen_baseline": {
+    "from": "Any posture",
+    "event": "Compaction/resume",
+    "guard": "Context generation changed",
+    "to": "Persona/context delivery needed",
+    "effects": "Carry actual intent, stops, outstanding work and relevant history; refresh delivery by generation.",
+    "failure_retry": "Restored prompt context is not a new approval or fabricated task completion.",
+    "source": [
+     {
+      "path": "core/surface/includes/dangerous-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/dangerous-mode.md"
+     },
+     {
+      "path": "core/surface/includes/ops-mode.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/ops-mode.md"
+     },
+     {
+      "path": "core/surface/includes/pi-host-notes.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/pi-host-notes.md"
+     },
+     {
+      "path": "core/surface/arbiter.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/arbiter.md"
+     }
+    ],
+    "transition_id": "WF-33:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Compaction generation and last-delivery comparison refresh the persona when generation changes. Generation-write failure attempts marker invalidation; read failures default conservatively. Maintained orchestration keeps actual intent, stops/work/history in scope, while restored text creates no approval, completion or host authority.",
+   "witnesses": [
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 192,
+     "end": 265,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "451bae0d9e13bc699f29268bc504cc7cfe334b428032939637082f03df1db16c"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 270,
+     "end": 343,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "416e7b255172f94ea256dd35e097194fcf2f97b11fd630f4814f9039c2ce4edf"
+    },
+    {
+     "path": "core/pysrc/prompt-submit.py",
+     "start": 450,
+     "end": 493,
+     "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+     "span_sha256": "2b69b4dac453739874a6688ba22ed5d1e204cb2ee7fcd713cc52ca7cf978094e"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 851,
+     "end": 884,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "b5968024e33f57e91cde33c967666eabb3aeab1e72a326eccf9ea6eae98ea1cf"
+    },
+    {
+     "path": "core/surface/arbiter.md",
+     "start": 1,
+     "end": 153,
+     "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+     "span_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 63,
+     "end": 85,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "8c104aaf86386653addb49a85d97c7df320dc68fc504c1b238b9a14c4a65f18e"
+    }
+   ],
+   "intake_variances": [
+    "Double storage denial can defeat both generation update and marker removal. The accepted bounded recovery claim explicitly excludes this durable-failure case; source conformance is not assurance of arbitrary compaction survival."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:01",
+   "frozen_row_sha256": "4963098f6a31ccfd71dd6967365abe66eb69c553aa9cb2093f17be0abb793014",
+   "frozen_baseline": {
+    "from": "Doctor requested",
+    "event": "Inspect active package",
+    "guard": "Actual installed host path and pinned payload",
+    "to": "Capability report",
+    "effects": "Read health/catalog/bridge and relevant bounded live probes; distinguish active wrapper proof from dispatcher proof.",
+    "failure_retry": "No automatic trust repair, authority grant or unsupported-host success from a version label.",
+    "source": [
+     {
+      "path": "core/surface/commands/doctor.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/doctor.md"
+     },
+     {
+      "path": "core/surface/commands/prune.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/prune.md"
+     },
+     {
+      "path": "core/surface/commands/statusline.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/statusline.md"
+     },
+     {
+      "path": "core/surface/commands/status.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+     }
+    ],
+    "transition_id": "WF-34:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Doctor resolves the actual host package and pinned payload/capability identity, distinguishes a harmless wrapper self-test from active dispatcher proof, reports unsupported/degraded paths and keeps manual trust repair/foreign hooks outside automatic remediation.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/doctor.md",
+     "start": 8,
+     "end": 94,
+     "file_sha256": "88c8f8e41178fea7ca683c7411c57500b4e05a2f736d73cb1bd0f688febf1c7e",
+     "span_sha256": "cbaa8ea0c454aea55ce0f8b65ee295e3ecd63801c80dcf64724b4a54f2bd7d8b"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 87,
+     "end": 114,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "ae6fd61a98418120ef6ef567b2de42299682bb1bd863cd88449c6c6e4aa0d247"
+    }
+   ],
+   "intake_variances": [
+    "The supported Pi version changed from1.1.0 to1.5.0. PI-AC28 remains explicitly blocked; a version label or package self-report is not installed dispatch qualification."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:02",
+   "frozen_row_sha256": "987cc540f0d516274def1df0b341fae5fc53f2cbb4aea7cc390873fe265f3b06",
+   "frozen_baseline": {
+    "from": "Prune setting",
+    "event": "Select off/dry/on",
+    "guard": "Explicit selected policy",
+    "to": "Configured semantic prune policy",
+    "effects": "Dry mode reports effects; on uses host-supported path. Pi uses native compaction, Claude transcript path differs.",
+    "failure_retry": "No hand-editing active Pi JSONL; interrupted/unsafe state requires recovery or refusal.",
+    "source": [
+     {
+      "path": "core/surface/commands/doctor.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/doctor.md"
+     },
+     {
+      "path": "core/surface/commands/prune.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/prune.md"
+     },
+     {
+      "path": "core/surface/commands/statusline.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/statusline.md"
+     },
+     {
+      "path": "core/surface/commands/status.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+     }
+    ],
+    "transition_id": "WF-34:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Off/dry/on is explicitly selected through the sanctioned prune owner. Dry reports effects, Pi uses native compaction and Claude has its distinct transcript path/metrics. No active Pi JSONL hand-editing, automatic on-policy, unsafe interrupted rewrite or conflation of compacted context with file bytes is allowed.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/prune.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95",
+     "span_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 55,
+     "end": 61,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "d3e66facff8e44349dfbbd1c71d19e2eec960bf384d8584e8e0bc7882eca9b63"
+    }
+   ],
+   "intake_variances": [
+    "These are source workflow obligations. No actual compaction, session mutation, byte recovery or installed host result is asserted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:03",
+   "frozen_row_sha256": "9b3b47699b9e4c81e47b58304b9619c403245bcdbb69368cd2ee8f074f0fb41a",
+   "frozen_baseline": {
+    "from": "Statusline absent/present",
+    "event": "Install or refresh",
+    "guard": "Resolved stable executable path and existing config inspected",
+    "to": "Installed statusline with backup",
+    "effects": "Back up original configuration on first install and update managed path without replacing original backup.",
+    "failure_retry": "Do not hand-edit generated settings or reinterpret failed inspection as absent.",
+    "source": [
+     {
+      "path": "core/surface/commands/doctor.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/doctor.md"
+     },
+     {
+      "path": "core/surface/commands/prune.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/prune.md"
+     },
+     {
+      "path": "core/surface/commands/statusline.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/statusline.md"
+     },
+     {
+      "path": "core/surface/commands/status.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+     }
+    ],
+    "transition_id": "WF-34:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Explicit install checks renderer existence and rejects ephemeral roots, inspects existing settings, backs up the live current choice, then stamps exactly owned commands. Refresh only changes an owned stable path/legacy-backup migration, preserves the prior backup and ignores foreign/absent lines. Invalid JSON refuses; failed reads propagate rather than becoming absent.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 57,
+     "end": 76,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "37f4783f92076874047dfbf5bb722be4f94d64e8b2293dcfd68f4a541ba2cbfb"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 72,
+     "end": 110,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "7e9280425e98e9d7e64d648a7e754bada5a71f8f9957fe8f5e5b9761cd23feef"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 216,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "81adec9947554e5f137d8f7cd8a44d4d76582b7f766266846c39ba61d565879e"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 240,
+     "end": 365,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "65775062492d7aa09848c229603bb28dae59c9ce934338dbbc8b0d1c35c02601"
+    },
+    {
+     "path": "core/pysrc/_durabilitylib.py",
+     "start": 79,
+     "end": 186,
+     "file_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+     "span_sha256": "eb6b43409cf949ca2a867dbae8e0571d6d18b7356dda1454f03a7c54e7a9d48b"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "68f7a642ed5850e896737ac476a524b1b3343ef35e51182f17d1fd5a0464126b"
+    }
+   ],
+   "intake_variances": [
+    "Accepted HW05 narrows ownership: later user choices begin a new explicit-install backup cycle; automatic refresh never replaces them. Unique temporary-file replacement protects prior bytes on an ordinary failure but is not whole-settings concurrency or arbitrary crash durability."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:04",
+   "frozen_row_sha256": "01a27d847f1419f3d4325a73fa7bb22b260b4cbc0db979ba501b4fc9782bd1d0",
+   "frozen_baseline": {
+    "from": "Installed statusline",
+    "event": "Uninstall",
+    "guard": "Original backup/managed ownership known",
+    "to": "Restored or cleared config",
+    "effects": "Restore prior value or clear only owned entry.",
+    "failure_retry": "Never overwrite unrelated later user configuration without owning evidence.",
+    "source": [
+     {
+      "path": "core/surface/commands/doctor.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/doctor.md"
+     },
+     {
+      "path": "core/surface/commands/prune.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/prune.md"
+     },
+     {
+      "path": "core/surface/commands/statusline.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/statusline.md"
+     },
+     {
+      "path": "core/surface/commands/status.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+     }
+    ],
+    "transition_id": "WF-34:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Uninstall restores/removes only a still-owned statusline and independently owned spinner. Exact owner mismatch, replacement, removal or legacy backup without current ownership preserves the later user setting and settles only stale bookkeeping. Legacy spinner backup migrates without destroying its value, avoiding old-reader restore trigger.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 78,
+     "end": 82,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "8a67f28f44f95decaa3936ec65a9a3fca98ba3bffc9dc60dd4a008440e9e2878"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 188,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "b5e1f221bd1aec0f8e08ea9305240a4567e5e0c20a63154407184039c57ecbd2"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 353,
+     "end": 400,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "5851bbae68164112746f0aa811ce97c46b291a2a7e6a6743da6f1bfb68f0f579"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 402,
+     "end": 461,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "c09f3838436a741576cea973d374b02fd3bfb77eb0590f68ce14c2b0698fcd3c"
+    }
+   ],
+   "intake_variances": [
+    "The accepted ownership repair narrows the generic restore-prior prose. No new sanitizer, arbitrary malformed-settings repair, host consent or real global-settings acceptance is inferred."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:05",
+   "frozen_row_sha256": "8700ba2a837b598b9ca71840cbedca56e8e34a3b0621fac08f5b63c12d95766e",
+   "frozen_baseline": {
+    "from": "Status requested",
+    "event": "Read progress/proof/cost",
+    "guard": "Actual source and completeness known",
+    "to": "Labeled display",
+    "effects": "Distinguish known, lower-bound, unavailable, host-only and stale observations.",
+    "failure_retry": "A status number without its provenance must not imply stronger evidence.",
+    "source": [
+     {
+      "path": "core/surface/commands/doctor.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/doctor.md"
+     },
+     {
+      "path": "core/surface/commands/prune.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/prune.md"
+     },
+     {
+      "path": "core/surface/commands/statusline.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/statusline.md"
+     },
+     {
+      "path": "core/surface/commands/status.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+     }
+    ],
+    "transition_id": "WF-34:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Status and the cost display distinguish exact observations, host-only, approximate/lower-bound, unavailable and stale provenance. Drift/pipelines/recovery report their selected read scope; absent/partial/unreadable recovery is not completed historical work and status performs no resume/promotion/completion.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 14,
+     "end": 49,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "f8bb2866d589a7b26207f9bd8766795e791f2782a173c2de536ad8f31650f453"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 1,
+     "end": 24,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "a7767053b2f6f2d8448034dcd980fb221abfedb059754417dfb36ba1b7192554"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 31,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "911b8cbd4a3c7c736ce01989d1555713d1f2b4539a13a108d62263766f417e3b"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 108,
+     "end": 111,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "7cc5888d2a2f7a4ef9099dccb8b9d399c9b9ed4898c8fa10af1e72e09b42b1fd"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 44,
+     "end": 59,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "0b03e3ee1c1615d73bcb2e4703e5e42ae6d803188f3c4eb0fe910672df3cc687"
+    }
+   ],
+   "intake_variances": [
+    "Added workflow recovery is bounded read-only disclosure with page cursors, not full-backlog counting or renewed work authority."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "intake_interpretations": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}

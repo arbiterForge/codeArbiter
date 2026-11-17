@@ -1,0 +1,284 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+  "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:command-evidence",
+  "disposition:transitions:hooks:command-evidence:01",
+  "disposition:transitions:hooks:command-evidence:02",
+  "disposition:transitions:hooks:command-evidence:03",
+  "disposition:transitions:hooks:command-evidence:04",
+  "disposition:transitions:hooks:command-evidence:05",
+  "disposition:transitions:hooks:command-evidence:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:command-evidence",
+   "frozen_row_sha256": "a3c23343032860c486fd2c6df8cccc615c772e1027e53edb8513d13e081913de",
+   "clause_ids": [
+    "disposition:transitions:hooks:command-evidence:01",
+    "disposition:transitions:hooks:command-evidence:02",
+    "disposition:transitions:hooks:command-evidence:03",
+    "disposition:transitions:hooks:command-evidence:04",
+    "disposition:transitions:hooks:command-evidence:05",
+    "disposition:transitions:hooks:command-evidence:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "validate_command_record",
+     "start": 689,
+     "end": 774,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6a4ff33316532cf46730c1ef148cf748695d3b0f0401386e27f1597d1e4f3064",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "_verification_binding",
+     "start": 658,
+     "end": 686,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "a501aa8f85361609413800116cd8aec90c127336840bdd21b517933d60318974",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "resolve_scoped_command_guidance",
+     "start": 777,
+     "end": 891,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6453ff21b146104bcb97bde979eee6449c5aaa8c13a35f9c144023be0296bd0a",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextselectlib.py",
+     "symbol": "select_task_context",
+     "start": 116,
+     "end": 237,
+     "file_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+     "span_sha256": "f429089f86e7075994d6a48666823808501fe0bf65b498cfc3605487cbe5c51a",
+     "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+    },
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "validate_constraint_reference",
+     "start": 894,
+     "end": 907,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "00b8a76f128337fbf4a996d3d9caa7fafbd76125353de34440de51cb2f27d0c0",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextselectlib.py",
+     "symbol": "check_task_context",
+     "start": 399,
+     "end": 454,
+     "file_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+     "span_sha256": "48e806a8a52451187e482264639484d26df62b1ff7044376cb0d758b88d4bee6",
+     "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "The pure consumer checks reported provenance shape and joins; it does not itself execute, authenticate a host observation or authorize the command."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:01",
+   "frozen_row_sha256": "2ef578cd32b1769b953be5417c0aa0e62352229b6700e6118e004f97b316c119",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "validate_command_record",
+     "start": 689,
+     "end": 774,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6a4ff33316532cf46730c1ef148cf748695d3b0f0401386e27f1597d1e4f3064",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "_verification_binding",
+     "start": 658,
+     "end": 686,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "a501aa8f85361609413800116cd8aec90c127336840bdd21b517933d60318974",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    }
+   ],
+   "semantic_assessment": "Command records accept literal bounded argv only under no-shell/no-operator grammar or an explicitly unverified declaration reference with source selector. Scoped evidence refs/prerequisites are validated as records; declarations do not prove execution or grant permission.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:02",
+   "frozen_row_sha256": "29e0a5304f4333fc099a602fda9379bbaed445b6b1dd39cea6685cdb890f24f1",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "validate_command_record",
+     "start": 689,
+     "end": 774,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6a4ff33316532cf46730c1ef148cf748695d3b0f0401386e27f1597d1e4f3064",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "resolve_scoped_command_guidance",
+     "start": 777,
+     "end": 891,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6453ff21b146104bcb97bde979eee6449c5aaa8c13a35f9c144023be0296bd0a",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    }
+   ],
+   "semantic_assessment": "Historical pass/fail remains current only when invocation/prerequisites and every supplied source_snapshot/runtime/lock/prerequisite/oracle/argv/cwd/environment binding equal the current owning values. The scoped resolver never treats a stored observation reference alone as fresh; missing fresh observation stays unknown.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:03",
+   "frozen_row_sha256": "efbbecb447eebf3a06d58344dafee94b175e772f517c45e39a302e7f5b9501aa",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "resolve_scoped_command_guidance",
+     "start": 777,
+     "end": 891,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6453ff21b146104bcb97bde979eee6449c5aaa8c13a35f9c144023be0296bd0a",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    }
+   ],
+   "semantic_assessment": "A supplied authorized observation becomes reported passed only with exact current binding/source/invocation and exit0 plus unique complete all-pass named oracle, or explicit empty-tests exit-only oracle. Incomplete/duplicate/skipped/mismatched evidence stays unknown.",
+   "intake_variances": [
+    "The pure consumer checks reported provenance shape and joins; it does not itself execute, authenticate a host observation or authorize the command."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:04",
+   "frozen_row_sha256": "670ea98ad2685ae512abe787e55ee4f304a7bf7469fcbfde657c89ea3206225d",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "resolve_scoped_command_guidance",
+     "start": 777,
+     "end": 891,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6453ff21b146104bcb97bde979eee6449c5aaa8c13a35f9c144023be0296bd0a",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    }
+   ],
+   "semantic_assessment": "An exact current authorized run with nonzero exit or an observed failed test is reported failed. Stale or mismatched failure remains unknown instead of overriding current evidence; a declared or historical pass cannot turn failure into passed.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:05",
+   "frozen_row_sha256": "1f3bcd8cf461672f54266dd222986ea3e478941e062e50d463934d2cd9999594",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "resolve_scoped_command_guidance",
+     "start": 777,
+     "end": 891,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "6453ff21b146104bcb97bde979eee6449c5aaa8c13a35f9c144023be0296bd0a",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextselectlib.py",
+     "symbol": "select_task_context",
+     "start": 116,
+     "end": 237,
+     "file_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+     "span_sha256": "f429089f86e7075994d6a48666823808501fe0bf65b498cfc3605487cbe5c51a",
+     "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+    }
+   ],
+   "semantic_assessment": "Exactly one ID/cwd match and one source evidence reference are required; package source cwd and declaration path must match. Duplicate intersecting records or ambiguous sources refuse rather than selecting an arbitrary winner.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:command-evidence:06",
+   "frozen_row_sha256": "a4967b747cc18dbd0d0a6c6841e6b665a647430d801b577a363855f54009ca13",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextreportlib.py",
+     "symbol": "validate_constraint_reference",
+     "start": 894,
+     "end": 907,
+     "file_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+     "span_sha256": "00b8a76f128337fbf4a996d3d9caa7fafbd76125353de34440de51cb2f27d0c0",
+     "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a"
+    },
+    {
+     "path": "core/pysrc/_contextselectlib.py",
+     "symbol": "select_task_context",
+     "start": 116,
+     "end": 237,
+     "file_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+     "span_sha256": "f429089f86e7075994d6a48666823808501fe0bf65b498cfc3605487cbe5c51a",
+     "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+    },
+    {
+     "path": "core/pysrc/_contextselectlib.py",
+     "symbol": "check_task_context",
+     "start": 399,
+     "end": 454,
+     "file_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+     "span_sha256": "48e806a8a52451187e482264639484d26df62b1ff7044376cb0d758b88d4bee6",
+     "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532"
+    }
+   ],
+   "semantic_assessment": "Constraint validation normalizes only the three declared reference classes with known nonempty refs and bounded scope/statement. Selection separately tracks owner/authority/epoch/status; noncurrent or conflicting relevant constraints block task admission, without proving semantic applicability from record shape.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:command-evidence finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

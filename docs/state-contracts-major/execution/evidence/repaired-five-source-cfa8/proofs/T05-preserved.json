@@ -1,0 +1,103 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: current source-only literal26-clause reinspection after audited mode repair; actual prior independent source/code review reuse"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/codex-parity-fixture.py": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea"
+ },
+ "disposition_ids": [
+  "disposition:machines:T05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:T05",
+   "frozen_row_sha256": "d3a97ddc058332d19499e42aef368584f3ee6e1c47f91cd96e0517c51603b4b4",
+   "clause_ids": [
+    "disposition:transitions:T05:01",
+    "disposition:transitions:T05:02",
+    "disposition:transitions:T05:03"
+   ],
+   "witnesses": [
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 1,
+     "end": 128,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "4db4ec433f24bfec59ac60f9025c9b9696d0d987d28103c27ed8d830fe4ecc9b"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 130,
+     "end": 150,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "c3eaa12532c5f012edae00c8553bd166bbf226e03b552ccba155929a98b47025"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 116,
+     "end": 121,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "fbec76fa327efef4928f7a4123c3187386f0a15649c6f3cf407e01f71abcd000"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 151,
+     "end": 164,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "11d6e53dab825a41363b5c12713d00a7fbe6f12c22c466fdb98c8ce2a427297d"
+    },
+    {
+     "path": "tools/codex-parity-fixture.py",
+     "start": 165,
+     "end": 182,
+     "file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+     "span_sha256": "49342ae9bd4acd6b500f504a1f9e43b82c0e670329e46c2cd76fbf16b926acfe"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses, including retained advanced children, are mapped to current/pinned owners and essential callee spans. Exact accepted repairs and honest limitations are explicit per clause. This authored source-only assessment does not renew runtime evidence or close actual task/host/human acceptance.",
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "scope": "Authored reasoned source-only preservation of selected PLANNED cells; no actual execution, installed/runtime acceptance, host consent, model/benchmark or publication claim.",
+ "limits": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}
