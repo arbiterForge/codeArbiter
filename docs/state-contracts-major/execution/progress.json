@@ -3926,7 +3926,7 @@
     }
   ],
   "next_actions": [
-    "Finish exact finite existing-transport mappings and source-only successor assembly; reselect actual final code inputs after Atlas/init/wiring repairs. Preserve original failed CI outcomes and held source families.",
+    "Push coherent reviewed successor with Atlas/init/wiring fixes, two finite existing-transport mappings and bounded fixture diagnostics; require fresh exact-head wholeCI/Docs and aggregate before child merge.",
     "Push coherent1119successor and require its exact-head CI/Docs and required merge gate before authorized child merge into major; main1098held for user testing.",
     "Consume genuine original normal integration observations for finite mapped findings; complete actual installed/participant/upgrade/rollback journeys without promoting tasks from suite totals."
   ],
@@ -5291,6 +5291,13 @@
         "HOOK-F04"
       ],
       "status": "LOCAL_ADMISSION_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+    },
+    "release_fixture_timeout_diagnostics": {
+      "controller_anchor": "1b991ceb37f2fa0b4614a9970387c6609a1bffaa",
+      "record": "docs/state-contracts-major/execution/evidence/release-fixture-phases-1b/development.json",
+      "status": "LOCAL_20_OWNING_TESTS_AND_INDEPENDENT_REVIEW_PASS",
+      "original_timeout_cause": "UNKNOWN",
+      "child_budget_seconds": 20
     }
   },
   "checkpoint_history": [

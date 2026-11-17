@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Report bounded setup phases when release guard tests time out, retaining their original deadlines and outcomes.
 - Collect finite Farm finding observations from the existing test run with exact source, named-case, upload and trusted-job bindings.
 - Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
 - Add closed original-observation mappings for seven finite Pi and Sandbox findings, retaining exact named selectors and existing job authority.

@@ -1,0 +1,57 @@
+{
+ "schema": "bounded-private-test-diagnostic-delivery-v1",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "base_epoch": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+ "head_at_seal": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+ "epoch_note": "Root reported disjoint d7 commit before owning run; unchanged relevant target/skill/helpers join byte-for-byte to original0ef. Original hosted timeout remains0ef; no whole-d7 qualification.",
+ "subject_count": 1,
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\filemap.json",
+  "sha256": "5773e5bd7933ec13b4117df9eb11a924cd2e39fbc126687b5f49174b8857b447",
+  "bytes": 737
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\candidate.patch",
+  "sha256": "c362f281c9a8182f87b9e2af2b0bf7374de59e4f9459ff5064568503742be33d",
+  "bytes": 13082
+ },
+ "source_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\source-bindings.json",
+  "sha256": "27e8182ee7dd80b74f9bd141d3d9372cddb71c66ae1eb4d627f80c56e149778e",
+  "bytes": 2252
+ },
+ "checks": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\checks.json",
+  "sha256": "a6010a4442026ebedab986cea1ea7b5cf192fac67082a11d8a1bd7fea4562cc6",
+  "bytes": 7473
+ },
+ "scope_and_preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\scope-and-preservation.json",
+  "sha256": "3a9b9a0e49a0b256a60a15b12ee4146075c409428b555bfc2e80b42e73397d67",
+  "bytes": 2133
+ },
+ "original_timeout": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\original-timeout-binding.json",
+  "sha256": "02cf675587f7089a88bab5c5840b747eebfc775ea94398fa59fed8b4f4a30a0f",
+  "bytes": 555
+ },
+ "contexts": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\release-fixture-diagnostics-input.txt",
+   "sha256": "9783393042c2e49968f8baac651452713fd85665680f146c053766ed805a6e32",
+   "bytes": 10459
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\release-fixture-diagnostics-context.json",
+   "sha256": "ec8ac422260d911bc8a67fc0d85ef15d6ec15ba175cc2c92b4bb0b2d293a8371",
+   "bytes": 17871
+  }
+ ],
+ "tools": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\tools.json",
+  "sha256": "94890d90af1adde31a21c1b58ef028b6633f9ba6a3406f3bed34e256cca1813f",
+  "bytes": 456
+ },
+ "canonical_index_ref_marker_or_API_writes": false,
+ "qualification_claim": false
+}

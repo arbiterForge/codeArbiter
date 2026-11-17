@@ -1,0 +1,154 @@
+{
+ "commands": [
+  {
+   "name": "phase-target-red",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.json",
+    "sha256": "e14d03c59cba7f3ebf670530765fc6b78da3f06e3f40ce75ff3fd263462d9b45",
+    "bytes": 808
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.stderr",
+    "sha256": "f0de119ffbde4ae808596e06e4caf8447fe0a395e13a62f9fd9af1fabf8d8bb9",
+    "bytes": 1702
+   },
+   "exit_code": 1,
+   "elapsed_seconds": 0.17945709999185055
+  },
+  {
+   "name": "phase-target-green",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.json",
+    "sha256": "c2658ab461105eef843b772a34bea99be01f78cf1b2f338f066b63f84ceb7c56",
+    "bytes": 807
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.stderr",
+    "sha256": "9f53f76a9b28d4aa21c74b354b5c16e977a0a7588137f6d9bd45490abe5d0e16",
+    "bytes": 301
+   },
+   "exit_code": 0,
+   "elapsed_seconds": 0.17414459999417886
+  },
+  {
+   "name": "phase-focused-controls",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.json",
+    "sha256": "31d4efecff0f23c01a09d30a2db9882f3ea9f994fd9f762660d3c96ea4d92002",
+    "bytes": 742
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.stderr",
+    "sha256": "1661c7605d30ccf43501665ee067a98c45a30ea0182559907bdcb42d48ba2107",
+    "bytes": 3046
+   },
+   "exit_code": 1,
+   "elapsed_seconds": 0.38491210000938736
+  },
+  {
+   "name": "phase-affected-read-controls-green",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.json",
+    "sha256": "f806e16b0ab06a20037e233c822265249dba87c5c592832f053b0f10b0b7c869",
+    "bytes": 916
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.stderr",
+    "sha256": "b77ba91df5f097ef35cf60112e9416af2dce8b23d20eaf76ea4391dd388b8646",
+    "bytes": 515
+   },
+   "exit_code": 0,
+   "elapsed_seconds": 0.20008409998263232
+  },
+  {
+   "name": "release-followup-owning-green",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.json",
+    "sha256": "0ead6543b66c574f98b935a9a2cc30a3bdd5efe3e575f777310aa322fccb8b5e",
+    "bytes": 705
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.stderr",
+    "sha256": "52088e1306f9f8d490c3baf0d97ade3880287d0ca18f0af7891efcac0fe695ff",
+    "bytes": 3901
+   },
+   "exit_code": 0,
+   "elapsed_seconds": 28.175264899997273
+  }
+ ],
+ "named_final_methods": [
+  "ReleaseWorkflowFollowupTest.test_first_release_reentry_for_every_merge_method",
+  "ReleaseWorkflowFollowupTest.test_missing_published_reconciliation_still_blocks_after_confirmation",
+  "ReleaseWorkflowFollowupTest.test_nonempty_adoption_window_is_not_widened",
+  "ReleaseWorkflowFollowupTest.test_tagged_empty_window_does_not_offer_first_release_widening",
+  "ReleaseWorkflowFollowupTest.test_unresolvable_adoption_and_window_are_failures_not_empty_history",
+  "ReleaseWorkflowFollowupTest.test_empty_full_history_is_terminal_not_another_confirmation_loop",
+  "ReleaseWorkflowFollowupTest.test_actual_missing_prerequisite_refuses_before_a_write_attempt",
+  "ReleaseWorkflowFollowupTest.test_actual_default_and_detached_branches_refuse_before_a_write_attempt",
+  "ReleaseWorkflowFollowupTest.test_prepared_nondefault_branch_passes_actual_guard",
+  "ReleaseWorkflowFollowupTest.test_real_clean_and_dirty_probes_do_not_share_a_success_verdict",
+  "ReleaseWorkflowFollowupTest.test_valid_but_nonancestor_adoption_is_refused",
+  "ReleaseWorkflowFollowupTest.test_no_payload_arguments_is_not_a_whole_repository_fallback",
+  "ReleaseWorkflowFollowupTest.test_clean_guard_reaches_the_controlled_write_only_on_success",
+  "ReleaseWorkflowFollowupTest.test_calls_are_wired_before_each_write_boundary",
+  "ReleaseWorkflowFollowupTest.test_empty_stdout_failed_and_timed_out_probes_stop_before_side_effect",
+  "ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception",
+  "ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes",
+  "ReleaseFixtureDiagnosticsTest.test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable",
+  "ReleaseFixtureDiagnosticsTest.test_real_shell_sink_denial_preserves_streams_arguments_and_exit_status",
+  "ReleaseFixtureDiagnosticsTest.test_ordinary_completed_process_is_returned_without_projection"
+ ],
+ "final_owning": {
+  "tests": 20,
+  "passed": 20,
+  "skips": 0,
+  "original": 15,
+  "new": 5,
+  "unittest_seconds": 28.006,
+  "outer_seconds": 28.175264899997273
+ },
+ "proper_RED": "Original run_definition raised the same TimeoutExpired with unchanged streams but lacked the required closed note; retained assertion failure before helper.",
+ "draft_history": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-stat-discriminator.json",
+   "sha256": "70542ac9b6e4cca41a02eba9d18f3f591b35a0a24067c6c111898058fb83dda8",
+   "bytes": 741
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\affected-phase-stat-observation.json",
+   "sha256": "926fed6898cd6c5c73d1b5c84af8e8b3d2fff3f1656688c037438597d87e45bb",
+   "bytes": 6046
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\ctime-refusal-candidate.py",
+   "sha256": "95ee860812a64db85df259857849b84cf4d164a84a2fd35171b1a796a15188f7",
+   "bytes": 31937
+  }
+ ],
+ "draft_cause": "Windows lstat/fstat ctime discrepancy for identical inode/size/mtime made valid owned phases unavailable. Fixed new diagnostic comparison to common dev/inode/size/mtime while retaining regular/single-link/reparse/before/open/after/path checks. This is not original hosted timeout cause."
+}
