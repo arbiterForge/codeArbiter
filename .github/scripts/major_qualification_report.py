@@ -210,7 +210,7 @@ def source_checkout(repo, profile=None):
     fresh HEAD index forces a current-policy read; the real index is checked
     independently so staged or unmerged changes cannot disappear in that view.
     """
-    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS or profile in PYTHON_FINDING_PROFILES, "unknown source identity profile")
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS or profile in PYTHON_FINDING_PROFILES, "unknown source identity profile")
     source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
     tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
     before, actual_raw = _source_indices(repo, retain=True)
@@ -896,6 +896,33 @@ Q02_SOURCE_PAYLOAD = "major-source-inputs-q02-implementation"
 Q02_SOURCE_UPLOAD = "Upload Q02 implementation source-test inputs"
 Q02_SOURCE_CELLS = frozenset(("task:Q-02",))
 Q02_SOURCE_SCRIPTS = frozenset((".github/scripts/test_major_readiness.py", ".github/scripts/test_release_workflow.py"))
+ROUTE_RELEASE_SOURCE_PROFILE = "route-release-state-component-v1"
+ROUTE_RELEASE_SOURCE_SCRIPT = ".github/scripts/test_command_route_release_state.py"
+ROUTE_RELEASE_SOURCE = {
+    "job": "[CHECK] | [CORE] | Generated surface",
+    "payload": "major-source-inputs-route-release-state",
+    "upload": "Upload release-state classifier source-test inputs",
+    "paths": frozenset((
+        ROUTE_RELEASE_SOURCE_SCRIPT,
+        ".github/major-qualification-policy.json",
+        ".github/scripts/_boundedproc.py",
+        ".github/scripts/_contextverificationlib.py",
+        ".github/scripts/_immutable_git_blobs.py",
+        ".github/scripts/check_command_route_release_state.py",
+        ".github/scripts/ci20_native_binding.py",
+        ".github/scripts/major_qualification_report.py",
+        ".github/scripts/major_readiness.py",
+        ".github/workflows/ci.yml",
+        "core/pysrc/_artifactmanifestlib.py",
+        "core/pysrc/_gitexec.py",
+        "core/surface/command-routes.json",
+        "core/surface/includes/command-compatibility.md",
+        "plugins/ca/.claude-plugin/plugin.json",
+        "plugins/ca-codex/.codex-plugin/plugin.json",
+        "plugins/ca-pi/package.json",
+        "tools/command_compatibility.py",
+    )),
+}
 Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md',
  '.codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md',
  '.codearbiter/decisions/0043-assistive-state-engine.md',
@@ -2460,14 +2487,21 @@ def _finding_python_members(repo, profile):
     require(found == expected, "Python finding source namespace differs")
 
 
+def original_python_entrypoint(argv, script):
+    if not isinstance(argv, list) or len(argv) != 2 or not all(type(value) is str and value for value in argv):
+        return False
+    path = argv[1].replace("\\", "/")
+    return path == script or path.endswith("/" + script)
+
+
 def _q02_python_command(argv):
-    require(isinstance(argv, list) and len(argv) == 2 and all(type(v) is str and v for v in argv)
-            and any(argv[1].replace("\\", "/") == script or argv[1].replace("\\", "/").endswith("/" + script)
-                    for script in Q02_SOURCE_SCRIPTS),
+    require(any(original_python_entrypoint(argv, script) for script in Q02_SOURCE_SCRIPTS),
             "Q02 source profile requires an original unfiltered owning Python entry point")
 
 
 def source_profile(profile=SOURCE_PROFILE):
+    if profile == ROUTE_RELEASE_SOURCE_PROFILE:
+        return ROUTE_RELEASE_SOURCE
     if profile in PYTHON_FINDING_PROFILES:
         return {key: value for key, value in PYTHON_FINDING_PROFILES[profile].items() if key != "roots"}
     if profile == SOURCE_PROFILE:
@@ -2578,6 +2612,7 @@ def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
     require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS or relative in HOOK_REVIEW_SOURCE_PATHS
+            or relative in ROUTE_RELEASE_SOURCE["paths"]
             or any(relative in paths for paths in TS_PROFILE_PATHS.values())
             or any(relative in spec["paths"] for spec in PYTHON_FINDING_PROFILES.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
@@ -2606,7 +2641,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     elif profile == HOOK_REVIEW_SOURCE_PROFILE:
         _source_root_members(repo)
         _hook_review_members(repo)
-    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE): _source_root_members(repo)
+    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE): _source_root_members(repo)
     elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
@@ -2647,7 +2682,7 @@ def validate_source_manifest(record, req, job_name, members):
     paths = spec["paths"]
     fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
     require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
-            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES) and record["workflow"] == ".github/workflows/ci.yml"
+            and record["workflow"] == ".github/workflows/ci.yml"
             and job_name == record["producer_job_name"] == spec["job"]
             and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
             and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
@@ -2738,7 +2773,7 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     binding = observed.get("source_input_binding")
     spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
     require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
-            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES)
+            and binding["format"] == SOURCE_BINDING
             and binding["payload_name"] == spec["payload"]
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
@@ -2752,6 +2787,10 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     elif binding["profile"] == Q02_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "Q02 source profile requires original Python observer")
         _q02_python_command(observed.get("argv"))
+    elif binding["profile"] == ROUTE_RELEASE_SOURCE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer"
+                and original_python_entrypoint(observed.get("argv"), ROUTE_RELEASE_SOURCE_SCRIPT),
+                "release-state profile requires original Python observer")
     elif binding["profile"] == SDK_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
         _sdk_python_command(observed.get("argv"))
@@ -2759,8 +2798,169 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
         require(observed.get("producer") == "vitest-json-observer", "TS source profile requires original Vitest observer")
     record = payload.get("documents", {}).get(SOURCE_MANIFEST)
     validate_source_manifest(record, req, job_name, payload.get("members", []))
+    require(record["profile"] == binding["profile"], "source test manifest profile differs")
     require(next(row["sha256"] for row in payload["members"] if row["path"] == SOURCE_MANIFEST)
             == binding["manifest_sha256"], "source test manifest digest differs")
+
+
+def source_component(profile, script, artifact_prefix, upload, member, cases):
+    return {"profile": profile, "script": script, "artifact_prefix": artifact_prefix,
+            "upload": upload, "member": member,
+            "selectors": sorted(f"python:{script}:__main__.{case}" for case in cases)}
+
+
+SOURCE_FINDING_COMPOSITIONS = {
+    "disposition:findings:C-F04": (
+        source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-q02-release-observation.json", (
+                "SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+            )),
+        source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_SCRIPT,
+            "route-release-state-observation-", "Retain original release-state classifier observation",
+            "route-release-state-observation.json", (
+                "ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate",
+                "ReleaseStateClassifierTest.test_exact_non_draft_release_is_published",
+                "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
+                "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
+                "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
+                "ReleaseStateClassifierTest.test_release_tag_mismatch_is_not_publication",
+                "ReleaseStateClassifierTest.test_release_target_mismatch_is_not_publication",
+                "ReleaseStateClassifierTest.test_tag_payload_mismatch_is_not_publication",
+                "ObserveIntegrationTest.test_exact_tags_payloads_and_release_responses_pass_end_to_end",
+                "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
+                "ObserveIntegrationTest.test_tag_only_response_fails_the_aggregate_end_to_end",
+            )),
+    ),
+}
+
+
+def source_finding_profiles(cells):
+    readiness.require(isinstance(cells, list) and all(type(cell) is str and cell in SOURCE_FINDING_COMPOSITIONS for cell in cells)
+                      and cells == sorted(set(cells)), "invalid original source finding composition selection")
+    return sorted({component["profile"] for cell in cells for component in SOURCE_FINDING_COMPOSITIONS[cell]})
+
+
+def source_member_digest(rows):
+    data = [[row["path"], row["bytes"], row["sha256"]] for row in rows]
+    return readiness.digest(json.dumps(data, separators=(",", ":")).encode("utf-8"))
+
+
+def source_finding_input_pins(cells, source, load):
+    pins = {}
+    for profile in source_finding_profiles(cells):
+        rows = []
+        for path in sorted(source_profile(profile)["paths"]):
+            raw = load(source, path)
+            rows.append({"path": path, "bytes": len(raw), "sha256": readiness.digest(raw)})
+        pins[profile] = source_member_digest(rows)
+    return pins
+
+
+def source_component_archive(archive, member, *, source_paths=None, shared=False):
+    limit = (64 if source_paths is not None else 8) * 1024 * 1024
+    readiness.require(len(archive) <= limit, "original component archive exceeds bound")
+    with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+        entries = zipped.infolist()
+        readiness.require(len(entries) <= 4096, "original component archive has too many members")
+        names = [info.filename for info in entries if not info.is_dir()]
+        readiness.require(len(set(names)) == len(names) and member in names
+                          and sum(info.file_size for info in entries) <= limit,
+                          "original component archive population or size differs")
+        if source_paths is not None:
+            readiness.require(set(names) == source_paths | {member}, "original component source archive membership differs")
+        elif shared:
+            readiness.require(len(names) <= 32 and all(name.startswith("python-") and name.endswith("-observation.json")
+                              and "/" not in name for name in names), "original Python observation archive membership differs")
+        else:
+            readiness.require(names == [member], "original component observation archive membership differs")
+        readiness.require(zipped.getinfo(member).file_size <= 1024 * 1024, "original component document exceeds bound")
+        members = readiness.members(archive)
+        return json.loads(zipped.read(member), object_pairs_hook=unique), members
+
+
+def source_component_evidence(component, req, run, artifacts, jobs):
+    profile = component["profile"]
+    spec = source_profile(profile)
+    matches = [job for job in jobs if job.get("name") == spec["job"]]
+    readiness.require(len(matches) == 1, "exact original component job required")
+    job = matches[0]
+    readiness.require(type(job.get("id")) is int and job["id"] > 0 and job.get("run_id") == run["id"]
+                      and job.get("run_attempt") == run["run_attempt"] and job.get("status") == "completed"
+                      and job.get("conclusion") == "success", "original component job did not succeed in the selected attempt")
+    name = component["artifact_prefix"] + f"{req['source_commit']}-{run['id']}-{run['run_attempt']}"
+    source = [artifact for artifact in artifacts if artifact.get("name") == spec["payload"]]
+    captures = [artifact for artifact in artifacts if artifact.get("name") == name]
+    readiness.require(len(source) == len(captures) == 1 and source[0].get("id") != captures[0].get("id"),
+                      "exact original component artifact required")
+    source, capture = source[0], captures[0]
+    readiness.require(all(type(item.get("size_in_bytes")) is int and 0 < item["size_in_bytes"] <= limit
+                          for item, limit in ((source, 64 << 20), (capture, 8 << 20))),
+                      "original component archive metadata exceeds bound")
+    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    readiness.validate_upload(job, source, spec["upload"], job_log=log)
+    readiness.validate_upload(job, capture, component["upload"], job_log=log)
+    source_archive = readiness.artifact_bytes(source, req)
+    manifest, members = source_component_archive(source_archive, SOURCE_MANIFEST, source_paths=spec["paths"])
+    validate_source_manifest(manifest, req, job["name"], members)
+    readiness.require(manifest["profile"] == profile and source_member_digest(manifest["members"]) == req["source_finding_inputs"][profile],
+                      "original component source bytes differ from the immutable source")
+    capture_archive = readiness.artifact_bytes(capture, req)
+    observed, _ = source_component_archive(capture_archive, component["member"], shared=profile == Q02_SOURCE_PROFILE)
+    argv = observed.get("argv") if isinstance(observed, dict) else None
+    readiness.require(isinstance(observed, dict) and observed.get("format") == OBSERVATION
+                      and observed.get("source_commit") == req["source_commit"] and observed.get("source_tree") == req["source_tree"]
+                      and type(observed.get("ci_run_id")) is int and observed["ci_run_id"] == run["id"]
+                      and observed.get("clean") is True and observed.get("source_stable") is True
+                      and observed.get("proof_kind") == "source-test" and observed.get("producer") == "python-test-result-observer"
+                      and type(observed.get("exit_code")) is int and observed["exit_code"] == 0
+                      and original_python_entrypoint(argv, component["script"]),
+                      "original component observation is absent, stale, filtered or unsuccessful")
+    admit_source_observation(observed, {"source_manifest_sha256": next(row["sha256"] for row in members
+        if row["path"] == SOURCE_MANIFEST), "source_upload_job_id": job["id"], "members": members,
+        "documents": {SOURCE_MANIFEST: manifest}}, req, job["name"], job["id"])
+    tests = observed.get("tests")
+    readiness.require(isinstance(tests, list) and len(tests) <= MAX_TESTS
+                      and all(isinstance(test, dict) and set(test) == {"id", "result"}
+                              and type(test["id"]) is str and 0 < len(test["id"].encode("utf-8")) <= MAX_TEST_ID_BYTES
+                              for test in tests), "invalid or unbounded original component named outcomes")
+    outcomes = {test["id"]: test["result"] for test in tests}
+    readiness.require(len(outcomes) == len(tests) and all(outcomes.get(selector) == "passed" for selector in component["selectors"]),
+                      "selected named test missing, repeated, skipped or failed in original component")
+    return ({"job_id": job["id"], "run_attempt": run["run_attempt"], "source_artifact_id": source["id"],
+             "observation_artifact_id": capture["id"], "observation_archive_sha256": readiness.digest(capture_archive),
+             "selectors": component["selectors"]},
+            {"artifact_id": source["id"], "archive_sha256": readiness.digest(source_archive), "members": members})
+
+
+def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
+    cells = req.get("source_finding_composite_cells", [])
+    profiles = source_finding_profiles(cells)
+    if not cells:
+        return {}, {}
+    pins = req.get("source_finding_inputs")
+    readiness.require(set(cells) <= set(req["cells"]) and isinstance(pins, dict) and set(pins) == set(profiles)
+                      and all(type(pin) is str and readiness.DIGEST.fullmatch(pin) for pin in pins.values()),
+                      "original component recipe lacks immutable source inputs")
+    if run is None:
+        run = readiness.api(f"actions/runs/{req['ci_run_id']}")
+    readiness.validate_run(run, req, producing=producing)
+    readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
+    rows, payloads = {}, {}
+    for cell in cells:
+        components = []
+        for component in SOURCE_FINDING_COMPOSITIONS[cell]:
+            evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
+            components.append(evidence)
+            payloads[payload["artifact_id"]] = payload
+        identities = readiness.bounded_payload_ids(sorted(c["source_artifact_id"] for c in components))
+        readiness.require(len({c["job_id"] for c in components}) == len(components),
+                          "each original component requires a distinct owning job")
+        readiness.require(len({*identities, *(c["observation_artifact_id"] for c in components)}) == 2 * len(components),
+                          "each original component requires distinct source and observation artifacts")
+        rows[cell] = {"cell": cell, "result": "PASSED", "source_components": components,
+                      "evidence_artifact_ids": identities}
+    return rows, payloads
 
 
 def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
@@ -2780,6 +2980,9 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     elif profile == Q02_SOURCE_PROFILE:
         require(relative in Q02_SOURCE_SCRIPTS and arguments == [] and source_payload is not None,
                 "Q02 source profile requires its original unfiltered Python entry point and payload")
+    elif profile == ROUTE_RELEASE_SOURCE_PROFILE:
+        require(relative == ROUTE_RELEASE_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
+                "release-state profile requires its original unfiltered Python entry point and payload")
     elif profile == SDK_SOURCE_PROFILE:
         require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
                 "SDK source profile requires its original unfiltered Python entry point and payload")
@@ -3227,6 +3430,7 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
     groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
     require(expected, "job has no required mapped cells")
+    require(expected.isdisjoint(SOURCE_FINDING_COMPOSITIONS), "cross-job source findings require all original owners")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,
             "semantic cell mapping is missing, extra or assigned to another job")
@@ -3369,6 +3573,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
                 elif profile == SDK_SOURCE_PROFILE:
                     require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
+                elif profile == ROUTE_RELEASE_SOURCE_PROFILE:
+                    require(False, "release-state source observations require an independent original component")
                 else:
                     if cell in TS_FINDING_RECIPES:
                         recipe = TS_FINDING_RECIPES[cell]
@@ -3526,7 +3732,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)

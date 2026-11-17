@@ -4477,6 +4477,12 @@ jobs:
           python-version: "3.x"
       - name: Check rendered surfaces match core/surface/ templates (both hosts)
         run: python3 tools/build-surface.py --check
+      - name: Prepare original release-state classifier source inputs
+        run: >-
+          python3 -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile route-release-state-component-v1
+          --job-name "[CHECK] | [CORE] | Generated surface"
+          --output "${{ runner.temp }}/route-release-state-source-inputs"
       - name: Run command-route registry and compatibility contract
         # RA-11: exact taxonomy, frozen route inventory, byte-preserved legacy
         # workflows, additive canonical modes, stable first-containing Release
@@ -4485,8 +4491,30 @@ jobs:
         # job (R-04), which records and never gates publication.
         run: |
           python3 .github/scripts/check_command_route_release_state.py declarations
-          python3 .github/scripts/test_command_route_release_state.py
+          python3 -B .github/scripts/major_qualification_report.py observe-python \
+            --repo . --source-profile route-release-state-component-v1 \
+            --source-payload "${{ runner.temp }}/route-release-state-source-inputs" \
+            --output "${{ runner.temp }}/route-release-state-observation.json" \
+            -- .github/scripts/test_command_route_release_state.py
           python3 .github/scripts/test_command_route_compatibility.py
+      - name: Upload release-state classifier source-test inputs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-route-release-state
+          path: ${{ runner.temp }}/route-release-state-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original release-state classifier observation
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: route-release-state-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/route-release-state-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Classify every active CLAUDE_PLUGIN_ROOT occurrence
         # The root token is Claude-native only in the Claude payload.  A Codex
         # compatibility fixture/input and immutable historical evidence are the

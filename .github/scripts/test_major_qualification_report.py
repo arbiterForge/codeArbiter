@@ -3128,6 +3128,20 @@ class Q02ReadinessSourceProfileTests(unittest.TestCase):
             self.assertEqual([row["cell"] for row in report["results"]],["task:Q-02"])
             self.assertEqual(report["results"][0]["executed_population"],sum(map(len,Q02_FIXTURE_SELECTORS.values())))
 
+    def test_q02_observation_rejects_another_profile_from_the_same_job(self):
+        with q02_python_source_fixture() as fixture:
+            observed = self.original(fixture)["release"]
+            req, payload = self.authenticate(fixture)
+            owner.admit_source_observation(observed, payload, req, fixture["job"], 9)
+
+            other = owner.source_profile(owner.SOURCE_PROFILE)
+            self.assertEqual(other["job"], fixture["job"])
+            observed["source_input_binding"].update(
+                profile=owner.SOURCE_PROFILE, payload_name=other["payload"],
+            )
+            with self.assertRaisesRegex(ValueError, "source test manifest profile differs"):
+                owner.admit_source_observation(observed, payload, req, fixture["job"], 9)
+
     def test_q02_requires_all_original_named_assertions_and_refuses_skip_failure_duplicate(self):
         with q02_python_source_fixture() as f:
             observed=self.original(f)

@@ -934,7 +934,20 @@ def _requirements(repo, source, run_id):
         selected_launch_findings = [cell for cell in launch_findings if cell not in source_dispositions]
         if selected_launch_findings:
             native_fields['launch_binding_findings'] = selected_launch_findings
-    return {**native_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
+    source_finding_fields = {}
+    source_finding_cells = policy.get('source_finding_composite_cells', [])
+    require(isinstance(source_finding_cells, list), 'invalid source finding composition selection')
+    if source_finding_cells:
+        from major_qualification_report import source_finding_input_pins, source_finding_profiles
+        source_finding_profiles(source_finding_cells)
+        require(set(source_finding_cells) <= set(cells) and not set(source_finding_cells).intersection(
+                {*native, *native_fields.get('launch_binding_findings', [])}),
+                'source finding composition is outside its runtime disposition population')
+        selected = [cell for cell in source_finding_cells if cell not in source_dispositions]
+        if selected:
+            source_finding_fields = {'source_finding_composite_cells': selected,
+                'source_finding_inputs': source_finding_input_pins(selected, source, load)}
+    return {**native_fields, **source_finding_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
@@ -1087,11 +1100,17 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
     rows = record.get("results", [])
     require(len(rows) == len(req["cells"]) and sorted(r.get("cell", "") for r in rows) == sorted(req["cells"]),
             "missing, extra or duplicate qualification cell")
+    from major_qualification_report import source_finding_evidence
+    composed, component_payloads = source_finding_evidence(req, build_artifacts, jobs, run=run)
     qualified_ids = set()
     for row in rows:
+        if row["cell"] in composed:
+            require(row == composed[row["cell"]], "readiness differs from original component evidence")
+            qualified_ids.update(evidence_payload_ids(row))
+            continue
         job = by_job.get(row.get("job_id"), {})
         require(row.get("result") == "PASSED" and job.get("conclusion") == "success"
-                and job.get("name") == req["cell_jobs"][row["cell"]],
+                and job.get("name") == req["cell_jobs"][row["cell"]] and "source_components" not in row,
                 "required qualification cell lacks successful named execution: " + row["cell"])
         qualified_ids.update(evidence_payload_ids(row))
     archives = record.get("artifacts", [])
@@ -1100,6 +1119,8 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
         identity = payload["artifact_id"]
         require(identity in qualified_ids, "artifact has no executed qualification")
         validate_artifact(by_artifact.get(identity), req, payload.get("archive_sha256"))
+        if identity in component_payloads:
+            require(payload == component_payloads[identity], "readiness payload differs from original component bytes")
         require(payload.get("members") and all(DIGEST.fullmatch(m.get("sha256", "")) for m in payload["members"]),
                 "payload member digests missing")
         if payload_members is not None:
@@ -1300,7 +1321,9 @@ def produce(req, artifacts, jobs):
     by_name = {a["name"]: a for a in artifacts}
     by_id = {a["id"]: a for a in artifacts}
     results, payloads = [], {}
-    expected_jobs = set(req["cell_jobs"].values())
+    from major_qualification_report import source_finding_evidence
+    composed, component_payloads = source_finding_evidence(req, artifacts, jobs, producing=True)
+    expected_jobs = {name for cell, name in req["cell_jobs"].items() if cell not in composed}
     for name in sorted(expected_jobs):
         matches = [j for j in jobs if j["name"] == name]
         require(len(matches) == 1 and matches[0].get("conclusion") == "success",
@@ -1315,7 +1338,7 @@ def produce(req, artifacts, jobs):
                 and report.get("source_tree") == req["source_tree"]
                 and report.get("ci_run_id") == req["ci_run_id"] and report.get("job_id") == job["id"],
                 "qualification report source or runner identity differs")
-        expected = sorted(c for c in req["cells"] if req["cell_jobs"][c] == name)
+        expected = sorted(c for c in req["cells"] if c not in composed and req["cell_jobs"][c] == name)
         rows = report.get("results", [])
         require(sorted(r.get("cell", "") for r in rows) == expected,
                 "qualification report population differs: " + name)
@@ -1382,6 +1405,10 @@ def produce(req, artifacts, jobs):
             else:
                 result["evidence_artifact_id"] = payload_ids[0]
             results.append(result)
+    for identity, payload in component_payloads.items():
+        require(identity not in payloads or payloads[identity] == payload, "original component payload binding differs")
+        payloads[identity] = payload
+    results.extend(composed.values())
     require(set(req["required_artifact_names"]) <= {by_id[i]["name"] for i in payloads},
             "qualification has no complete exact package cohort")
     producers = [j for j in jobs if j.get('name') == 'major readiness producer']

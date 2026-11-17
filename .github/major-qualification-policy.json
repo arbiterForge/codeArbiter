@@ -101,6 +101,9 @@
     "disposition:findings:GEN-F02": "Site | [Test] - Generator",
     "disposition:findings:SX-F01": "Site | [Test] - Generator"
   },
+  "source_finding_composite_cells": [
+    "disposition:findings:C-F04"
+  ],
   "native_composite_cells": [
     "disposition:findings:N-F02",
     "disposition:findings:N-F05",

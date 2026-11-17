@@ -357,6 +357,168 @@ class ReadinessTest(unittest.TestCase):
         self.assertIn('if [ "$GITHUB_SHA" != "$SOURCE_COMMIT" ]', action)
 
 
+class CrossJobSourceFindingTest(unittest.TestCase):
+    cell = 'disposition:findings:C-F04'
+    surface_profile = 'route-release-state-component-v1'
+
+    def setUp(self):
+        from major_qualification_report import Q02_SOURCE_JOB
+
+        self.req = {'source_commit': 'a' * 40, 'source_tree': 'b' * 40, 'ci_run_id': 7,
+                    'task_ids': [], 'cells': [self.cell], 'required_artifact_names': [],
+                    'cell_jobs': {self.cell: 'major qualification / release-and-integration'},
+                    'source_finding_composite_cells': [self.cell]}
+        self.run = {'id': 7, 'run_attempt': 3, 'event': 'push', 'head_branch': 'main',
+                    'head_sha': self.req['source_commit'], 'conclusion': 'success',
+                    'path': '.github/workflows/ci.yml', 'repository': {'full_name': owner.REPOSITORY}}
+        self.jobs = [dict(id=i, name=name, run_id=7, run_attempt=3, status='completed', conclusion='success', steps=[])
+                     for i, name in enumerate([Q02_SOURCE_JOB, '[CHECK] | [CORE] | Generated surface',
+                                               'major readiness producer'], 20)]
+        self.artifacts, self.blobs, self.logs = [], {}, {}
+        context = mock.patch.object(owner, 'api', side_effect=self.api)
+        context.start()
+        self.addCleanup(context.stop)
+
+    def api(self, path, binary=False):
+        if path == 'actions/runs/7' and not binary:
+            return self.run
+        return self.blobs.get(path, self.logs.get(path, b''))
+
+    def archive(self, name, job, step, files):
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, 'w') as output:
+            for path, raw in files.items():
+                output.writestr(path, raw)
+        raw = archive.getvalue()
+        digest = owner.digest(raw)
+        identity = 100 + len(self.artifacts)
+        artifact = dict(id=identity, name=name, expired=False, size_in_bytes=len(raw), digest='sha256:' + digest,
+                        workflow_run={'id': 7, 'head_sha': self.req['source_commit']}, created_at='2026-01-01T00:00:00Z')
+        self.artifacts.append(artifact)
+        self.blobs[f'actions/artifacts/{identity}/zip'] = raw
+        start = f'2026-01-01T00:00:{len(job["steps"]) * 5:02d}Z'
+        job['steps'].append(dict(name=step, status='completed', conclusion='success', started_at=start, completed_at=start))
+        key = f'actions/jobs/{job["id"]}/logs'
+        messages = ('##[group]Run ' + owner.UPLOAD_ACTION, 'SHA256 digest of uploaded artifact is ' + digest,
+                    f'Artifact {name} successfully finalized. Artifact ID {identity}')
+        self.logs[key] = self.logs.get(key, b'') + ''.join(f'{start} {message}\n' for message in messages).encode()
+        return artifact
+
+    def complete_components(self, modify_surface=None):
+        import major_qualification_report as reports
+
+        surface_spec = reports.source_profile(self.surface_profile)
+        self.req['source_finding_inputs'] = reports.source_finding_input_pins(
+            [self.cell], self.req['source_commit'], lambda _source, _path: b'owned source fixture')
+        components = (
+            (self.jobs[0], reports.Q02_SOURCE_PROFILE, reports.source_profile(reports.Q02_SOURCE_PROFILE),
+             '.github/scripts/test_release_workflow.py', 'python-source-observations-' + self.req['source_commit'] + '-7-3',
+             'Retain original Python source-test observations', 'python-q02-release-observation.json',
+             {'SourceSelectionTest': ('route_publication_is_observed_after_every_target_settles',)}),
+            (self.jobs[1], self.surface_profile, surface_spec, '.github/scripts/test_command_route_release_state.py',
+             'route-release-state-observation-' + self.req['source_commit'] + '-7-3',
+             'Retain original release-state classifier observation', 'route-release-state-observation.json',
+             {'ReleaseStateClassifierTest': ('absent_tag_and_absent_release_is_a_planned_candidate',
+                 'exact_non_draft_release_is_published', 'tag_without_a_release_is_not_publication',
+                 'draft_release_is_not_publication', 'api_unavailability_is_distinct_and_fail_closed',
+                 'release_tag_mismatch_is_not_publication', 'release_target_mismatch_is_not_publication',
+                 'tag_payload_mismatch_is_not_publication'), 'ObserveIntegrationTest': (
+                 'exact_tags_payloads_and_release_responses_pass_end_to_end',
+                 'observer_refuses_missing_retirement_prerequisites_or_unknown_policy',
+                 'tag_only_response_fails_the_aggregate_end_to_end')}),
+        )
+        for job, profile, spec, script, name, upload, member, cases in components:
+            files = {path: b'owned source fixture' for path in sorted(spec['paths'])}
+            manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=self.req['source_commit'],
+                            source_tree=self.req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                            workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+            raw_manifest = json.dumps(manifest).encode()
+            files[reports.SOURCE_MANIFEST] = raw_manifest
+            self.archive(spec['payload'], job, spec['upload'], files)
+            observation = dict(format=reports.OBSERVATION, source_commit=self.req['source_commit'],
+                source_tree=self.req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
+                proof_kind='source-test', producer='python-test-result-observer', argv=['python', script], exit_code=0,
+                source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                          manifest_sha256=owner.digest(raw_manifest)),
+                tests=[dict(id=f'python:{script}:__main__.{group}.test_{case}', result='passed')
+                       for group, test_names in cases.items() for case in test_names])
+            if job is self.jobs[1] and modify_surface:
+                modify_surface(observation)
+            observations = {member: json.dumps(observation).encode()}
+            if job is self.jobs[0]:
+                observations['python-publisher-observation.json'] = b'{}'
+            self.archive(name, job, upload, observations)
+
+    def test_complete_cross_job_originals_form_the_only_pass(self):
+        self.complete_components()
+        record = owner.produce(self.req, self.artifacts, self.jobs)
+        cell, = record['results']
+        self.assertEqual((cell['cell'], cell['result']), (self.cell, 'PASSED'))
+        self.assertEqual([c['job_id'] for c in cell['source_components']], [20, 21])
+        self.assertEqual([len(c['selectors']) for c in cell['source_components']], [1, 11])
+        readiness = self.archive('major-readiness-' + self.req['source_commit'], self.jobs[-1],
+                                 'Upload major readiness record', {'major-readiness.json': b'{}'})
+        args = dict(record=record, requirements=self.req, run=self.run, artifact=readiness,
+                    archive_digest=readiness['digest'][7:], jobs=self.jobs, build_artifacts=self.artifacts)
+        self.assertEqual(owner.verify(**args)['state'], 'PREPUBLICATION_READY')
+        for run in (dict(self.run, conclusion=None), dict(self.run, head_branch='major/state-contracts')):
+            with self.subTest(run=run), self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+                owner.verify(**dict(args, run=run))
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component'):
+            owner.verify(**dict(args, record=dict(record, results=[dict(cell, source_components=cell['source_components'][:1])])))
+
+    def test_partial_or_wrong_attempt_component_refuses(self):
+        self.complete_components()
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(self.req, self.artifacts[:-1], self.jobs)
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            owner.produce(self.req, self.artifacts, [self.jobs[0], dict(self.jobs[1], run_attempt=2), self.jobs[-1]])
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            owner.produce(self.req, self.artifacts, [self.jobs[0], dict(self.jobs[1], conclusion='skipped'), self.jobs[-1]])
+        self.logs['actions/jobs/21/logs'] = b''
+        with self.assertRaisesRegex(owner.ReadinessError, 'upload attribution unavailable'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+
+    def test_selected_surface_skip_refuses_otherwise_authenticated_components(self):
+        self.complete_components(lambda observation: observation['tests'][0].update(result='skipped'))
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+
+    def test_job_local_report_cannot_claim_composed_cell(self):
+        import major_qualification_report as reports
+
+        for job in self.jobs[:2]:
+            req = dict(self.req, cell_jobs={self.cell: job['name']})
+            with self.subTest(job=job['name']), self.assertRaisesRegex(ValueError, 'require all original owners'):
+                reports.build_report(req, job_name=job['name'], job_id=job['id'], observations={}, payloads={},
+                                     selections={'schema': reports.SELECTIONS, 'groups': []})
+
+    def test_original_upload_still_requires_immutable_sources_and_trusted_main(self):
+        self.complete_components()
+        pins = dict(self.req['source_finding_inputs'], **{self.surface_profile: '0' * 64})
+        with self.assertRaisesRegex(owner.ReadinessError, 'immutable source'):
+            owner.produce(dict(self.req, source_finding_inputs=pins), self.artifacts, self.jobs)
+        self.run.update(head_branch='major/state-contracts', conclusion=None)
+        with self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+        self.run['head_branch'] = 'main'
+        self.assertEqual(owner.produce(self.req, self.artifacts, self.jobs)['results'][0]['result'], 'PASSED')
+
+    def test_actual_ci_observes_each_original_entrypoint_once_in_order(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        hooks = workflow.split('      - name: Observe original Q02 publication guard tests\n', 1)[1]
+        hooks = hooks.split('      - name:', 1)[0]
+        surface = workflow.split('\n  surface:\n', 1)[1].split('\n  codex-host:\n', 1)[0]
+        self.assertEqual(hooks.count('-- .github/scripts/test_release_workflow.py'), 1)
+        self.assertEqual(surface.count('test_command_route_release_state.py'), 1)
+        fragments = ('check_command_route_release_state.py declarations', 'observe-python',
+                     '-- .github/scripts/test_command_route_release_state.py', 'test_command_route_compatibility.py',
+                     'Upload release-state classifier source-test inputs', 'Retain original release-state classifier observation')
+        positions = [surface.index(fragment) for fragment in fragments]
+        self.assertEqual(positions, sorted(positions))
+
+
 class CompletedPopulationTest(unittest.TestCase):
     """Exercise the full frozen corpus after every metadata task says done."""
     @classmethod
