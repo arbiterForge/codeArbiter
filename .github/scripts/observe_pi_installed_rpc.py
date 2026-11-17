@@ -285,6 +285,28 @@ def worker(config):
         with owners(Path(config['repo']),config['expected'],config['git'],home) as cold:
             return run_owner(config,cold,Path(config['output']))
 
+def parent_author_fixture(config, acquisition, output, spawn):
+    """Separate scripted TUI fixture; never changes the original RPC profile."""
+    workspace=Path(config['workspace']);repo=Path(config['repo'])
+    case={key:config[key] for key in ('repo','stage','packages','expected','python','node','git','npm_launcher','npm_cli','npm_node')}
+    case.update(format='codearbiter.pi-parent-tui-config/1',
+        workspace=str(workspace/'parent-author-fixture'),output=str(output/'parent-author'),
+        installed=str(workspace/'installed-pi'),acquisition=acquisition)
+    path=workspace/'parent-author-config.json';payloads=workspace/'parent-author-payloads.json'
+    save(path,case);save(payloads,config['authenticated_payloads'])
+    argv=[config['python'],'-I','-B',str(repo/'.github/scripts/pi_parent_tui_observation.py'),
+        '--config',str(path),'--authenticated-payloads',str(payloads)]
+    done=spawn(argv,timeout=120,cwd=str(repo),
+        env=environment(workspace/'parent-author-supervisor-home',config,acquisition['prefix']))
+    supervision=completion(done,argv)
+    save(output/'parent-author-supervision.json',{**supervision,'timeout_seconds':120,'body_seconds':90,
+        'stdout_sha256':sha(done.stdout.encode()),'stderr_sha256':sha(done.stderr.encode())})
+    require(successful(supervision),'Pi parent author failed/timed out/unconfirmed')
+    verification=load(output/'parent-author/verification.json')
+    require(verification=={'status':'passed','scope':'first POSIX scripted public-parent-TUI fixture only; not human/full PI-D07/major qualification'},
+        'Pi parent author verification refused')
+
+
 def _produce(config,cold,spawn):
     """Effect seams used only by inert unit controls, never public arguments."""
     output=Path(config['output']);workspace=Path(config['workspace']);repo=Path(config['repo']);expected=config['expected']
@@ -303,7 +325,7 @@ def _produce(config,cold,spawn):
         cold._verify_production(repo,Path(config['packages']),Path(config['stage']),expected,promotion)
         save(output/'production-admission.json',{'source_commit':expected['source_commit'],'ci_run_id':expected['ci_run_id'],'promotion_sha256':promotion,'cohort_sha256':sha(cohort_raw),'require_production':True})
         acq=acquire_runtime(config,cold,output,spawn)
-        worker_config={k:v for k,v in config.items() if k!='authenticated_payloads'};worker_config.update(acquisition=acq,promotion_sha256=promotion)
+        worker_config={k:v for k,v in config.items() if k not in ('authenticated_payloads','parent_author_fixture')};worker_config.update(acquisition=acq,promotion_sha256=promotion)
         path=workspace/'worker-config.json';save(path,worker_config)
         argv=[config['python'],'-I','-B',str(repo/'.github/scripts/observe_pi_installed_rpc.py'),'--worker',str(path)]
         done=spawn(argv,timeout=240,cwd=str(repo),env=environment(workspace/'supervisor-home',config,acq['prefix']))
@@ -311,6 +333,8 @@ def _produce(config,cold,spawn):
         save(output/'worker-exit.json',{**supervision,'stdout_sha256':sha(done.stdout.encode()),'stderr_sha256':sha(done.stderr.encode())})
         require(successful(supervision),'Pi worker failed/timed out/unconfirmed')
         observed=load(output/'worker-result.json')
+        if config.get('parent_author_fixture',False):
+            parent_author_fixture(config,acq,output,spawn)
         require(source_snapshot(cold,config)==source,'Pi source changed after worker')
         binding={'format':'codearbiter.installed-observation-binding/1','profile':'pi-installed-rpc-v1',**expected,'workflow':WORKFLOW,'platform':actual_platform(),'runtime_version':VERSION,'consumed_payloads':consumed,'cohort_json':cohort_raw.decode('utf8'),'acquisition':acq,'worker':observed,'supervision':supervision,'cleanup':{'complete':True}}
     except Exception as error:
@@ -332,6 +356,9 @@ def _produce(config,cold,spawn):
 def produce(config,*,authenticated_payloads):
     """Public same-job coordinator entry; no supplied checker/spawn/receipt flag."""
     config={k:str(v) if isinstance(v,Path) else v for k,v in config.items()}
+    selected=config.get('parent_author_fixture',False)
+    require(type(selected) is bool,'closed parent author selection required')
+    if selected:require(actual_platform()=='linux/amd64','parent author requires installed Linux owner')
     repo=ordinary(config['repo']).resolve(strict=True);workspace=Path(config['workspace']).absolute();output=Path(config['output']).absolute()
     require(not workspace.is_relative_to(repo) and not repo.is_relative_to(workspace) and not output.is_relative_to(workspace),'Pi owned paths overlap source/retention')
     for path in [workspace,output]:

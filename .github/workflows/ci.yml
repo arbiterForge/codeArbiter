@@ -248,6 +248,8 @@ jobs:
               - '.github/scripts/observe_pi_installed_rpc.py'
               - '.github/scripts/test_observe_pi_installed_rpc.py'
               - '.github/scripts/coordinate_pi_host.py'
+              - '.github/scripts/pi_parent_tui_observation.py'
+              - '.github/scripts/test_pi_parent_tui_observation.py'
               - '.github/scripts/pi_live_report_profile.py'
               - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/coverage_union.py'
@@ -475,6 +477,8 @@ jobs:
               - '.github/scripts/observe_pi_installed_rpc.py'
               - '.github/scripts/test_observe_pi_installed_rpc.py'
               - '.github/scripts/coordinate_pi_host.py'
+              - '.github/scripts/pi_parent_tui_observation.py'
+              - '.github/scripts/test_pi_parent_tui_observation.py'
               - '.github/scripts/pi_live_report_profile.py'
               - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/ci20_native_binding.py'
@@ -2741,6 +2745,7 @@ jobs:
         run: |
           python -B .github/scripts/test_observe_pi_installed_rpc.py
           python -B .github/scripts/test_pi_ci_wiring.py
+          python -B .github/scripts/test_pi_parent_tui_observation.py
       - name: Test cross-host coverage identity and provenance
         working-directory: .
         run: python .github/scripts/test_coverage_union.py
@@ -4359,12 +4364,17 @@ jobs:
         run: |
           set -euo pipefail
           pi_workspace_parent="$(python -c 'import os; from pathlib import Path; print(Path(os.environ["GITHUB_WORKSPACE"]).resolve().parent)')"
+          parent_author_args=()
+          if [ "${{ matrix.system }}" = linux ]; then
+            parent_author_args+=(--parent-author-fixture)
+          fi
           python -I -B .github/scripts/coordinate_pi_host.py \
             --repo . --stage "${{ runner.temp }}/pi-stage" \
             --package-root "${{ runner.temp }}/pi-packages" \
             --expected-platform "${{ matrix.platform }}" \
             --workspace "$pi_workspace_parent/pi-observer-${{ matrix.system }}-${{ github.run_attempt }}" \
-            --output-root "${{ runner.temp }}/pi-observation-${{ matrix.system }}"
+            --output-root "${{ runner.temp }}/pi-observation-${{ matrix.system }}" \
+            "${parent_author_args[@]}"
           python - "${{ runner.temp }}/pi-observation-${{ matrix.system }}/qualification.json" <<'PY'
           import json, os, sys
           with open(sys.argv[1], encoding="utf-8") as stream:
@@ -4380,6 +4390,13 @@ jobs:
           name: installed-pi-observation-${{ matrix.system }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/pi-observation-${{ matrix.system }}/**/*.json
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/parent.ansi
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/parent.readable.txt
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/git-init.output
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/package-install.output
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/git-init.partial-output
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/package-install.partial-output
+            ${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/parent.partial-output
           if-no-files-found: warn
           retention-days: 14
           include-hidden-files: false

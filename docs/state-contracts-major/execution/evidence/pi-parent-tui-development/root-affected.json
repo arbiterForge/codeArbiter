@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest\nsys.path.insert(0,str(sys.argv[1]))\ns=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_parent_tui_observation','test_observe_pi_installed_rpc.OrchestrationTests','test_pi_ci_wiring.WiringTests','test_pi_ci_wiring.ControlTests','test_pi_ci_wiring.ReportTests','test_pi_ci_wiring.OrchestrationTests'])\nr=unittest.TextTestRunner(verbosity=2).run(s)\nraise SystemExit(not(r.wasSuccessful() and not r.skipped))\n",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "returncode": 0,
+  "seconds": 0.8499983999936376,
+  "raw": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-root-affected-d5ukcjyt",
+  "stderr_sha256": "28f3ac81adebb2c2500ef4090dbf8454f054a351f2d49ddbbcaf6e38071bcb9b",
+  "runtime_executed": false,
+  "prior_controller_error": "One Root PowerShell inline quoting SyntaxError before any test; corrected using this literal file."
+}
