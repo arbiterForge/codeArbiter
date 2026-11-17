@@ -34,9 +34,10 @@ def git_for_windows_bash(git: str | None) -> Path | None:
     """Find the same installation's Bash for Git's normal Windows entrypoints."""
     if not git or not Path(git).is_absolute():
         return None
-    try:
-        executable = Path(git).resolve(strict=True)
-    except OSError:
+    # Derive the installation from the declared entrypoint. Resolving that
+    # entrypoint first can discard a wrapper/link's installation location.
+    executable = Path(git)
+    if not executable.is_file():
         return None
     if executable.name.casefold() != "git.exe":
         return None
@@ -47,12 +48,16 @@ def git_for_windows_bash(git: str | None) -> Path | None:
         installation = parent.parent
         if installation.name.casefold() in ("mingw32", "mingw64"):
             installation = installation.parent
+    elif (parent.name.casefold() == "git-core"
+          and parent.parent.name.casefold() == "libexec"
+          and parent.parent.parent.name.casefold() in ("mingw32", "mingw64")):
+        installation = parent.parent.parent.parent
     else:
         return None
     for directory in ("bin", "usr/bin"):
         candidate = installation / directory / "bash.exe"
         if candidate.is_file():
-            return candidate
+            return candidate.resolve(strict=True)
     return None
 
 
@@ -64,6 +69,35 @@ def real_bash() -> Path | None:
 
 
 class BashDiscoveryTest(unittest.TestCase):
+    def test_internal_git_entrypoints_find_the_same_installations_bash(self):
+        with tempfile.TemporaryDirectory() as raw:
+            installation = Path(raw) / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            for architecture in ("mingw32", "mingw64"):
+                git = installation / architecture / "libexec/git-core/git.exe"
+                git.parent.mkdir(parents=True)
+                git.write_bytes(b"inert internal Git entrypoint; never executed")
+                with self.subTest(architecture=architecture):
+                    actual = git_for_windows_bash(str(git))
+                    self.assertTrue(actual and actual.samefile(bash))
+
+    def test_linked_git_entrypoint_keeps_its_declared_installation(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            installation = root / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            target = root / "actual-binary.exe"
+            target.write_bytes(b"inert link target; never executed")
+            git = installation / "cmd/git.exe"
+            git.parent.mkdir()
+            git.symlink_to(target)
+            actual = git_for_windows_bash(str(git))
+            self.assertTrue(actual and actual.samefile(bash))
+
     def test_git_entrypoints_share_the_same_installations_bash(self):
         with tempfile.TemporaryDirectory() as raw:
             installation = Path(raw) / "Git"
@@ -75,7 +109,8 @@ class BashDiscoveryTest(unittest.TestCase):
                 git.parent.mkdir(parents=True, exist_ok=True)
                 git.write_bytes(b"inert Git entrypoint; never executed")
                 with self.subTest(entrypoint=relative):
-                    self.assertEqual(git_for_windows_bash(str(git)), bash)
+                    actual = git_for_windows_bash(str(git))
+                    self.assertTrue(actual and actual.samefile(bash))
 
     def test_missing_or_unknown_installations_cannot_select_an_unrelated_bash(self):
         self.assertIsNone(git_for_windows_bash(None))
@@ -377,7 +412,8 @@ class ConsumerSafetyGateTest(unittest.TestCase):
                 line[8:] for line in run.splitlines()[1:] if line.startswith("        ")
             )
         bash = real_bash()
-        self.assertTrue(bash and Path(bash).is_file(), "bash is required")
+        self.assertTrue(bash and Path(bash).is_file(),
+                        f"bash is required (selected Git: {shutil.which('git')!r})")
         script = "npm_mock() { printf '__NPM_CALLED__\\n'; }\n" + script
         base_env = {**os.environ, "NPM_CLI": "npm_mock", "TARBALL": "unused.tgz",
                     "SOURCE_COMMIT": "a" * 40}
@@ -595,7 +631,8 @@ class ReceiptShellBoundaryTest(unittest.TestCase):
         self.addCleanup(self.scratch.cleanup)
         self.root = Path(self.scratch.name)
         self.bash = real_bash()
-        self.assertTrue(self.bash and self.bash.is_file(), "real Bash is required; do not skip qualification")
+        self.assertTrue(self.bash and self.bash.is_file(),
+                        f"real Bash is required; do not skip qualification (selected Git: {shutil.which('git')!r})")
 
     def fixture(self, host):
         root = self.root / host

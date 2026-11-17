@@ -5,6 +5,7 @@ Run as a required step in each hook matrix cell. These checks complement,
 not replace, actionlint, workflow review, and actual native-host execution.
 """
 from __future__ import annotations
+import ast
 import hashlib
 import json
 import re
@@ -54,7 +55,7 @@ RECOVERY_COMMANDS = (
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
 PREVIOUS_COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
-COMMANDS_SHA256 = 'e8ce3068122b23fdd7f712879b9cbdf795592cb15361191294b0ef16d1d62009'
+COMMANDS_SHA256 = 'ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974'
 HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
@@ -620,7 +621,7 @@ class SourceQualificationRoleTests(unittest.TestCase):
         text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block)
         commands=[command(step) for step in step_blocks(block) if step not in roles.values()
                   and command(step) not in (None,NATIVE_PREPARE_COMMAND,GUARD)]
-        added='python .github/scripts/test_npm_binding_observation.py'
+        added=NPM_PURE_COMMAND
         self.assertEqual(commands.count(added),1)
         self.assertEqual(len(commands),76)
         previous=[value for value in commands if value!=added]
@@ -633,6 +634,77 @@ class SourceQualificationRoleTests(unittest.TestCase):
         changed=owned.replace(added,'python .github/scripts/unreviewed.py')
         with self.assertRaises(ValueError):validate(text.replace(owned,changed,1))
 
+
+
+NPM_PURE_COMMAND = 'python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests'
+NPM_PRODUCER_COMMAND = 'python .github/scripts/test_npm_binding_observation.py ProducerBoundaryTests'
+NPM_NATIVE_STEP = ('      - name: Test original Python npm binding producer on the qualified runtime\n'
+                   '        run: ' + NPM_PRODUCER_COMMAND + '\n')
+NPM_NATIVE_BUILD = '      - name: Build native qualified candidate\n        run: >-\n          python tools/build-artifacts.py\n          --output "${{ runner.temp }}/artifact-candidate"\n          --test-observation "${{ runner.temp }}/native-tests.json"\n          --npm-binding-observations "${{ runner.temp }}/native-npm-binding-identities"\n'
+
+def validate_native_npm_owner(text: str) -> None:
+    native = job_block(text, 'artifact-native-build')
+    steps = step_blocks(native)
+    require(steps.count(NPM_NATIVE_STEP) == 1, 'Pinned native runtime producer unit missing or repeated')
+    require(steps.count(NPM_NATIVE_BUILD) == 1, 'Original native builder command changed or repeated')
+    require(steps.index(NPM_NATIVE_STEP) < steps.index(NPM_NATIVE_BUILD), 'Producer unit must precede original builder')
+    setup = ('      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
+             '        with:\n          python-version: "3.14"\n')
+    require(steps.count(setup) == 1 and steps.index(setup) < steps.index(NPM_NATIVE_STEP), 'Producer requires original pinned Python 3.14 setup')
+    platforms = re.findall(r'^            expected_platform: (\S+)$', native, re.M)
+    require(sorted(platforms) == ['darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64'], 'Producer must retain all six native platforms')
+    require('    runs-on: ${{ matrix.os }}\n' in native, 'Native runtime platform routing changed')
+    hooks = job_block(text, 'hooks')
+    selected = [command(step) for step in step_blocks(hooks) if command(step) and 'test_npm_binding_observation.py' in command(step)]
+    require(selected == [NPM_PURE_COMMAND], 'Hook npm controls must be exactly the three runtime-independent classes')
+    native_selected = [command(step) for step in steps if command(step) and 'test_npm_binding_observation.py' in command(step)]
+    require(native_selected == [NPM_PRODUCER_COMMAND], 'Native producer must execute once without filtering its method')
+
+
+class NpmRuntimeOwnerTests(unittest.TestCase):
+    def current(self):
+        return (Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+
+    def test_full_runtime_producer_uses_each_pinned_native_runtime_once(self):
+        try:
+            validate_native_npm_owner(self.current())
+        except ValueError as error:
+            self.fail(str(error))
+
+    def test_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes(self):
+        text=self.current();validate_native_npm_owner(text)
+        native=job_block(text,'artifact-native-build')
+        changes=(
+            (NPM_NATIVE_STEP,''),
+            (NPM_NATIVE_STEP,NPM_NATIVE_STEP+NPM_NATIVE_STEP),
+            (NPM_NATIVE_STEP,NPM_NATIVE_STEP.replace('        run:', '        if: false\n        run:')),
+            (NPM_NATIVE_STEP+NPM_NATIVE_BUILD,NPM_NATIVE_BUILD+NPM_NATIVE_STEP),
+            ('python-version: "3.14"','python-version: "3.x"'),
+            ('setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0','setup-python@'+'0'*40),
+            ('expected_platform: linux/arm64','expected_platform: linux/amd64'),
+            (NPM_NATIVE_BUILD,NPM_NATIVE_BUILD.replace('python tools/build-artifacts.py','python tools/other.py')),
+            (NPM_PRODUCER_COMMAND,NPM_PRODUCER_COMMAND+' -k subset'),
+        )
+        for before,after in changes:
+            self.assertIn(before,native)
+            with self.subTest(field=before),self.assertRaises(ValueError):
+                validate_native_npm_owner(text.replace(native,native.replace(before,after,1),1))
+        for replacement in (NPM_PRODUCER_COMMAND,NPM_PURE_COMMAND.replace(' RuntimePortabilityTests',''),NPM_PURE_COMMAND+' ProducerBoundaryTests'):
+            with self.subTest(hooks=replacement),self.assertRaises(ValueError):
+                validate_native_npm_owner(text.replace(NPM_PURE_COMMAND,replacement,1))
+
+    def test_class_selection_is_disjoint_complete_and_preserves_all_eighteen_methods(self):
+        path=Path(__file__).with_name('test_npm_binding_observation.py')
+        tree=ast.parse(path.read_text(encoding='utf8'))
+        classes={node.name:{m.name for m in node.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test_')}
+                 for node in tree.body if isinstance(node,ast.ClassDef)}
+        selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
+        self.assertEqual(set(classes),selected|{'ProducerBoundaryTests'})
+        self.assertEqual(sum(len(classes[name]) for name in selected),17)
+        self.assertEqual(len(classes['ProducerBoundaryTests']),1)
+        self.assertEqual(NPM_PURE_COMMAND.split()[2:],['AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'])
+        self.assertEqual(NPM_PRODUCER_COMMAND.split()[2:],['ProducerBoundaryTests'])
+        self.assertEqual(sum(map(len,classes.values())),18)
 
 
 def main() -> int:

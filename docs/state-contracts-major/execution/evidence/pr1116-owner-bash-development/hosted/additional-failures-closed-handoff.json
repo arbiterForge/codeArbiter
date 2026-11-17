@@ -1,0 +1,134 @@
+{
+  "kind": "original-exact-head-failure-handoff",
+  "head": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "rows": [
+    {
+      "job_id": 133704235590,
+      "head": "15c57b73859b00b806d6b027d1504ab0e193a489",
+      "run_id": 43983045996,
+      "run_attempt": 1,
+      "job": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+      "step": [
+        "Run hosted release-workflow contract tests"
+      ],
+      "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\failed-job-133704235590.log",
+      "bytes": 256970,
+      "sha256": "b36e43d9ef53cc355fcec9448d6de8fa193d258cea315ed5e6e6ae291214ddce",
+      "named_failures": [
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        }
+      ],
+      "closed_cause": "BASH_DISCOVERY_LEXICAL_RESOLVED_FIXTURE_MISMATCH",
+      "limits": []
+    },
+    {
+      "job_id": 133704235880,
+      "head": "15c57b73859b00b806d6b027d1504ab0e193a489",
+      "run_id": 43983045996,
+      "run_attempt": 1,
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "step": [
+        "Observe original Q02 publication guard tests"
+      ],
+      "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\failed-job-133704235880.log",
+      "bytes": 280940,
+      "sha256": "be08954379d26a662ec4e0887512893e61af99d034dc2e9c9b6243b43d66e4fa",
+      "named_failures": [
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_git_entrypoints_share_the_same_installations_bash",
+          "owner": "__main__.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_pi_publish_refuses_a_different_workflow_commit",
+          "owner": "__main__.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes",
+          "owner": "__main__.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+          "owner": "__main__.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+          "owner": "__main__.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite"
+        },
+        {
+          "kind": "FAIL",
+          "method": "test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+          "owner": "__main__.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry"
+        }
+      ],
+      "closed_cause": "BASH_DISCOVERY_FIXTURE_MISMATCH_AND_REAL_BASH_UNAVAILABLE",
+      "limits": [
+        "Selected Windows Git/Bash resolver branch/path is not retained; real_bash None cause remains UNKNOWN."
+      ]
+    },
+    {
+      "job_id": 133708862150,
+      "head": "15c57b73859b00b806d6b027d1504ab0e193a489",
+      "run_id": 43983045996,
+      "run_attempt": 1,
+      "job": "[CHECK] | [REPO] | Coverage union",
+      "step": [
+        "Merge and report the union"
+      ],
+      "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\failed-job-133708862150.log",
+      "bytes": 102843,
+      "sha256": "22887eee819ecb84f91b1bf5a09bc7b830d859eb47174872a9b62ba470dc88e1",
+      "named_failures": [],
+      "closed_cause": "MERGED_ORIGINAL_FARM_TEST_TIMEOUT",
+      "limits": []
+    }
+  ],
+  "source_refs": {
+    "discovery_comparison": ".github/scripts/test_release_workflow.py:78",
+    "real_bash_gate": ".github/scripts/test_release_workflow.py:380",
+    "receipt_shell_setup": ".github/scripts/test_release_workflow.py:598"
+  },
+  "source_findings": [
+    "Discovery fixture expects raw TemporaryDirectory path while resolver canonicalizes input. Actual Mac errors contain /var and /private/var aliases; Windows errors contain RUNNER~ and canonical alias inequality.",
+    "Windows real_bash() returns None before one consumer script and four receipt-script cases. Actual Git selection path is UNKNOWN; no invented cause.",
+    "Coverage aggregate merge-reports reproduces the original named Farm 60000ms timeout from its blob; no new standalone coverage-threshold cause claimed."
+  ],
+  "effects": "Read-only metadata and original logs only. No rerun, cancellation, source/Git/provider mutation or process replay."
+}

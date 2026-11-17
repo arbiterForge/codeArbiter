@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');r=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_release_workflow.BashDiscoveryTest.test_internal_git_entrypoints_find_the_same_installations_bash', 'test_release_workflow.BashDiscoveryTest.test_linked_git_entrypoint_keeps_its_declared_installation']));sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 1,
+  "source_sha256": "3ec3cc8067baf6ae4c046333d6e1694d5a0617187fb3f4a4ff47aa669f3049ff",
+  "stderr_sha256": "6e5e39e47e06c93722a80a924fef3f1898c86c6a97a23f35f120a7648017fbbb",
+  "scope": "Two new methods, actual owned inert executables/link; internal entrypoints and declared link path returnNone under original helper."
+}

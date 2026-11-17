@@ -1,0 +1,466 @@
+{
+  "schema": "farm-bounded-actual-phase-observation/1",
+  "source": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "original_runtime": "Node20.20.2/npm10.8.2",
+  "local_runtime": "ApprovedNode24.22.1/Vitest4.1.12/tsx4.22.4",
+  "selected_case": "farm artifact publication (#397 / #387) #387: the unavailable-diff list is bounded and still reports the true total",
+  "selected_tests_passed": 1,
+  "selected_tests_failed": 0,
+  "other_registered_tests_unselected": 145,
+  "case_duration_ms": 4317.4079,
+  "supervisor_seconds": 5.147094,
+  "original_case_timeout_ms": 60000,
+  "task_count": 12,
+  "configured_workers": 6,
+  "tasks_observed": {
+    "bulk0": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 1.638769,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 1.841612,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 2.045518,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk1": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "commit-pending": {
+        "first_observed_seconds": 1.841612,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 2.045518,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 2.65676,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 2.860954,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk10": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "commit-pending": {
+        "first_observed_seconds": 1.638769,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 1.841612,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 2.045518,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 2.248743,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 2.452773,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk11": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 2.045518,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 2.860954,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 3.066084,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk2": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "commit-pending": {
+        "first_observed_seconds": 2.045518,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 2.248743,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 3.066084,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 3.27104,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 3.47578,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk3": {
+      "prepared": {
+        "first_observed_seconds": 1.232657,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 1.841612,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 2.452773,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 2.65676,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk4": {
+      "prepared": {
+        "first_observed_seconds": 2.248743,
+        "attempt": 1,
+        "result_status": null
+      },
+      "commit-pending": {
+        "first_observed_seconds": 2.452773,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 2.65676,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 3.27104,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 3.47578,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 3.680723,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk5": {
+      "prepared": {
+        "first_observed_seconds": 2.452773,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 2.860954,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 3.680723,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 3.885188,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk6": {
+      "prepared": {
+        "first_observed_seconds": 2.65676,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 3.066084,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 3.885188,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 4.090034,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk7": {
+      "prepared": {
+        "first_observed_seconds": 3.066084,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 3.27104,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merged": {
+        "first_observed_seconds": 4.090034,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 4.295272,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk8": {
+      "prepared": {
+        "first_observed_seconds": 3.27104,
+        "attempt": 1,
+        "result_status": null
+      },
+      "commit-pending": {
+        "first_observed_seconds": 3.47578,
+        "attempt": 1,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 3.680723,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 4.295272,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 4.499667,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    },
+    "bulk9": {
+      "prepared": {
+        "first_observed_seconds": 3.47578,
+        "attempt": 0,
+        "result_status": null
+      },
+      "committed": {
+        "first_observed_seconds": 3.885188,
+        "attempt": 1,
+        "result_status": null
+      },
+      "merge-pending": {
+        "first_observed_seconds": 4.499667,
+        "attempt": 1,
+        "result_status": null
+      },
+      "settled": {
+        "first_observed_seconds": 4.704255,
+        "attempt": 1,
+        "result_status": "green"
+      }
+    }
+  },
+  "settled_population": [
+    {
+      "id": "bulk0",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk10",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk3",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk1",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk11",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk2",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk4",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk5",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk6",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk7",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk8",
+      "status": "green",
+      "attempts": 1
+    },
+    {
+      "id": "bulk9",
+      "status": "green",
+      "attempts": 1
+    }
+  ],
+  "samples": 26,
+  "sample_interval_seconds": 0.2,
+  "peak_owned_active_processes": 10,
+  "total_owned_processes": 709,
+  "last_job_cpu_100ns": {
+    "user": 43906250,
+    "kernel": 55312500
+  },
+  "cleanup": "private-job-members-waited-and-accounting-zero",
+  "raw_owned_capture_files": [
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 473,
+      "sha256": "739c068cbb074f7cf687af70bb47244200e16006195b9c087bc3166276b6791e"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 951,
+      "sha256": "5b5a15cacb3d0debb57370d1f444f94aa185cc6dd8cb0288ab7225c950cd82d7"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 1424,
+      "sha256": "4969c3051a1a7bc3a204d9202a76a4126867098649be5631e7de30a58e2a000b"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 1897,
+      "sha256": "f6ed40d3ad9b7fb685bc4708302b7b232eb58c3064787f54d2460fab4256ea25"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 2375,
+      "sha256": "11933797aa24297e43e917477edfe43f40c73417511619745f27bb47806dad12"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 2848,
+      "sha256": "509a44aad8210dd0e165f3c724843bb0dc0da238e2f6334ef4b77622462d62c7"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 3344,
+      "sha256": "5d63264c21246dd173adcd27ce63dbd6c1d8945c80539497fcd68842e0194db4"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 3864,
+      "sha256": "9eedbade553b7bb39e6c314f4ba1bb1810914dcc188e2791c3d164f9474da779"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 4406,
+      "sha256": "c2c805326100b9deedc1712420c30c843b7a079eeb0eff85323fd5ced48aa51c"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 4970,
+      "sha256": "63a04aebc14187b8b3814883199287e6376485bb63e3edf2b929d220f2a5da27"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 5578,
+      "sha256": "5f04e6f8f93e68c40f9e03a6975fe3474119c7da49370c96a8da86288d082390"
+    },
+    {
+      "original": "tmp\\farm-artifacts-1794875142784-sf4lcctr8r\\.farm\\runs\\bounded\\farm-results.jsonl",
+      "bytes": 6208,
+      "sha256": "d07dd88cfe754bc4138461c90fedbba41a3d6385c15b9ac7248c7999ceeafb74"
+    }
+  ],
+  "scope_limitations": [
+    "200ms passive samples can miss intermediate stages/short-lived file events; absence alone is not refusal/phase proof.",
+    "Effect/settlement population and task-phase progression observed; exact process executable/argv/thread-stack not inspected.",
+    "One Node24 local variant pass cannot explain or waive original Node20 CI timeout/full-suite load.",
+    "Private config changes only cacheDir plus native config loading/cache=false; production/test/threshold/assertion/60s/12/6 unchanged.",
+    "Two earlier controller-only failures preserved separately; neither reproduced a farm timeout."
+  ]
+}

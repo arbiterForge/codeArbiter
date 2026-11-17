@@ -755,6 +755,8 @@ jobs:
           go-download-base-url: https://go.dev/dl
       - name: Verify exact Go toolchain
         run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
+      - name: Test original Python npm binding producer on the qualified runtime
+        run: python .github/scripts/test_npm_binding_observation.py ProducerBoundaryTests
       - name: Build native qualified candidate
         run: >-
           python tools/build-artifacts.py
@@ -3349,7 +3351,7 @@ jobs:
         run: python .github/scripts/test_major_qualification_report.py
       - name: Test original Python npm binding identities and admission
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        run: python .github/scripts/test_npm_binding_observation.py
+        run: python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests
       - name: Test retained archive CLI observations
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_retained_archive_cli_observation.py
