@@ -1,0 +1,153 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+  "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:tribunal-inventory",
+  "disposition:transitions:hooks:tribunal-inventory:02"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:tribunal-inventory",
+   "frozen_row_sha256": "d1e884796ef1468320142e45caa7a1b39a6320bda5e590ea3de0f60e7cdfd722",
+   "clause_ids": [
+    "disposition:transitions:hooks:tribunal-inventory:01",
+    "disposition:transitions:hooks:tribunal-inventory:02",
+    "disposition:transitions:hooks:tribunal-inventory:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "collect_inventory",
+     "start": 459,
+     "end": 544,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "9981c64663c01aa6c0a9a32e1aa4d1495bbaf1a4022883d0548fe121d7f93b46"
+    },
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "_git",
+     "start": 78,
+     "end": 124,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "dae484a225f7f6e21dbc2d440c48a3951e65e7d20f7c7ac9d439bd97f6570f4d"
+    },
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "_parse_manifest",
+     "start": 243,
+     "end": 343,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "05c14f98dbc89b63054dbb21511ec26886138473540f9c89fe0d37f8e82b3b61"
+    },
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "resolve_profile",
+     "start": 579,
+     "end": 613,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "1ae4cb7f4f396c8ae12cd9ad1f8077c357866e640f18787e0648d0a563396cfc"
+    },
+    {
+     "path": "core/pysrc/tribunal.py",
+     "symbol": "main",
+     "start": 15,
+     "end": 116,
+     "git_oid": "c3f6ca2ab5ec9a6717878de32fa277d354ca6f84",
+     "file_sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+     "span_sha256": "7876efca39331ad571400b287d6fada1176203310752795d448b4d41ea8203b5"
+    },
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "estimate_cost",
+     "start": 616,
+     "end": 653,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "14dd902db242ca7ce062a18c1df1e319829df3b083cb41f48f66be80a900129d"
+    }
+   ],
+   "semantic_assessment": "All3 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "Frozen refuses wording means no invented override is selected; valid profiles can continue with inherited settings/status limited rather than a blanket refusal. Existing named source assertions explicitly require inheritance for all three profiles."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:tribunal-inventory:02",
+   "frozen_row_sha256": "ddd5e5766618a32af7e97166091af22e3fdffda2cc92808f23da21fda526d74c",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_tribunalinventorylib.py",
+     "symbol": "resolve_profile",
+     "start": 579,
+     "end": 613,
+     "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+     "file_sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+     "span_sha256": "1ae4cb7f4f396c8ae12cd9ad1f8077c357866e640f18787e0648d0a563396cfc"
+    },
+    {
+     "path": "core/pysrc/tribunal.py",
+     "symbol": "main",
+     "start": 15,
+     "end": 116,
+     "git_oid": "c3f6ca2ab5ec9a6717878de32fa277d354ca6f84",
+     "file_sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+     "span_sha256": "7876efca39331ad571400b287d6fada1176203310752795d448b4d41ea8203b5"
+    }
+   ],
+   "semantic_assessment": "Only deep/standard/extract resolve; supplied supported model/reasoning overrides become settings. Missing fresh-thread support yields limited shared-context inline execution. Unsupported/missing override inherits the configured setting with limitations, and unknown profile returns unavailable.",
+   "intake_variances": [
+    "Frozen refuses wording means no invented override is selected; valid profiles can continue with inherited settings/status limited rather than a blanket refusal. Existing named source assertions explicitly require inheritance for all three profiles."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:tribunal-inventory finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

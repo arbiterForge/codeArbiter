@@ -1,5 +1,13 @@
 # State-contract program checkpoint
 
+The prune hook now refuses canonical prefix siblings such as `.claude-other` before `self_heal`. Commit `2e09c637` includes the shared owner, all host mirrors and seven new boundary cases; the actual focused run passed13 tests with no skips after three original sibling regressions failed. These are local Windows checks with explicit race/platform limits.
+
+60 additional source mappings complete current-source coverage of the remaining hook/work machines and edges:777 source records authenticate privately, and57 PLANNED dispositions remain (49 findings,8 native transitions). All28 previously advanced rows and their evidence histories remain exact. Source conformance does not promote tasks, runtime, installed hosts or participant acceptance. [Current observations](evidence/remaining-source60-followup/development.json).
+
+The original normal `d4822a56` Docs run failed one Generator checksum-drift rejection test on its five-second limit (1570 passed,1 failed), with no checksum mismatch assertion reported; cause remains unknown. The separate #1119 Docs run succeeded. Both original CI watches remain distinct and pending at this checkpoint. #1098 remains draft and held from `main` for Brennon testing; publication is unauthorized.
+
+## Previous retained checkpoint
+
 PR #1118 merged into `major/state-contracts` at `d4822a56` after its original exact-head CI and Docs passed: 88 checks passed, 11 skipped. Fresh premerge verification also checked every reported context and the required merge gate. #1098 remains draft and held from `main` for Brennon testing; publication is unauthorized.
 
 The next child contains committed mode exit/entry audit pairs and regular-file work adoption acquisition, generated across all three hosts. Actual original regressions, focused checks and independent code reviews are retained at their exact epochs. Recovery retains its queue, dual-storage-denial, crash/concurrency and platform/ancestor limits. The public Farm warning now agrees with existing run-ID refusal. These repairs are implemented; they are not future implementation tasks.

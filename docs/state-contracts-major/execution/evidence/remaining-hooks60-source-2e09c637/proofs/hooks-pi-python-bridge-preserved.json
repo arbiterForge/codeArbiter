@@ -1,0 +1,609 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+  "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+  "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+  "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+  "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+  "core/pysrc/_segmentslib.py": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:pi-python-bridge",
+  "disposition:transitions:hooks:pi-python-bridge:01",
+  "disposition:transitions:hooks:pi-python-bridge:02",
+  "disposition:transitions:hooks:pi-python-bridge:03",
+  "disposition:transitions:hooks:pi-python-bridge:04",
+  "disposition:transitions:hooks:pi-python-bridge:05",
+  "disposition:transitions:hooks:pi-python-bridge:06",
+  "disposition:transitions:hooks:pi-python-bridge:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:pi-python-bridge",
+   "frozen_row_sha256": "8763772497bb638c56bcb24729e295dab39f23514368e2baece789341fc042f5",
+   "clause_ids": [
+    "disposition:transitions:hooks:pi-python-bridge:01",
+    "disposition:transitions:hooks:pi-python-bridge:02",
+    "disposition:transitions:hooks:pi-python-bridge:03",
+    "disposition:transitions:hooks:pi-python-bridge:04",
+    "disposition:transitions:hooks:pi-python-bridge:05",
+    "disposition:transitions:hooks:pi-python-bridge:06",
+    "disposition:transitions:hooks:pi-python-bridge:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_request",
+     "start": 129,
+     "end": 173,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "fdefe89e7cb0c5d37ccb6b4e22c67007db287e5793e5a252773e0f1138e81b1f"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_json_value",
+     "start": 105,
+     "end": 126,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "678de2168ea47afbf33a875f363acc5f28e4d90e8db18c170345bf3c439fc704"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "main",
+     "start": 549,
+     "end": 554,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "735d2211eacc68f1b67f4dbb1c601cd88b7ac9b4f7b71aadcfb1b0a8145e562a"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_payload",
+     "start": 190,
+     "end": 202,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "719d210e21fa17abe43c981aaa6727cdeb3f179717fe691eec71ad3a5ae001e5"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_load_entry",
+     "start": 176,
+     "end": 187,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "835d1cfd4dab721dd8eafbf87287bf2ac44fa01cc659e8e09930362920590eb0"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_run_entry",
+     "start": 205,
+     "end": 226,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2a72b8157bfcad535f173b9e538a4baf410e3f1405d781c3981f0df6647542c7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "dispatch",
+     "start": 478,
+     "end": 546,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "6de642f81c8d8c9ce7b5ca24694834b042fc150e9877fd6e4cadd0c2d0e820bd"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "BoundedText",
+     "start": 74,
+     "end": 102,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2475bb657b6be166ee46bcc67b88dc42ccfb89baeca2c8efbb884979a5ec2c9b"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_rule",
+     "start": 229,
+     "end": 231,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "f05ed4691a90af52875342e7f9bdfd34d0c531e5d2160af239df97cbabb08ac7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_plan_file_request",
+     "start": 435,
+     "end": 459,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "75b17205d22dbb6a8c0598990fe34e632143699a6167d305e7e672a522838509"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_plan_file_response",
+     "start": 462,
+     "end": 475,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "c96725944af4122d889d3a5b4ea61017757042556e23927dbbbdc42d5e71b8a2"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "symbol": "plan_file_operation",
+     "start": 607,
+     "end": 697,
+     "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a826cbdea3683c902df473cc1d01766169d058acc4e68f76f7e0b522349d689d"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_usage_update",
+     "start": 337,
+     "end": 369,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "f1734015f33420849c21781afd60a1134e45272ab29cd68b8141dfc9aba8422a"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_usage_result",
+     "start": 315,
+     "end": 334,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "56363591a1ad13bac74631f07f7338f71909cb77acba00a8fbf4f43da0847539"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_status_snapshot",
+     "start": 380,
+     "end": 432,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "3eafc3a2f7f74ee440ddc22f61e23d84c15b1855248b91e97eab214455ae65d3"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_bounded_footer_text",
+     "start": 372,
+     "end": 377,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "d4414d161d3d0bd97125959c186febd62fec195c23250db272cb5f369f86d8b1"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "pi_ledger_update",
+     "start": 1632,
+     "end": 1661,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "3314fd592f6e40cd0e03d6801afc1436fcb569f165c07a7b6c572521e00a7035"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "arbiter_state",
+     "start": 187,
+     "end": 197,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "ce8cd2c81de4895507450051f5799ee48e9472fb41c2e69ef648b5733a08f317"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "current_mode",
+     "start": 260,
+     "end": 290,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "fe8cd4a3a205a5e09625411c04004b1315b87df8aaee1a9060ffe17af38fb437"
+    },
+    {
+     "path": "core/pysrc/_segmentslib.py",
+     "symbol": "seg_prune",
+     "start": 304,
+     "end": 329,
+     "git_oid": "1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf",
+     "file_sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+     "span_sha256": "6cdfb5cb65a17b64829696d365d537317866617e07faefbdcb372ddfe342971d"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "symbol": "current_mode",
+     "start": 251,
+     "end": 285,
+     "git_oid": "6d2e162e15cf0b7904ba5d04a0470c604bf474ce",
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c68fda3cd7bcb115661e9bda72a9c7a9cef98c0810d8616ef5acaac96ea8fc60"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_prune_plan",
+     "start": 234,
+     "end": 292,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "plan_prune",
+     "start": 204,
+     "end": 261,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3"
+    }
+   ],
+   "semantic_assessment": "All7 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "Status is an advisory projection: process-local mtime caching and fallback arbiter mode are preserved; this is not an independent complete/current state or authorization proof."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:01",
+   "frozen_row_sha256": "28d5c4d28816b90946355d09302a6263f1f4e03db83fc3667df7a7951c7b79d2",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_request",
+     "start": 129,
+     "end": 173,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "fdefe89e7cb0c5d37ccb6b4e22c67007db287e5793e5a252773e0f1138e81b1f"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_json_value",
+     "start": 105,
+     "end": 126,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "678de2168ea47afbf33a875f363acc5f28e4d90e8db18c170345bf3c439fc704"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "main",
+     "start": 549,
+     "end": 554,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "735d2211eacc68f1b67f4dbb1c601cd88b7ac9b4f7b71aadcfb1b0a8145e562a"
+    }
+   ],
+   "semantic_assessment": "Main reads MAX_REQUEST_BYTES+1 and rejects overflow; strict UTF8 unique-key JSON, exact version/event-specific fields, depth16/list10000/object1000, absolute existing cwd, bounded optional session/tool and lowerhex64correlation precede dispatch. Top-level error reports only fixed exception class and exits1, not raw request text.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:02",
+   "frozen_row_sha256": "7aab79aadb5c38f912dcc5c7af2176f5a09da5e25deb5155a32094b11f32ce6f",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_payload",
+     "start": 190,
+     "end": 202,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "719d210e21fa17abe43c981aaa6727cdeb3f179717fe691eec71ad3a5ae001e5"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_load_entry",
+     "start": 176,
+     "end": 187,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "835d1cfd4dab721dd8eafbf87287bf2ac44fa01cc659e8e09930362920590eb0"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_run_entry",
+     "start": 205,
+     "end": 226,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2a72b8157bfcad535f173b9e538a4baf410e3f1405d781c3981f0df6647542c7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "dispatch",
+     "start": 478,
+     "end": 546,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "6de642f81c8d8c9ce7b5ca24694834b042fc150e9877fd6e4cadd0c2d0e820bd"
+    }
+   ],
+   "semantic_assessment": "Finite event/tool map selects exact shared run seam, with normalized read input and exact host payload. Unknown tool_call blocks PI_UNKNOWN_BLOCK; no-route before_agent_start allows. New HW14 recovery snapshot is a separate bounded reader, never target repair or grant resurrection.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:03",
+   "frozen_row_sha256": "85aa91ce47e04606bec98c0f5e56891d77ed798263ae533321ad3d4987536145",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "BoundedText",
+     "start": 74,
+     "end": 102,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2475bb657b6be166ee46bcc67b88dc42ccfb89baeca2c8efbb884979a5ec2c9b"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_run_entry",
+     "start": 205,
+     "end": 226,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2a72b8157bfcad535f173b9e538a4baf410e3f1405d781c3981f0df6647542c7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_rule",
+     "start": 229,
+     "end": 231,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "f05ed4691a90af52875342e7f9bdfd34d0c531e5d2160af239df97cbabb08ac7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "dispatch",
+     "start": 478,
+     "end": 546,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "6de642f81c8d8c9ce7b5ca24694834b042fc150e9877fd6e4cadd0c2d0e820bd"
+    }
+   ],
+   "semantic_assessment": "Per-stream UTF8 capture is bounded1MiB; overflow raises. Hook exit2 maps to block/message plus parsed fixed rule when found; other nonzero becomes transport error, not success. This is a codec, not a hard child wall-time/containment supervisor.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:04",
+   "frozen_row_sha256": "999ac3124ecfaef1fde4f033e7985cdbedfcf6119b2c0b97288a89a5b1732461",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_run_entry",
+     "start": 205,
+     "end": 226,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "2a72b8157bfcad535f173b9e538a4baf410e3f1405d781c3981f0df6647542c7"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "dispatch",
+     "start": 478,
+     "end": 546,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "6de642f81c8d8c9ce7b5ca24694834b042fc150e9877fd6e4cadd0c2d0e820bd"
+    }
+   ],
+   "semantic_assessment": "Exit0 read-tool stdout must parse hookSpecificOutput additionalContext; otherwise malformed transport refuses. On other routes stderr notice precedes stdout context, then empty output allows. Capture overflow is explicit; no generic JSON parsing is claimed for ordinary text context.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:05",
+   "frozen_row_sha256": "4ab3e487eb792950c2c1f14750841470fb564c4cb0d6ff52392347bf6bdf2740",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_plan_file_request",
+     "start": 435,
+     "end": 459,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "75b17205d22dbb6a8c0598990fe34e632143699a6167d305e7e672a522838509"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_plan_file_response",
+     "start": 462,
+     "end": 475,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "c96725944af4122d889d3a5b4ea61017757042556e23927dbbbdc42d5e71b8a2"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "dispatch",
+     "start": 478,
+     "end": 546,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "6de642f81c8d8c9ce7b5ca24694834b042fc150e9877fd6e4cadd0c2d0e820bd"
+    },
+    {
+     "path": "core/pysrc/_planfilelib.py",
+     "symbol": "plan_file_operation",
+     "start": 607,
+     "end": 697,
+     "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+     "file_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+     "span_sha256": "a826cbdea3683c902df473cc1d01766169d058acc4e68f76f7e0b522349d689d"
+    }
+   ],
+   "semantic_assessment": "Plan-file replace uses exact fields, canonical base64 and<=92160bytes strictUTF8; read/replace delegates with require_legacy_pair=True. Response preserves every typed result field and base64-encodes bounded content rather than flattening conflict/committed-unobserved/error into success. No public edit UI or global serializability is claimed.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:06",
+   "frozen_row_sha256": "c474d9b1b8a33b9b1815a4ffa097b3bf1cc780e0e01f5632a50d84995ffbb608",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_usage_update",
+     "start": 337,
+     "end": 369,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "f1734015f33420849c21781afd60a1134e45272ab29cd68b8141dfc9aba8422a"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_usage_result",
+     "start": 315,
+     "end": 334,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "56363591a1ad13bac74631f07f7338f71909cb77acba00a8fbf4f43da0847539"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_footer_status_snapshot",
+     "start": 380,
+     "end": 432,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "3eafc3a2f7f74ee440ddc22f61e23d84c15b1855248b91e97eab214455ae65d3"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_bounded_footer_text",
+     "start": 372,
+     "end": 377,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "d4414d161d3d0bd97125959c186febd62fec195c23250db272cb5f369f86d8b1"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "pi_ledger_update",
+     "start": 1632,
+     "end": 1661,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "3314fd592f6e40cd0e03d6801afc1436fcb569f165c07a7b6c572521e00a7035"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "arbiter_state",
+     "start": 187,
+     "end": 197,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "ce8cd2c81de4895507450051f5799ee48e9472fb41c2e69ef648b5733a08f317"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "current_mode",
+     "start": 260,
+     "end": 290,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "fe8cd4a3a205a5e09625411c04004b1315b87df8aaee1a9060ffe17af38fb437"
+    },
+    {
+     "path": "core/pysrc/_segmentslib.py",
+     "symbol": "seg_prune",
+     "start": 304,
+     "end": 329,
+     "git_oid": "1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf",
+     "file_sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+     "span_sha256": "6cdfb5cb65a17b64829696d365d537317866617e07faefbdcb372ddfe342971d"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "symbol": "current_mode",
+     "start": 251,
+     "end": 285,
+     "git_oid": "6d2e162e15cf0b7904ba5d04a0470c604bf474ce",
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c68fda3cd7bcb115661e9bda72a9c7a9cef98c0810d8616ef5acaac96ea8fc60"
+    }
+   ],
+   "semantic_assessment": "Footer status bounds and strips control/ANSI text, validates counters/sprint/current mode and degrades unavailable optional segments honestly. Usage verifies the closed ledger result and preserves status/highWater/acceptedThrough; invalid result becomes corrupt blank display with both cursors-1, never an accepted zero fact.",
+   "intake_variances": [
+    "Status is an advisory projection: process-local mtime caching and fallback arbiter mode are preserved; this is not an independent complete/current state or authorization proof."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-python-bridge:07",
+   "frozen_row_sha256": "0ccf488fb6c40cfa1336e2dcace559675f801aada0efc4947f9f793b0d34efb5",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_prune_plan",
+     "start": 234,
+     "end": 292,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "plan_prune",
+     "start": 204,
+     "end": 261,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3"
+    }
+   ],
+   "semantic_assessment": "Pure prune request validates unique entry IDs, exact policy/entry shapes and ordered ordinals before planning; missing first-kept boundary refuses. Returned IDs/actions come from admitted entries and the bridge performs no transcript rewrite.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:pi-python-bridge finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

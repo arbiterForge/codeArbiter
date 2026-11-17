@@ -1,0 +1,368 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+  "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+  "plugins/ca-codex/hooks/pre-tool-adapter.py": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+  "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:codex-pretool",
+  "disposition:transitions:hooks:codex-pretool:01",
+  "disposition:transitions:hooks:codex-pretool:02",
+  "disposition:transitions:hooks:codex-pretool:03",
+  "disposition:transitions:hooks:codex-pretool:04",
+  "disposition:transitions:hooks:codex-pretool:05",
+  "disposition:transitions:hooks:codex-pretool:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:codex-pretool",
+   "frozen_row_sha256": "17f7f65dfc009c3e3452178ad243e06dfd9a343fa5366e67371cc2f210869676",
+   "clause_ids": [
+    "disposition:transitions:hooks:codex-pretool:01",
+    "disposition:transitions:hooks:codex-pretool:02",
+    "disposition:transitions:hooks:codex-pretool:03",
+    "disposition:transitions:hooks:codex-pretool:04",
+    "disposition:transitions:hooks:codex-pretool:05",
+    "disposition:transitions:hooks:codex-pretool:06"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_read_stdin_bounded",
+     "start": 100,
+     "end": 109,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "f0ad06c58f84ee2c5e275a7637e9f259be06ffa5b1cfb2c1fc05f9071863cde9"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_route",
+     "start": 121,
+     "end": 139,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "b38c9bc6eb1ad477123bdd2e44d009acd4cebf0fc8b731600f59210bbfc01b76"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "main",
+     "start": 169,
+     "end": 246,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "9dc5ba05b3b997499c11fe5548bac8c9a582f432b46dbdb0ea5d2f4c5c3fb5bd"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_arbiter_active",
+     "start": 142,
+     "end": 166,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "c0b2951b933a0ac023e481d5b5dbc6a21d3302bc7e56de49477e94dab9adffd0"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/_host.py",
+     "symbol": "parse_apply_patch",
+     "start": 64,
+     "end": 169,
+     "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+     "file_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+     "span_sha256": "7c0363d407b365759d1bec6e1e0cb28349ff3caacb5f99c7b870e785435a3731"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/_host.py",
+     "symbol": "CodexHost.iter_file_ops",
+     "start": 281,
+     "end": 311,
+     "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+     "file_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+     "span_sha256": "cb3fea4acfa6d949c456cec23dd1690b7c889a4ed21beb746d188c2edfc89285"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "symbol": "presentation",
+     "start": 2210,
+     "end": 2229,
+     "git_oid": "a211da361e2fa03333b98fce0260687af330079d",
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "4a6274392909d2991f1e9865bd33a85b92a4ba4112f7858ddb3c528b88089c17"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "symbol": "record_notice_emitted",
+     "start": 2232,
+     "end": 2246,
+     "git_oid": "a211da361e2fa03333b98fce0260687af330079d",
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "dfd5413371dff44ad722530056ef3365dd5a0a5e6986efc2eedab8d8dc4f5858"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_guard_timeout_seconds",
+     "start": 74,
+     "end": 85,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "837b0d2d427d95bd7291e3009046dd71f72bac833642ee7b9899a25f13184e84"
+    },
+    {
+     "path": "core/pysrc/hostapi.py",
+     "symbol": "Host.iter_file_ops",
+     "start": 574,
+     "end": 669,
+     "git_oid": "1a7db1792ef432615a47a7cf4aed7714b16045dc",
+     "file_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+     "span_sha256": "80622caf6086814d180f88143f5cba7d3a89f2a5d824d86a01ed62af04c93b5e"
+    },
+    {
+     "path": "plugins/ca/hooks/_host.py",
+     "symbol": "ClaudeHost",
+     "start": 27,
+     "end": 37,
+     "git_oid": "8503a10cec96334795cc7b4e40812d11c12e5e57",
+     "file_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+     "span_sha256": "6c148c7344458291d6a2514644332bc6604a9cb9518deed4f3194117644528fa"
+    }
+   ],
+   "semantic_assessment": "All6 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "The bound is a reader wait, not a byte/memory cap; the daemon may remain blocked until adapter exit.",
+    "Bounded here describes the finite grammar/output shape; this parser itself has no independent patch-byte/population cap.",
+    "Finite/nonnegative validation is not separately performed on a successfully parsed override; no universal process-tree cleanup is claimed from subprocess.run killing/reaping its direct child."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:01",
+   "frozen_row_sha256": "57f30d056410e8547d45446835c8948231d69bc519606cc0baecfc42e0755f2b",
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_read_stdin_bounded",
+     "start": 100,
+     "end": 109,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "f0ad06c58f84ee2c5e275a7637e9f259be06ffa5b1cfb2c1fc05f9071863cde9"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_route",
+     "start": 121,
+     "end": 139,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "b38c9bc6eb1ad477123bdd2e44d009acd4cebf0fc8b731600f59210bbfc01b76"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "main",
+     "start": 169,
+     "end": 246,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "9dc5ba05b3b997499c11fe5548bac8c9a582f432b46dbdb0ea5d2f4c5c3fb5bd"
+    }
+   ],
+   "semantic_assessment": "Preliminary activation occurs before a daemon-thread stdin read with5s join; supported write aliases route pre-write and other object tool payloads pre-bash. Active malformed/unreadable input blocks with fixed reason, dormant malformed input returns0.",
+   "intake_variances": [
+    "The bound is a reader wait, not a byte/memory cap; the daemon may remain blocked until adapter exit."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:02",
+   "frozen_row_sha256": "117ae8c87d49f985230dbd7fa234a619a12af1bcfaf697a78113fd4d20646b8f",
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_arbiter_active",
+     "start": 142,
+     "end": 166,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "c0b2951b933a0ac023e481d5b5dbc6a21d3302bc7e56de49477e94dab9adffd0"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "main",
+     "start": 169,
+     "end": 246,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "9dc5ba05b3b997499c11fe5548bac8c9a582f432b46dbdb0ea5d2f4c5c3fb5bd"
+    }
+   ],
+   "semantic_assessment": "The adapter asks shared activation/project-root helpers before stdin; import/read uncertainty is conservatively active so malformed payload fails closed rather than disabling enforcement.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:03",
+   "frozen_row_sha256": "3223cb9ce696ff4c600504f2b219c1bf221bbbc067015aa7ef708ade72e2b7be",
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/_host.py",
+     "symbol": "parse_apply_patch",
+     "start": 64,
+     "end": 169,
+     "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+     "file_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+     "span_sha256": "7c0363d407b365759d1bec6e1e0cb28349ff3caacb5f99c7b870e785435a3731"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/_host.py",
+     "symbol": "CodexHost.iter_file_ops",
+     "start": 281,
+     "end": 311,
+     "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+     "file_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+     "span_sha256": "cb3fea4acfa6d949c456cec23dd1690b7c889a4ed21beb746d188c2edfc89285"
+    }
+   ],
+   "semantic_assessment": "Recognized lenient Begin/Add/Delete/Update/Move grammar extracts actual per-file operations and added text, including old delete+new edit for moves. Unknown *** directives discard partial operations for one opaque result; recognized empty envelope becomes opaque at host seam. No envelope/path-shaped input may yield no operations.",
+   "intake_variances": [
+    "Bounded here describes the finite grammar/output shape; this parser itself has no independent patch-byte/population cap."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:04",
+   "frozen_row_sha256": "da29b29dfc8b1fee8fa53389f0feb1779666853dce2e8736884839007560a111",
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "main",
+     "start": 169,
+     "end": 246,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "9dc5ba05b3b997499c11fe5548bac8c9a582f432b46dbdb0ea5d2f4c5c3fb5bd"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "symbol": "presentation",
+     "start": 2210,
+     "end": 2229,
+     "git_oid": "a211da361e2fa03333b98fce0260687af330079d",
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "4a6274392909d2991f1e9865bd33a85b92a4ba4112f7858ddb3c528b88089c17"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "symbol": "record_notice_emitted",
+     "start": 2232,
+     "end": 2246,
+     "git_oid": "a211da361e2fa03333b98fce0260687af330079d",
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "dfd5413371dff44ad722530056ef3365dd5a0a5e6986efc2eedab8d8dc4f5858"
+    }
+   ],
+   "semantic_assessment": "Selected Python/hook subprocess receives original input and the existing timeout. Exit2 becomes structured block with adapter exit0; other exits/output/stderr propagate. Accepted HW14 notice is added only after active guard success and compatible non-block/non-deny envelope, then delivery marker records after output; notice failure preserves guard verdict.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:05",
+   "frozen_row_sha256": "e797f2535bd5f5c8c109bd7bef40fead1c7c6ea71f117150f9969a1e0d5c5846",
+   "witnesses": [
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "_guard_timeout_seconds",
+     "start": 74,
+     "end": 85,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "837b0d2d427d95bd7291e3009046dd71f72bac833642ee7b9899a25f13184e84"
+    },
+    {
+     "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+     "symbol": "main",
+     "start": 169,
+     "end": 246,
+     "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+     "file_sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+     "span_sha256": "9dc5ba05b3b997499c11fe5548bac8c9a582f432b46dbdb0ea5d2f4c5c3fb5bd"
+    }
+   ],
+   "semantic_assessment": "Default30s or parsed configured float is passed to subprocess.run; TimeoutExpired becomes a structured block. Non-float parse falls back to default.",
+   "intake_variances": [
+    "Finite/nonnegative validation is not separately performed on a successfully parsed override; no universal process-tree cleanup is claimed from subprocess.run killing/reaping its direct child."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-pretool:06",
+   "frozen_row_sha256": "9ecf5b70b70483d624b673e45e74a2648f6d31eb3a5dae5eec22a287d41217f7",
+   "witnesses": [
+    {
+     "path": "core/pysrc/hostapi.py",
+     "symbol": "Host.iter_file_ops",
+     "start": 574,
+     "end": 669,
+     "git_oid": "1a7db1792ef432615a47a7cf4aed7714b16045dc",
+     "file_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+     "span_sha256": "80622caf6086814d180f88143f5cba7d3a89f2a5d824d86a01ed62af04c93b5e"
+    },
+    {
+     "path": "plugins/ca/hooks/_host.py",
+     "symbol": "ClaudeHost",
+     "start": 27,
+     "end": 37,
+     "git_oid": "8503a10cec96334795cc7b4e40812d11c12e5e57",
+     "file_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+     "span_sha256": "6c148c7344458291d6a2514644332bc6604a9cb9518deed4f3194117644528fa"
+    }
+   ],
+   "semantic_assessment": "Claude Write/Edit/MultiEdit/Notebook shapes normalize per-file content/old_string/replace_all/batched/notebook flags for shared guards. MultiEdit is explicitly batched, Notebook is opaque, and unknown path-shaped payload defaults to write. This normalization is not proof every malformed nested shape is accepted or safe.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:codex-pretool finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

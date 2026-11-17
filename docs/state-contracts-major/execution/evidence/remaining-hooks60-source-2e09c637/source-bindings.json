@@ -1,0 +1,661 @@
+{
+ "schema": "codearbiter.source-inspection-bindings/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "observed_HEAD_before": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "prior_healthy_inspection_epoch": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "physical_before": {
+    "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "bytes": 6365,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+    "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "bytes": 6365,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_arbiterstatelib.py": {
+   "path": "core/pysrc/_arbiterstatelib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+   "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "bytes": 14372,
+   "physical_before": {
+    "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "bytes": 14372,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+    "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "bytes": 14372,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_artifactlib.py": {
+   "path": "core/pysrc/_artifactlib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "physical_before": {
+    "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "bytes": 64924,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "d724140df90601c934c8f246906c71a9aba609f3",
+    "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+    "bytes": 64686,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_githooks.py": {
+   "path": "core/pysrc/_githooks.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+   "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "bytes": 64758,
+   "physical_before": {
+    "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "bytes": 64758,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+    "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "bytes": 64758,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_hooklib.py": {
+   "path": "core/pysrc/_hooklib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147,
+   "physical_before": {
+    "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "bytes": 49147,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+    "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "bytes": 49147,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_ledgerlib.py": {
+   "path": "core/pysrc/_ledgerlib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+   "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+   "bytes": 65565,
+   "physical_before": {
+    "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "bytes": 65565,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+    "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "bytes": 65565,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_modelib.py": {
+   "path": "core/pysrc/_modelib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "6d2e162e15cf0b7904ba5d04a0470c604bf474ce",
+   "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+   "bytes": 45342,
+   "physical_before": {
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "bytes": 45342,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "eecd013470e3d1db430b1686214f3d3aa02f9004",
+    "sha256": "18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de",
+    "bytes": 39306,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_planfilelib.py": {
+   "path": "core/pysrc/_planfilelib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+   "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "bytes": 28296,
+   "physical_before": {
+    "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "bytes": 28296,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+    "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "bytes": 28296,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_prunelib.py": {
+   "path": "core/pysrc/_prunelib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+   "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+   "bytes": 58415,
+   "physical_before": {
+    "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+    "bytes": 58415,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "ed0626c34ca98efecb4049f9321deb8bb263ace3",
+    "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "bytes": 58271,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_prunepolicy.py": {
+   "path": "core/pysrc/_prunepolicy.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+   "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+   "bytes": 10440,
+   "physical_before": {
+    "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "bytes": 10440,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+    "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "bytes": 10440,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_segmentslib.py": {
+   "path": "core/pysrc/_segmentslib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf",
+   "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+   "bytes": 14615,
+   "physical_before": {
+    "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+    "bytes": 14615,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf",
+    "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+    "bytes": 14615,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_taskboardlib.py": {
+   "path": "core/pysrc/_taskboardlib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+   "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "bytes": 69125,
+   "physical_before": {
+    "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "bytes": 69125,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "92f17a33ca8f853e938b11537f9b7f28deaba4f6",
+    "sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46",
+    "bytes": 59600,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_tribunalinventorylib.py": {
+   "path": "core/pysrc/_tribunalinventorylib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+   "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+   "bytes": 33101,
+   "physical_before": {
+    "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "bytes": 33101,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "8103dfb8e48ae62c3b36fb5557c71075bd409577",
+    "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "bytes": 33101,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_tribunalrunlib.py": {
+   "path": "core/pysrc/_tribunalrunlib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+   "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+   "bytes": 40445,
+   "physical_before": {
+    "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "bytes": 40445,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+    "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "bytes": 40445,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_workflowrecoverylib.py": {
+   "path": "core/pysrc/_workflowrecoverylib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "a211da361e2fa03333b98fce0260687af330079d",
+   "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+   "bytes": 104162,
+   "physical_before": {
+    "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "bytes": 104162,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_worklib.py": {
+   "path": "core/pysrc/_worklib.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "physical_before": {
+    "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "bytes": 18760,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+    "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "bytes": 18760,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/doctor.py": {
+   "path": "core/pysrc/doctor.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "d3b81bdcc21fb02977936ac51151db9086ad3397",
+   "sha256": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+   "bytes": 28315,
+   "physical_before": {
+    "sha256": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+    "bytes": 28315,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "844fa0c4a43805c590bdd1d7b67936075cc767c6",
+    "sha256": "fe65358e9ea7ac2968e6ed2bf60d3cdd9a762f1a494ef5316daa8102cce6eafa",
+    "bytes": 27941,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/hostapi.py": {
+   "path": "core/pysrc/hostapi.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "1a7db1792ef432615a47a7cf4aed7714b16045dc",
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "bytes": 38083,
+   "physical_before": {
+    "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "bytes": 38083,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "207e3f257f993265bf8984cd4f5a8bdd5e47db23",
+    "sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+    "bytes": 38083,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/prune-transcript.py": {
+   "path": "core/pysrc/prune-transcript.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "f6a8bfb89b12d225a323c327d8792442ea28af8f",
+   "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+   "bytes": 10814,
+   "physical_before": {
+    "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+    "bytes": 10814,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "f6a8bfb89b12d225a323c327d8792442ea28af8f",
+    "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+    "bytes": 10814,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/taskwrite.py": {
+   "path": "core/pysrc/taskwrite.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686,
+   "physical_before": {
+    "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "bytes": 22686,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+    "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "bytes": 22686,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/tribunal.py": {
+   "path": "core/pysrc/tribunal.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "c3f6ca2ab5ec9a6717878de32fa277d354ca6f84",
+   "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+   "bytes": 6336,
+   "physical_before": {
+    "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+    "bytes": 6336,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "c3f6ca2ab5ec9a6717878de32fa277d354ca6f84",
+    "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+    "bytes": 6336,
+    "equal_current": true
+   }
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "path": "docs/state-contracts-major/PROGRAM.md",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "physical_before": {
+    "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "bytes": 7910,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "physical_before": {
+    "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "bytes": 385316,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "path": "docs/state-contracts-major/contracts/program.json",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "physical_before": {
+    "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "bytes": 6403,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "path": "docs/state-contracts-major/contracts/tasks.json",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "physical_before": {
+    "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "bytes": 331224,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "physical_before": {
+    "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "bytes": 3185278,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": null,
+    "sha256": null,
+    "bytes": null,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-codex/hooks/_host.py": {
+   "path": "plugins/ca-codex/hooks/_host.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+   "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+   "bytes": 15607,
+   "physical_before": {
+    "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+    "bytes": 15607,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "ac77f39e07408c3d8dc0f34139a89db02dc91bbf",
+    "sha256": "30fbef97ea3d72c30825b7ad43b589164b7cf587a8954d188344535f7f1c425d",
+    "bytes": 15607,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-codex/hooks/pre-tool-adapter.py": {
+   "path": "plugins/ca-codex/hooks/pre-tool-adapter.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "a5fd6041a21efa210aa9aa519b39e12e02307dd0",
+   "sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+   "bytes": 12134,
+   "physical_before": {
+    "sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+    "bytes": 12134,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "eb60f6c50e9b79a1f88576e0cc5ecd6d1551acaa",
+    "sha256": "8d7b45a967dc0750c748f3230624010ac6f8ffc854d98ecbf039733653b9abcb",
+    "bytes": 10352,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-pi/hooks/_host.py": {
+   "path": "plugins/ca-pi/hooks/_host.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "c2992d5c434636749e00c37dee8a1982963ff4c3",
+   "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+   "bytes": 4549,
+   "physical_before": {
+    "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+    "bytes": 4549,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "46200d7accb5aba2db3aef0015dea2593de0fe5f",
+    "sha256": "d1946b8f366ca40b2fd84012e946239e172dc6486a3afb2d7280c716b72a959c",
+    "bytes": 4549,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-pi/hooks/pi-bridge.py": {
+   "path": "plugins/ca-pi/hooks/pi-bridge.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+   "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+   "bytes": 23604,
+   "physical_before": {
+    "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+    "bytes": 23604,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "686983bab2b8f62bd64071018b4d4fcc9af6c70b",
+    "sha256": "19e2512a091bfca5c51e4e1701c091f6b6033052394adb11d98697e2d0705197",
+    "bytes": 22958,
+    "equal_current": false
+   }
+  },
+  "plugins/ca/hooks/_host.py": {
+   "path": "plugins/ca/hooks/_host.py",
+   "subject": "literal immutable Git blob",
+   "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+   "git_oid": "8503a10cec96334795cc7b4e40812d11c12e5e57",
+   "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "bytes": 1689,
+   "physical_before": {
+    "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "bytes": 1689,
+    "raw_equal_to_subject": true,
+    "LF_normalized_equal": true
+   },
+   "baseline": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "80f6cdcc220477d8faf09a887c97b5f2998c743d",
+    "sha256": "e7225f47e7bbc3626f6ae247d6776432dad6712f4249248d9a5d794555424ad1",
+    "bytes": 1689,
+    "equal_current": false
+   }
+  }
+ },
+ "transport_rule": "Literal Git bytes bind positive inputs. Separate physical Markdown CRLF/LF facts are nonexecuted source-inspection transport facts only; executable inputs never normalized."
+}
