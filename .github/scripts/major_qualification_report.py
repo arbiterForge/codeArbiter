@@ -3578,6 +3578,12 @@ def main(argv=None):
                     req.setdefault("native_module_sha256", {})[order] = pin
             run = readiness.api(f"actions/runs/{run_id}")
             native_components[mapped_keys[0]] = authenticate_component(req, run, artifacts, jobs, "windows/amd64")
+        source_payload_names = {
+            SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, HOOK_REVIEW_SOURCE_PAYLOAD,
+            *TS_PROFILE_PAYLOADS.values(),
+            *(spec["payload"] for spec in PYTHON_FINDING_PROFILES.values()),
+            "major-source-inputs-mapped-work-windows",
+        }
         payloads = {}
         for item in args.payload_root:
             name, path = item.split("=", 1)
@@ -3589,8 +3595,9 @@ def main(argv=None):
                 payloads[name] = authenticate_native_consumption(path, native_components[mapped_keys[0]])
                 require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
             else:
-                payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
-                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, HOOK_REVIEW_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
+                payloads[name] = authenticated_payload(
+                    found[0], req, path, source_job=matching[0] if name in source_payload_names else None,
+                )
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

@@ -4364,6 +4364,67 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 path=repo/'tools/test_measurement_contracts.py';path.unlink()
                 with self.subTest(profile=profile,mutation='missing'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
 
+    def test_emit_joins_both_python_finding_source_payloads_to_their_uploaders(self):
+        for cell in ('disposition:findings:HOOK-F03', 'disposition:findings:C-F07'):
+            profile = self.EXPECTED[cell]['profile']
+            # Keep the actual profile's role and uploader. Use one inert input
+            # to exercise the report and archive join without replaying a suite.
+            original = owner.PYTHON_FINDING_PROFILES[profile]
+            path = self.EXPECTED[cell]['script']
+            tiny = dict(original, paths=frozenset({path}))
+            with (self.subTest(profile=profile),
+                  tempfile.TemporaryDirectory(prefix='ca-python-source-emit-') as directory,
+                  mock.patch.dict(owner.PYTHON_FINDING_PROFILES, {profile: tiny})):
+                root = Path(directory).resolve()
+                repo = root / 'repo'
+                code = b'# inert source for emitter join\n'
+                source = repo / path
+                source.parent.mkdir(parents=True)
+                source.write_bytes(code)
+                recipe, spec, req, payload, observed, group, _ = self.fixture(cell)
+                manifest = payload['documents'][owner.SOURCE_MANIFEST]
+                manifest['members'][0].update(sha256=owner.readiness.digest(code), bytes=len(code))
+                raw = json.dumps(manifest).encode('utf8')
+                observed['source_input_binding']['manifest_sha256'] = owner.readiness.digest(raw)
+                archive = io.BytesIO()
+                with zipfile.ZipFile(archive, 'w') as zipped:
+                    zipped.writestr(path, code)
+                    zipped.writestr(owner.SOURCE_MANIFEST, raw)
+                (repo / '.github/major-test-selections.json').write_text(
+                    json.dumps({'schema': owner.SELECTIONS, 'groups': [group]}), encoding='utf8')
+                observation = root / 'observation.json'
+                observation.write_text(json.dumps(observed), encoding='utf8')
+                metadata = {'id': 8, 'name': spec['payload']}
+                step = {'name': spec['upload'], 'status': 'completed', 'conclusion': 'success'}
+                job = {'id': 9, 'name': spec['job'], 'status': 'in_progress', 'conclusion': None, 'steps': [step]}
+                identity = {**req, 'clean': True}
+                env = {'GITHUB_ACTIONS': 'true', 'GITHUB_REPOSITORY': owner.readiness.REPOSITORY,
+                       'GITHUB_REF': 'refs/heads/major/state-contracts', 'GITHUB_EVENT_NAME': 'push',
+                       'GITHUB_SHA': req['source_commit'], 'GITHUB_RUN_ID': str(req['ci_run_id'])}
+                out = root / 'qualification.json'
+                stderr = io.StringIO()
+                argv = ['emit', '--repo', str(repo), '--output', str(out), '--job-name', spec['job'],
+                        '--observation', recipe['observation'] + '=' + str(observation),
+                        '--payload-root', spec['payload'] + '=' + str(repo)]
+                with (mock.patch.dict(os.environ, env, clear=True),
+                      mock.patch.object(owner, 'source_identity', return_value=identity),
+                      mock.patch.object(owner, 'source_input_snapshot', return_value={**identity, 'members': manifest['members']}),
+                      mock.patch.object(owner.readiness, 'collect', return_value=(req, None, [metadata], [job])),
+                      mock.patch.object(owner.readiness, 'artifact_bytes', return_value=archive.getvalue()),
+                      mock.patch('sys.stderr', stderr)):
+                    # Refuse a merely named step that did not actually complete.
+                    step['conclusion'] = 'failure'
+                    self.assertEqual(owner.main(argv), 1)
+                    self.assertFalse(out.exists())
+                    step['conclusion'] = 'success'
+                    stderr.seek(0)
+                    stderr.truncate()
+                    self.assertEqual(owner.main(argv), 0, stderr.getvalue())
+                result, = owner.load_json(out)['results']
+                self.assertEqual(result['cell'], cell)
+                self.assertEqual(result['selected_population'], len(recipe['selectors']))
+                self.assertEqual(result['payload_artifact_id'], metadata['id'])
+
 
 class HookF02CompleteCompositionTests(unittest.TestCase):
     CELL='disposition:findings:HOOK-F02'
