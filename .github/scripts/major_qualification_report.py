@@ -633,6 +633,64 @@ TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualifi
                     "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",
                         "disposition:transitions:S51:01", "disposition:transitions:S51:02",
                         "disposition:transitions:S52:06"))}
+
+# Additional finite findings use the same original typed source profiles.
+# Every required assertion must survive selection; this is not installed/task credit.
+TS_FINDING_RECIPES = {
+    'disposition:findings:SF01': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects',
+    ))},
+    'disposition:findings:SF02': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session',
+    ))},
+    'disposition:findings:SF03': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once',
+    ))},
+    'disposition:findings:SF12': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads',
+    ))},
+    'disposition:findings:SF08': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input',
+        'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box',
+        'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box',
+    ))},
+    'disposition:findings:SF10': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target',
+    ))},
+    'disposition:findings:SF09': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment',
+        'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box',
+    ))},
+}
+
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
 
 
@@ -2307,7 +2365,14 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 elif profile == SDK_SOURCE_PROFILE:
                     require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
                 else:
-                    require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
+                    if cell in TS_FINDING_RECIPES:
+                        recipe = TS_FINDING_RECIPES[cell]
+                        require(set(group["cells"]) == {cell} and profile == recipe["profile"]
+                                and job_name == TS_PROFILE_JOBS[profile]
+                                and set(group["selectors"]) == recipe["selectors"],
+                                "TS profile requires its complete exact finite finding composition")
+                    else:
+                        require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
                 admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
             if group["proof_kind"] == "native-module":
                 native_bindings.append(observed.get("native_binding"))

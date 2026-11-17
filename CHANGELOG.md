@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Add closed original-observation mappings for seven finite Pi and Sandbox findings, retaining exact named selectors and existing job authority.
 - Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
 - Clarify initialization and Sandbox discovery owners; retain original review-policy evidence and select fast native-suite guards for every owned input.
 - Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.

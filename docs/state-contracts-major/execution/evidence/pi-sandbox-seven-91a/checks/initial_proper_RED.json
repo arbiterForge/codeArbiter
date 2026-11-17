@@ -1,0 +1,23 @@
+{
+ "argv": [
+  "C:/Python314/python.exe",
+  "-I",
+  "-S",
+  "-B",
+  "-X",
+  "utf8",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\controller.py",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\candidate",
+  "PiSandboxFiniteFindingRoutingTests.test_a_complete_existing_finite_findings_reach_the_original_report_boundary"
+ ],
+ "exit_code": 1,
+ "seconds": 2.88084080000408,
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "3512c318180ef25c94f3f28c83dc4fed15abfe705a01fcee219b2b94517c1a51",
+ "subjects": {
+  ".github\\scripts\\major_qualification_report.py": "441e325950b9bc49db3f31b03058d6fb6fdba1eb7b235404518f320f6a268270",
+  ".github\\scripts\\test_major_qualification_report.py": "db0139f4dab7a8fac5fcf321fbcbe90c57cd088808ec4dcfea462de35108bfc3",
+  ".github\\major-test-selections.json": "8018ffd55e8c1fc8ba032d9086948dff35342df7f7fcdd750d6de7a2efc9fcb9",
+  ".github\\major-qualification-policy.json": "68bb6a70f063b7fc4845eea1fbeaad5a8e49cb57d65a492c13f888e5f9f273dd"
+ }
+}

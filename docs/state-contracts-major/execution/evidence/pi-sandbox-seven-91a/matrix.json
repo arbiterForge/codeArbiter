@@ -1,0 +1,1555 @@
+{
+ "source_epoch": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "cells": [
+  {
+   "cell": "disposition:findings:SF01",
+   "frozen_record": {
+    "finding_id": "SF01",
+    "title": "Pi author child has no usable mutation authorization path",
+    "baseline_status": "source-confirmed and isolated source-module probe",
+    "treatment": "IMPLEMENT_AUTHORIZED_CAPABILITY",
+    "status": "PLANNED",
+    "task_ids": [
+     "PI-D01",
+     "PI-D02",
+     "PI-D03",
+     "PI-D04",
+     "PI-D05",
+     "PI-D06",
+     "PI-D07"
+    ],
+    "decision_ids": [
+     "D-PI"
+    ],
+    "composed_scenario_ids": [
+     "SEQ-12",
+     "SEQ-13",
+     "SEQ-14"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "d04a5e72344c0992fbe6fde9a06384ea3102213805e8e1e5932bcf7648da72b4",
+   "finite_clause_assessment": {
+    "guard": "Parent final permission gate precedes exact effect; bridge refusal, disabled/trust loss, token/replay/sequence/expiry/lifecycle refusal remain effective.",
+    "effect": "Child proxy crosses actual loopback channel and parent enforcement into an owned durable file write; callback and tool factories are fixture ports.",
+    "retry": "Duplicate exact request joins one effect; changed identity/revoked or expired grant cannot repeat/admit effects."
+   },
+   "profile": "pi-tools-v1",
+   "job": "Coverage union (Pi)  <os: windows-latest>",
+   "observation": "pi-tools",
+   "payload": "major-source-inputs-pi-windows-coverage",
+   "selected_assertions": {
+    "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect": {
+     "source_path": "plugins/ca-pi/tools/test/parent-delegation.test.ts",
+     "source_sha256": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+     "start_line": 135,
+     "end_line": 174,
+     "span_sha256": "f422b873458ce4b115a76254d6826ac1f459441bff5bef5311020aa32d19c100",
+     "assertion_lines": [
+      {
+       "line": 162,
+       "text": "expect(outcome.execution).toBe(\"completed\"); expect(outcome.observation).toBe(\"exact\");"
+      },
+      {
+       "line": 163,
+       "text": "expect(await readFile(join(root, \"approved.txt\"), \"utf8\")).toBe(\"exact approved bytes\");"
+      },
+      {
+       "line": 164,
+       "text": "expect(prompts).toBe(1); expect(bridgeCalls).toBe(1); expect(await journal.unresolved()).toEqual([]);"
+      },
+      {
+       "line": 166,
+       "text": "expect((await child.execute(\"write\", { path: \"refused.txt\", content: \"never\" })).admission).toBe(\"denied\");"
+      },
+      {
+       "line": 167,
+       "text": "expect(prompts).toBe(1); await expect(readFile(join(root, \"refused.txt\"))).rejects.toThrow();"
+      },
+      {
+       "line": 169,
+       "text": "expect((await child.execute(\"write\", { path: \"disabled.txt\", content: \"never\" })).admission).toBe(\"revoked\");"
+      },
+      {
+       "line": 171,
+       "text": "expect((await child.execute(\"write\", { path: \"untrusted.txt\", content: \"never\" })).admission).toBe(\"revoked\");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle": {
+     "source_path": "plugins/ca-pi/tools/test/delegation-session.test.ts",
+     "source_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+     "start_line": 16,
+     "end_line": 28,
+     "span_sha256": "aae6ab305119e095ab7127b55cecd48e7e88ed51cb6830fa27f836300fb41596",
+     "assertion_lines": [
+      {
+       "line": 26,
+       "text": "expect(signal?.aborted).toBe(true); expect((await pending).execution).toBe(\"outcome-unknown\"); await session.settle();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes": {
+     "source_path": "plugins/ca-pi/tools/test/delegation-session.test.ts",
+     "source_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+     "start_line": 29,
+     "end_line": 44,
+     "span_sha256": "b5008bce8614ae67ccab882acbfa6faa6bbb8c03732a5254a7f3bd071820197c",
+     "assertion_lines": [
+      {
+       "line": 37,
+       "text": "expect(results.map((r) => r.execution)).toEqual([\"completed\", \"completed\"]);"
+      },
+      {
+       "line": 38,
+       "text": "expect(seen.map((r) => r.seq)).toEqual([1, 2]);"
+      },
+      {
+       "line": 39,
+       "text": "expect(Object.keys(seen[0]!).sort()).toEqual([\"digest\", \"params\", \"requestId\", \"seq\", \"tool\", \"v\"]);"
+      },
+      {
+       "line": 41,
+       "text": "expect((await client.execute(\"write\", { path: \"three.txt\", content: \"three\" })).admission).toBe(\"revoked\");"
+      },
+      {
+       "line": 42,
+       "text": "expect(seen).toHaveLength(2);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects": {
+     "source_path": "plugins/ca-pi/tools/test/delegation-session.test.ts",
+     "source_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+     "start_line": 45,
+     "end_line": 54,
+     "span_sha256": "4658618fea28356a3ab90392ffed39838645f69939222541ba2dbf3435849562",
+     "assertion_lines": [
+      {
+       "line": 49,
+       "text": "const denied = await session.handle(\"not-the-parent-token\", request()); expect(denied.reason).toBe(\"token-invalid\");"
+      },
+      {
+       "line": 51,
+       "text": "expect(one).toEqual(replay); expect(effects).toBe(1);"
+      },
+      {
+       "line": 52,
+       "text": "expect((await session.handle(session.token, request(2, \"one\", \"changed\"))).reason).toBe(\"operation-id-reused\");"
+      },
+      {
+       "line": 53,
+       "text": "expect(effects).toBe(1);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population": {
+     "source_path": "plugins/ca-pi/tools/test/delegation-session.test.ts",
+     "source_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+     "start_line": 55,
+     "end_line": 61,
+     "span_sha256": "7b43ee1b64243185749af162b55f18566ff12a045bee18acbc881672c121097c",
+     "assertion_lines": [
+      {
+       "line": 57,
+       "text": "expect((await session.handle(session.token, request())).execution).toBe(\"completed\");"
+      },
+      {
+       "line": 58,
+       "text": "expect((await session.handle(session.token, request(1, \"two\"))).reason).toBe(\"sequence-invalid\");"
+      },
+      {
+       "line": 59,
+       "text": "expect((await session.handle(session.token, request(2, \"two\"))).execution).toBe(\"completed\");"
+      },
+      {
+       "line": 60,
+       "text": "expect((await session.handle(session.token, request(3, \"three\"))).reason).toBe(\"grant-exhausted\");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects": {
+     "source_path": "plugins/ca-pi/tools/test/delegation-session.test.ts",
+     "source_sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+     "start_line": 62,
+     "end_line": 72,
+     "span_sha256": "af4ffcd3c1900a47148a5de93d2ab1e5e8d92830a59cb3d386eb2b0c396acf5b",
+     "assertion_lines": [
+      {
+       "line": 66,
+       "text": "expect((await session.handle(session.token, '{\"grant\":\"all\"}')).reason).toBe(\"protocol-invalid\");"
+      },
+      {
+       "line": 67,
+       "text": "now = 501; expect((await session.handle(session.token, request())).admission).toBe(\"expired\");"
+      },
+      {
+       "line": 68,
+       "text": "now = 1; current = false; expect((await session.handle(session.token, request())).admission).toBe(\"revoked\");"
+      },
+      {
+       "line": 69,
+       "text": "current = true; session.revoke(); expect((await session.handle(session.token, request())).admission).toBe(\"revoked\");"
+      },
+      {
+       "line": 70,
+       "text": "expect(effects).toBe(0);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF02",
+   "frozen_record": {
+    "finding_id": "SF02",
+    "title": "Pi ready state can outlive failed persona initialization",
+    "baseline_status": "source-confirmed",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "PI-L01"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-15"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "2a70993a11b70ba55d140d0c18515289a71ca774679e52dfedf08bcef3d086f5",
+   "finite_clause_assessment": {
+    "guard": "Required persona readiness is independent of successful bridge health; missing/empty/failed persona never reports governed readiness.",
+    "effect": "Prompt, dispatch lease and status consistently remain unavailable until successful current-generation persona load.",
+    "retry": "Successful retry restores persona exactly once; retired-generation result cannot populate new session."
+   },
+   "profile": "pi-tools-v1",
+   "job": "Coverage union (Pi)  <os: windows-latest>",
+   "observation": "pi-tools",
+   "payload": "major-source-inputs-pi-windows-coverage",
+   "selected_assertions": {
+    "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable": {
+     "source_path": "plugins/ca-pi/tools/test/activation.test.ts",
+     "source_sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+     "start_line": 890,
+     "end_line": 906,
+     "span_sha256": "3c0ff87486c4df67d550935a26ae40ed178232e44055d3e18ca4efab965965bf",
+     "assertion_lines": [
+      {
+       "line": 893,
+       "text": "expect(h.host.statusCalls.at(-1)?.text).toContain(\"persona unavailable\");"
+      },
+      {
+       "line": 894,
+       "text": "expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);"
+      },
+      {
+       "line": 895,
+       "text": "expect(h.dispatchLifecycle()).toBeUndefined();"
+      },
+      {
+       "line": 899,
+       "text": "expect(h.bridge.calls.map((call) => call.event)).toEqual([\"session_start\", \"before_agent_start\"]);"
+      },
+      {
+       "line": 900,
+       "text": "expect(result?.systemPrompt).toContain(\"codeArbiter persona unavailable\");"
+      },
+      {
+       "line": 902,
+       "text": "expect(h.host.statusCalls.at(-1)?.text).toContain(\"persona unavailable\");"
+      },
+      {
+       "line": 903,
+       "text": "expect(h.host.statusCalls.map((call) => call.text)).not.toContain(GOVERNED);"
+      },
+      {
+       "line": 904,
+       "text": "expect(h.dispatchLifecycle()).toBeUndefined();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once": {
+     "source_path": "plugins/ca-pi/tools/test/activation.test.ts",
+     "source_sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+     "start_line": 907,
+     "end_line": 928,
+     "span_sha256": "b15a9d278eebe06e4a24d487b52a12947e03fedad2dad75a5488c5757b3c1473",
+     "assertion_lines": [
+      {
+       "line": 915,
+       "text": "expect(h.dispatchLifecycle()).toBeUndefined();"
+      },
+      {
+       "line": 917,
+       "text": "expect(attempts).toBe(2);"
+      },
+      {
+       "line": 918,
+       "text": "expect(first?.systemPrompt).toContain(\"BASE\\n\\nRECOVERED PERSONA\");"
+      },
+      {
+       "line": 919,
+       "text": "expect(first?.systemPrompt.split(\"RECOVERED PERSONA\")).toHaveLength(2);"
+      },
+      {
+       "line": 920,
+       "text": "expect(first?.systemPrompt).not.toContain(\"persona unavailable\");"
+      },
+      {
+       "line": 921,
+       "text": "expect(h.dispatchLifecycle()).toBeDefined();"
+      },
+      {
+       "line": 923,
+       "text": "expect(h.host.statusCalls.at(-1)?.text).toBe(GOVERNED);"
+      },
+      {
+       "line": 926,
+       "text": "expect(attempts).toBe(2);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable": {
+     "source_path": "plugins/ca-pi/tools/test/activation.test.ts",
+     "source_sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+     "start_line": 929,
+     "end_line": 938,
+     "span_sha256": "cf917b1cde1ee172f17a6ce4ba7d69b7a8f23d899d7ce2e844ae2016dc81defe",
+     "assertion_lines": [
+      {
+       "line": 933,
+       "text": "expect(texts).toContain(\"codeArbiter host: pi starting\");"
+      },
+      {
+       "line": 934,
+       "text": "expect(texts.at(-1)).toBe(GOVERNED);"
+      },
+      {
+       "line": 935,
+       "text": "expect(texts.some((text) => text?.includes(\"persona unavailable\"))).toBe(false);"
+      },
+      {
+       "line": 936,
+       "text": "expect(h.dispatchLifecycle()).toBeDefined();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed": {
+     "source_path": "plugins/ca-pi/tools/test/activation.test.ts",
+     "source_sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+     "start_line": 939,
+     "end_line": 945,
+     "span_sha256": "3df0077d3b82c00428f0dd4e1ed2a48a55d7a7db7e1ff5301c87d03df4f1a0ba",
+     "assertion_lines": [
+      {
+       "line": 942,
+       "text": "expect(h.host.statusCalls.at(-1)?.text).toContain(\"persona unavailable\");"
+      },
+      {
+       "line": 943,
+       "text": "expect(h.dispatchLifecycle()).toBeUndefined();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session": {
+     "source_path": "plugins/ca-pi/tools/test/activation.test.ts",
+     "source_sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+     "start_line": 946,
+     "end_line": 962,
+     "span_sha256": "b4e52a252f2cc982128bb111718f3ac63543c839e9e98d7a5c2e000289c59398",
+     "assertion_lines": [
+      {
+       "line": 954,
+       "text": "await vi.waitFor(() => expect(calls).toBe(1));"
+      },
+      {
+       "line": 959,
+       "text": "expect(result?.systemPrompt).toContain(\"NEW PERSONA\");"
+      },
+      {
+       "line": 960,
+       "text": "expect(result?.systemPrompt).not.toContain(\"OLD PERSONA\");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF03",
+   "frozen_record": {
+    "finding_id": "SF03",
+    "title": "Sidebar installs after disposal when metrics promise resolves late",
+    "baseline_status": "source-confirmed and isolated source-module probe",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "PI-L02"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-15"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "ecd4bba2c39f922ee5288a9c1805d389adf6f584ac6fcde92096d1d4715b15ae",
+   "finite_clause_assessment": {
+    "guard": "Disposal/off retires pending installation generation before metrics resolution.",
+    "effect": "Late metrics cannot replace native render/terminal hooks or install into disposed session.",
+    "retry": "New session can install once in either old/new resolution order; old failure does not degrade new session."
+   },
+   "profile": "pi-tools-v1",
+   "job": "Coverage union (Pi)  <os: windows-latest>",
+   "observation": "pi-tools",
+   "payload": "major-source-inputs-pi-windows-coverage",
+   "selected_assertions": {
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 296,
+     "end_line": 317,
+     "span_sha256": "40e7c80c5432dc839e974c824d747d1ddbe41f209e5f2937d2d355995fca223b",
+     "assertion_lines": [
+      {
+       "line": 304,
+       "text": "expect(manager.health().installed).toBe(false);"
+      },
+      {
+       "line": 305,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      },
+      {
+       "line": 306,
+       "text": "expect(tui.doRender).toBe(nativeRender);"
+      },
+      {
+       "line": 310,
+       "text": "expect(manager.health().installed).toBe(false);"
+      },
+      {
+       "line": 311,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      },
+      {
+       "line": 312,
+       "text": "expect(tui.doRender).toBe(nativeRender);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 318,
+     "end_line": 332,
+     "span_sha256": "c84d6c9087943caa713d319abacff296eff061ff132eb6ffaa0d26d46033b67d",
+     "assertion_lines": [
+      {
+       "line": 327,
+       "text": "expect(manager.health()).toMatchObject({ expected: false, installed: false });"
+      },
+      {
+       "line": 328,
+       "text": "expect(manager.health().reason).toBeUndefined();"
+      },
+      {
+       "line": 329,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      },
+      {
+       "line": 330,
+       "text": "expect(tui.doRender).toBe(nativeRender);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 372,
+     "end_line": 398,
+     "span_sha256": "4ef4fe55a9c6c1b3cd13c390d9d2acc2dd71ea43dbe6ef665034a3a548872f1b",
+     "assertion_lines": [
+      {
+       "line": 382,
+       "text": "expect(requests).toHaveLength(2);"
+      },
+      {
+       "line": 386,
+       "text": "expect(manager.health().installed).toBe(false);"
+      },
+      {
+       "line": 387,
+       "text": "expect(tui.doRender).toBe(nativeRender);"
+      },
+      {
+       "line": 390,
+       "text": "expect(manager.health().installed).toBe(true);"
+      },
+      {
+       "line": 391,
+       "text": "expect(h.terminal.columns).toBe(140 - 41);"
+      },
+      {
+       "line": 395,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      },
+      {
+       "line": 396,
+       "text": "expect(tui.doRender).toBe(nativeRender);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 399,
+     "end_line": 411,
+     "span_sha256": "2bfdf6f75251fecb668c97e128d24c0b69a3bfd7d98bf8bd14ad4d5895f66157",
+     "assertion_lines": [
+      {
+       "line": 408,
+       "text": "expect(manager.health()).toMatchObject({ expected: true, installed: false, degraded: false });"
+      },
+      {
+       "line": 409,
+       "text": "expect(manager.health().reason).toBeUndefined();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 413,
+     "end_line": 431,
+     "span_sha256": "6e198d1cb97dbed73d1c2640e2ffebfe49491c8343f241ecf0607e61374b82d8",
+     "assertion_lines": [
+      {
+       "line": 422,
+       "text": "expect(requests).toHaveLength(2);"
+      },
+      {
+       "line": 425,
+       "text": "expect(manager.health()).toMatchObject({ expected: true, installed: true });"
+      },
+      {
+       "line": 426,
+       "text": "expect(h.terminal.columns).toBe(140 - 41);"
+      },
+      {
+       "line": 428,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once": {
+     "source_path": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+     "source_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+     "start_line": 413,
+     "end_line": 431,
+     "span_sha256": "6e198d1cb97dbed73d1c2640e2ffebfe49491c8343f241ecf0607e61374b82d8",
+     "assertion_lines": [
+      {
+       "line": 422,
+       "text": "expect(requests).toHaveLength(2);"
+      },
+      {
+       "line": 425,
+       "text": "expect(manager.health()).toMatchObject({ expected: true, installed: true });"
+      },
+      {
+       "line": 426,
+       "text": "expect(h.terminal.columns).toBe(140 - 41);"
+      },
+      {
+       "line": 428,
+       "text": "expect(h.terminal.columns).toBe(140);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF12",
+   "frozen_record": {
+    "finding_id": "SF12",
+    "title": "Private Pi artifact prompt is not general installed Pi approval support",
+    "baseline_status": "source-confirmed",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "PI-D06",
+     "PI-C01"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-31"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "84bc8ac8c06a01057df224422e0399046265a7a61aebbe66444bf22f2c09ce99",
+   "finite_clause_assessment": {
+    "guard": "Compatibility matrix makes optional private approval unavailable on admitted1.5, runtime-gated only on legacy1.0.2 and unsupported elsewhere.",
+    "effect": "Synthetic private dialog requires exact launch/current caller bindings and preserves wrong-reply/uncertain refusal; this is not installed/general approval evidence.",
+    "retry": "No ordinary authority or support is inferred from legacy/synthetic results; no production doctor or human consent claim."
+   },
+   "profile": "pi-tools-v1",
+   "job": "Coverage union (Pi)  <os: windows-latest>",
+   "observation": "pi-tools",
+   "payload": "major-source-inputs-pi-windows-coverage",
+   "selected_assertions": {
+    "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support": {
+     "source_path": "plugins/ca-pi/tools/test/package.test.ts",
+     "source_sha256": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+     "start_line": 367,
+     "end_line": 372,
+     "span_sha256": "c2b58a5445adf438d64da99842aab42c6a0cf6b7b2fa0d3d3683fb0004576618",
+     "assertion_lines": [
+      {
+       "line": 368,
+       "text": "expect(privateApprovalCapability(\"1.5.0\")).toEqual({ state: \"unavailable\", evidenceMode: \"runtime-gated\" });"
+      },
+      {
+       "line": 369,
+       "text": "expect(privateApprovalCapability(\"1.0.2\")).toEqual({ state: \"legacy-runtime-gated\", evidenceMode: \"runtime-gated\" });"
+      },
+      {
+       "line": 370,
+       "text": "expect(compatibilityDirection({ piVersion: \"1.0.2\", nodeVersion: \"24.18.0\", pythonMajor: 3 })).not.toBeNull();"
+      },
+      {
+       "line": 371,
+       "text": "expect(privateApprovalCapability(\"1.5.0-rc.1\").state).toBe(\"unsupported-runtime\");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings": {
+     "source_path": "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+     "source_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+     "start_line": 33,
+     "end_line": 43,
+     "span_sha256": "c93c4d0cfe088ba08d87d6859ad174867b65d1c53120875b25b50a6ddeff5c9b",
+     "assertion_lines": [
+      {
+       "line": 35,
+       "text": "expect(await candidate.runApprovalDialog(f.context, f.options)).toEqual({ status: \"approved\", artifact_id: pending.artifact_id });"
+      },
+      {
+       "line": 37,
+       "text": "expect(request.input.reply).toBe(\"approve SPEC-EXAMPLE synthetic-pi-token\");"
+      },
+      {
+       "line": 38,
+       "text": "expect(request.input.pending_sha256).toBe(pending.pending_sha256);"
+      },
+      {
+       "line": 39,
+       "text": "expect(request.sessionId).toBe(sessionId);"
+      },
+      {
+       "line": 40,
+       "text": "expect(request.input.generation).toMatch(/^[0-9a-f-]{36}$/u);"
+      },
+      {
+       "line": 41,
+       "text": "expect(f.input).toHaveBeenCalledOnce();"
+      },
+      {
+       "line": 42,
+       "text": "expect(f.input.mock.calls[0]![0]).toContain(pending.normative_sha256);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge": {
+     "source_path": "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+     "source_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+     "start_line": 55,
+     "end_line": 64,
+     "span_sha256": "898755104825c391690d30cf12d2c81482ee58b6817a997855031ee657a59f83",
+     "assertion_lines": [
+      {
+       "line": 61,
+       "text": "expect(await candidate.runApprovalDialog(f.context, f.options)).toEqual({ status: \"unavailable\" });"
+      },
+      {
+       "line": 62,
+       "text": "expect(create).not.toHaveBeenCalled(); expect(f.input).not.toHaveBeenCalled();"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval": {
+     "source_path": "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+     "source_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+     "start_line": 65,
+     "end_line": 72,
+     "span_sha256": "63d8a316eaa922947c943fb46975ae5169497a1a8df74a17bc8edb95b46c4095",
+     "assertion_lines": [
+      {
+       "line": 70,
+       "text": "expect(await candidate.runApprovalDialog(f.context, f.options)).toEqual({ status: \"unmatched\" });"
+      },
+      {
+       "line": 71,
+       "text": "expect(f.bridge.call.mock.calls[1]![0].input.reply).toBe(\" approve SPEC-EXAMPLE synthetic-pi-token \");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure": {
+     "source_path": "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+     "source_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+     "start_line": 73,
+     "end_line": 79,
+     "span_sha256": "22c735ae8ef413d21b3a561b06bc37dc55d5e5762130844dbfcaa895c1e8a803",
+     "assertion_lines": [
+      {
+       "line": 78,
+       "text": "expect(await candidate.runApprovalDialog(f.context, f.options)).toEqual({ status: \"outcome-unknown\" });"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads": {
+     "source_path": "plugins/ca-pi/tools/test/approval-dialog.test.ts",
+     "source_sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+     "start_line": 80,
+     "end_line": 90,
+     "span_sha256": "651eb48524779670ea423e77455002f32670eba9b2b1b8f81c03864d9c4e6b44",
+     "assertion_lines": [
+      {
+       "line": 83,
+       "text": "expect(candidate.validApprovalLaunch(args, entry, [], undefined)).toBe(true);"
+      },
+      {
+       "line": 85,
+       "text": "expect(candidate.validApprovalLaunch(changed, entry, [], undefined)).toBe(false);"
+      },
+      {
+       "line": 87,
+       "text": "expect(candidate.validApprovalLaunch(args, entry, [\"--import\", \"other.js\"], undefined)).toBe(false);"
+      },
+      {
+       "line": 88,
+       "text": "expect(candidate.validApprovalLaunch(args, entry, [], \"--import other.js\")).toBe(false);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF08",
+   "frozen_record": {
+    "finding_id": "SF08",
+    "title": "Sandbox dependency cache identity is tied to random checkout basename",
+    "baseline_status": "source-confirmed and isolated source-module probe",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "SBX-C01"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-19"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "d45b0ed470fde6d632680066da513bb7631b5340150545dc54c782b9575cf03a",
+   "finite_clause_assessment": {
+    "guard": "Cache reuse requires observed builder/platform/provenance identity, not tag existence; unavailable/malformed declared input cannot become an absent-input cache key.",
+    "effect": "Both existing real Docker builder cases use distinct staging directories and verify reused immutable labeled image, changed dependency image and independently surviving box.",
+    "retry": "Actual concurrent cold requests converge without an exactly-one-build promise; later hit observes published immutable identity."
+   },
+   "profile": "sandbox-tools-v1",
+   "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+   "observation": "sandbox-tools",
+   "payload": "major-source-inputs-sandbox-driver",
+   "selected_assertions": {
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 14,
+     "end_line": 24,
+     "span_sha256": "3d94b9ea2fa7936e585bc565ad363a022fe1828dca9587ddc1ce832b3c26908b",
+     "assertion_lines": [
+      {
+       "line": 21,
+       "text": "expect(a.tag).toBe(b.tag);"
+      },
+      {
+       "line": 22,
+       "text": "expect(a.reused && b.reused).toBe(true);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 25,
+     "end_line": 36,
+     "span_sha256": "fbffbde70c79c24f9013899b42b5d57a8b1e7e37e7d08b8ba9b156f66bcf76f8",
+     "assertion_lines": [
+      {
+       "line": 33,
+       "text": "expect(builds).toBe(2);"
+      },
+      {
+       "line": 34,
+       "text": "expect(a.tag).not.toBe(b.tag);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 102,
+     "end_line": 113,
+     "span_sha256": "96273330174e4287d6c45b08e4c762e38c1e45d7ffa6638e7e3d14dad0bd44a4",
+     "assertion_lines": [
+      {
+       "line": 109,
+       "text": "expect(initial.tag).not.toBe(arm.tag);expect(builds).toBe(2);"
+      },
+      {
+       "line": 110,
+       "text": "await expect(buildOrReuseImage(\"/tmp/a\",\"manifest\",{...deps,ensureNixpacks:async()=>({available:true,version:\"unavailable\"})})).rejects.toThrow(/malformed/);"
+      },
+      {
+       "line": 111,
+       "text": "expect(builds).toBe(2);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 114,
+     "end_line": 122,
+     "span_sha256": "6629a9be3869d8b154064d11a2b7ac775b06c643ad7a31f65c76bf8e99e93963",
+     "assertion_lines": [
+      {
+       "line": 120,
+       "text": "await expect(buildOrReuseImage(\"unused\",\"manifest\",deps)).rejects.toThrow(/malformed/);"
+      },
+      {
+       "line": 121,
+       "text": "expect(effects).toBe(0);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 123,
+     "end_line": 132,
+     "span_sha256": "1e7889c380b5e86608e800891155d3be73d4d3d5b1658ba2310c0d9b7d220d70",
+     "assertion_lines": [
+      {
+       "line": 129,
+       "text": "expect(runArgs).toContain(imageId);expect(runArgs).not.toContain(\"ca-sbx:v2-fixture\");"
+      },
+      {
+       "line": 130,
+       "text": "expect(result).toMatchObject({imageId,network:{requested:\"offline\",effective:\"offline\",available:true}});"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 145,
+     "end_line": 157,
+     "span_sha256": "94753a3ce727b6eb398742f2ad42c9a0bcac4ed2a0a70cd0ccef1c183231f00f",
+     "assertion_lines": [
+      {
+       "line": 148,
+       "text": "expect(await readManifests(root,path)).toEqual([]);"
+      },
+      {
+       "line": 151,
+       "text": "expect(valid.map(input=>({path:input.path,bytes:Buffer.from(input.bytes).toString(\"utf8\")}))).toEqual([{path:\"package.json\",bytes:\"{\\\"name\\\":\\\"fixture\\\"}\"}]);"
+      },
+      {
+       "line": 155,
+       "text": "await expect(readManifests(root,path)).rejects.toThrow(/manifest.*unavailable.*\\.dockerignore/i);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 158,
+     "end_line": 166,
+     "span_sha256": "5d6adcdb3024e2cc620c27dfb2ca717c88b781cb1ea2fd247e689828a57949d5",
+     "assertion_lines": [
+      {
+       "line": 164,
+       "text": "await expect(readManifests(root,path)).rejects.toThrow(/manifest.*unavailable.*nixpacks\\.toml/i);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box": {
+     "source_path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+     "source_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+     "start_line": 41,
+     "end_line": 257,
+     "span_sha256": "02836820988157eb55f86ce7a78da01ea68b40ad36adef3a75ef38cfda876b4b",
+     "assertion_lines": [
+      {
+       "line": 46,
+       "text": "if (builder === \"nixpacks\") expect(installed.version).toBe(\"1.41.0\");"
+      },
+      {
+       "line": 88,
+       "text": "expect(actual, \"unique cold fixture tag must not preexist\").not.toBe(0);"
+      },
+      {
+       "line": 94,
+       "text": "expect(context.builder).toBe(builder);"
+      },
+      {
+       "line": 95,
+       "text": "expect(context.cacheKey).toMatch(/^[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 141,
+       "text": "expect(inspected.code).toBe(0);"
+      },
+      {
+       "line": 143,
+       "text": "expect(image.Id).toBe(result.imageId);"
+      },
+      {
+       "line": 144,
+       "text": "expect(image.Id).toMatch(/^sha256:[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 145,
+       "text": "expect(image.Config.Labels[CACHE_LABEL]).toBe(result.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 147,
+       "text": "expect(container.code).toBe(0);"
+      },
+      {
+       "line": 149,
+       "text": "expect(actual.Image).toBe(result.imageId);"
+      },
+      {
+       "line": 150,
+       "text": "expect(actual.State.Running).toBe(true);"
+      },
+      {
+       "line": 151,
+       "text": "expect(actual.HostConfig.NetworkMode).toBe(\"none\");"
+      },
+      {
+       "line": 152,
+       "text": "expect(actual.HostConfig.ReadonlyRootfs).toBe(true);"
+      },
+      {
+       "line": 153,
+       "text": "expect(actual.Config.User).toBe(\"1000:1000\");"
+      },
+      {
+       "line": 155,
+       "text": "expect(marker.code).toBe(0);"
+      },
+      {
+       "line": 156,
+       "text": "expect(marker.stdout).toBe(\"SBX_CACHE_OK\\n\");"
+      },
+      {
+       "line": 162,
+       "text": "expect(teardownIncomplete(removed)).toBe(false);"
+      },
+      {
+       "line": 167,
+       "text": "expect(builds).toHaveLength(1);"
+      },
+      {
+       "line": 169,
+       "text": "expect(second.image).toBe(first.image);"
+      },
+      {
+       "line": 170,
+       "text": "expect(second.imageId).toBe(first.imageId);"
+      },
+      {
+       "line": 171,
+       "text": "expect(staging.get(\"a1\")).not.toBe(staging.get(\"a2\"));"
+      },
+      {
+       "line": 172,
+       "text": "expect(builds).toHaveLength(1);"
+      },
+      {
+       "line": 174,
+       "text": "expect(inspected.code).toBe(0);"
+      },
+      {
+       "line": 176,
+       "text": "expect(image.Id).toMatch(/^sha256:[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 177,
+       "text": "expect(image.Config.Labels[CACHE_LABEL]).toBe(first.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 180,
+       "text": "expect(survivor.code).toBe(0);expect(survivor.stdout.trim()).toBe(\"true\");"
+      },
+      {
+       "line": 182,
+       "text": "expect(changed.image).not.toBe(first.image);"
+      },
+      {
+       "line": 183,
+       "text": "expect(changed.imageId).not.toBe(first.imageId);"
+      },
+      {
+       "line": 184,
+       "text": "expect(builds).toHaveLength(2);"
+      },
+      {
+       "line": 188,
+       "text": "for (const result of cold) expect(result.status).toBe(\"fulfilled\");"
+      },
+      {
+       "line": 190,
+       "text": "expect(one.image).toBe(two.image);"
+      },
+      {
+       "line": 191,
+       "text": "expect(one.image).not.toBe(changed.image);"
+      },
+      {
+       "line": 193,
+       "text": "expect(concurrent.length).toBeGreaterThanOrEqual(1);"
+      },
+      {
+       "line": 194,
+       "text": "expect(concurrent.length).toBeLessThanOrEqual(2); // No exactly-one-build requirement."
+      },
+      {
+       "line": 196,
+       "text": "expect(Math.max(...concurrent.map(call => call.start))).toBeLessThan(Math.min(...concurrent.map(call => call.end!)));"
+      },
+      {
+       "line": 198,
+       "text": "expect(concurrent.every(call => call.code === 0)).toBe(true);"
+      },
+      {
+       "line": 200,
+       "text": "expect(finalIdentity.code).toBe(0);"
+      },
+      {
+       "line": 202,
+       "text": "expect([one.imageId, two.imageId]).toContain(published.Id);"
+      },
+      {
+       "line": 203,
+       "text": "expect(published.Config.Labels[CACHE_LABEL]).toBe(one.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 206,
+       "text": "expect(converged.imageId).toBe(published.Id);"
+      },
+      {
+       "line": 207,
+       "text": "expect(builds).toHaveLength(beforeHit);"
+      },
+      {
+       "line": 246,
+       "text": "if (!bodyFailed) expect(cleanupErrors).toEqual([]);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box": {
+     "source_path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+     "source_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+     "start_line": 41,
+     "end_line": 257,
+     "span_sha256": "02836820988157eb55f86ce7a78da01ea68b40ad36adef3a75ef38cfda876b4b",
+     "assertion_lines": [
+      {
+       "line": 46,
+       "text": "if (builder === \"nixpacks\") expect(installed.version).toBe(\"1.41.0\");"
+      },
+      {
+       "line": 88,
+       "text": "expect(actual, \"unique cold fixture tag must not preexist\").not.toBe(0);"
+      },
+      {
+       "line": 94,
+       "text": "expect(context.builder).toBe(builder);"
+      },
+      {
+       "line": 95,
+       "text": "expect(context.cacheKey).toMatch(/^[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 141,
+       "text": "expect(inspected.code).toBe(0);"
+      },
+      {
+       "line": 143,
+       "text": "expect(image.Id).toBe(result.imageId);"
+      },
+      {
+       "line": 144,
+       "text": "expect(image.Id).toMatch(/^sha256:[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 145,
+       "text": "expect(image.Config.Labels[CACHE_LABEL]).toBe(result.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 147,
+       "text": "expect(container.code).toBe(0);"
+      },
+      {
+       "line": 149,
+       "text": "expect(actual.Image).toBe(result.imageId);"
+      },
+      {
+       "line": 150,
+       "text": "expect(actual.State.Running).toBe(true);"
+      },
+      {
+       "line": 151,
+       "text": "expect(actual.HostConfig.NetworkMode).toBe(\"none\");"
+      },
+      {
+       "line": 152,
+       "text": "expect(actual.HostConfig.ReadonlyRootfs).toBe(true);"
+      },
+      {
+       "line": 153,
+       "text": "expect(actual.Config.User).toBe(\"1000:1000\");"
+      },
+      {
+       "line": 155,
+       "text": "expect(marker.code).toBe(0);"
+      },
+      {
+       "line": 156,
+       "text": "expect(marker.stdout).toBe(\"SBX_CACHE_OK\\n\");"
+      },
+      {
+       "line": 162,
+       "text": "expect(teardownIncomplete(removed)).toBe(false);"
+      },
+      {
+       "line": 167,
+       "text": "expect(builds).toHaveLength(1);"
+      },
+      {
+       "line": 169,
+       "text": "expect(second.image).toBe(first.image);"
+      },
+      {
+       "line": 170,
+       "text": "expect(second.imageId).toBe(first.imageId);"
+      },
+      {
+       "line": 171,
+       "text": "expect(staging.get(\"a1\")).not.toBe(staging.get(\"a2\"));"
+      },
+      {
+       "line": 172,
+       "text": "expect(builds).toHaveLength(1);"
+      },
+      {
+       "line": 174,
+       "text": "expect(inspected.code).toBe(0);"
+      },
+      {
+       "line": 176,
+       "text": "expect(image.Id).toMatch(/^sha256:[a-f0-9]{64}$/);"
+      },
+      {
+       "line": 177,
+       "text": "expect(image.Config.Labels[CACHE_LABEL]).toBe(first.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 180,
+       "text": "expect(survivor.code).toBe(0);expect(survivor.stdout.trim()).toBe(\"true\");"
+      },
+      {
+       "line": 182,
+       "text": "expect(changed.image).not.toBe(first.image);"
+      },
+      {
+       "line": 183,
+       "text": "expect(changed.imageId).not.toBe(first.imageId);"
+      },
+      {
+       "line": 184,
+       "text": "expect(builds).toHaveLength(2);"
+      },
+      {
+       "line": 188,
+       "text": "for (const result of cold) expect(result.status).toBe(\"fulfilled\");"
+      },
+      {
+       "line": 190,
+       "text": "expect(one.image).toBe(two.image);"
+      },
+      {
+       "line": 191,
+       "text": "expect(one.image).not.toBe(changed.image);"
+      },
+      {
+       "line": 193,
+       "text": "expect(concurrent.length).toBeGreaterThanOrEqual(1);"
+      },
+      {
+       "line": 194,
+       "text": "expect(concurrent.length).toBeLessThanOrEqual(2); // No exactly-one-build requirement."
+      },
+      {
+       "line": 196,
+       "text": "expect(Math.max(...concurrent.map(call => call.start))).toBeLessThan(Math.min(...concurrent.map(call => call.end!)));"
+      },
+      {
+       "line": 198,
+       "text": "expect(concurrent.every(call => call.code === 0)).toBe(true);"
+      },
+      {
+       "line": 200,
+       "text": "expect(finalIdentity.code).toBe(0);"
+      },
+      {
+       "line": 202,
+       "text": "expect([one.imageId, two.imageId]).toContain(published.Id);"
+      },
+      {
+       "line": 203,
+       "text": "expect(published.Config.Labels[CACHE_LABEL]).toBe(one.image.split(\":v2-\")[1]);"
+      },
+      {
+       "line": 206,
+       "text": "expect(converged.imageId).toBe(published.Id);"
+      },
+      {
+       "line": 207,
+       "text": "expect(builds).toHaveLength(beforeHit);"
+      },
+      {
+       "line": 246,
+       "text": "if (!bodyFailed) expect(cleanupErrors).toEqual([]);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF10",
+   "frozen_record": {
+    "finding_id": "SF10",
+    "title": "Sandbox cleanup and discovery sometimes claim more than observed",
+    "baseline_status": "source-confirmed",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "SBX-C03"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-20"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/registry.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "61bb6621c338499992d516da5d4cdd5835f1025cfae0c764a56eb1cbf457f119",
+   "finite_clause_assessment": {
+    "guard": "Failed discovery/partial stdout cannot authorize an empty/clean claim or destruction of unobserved target.",
+    "effect": "Actual production functions report unavailable/unknown and exact owned resource references under injected Docker failures.",
+    "retry": "Cancellation cannot cancel compensation; firewall cleanup remains bounded independently and unknown outcome is retained. No universal cleanup or real daemon-outage proof."
+   },
+   "profile": "sandbox-tools-v1",
+   "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+   "observation": "sandbox-tools",
+   "payload": "major-source-inputs-sandbox-driver",
+   "selected_assertions": {
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 51,
+     "end_line": 55,
+     "span_sha256": "c833803d5ff39c6f977a81e3943d101e0a67475f232377c2cf1cf4b9c97e2b3d",
+     "assertion_lines": [
+      {
+       "line": 53,
+       "text": "await expect(listSandboxes(dockerRun)).rejects.toThrow(/unavailable/i);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 56,
+     "end_line": 73,
+     "span_sha256": "c1ef650136b9800766de68bb22da79bb90a4ae921a4cb2053ccad006dd09557d",
+     "assertion_lines": [
+      {
+       "line": 69,
+       "text": "expect(failure).toBeInstanceOf(CreateFailure);"
+      },
+      {
+       "line": 70,
+       "text": "expect(failure).toMatchObject({id:\"owned\",volumeName:\"ca-sbx-vol-owned\",cleanup:{verified:false}});"
+      },
+      {
+       "line": 71,
+       "text": "expect(calls.filter(c=>c.args[0]===\"ps\" || c.args.includes(\"rm\")).every(c=>!c.signal)).toBe(true);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 88,
+     "end_line": 101,
+     "span_sha256": "64405ff35d39adc7628b281f504b136efef18864f54d6c3ce167831e72dd124e",
+     "assertion_lines": [
+      {
+       "line": 98,
+       "text": "await expect(failed).rejects.toThrow(/cleanup unknown.*token-container/s);"
+      },
+      {
+       "line": 99,
+       "text": "await expect(failed).rejects.toMatchObject({containerId:\"token-container\",commandCode:130,cleanup:{containment:\"unknown\",removeCode:1,observationCode:1}});"
+      },
+      {
+       "line": 100,
+       "text": "expect(calls.filter(c=>[\"rm\",\"ps\"].includes(c.args[0])).every(c=>!c.signal)).toBe(true);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 133,
+     "end_line": 144,
+     "span_sha256": "2cd99d800a315a70751615ce3f528bc65aa107faa14e88e9caaf3b3a3fdbbb6e",
+     "assertion_lines": [
+      {
+       "line": 140,
+       "text": "expect(result.failureCount).toBeGreaterThan(0);"
+      },
+      {
+       "line": 141,
+       "text": "expect(calls.some(c=>c[0]===\"rm\")).toBe(false);"
+      },
+      {
+       "line": 142,
+       "text": "expect(result.removedContainers).toEqual([]);"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  },
+  {
+   "cell": "disposition:findings:SF09",
+   "frozen_record": {
+    "finding_id": "SF09",
+    "title": "Sandbox output overflow kills observation client without stopping workload",
+    "baseline_status": "source-confirmed and isolated source-module probe",
+    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+    "status": "PLANNED",
+    "task_ids": [
+     "SBX-C02"
+    ],
+    "decision_ids": [],
+    "composed_scenario_ids": [
+     "SEQ-20"
+    ],
+    "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+    "source_refs": [
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+     "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts"
+    ],
+    "implementation_evidence": [],
+    "qualification_evidence": [],
+    "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+   },
+   "frozen_record_sha256": "8137a34b493707c8414cda1f42588ded2661d47fd0dac19614368c36ddaa0a9d",
+   "finite_clause_assessment": {
+    "guard": "Output overflow is distinct lost observation, not successful completion or ordinary command failure.",
+    "effect": "Actual existing Docker case overflows without timeout and independently inspects exact target stopped and second box still running; unit additionally requires explicit stop+inspect.",
+    "retry": "No arbitrary-workload/global cleanup guarantee; future original job must actually execute selected case without skip."
+   },
+   "profile": "sandbox-tools-v1",
+   "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+   "observation": "sandbox-tools",
+   "payload": "major-source-inputs-sandbox-driver",
+   "selected_assertions": {
+    "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment": {
+     "source_path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+     "source_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+     "start_line": 37,
+     "end_line": 50,
+     "span_sha256": "e1cd431a3431a033f2dfa78371a23c6d748f04f503aae9677026a874a93fbbd5",
+     "assertion_lines": [
+      {
+       "line": 46,
+       "text": "expect(calls.some(c => c[0] === \"stop\" && c.at(-1) === \"owned-target\")).toBe(true);"
+      },
+      {
+       "line": 47,
+       "text": "expect(calls.some(c => c[0] === \"inspect\" && c.at(-1) === \"owned-target\")).toBe(true);"
+      },
+      {
+       "line": 48,
+       "text": "expect(r).toMatchObject({ overflowed: true, containment: \"verified-stopped\" });"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    },
+    "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box": {
+     "source_path": "plugins/ca-sandbox/tools/deadline.test.ts",
+     "source_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+     "start_line": 247,
+     "end_line": 278,
+     "span_sha256": "fe22c815be06634f290e6ce185b034286dd56e8733c65c9b1d9b50e243c09b0b",
+     "assertion_lines": [
+      {
+       "line": 256,
+       "text": "expect(created.code, created.stderr).toBe(0);"
+      },
+      {
+       "line": 257,
+       "text": "expect(owned).toHaveLength(role === \"target\" ? 1 : 2);"
+      },
+      {
+       "line": 263,
+       "text": "expect(result.overflowed).toBe(true);"
+      },
+      {
+       "line": 264,
+       "text": "expect(result.timedOut).not.toBe(true);"
+      },
+      {
+       "line": 265,
+       "text": "expect(result.containment, result.stderr).toBe(\"verified-stopped\");"
+      },
+      {
+       "line": 267,
+       "text": "expect(stopped.code, stopped.stderr).toBe(0);"
+      },
+      {
+       "line": 268,
+       "text": "expect(stopped.stdout.trim()).toBe(\"false\");"
+      },
+      {
+       "line": 270,
+       "text": "expect(alive.code, alive.stderr).toBe(0);"
+      },
+      {
+       "line": 271,
+       "text": "expect(alive.stdout.trim()).toBe(\"true\");"
+      }
+     ],
+     "scope": "Source witness only, not a named runtime observation from this author run."
+    }
+   },
+   "group_scope": "Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification.",
+   "admission": "DRAFT_SOURCE_TEST_MAPPING; requires actual original once-only named outcomes and authenticated source payload, successful trusted whole-run/final reader. No author runtime qualification."
+  }
+ ],
+ "count": 7,
+ "required_unique_selectors": 38,
+ "source_limit": "Task links are routing context, not whole-task acceptance. No ledger/task/scenario/installed/model/human advancement.",
+ "old_map_correction": "SF09 real Docker oracle exists in current deadline.test.ts247 despite old remaining32 map not locating it. Initial six-map proposal preserved at predecessor path."
+}

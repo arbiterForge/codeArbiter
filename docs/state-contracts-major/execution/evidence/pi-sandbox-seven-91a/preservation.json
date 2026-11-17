@@ -1,0 +1,16 @@
+{
+ "old_production_top_level_assignments_functions_classes_retained": 91,
+ "only_changed_old_node": "FunctionDef:build_report",
+ "new_production_data": "TS_FINDING_RECIPES",
+ "all_old_test_owners_AST_preserved": 32,
+ "old_test_methods_AST_preserved": 125,
+ "new_methods": 5,
+ "old_selection_groups_preserved_in_order": 56,
+ "old_policy_bindings_preserved": 56,
+ "new_groups_bindings": 7,
+ "old_TS_PROFILE_CELLS_and_all_profiles_commands_native_guards": "unchanged AST; effective finding admission is a separate exact profile/cell/selector/job union",
+ "target_RED_GREEN_same_test_bytes": true,
+ "all_4_canonical_preimages_still_exact": true,
+ "current_HEAD": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "ledger_status_or_runtime_evidence_updates": false
+}

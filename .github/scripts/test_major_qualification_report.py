@@ -3513,5 +3513,134 @@ class HookReviewObservationProfileTests(unittest.TestCase):
             with self.subTest(change=before), self.assertRaises((AssertionError, ValueError)): check(text.replace(before, after, 1))
 
 
+
+class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
+    """Pure report admission over inert named outcomes; no TS/Docker/Pi execution."""
+    EXPECTED = {'disposition:findings:SF01': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects'], 'scope': 'Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification.'}, 'disposition:findings:SF02': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session'], 'scope': 'Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification.'}, 'disposition:findings:SF03': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once'], 'scope': 'Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification.'}, 'disposition:findings:SF12': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads'], 'scope': 'Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification.'}, 'disposition:findings:SF08': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box'], 'scope': 'Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit.'}, 'disposition:findings:SF10': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target'], 'scope': 'Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim.'}, 'disposition:findings:SF09': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment', 'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box'], 'scope': 'Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification.'}}
+
+    def groups(self, profile):
+        return [{"id": "finite-" + cell.rsplit(":", 1)[1], "job": owner.TS_PROFILE_JOBS[profile],
+            "payload_name": owner.TS_PROFILE_PAYLOADS[profile], "observation": "pi-tools" if profile == "pi-tools-v1" else "sandbox-tools",
+            "proof_kind": "source-test", "selectors": row["selectors"], "cells": [cell], "scope": row["scope"]}
+            for cell, row in self.EXPECTED.items() if row["profile"] == profile]
+
+    def fixture_report(self, fixture, groups):
+        profile = fixture["spec"]["root"]
+        payload = VitestSourceProducerTests.authenticate(self, fixture)
+        names = sorted({name for group in groups for name in group["selectors"]})
+        observed = {"format": owner.OBSERVATION, **fixture["identity"], "ci_run_id": 7,
+            "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+            "argv": fixture["command"], "exit_code": 0,
+            "tests": [{"id": name, "result": "passed"} for name in names],
+            "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": fixture["manifest"]["profile"],
+                "payload_name": fixture["spec"]["payload"],
+                "manifest_sha256": owner.readiness.digest((fixture["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+        req = {**fixture["identity"], "ci_run_id": 7, "cells": sorted(g["cells"][0] for g in groups),
+            "cell_jobs": {g["cells"][0]: fixture["spec"]["job"] for g in groups}}
+        def build(o=observed, p=payload, selected=groups, required=req, job=fixture["spec"]["job"]):
+            return owner.build_report(required, job_name=job, job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": selected},
+                observations={groups[0]["observation"]: o}, payloads={fixture["spec"]["payload"]: p})
+        return observed, payload, req, build
+
+    def test_a_complete_existing_finite_findings_reach_the_original_report_boundary(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
+                groups = self.groups(profile)
+                _, _, req, build = self.fixture_report(f, groups)
+                try:
+                    report = build()
+                except ValueError as exc:
+                    self.fail("original report boundary lacks complete finite finding mapping: " + str(exc))
+                self.assertEqual({r["cell"] for r in report["results"]}, set(req["cells"]))
+
+    def test_b_configuration_requires_exact_complete_finite_compositions_and_existing_source_closure(self):
+        groups = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        selected = [g for g in groups if set(g["cells"]) & set(self.EXPECTED)]
+        self.assertEqual(len(selected), len(self.EXPECTED))
+        for cell, row in self.EXPECTED.items():
+            group, = [g for g in selected if cell in g["cells"]]
+            self.assertEqual(group["cells"], [cell])
+            self.assertEqual(group["job"], owner.TS_PROFILE_JOBS[row["profile"]])
+            self.assertEqual(policy["cell_job_bindings"][cell], group["job"])
+            self.assertEqual(group["payload_name"], owner.TS_PROFILE_PAYLOADS[row["profile"]])
+            self.assertEqual(group["observation"], "pi-tools" if row["profile"] == "pi-tools-v1" else "sandbox-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(set(group["selectors"]), set(row["selectors"]))
+            for selector in group["selectors"]:
+                path, title = selector[len("vitest:"):].split(":", 1)
+                self.assertIn(path, owner.TS_PROFILE_PATHS[row["profile"]])
+                body = (owner.ROOT / path).read_text(encoding="utf-8")
+                # Concrete source name witnesses: dynamic builder/order titles
+                # retain their exact two finite expansions, not regex selectors.
+                if ": distinct staging names" in title:
+                    self.assertIn("distinct staging names reuse the exact labeled image and preserve another box", body)
+                    self.assertIn('["dockerfile-fallback", "nixpacks"]', body)
+                elif "old and new session metrics resolve" in title:
+                    self.assertIn('"old and new session metrics resolve %s: only the new session installs, once"', body)
+                    self.assertIn('["old-first", "new-first"]', body)
+                else:
+                    self.assertTrue(any(title.endswith(t) for t in __import__('re').findall(r'(?:test|it)\("([^"\n]+)"', body)), selector)
+        held = "disposition:findings:SF11"
+        self.assertNotIn(held, policy["cell_job_bindings"])
+        self.assertFalse(any(held in g["cells"] for g in groups))
+
+    def test_c_no_missing_skipped_failed_or_duplicate_outcome_can_qualify_a_finding(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with vitest_source_fixture(profile) as f:
+                groups = self.groups(profile); observed, _, _, build = self.fixture_report(f, groups)
+                self.assertTrue(build()["results"])
+                for name in sorted({s for g in groups for s in g["selectors"]}):
+                    for state in ("missing", "skipped", "failed", "duplicate"):
+                        changed = copy.deepcopy(observed); item = next(t for t in changed["tests"] if t["id"] == name)
+                        if state == "missing": changed["tests"].remove(item)
+                        elif state == "duplicate": changed["tests"].append(dict(item))
+                        else: item["result"] = state
+                        with self.subTest(selector=name, state=state), self.assertRaisesRegex(ValueError, "selected named test"):
+                            build(o=changed)
+
+    def test_d_partial_added_cross_profile_and_unowned_scope_compositions_refuse(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with vitest_source_fixture(profile) as f:
+                groups = self.groups(profile); observed, payload, req, build = self.fixture_report(f, groups)
+                for index, group in enumerate(groups):
+                    for selector in group["selectors"]:
+                        changed = copy.deepcopy(groups); changed[index]["selectors"].remove(selector)
+                        with self.subTest(cell=group["cells"], missing=selector), self.assertRaisesRegex(ValueError, "complete exact finite finding"):
+                            build(selected=changed)
+                    changed = copy.deepcopy(groups); changed[index]["selectors"].append("vitest:foreign.test.ts:invented")
+                    with self.assertRaisesRegex(ValueError, "complete exact finite finding"): build(selected=changed)
+                for failure in ("source", "run", "unstable", "exit", "profile", "manifest", "uploader", "role", "job"):
+                    o, p, selected, required = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups), copy.deepcopy(req)
+                    job = f["spec"]["job"]
+                    if failure == "source": o["source_commit"] = "f" * 40
+                    if failure == "run": o["ci_run_id"] = 8
+                    if failure == "unstable": o["source_stable"] = False
+                    if failure == "exit": o["exit_code"] = 1
+                    if failure == "profile": o["source_input_binding"]["profile"] = "sandbox-tools-v1" if profile == "pi-tools-v1" else "pi-tools-v1"
+                    if failure == "manifest": p["source_manifest_sha256"] = "0" * 64
+                    if failure == "uploader": p["source_upload_job_id"] = True
+                    if failure == "role": selected[0]["payload_name"] = "foreign-native-archive"
+                    if failure == "job":
+                        job = "unrelated job"
+                        for g in selected: g["job"] = job
+                        required["cell_jobs"] = dict.fromkeys(required["cells"], job)
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): build(o, p, selected, required, job)
+                for cell in ("disposition:findings:SF11", "task:PI-D07", "task:SBX-C01", "installed:pi:1.5.0", "disposition:machines:S01"):
+                    changed = copy.deepcopy(groups[:1]); changed[0]["cells"] = [cell]
+                    required = {**req, "cells": [cell], "cell_jobs": {cell: f["spec"]["job"]}}
+                    with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=changed, required=required)
+
+    def test_e_real_overflow_target_and_survivor_assertions_reach_existing_report_admission(self):
+        with vitest_source_fixture("sandbox-tools-v1") as f:
+            group, = [g for g in self.groups("sandbox-tools-v1") if g["cells"] == ["disposition:findings:SF09"]]
+            _, _, _, build = self.fixture_report(f, [group])
+            try:
+                report = build()
+            except ValueError as exc:
+                self.fail("original overflow report boundary lacks its real target/survivor composition: " + str(exc))
+            self.assertEqual([r["cell"] for r in report["results"]], ["disposition:findings:SF09"])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

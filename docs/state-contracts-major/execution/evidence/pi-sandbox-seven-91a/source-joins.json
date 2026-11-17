@@ -1,0 +1,210 @@
+{
+ "source_epoch": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "observed_head": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "inputs": {
+  ".github/major-qualification-policy.json": {
+   "sha256": "68bb6a70f063b7fc4845eea1fbeaad5a8e49cb57d65a492c13f888e5f9f273dd",
+   "bytes": 8107,
+   "git_ls_tree": "100644 blob 7bf4092bc3ad022c1a0dc927f1d52439a0e7acb1\t.github/major-qualification-policy.json",
+   "physical_equals_immutable": true
+  },
+  ".github/major-test-selections.json": {
+   "sha256": "8018ffd55e8c1fc8ba032d9086948dff35342df7f7fcdd750d6de7a2efc9fcb9",
+   "bytes": 75711,
+   "git_ls_tree": "100644 blob 7f260b750f33403fbb47def71c95e2813a688444\t.github/major-test-selections.json",
+   "physical_equals_immutable": true
+  },
+  ".github/scripts/major_qualification_report.py": {
+   "sha256": "441e325950b9bc49db3f31b03058d6fb6fdba1eb7b235404518f320f6a268270",
+   "bytes": 148755,
+   "git_ls_tree": "100644 blob abbd102bfb28182389ae1dd1fa7755784a47ceb1\t.github/scripts/major_qualification_report.py",
+   "physical_equals_immutable": true
+  },
+  ".github/scripts/test_major_qualification_report.py": {
+   "sha256": "dc4f76eac220fd64014d3178360ffae5a59fce3362574e5c0b4e8cbf672d1906",
+   "bytes": 281156,
+   "git_ls_tree": "100644 blob 7f5cb0296bdef45ce84bf52ec82881044072e446\t.github/scripts/test_major_qualification_report.py",
+   "physical_equals_immutable": true
+  },
+  ".github/workflows/ci.yml": {
+   "sha256": "ca1b8a78a1a2fcb370e02b89a30c5fdc15089d0b98a273382ea17373d4fb2ddb",
+   "bytes": 279842,
+   "git_ls_tree": "100644 blob c1cee1b58ed4f6964a84aca419d5e2a1f5c9e56e\t.github/workflows/ci.yml",
+   "physical_equals_immutable": true
+  },
+  "docs/state-contracts-major/contracts/finding-dispositions.json": {
+   "sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+   "bytes": 80913,
+   "git_ls_tree": "100644 blob baf65ee0ecb011a1731cf8963927c542a98013a4\tdocs/state-contracts-major/contracts/finding-dispositions.json",
+   "physical_equals_immutable": true
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "git_ls_tree": "100644 blob 3f52ff13e833b002a9759706dd6f5f48e499cc63\tdocs/state-contracts-major/contracts/tasks.json",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/approval-dialog.ts": {
+   "sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+   "bytes": 5573,
+   "git_ls_tree": "100644 blob c44158a42089cd4de256375d772cd4bf43fb12b3\tplugins/ca-pi/tools/src/approval-dialog.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/approval-entry.ts": {
+   "sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+   "bytes": 3373,
+   "git_ls_tree": "100644 blob 46eba33b0730a55d6980f649bb06779993e6cc5a\tplugins/ca-pi/tools/src/approval-entry.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/compatibility.ts": {
+   "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+   "bytes": 2400,
+   "git_ls_tree": "100644 blob 011fb90363563e275df72e74c9644ed3cb7f3fc4\tplugins/ca-pi/tools/src/compatibility.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/delegated-executor.ts": {
+   "sha256": "74b556c921450dc022399e0ed029646d8ab487c1736bd5af7fd640c5f9bc38b1",
+   "bytes": 28847,
+   "git_ls_tree": "100644 blob 0bf63064db84b836307211df9dabc3cfc9eac7fb\tplugins/ca-pi/tools/src/delegated-executor.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/delegation-client.ts": {
+   "sha256": "718cc65ee5c0fd493c2cb5310630fd84a392c2c48c89f26c24d26ba7ea010d0e",
+   "bytes": 3640,
+   "git_ls_tree": "100644 blob 86004ec83fcff29c34db23c53162e8665a75dde1\tplugins/ca-pi/tools/src/delegation-client.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/delegation-session.ts": {
+   "sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+   "bytes": 7391,
+   "git_ls_tree": "100644 blob 390417ca0601c3c95806c8b4dee5f30af5a2e977\tplugins/ca-pi/tools/src/delegation-session.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/extension.ts": {
+   "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+   "bytes": 64790,
+   "git_ls_tree": "100644 blob efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f\tplugins/ca-pi/tools/src/extension.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/parent-delegation.ts": {
+   "sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+   "bytes": 3929,
+   "git_ls_tree": "100644 blob c8f75ba1ecfe38964ca05948d4de6d1e204b2d80\tplugins/ca-pi/tools/src/parent-delegation.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+   "sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+   "bytes": 9210,
+   "git_ls_tree": "100644 blob cab4e87b6d38ea2f3decdeb921d70a0e2dad1fd5\tplugins/ca-pi/tools/src/sidebar-manager.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/activation.test.ts": {
+   "sha256": "87796dfe8e59f6bd48dca36a154227120851f8e3b5163e932a46720b6d896186",
+   "bytes": 55027,
+   "git_ls_tree": "100644 blob 0a27d50d3a141a530dae2e9340121c9b2946e402\tplugins/ca-pi/tools/test/activation.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/approval-dialog.test.ts": {
+   "sha256": "7b325d2e409a08b6e59f285c3922dbf660362c4683d034f6434a7351a397f7da",
+   "bytes": 5976,
+   "git_ls_tree": "100644 blob f71da140f710538395384e62ddddcccd34f0ee56\tplugins/ca-pi/tools/test/approval-dialog.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/delegation-session.test.ts": {
+   "sha256": "3b57e651127c13dcd6e8c5eb06c181eea7868f485819568656d857e02a9412ea",
+   "bytes": 5343,
+   "git_ls_tree": "100644 blob ea96c72a2e4f6932c19283dfb2180e343c3719f1\tplugins/ca-pi/tools/test/delegation-session.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/package.test.ts": {
+   "sha256": "80f0a62ce093cd34f6eab182c585ecda5fc4a94b14c03cb595f7b296d8202806",
+   "bytes": 53893,
+   "git_ls_tree": "100644 blob 175e85f728b00ce7ea34f07e8b64557a0d0855d6\tplugins/ca-pi/tools/test/package.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/parent-delegation.test.ts": {
+   "sha256": "e2af7967d722655ea7c63d2baa0bbde7c07ab6347a0b832a2da1b18e71884b8c",
+   "bytes": 14306,
+   "git_ls_tree": "100644 blob 5156e219eab45be4337bc9977e39f24b256e3dad\tplugins/ca-pi/tools/test/parent-delegation.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/test/sidebar-manager.test.ts": {
+   "sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+   "bytes": 18760,
+   "git_ls_tree": "100644 blob a3466fd5623b407b8641d49a7c8d7a094dd90a87\tplugins/ca-pi/tools/test/sidebar-manager.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/build.ts": {
+   "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+   "bytes": 45428,
+   "git_ls_tree": "100644 blob 882c93d28f80b9598d466bda285803c6eff99b9f\tplugins/ca-sandbox/tools/build.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/cache-provenance.test.ts": {
+   "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+   "bytes": 14542,
+   "git_ls_tree": "100644 blob 93b8da882474dfccf1f69175c83acba280c210a6\tplugins/ca-sandbox/tools/cache-provenance.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/claude-inside.ts": {
+   "sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+   "bytes": 20507,
+   "git_ls_tree": "100644 blob f7b854ef496f520c567178e798b32e13b1b93993\tplugins/ca-sandbox/tools/claude-inside.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/create.ts": {
+   "sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+   "bytes": 24777,
+   "git_ls_tree": "100644 blob 8db15149c9d0744a24525e1ae4a5b5f95d7a0f00\tplugins/ca-sandbox/tools/create.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/destroy.ts": {
+   "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+   "bytes": 17156,
+   "git_ls_tree": "100644 blob 9458f56a96624f701bf7f09e52c12907cb14db47\tplugins/ca-sandbox/tools/destroy.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/docker-gate.ts": {
+   "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+   "bytes": 6847,
+   "git_ls_tree": "100644 blob c31647d22813240304ccb6eba11d0dec80906e0d\tplugins/ca-sandbox/tools/docker-gate.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/registry.ts": {
+   "sha256": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+   "bytes": 10407,
+   "git_ls_tree": "100644 blob b0460c41957d09a7b176e7ea5eb8c428ae3a9387\tplugins/ca-sandbox/tools/registry.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/state-contracts.test.ts": {
+   "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+   "bytes": 10611,
+   "git_ls_tree": "100644 blob efbe5523f25c33438f99a96641523f5f3b70ceed\tplugins/ca-sandbox/tools/state-contracts.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-pi/tools/src/tool-guard.ts": {
+   "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+   "bytes": 46425,
+   "git_ls_tree": "100644 blob 2d4cd560f4571c759040ea756b2ae7d4db270acb\tplugins/ca-pi/tools/src/tool-guard.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/deadline.test.ts": {
+   "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+   "bytes": 18656,
+   "git_ls_tree": "100644 blob 97b312061c39322bfd5abad8df04d17ce710c79a\tplugins/ca-sandbox/tools/deadline.test.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/exec.ts": {
+   "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+   "bytes": 10180,
+   "git_ls_tree": "100644 blob cb9e7cc95e058b95a3ce4e39fa7f7d979150e534\tplugins/ca-sandbox/tools/exec.ts",
+   "physical_equals_immutable": true
+  },
+  "plugins/ca-sandbox/tools/docker.ts": {
+   "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+   "bytes": 12838,
+   "git_ls_tree": "100644 blob 63d58f680e4591e4b73a8be437f72b8d7d5cfb57\tplugins/ca-sandbox/tools/docker.ts",
+   "physical_equals_immutable": true
+  }
+ }
+}
