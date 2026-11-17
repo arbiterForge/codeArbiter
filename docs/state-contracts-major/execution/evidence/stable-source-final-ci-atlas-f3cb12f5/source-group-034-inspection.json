@@ -1,0 +1,1394 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-034",
+  "positive_input_join": {
+    ".github/scripts/check_command_route_release_state.py": {
+      "sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "previous_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "bytes": 18654,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+        "bytes": 18654
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    ".github/workflows/release.yml": {
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "previous_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "bytes": 25073,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+        "bytes": 25073
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/command_compatibility.py": {
+      "sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+      "previous_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+      "bytes": 1561,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+        "bytes": 1561
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "C32 declarations and original unfiltered static classifier/compatibility suites run at the same Surface callsite. The release workflow and CLI classifiers are unchanged. Optional remote lookup remains explicitly separate.",
+    "workflow_callsite_join": {
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "surface": {
+        "previous_sha256": "88200daf6e8cfbc3cadf1885766b74380aecb5a077c72d8e37bc6d274a1f9cd4",
+        "current_sha256": "cfcbe76e5f6d2b5577b3185010373322584b9d0224a63832a1b3e353ab895564",
+        "current_scope": "The command-route release-state operation is still declarations only. Two original route suites go through separately named static unfiltered Python observations with original suite identities; no optional remote observe/API command is placed on the workflow."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C32",
+      "frozen_record": {
+        "machine_id": "C32",
+        "name": "Command-route compatibility release clock and optional remote observation",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "48d8194046b784e06b7f3bab7c639553809fbb64c7fd90d6988e016b425d31e0",
+      "group": "source-group-034",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Command-route compatibility release clock and optional remote observation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C32:01",
+      "frozen_record": {
+        "transition_id": "C32:01",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "declaration unchecked",
+          "from": "declaration unchecked",
+          "event": "declarations validation",
+          "guard": "clockStarts exact confirmed non-draft release rule; target metadata complete; baseline < first-containing <= current manifest",
+          "to": "declarations valid",
+          "effects": "Return static contract success.",
+          "failure_retry": "Malformed/missing clock/target/version fails; compatibility.removalRequires is not read by this checker.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "load_declarations",
+              "lines": [
+                88,
+                121
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:01"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e8108ddd16ab029993e00a71cd50a2916e024976d0293553fa89d8ca5b863f2c",
+      "group": "source-group-034",
+      "assessment": "Static declarations retain clock/metadata/version checks and do not read removalRequires.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:01",
+        "frozen_row_sha256": "e8108ddd16ab029993e00a71cd50a2916e024976d0293553fa89d8ca5b863f2c",
+        "literal": {
+          "event": "declarations validation",
+          "guard": "clockStarts exact confirmed non-draft release rule; target metadata complete; baseline < first-containing <= current manifest",
+          "effects": "Return static contract success.",
+          "failure_retry": "Malformed/missing clock/target/version fails; compatibility.removalRequires is not read by this checker."
+        },
+        "actual_current_interpretation": "Static declarations retain clock/metadata/version checks and do not read removalRequires.",
+        "witness_ids": [
+          "w1",
+          "w2",
+          "w3",
+          "w4"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:02",
+      "frozen_record": {
+        "transition_id": "C32:02",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "no tag evidence",
+          "from": "no tag evidence",
+          "event": "observe with missing release",
+          "guard": "API says no matching release and tag absent",
+          "to": "planned",
+          "effects": "Report publication clock not started.",
+          "failure_retry": "Observe aggregate fails unless every target is published.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "classify_release_state",
+              "lines": [
+                179,
+                221
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:02"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e625ae628ea173f98c8561fbd3ebbfa451f4028ed519e3883b8280ed04d1dd23",
+      "group": "source-group-034",
+      "assessment": "Absent release plus absent tag remains planned with no publication clock.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:02",
+        "frozen_row_sha256": "e625ae628ea173f98c8561fbd3ebbfa451f4028ed519e3883b8280ed04d1dd23",
+        "literal": {
+          "event": "observe with missing release",
+          "guard": "API says no matching release and tag absent",
+          "effects": "Report publication clock not started.",
+          "failure_retry": "Observe aggregate fails unless every target is published."
+        },
+        "actual_current_interpretation": "Absent release plus absent tag remains planned with no publication clock.",
+        "witness_ids": [
+          "w5",
+          "w6",
+          "w7"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:03",
+      "frozen_record": {
+        "transition_id": "C32:03",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "valid exact tag",
+          "from": "valid exact tag",
+          "event": "observe missing release",
+          "guard": "tag metadata matches first-containing version/source",
+          "to": "tag-only",
+          "effects": "Report tag exists but release clock not started.",
+          "failure_retry": "No clock advance from tag creation alone.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "classify_release_state",
+              "lines": [
+                179,
+                221
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:03"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "aa0511eef5c24504bc1159b8dda8df3ebc8e8050d1728b17e9a5a274f24ec44a",
+      "group": "source-group-034",
+      "assessment": "Exact tag without release remains tag-only.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:03",
+        "frozen_row_sha256": "aa0511eef5c24504bc1159b8dda8df3ebc8e8050d1728b17e9a5a274f24ec44a",
+        "literal": {
+          "event": "observe missing release",
+          "guard": "tag metadata matches first-containing version/source",
+          "effects": "Report tag exists but release clock not started.",
+          "failure_retry": "No clock advance from tag creation alone."
+        },
+        "actual_current_interpretation": "Exact tag without release remains tag-only.",
+        "witness_ids": [
+          "w6",
+          "w8"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:04",
+      "frozen_record": {
+        "transition_id": "C32:04",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "tag observation",
+          "from": "tag observation",
+          "event": "observe draft release",
+          "guard": "API draft flag true",
+          "to": "draft",
+          "effects": "Report clock not started; draft classification occurs before public tag/source checks.",
+          "failure_retry": "A draft does not satisfy published observation.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "classify_release_state",
+              "lines": [
+                179,
+                221
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:04"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "12f3b735fec5501704953d478a0e7a6953755d7da08cfeee8a8fa181e0b0a559",
+      "group": "source-group-034",
+      "assessment": "Draft remains nonpublished and classified before public tag/source checks.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:04",
+        "frozen_row_sha256": "12f3b735fec5501704953d478a0e7a6953755d7da08cfeee8a8fa181e0b0a559",
+        "literal": {
+          "event": "observe draft release",
+          "guard": "API draft flag true",
+          "effects": "Report clock not started; draft classification occurs before public tag/source checks.",
+          "failure_retry": "A draft does not satisfy published observation."
+        },
+        "actual_current_interpretation": "Draft remains nonpublished and classified before public tag/source checks.",
+        "witness_ids": [
+          "w6"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:05",
+      "frozen_record": {
+        "transition_id": "C32:05",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "valid exact tag",
+          "from": "valid exact tag",
+          "event": "observe public release",
+          "guard": "expected tag_name and target_commitish exactly equal bound commit",
+          "to": "published",
+          "effects": "Report successful release-clock evidence.",
+          "failure_retry": "Different tag/source is mismatch; unavailable API is api-unavailable, not missing.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "classify_release_state",
+              "lines": [
+                179,
+                221
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:05"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "45b34dbedb7a0afe5919497dac2f50bdfc405d1991fceaff20c8e6726d034b87",
+      "group": "source-group-034",
+      "assessment": "Published requires exact expected tag and target_commitish.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:05",
+        "frozen_row_sha256": "45b34dbedb7a0afe5919497dac2f50bdfc405d1991fceaff20c8e6726d034b87",
+        "literal": {
+          "event": "observe public release",
+          "guard": "expected tag_name and target_commitish exactly equal bound commit",
+          "effects": "Report successful release-clock evidence.",
+          "failure_retry": "Different tag/source is mismatch; unavailable API is api-unavailable, not missing."
+        },
+        "actual_current_interpretation": "Published requires exact expected tag and target_commitish.",
+        "witness_ids": [
+          "w6",
+          "w8"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:06",
+      "frozen_record": {
+        "transition_id": "C32:06",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "any observation",
+          "from": "any observation",
+          "event": "API unavailable/malformed/duplicate release",
+          "guard": "transport or closed document checks fail",
+          "to": "api-unavailable or mismatch",
+          "effects": "Emit explicit non-published state; fail observation aggregation.",
+          "failure_retry": "No silently inferred publication.",
+          "source": [
+            {
+              "path": ".github/scripts/check_command_route_release_state.py",
+              "symbol": "classify_release_list",
+              "lines": [
+                148,
+                176
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+            }
+          ],
+          "transition_id": "C32:06"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "963d8504ebee2bdcaf8f14a536a590767ffada57d83648d0a02c3a6c003e703f",
+      "group": "source-group-034",
+      "assessment": "Unavailable/malformed/duplicate API records remain explicit nonpublished outcomes.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:06",
+        "frozen_row_sha256": "963d8504ebee2bdcaf8f14a536a590767ffada57d83648d0a02c3a6c003e703f",
+        "literal": {
+          "event": "API unavailable/malformed/duplicate release",
+          "guard": "transport or closed document checks fail",
+          "effects": "Emit explicit non-published state; fail observation aggregation.",
+          "failure_retry": "No silently inferred publication."
+        },
+        "actual_current_interpretation": "Unavailable/malformed/duplicate API records remain explicit nonpublished outcomes.",
+        "witness_ids": [
+          "w5",
+          "w9",
+          "w7",
+          "w6"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C32:07",
+      "frozen_record": {
+        "transition_id": "C32:07",
+        "machine_id": "C32",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "declarations valid in CI",
+          "from": "declarations valid in CI",
+          "event": "current workflow wiring",
+          "guard": "surface job invokes declarations and tests only",
+          "to": "static validation only",
+          "effects": "Observe/api-lookup remain available CLI operations but are not invoked by current release workflow/composite.",
+          "failure_retry": "Comment assigning postpublication audit to release.yml is not implemented wiring.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "3260",
+              "lines": [
+                3260,
+                3260
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C32:07"
+        },
+        "task_ids": [
+          "HW-21",
+          "HW-27",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-01",
+          "SEQ-02",
+          "SEQ-16",
+          "SEQ-05",
+          "SEQ-21",
+          "SEQ-09",
+          "SEQ-10",
+          "SEQ-08",
+          "SEQ-11",
+          "SEQ-29",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "88aa35f0a4f3b3e7948f2f19e635b1b3ddba1ededc9f6dd538d0d946c7e72416",
+      "group": "source-group-034",
+      "assessment": "CI still invokes declarations/tests only, without remote observe/API wiring.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+          "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C32:07",
+        "frozen_row_sha256": "88aa35f0a4f3b3e7948f2f19e635b1b3ddba1ededc9f6dd538d0d946c7e72416",
+        "literal": {
+          "event": "current workflow wiring",
+          "guard": "surface job invokes declarations and tests only",
+          "effects": "Observe/api-lookup remain available CLI operations but are not invoked by current release workflow/composite.",
+          "failure_retry": "Comment assigning postpublication audit to release.yml is not implemented wiring."
+        },
+        "actual_current_interpretation": "CI still invokes declarations/tests only, without remote observe/API wiring.",
+        "witness_ids": [
+          "w10",
+          "w11",
+          "w12",
+          "w13"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w1",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          58,
+          62
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w1",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          58,
+          62
+        ],
+        "current_spans": [
+          [
+            58,
+            62
+          ]
+        ],
+        "sha256_of_LF_span": "858b4a655f4c5d7b800755b4d1ec7605f267462d44a9704922fde79efc138733",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          58,
+          62
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w2",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          65,
+          87
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w2",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          65,
+          87
+        ],
+        "current_spans": [
+          [
+            65,
+            87
+          ]
+        ],
+        "sha256_of_LF_span": "cf0b497c40ffecf147d7ce4f4cf5f775d6ede9b390be56cd51809b675a4644aa",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          65,
+          87
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w3",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          90,
+          129
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w3",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          90,
+          129
+        ],
+        "current_spans": [
+          [
+            90,
+            129
+          ]
+        ],
+        "sha256_of_LF_span": "bb159ee37f4b30719884741d46a018fd6f5020f251063adc9d88146fac919d96",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          90,
+          129
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w4",
+      "path": "tools/command_compatibility.py",
+      "actual0ef_spans": [
+        [
+          1,
+          32
+        ]
+      ],
+      "current_file_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+      "prior": {
+        "id": "w4",
+        "path": "tools/command_compatibility.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          1,
+          32
+        ],
+        "current_spans": [
+          [
+            1,
+            32
+          ]
+        ],
+        "sha256_of_LF_span": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          1,
+          32
+        ]
+      ],
+      "current_f3_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e"
+    },
+    {
+      "witness_id": "w5",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          132,
+          153
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w5",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          132,
+          153
+        ],
+        "current_spans": [
+          [
+            132,
+            153
+          ]
+        ],
+        "sha256_of_LF_span": "f26329fdcc19d9b8277ec587d3f3b411f252ae9d846cee4d095a732ba91a199c",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          132,
+          153
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w6",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          187,
+          234
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w6",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          187,
+          234
+        ],
+        "current_spans": [
+          [
+            187,
+            234
+          ]
+        ],
+        "sha256_of_LF_span": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          187,
+          234
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w7",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          240,
+          252
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w7",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          240,
+          252
+        ],
+        "current_spans": [
+          [
+            240,
+            252
+          ]
+        ],
+        "sha256_of_LF_span": "1c737455e61f8e1694bfd8daa9a52e3480e38c627d1d732d3ffbf8725c5bec1d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          240,
+          252
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w8",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          304,
+          345
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w8",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          304,
+          345
+        ],
+        "current_spans": [
+          [
+            304,
+            345
+          ]
+        ],
+        "sha256_of_LF_span": "aa3f374448bb3ccd291395e94189155e657eac9b15aa48d929af90e87f9597b5",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          304,
+          345
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w9",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          156,
+          184
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w9",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          156,
+          184
+        ],
+        "current_spans": [
+          [
+            156,
+            184
+          ]
+        ],
+        "sha256_of_LF_span": "cf9c8eda1aa7e7aac4c9ab07be0ff0e264922f72564f8f9468d8bd469b80fb01",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          156,
+          184
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w10",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          357,
+          454
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w10",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          357,
+          454
+        ],
+        "current_spans": [
+          [
+            357,
+            454
+          ]
+        ],
+        "sha256_of_LF_span": "af2e2352169112b91692433461099e7bf01f24e300a75d5726072b22efb0d269",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          357,
+          454
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w11",
+      "path": ".github/scripts/check_command_route_release_state.py",
+      "actual0ef_spans": [
+        [
+          255,
+          291
+        ]
+      ],
+      "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+      "prior": {
+        "id": "w11",
+        "path": ".github/scripts/check_command_route_release_state.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          255,
+          291
+        ],
+        "current_spans": [
+          [
+            255,
+            291
+          ]
+        ],
+        "sha256_of_LF_span": "2188b407b46d56f8abee7b322e86185bb4cbcabc9f23edd2bbd5fe510e9b58b8",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          255,
+          291
+        ]
+      ],
+      "current_f3_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9"
+    },
+    {
+      "witness_id": "w13",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w13",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          472,
+          513
+        ],
+        "current_spans": [
+          [
+            472,
+            513
+          ]
+        ],
+        "sha256_of_LF_span": "d878d7d44fa806c6a1ff07198c920bc9b8b0f162c21c0e9c0ef0c517ed72d851",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w33",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w33",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          31,
+          63
+        ],
+        "current_spans": [
+          [
+            31,
+            63
+          ]
+        ],
+        "sha256_of_LF_span": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w60",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w60",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          178,
+          191
+        ],
+        "current_spans": [
+          [
+            178,
+            191
+          ]
+        ],
+        "sha256_of_LF_span": "476cf91bb6bb8341e04ce2217aa983ec6750be1b69fbf2e8105e0ea98359afdb",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

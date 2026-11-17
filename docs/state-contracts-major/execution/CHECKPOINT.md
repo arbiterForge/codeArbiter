@@ -1,5 +1,15 @@
 # State-contract program checkpoint
 
+## November 17 verification
+
+The local code binds the remaining original route, command catalog, debug-resubmission and output-rollback evidence. Local checks passed 132 readiness tests and 21 Docs authority tests. A clean Windows checkout built the native helper after 525 passing Go tests and three skips. Recovery source preparation and its 40 runtime tests passed. The separate npm binding test passed all 20 cases across five local runs. The original hosted npm timeout remains open.
+
+The source reader verified 1,739 of 1,739 source records. The final CI and Atlas review refreshed 140 existing records while retaining their prior evidence and disposition. Thirty-three findings still require qualified evidence. The task record has 72 implemented and unqualified tasks, nine in progress, and one waiting to start.
+
+The hosted head of #1119 is `48bf82eb`. The original CI and Docs runs finished with 59 successful checks, 11 failures, two cancellations and 12 skips among the selected jobs. Windows Pi RPC and shutdown passed. Four jobs failed the same high severity picomatch advisory and GitHub lists no patched release. A scoped audit decision is pending. The local repairs require fresh hosted execution. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44160520956) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44160520838) · [Advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+#1098 is a draft for user testing before a merge to main. Installed, upgrade, rollback and participant qualification remain open.
+
 ## November 17 continuation
 
 The local successor includes both Python source uploader routes, the complete readiness fixtures, and a shared profile check that rejects mixing two profiles from the same job. The C-F04 release-order check requires the original Hooks and Generated surface evidence from the same CI attempt. The Workflow recovery reader can authenticate nine cases from its original runtime suite. The installed recovery complement is still in progress. All 123 local readiness tests passed.
