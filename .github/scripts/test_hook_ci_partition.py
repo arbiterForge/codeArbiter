@@ -48,6 +48,62 @@ RECOVERY_COMMANDS = (
     'python .github/scripts/test_workflow_recovery_generator.py',
     'python .github/scripts/test_review_resubmission.py',
 )
+RECOVERY_WINDOWS = "        if: matrix.os == 'windows-latest'\n"
+RECOVERY_OTHER_HOSTS = "        if: matrix.os != 'windows-latest'\n"
+RECOVERY_BINDING_RUN = ('        run: >-\n'
+                        '          python -B .github/scripts/major_qualification_report.py ')
+RECOVERY_PROFILE = '          --repo . --source-profile workflow-recovery-runtime-v1\n'
+RECOVERY_INPUTS = '${{ runner.temp }}/workflow-recovery-runtime-inputs'
+RECOVERY_UPLOAD_PIN = 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2'
+RECOVERY_RUN_SUFFIX = '${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}'
+
+
+def recovery_consumer_steps() -> list[str]:
+    def named(name):
+        return '      - name: ' + name + '\n'
+
+    def upload(name, artifact, path, hidden='false'):
+        return (named(name) + RECOVERY_WINDOWS + '        uses: ' + RECOVERY_UPLOAD_PIN + '\n'
+                '        with:\n          name: ' + artifact + '\n          path: ' + path + '\n'
+                '          if-no-files-found: error\n          retention-days: 14\n'
+                '          include-hidden-files: ' + hidden + '\n          overwrite: false\n')
+
+    steps = [named('Prepare workflow recovery runtime source inputs') + RECOVERY_WINDOWS
+             + RECOVERY_BINDING_RUN + 'prepare-source\n' + RECOVERY_PROFILE
+             + '          --job-name "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>"\n'
+             + '          --output "' + RECOVERY_INPUTS + '"\n']
+    roles = (('runtime', 'Test durable runtime and concurrency', 'Observe original durable runtime and concurrency tests',
+              'Retain original workflow recovery runtime observation'),
+             ('cli', 'Test actual installed helper and native effects', 'Observe original installed helper and native effects',
+              'Retain original workflow recovery CLI observation'),
+             ('hosts', 'Test actual host event and readonly notice seams', 'Observe original host event and readonly notice seams',
+              'Retain original workflow recovery host observation'))
+    uploads = [upload('Upload workflow recovery runtime source inputs',
+                      'major-source-inputs-workflow-recovery-runtime', RECOVERY_INPUTS + '/', 'true')]
+    for cmd, (role, plain, observed, upload_name) in zip(RECOVERY_COMMANDS[:3], roles):
+        steps.append(named(plain) + RECOVERY_OTHER_HOSTS + '        run: ' + cmd + '\n')
+        if role == 'runtime':
+            env = ''
+        else:
+            env = ('        env:\n          WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION: '
+                   '${{ runner.temp }}/workflow-recovery-' + role + '-installation.json\n')
+        observation = 'workflow-recovery-' + role + '-observation'
+        steps.append(named(observed) + RECOVERY_WINDOWS + env
+                     + RECOVERY_BINDING_RUN + 'observe-python\n' + RECOVERY_PROFILE
+                     + '          --source-payload "' + RECOVERY_INPUTS + '"\n'
+                     + '          --output "${{ runner.temp }}/' + observation + '.json"\n'
+                     + '          -- ' + cmd.removeprefix('python ') + '\n')
+        uploads.append(upload(upload_name, observation + '-' + RECOVERY_RUN_SUFFIX,
+                              '${{ runner.temp }}/' + observation + '.json'))
+    for cmd, name in zip(RECOVERY_COMMANDS[3:], ('Test atomic contract generation', 'Test fresh linked review resubmission')):
+        steps.append(named(name) + '        run: ' + cmd + '\n')
+    native = '${{ github.workspace }}/../workflow-recovery-native/'
+    uploads.append(upload('Upload original workflow recovery native installation',
+                          'workflow-recovery-native-' + RECOVERY_RUN_SUFFIX,
+                          '|\n            ' + native + 'release.json\n            ' + native + 'ca-artifact-windows-amd64.exe'))
+    return steps + uploads
+
+
 # sha256(compact JSON of the ordered pre-partition command list). This binds
 # the guard to all 76 reviewed command steps without duplicating the workflow here.
 # Release-workflow and Codex identity regressions run in separate native steps.
@@ -757,16 +813,16 @@ def validate_recovery(text: str) -> dict[str, int]:
             == '        os: [ubuntu-latest, windows-latest, macos-latest]\n', 'Recovery must retain exactly three OS cells')
     require('continue-on-error:' not in block, 'Recovery failures cannot be softened')
     steps = step_blocks(block)
-    require(len(steps) == 9, 'Recovery requires three setup steps, one qualification and five original commands')
-    require(not any(re.search(r'^        if:', step, re.M) for step in steps), 'Recovery preparation and consumers must be unconditional')
+    require(len(steps) >= 4, 'Recovery requires three setup steps and one original qualification')
+    require(not any(re.search(r'^        if:', step, re.M) for step in steps[:4]), 'Recovery setup and qualification must be unconditional')
     require('uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' in steps[0]
             and 'fetch-depth: 0' in steps[0] and 'persist-credentials: false' in steps[0], 'Recovery checkout pin/history/credential scope changed')
     require(steps[1] == '      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
             '        with:\n          python-version: "3.14"\n', 'Recovery Python setup changed')
     require(steps[2] == GO_SETUP, 'Recovery qualification requires the existing pinned Go setup')
     require(steps[3] == RECOVERY_PREPARE, 'Recovery must clear inherited installation input and qualify once before consumers')
-    require(tuple(command(step) for step in steps[4:]) == RECOVERY_COMMANDS, 'Recovery original five commands or order changed')
-    require(not any('        env:\n' in step for step in steps[4:]), 'Recovery consumers cannot override the qualified installation')
+    require([step.rstrip('\n') for step in steps[4:]] == [step.rstrip('\n') for step in recovery_consumer_steps()],
+            'Recovery original commands, disjoint observer routes or owned artifact uploads changed')
     return {'commands': 5, 'native_setup': 1, 'cells': 3}
 
 
@@ -783,9 +839,7 @@ def recovery_fixture() -> str:
             '      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
             '        with:\n          python-version: "3.14"\n')
     pre += GO_SETUP + RECOVERY_PREPARE
-    for index, cmd in enumerate(RECOVERY_COMMANDS):
-        pre += f'      - name: recovery {index}\n        run: {cmd}\n'
-    return pre
+    return pre + ''.join(recovery_consumer_steps())
 
 
 class RecoveryContractTests(unittest.TestCase):
@@ -809,7 +863,16 @@ class RecoveryContractTests(unittest.TestCase):
     def test_recovery_refuses_ambient_reuse_and_qualification_bypass(self):
         self.bad('          ARTIFACT_TEST_INSTALLATION: ""', '          ARTIFACT_TEST_INSTALLATION: unqualified-parent')
         self.bad(RECOVERY_PREPARE_COMMAND, RECOVERY_PREPARE_COMMAND + ' --skip-tests')
-        self.bad('      - name: recovery 0\n', '      - name: recovery 0\n        env:\n          ARTIFACT_TEST_INSTALLATION: other-input\n')
+        self.bad('      - name: Test durable runtime and concurrency\n',
+                 '      - name: Test durable runtime and concurrency\n        env:\n          ARTIFACT_TEST_INSTALLATION: other-input\n')
+
+    def test_recovery_refuses_duplicate_or_mixed_original_authority(self):
+        observed = recovery_consumer_steps()[2]
+        self.bad(observed, observed + observed)
+        self.bad(RECOVERY_OTHER_HOSTS, RECOVERY_WINDOWS)
+        self.bad('          -- .github/scripts/test_workflow_recovery.py\n',
+                 '          -- .github/scripts/test_workflow_recovery.py -k subset\n')
+        self.bad('          include-hidden-files: true\n', '          include-hidden-files: false\n')
 
     def test_recovery_preserves_budget_matrix_permissions_and_pins(self):
         for before, after in (

@@ -4163,9 +4163,31 @@ jobs:
           --output "${{ runner.temp }}/workflow-recovery-runtime-observation.json"
           -- .github/scripts/test_workflow_recovery.py
       - name: Test actual installed helper and native effects
+        if: matrix.os != 'windows-latest'
         run: python .github/scripts/test_workflow_recovery_cli.py
+      - name: Observe original installed helper and native effects
+        if: matrix.os == 'windows-latest'
+        env:
+          WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION: ${{ runner.temp }}/workflow-recovery-cli-installation.json
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile workflow-recovery-runtime-v1
+          --source-payload "${{ runner.temp }}/workflow-recovery-runtime-inputs"
+          --output "${{ runner.temp }}/workflow-recovery-cli-observation.json"
+          -- .github/scripts/test_workflow_recovery_cli.py
       - name: Test actual host event and readonly notice seams
+        if: matrix.os != 'windows-latest'
         run: python .github/scripts/test_workflow_recovery_hosts.py
+      - name: Observe original host event and readonly notice seams
+        if: matrix.os == 'windows-latest'
+        env:
+          WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION: ${{ runner.temp }}/workflow-recovery-hosts-installation.json
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile workflow-recovery-runtime-v1
+          --source-payload "${{ runner.temp }}/workflow-recovery-runtime-inputs"
+          --output "${{ runner.temp }}/workflow-recovery-hosts-observation.json"
+          -- .github/scripts/test_workflow_recovery_hosts.py
       - name: Test atomic contract generation
         run: python .github/scripts/test_workflow_recovery_generator.py
       - name: Test fresh linked review resubmission
@@ -4186,6 +4208,38 @@ jobs:
         with:
           name: workflow-recovery-runtime-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/workflow-recovery-runtime-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Retain original workflow recovery CLI observation
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: workflow-recovery-cli-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workflow-recovery-cli-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Retain original workflow recovery host observation
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: workflow-recovery-hosts-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workflow-recovery-hosts-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Upload original workflow recovery native installation
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: workflow-recovery-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ github.workspace }}/../workflow-recovery-native/release.json
+            ${{ github.workspace }}/../workflow-recovery-native/ca-artifact-windows-amd64.exe
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false

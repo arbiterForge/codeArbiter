@@ -572,7 +572,7 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         observed = dict(format=reports.OBSERVATION, source_commit=self.req['source_commit'],
                         source_tree=self.req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
                         proof_kind='source-test', producer='python-test-result-observer',
-                        argv=['python', spec['script']], exit_code=0,
+                        argv=['python', component['script']], exit_code=0,
                         source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
                                                   manifest_sha256=owner.digest(source_manifest)),
                         tests=[dict(id=selector, result='passed') for selector in component['selectors']])
@@ -593,6 +593,140 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         with self.assertRaisesRegex(owner.ReadinessError, 'immutable source'):
             reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
 
+    def test_recovery_fixture_reports_consumed_copies_for_both_original_classes(self):
+        import os
+        import shutil
+        import tempfile
+        import types
+        import test_workflow_recovery_cli as recovery_cli
+        import test_workflow_recovery_hosts as recovery_hosts
+
+        binary = b'inert recovery installation fixture'
+        name = 'ca-artifact-windows-amd64.exe'
+        manifest = {'format': 'codearbiter.artifact-release/0.1.0', 'version': '0.1.0',
+                    'protocol': 'codearbiter.artifact-api/0.1.0', 'schema_version': '0.3.2',
+                    'binaries': {'windows/amd64': {'file': name, 'sha256': owner.digest(binary), 'native_tested': True}}}
+        with tempfile.TemporaryDirectory(prefix='inert-recovery-copy-') as folder:
+            scratch = Path(folder)
+            root = scratch / 'repo'
+            source = scratch / 'workflow-recovery-native'
+            source.mkdir()
+            raw = json.dumps(manifest).encode()
+            (source / 'release.json').write_bytes(raw)
+            (source / name).write_bytes(binary)
+            for directory in (root / 'core/pysrc', *(root / 'plugins' / name / 'hooks' for name in ('ca', 'ca-codex', 'ca-pi'))):
+                directory.mkdir(parents=True)
+                for filename in ('_workflowrecoverylib.py', 'workflow-recovery.py'):
+                    (directory / filename).write_bytes(b'# inert')
+            owner_module = types.ModuleType('test_artifact_authoring')
+
+            def fixture_copy():
+                temporary = tempfile.TemporaryDirectory(dir=scratch)
+                target = Path(temporary.name) / 'helpers' / 'artifacts'
+                shutil.copytree(source, target)
+                return temporary, target
+
+            owner_module.build_installation = fixture_copy
+            for original_class, role in ((recovery_cli.InstalledRecoveryTest, 'cli'), (recovery_hosts.RecoveryHostTest, 'hosts')):
+                cls = type(original_class.__name__, (original_class,), {})
+                output = scratch / f'workflow-recovery-{role}-installation.json'
+                with (self.subTest(role=role), mock.patch.object(recovery_cli, 'ROOT', root),
+                      mock.patch.dict(sys.modules, {'test_artifact_authoring': owner_module}),
+                      mock.patch.dict(os.environ, {'ARTIFACT_TEST_INSTALLATION': str(source), 'RUNNER_TEMP': str(scratch),
+                                                  'WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION': str(output)})):
+                    try:
+                        cls.setUpClass()
+                        cls.tearDownClass()
+                    finally:
+                        cls.doClassCleanups()
+                    projection = json.loads(output.read_bytes())
+                    expected = {'manifest_sha256': owner.digest(raw), 'binary_sha256': owner.digest(binary)}
+                    self.assertEqual(projection['fixture'], original_class.__name__)
+                    self.assertEqual(projection['platform'], 'windows/amd64')
+                    self.assertEqual(projection['installation'], expected)
+                    self.assertEqual(projection['fixture_copy'], expected)
+                    self.assertEqual(projection['hosts'], dict.fromkeys(('claude', 'codex', 'pi'), expected))
+
+    def test_recovery_finding_receipt_requires_native_archive_and_both_consumed_copies(self):
+        import major_qualification_report as reports
+
+        cells = list(reports.RECOVERY_FINDING_CELLS)
+        req = dict(self.req, cells=cells, cell_jobs=dict.fromkeys(cells, 'major qualification / workflow-recovery'),
+                   source_finding_composite_cells=cells)
+        profile = reports.RECOVERY_RUNTIME_PROFILE
+        spec = reports.source_profile(profile)
+        source_bytes = b'owned immutable fixture'
+        req['source_finding_inputs'] = reports.source_finding_input_pins(cells, req['source_commit'],
+                                                                      lambda _source, _path: source_bytes)
+        binary = b'inert archive fixture'
+        filename = reports.RECOVERY_NATIVE_BINARY
+        raw = json.dumps({'format': 'codearbiter.artifact-release/0.1.0', 'version': '0.1.0',
+            'protocol': 'codearbiter.artifact-api/0.1.0', 'schema_version': '0.3.2',
+            'binaries': {'windows/amd64': {'file': filename, 'sha256': owner.digest(binary), 'native_tested': True}}}).encode()
+        identity = dict(manifest_sha256=owner.digest(raw), binary_sha256=owner.digest(binary))
+        suffix = f"{req['source_commit']}-7-3"
+
+        def fixtures(change_host=None):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            job = dict(self.jobs[0], name=spec['job'], steps=[dict(name='Qualify one native installation for workflow recovery',
+                                                                 status='completed', conclusion='success')])
+            files = dict.fromkeys(sorted(spec['paths']), source_bytes)
+            manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                            source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                            workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+            manifest_raw = json.dumps(manifest).encode()
+            files[reports.SOURCE_MANIFEST] = manifest_raw
+            self.archive(spec['payload'], job, spec['upload'], files)
+            for component in reports.RECOVERY_COMPONENTS:
+                script = component['script']
+                observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0,
+                    source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                              manifest_sha256=owner.digest(manifest_raw)),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                if script in reports.RECOVERY_INSTALLED_SCRIPTS:
+                    role, actual_class = reports.RECOVERY_INSTALLED_SCRIPTS[script]
+                    binding = dict(format='codearbiter.workflow-recovery-installation/1', fixture=actual_class,
+                                   platform='windows/amd64', installation=identity, fixture_copy=identity,
+                                   hosts=dict.fromkeys(('claude', 'codex', 'pi'), identity))
+                    if role == 'hosts' and change_host:
+                        change_host(observed, binding)
+                    observed['workflow_recovery_installation'] = binding
+                self.archive(component['artifact_prefix'] + suffix, job, component['upload'],
+                             {component['member']: json.dumps(observed).encode()})
+            self.archive('workflow-recovery-native-' + suffix, job, 'Upload original workflow recovery native installation',
+                         {'release.json': raw, filename: binary})
+            return [job, self.jobs[-1]]
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        self.assertEqual([r['cell'] for r in record['results']], cells)
+        for result in record['results']:
+            self.assertEqual(result['result'], 'PASSED')
+            self.assertEqual([len(c['selectors']) for c in result['source_components']], [9, 7, 5])
+            self.assertEqual(result['workflow_recovery_installation']['binary_sha256'], owner.digest(binary))
+            self.assertEqual([c['consumed_native_installation'] for c in result['source_components'][1:]], [identity] * 2)
+        with self.assertRaisesRegex(owner.ReadinessError, 'native installation archive required'):
+            owner.produce(req, self.artifacts[:-1], jobs)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(req, [self.artifacts[0], self.artifacts[1], self.artifacts[-1]], jobs)
+        bad_copy = fixtures(lambda _observed, binding: binding['hosts'].update(pi=dict(identity, binary_sha256='0' * 64)))
+        with self.assertRaisesRegex(owner.ReadinessError, 'consumed installation differs'):
+            owner.produce(req, self.artifacts, bad_copy)
+        skipped = fixtures(lambda observed, _binding: observed['tests'][0].update(result='skipped'))
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+            owner.produce(req, self.artifacts, skipped)
+        jobs = fixtures()
+        readiness = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                                 {'major-readiness.json': b'{}'})
+        self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=readiness,
+                                      archive_digest=readiness['digest'][7:], jobs=jobs,
+                                      build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
     def test_recovery_ci_observes_runtime_once_and_keeps_the_native_owners(self):
         workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
         job = workflow.split('\n  workflow-recovery:\n', 1)[1].split('\n  version-bump:\n', 1)[0]
@@ -603,10 +737,16 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         self.assertIn('run: python .github/scripts/test_workflow_recovery.py\n', direct)
         self.assertIn("if: matrix.os == 'windows-latest'", observed.split('      - name:', 1)[0])
         self.assertEqual(job.count('.github/scripts/test_workflow_recovery.py'), 2)
-        fragments = ('python tools/build-artifacts.py', 'observe-python', '-- .github/scripts/test_workflow_recovery.py',
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery_cli.py'), 2)
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery_hosts.py'), 2)
+        self.assertEqual(job.count('observe-python'), 3)
+        fragments = ('python tools/build-artifacts.py', '-- .github/scripts/test_workflow_recovery.py',
                      'run: python .github/scripts/test_workflow_recovery_cli.py',
+                     '-- .github/scripts/test_workflow_recovery_cli.py',
                      'run: python .github/scripts/test_workflow_recovery_hosts.py',
-                     'Retain original workflow recovery runtime observation')
+                     '-- .github/scripts/test_workflow_recovery_hosts.py',
+                     'Retain original workflow recovery runtime observation',
+                     'Upload original workflow recovery native installation')
         self.assertEqual([job.count(fragment) for fragment in fragments], [1] * len(fragments))
         self.assertEqual([job.index(fragment) for fragment in fragments], sorted(job.index(fragment) for fragment in fragments))
 

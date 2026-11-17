@@ -902,7 +902,7 @@ ROUTE_RELEASE_SOURCE = {
     "job": "[CHECK] | [CORE] | Generated surface",
     "payload": "major-source-inputs-route-release-state",
     "upload": "Upload release-state classifier source-test inputs",
-    "script": ROUTE_RELEASE_SOURCE_SCRIPT,
+    "scripts": (ROUTE_RELEASE_SOURCE_SCRIPT,),
     "paths": frozenset((
         ROUTE_RELEASE_SOURCE_SCRIPT,
         ".github/major-qualification-policy.json",
@@ -926,22 +926,33 @@ ROUTE_RELEASE_SOURCE = {
 }
 RECOVERY_RUNTIME_PROFILE = "workflow-recovery-runtime-v1"
 RECOVERY_RUNTIME_SCRIPT = ".github/scripts/test_workflow_recovery.py"
+RECOVERY_INSTALLED_SCRIPTS = {
+    ".github/scripts/test_workflow_recovery_cli.py": ("cli", "InstalledRecoveryTest"),
+    ".github/scripts/test_workflow_recovery_hosts.py": ("hosts", "RecoveryHostTest"),
+}
+RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
+RECOVERY_NATIVE_PLATFORM = "windows/amd64"
+RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
+RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
 PYTHON_COMPONENT_PROFILES = {
     ROUTE_RELEASE_SOURCE_PROFILE: ROUTE_RELEASE_SOURCE,
     RECOVERY_RUNTIME_PROFILE: {
         "job": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
         "payload": "major-source-inputs-workflow-recovery-runtime",
         "upload": "Upload workflow recovery runtime source inputs",
-        "script": RECOVERY_RUNTIME_SCRIPT,
+        "scripts": (RECOVERY_RUNTIME_SCRIPT, *RECOVERY_INSTALLED_SCRIPTS),
         "paths": frozenset((
             RECOVERY_RUNTIME_SCRIPT,
+            *RECOVERY_INSTALLED_SCRIPTS,
             ".github/scripts/_boundedproc.py",
             ".github/scripts/_contextverificationlib.py",
             ".github/scripts/_immutable_git_blobs.py",
             ".github/scripts/ci20_native_binding.py",
             ".github/scripts/major_qualification_report.py",
             ".github/scripts/major_readiness.py",
+            ".github/scripts/test_artifact_authoring.py",
             ".github/workflows/ci.yml",
+            "core/artifact-release-manifest.json",
             "core/pysrc/_activationlib.py",
             "core/pysrc/_arbiterstatelib.py",
             "core/pysrc/_artifactauthoritylib.py",
@@ -965,6 +976,20 @@ PYTHON_COMPONENT_PROFILES = {
             "core/pysrc/work.py",
             "core/pysrc/workflow-recovery.py",
             "core/workflow-recovery-contract.json",
+            "plugins/ca/.claude-plugin/plugin.json",
+            "plugins/ca/hooks/prompt-submit.py",
+            "plugins/ca/hooks/session-start.py",
+            "plugins/ca/hooks/workflow-recovery.py",
+            "plugins/ca-codex/.codex-plugin/plugin.json",
+            "plugins/ca-codex/hooks/pre-tool-adapter.py",
+            "plugins/ca-codex/hooks/prompt-submit.py",
+            "plugins/ca-codex/hooks/session-start.py",
+            "plugins/ca-codex/hooks/workflow-recovery.py",
+            "plugins/ca-pi/hooks/pi-bridge.py",
+            "plugins/ca-pi/hooks/workflow-recovery.py",
+            "plugins/ca-pi/package.json",
+            "tools/build-artifacts.py",
+            "tools/go_test_parallel.py",
         )),
     },
 }
@@ -2834,7 +2859,7 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
         _q02_python_command(observed.get("argv"))
     elif binding["profile"] in PYTHON_COMPONENT_PROFILES:
         require(observed.get("producer") == "python-test-result-observer"
-                and original_python_entrypoint(observed.get("argv"), spec["script"]),
+                and any(original_python_entrypoint(observed.get("argv"), script) for script in spec["scripts"]),
                 "component source profile requires original Python observer")
     elif binding["profile"] == SDK_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
@@ -2881,9 +2906,11 @@ SOURCE_FINDING_COMPOSITIONS = {
 
 
 def source_finding_profiles(cells):
-    readiness.require(isinstance(cells, list) and all(type(cell) is str and cell in SOURCE_FINDING_COMPOSITIONS for cell in cells)
+    readiness.require(isinstance(cells, list) and all(type(cell) is str and (cell in SOURCE_FINDING_COMPOSITIONS
+                                                                            or cell in RECOVERY_FINDING_CELLS) for cell in cells)
                       and cells == sorted(set(cells)), "invalid original source finding composition selection")
-    return sorted({component["profile"] for cell in cells for component in SOURCE_FINDING_COMPOSITIONS[cell]})
+    return sorted({component["profile"] for cell in cells
+                   for component in SOURCE_FINDING_COMPOSITIONS.get(cell, RECOVERY_COMPONENTS)})
 
 
 def source_member_digest(rows):
@@ -2925,15 +2952,20 @@ def source_component_archive(archive, member, *, source_paths=None, shared=False
         return json.loads(zipped.read(member), object_pairs_hook=unique), members
 
 
-def source_component_evidence(component, req, run, artifacts, jobs):
-    profile = component["profile"]
-    spec = source_profile(profile)
+def source_component_job(spec, run, jobs):
     matches = [job for job in jobs if job.get("name") == spec["job"]]
     readiness.require(len(matches) == 1, "exact original component job required")
     job = matches[0]
     readiness.require(type(job.get("id")) is int and job["id"] > 0 and job.get("run_id") == run["id"]
                       and job.get("run_attempt") == run["run_attempt"] and job.get("status") == "completed"
                       and job.get("conclusion") == "success", "original component job did not succeed in the selected attempt")
+    return job
+
+
+def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=None, installation=None):
+    profile = component["profile"]
+    spec = source_profile(profile)
+    job = source_component_job(spec, run, jobs)
     name = component["artifact_prefix"] + f"{req['source_commit']}-{run['id']}-{run['run_attempt']}"
     source = [artifact for artifact in artifacts if artifact.get("name") == spec["payload"]]
     captures = [artifact for artifact in artifacts if artifact.get("name") == name]
@@ -2943,7 +2975,7 @@ def source_component_evidence(component, req, run, artifacts, jobs):
     readiness.require(all(type(item.get("size_in_bytes")) is int and 0 < item["size_in_bytes"] <= limit
                           for item, limit in ((source, 64 << 20), (capture, 8 << 20))),
                       "original component archive metadata exceeds bound")
-    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True) if job_log is None else job_log
     readiness.validate_upload(job, source, spec["upload"], job_log=log)
     readiness.validate_upload(job, capture, component["upload"], job_log=log)
     source_archive = readiness.artifact_bytes(source, req)
@@ -2973,9 +3005,18 @@ def source_component_evidence(component, req, run, artifacts, jobs):
     outcomes = {test["id"]: test["result"] for test in tests}
     readiness.require(len(outcomes) == len(tests) and all(outcomes.get(selector) == "passed" for selector in component["selectors"]),
                       "selected named test missing, repeated, skipped or failed in original component")
+    binary_fields = {}
+    if component["script"] in RECOVERY_INSTALLED_SCRIPTS:
+        _, fixture = RECOVERY_INSTALLED_SCRIPTS[component["script"]]
+        readiness.require(installation is not None and observed.get("workflow_recovery_installation") == {
+            "format": "codearbiter.workflow-recovery-installation/1", "fixture": fixture, "platform": RECOVERY_NATIVE_PLATFORM,
+            "installation": installation, "fixture_copy": installation,
+            "hosts": dict.fromkeys(("claude", "codex", "pi"), installation),
+        }, "workflow recovery consumed installation differs from the original native archive")
+        binary_fields = {"consumed_native_installation": installation}
     return ({"job_id": job["id"], "run_attempt": run["run_attempt"], "source_artifact_id": source["id"],
              "observation_artifact_id": capture["id"], "observation_archive_sha256": readiness.digest(capture_archive),
-             "selectors": component["selectors"]},
+             "selectors": component["selectors"], **binary_fields},
             {"artifact_id": source["id"], "archive_sha256": readiness.digest(source_archive), "members": members})
 
 
@@ -2993,7 +3034,14 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     readiness.validate_run(run, req, producing=producing)
     readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
     rows, payloads = {}, {}
+    recovery = None
     for cell in cells:
+        if cell in RECOVERY_FINDING_CELLS:
+            if recovery is None:
+                recovery, recovery_payloads = workflow_recovery_evidence(req, run, artifacts, jobs)
+                payloads.update(recovery_payloads)
+            rows[cell] = {"cell": cell, "result": "PASSED", **recovery}
+            continue
         components = []
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
             evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
@@ -3022,6 +3070,75 @@ RECOVERY_RUNTIME_COMPONENT = source_component(
         "RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
         "RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
     ))
+RECOVERY_COMPONENTS = (RECOVERY_RUNTIME_COMPONENT,
+    source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_cli.py",
+        "workflow-recovery-cli-observation-", "Retain original workflow recovery CLI observation",
+        "workflow-recovery-cli-observation.json", (
+            "InstalledRecoveryTest.test_all_three_authenticated_helpers_capture_and_observe_same_local_store",
+            "InstalledRecoveryTest.test_automatic_scan_child_environment_has_no_provider_credentials",
+            "InstalledRecoveryTest.test_changed_native_project_and_dual_owner_hold_only_affected_obligation",
+            "InstalledRecoveryTest.test_old_install_read_preserves_pending_recovery_and_targets",
+            "InstalledRecoveryTest.test_real_native_work_effect_is_reconciled_after_actual_process_death",
+            "InstalledRecoveryTest.test_real_stalled_optional_scan_child_is_killed_and_independent_code_continues",
+            "InstalledRecoveryTest.test_unknown_helper_foreign_manifest_and_arbitrary_storage_argument_refuse",
+        )),
+    source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_hosts.py",
+        "workflow-recovery-hosts-observation-", "Retain original workflow recovery host observation",
+        "workflow-recovery-hosts-observation.json", (
+            "RecoveryHostTest.test_codex_pretool_context_does_not_synthesize_allow_or_change_block",
+            "RecoveryHostTest.test_corrupt_inventory_notice_never_repairs_or_blocks_real_host_entry",
+            "RecoveryHostTest.test_dormant_snapshot_and_missing_ledger_create_no_state",
+            "RecoveryHostTest.test_pi_closed_snapshot_codec_reads_pending_state_without_any_effect",
+            "RecoveryHostTest.test_real_startup_prompt_and_compaction_keep_notice_separate_from_persona",
+        )),
+)
+
+
+def workflow_recovery_native_archive(req, run, artifacts, job, job_log):
+    builds = [step for step in job.get("steps", []) if step.get("name") == "Qualify one native installation for workflow recovery"]
+    readiness.require(len(builds) == 1 and builds[0].get("status") == "completed"
+                      and builds[0].get("conclusion") == "success", "original workflow recovery native installation was not built")
+    artifact_name = f"workflow-recovery-native-{req['source_commit']}-{run['id']}-{run['run_attempt']}"
+    matches = [artifact for artifact in artifacts if artifact.get("name") == artifact_name]
+    readiness.require(len(matches) == 1, "exact original workflow recovery native installation archive required")
+    artifact = matches[0]
+    limit = 64 * 1024 * 1024
+    readiness.require(type(artifact.get("size_in_bytes")) is int and 0 < artifact["size_in_bytes"] <= limit,
+                      "workflow recovery native archive metadata exceeds bound")
+    readiness.validate_upload(job, artifact, "Upload original workflow recovery native installation", job_log=job_log)
+    archive = readiness.artifact_bytes(artifact, req)
+    readiness.require(len(archive) <= limit, "workflow recovery native archive exceeds bound")
+    with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+        entries = zipped.infolist()
+        filenames = {"release.json", RECOVERY_NATIVE_BINARY}
+        readiness.require(len(entries) == 2 and {entry.filename for entry in entries} == filenames
+                          and sum(entry.file_size for entry in entries) <= limit
+                          and zipped.getinfo("release.json").file_size <= 65536,
+                          "workflow recovery native archive members differ or exceed bound")
+        members = readiness.members(archive)
+        with tempfile.TemporaryDirectory(prefix="recovery-native-identity-") as directory:
+            for filename in filenames:
+                (Path(directory) / filename).write_bytes(zipped.read(filename))
+            identity = native_binding_owner.candidate_identity(Path(directory), RECOVERY_NATIVE_PLATFORM)
+    return identity, {"artifact_id": artifact["id"], "archive_sha256": readiness.digest(archive), "members": members}
+
+
+def workflow_recovery_evidence(req, run, artifacts, jobs):
+    job = source_component_job(source_profile(RECOVERY_RUNTIME_PROFILE), run, jobs)
+    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    installation, native_payload = workflow_recovery_native_archive(req, run, artifacts, job, log)
+    captured = [source_component_evidence(component, req, run, artifacts, jobs, job_log=log, installation=installation)
+                for component in RECOVERY_COMPONENTS]
+    components = [evidence for evidence, _ in captured]
+    source_payload = captured[0][1]
+    readiness.require(all(payload == source_payload for _, payload in captured), "workflow recovery source component payloads differ")
+    ids = readiness.bounded_payload_ids(sorted([source_payload["artifact_id"], native_payload["artifact_id"]]))
+    readiness.require(len({*ids, *(value["observation_artifact_id"] for value in components)}) == 5,
+                      "workflow recovery requires distinct original installation, source and observation artifacts")
+    return ({"source_components": components, "evidence_artifact_ids": ids,
+             "workflow_recovery_installation": {**installation, "artifact_id": native_payload["artifact_id"],
+                                                "platform": RECOVERY_NATIVE_PLATFORM}},
+            {payload["artifact_id"]: payload for payload in (source_payload, native_payload)})
 
 
 def workflow_recovery_runtime_evidence(req, run, artifacts, jobs, load):
@@ -3055,13 +3172,20 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
         require(relative in Q02_SOURCE_SCRIPTS and arguments == [] and source_payload is not None,
                 "Q02 source profile requires its original unfiltered Python entry point and payload")
     elif profile in PYTHON_COMPONENT_PROFILES:
-        require(relative == spec["script"] and arguments == [] and source_payload is not None,
+        require(relative in spec["scripts"] and arguments == [] and source_payload is not None,
                 "component source profile requires its original unfiltered Python entry point and payload")
     elif profile == SDK_SOURCE_PROFILE:
         require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
                 "SDK source profile requires its original unfiltered Python entry point and payload")
     else:
         require(profile == SOURCE_PROFILE, "Python observer requires a closed Python source profile")
+    installation_output = None
+    if profile == RECOVERY_RUNTIME_PROFILE and relative in RECOVERY_INSTALLED_SCRIPTS:
+        role, _ = RECOVERY_INSTALLED_SCRIPTS[relative]
+        installation_output = Path(output).with_name(f"workflow-recovery-{role}-installation.json")
+        require(Path(os.environ.get(RECOVERY_INSTALLATION_ENV, "")) == installation_output
+                and not installation_output.exists() and not installation_output.is_symlink(),
+                "new owned workflow recovery installation observation required")
     before = source_identity(repo, profile)
     source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
@@ -3130,6 +3254,9 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                        "argv": [sys.executable, str(script), *arguments],
                        "exit_code": code, "tests": rows}
     if source_binding is not None: document["source_input_binding"] = source_binding
+    if installation_output is not None and code == 0:
+        require(installation_output.lstat().st_size <= 4096, "workflow recovery installation observation exceeds bound")
+        document["workflow_recovery_installation"] = load_json(installation_output)
     new_output(output, document)
     return code if not source_payload or stable else 1
 
@@ -3504,7 +3631,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
     groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
     require(expected, "job has no required mapped cells")
-    require(expected.isdisjoint(SOURCE_FINDING_COMPOSITIONS), "cross-job source findings require all original owners")
+    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_FINDING_CELLS}),
+            "composed source findings require all original owners and components")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,
             "semantic cell mapping is missing, extra or assigned to another job")

@@ -102,7 +102,9 @@
     "disposition:findings:SX-F01": "Site | [Test] - Generator"
   },
   "source_finding_composite_cells": [
-    "disposition:findings:C-F04"
+    "disposition:findings:C-F04",
+    "disposition:findings:HOOK-B04",
+    "disposition:findings:W-F04"
   ],
   "native_composite_cells": [
     "disposition:findings:N-F02",
