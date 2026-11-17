@@ -1,0 +1,132 @@
+{
+ "kind": "PRIVATE_CONFIRMED_FIX",
+ "source_head_observed": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+ "expected_base": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+ "finding": "New HookF04 class was rejected by exact inventory and omitted by the existing explicit Hook selection. Select precisely this class, retain original 20 pure + 1 producer subset and require exact three new names.",
+ "subjects": [
+  {
+   "path": ".github/scripts/test_hook_ci_partition.py",
+   "preimage": {
+    "sha256": "eef56fd43a5d857c42cde7ef4d8a88c0835e7da92f4f9f87f37a3273bd88e5a4",
+    "bytes": 51198
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+    "sha256": "190eaa3f76ff99b5fce83ecf95a7c35faa0e3bef004f596bc9f3596d74c54592",
+    "bytes": 52221
+   },
+   "canonical_unchanged_at_seal": true
+  },
+  {
+   "path": ".github/workflows/ci.yml",
+   "preimage": {
+    "sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+    "bytes": 284338
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\candidate\\.github\\workflows\\ci.yml",
+    "sha256": "f3ffb37a927c50b9b4a146cec4848f8d4d75f3582fec11fe15577d8fc057079f",
+    "bytes": 284373
+   },
+   "canonical_unchanged_at_seal": true
+  }
+ ],
+ "supporting_input": {
+  "path": ".github/scripts/test_npm_binding_observation.py",
+  "sha256": "3db3f66b20f423e00ac34239ef96e8e46a1eac6b1f7b2494c7273da09d949775",
+  "bytes": 44425
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\candidate.patch",
+  "sha256": "da3fdb5e1507e6339b1cff6d1e4d872cdc8d9be835193e5bc915eb4d8b19f86b"
+ },
+ "actual_checks": {
+  "target_red": {
+   "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:/Users/brenn/AppData/Local/Temp/ca-hook-f04-owner-fix-q8ie53ku/runner.py",
+    "C:/Users/brenn/AppData/Local/Temp/ca-hook-f04-owner-fix-q8ie53ku/original",
+    "NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku",
+   "exit_code": 1,
+   "elapsed_seconds": 0.11057639998034574,
+   "streams": {
+    "stdout": {
+     "bytes": 0,
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+     "bytes": 1159,
+     "sha256": "566252ac504c499c6c24ad7b42189aa775dcc76189b7cf5c9d89c9963c6c60dd"
+    }
+   },
+   "environment": "owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command"
+  },
+  "affected_green": {
+   "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:/Users/brenn/AppData/Local/Temp/ca-hook-f04-owner-fix-q8ie53ku/runner.py",
+    "C:/Users/brenn/AppData/Local/Temp/ca-hook-f04-owner-fix-q8ie53ku/candidate",
+    "NpmRuntimeOwnerTests",
+    "SourceQualificationRoleTests"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku",
+   "exit_code": 0,
+   "elapsed_seconds": 0.275293300015619,
+   "streams": {
+    "stdout": {
+     "bytes": 0,
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+     "bytes": 1573,
+     "sha256": "bbc35f5e18dcf9ff18658dc44f1ee4f1dea30b275d20360c4e6a384d9307dd06"
+    }
+   },
+   "environment": "owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command"
+  },
+  "green_count": 8,
+  "unittest_seconds": 0.133,
+  "original_command_count": 75,
+  "current_command_count": 76,
+  "new_total_declared_methods": 24,
+  "old_subset_methods": 21,
+  "actual_method_execution": "Only partition/source-role reader controls executed; original npm/native producer not replayed."
+ },
+ "digest_join": {
+  "original_75": "091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2",
+  "predecessor_76": "ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974",
+  "candidate_76": "02be87b265a36430f8b32554cb726b6bdc557806f830f8d7ea1894e50e97ab6e",
+  "only_replacement": {
+   "before": "python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests",
+   "after": "python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests HookF04FiniteFindingAdmissionTests"
+  }
+ },
+ "preservation": {
+  "old_test_method_count": 56,
+  "unchanged_old_methods": 54,
+  "changed_old_methods": [
+   "NpmRuntimeOwnerTests.test_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes",
+   "NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods"
+  ],
+  "native_producer_command_unchanged": true,
+  "six_platforms_unchanged": true,
+  "permissions_guards_budgets_unchanged": true,
+  "no_canonical_writes": true
+ },
+ "limits": [
+  "Private source/wiring checks only; no hosted success or runtime qualification inferred.",
+  "Broad six-profile feature excluded from this isolated patch."
+ ]
+}

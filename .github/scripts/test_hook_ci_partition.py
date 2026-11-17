@@ -55,7 +55,7 @@ RECOVERY_COMMANDS = (
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
 PREVIOUS_COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
-COMMANDS_SHA256 = 'ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974'
+COMMANDS_SHA256 = '02be87b265a36430f8b32554cb726b6bdc557806f830f8d7ea1894e50e97ab6e'
 HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
@@ -673,7 +673,7 @@ class SourceQualificationRoleTests(unittest.TestCase):
 
 
 
-NPM_PURE_COMMAND = 'python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests'
+NPM_PURE_COMMAND = 'python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests HookF04FiniteFindingAdmissionTests'
 NPM_PRODUCER_COMMAND = 'python .github/scripts/test_npm_binding_observation.py ProducerBoundaryTests'
 NPM_NATIVE_STEP = ('      - name: Test original Python npm binding producer on the qualified runtime\n'
                    '        run: ' + NPM_PRODUCER_COMMAND + '\n')
@@ -693,7 +693,7 @@ def validate_native_npm_owner(text: str) -> None:
     require('    runs-on: ${{ matrix.os }}\n' in native, 'Native runtime platform routing changed')
     hooks = job_block(text, 'hooks')
     selected = [command(step) for step in step_blocks(hooks) if command(step) and 'test_npm_binding_observation.py' in command(step)]
-    require(selected == [NPM_PURE_COMMAND], 'Hook npm controls must be exactly the three runtime-independent classes')
+    require(selected == [NPM_PURE_COMMAND], 'Hook npm controls must be exactly the four runtime-independent classes')
     native_selected = [command(step) for step in steps if command(step) and 'test_npm_binding_observation.py' in command(step)]
     require(native_selected == [NPM_PRODUCER_COMMAND], 'Native producer must execute once without filtering its method')
 
@@ -726,7 +726,10 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
             self.assertIn(before,native)
             with self.subTest(field=before),self.assertRaises(ValueError):
                 validate_native_npm_owner(text.replace(native,native.replace(before,after,1),1))
-        for replacement in (NPM_PRODUCER_COMMAND,NPM_PURE_COMMAND.replace(' RuntimePortabilityTests',''),NPM_PURE_COMMAND+' ProducerBoundaryTests'):
+        for replacement in (NPM_PRODUCER_COMMAND,NPM_PURE_COMMAND.replace(' RuntimePortabilityTests',''),
+                            NPM_PURE_COMMAND.replace(' HookF04FiniteFindingAdmissionTests',''),
+                            NPM_PURE_COMMAND+' HookF04FiniteFindingAdmissionTests',
+                            NPM_PURE_COMMAND+' ProducerBoundaryTests'):
             with self.subTest(hooks=replacement),self.assertRaises(ValueError):
                 validate_native_npm_owner(text.replace(NPM_PURE_COMMAND,replacement,1))
 
@@ -735,13 +738,23 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
         tree=ast.parse(path.read_text(encoding='utf8'))
         classes={node.name:{m.name for m in node.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test_')}
                  for node in tree.body if isinstance(node,ast.ClassDef)}
-        selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
-        self.assertEqual(set(classes),selected|{'ProducerBoundaryTests'})
-        self.assertEqual(sum(len(classes[name]) for name in selected),20)
+        original_selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
+        finding_class='HookF04FiniteFindingAdmissionTests'
+        self.assertEqual(set(classes),original_selected|{'ProducerBoundaryTests',finding_class})
+        self.assertEqual(sum(len(classes[name]) for name in original_selected),20)
         self.assertEqual(len(classes['ProducerBoundaryTests']),1)
-        self.assertEqual(NPM_PURE_COMMAND.split()[2:],['AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'])
+        self.assertEqual(sum(len(classes[name]) for name in original_selected|{'ProducerBoundaryTests'}),21)
+        self.assertEqual(classes[finding_class],{
+            'test_hook_f04_requires_complete_original_six_platform_launch_transport',
+            'test_hook_f04_refuses_missing_owner_or_unreviewed_finding_authority',
+            'test_hook_f04_refuses_sidecar_identity_incomplete_named_case_and_projection_tampering',
+        })
+        self.assertEqual(NPM_PURE_COMMAND.split()[2:],[
+            'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests',finding_class])
         self.assertEqual(NPM_PRODUCER_COMMAND.split()[2:],['ProducerBoundaryTests'])
-        self.assertEqual(sum(map(len,classes.values())),21)
+        self.assertFalse(set(NPM_PURE_COMMAND.split()[2:]) & set(NPM_PRODUCER_COMMAND.split()[2:]))
+        self.assertEqual(set(NPM_PURE_COMMAND.split()[2:]) | set(NPM_PRODUCER_COMMAND.split()[2:]),set(classes))
+        self.assertEqual(sum(map(len,classes.values())),24)
 
 
 def main() -> int:

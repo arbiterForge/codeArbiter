@@ -3469,7 +3469,7 @@ jobs:
         run: python .github/scripts/test_major_qualification_report.py
       - name: Test original Python npm binding identities and admission
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        run: python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests
+        run: python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests HookF04FiniteFindingAdmissionTests
       - name: Test retained archive CLI observations
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_retained_archive_cli_observation.py

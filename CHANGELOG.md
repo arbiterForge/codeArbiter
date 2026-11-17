@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Run the three new native-launch finding admission controls with their existing pure Hook owner while preserving the native producer split.
 - Report bounded setup phases when release guard tests time out, retaining their original deadlines and outcomes.
 - Collect finite Farm finding observations from the existing test run with exact source, named-case, upload and trusted-job bindings.
 - Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
