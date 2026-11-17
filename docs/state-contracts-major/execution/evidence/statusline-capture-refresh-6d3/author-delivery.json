@@ -1,0 +1,77 @@
+{
+  "schema": "codearbiter.private-affected-capture-refresh/1",
+  "route": "ca-chore generated docs",
+  "state": "OBSERVED_PASS_PRIVATE_ONLY",
+  "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+  "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "subject": {
+    "path": "site/src/assets/captures/statusline-refusal.json",
+    "preimage_sha256": "c0da053d2f05246b7a6e79b4da07cb8d57d6b972ff5aba7af8982da0fa026847",
+    "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\captures\\statusline-refusal.json",
+    "sha256": "919f3d0b31fc57acd2ea83f010c73413b98c5d1aa23a92b498b3a5925190b381",
+    "bytes": 2175
+  },
+  "command": {
+    "argv": [
+      "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\run-one.mts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "PYTHON": "C:\\Python314\\python.exe",
+    "exit_code": 0,
+    "timeout_seconds": 75
+  },
+  "owner": "Existing runCapture(CAPTURE_TARGETS.statusline-refusal), temporary fake malformed settings only; full generated capture CLI and unrelated hook proof not replayed.",
+  "observations": {
+    "before_findings": [
+      {
+        "capture": "statusline-refusal",
+        "file": "statusline-refusal.json",
+        "source": "plugins/ca/hooks/wire-statusline.py",
+        "problem": "changed",
+        "recorded": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "actual": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87"
+      }
+    ],
+    "after": "Original assertCapturesFresh passes private single capture",
+    "unchanged_output_argv_exit_and_source_members": true,
+    "only_source_digest_change": {
+      "plugins/ca/hooks/wire-statusline.py": [
+        "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87"
+      ]
+    }
+  },
+  "limits": [
+    "Real owned capture execution, not manual hash editing or a simulated observation.",
+    "No real home/config/install/network/provider/browser/build or runtime/task qualification. Existing exact source-freshness guard remains unchanged."
+  ],
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\run-one.mts",
+      "sha256": "c7e587998a9c75117e7ba2902ec6e2a15bd153d11bcb32b6abf47d02df34fe7d",
+      "bytes": 1382
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\before.json",
+      "sha256": "7f3d7377bb824d84bed35ef6fb1e5f5d5141fbed5aac1252a01057d62ddc73e4",
+      "bytes": 504
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\after.json",
+      "sha256": "d50586dc9cec2c49e82756e7d9e33a9d6f36718d816b7a78ca3e1aff23c4a410",
+      "bytes": 69
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refusal-refresh-kx1nkplm\\stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}
