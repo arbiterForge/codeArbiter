@@ -1,0 +1,61 @@
+test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona)
+Separate hook processes must not trust A after an emitted B cannot record. ... 
+  test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='claude')
+Separate hook processes must not trust A after an emitted B cannot record. ... FAIL
+  test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='codex')
+Separate hook processes must not trust A after an emitted B cannot record. ... FAIL
+test_double_denied_delivery_record_update_reports_remaining_limit (test_prompt_submit.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit)
+If neither update nor removal is possible, old durable state can remain. ... 
+  test_double_denied_delivery_record_update_reports_remaining_limit (test_prompt_submit.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit) (host='claude')
+If neither update nor removal is possible, old durable state can remain. ... FAIL
+  test_double_denied_delivery_record_update_reports_remaining_limit (test_prompt_submit.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit) (host='codex')
+If neither update nor removal is possible, old durable state can remain. ... FAIL
+
+======================================================================
+FAIL: test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='claude')
+Separate hook processes must not trust A after an emitted B cannot record.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 790, in test_failed_delivery_record_write_does_not_suppress_return_persona
+    self.assertIn(self.MARKS["arbiter"], turn(host_name, "return"),
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  "failed B record left stale A suppressing the return persona")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ARBITER-MODE-MARK' not found in '' : failed B record left stale A suppressing the return persona
+
+======================================================================
+FAIL: test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='codex')
+Separate hook processes must not trust A after an emitted B cannot record.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 790, in test_failed_delivery_record_write_does_not_suppress_return_persona
+    self.assertIn(self.MARKS["arbiter"], turn(host_name, "return"),
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  "failed B record left stale A suppressing the return persona")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ARBITER-MODE-MARK' not found in '' : failed B record left stale A suppressing the return persona
+
+======================================================================
+FAIL: test_double_denied_delivery_record_update_reports_remaining_limit (test_prompt_submit.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit) (host='claude')
+If neither update nor removal is possible, old durable state can remain.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 827, in test_double_denied_delivery_record_update_reports_remaining_limit
+    self.assertIn("delivery dedup is unconfirmed", err)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'delivery dedup is unconfirmed' not found in ''
+
+======================================================================
+FAIL: test_double_denied_delivery_record_update_reports_remaining_limit (test_prompt_submit.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit) (host='codex')
+If neither update nor removal is possible, old durable state can remain.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 827, in test_double_denied_delivery_record_update_reports_remaining_limit
+    self.assertIn("delivery dedup is unconfirmed", err)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'delivery dedup is unconfirmed' not found in ''
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.577s
+
+FAILED (failures=4)

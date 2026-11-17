@@ -1,0 +1,58 @@
+{
+ "added": [
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_activationlib.cpython-314.pyc",
+   "sha256": "8897e72ef096b8b5e794a4fb306db5028bcf3085c67a3fd278257ef7b17acbd1"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_gitexec.cpython-314.pyc",
+   "sha256": "3a365a1ae136932b046b3b84bda63819ba2e83b4c1e7244d589c5ad36f9c7c36"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_hooklib.cpython-314.pyc",
+   "sha256": "b0108c1b7a5bbaf1d497acd4e94bfa07f4eeeec9c560be02fbc1908bdbc09f2d"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_host.cpython-314.pyc",
+   "sha256": "db11130e81a2b242bdcf8b1aedff3ad58101ffa0c34c0b18c88b22eb1cb4ea93"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_pathnorm.cpython-314.pyc",
+   "sha256": "526767478c486f67dfec563cba8480426492fe4cc33cbdfe78827a2d8b7ab81b"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_protectedlib.cpython-314.pyc",
+   "sha256": "ecfffb040cb54afd5b46988bb4ab04ad6dd20cd7e4be333284711de167e91f09"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_scopelib.cpython-314.pyc",
+   "sha256": "95dbb0116c8fe17efbb1fd188cfa0c0e9159a2a8d698487c21c61162cb6f289e"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_sensitivelib.cpython-314.pyc",
+   "sha256": "a606a0f7453c3f4be129dafbd3883993604779eeffd16740502381d3ae16fe48"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/_updatelib.cpython-314.pyc",
+   "sha256": "8aaf368ccea06b7f985ed76e4c5a7fc1cc4934f1c9a7715c127658b06315fc03"
+  },
+  {
+   "path": "package/plugins/ca-pi/hooks/__pycache__/hostapi.cpython-314.pyc",
+   "sha256": "41fb5ccef6eadc0f5cd10d8a2493da130ba62e88c140c03073295fb4ae496fd9"
+  }
+ ],
+ "removed": {},
+ "changed": {},
+ "import_projection": {
+  "original_sha256": "b0f0925f4c4f769bba9bc68884d4f7a05ff41e54c04e5dc98806370a6792b28f",
+  "original_bytes": 1462,
+  "original_retained_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\installed-inventory-delta.json",
+  "transformed_member_maps": [
+   {
+    "path": "/added",
+    "members": 10
+   }
+  ],
+  "scope": "Passive provenance-labelled projection. Pure installed-member digest maps are represented as path/sha256 rows; every original path and digest is preserved. No scanner configuration, qualification guard or original receipt changed."
+ }
+}

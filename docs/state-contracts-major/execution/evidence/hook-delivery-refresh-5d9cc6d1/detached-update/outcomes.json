@@ -1,0 +1,49 @@
+{
+ "schema": "codearbiter.private-fix-outcomes/1",
+ "regression": "TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode",
+ "original_RED": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\red.json",
+   "sha256": "cd0c3e42fb60bf4212aafd46701493ff4d031c05e5a4fd001e7a633ee4b3da6a",
+   "bytes": 762
+  },
+  "methods": 1,
+  "assertion_failures": 2,
+  "errors": 0,
+  "oracles": [
+   "actual inert child dont_write_bytecode=False",
+   "exact complete member/hash inventory gained owned pyc"
+  ]
+ },
+ "final_GREEN": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\green.json",
+   "sha256": "899caf0a0f99567258cb1e572ab7fafb113d59f168402ef1d5db570e5ff52d83",
+   "bytes": 667
+  },
+  "methods": 8,
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "old_cases": 7,
+  "new_cases": 1,
+  "duration_seconds": 0.138
+ },
+ "child_observations": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\owned-child-observations.json",
+  "sha256": "375d741219a980a7c2fc5b7c0075d5e1aa38fe4dec1c330523694228a4964884",
+  "bytes": 1915
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\source-preservation.json",
+  "sha256": "a50bc5e92b6adaa224694cdde9d14618040d666921d448910cc0c3dac70aecac",
+  "bytes": 1456
+ },
+ "mutation": "Original no--B launch is the exact guard-removal mutation and genuine RED; no redundant replay.",
+ "limits": [
+  "Original archive reportedly gained ten pyc members; this review did not reproduce that installed run or establish the detached child as its sole writer, since original detached PID/argv were not retained. Source defect and owned inert-child causal reproduction are confirmed separately.",
+  "Windows/Python owned child probe only; no real updater/network/provider/API/dependency/install/host/package qualification or Linux runtime replay. No immutable-inventory exclusion or weaker qualification guard introduced.",
+  "Only seven existing focused cases plus one new regression executed; all other old test bodies remain unchanged and unexecuted. Root owns canonical generation/adoption/independent review/staged gates/exact-head hosted qualification.",
+  "No global environment mutation; existing test module redirects its own isolated process home/state, and Popen wrapper changes only inert child environment. Production flags/null stdio/detachment/caller failure behavior preserved."
+ ]
+}

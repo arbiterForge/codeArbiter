@@ -213,7 +213,10 @@ def _effective_mode(root, session_id, payload):
 # Versioned (`v`), and in its own `modedelivery-v2-` namespace: a rolled-back
 # reader never sees it, and this reader never reinterprets a legacy
 # `modeinject-` marker. Unreadable or mismatched -> treated as "nothing
-# delivered", which fails toward a redundant persona, never a missing one.
+# delivered", which fails toward a redundant persona. If updating a delivery
+# record fails, invalidate the old record so a later hook cannot mistake it for
+# the last emission. If storage denies both update and removal, the old record
+# can survive; report unconfirmed dedup without claiming durable invalidation.
 
 MODEDELIVERY_PREFIX = "modedelivery-v2-"
 _DELIVERY_RECORD_VERSION = 2
@@ -253,8 +256,11 @@ def _record_delivered(root, session_id, mode, generation):
         _hooklib.write_text_atomic(path, json.dumps({
             "v": _DELIVERY_RECORD_VERSION, "session": str(session_id),
             "mode": mode, "generation": generation}))
-    except Exception:  # noqa: BLE001 — a failed record write only costs a redundant re-delivery
-        pass
+    except Exception:  # noqa: BLE001 — discard stale dedup when the new delivery cannot record
+        if not _invalidate_injection_markers(root, session_id):
+            sys.stderr.write(
+                "codeArbiter: persona delivery record update and invalidation failed; "
+                "delivery dedup is unconfirmed.\n")
 
 
 # ---------------------------------------------------------------------------
@@ -287,13 +293,16 @@ def _invalidate_injection_markers(root, session_id):
     The fallback when the generation cannot advance. Deleting the record
     forces the next turn's `_already_delivered` to miss, so the persona is
     re-injected — the same outcome a successful bump produces, reached by the
-    other side. Never raises: this runs on an already-degraded path, and a
-    failure here costs the re-injection it was trying to guarantee, so it must
-    not also cost the PreCompact turn."""
+    other side. Returns whether the record is absent after the attempt; a
+    failed removal leaves invalidation unconfirmed. Never raises: this runs on
+    an already-degraded path and must not also cost the PreCompact turn."""
     try:
         os.remove(_delivery_record_path(root, session_id))
-    except Exception:  # noqa: BLE001 — absent is the desired state anyway
-        pass
+    except FileNotFoundError:
+        return True
+    except Exception:  # noqa: BLE001 — callers distinguish unconfirmed invalidation
+        return False
+    return True
 
 
 def _bump_compaction_generation(root, session_id):

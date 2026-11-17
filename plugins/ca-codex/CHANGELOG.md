@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Changed
 
+- Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
+- Preserve no-bytecode execution when SessionStart launches the detached updater.
 - Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
 - Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
 - Separate recorded work progress from derived dependency readiness and independently verified checks, preserving identities, user stops and later edits across supported schema upgrades.

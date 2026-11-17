@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e",
+ "exit_code": 0,
+ "elapsed_seconds": 2.4963571000262164,
+ "source_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+ "test_sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "82ec8b93d6535e9784bdfed329d8bc6e93f34060147f66e8fae621f7b3cb4622"
+}
