@@ -95,8 +95,16 @@ def recovery_consumer_steps() -> list[str]:
                      + '          -- ' + cmd.removeprefix('python ') + '\n')
         uploads.append(upload(upload_name, observation + '-' + RECOVERY_RUN_SUFFIX,
                               '${{ runner.temp }}/' + observation + '.json'))
-    for cmd, name in zip(RECOVERY_COMMANDS[3:], ('Test atomic contract generation', 'Test fresh linked review resubmission')):
-        steps.append(named(name) + '        run: ' + cmd + '\n')
+    steps.append(named('Test atomic contract generation') + '        run: ' + RECOVERY_COMMANDS[3] + '\n')
+    steps.append(named('Test fresh linked review resubmission') + RECOVERY_OTHER_HOSTS + '        run: ' + RECOVERY_COMMANDS[4] + '\n')
+    steps.append(named('Observe original fresh linked review resubmission') + RECOVERY_WINDOWS
+                 + RECOVERY_BINDING_RUN + 'observe-python\n' + RECOVERY_PROFILE
+                 + '          --source-payload "' + RECOVERY_INPUTS + '"\n'
+                 + '          --output "${{ runner.temp }}/review-resubmission-observation.json"\n'
+                 + '          -- ' + RECOVERY_COMMANDS[4].removeprefix('python ') + '\n')
+    uploads.append(upload('Retain original review resubmission observation',
+                          'review-resubmission-observation-' + RECOVERY_RUN_SUFFIX,
+                          '${{ runner.temp }}/review-resubmission-observation.json'))
     native = '${{ github.workspace }}/../workflow-recovery-native/'
     uploads.append(upload('Upload original workflow recovery native installation',
                           'workflow-recovery-native-' + RECOVERY_RUN_SUFFIX,
@@ -129,9 +137,21 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
 # Finite reviewed roles: original suites stay in the legacy digest; metadata
 # does not become a merge-queue test. Exact blocks keep commands, guards,
 # credentials and uploader pins reviewable, as for native qualification above.
-ROUTE_GENERATOR_SOURCE_STEPS = ('Prepare single-owner hook source-test inputs',
-                                'Observe original surface-generator unit tests')
-PYTHON_SOURCE_ROLES = {'Observe original surface-generator unit tests': (
+EARLY_HOOK_SOURCE_STEPS = ('Prepare single-owner hook source-test inputs',
+                           'Observe original sync-core tool unit tests',
+                           'Observe original surface-generator unit tests')
+PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
+                          '      - name: Observe original sync-core tool unit tests\n'
+                          '        id: sf13_sync_observed\n'
+                          "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+                          '        shell: bash\n'
+                          '        run: >-\n'
+                          '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+                          '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                          '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+                          '          --output "${{ runner.temp }}/python-sf13-sync-observation.json"\n'
+                          '          -- .github/scripts/test_sync_core.py\n'),
+ 'Observe original surface-generator unit tests': (
                           '      - name: Observe original surface-generator unit tests\n'
                           '        id: route_generator_observed\n'
                           "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
@@ -545,11 +565,12 @@ def python_source_roles(block: str) -> dict[str,str]:
             == ['          GH_TOKEN: ${{ github.token }}'], 'Python source credentials escaped metadata emission')
     require(block.count('${{ github.token }}')==1 and 'secrets.' not in block,
             'Python source credentials escaped metadata emission')
-    roles_in_order = [*ROUTE_GENERATOR_SOURCE_STEPS,
-                      *(name for name in PYTHON_SOURCE_ROLES if name not in ROUTE_GENERATOR_SOURCE_STEPS)]
+    roles_in_order = [*EARLY_HOOK_SOURCE_STEPS,
+                      *(name for name in PYTHON_SOURCE_ROLES if name not in EARLY_HOOK_SOURCE_STEPS)]
     expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in roles_in_order]
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
-    for name,entry in (('Run surface-generator unit tests','test_build_surface.py'),
+    for name,entry in (('Run sync-core tool unit tests','test_sync_core.py'),
+                       ('Run surface-generator unit tests','test_build_surface.py'),
                        ('Test interrupted output publication','test_generated_output.py'),
                        ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
@@ -771,11 +792,17 @@ def validate(
             require(not predicates,'Partition validator must run in every cell')
             continue
         require(cmd!=DIRECT,'The hermetic run already executes the complete hook suite')
+        if cmd == 'python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py':
+            require("        env:\n          PYTHONDONTWRITEBYTECODE: '1'\n"
+                    "          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 'hooks-single-owner-findings-v1' || '' }}\n"
+                    "        run: " + cmd + "\n" in step,
+                    'Debug workflow evidence must use its original Hook contract command')
         commands.append(cmd)
         kind='isolation' if cmd==ISOLATION else 'contracts'
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         observed_original = roles and cmd in ('python .github/scripts/test_review_funnel.py',
+                                               'python .github/scripts/test_sync_core.py',
                                                'python .github/scripts/test_build_surface.py',
                                                'python .github/scripts/test_generated_output.py',
                                                'python .github/scripts/test_check_skill_proof_fresh.py',
@@ -1068,6 +1095,21 @@ class SourceQualificationRoleTests(unittest.TestCase):
             self.assertIn(exclusive,fallback)
             with self.subTest(fallback=name),self.assertRaises(ValueError):
                 validate(text.replace(fallback,fallback.replace(exclusive,"matrix.partition == 'all' || matrix.partition == 'contracts'"),1))
+
+    def test_sync_core_observation_keeps_one_exact_original_invocation(self):
+        text = self.current()
+        observed = PYTHON_SOURCE_ROLES['Observe original sync-core tool unit tests']
+        self.assertIn(observed, text)
+        fallback = next(step for step in step_blocks(job_block(text, 'hooks'))
+                        if step.startswith('      - name: Run sync-core tool unit tests\n'))
+        for old, changed in (
+            (observed, observed + observed),
+            (observed, observed.replace('test_sync_core.py', 'test_sync_core.py -k subset')),
+            (fallback, fallback.replace(" && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')", '')),
+        ):
+            self.assertNotEqual(old, changed)
+            with self.subTest(changed=changed.splitlines()[0]), self.assertRaises(ValueError):
+                validate(text.replace(old, changed, 1))
 
     def test_exact_hw04_addition_preserves_all_prior_ordered_commands(self):
         text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block)

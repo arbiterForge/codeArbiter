@@ -900,6 +900,8 @@ ROUTE_RELEASE_SOURCE_PROFILE = "route-release-state-component-v1"
 ROUTE_RELEASE_SOURCE_SCRIPT = ".github/scripts/test_command_route_release_state.py"
 ROUTE_COMPATIBILITY_SCRIPT = ".github/scripts/test_command_route_compatibility.py"
 ROUTE_GENERATOR_SCRIPT = ".github/scripts/test_build_surface.py"
+SF13_CELL = "disposition:findings:SF13"
+SF13_SYNC_SCRIPT = ".github/scripts/test_sync_core.py"
 OUTER_UNITTEST_RESULT = "entrypoint-text-runner"
 ROUTE_RELEASE_SOURCE = {
     "job": "[CHECK] | [CORE] | Generated surface",
@@ -941,6 +943,18 @@ RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
 RECOVERY_NATIVE_PLATFORM = "windows/amd64"
 RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
 RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
+DEBUG_RESUBMISSION_FINDING = "disposition:findings:W-F02"
+DEBUG_LAUNCHER = ".github/scripts/test_ci_impact.py"
+DEBUG_WORKFLOW_SUITE = ".github/scripts/test_debug_workflow.py"
+DEBUG_HANDOFF_SUITE = ".github/scripts/test_debug_handoff.py"
+DEBUG_RESUBMISSION_SCRIPT = ".github/scripts/test_review_resubmission.py"
+DEBUG_LOCKED_PROFILE = "debug-reference-component-v1"
+DEBUG_LOCK_PATH = ".github/requirements/artifact-conformance-py314.lock"
+DEBUG_HOOK_PROFILE = "hooks-single-owner-findings-v1"
+DEBUG_RUNNERS = {
+    DEBUG_HOOK_PROFILE: ("hooks", DEBUG_WORKFLOW_SUITE, "single-owner-hook-source-inputs", "python-debug-workflow-observation.json"),
+    DEBUG_LOCKED_PROFILE: ("artifact-native-bridges", DEBUG_HANDOFF_SUITE, "debug-reference-source-inputs", "debug-reference-observation.json"),
+}
 CATALOG_SOURCE_PROFILE = "command-catalog-component-v1"
 CATALOG_SCRIPT = ".github/scripts/test_command_catalog.py"
 CATALOG_FINDING_CELL = "disposition:findings:W-F08"
@@ -972,13 +986,43 @@ PYTHON_COMPONENT_PROFILES = {
             "plugins/ca-pi/routines/INDEX.md",
         )),
     },
+    DEBUG_LOCKED_PROFILE: {
+        "job": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+        "payload": "major-source-inputs-debug-reference",
+        "upload": "Upload locked debug reference source-test inputs",
+        "scripts": (DEBUG_HANDOFF_SUITE,),
+        "paths": frozenset((
+            DEBUG_LAUNCHER, DEBUG_HANDOFF_SUITE, DEBUG_LOCK_PATH,
+            ".github/fixtures/debug/cases.json",
+            ".github/fixtures/debug/handoff-examples.json",
+            ".github/fixtures/debug/qualification-cells.json",
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_debughandofflib.py",
+            "core/pysrc/_gitexec.py",
+            "core/pysrc/debug-handoff.py",
+            "tools/ci-impact.py",
+        )) | frozenset(path for path in SOURCE_PATHS if path.startswith("core/surface/skills/debug/")),
+    },
     RECOVERY_RUNTIME_PROFILE: {
         "job": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
         "payload": "major-source-inputs-workflow-recovery-runtime",
         "upload": "Upload workflow recovery runtime source inputs",
-        "scripts": (RECOVERY_RUNTIME_SCRIPT, *RECOVERY_INSTALLED_SCRIPTS),
+        "scripts": (RECOVERY_RUNTIME_SCRIPT, DEBUG_RESUBMISSION_SCRIPT, *RECOVERY_INSTALLED_SCRIPTS),
         "paths": frozenset((
             RECOVERY_RUNTIME_SCRIPT,
+            DEBUG_RESUBMISSION_SCRIPT,
+            ".github/scripts/fixtures/claude-hooks/agent-posttooluse.json",
+            ".github/scripts/fixtures/claude-hooks/agent-pretooluse.json",
+            ".github/scripts/fixtures/claude-hooks/subagentstart.json",
+            ".github/scripts/fixtures/claude-hooks/subagentstop-first.json",
             *RECOVERY_INSTALLED_SCRIPTS,
             ".github/scripts/_boundedproc.py",
             ".github/scripts/_contextverificationlib.py",
@@ -987,6 +1031,7 @@ PYTHON_COMPONENT_PROFILES = {
             ".github/scripts/major_qualification_report.py",
             ".github/scripts/major_readiness.py",
             ".github/scripts/test_artifact_authoring.py",
+            ".github/scripts/test_artifact_authority_adapter.py",
             ".github/workflows/ci.yml",
             "core/artifact-release-manifest.json",
             "core/pysrc/_activationlib.py",
@@ -1739,7 +1784,11 @@ Q02_FINDING_RECIPES = {
 
 # Single-owner finding routes use existing unfiltered commands. Shared source
 # transport grants no multi-owner, whole-task, model or installed-host claim.
-_HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset(['.gitattributes',
+_HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ 'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
+ 'plugins/ca-codex/routines/debug/SKILL.md', 'plugins/ca-codex/routines/debug/references/preparation.md',
+ 'plugins/ca-pi/routines/debug/SKILL.md', 'plugins/ca-pi/routines/debug/references/preparation.md',
+ '.gitattributes',
  '.github/major-qualification-policy.json',
  '.github/major-test-selections.json',
  '.github/scripts/_codex_cli_profile.py',
@@ -2559,7 +2608,7 @@ def _finding_python_command(argv, profile, script=None):
     permitted = {row["script"] for row in PYTHON_FINDING_RECIPES.values() if row["profile"] == profile}
     if profile == "hooks-single-owner-findings-v1":
         permitted |= {row["script"] for row in HOOK_F02_COMPONENTS.values()}
-        permitted.add(ROUTE_GENERATOR_SCRIPT)
+        permitted.update((ROUTE_GENERATOR_SCRIPT, SF13_SYNC_SCRIPT))
     require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv),
             "single-owner profile requires its unfiltered Python entry point")
     path = argv[1].replace("\\", "/")
@@ -2599,6 +2648,13 @@ def original_python_entrypoint(argv, script):
         return False
     path = argv[1].replace("\\", "/")
     return path == script or path.endswith("/" + script)
+
+
+def original_debug_entrypoint(argv, profile):
+    role = DEBUG_RUNNERS.get(profile)
+    return (role is not None and isinstance(argv, list) and len(argv) == 4
+            and original_python_entrypoint(argv[:2], DEBUG_LAUNCHER)
+            and argv[2:] == ["--run-debug-suite", role[1]])
 
 
 def _q02_python_command(argv):
@@ -2889,7 +2945,11 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
             "source test payload binding missing or differs")
-    if binding["profile"] in PYTHON_FINDING_PROFILES:
+    debug = original_debug_entrypoint(observed.get("argv"), binding["profile"])
+    if debug:
+        require(observed.get("producer") == "python-test-result-observer" and observed.get("test_result_scope") == OUTER_UNITTEST_RESULT,
+                "debug suite requires the original entrypoint runner results")
+    elif binding["profile"] in PYTHON_FINDING_PROFILES:
         require(observed.get("producer") == "python-test-result-observer", "single-owner profile requires original Python observer")
         _finding_python_command(observed.get("argv"), binding["profile"])
     elif binding["profile"] == HOOK_REVIEW_SOURCE_PROFILE:
@@ -2910,14 +2970,19 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     record = payload.get("documents", {}).get(SOURCE_MANIFEST)
     validate_source_manifest(record, req, job_name, payload.get("members", []))
     require(record["profile"] == binding["profile"], "source test manifest profile differs")
+    if debug and binding["profile"] == DEBUG_LOCKED_PROFILE:
+        lock_sha = next(row["sha256"] for row in record["members"] if row["path"] == DEBUG_LOCK_PATH)
+        require(observed.get("debug_runtime") == {"python": "3.14", "lock_sha256": lock_sha},
+                "debug suite locked interpreter differs from retained source")
     require(next(row["sha256"] for row in payload["members"] if row["path"] == SOURCE_MANIFEST)
             == binding["manifest_sha256"], "source test manifest digest differs")
 
 
 def source_component(profile, script, artifact_prefix, upload, member, cases):
+    module = PurePosixPath(script).stem if script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE) else "__main__"
     return {"profile": profile, "script": script, "artifact_prefix": artifact_prefix,
             "upload": upload, "member": member,
-            "selectors": sorted(f"python:{script}:__main__.{case}" for case in cases)}
+            "selectors": sorted(f"python:{script}:{module}.{case}" for case in cases)}
 
 
 def route_release_component(cases):
@@ -2959,6 +3024,47 @@ ROUTE_GENERATOR_REVIEW_COMPONENT = route_generator_component((
 
 
 SOURCE_FINDING_COMPOSITIONS = {
+    DEBUG_RESUBMISSION_FINDING: (
+        source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
+            "Retain original locked debug reference observation", "debug-reference-observation.json", (
+                "HandoffByteDecoderTest.test_utf8_byte_and_depth_limits_accept_exact_boundaries",
+                "PrivateDebugEntryTest.test_corrected_resubmission_contract",
+            )),
+        source_component(DEBUG_HOOK_PROFILE, DEBUG_WORKFLOW_SUITE, "python-source-observations-",
+            "Retain original Python source-test observations", "python-debug-workflow-observation.json", (
+                "CorrectedResubmissionSurfaceTest.test_every_rendered_resource_allows_a_corrected_resubmission",
+            )),
+        source_component(RECOVERY_RUNTIME_PROFILE, DEBUG_RESUBMISSION_SCRIPT, "review-resubmission-observation-",
+            "Retain original review resubmission observation", "review-resubmission-observation.json", (
+                "ReviewResubmissionTest.test_changed_target_and_contract_are_captured_fresh_and_stale_child_cannot_pass",
+                "ReviewResubmissionTest.test_changes_requested_and_block_are_never_success_by_resubmitting",
+                "ReviewResubmissionTest.test_denied_unknown_and_arbitrary_terminal_failure_cannot_be_cleared",
+                "ReviewResubmissionTest.test_exact_retry_after_each_persisted_boundary_never_creates_another_successor",
+                "ReviewResubmissionTest.test_malformed_first_report_gets_fresh_linked_capture_without_mutating_original",
+            )),
+    ),
+    SF13_CELL: (
+        source_component(SOURCE_PROFILE, ".github/scripts/test_generated_output.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-publisher-observation.json", (
+            'GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker',
+            'GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication',
+            'GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive',
+            'GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges',
+            'GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set',
+            'GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal',
+            'GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect',
+            'GeneratedOutputTests.test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files',
+            'GeneratedOutputTests.test_windows_junction_ancestor_and_owner_refuse_before_any_effect',
+            )),
+        source_component("hooks-single-owner-findings-v1", SF13_SYNC_SCRIPT,
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-sf13-sync-observation.json", (
+            'TestSyncOwnerAcceptance.test_declared_inventory_excludes_host_adapter_and_nonpython_owners',
+            'TestSyncOwnerAcceptance.test_invalid_real_descriptor_refuses_before_publication_or_other_effect',
+            'TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges',
+            )),
+    ),
     "disposition:findings:C-F04": (
         source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
             "python-source-observations-", "Retain original Python source-test observations",
@@ -3099,13 +3205,18 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
     observed, _ = source_component_archive(capture_archive, component["member"],
                                            shared=component["artifact_prefix"] == "python-source-observations-")
     argv = observed.get("argv") if isinstance(observed, dict) else None
+    script = component["script"]
+    if script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE):
+        command_matches = original_debug_entrypoint(argv, profile) and argv[3] == script
+    else:
+        command_matches = original_python_entrypoint(argv, script)
     readiness.require(isinstance(observed, dict) and observed.get("format") == OBSERVATION
                       and observed.get("source_commit") == req["source_commit"] and observed.get("source_tree") == req["source_tree"]
                       and type(observed.get("ci_run_id")) is int and observed["ci_run_id"] == run["id"]
                       and observed.get("clean") is True and observed.get("source_stable") is True
                       and observed.get("proof_kind") == "source-test" and observed.get("producer") == "python-test-result-observer"
                       and type(observed.get("exit_code")) is int and observed["exit_code"] == 0
-                      and original_python_entrypoint(argv, component["script"]),
+                      and command_matches,
                       "original component observation is absent, stale, filtered or unsuccessful")
     admit_source_observation(observed, {"source_manifest_sha256": next(row["sha256"] for row in members
         if row["path"] == SOURCE_MANIFEST), "source_upload_job_id": job["id"], "members": members,
@@ -3137,6 +3248,8 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
 
 
 def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
+    readiness.require(SF13_CELL not in req.get("cells", ()),
+                      "SF13 requires both original Core and Docs evidence")
     cells = req.get("source_finding_composite_cells", [])
     profiles = source_finding_profiles(cells)
     if not cells:
@@ -3174,7 +3287,7 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                               "original shared observation archive member is ambiguous or repeated")
             capture_members.add(capture_member)
         identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()),
-                                                   limit=3 if cell == CATALOG_FINDING_CELL else 2)
+                                                   limit=3 if cell in (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING) else 2)
         expected_jobs = {source_profile(profile)["job"] for profile in owners}
         readiness.require(len({job_id for job_id, _ in owners.values()}) == len(expected_jobs),
                           "original source profiles require their exact owning jobs")
@@ -3282,7 +3395,33 @@ def workflow_recovery_runtime_evidence(req, run, artifacts, jobs, load):
             "component": evidence, "source_payload": payload}
 
 
-def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
+def locked_debug_runtime(repo):
+    venv = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True) / "artifact-conformance-venv"
+    executable = venv / "bin/python"
+    require(Path(os.environ["ARTIFACT_CONFORMANCE_PYTHON"]).absolute() == executable
+            and Path(sys.executable).absolute() == executable and executable.is_file() and Path(sys.prefix).resolve(strict=True) == venv
+            and Path(sys.base_prefix).resolve(strict=True) != venv and sys.version_info[:2] == (3, 14),
+            "debug suite must retain the original Python 3.14 reference interpreter")
+    return {"python": "3.14", "lock_sha256": readiness.digest(_source_file(repo, DEBUG_LOCK_PATH,
+                                                                    source_profile(DEBUG_LOCKED_PROFILE)["paths"]))}
+
+
+def observe_original_debug_suite(repo, argv, run_suite):
+    profile = os.environ.get("MAJOR_DEBUG_SOURCE_PROFILE")
+    role = DEBUG_RUNNERS.get(profile)
+    require(role is not None and os.environ.get("GITHUB_JOB") == role[0], "debug suite observer job/profile differs")
+    _, suite, source, output = role
+    repo = Path(repo).resolve(strict=True)
+    require(len(argv) == 3 and argv[1] == "--run-debug-suite"
+            and Path(argv[0]).resolve(strict=True) == repo / DEBUG_LAUNCHER
+            and Path(argv[2]).resolve(strict=True) == repo / suite,
+            "debug suite observer requires the exact original launcher and suite")
+    temp = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+    return observe_python(repo, DEBUG_LAUNCHER, ["--run-debug-suite", suite], temp / output, temp / source,
+                          profile, debug_runner=run_suite)
+
+
+def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE, *, debug_runner=None):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
@@ -3290,7 +3429,16 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
     spec = source_profile(profile)
-    if profile in PYTHON_FINDING_PROFILES:
+    debug_runtime = None
+    if debug_runner is not None:
+        require(relative == DEBUG_LAUNCHER and source_payload is not None
+                and original_debug_entrypoint([sys.executable, relative, *arguments], profile),
+                "debug suite requires the exact original unfiltered launcher")
+        relative = arguments[1]
+        expected_module = PurePosixPath(relative).stem
+        if profile == DEBUG_LOCKED_PROFILE:
+            debug_runtime = locked_debug_runtime(repo)
+    elif profile in PYTHON_FINDING_PROFILES:
         require(arguments == [] and source_payload is not None, "single-owner profile requires its original unfiltered command and payload")
         _finding_python_command([sys.executable, relative], profile)
     elif profile == HOOK_REVIEW_SOURCE_PROFILE:
@@ -3317,7 +3465,7 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     before = source_identity(repo, profile)
     source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
-    outer_only = profile == ROUTE_RELEASE_SOURCE_PROFILE and relative == ROUTE_COMPATIBILITY_SCRIPT
+    outer_only = debug_runner is not None or (profile == ROUTE_RELEASE_SOURCE_PROFILE and relative == ROUTE_COMPATIBILITY_SCRIPT)
     outer_result = None
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
@@ -3336,6 +3484,11 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
             if outer_only and result is not outer_result:
                 return original(result, test)
             test_id = test.id()
+            if debug_runner is not None:
+                loaded = sys.modules.get(expected_module)
+                require(test_id.startswith(expected_module + ".") and loaded is not None
+                        and Path(loaded.__file__).resolve(strict=True) == repo / relative,
+                        "debug named result did not originate from the approved discovered suite")
             require(isinstance(test_id, str) and 0 < len(test_id.encode("utf-8")) <= 2048
                     and len(rows) < MAX_TESTS, "Python named observation exceeds bound")
             row = {"id": "python:" + relative + ":" + test_id, "result": "unknown"}
@@ -3368,8 +3521,8 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
             # even when the caller did not start Python with -B.
             stack.enter_context(mock.patch.object(sys, "dont_write_bytecode", True))
             if outer_only:
-                # The compatibility suite directly runs an inner TestCase as
-                # a negative control. Its outer runner owns the suite result.
+                # Nested TestResult calls are fixture controls. The entrypoint
+                # runner alone owns the observed suite result.
                 stack.enter_context(mock.patch.object(unittest.TextTestRunner, "_makeResult",
                                                       make_result(unittest.TextTestRunner._makeResult)))
             stack.enter_context(mock.patch.object(unittest.TestResult, "startTest", start(unittest.TestResult.startTest)))
@@ -3379,7 +3532,10 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                 stack.enter_context(mock.patch.object(unittest.TestResult, name, outcome(getattr(unittest.TestResult, name), state)))
             stack.enter_context(mock.patch.object(unittest.TestResult, "addSubTest", subtest(unittest.TestResult.addSubTest)))
             try:
-                runpy.run_path(str(script), run_name="__main__")
+                if debug_runner is None:
+                    runpy.run_path(str(script), run_name="__main__")
+                else:
+                    code = debug_runner(Path(arguments[1]))
             except SystemExit as error:
                 code = error.code if type(error.code) is int else 0 if error.code is None else 1
             except BaseException:
@@ -3404,8 +3560,10 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                        "exit_code": code, "tests": rows}
     if source_binding is not None: document["source_input_binding"] = source_binding
     if outer_only:
-        require(outer_result is not None and rows, "route compatibility entrypoint runner outcomes missing")
+        require(outer_result is not None and rows, "original entrypoint runner outcomes missing")
         document["test_result_scope"] = OUTER_UNITTEST_RESULT
+    if debug_runtime is not None:
+        document["debug_runtime"] = debug_runtime
     if installation_output is not None and code == 0:
         require(installation_output.lstat().st_size <= 4096, "workflow recovery installation observation exceeds bound")
         document["workflow_recovery_installation"] = load_json(installation_output)

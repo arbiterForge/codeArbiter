@@ -273,9 +273,14 @@ class ReadinessTest(unittest.TestCase):
         job = 'capacity fixture original job'
         docs_cells = docs.CELLS.intersection(cells)
         self.assertEqual(docs_cells, docs.CELLS)
-        core_cells = sorted(set(cells) - docs_cells)
+        sf13_cell = docs.reports.SF13_CELL
+        self.assertIn(sf13_cell, cells)
+        core_cells = sorted(set(cells) - docs_cells - {sf13_cell})
         req = dict(self.requirements, cells=sorted(cells),
-                   cell_jobs={cell: docs.JOB if cell in docs_cells else job for cell in cells})
+                   cell_jobs={cell: docs.JOB if cell in docs_cells else job for cell in cells},
+                   source_finding_composite_cells=[sf13_cell],
+                   source_finding_inputs={profile: "5" * 64
+                       for profile in docs.reports.source_finding_profiles([sf13_cell])})
         output = io.BytesIO()
         with zipfile.ZipFile(output, 'w') as z:
             z.writestr('ca.tar.gz', b'exact package fixture')
@@ -303,14 +308,32 @@ class ReadinessTest(unittest.TestCase):
                 'executed_population': len(docs.RECIPES[cell]), 'payload_artifact_id': 31}
                 for cell in sorted(docs_cells)],
         }
+        docs_source['sf13_selectors'] = list(docs.SF13_DOCS_SELECTORS)
+        sf13_source = {
+            'cell': sf13_cell, 'result': 'PASSED',
+            'core_components': [
+                {'job_id': 20, 'run_attempt': 1, 'source_artifact_id': 40 + index,
+                 'observation_artifact_id': 42, 'observation_archive_sha256': '6' * 64,
+                 'selectors': component['selectors']}
+                for index, component in enumerate(docs.reports.SOURCE_FINDING_COMPOSITIONS[sf13_cell])
+            ],
+            'core_source_payloads': [
+                {'artifact_id': identity, 'archive_sha256': owner.digest(content),
+                 'members': owner.members(content)} for identity in (40, 41)
+            ],
+            'docs_run_id': 8, 'docs_run_attempt': 1, 'docs_job_id': 21,
+            'docs_selectors': docs_source['sf13_selectors'],
+        }
         with (mock.patch.object(owner, 'validate_upload'),
               mock.patch.object(owner, 'artifact_bytes',
                                 side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content),
-              mock.patch.object(docs, 'admit', return_value=docs_source) as admit_docs):
+              mock.patch.object(docs, 'admit', return_value=docs_source) as admit_docs,
+              mock.patch.object(docs, 'sf13_composition', return_value=sf13_source) as compose_sf13):
             receipt = owner.produce(req, artifacts, jobs)
         admit_docs.assert_called_once_with(req)
+        compose_sf13.assert_called_once_with(req, docs_source, artifacts, jobs, producing=True)
         self.assertEqual(receipt['schema'], docs.ENVELOPE)
-        results = receipt['core']['results'] + receipt['docs_source']['results']
+        results = receipt['core']['results'] + receipt['docs_source']['results'] + [receipt['sf13_source']]
         self.assertEqual(sorted(row['cell'] for row in results), sorted(cells))
         self.assertLess(len(raw), 4 * 1024 * 1024)
         self.assertLess(len(json.dumps(receipt, indent=2).encode()), 4 * 1024 * 1024)
@@ -388,7 +411,7 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         archive = io.BytesIO()
         with zipfile.ZipFile(archive, 'w') as output:
             for path, raw in files.items():
-                output.writestr(path, raw)
+                output.writestr(zipfile.ZipInfo(path), raw)
         raw = archive.getvalue()
         digest = owner.digest(raw)
         identity = 100 + len(self.artifacts)
@@ -722,6 +745,127 @@ if __name__ == "__main__":
         self.assertNotIn('secrets.', badge)
         self.assertNotIn('GH_TOKEN', badge)
 
+    def test_original_debug_launcher_retains_actual_discovered_suite_ids(self):
+        import os
+        import runpy
+        import tempfile
+        import major_qualification_report as reports
+
+        launcher = '.github/scripts/test_ci_impact.py'
+        suite = '.github/scripts/test_debug_workflow.py'
+        profile = 'hooks-single-owner-findings-v1'
+        with tempfile.TemporaryDirectory(prefix='original-debug-runner-fixture-') as folder:
+            root = Path(folder).resolve() / 'repo'
+            (root / launcher).parent.mkdir(parents=True)
+            (root / launcher).write_bytes(path.with_name('test_ci_impact.py').read_bytes())
+            (root / 'tools').mkdir()
+            (root / 'tools/ci-impact.py').write_bytes((path.parents[2] / 'tools/ci-impact.py').read_bytes())
+            (root / suite).write_text('import unittest\nclass DiscoveredFixture(unittest.TestCase):\n'
+                '    def test_original_name(self):\n        self.assertEqual(3, 3)\n', encoding='utf-8')
+            output = root.parent / 'python-debug-workflow-observation.json'
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            env = {'GITHUB_JOB': 'hooks', 'GITHUB_RUN_ID': '7', 'RUNNER_TEMP': str(root.parent),
+                   'MAJOR_DEBUG_SOURCE_PROFILE': profile}
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(os.environ, env), mock.patch.object(sys, 'argv', [str(root / launcher), '--run-debug-suite', str(root / suite)]),
+                  self.assertRaises(SystemExit) as exited):
+                runpy.run_path(str(root / launcher), run_name='__main__')
+            self.assertEqual(exited.exception.code, 0)
+            capture = json.loads(output.read_bytes())
+            self.assertEqual(capture['tests'], [{'id': f'python:{suite}:test_debug_workflow.DiscoveredFixture.test_original_name',
+                                                 'result': 'passed'}])
+            self.assertEqual(capture['argv'][2:], ['--run-debug-suite', suite])
+            self.assertEqual(capture['test_result_scope'], reports.OUTER_UNITTEST_RESULT)
+
+    def test_locked_debug_observer_refuses_a_replacement_interpreter(self):
+        import os
+        import tempfile
+        import types
+        import major_qualification_report as reports
+
+        with tempfile.TemporaryDirectory(prefix='inert-debug-runtime-') as folder:
+            temp = Path(folder).resolve()
+            venv = temp / 'artifact-conformance-venv'
+            executable = venv / 'bin/python'
+            executable.parent.mkdir(parents=True)
+            executable.write_bytes(b'inert launcher path')
+            runtime = types.SimpleNamespace(executable=str(executable), prefix=str(venv), base_prefix=str(temp),
+                                            version_info=(3, 14, 1))
+            raw = b'owned locked-source fixture'
+            with (mock.patch.object(reports, 'sys', runtime), mock.patch.object(reports, '_source_file', return_value=raw),
+                  mock.patch.dict(os.environ, {'RUNNER_TEMP': str(temp), 'ARTIFACT_CONFORMANCE_PYTHON': str(executable)})):
+                self.assertEqual(reports.locked_debug_runtime(temp), {'python': '3.14', 'lock_sha256': owner.digest(raw)})
+                runtime.executable = str(temp / 'replacement-python')
+                with self.assertRaisesRegex(ValueError, 'original Python 3.14 reference interpreter'):
+                    reports.locked_debug_runtime(temp)
+
+    def test_debug_resubmission_requires_all_three_original_scope_receipts(self):
+        import major_qualification_report as reports
+
+        cell = reports.DEBUG_RESUBMISSION_FINDING
+        recipe = reports.SOURCE_FINDING_COMPOSITIONS[cell]
+        req = dict(self.req, cells=[cell], source_finding_composite_cells=[cell],
+                   cell_jobs={cell: 'major qualification / workflow'})
+        raw = b'owned immutable source fixture'
+        req['source_finding_inputs'] = reports.source_finding_input_pins([cell], req['source_commit'], lambda _s, _p: raw)
+
+        def fixtures(change=None):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            jobs = []
+            for job_id, component in enumerate(recipe, 30):
+                profile, script = component['profile'], component['script']
+                spec = reports.source_profile(profile)
+                job = dict(self.jobs[0], id=job_id, name=spec['job'], steps=[])
+                jobs.append(job)
+                files = dict.fromkeys(sorted(spec['paths']), raw)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                                source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                                workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                    bytes=len(content), sha256=owner.digest(content)) for path, content in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                self.archive(spec['payload'], job, spec['upload'], files)
+                observation = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=profile, payload_name=spec['payload'], manifest_sha256=owner.digest(files[reports.SOURCE_MANIFEST])),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                if profile in reports.DEBUG_RUNNERS:
+                    observation['argv'] = ['python', reports.DEBUG_LAUNCHER, '--run-debug-suite', script]
+                    observation['test_result_scope'] = reports.OUTER_UNITTEST_RESULT
+                if profile == reports.DEBUG_LOCKED_PROFILE:
+                    observation['debug_runtime'] = {'python': '3.14', 'lock_sha256': owner.digest(raw)}
+                    if change:
+                        change(observation)
+                self.archive(component['artifact_prefix'] + req['source_commit'] + '-7-3', job, component['upload'],
+                             {component['member']: json.dumps(observation).encode()})
+            return [*jobs, dict(self.jobs[-1], steps=[])]
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        result, = record['results']
+        self.assertEqual(result['cell'], cell)
+        self.assertEqual([len(c['selectors']) for c in result['source_components']], [2, 1, 5])
+        self.assertEqual(len(result['evidence_artifact_ids']), 3)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(req, self.artifacts[:-1], jobs)
+        for change, expected in (
+            (lambda doc: doc['argv'].extend(['-k', 'subset']), 'stale, filtered or unsuccessful'),
+            (lambda doc: doc['debug_runtime'].update(lock_sha256='0' * 64), 'locked interpreter differs'),
+            (lambda doc: doc['tests'][0].update(result='skipped'), 'selected named test'),
+        ):
+            jobs = fixtures(change)
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                owner.produce(req, self.artifacts, jobs)
+        jobs = fixtures()
+        ready = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                             {'major-readiness.json': b'{}'})
+        self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=ready,
+                                      archive_digest=ready['digest'][7:], jobs=jobs,
+                                      build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
     def test_recovery_runtime_observer_runs_the_unfiltered_source_entry_once(self):
         import tempfile
         import major_qualification_report as reports
@@ -944,12 +1088,14 @@ if __name__ == "__main__":
         self.assertEqual(job.count('.github/scripts/test_workflow_recovery.py'), 2)
         self.assertEqual(job.count('.github/scripts/test_workflow_recovery_cli.py'), 2)
         self.assertEqual(job.count('.github/scripts/test_workflow_recovery_hosts.py'), 2)
-        self.assertEqual(job.count('observe-python'), 3)
+        self.assertEqual(job.count('observe-python'), 4)
         fragments = ('python tools/build-artifacts.py', '-- .github/scripts/test_workflow_recovery.py',
                      'run: python .github/scripts/test_workflow_recovery_cli.py',
                      '-- .github/scripts/test_workflow_recovery_cli.py',
                      'run: python .github/scripts/test_workflow_recovery_hosts.py',
                      '-- .github/scripts/test_workflow_recovery_hosts.py',
+                     'run: python .github/scripts/test_review_resubmission.py',
+                     '-- .github/scripts/test_review_resubmission.py',
                      'Retain original workflow recovery runtime observation',
                      'Upload original workflow recovery native installation')
         self.assertEqual([job.count(fragment) for fragment in fragments], [1] * len(fragments))

@@ -111,6 +111,137 @@ class OriginalDocsSourceTests(unittest.TestCase):
              mock.patch.object(docs,'namespace_members',return_value=self.namespaces):
             yield
 
+    def test_sf13_delegates_core_and_requires_original_docs(self):
+        cell = 'disposition:findings:SF13'
+        core_cell = 'disposition:findings:C-F04'
+        req = copy.deepcopy(self.req)
+        req['cells'].extend((cell, core_cell))
+        req['cell_jobs'].update({cell:'major qualification / packaging', core_cell:'composed core'})
+        req['source_finding_composite_cells'] = [core_cell, cell]
+        req['source_finding_inputs'] = {'major-readiness-implementation-v1':'1'*64,
+            'route-release-state-component-v1':'2'*64, 'hooks-proof-publisher-v1':'3'*64,
+            'hooks-single-owner-findings-v1':'4'*64}
+        docs_part = {'run_id':17, 'run_attempt':1, 'job_id':29,
+                     'sf13_selectors':['candidate selected fixture cases']}
+        joined = {'cell':cell,'result':'PASSED','core_components':['original bound proof']}
+        with (
+            mock.patch.object(docs,'admit',return_value=docs_part),
+            mock.patch.object(owner,'produce',return_value={'original core':'retained'}) as core,
+            mock.patch.object(docs,'sf13_composition',return_value=joined,create=True) as composite,
+        ):
+            record = docs.produce(req, [], [])
+        self.assertIn('sf13_source',record,'Docs-only envelope erased the complete SF13 composition')
+        self.assertEqual(record['sf13_source'],joined)
+        self.assertNotIn(cell,core.call_args.args[0]['cells'])
+        self.assertIn(core_cell,core.call_args.args[0]['cells'])
+        self.assertEqual(core.call_args.args[0]['source_finding_composite_cells'],[core_cell])
+        self.assertEqual(set(core.call_args.args[0]['source_finding_inputs']),{
+            'major-readiness-implementation-v1','route-release-state-component-v1'})
+        composite.assert_called_once()
+
+    def sf13_only_requirements(self):
+        cell = docs.reports.SF13_CELL
+        return {**self.req, 'cells':[cell], 'cell_jobs':{cell:'major qualification / packaging'},
+                'source_finding_composite_cells':[cell], 'source_finding_inputs':{
+                    docs.reports.SOURCE_PROFILE:'1'*64, 'hooks-single-owner-findings-v1':'2'*64}}
+
+    def original_core_run(self):
+        return {'id':7,'head_sha':'a'*40,'head_branch':'main','event':'push',
+            'status':'completed','conclusion':'success','run_attempt':3,'path':'.github/workflows/ci.yml',
+            'repository':{'id':8,'full_name':owner.REPOSITORY}}
+
+    def test_sf13_requires_each_original_docs_case(self):
+        req = self.sf13_only_requirements()
+        self.assertEqual(len(docs.CELLS),4)
+        self.assertNotIn(docs.reports.SF13_CELL,docs.CELLS)
+        self.assertTrue(docs.docs_required(req))
+        self.assertEqual(len(docs.SF13_DOCS_SELECTORS),13)
+        for selector in docs.SF13_DOCS_SELECTORS:
+            self.observed['tests'].append({'id':selector,'result':'passed'})
+            path = selector.split(':',2)[1]
+            self.values.setdefault(path,b'original fixture source\\n')
+        self.inputs = {p:{'bytes':len(raw),'sha256':owner.digest(raw)} for p,raw in self.values.items()}
+        self.manifest['inputs'] = self.inputs
+        self.manifest_raw = json.dumps(self.manifest).encode()
+        self.observed['source_manifest_sha256'] = owner.digest(self.manifest_raw)
+        self.source = self.archive({**self.values,docs.MANIFEST:self.manifest_raw})
+        self.refresh_summary(); self.refresh()
+        with self.owned_transport():
+            got = docs.admit(req)
+        self.assertEqual(got['results'],[])
+        self.assertEqual(got['sf13_selectors'],list(docs.SF13_DOCS_SELECTORS))
+        saved = self.observed['tests']
+        for selector in docs.SF13_DOCS_SELECTORS:
+            for effect in ('remove','skip'):
+                bad = copy.deepcopy(saved)
+                row = next(r for r in bad if r['id'] == selector)
+                if effect == 'remove': bad.remove(row)
+                else: row['result']='skipped'
+                self.observed['tests'] = bad
+                self.refresh_summary(); self.refresh()
+                with self.subTest(selector=selector,effect=effect), self.owned_transport(), self.assertRaisesRegex(
+                        owner.ReadinessError,'SF13 original Docs owner cases'):
+                    docs.admit(req)
+        self.observed['tests'] = saved
+
+    def test_sf13_composes_two_exact_core_sources_from_one_original_capture(self):
+        req = self.sf13_only_requirements()
+        ci = self.original_core_run()
+        job = {'id':51,'run_id':7,'run_attempt':3,'name':docs.reports.SOURCE_JOB,
+               'status':'completed','conclusion':'success'}
+        docs_part = {'run_id':17,'run_attempt':1,'job_id':29,
+                     'sf13_selectors':list(docs.SF13_DOCS_SELECTORS)}
+        def authenticate(component, actual_req, run, artifacts, jobs, *, job_log):
+            self.assertEqual((actual_req,run,jobs,job_log),(req,ci,[job],b'closed original log'))
+            idx = int(component['script'].endswith('test_sync_core.py'))
+            return ({'job_id':51,'run_attempt':3,'source_artifact_id':61+idx,
+                     'observation_artifact_id':64,'selectors':component['selectors']},
+                    {'artifact_id':61+idx,'members':[]})
+        with (
+            mock.patch.object(owner,'api',return_value=b'closed original log') as api,
+            mock.patch.object(docs.reports,'source_component_evidence',side_effect=authenticate) as components,
+        ):
+            value = docs.sf13_composition(req,docs_part,[],[job],run=ci)
+        api.assert_called_once_with('actions/jobs/51/logs',binary=True)
+        scripts = [call.args[0]['script'] for call in components.call_args_list]
+        self.assertEqual(scripts,['.github/scripts/test_generated_output.py','.github/scripts/test_sync_core.py'])
+        self.assertEqual([len(c['selectors']) for c in value['core_components']],[9,3])
+        self.assertEqual((value['docs_run_id'],value['docs_run_attempt'],value['docs_job_id']),(17,1,29))
+
+        with mock.patch.object(owner,'api') as api:
+            for invalid_run in (dict(ci,head_sha='c'*40),dict(ci,event='pull_request'),
+                                dict(ci,head_branch='major/state-contracts'),dict(ci,run_attempt='3')):
+                with self.assertRaises(owner.ReadinessError):
+                    docs.sf13_composition(req,docs_part,[],[job],run=invalid_run)
+            with self.assertRaisesRegex(owner.ReadinessError,'original Core source pins differ'):
+                docs.sf13_composition({**req,'source_finding_inputs':{}},docs_part,[],[job],run=ci)
+            with self.assertRaisesRegex(owner.ReadinessError,'original Docs complement'):
+                docs.sf13_composition(req,{**docs_part,'sf13_selectors':[]},[],[job],run=ci)
+            api.assert_not_called()
+        with self.assertRaisesRegex(owner.ReadinessError,'both original Core and Docs'):
+            docs.reports.source_finding_evidence(req,[],[job],run=ci)
+
+    def test_sf13_final_envelope_recomputes_and_requires_the_complete_composition(self):
+        req = self.sf13_only_requirements()
+        ci = self.original_core_run()
+        docs_part = {'run_id':17,'run_attempt':1,'job_id':29,'sf13_selectors':list(docs.SF13_DOCS_SELECTORS)}
+        joined = {'cell':docs.reports.SF13_CELL,'result':'PASSED','core_components':['observed Core fixture']}
+        result = {'schema':docs.ENVELOPE,'program_id':owner.PROGRAM,'state':'PREPUBLICATION_READY',
+                  **req,'core':{},'docs_source':docs_part,'sf13_source':joined}
+        kwargs = dict(record=result,requirements=req,run=ci,build_artifacts=[],jobs=[],artifact={},
+                      archive_digest='f'*64)
+        with (
+            mock.patch.object(docs,'admit',return_value=docs_part),
+            mock.patch.object(docs,'sf13_composition',return_value=joined) as actual,
+            mock.patch.object(owner,'verify') as core,
+        ):
+            self.assertEqual(docs.verify(**kwargs)['docs_source_run_id'],17)
+            actual.assert_called_once_with(req,docs_part,[],[],run=ci)
+            core.assert_called_once()
+            for record in ({k:v for k,v in result.items() if k!='sf13_source'},
+                           {**result,'sf13_source':{'cell':docs.reports.SF13_CELL,'result':'PASSED'}}):
+                with self.assertRaises(owner.ReadinessError): docs.verify(**{**kwargs,'record':record})
+
     def test_original_docs_generator_is_a_distinct_source_authority(self):
         with self.owned_transport():
             try:

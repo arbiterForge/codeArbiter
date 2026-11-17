@@ -1220,7 +1220,17 @@ jobs:
           .github/scripts/test_literal_python_reads.py
           --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
           .github/scripts/test_artifact_conformance.py
+      - name: Prepare locked debug reference source inputs
+        if: matrix.expected_platform == 'linux/amd64'
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile debug-reference-component-v1
+          --job-name "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>"
+          --output "${{ runner.temp }}/debug-reference-source-inputs"
       - name: Test debug handoff model against the locked reference interpreter
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.expected_platform == 'linux/amd64' && 'debug-reference-component-v1' || '' }}
         run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Recheck native candidate after bridge and conformance tests
         run: >-
@@ -1228,6 +1238,26 @@ jobs:
           --candidate "${{ runner.temp }}/artifact-candidate"
           --metadata "${{ runner.temp }}/ci20-native-tested.json"
           --platform "${{ matrix.expected_platform }}"
+      - name: Upload locked debug reference source-test inputs
+        if: matrix.expected_platform == 'linux/amd64'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-debug-reference
+          path: ${{ runner.temp }}/debug-reference-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original locked debug reference observation
+        if: matrix.expected_platform == 'linux/amd64'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: debug-reference-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/debug-reference-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Retain original mapped-work consumer observation
         if: ${{ !cancelled() && (success() || failure()) && steps.mapped_work_source_prepare.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -3397,20 +3427,6 @@ jobs:
         # drifts from core silently forks the enforcement logic between the
         # two hosts - fail the build before that ships.
         run: python tools/sync-core.py --check
-      - name: Run sync-core tool unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # FINDING 2 (2026-07 review): sync/--check pass-fail matrix (in-sync,
-        # drifted, missing), write-mode drift repair, and the hardened
-        # non-zero/clear-message error paths for an unreadable source file,
-        # an unwritable destination, and an empty/missing core dir.
-        run: python .github/scripts/test_sync_core.py
-      - name: Run codex-parity-fixture tool unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # FINDING 4 (2026-07 review): normal + --bare fixture creation,
-        # existing-target rejection, and every git/filesystem failure path
-        # exiting non-zero with a clear stderr message (no swallowed
-        # subprocess return codes, no raw traceback on a creation failure).
-        run: python .github/scripts/test_codex_parity_fixture.py
       - name: Prepare single-owner hook source-test inputs
         id: single_hook_prepare
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -3420,6 +3436,30 @@ jobs:
           --repo . --source-profile hooks-single-owner-findings-v1
           --output "${{ runner.temp }}/single-owner-hook-source-inputs"
           --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+      - name: Run sync-core tool unit tests
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
+        # FINDING 2 (2026-07 review): sync/--check pass-fail matrix (in-sync,
+        # drifted, missing), write-mode drift repair, and the hardened
+        # non-zero/clear-message error paths for an unreadable source file,
+        # an unwritable destination, and an empty/missing core dir.
+        run: python .github/scripts/test_sync_core.py
+      - name: Observe original sync-core tool unit tests
+        id: sf13_sync_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-sf13-sync-observation.json"
+          -- .github/scripts/test_sync_core.py
+      - name: Run codex-parity-fixture tool unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # FINDING 4 (2026-07 review): normal + --bare fixture creation,
+        # existing-target rejection, and every git/filesystem failure path
+        # exiting non-zero with a clear stderr message (no swallowed
+        # subprocess return codes, no raw traceback on a creation failure).
+        run: python .github/scripts/test_codex_parity_fixture.py
       - name: Run surface-generator unit tests
         if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # codex-support M3: determinism/idempotence of tools/build-surface.py,
@@ -3980,6 +4020,9 @@ jobs:
         run: python .github/scripts/test_context_consumers.py
       - name: Test debug workflow contracts
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 'hooks-single-owner-findings-v1' || '' }}
         run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py
       - name: Test debug helper invocation contracts
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
@@ -4201,7 +4244,16 @@ jobs:
       - name: Test atomic contract generation
         run: python .github/scripts/test_workflow_recovery_generator.py
       - name: Test fresh linked review resubmission
+        if: matrix.os != 'windows-latest'
         run: python .github/scripts/test_review_resubmission.py
+      - name: Observe original fresh linked review resubmission
+        if: matrix.os == 'windows-latest'
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile workflow-recovery-runtime-v1
+          --source-payload "${{ runner.temp }}/workflow-recovery-runtime-inputs"
+          --output "${{ runner.temp }}/review-resubmission-observation.json"
+          -- .github/scripts/test_review_resubmission.py
       - name: Upload workflow recovery runtime source inputs
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -4238,6 +4290,16 @@ jobs:
         with:
           name: workflow-recovery-hosts-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/workflow-recovery-hosts-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Retain original review resubmission observation
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: review-resubmission-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/review-resubmission-observation.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false

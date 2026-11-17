@@ -104,7 +104,9 @@
   "source_finding_composite_cells": [
     "disposition:findings:C-F04",
     "disposition:findings:HOOK-B04",
+    "disposition:findings:SF13",
     "disposition:findings:SF14",
+    "disposition:findings:W-F02",
     "disposition:findings:W-F04",
     "disposition:findings:W-F08",
     "disposition:findings:W-F09"

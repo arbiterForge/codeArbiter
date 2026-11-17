@@ -5831,5 +5831,8 @@ class SdkFooterSourceWorkflowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
+        if os.environ.get("MAJOR_DEBUG_SOURCE_PROFILE"):
+            from major_qualification_report import observe_original_debug_suite
+            raise SystemExit(observe_original_debug_suite(REPO_ROOT, sys.argv, run_debug_suite))
         raise SystemExit(run_debug_suite(Path(sys.argv[2])))
     unittest.main()

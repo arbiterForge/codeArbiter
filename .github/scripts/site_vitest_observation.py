@@ -241,6 +241,21 @@ RECIPES = {'disposition:findings:GEN-B01': ['vitest:site/test/generator/assign-s
                                  'distinct from source applicability retains source matches while explicitly exposing '
                                  'unknown, draft or published state']}
 CELLS = frozenset(RECIPES)
+SF13_DOCS_SELECTORS = (
+    'vitest:site/scripts/generate-academy-publication.test.ts:Academy caller publication recovery restores every prior output after a late cross-root failure and converges on rerun',
+    'vitest:site/scripts/owned-output.test.ts:owned generated publication refuses a linked owner before touching external files',
+    'vitest:site/scripts/owned-output.test.ts:owned generated publication refuses a second writer without touching its marker',
+    'vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically',
+    'vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication does not follow an existing search-output symlink',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication is wired to every Astro build instead of an optional postbuild command',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication restores the previous search index after a late promotion failure and converges on rerun',
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output',
+    'vitest:site/test/generator/generate.test.ts:generate is idempotent: running twice produces byte-identical output',
+    'vitest:site/test/generator/generate.test.ts:generate restores the previous pages and sidebar after a late promotion failure and converges on rerun',
+)
 
 
 def _regular(info):
@@ -626,13 +641,30 @@ def docs_required(req):
     need(all(req['cell_jobs'].get(cell) == JOB for cell in selected)
          and all(name != JOB or cell in CELLS for cell, name in req['cell_jobs'].items()),
          'Docs source job cannot qualify another scope')
-    return bool(selected)
+    return sf13_required(req) or bool(selected)
+
+
+def sf13_required(req):
+    selected = reports.SF13_CELL in req['cells']
+    declared = reports.SF13_CELL in req.get('source_finding_composite_cells', ())
+    need(selected == declared, 'SF13 is outside its declared original Core and Docs composition')
+    return selected
 
 
 def core_requirements(req):
     result = copy.deepcopy(req)
-    result['cells'] = [c for c in req['cells'] if c not in CELLS]
-    result['cell_jobs'] = {c: job for c, job in req['cell_jobs'].items() if c not in CELLS}
+    delegated = CELLS | ({reports.SF13_CELL} if sf13_required(req) else set())
+    result['cells'] = [c for c in req['cells'] if c not in delegated]
+    result['cell_jobs'] = {c: job for c, job in req['cell_jobs'].items() if c not in delegated}
+    if reports.SF13_CELL in delegated:
+        remaining = [cell for cell in req['source_finding_composite_cells'] if cell != reports.SF13_CELL]
+        if remaining:
+            result['source_finding_composite_cells'] = remaining
+            result['source_finding_inputs'] = {profile: req['source_finding_inputs'][profile]
+                for profile in reports.source_finding_profiles(remaining)}
+        else:
+            result.pop('source_finding_composite_cells')
+            result.pop('source_finding_inputs')
     return result
 
 
@@ -675,11 +707,14 @@ def _payload_identity(artifact, run):
          'Docs source artifact repository differs')
 
 
-def _report(observed, req, run, job, artifact, archive, *, repo=ROOT):
+def _report(observed, req, run, job, artifact, archive, *, repo=ROOT, sf13=False):
     need(artifact.get('name') == PAYLOAD, 'Docs original source payload role differs')
     _payload_identity(artifact, run)
     manifest, manifest_sha = source_archive(artifact, req, archive, repo=repo)
     results = validate_observation(observed, req, manifest)
+    if sf13:
+        need({s.split(':', 2)[1] for s in SF13_DOCS_SELECTORS} <= set(manifest['inputs']),
+             'SF13 selected Docs test paths are outside the original source archive')
     need(observed['run_attempt'] == run['run_attempt'] and observed['source_manifest_sha256'] == manifest_sha,
          'Docs observation source manifest or attempt differs')
     return {'schema': REPORT, 'source_commit': req['source_commit'], 'source_tree': req['source_tree'],
@@ -728,35 +763,77 @@ def admit(req, *, run_id=None, repo=ROOT):
     owner.validate_upload(job, report_artifact, REPORT_STEP, job_log=log)
     report = _report_document(report_artifact, docs_req)
     need(type(report) is dict and 'observation' in report, 'Docs source-test report missing')
-    expected = _report(report['observation'], docs_req, run, job, payload, archive, repo=repo)
+    sf13 = sf13_required(req)
+    expected = _report(report['observation'], docs_req, run, job, payload, archive, repo=repo, sf13=sf13)
     need(report == expected, 'Docs source-test report differs from original authenticated evidence')
     selected = set(req['cells']) & CELLS
-    need(selected and all(row['result'] == 'PASSED' for row in expected['results'] if row['cell'] in selected),
+    need((selected or sf13) and all(row['result'] == 'PASSED' for row in expected['results'] if row['cell'] in selected),
          'Docs selected finding complement is missing, skipped or unsuccessful')
+    if sf13:
+        observed = {row['id']: row['result'] for row in expected['observation']['tests']}
+        need(all(observed.get(selector) == 'passed' for selector in SF13_DOCS_SELECTORS),
+             'SF13 original Docs owner cases are missing, skipped or unsuccessful')
     return {'run_id': run['id'], 'run_attempt': run['run_attempt'], 'job_id': job['id'],
         'source_artifact_id': payload['id'], 'source_archive_sha256': owner.digest(archive),
         'report_artifact_id': report_artifact['id'], 'report_archive_sha256': report_artifact['digest'][7:],
-        'results': [row for row in expected['results'] if row['cell'] in selected]}
+        'results': [row for row in expected['results'] if row['cell'] in selected],
+        **({'sf13_selectors': list(SF13_DOCS_SELECTORS)} if sf13 else {})}
+
+
+def sf13_composition(req, docs_source, artifacts, jobs, *, run=None, producing=False):
+    need(sf13_required(req) and docs_source.get('sf13_selectors') == list(SF13_DOCS_SELECTORS),
+         'SF13 original Docs complement is missing')
+    if run is None:
+        run = owner.api(f"actions/runs/{req['ci_run_id']}")
+    owner.validate_run(run, req, producing=producing)
+    need(type(run.get('run_attempt')) is int and run['run_attempt'] > 0,
+         'SF13 original Core run attempt missing')
+    selected = req['source_finding_composite_cells']
+    profiles = reports.source_finding_profiles(selected)
+    pins = req.get('source_finding_inputs')
+    need(type(pins) is dict and set(pins) == set(profiles)
+         and all(type(pin) is str and owner.DIGEST.fullmatch(pin) for pin in pins.values()),
+         'SF13 original Core source pins differ')
+    job = reports.source_component_job(reports.source_profile(reports.SOURCE_PROFILE), run, jobs)
+    log = owner.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    components, payloads = zip(*(reports.source_component_evidence(component, req, run,
+        artifacts, jobs, job_log=log) for component in reports.SOURCE_FINDING_COMPOSITIONS[reports.SF13_CELL]))
+    need(all(row['job_id'] == job['id'] and row['run_attempt'] == run['run_attempt'] for row in components),
+         'SF13 Core components differ in original job or attempt')
+    observation_ids = {row['observation_artifact_id'] for row in components}
+    payload_ids = {row['artifact_id'] for row in payloads}
+    need(len(observation_ids) == 1 and len(payload_ids) == len(payloads) and observation_ids.isdisjoint(payload_ids),
+         'SF13 original Core capture and source roles differ')
+    return {'cell': reports.SF13_CELL, 'result': 'PASSED',
+        'core_components': list(components), 'core_source_payloads': list(payloads),
+        'docs_run_id': docs_source['run_id'], 'docs_run_attempt': docs_source['run_attempt'],
+        'docs_job_id': docs_source['job_id'], 'docs_selectors': docs_source['sf13_selectors']}
 
 
 def produce(req, artifacts, jobs):
     need(docs_required(req), 'Docs source envelope requires its finite population')
     core = owner.produce(core_requirements(req), artifacts, jobs)
+    docs_source = admit(req)
+    sf13 = {'sf13_source': sf13_composition(req, docs_source, artifacts, jobs, producing=True)} if sf13_required(req) else {}
     return {'schema': ENVELOPE, 'program_id': owner.PROGRAM, 'state': 'PREPUBLICATION_READY',
-        **req, 'core': core, 'docs_source': admit(req)}
+        **req, 'core': core, 'docs_source': docs_source, **sf13}
 
 
 def verify(*, record, requirements, **kwargs):
     req = requirements
     owner.validate_run(kwargs['run'], req)
+    sf13_fields = {'sf13_source'} if sf13_required(req) else set()
     need(docs_required(req) and type(record) is dict
-         and set(record) == {'schema','program_id','state','core','docs_source', *req}
+         and set(record) == {'schema', 'program_id', 'state', 'core', 'docs_source', *req, *sf13_fields}
          and record['schema'] == ENVELOPE and record['program_id'] == owner.PROGRAM
          and record['state'] == 'PREPUBLICATION_READY' and all(record.get(k) == v for k,v in req.items()),
          'Docs source readiness envelope differs from selected source/population')
     need(type(record['docs_source']) is dict, 'Docs source authority missing')
     expected = admit(req, run_id=record['docs_source'].get('run_id'))
     need(record['docs_source'] == expected, 'Docs source envelope differs from original evidence')
+    if sf13_fields:
+        composition = sf13_composition(req, expected, kwargs['build_artifacts'], kwargs['jobs'], run=kwargs['run'])
+        need(record['sf13_source'] == composition, 'SF13 final composition differs from both original owners')
     owner.verify(record=record['core'], requirements=core_requirements(req), **kwargs)
     return {'state':'PREPUBLICATION_READY','source':req['source_commit'],
         'ci_run_id':req['ci_run_id'],'docs_source_run_id':expected['run_id']}
