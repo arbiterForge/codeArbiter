@@ -1,0 +1,103 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-030",
+  "positive_input_join": {
+    ".github/fixtures/tribunal/cases.json": {
+      "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+      "bytes": 53322,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+        "bytes": 53322
+      }
+    },
+    "tools/codex-parity-fixture.py": {
+      "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+      "bytes": 6671,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+        "bytes": 6671
+      }
+    },
+    "tools/tribunal-eval.py": {
+      "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+      "bytes": 24185,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+        "bytes": 24185
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:T12",
+      "frozen_record": {
+        "machine_id": "T12",
+        "name": "Tribunal captured evidence, independent adjudication and critical-regression gate",
+        "domain": "Maintainer measurement tools",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 9,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "b82e1964c41a864a8c80f6951fbf0ac3065f8471110dfed8db8df0f87155fc81",
+      "group": "source-group-030",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Tribunal captured evidence, independent adjudication and critical-regression gate. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/tribunal-source-family.json",
+          "sha256": "5369fd1d185793bac5d29cc90a60472c3501c9dc0f5e6c8b740edf4903c976e1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "parity-manual-hint",
+      "paths": [
+        "tools/codex-parity-fixture.py"
+      ],
+      "assessment": "Only the printed hint changes: persona delivery is prompt-submit when due; SessionStart startup state/daily briefing are separate. Fixture creation/Git operations/target refusal are unchanged. T05:03 frozen stale session-start-injection detail needs an explicit corrected current contract note, not a claim the old hint is preserved or live host parity passed."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

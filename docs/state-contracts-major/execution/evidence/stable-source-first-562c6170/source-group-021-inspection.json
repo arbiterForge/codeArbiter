@@ -1,0 +1,1140 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-021",
+  "positive_input_join": {
+    "core/surface/agents/decision-challenger.md": {
+      "sha256": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+      "bytes": 4408,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+        "bytes": 4408
+      }
+    },
+    "core/surface/agents/grader.md": {
+      "sha256": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+      "bytes": 7922,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+        "bytes": 7922
+      }
+    },
+    "core/surface/agents/scout.md": {
+      "sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+      "bytes": 7620,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+        "bytes": 7620
+      }
+    },
+    "core/surface/skills/decision-variance/SKILL.md": {
+      "sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "bytes": 7573,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+        "bytes": 7573
+      }
+    },
+    "core/surface/skills/decision-variance/references/analysis.md": {
+      "sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "bytes": 9600,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+        "bytes": 9600
+      }
+    },
+    "core/surface/includes/smarts/core.md": {
+      "sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "bytes": 12802,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+        "bytes": 12802
+      }
+    },
+    "core/surface/includes/smarts/lenses.md": {
+      "sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+      "bytes": 4967,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+        "bytes": 4967
+      }
+    },
+    "core/surface/includes/smarts/decision-log-format.md": {
+      "sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "bytes": 2689,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+        "bytes": 2689
+      }
+    },
+    "core/surface/skills/decision-lifecycle/SKILL.md": {
+      "sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+      "bytes": 6700,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+        "bytes": 6700
+      }
+    },
+    "core/surface/includes/knowledge.md": {
+      "sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "bytes": 8798,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+        "bytes": 8798
+      }
+    },
+    "core/pysrc/knowledge.py": {
+      "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "bytes": 25169,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+        "bytes": 25169
+      }
+    },
+    "core/pysrc/_knowledgelib.py": {
+      "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "bytes": 3073,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+        "bytes": 3073
+      }
+    },
+    "core/surface/arbiter.md": {
+      "sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "bytes": 8989,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+        "bytes": 8989
+      }
+    },
+    "core/surface/includes/safety-core.md": {
+      "sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "bytes": 4988,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+        "bytes": 4988
+      }
+    },
+    "core/surface/includes/routing-table.md": {
+      "sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "bytes": 10061,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+        "bytes": 10061
+      }
+    },
+    "core/surface/commands/conflict.md": {
+      "sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+      "bytes": 3653,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+        "bytes": 3653
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:WF-16:01",
+      "frozen_record": {
+        "transition_id": "WF-16:01",
+        "machine_id": "WF-16",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Variance request",
+          "event": "Inspect selected artifacts/source",
+          "guard": "Relevant exact source identities",
+          "to": "Evidence comparison",
+          "effects": "Classify concur/divergent/scaffold-silent/artifact-silent/both-silent, with conflicts and gaps separate.",
+          "failure_retry": "A missing or incomplete search is not proof of silence.",
+          "source": [
+            {
+              "path": "core/surface/skills/decision-variance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/decision-variance/references/analysis.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/references/analysis.md"
+            },
+            {
+              "path": "core/surface/agents/scout.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/scout.md"
+            },
+            {
+              "path": "core/surface/agents/grader.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/grader.md"
+            },
+            {
+              "path": "core/surface/agents/decision-challenger.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/decision-challenger.md"
+            }
+          ],
+          "transition_id": "WF-16:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "132b7e035ae6d9270ee15edcf6a5f7e37daa84edc6b1cd82a1dc1a5d49f6dee0",
+      "group": "source-group-021",
+      "assessment": "Variance guidance requires exact source comparison, explicit user decision attribution and append-only uncertain-append recovery. Recommendations are analysis only; no choice, accepted ADR or automatic file mutation follows merely from a report.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "knowledge-literal-directory-staleness"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+          "sha256": "ce7d4334a9fafc2fa0c5ddc6e80da196606d40ec4018b749ea71e8d5c067c32f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-16:02",
+      "frozen_record": {
+        "transition_id": "WF-16:02",
+        "machine_id": "WF-16",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Evidence comparison",
+          "event": "Evaluate plausible alternatives",
+          "guard": "Actual constraints and priority evidence",
+          "to": "Report-only recommendation",
+          "effects": "Use qualitative SMARTS and optional independent challenge; report ready/partial/blocked as analysis.",
+          "failure_retry": "No file changes or user decision from a recommendation alone.",
+          "source": [
+            {
+              "path": "core/surface/skills/decision-variance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/decision-variance/references/analysis.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/references/analysis.md"
+            },
+            {
+              "path": "core/surface/agents/scout.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/scout.md"
+            },
+            {
+              "path": "core/surface/agents/grader.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/grader.md"
+            },
+            {
+              "path": "core/surface/agents/decision-challenger.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/decision-challenger.md"
+            }
+          ],
+          "transition_id": "WF-16:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f3c0e9607095f41089d520400d8bbd4b2c01bf34cb52fd680e76b0792ad08f0d",
+      "group": "source-group-021",
+      "assessment": "Variance guidance requires exact source comparison, explicit user decision attribution and append-only uncertain-append recovery. Recommendations are analysis only; no choice, accepted ADR or automatic file mutation follows merely from a report.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "knowledge-literal-directory-staleness"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+          "sha256": "ce7d4334a9fafc2fa0c5ddc6e80da196606d40ec4018b749ea71e8d5c067c32f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-16:03",
+      "frozen_record": {
+        "transition_id": "WF-16:03",
+        "machine_id": "WF-16",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Selected arbitration",
+          "event": "User resolves one variance",
+          "guard": "Specific attributable choice",
+          "to": "One logged decision",
+          "effects": "Append the decision immediately with exact source section hash and implications.",
+          "failure_retry": "Do not compress several decisions into one event or postpone all logging until the end.",
+          "source": [
+            {
+              "path": "core/surface/skills/decision-variance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/decision-variance/references/analysis.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/references/analysis.md"
+            },
+            {
+              "path": "core/surface/agents/scout.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/scout.md"
+            },
+            {
+              "path": "core/surface/agents/grader.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/grader.md"
+            },
+            {
+              "path": "core/surface/agents/decision-challenger.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/decision-challenger.md"
+            }
+          ],
+          "transition_id": "WF-16:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5a0935344910e40ecc7238404e0d8669819e05a935ab3c7f1d679f4b53ddd308",
+      "group": "source-group-021",
+      "assessment": "Variance guidance requires exact source comparison, explicit user decision attribution and append-only uncertain-append recovery. Recommendations are analysis only; no choice, accepted ADR or automatic file mutation follows merely from a report.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "knowledge-literal-directory-staleness"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+          "sha256": "ce7d4334a9fafc2fa0c5ddc6e80da196606d40ec4018b749ea71e8d5c067c32f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-16:04",
+      "frozen_record": {
+        "transition_id": "WF-16:04",
+        "machine_id": "WF-16",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Interrupted arbitration",
+          "event": "Resume",
+          "guard": "Read tail and uncertain prior append",
+          "to": "Continue unresolved decisions",
+          "effects": "Preserve committed decisions; ratification/new source becomes a new entry.",
+          "failure_retry": "Do not duplicate an uncertain append or edit old entries.",
+          "source": [
+            {
+              "path": "core/surface/skills/decision-variance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/decision-variance/references/analysis.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/references/analysis.md"
+            },
+            {
+              "path": "core/surface/agents/scout.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/scout.md"
+            },
+            {
+              "path": "core/surface/agents/grader.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/grader.md"
+            },
+            {
+              "path": "core/surface/agents/decision-challenger.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/decision-challenger.md"
+            }
+          ],
+          "transition_id": "WF-16:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3ed1bb6bfe11fe0d8b7a17df8a04b4b5f0954993f03e4405ce9ae434f922ad52",
+      "group": "source-group-021",
+      "assessment": "Variance guidance requires exact source comparison, explicit user decision attribution and append-only uncertain-append recovery. Recommendations are analysis only; no choice, accepted ADR or automatic file mutation follows merely from a report.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "knowledge-literal-directory-staleness"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+          "sha256": "ce7d4334a9fafc2fa0c5ddc6e80da196606d40ec4018b749ea71e8d5c067c32f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-16:05",
+      "frozen_record": {
+        "transition_id": "WF-16:05",
+        "machine_id": "WF-16",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Decision requires ADR change",
+          "event": "Author/supersede separately",
+          "guard": "Actual user-selected change",
+          "to": "ADR owner handoff",
+          "effects": "Route to decision-lifecycle.",
+          "failure_retry": "Variance analysis does not manufacture accepted ADRs.",
+          "source": [
+            {
+              "path": "core/surface/skills/decision-variance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/decision-variance/references/analysis.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-variance/references/analysis.md"
+            },
+            {
+              "path": "core/surface/agents/scout.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/scout.md"
+            },
+            {
+              "path": "core/surface/agents/grader.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/grader.md"
+            },
+            {
+              "path": "core/surface/agents/decision-challenger.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/decision-challenger.md"
+            }
+          ],
+          "transition_id": "WF-16:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6f3347839e928707f879cb745f50ec5fa7a04691451147dd2259828ed17d3b23",
+      "group": "source-group-021",
+      "assessment": "Variance guidance requires exact source comparison, explicit user decision attribution and append-only uncertain-append recovery. Recommendations are analysis only; no choice, accepted ADR or automatic file mutation follows merely from a report.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "knowledge-literal-directory-staleness"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+          "sha256": "ce7d4334a9fafc2fa0c5ddc6e80da196606d40ec4018b749ea71e8d5c067c32f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        13,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "ab3a57a612ae860a1b207b0303c2cdd1c74e93edbc373395a284f86476ad489f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          13,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          13,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        61,
+        68
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "124201ffbc6022920cc079b85803c83ded6387fced9c4e5d3982c315daa98600",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          61,
+          68
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          61,
+          68
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "old_span": [
+        13,
+        103
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "6db98347b12a68d1e56ac157e5e50e3fefe5f9ac9c732b4538299af324607ae0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          13,
+          103
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          13,
+          103
+        ]
+      ],
+      "actual0ef_file_sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        21,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "677c85b677c34d0179ecc262151157ae0a3392845d5b0d338475e64317274526",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          21,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          21,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        94,
+        121
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "3ae901a4bc5944d2d95deba7e2032bbaf7aa53270b27b6cd3de361b9d1564921",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          94,
+          121
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          94,
+          121
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "old_span": [
+        105,
+        148
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "d82afb3f4027225ac598b44880f02f954a7cb0c3a095e6d91f07e21d3bea5d3a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          105,
+          148
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          105,
+          148
+        ]
+      ],
+      "actual0ef_file_sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/smarts/core.md",
+      "old_span": [
+        53,
+        137
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "0c67937507e1f5e088bea51a92d3deae08208d6952192c33924035ded5941265",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          53,
+          137
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          53,
+          137
+        ]
+      ],
+      "actual0ef_file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/agents/scout.md",
+      "old_span": [
+        53,
+        75
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "bfaf1c14f18fa08cbe42f19227e94c12cdb328b7cf661d19aa38230ae19b050b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          53,
+          75
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          53,
+          75
+        ]
+      ],
+      "actual0ef_file_sha256": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/agents/grader.md",
+      "old_span": [
+        23,
+        59
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "a9f36eef054198b0e526c40d4ca9123fad36bd778594ab82fb71a0f352ec3120",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          23,
+          59
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          23,
+          59
+        ]
+      ],
+      "actual0ef_file_sha256": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/agents/decision-challenger.md",
+      "old_span": [
+        12,
+        27
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "2b84c148097b4afb5b75045653c0201278e26d9c9e96b4a56d8d47fbc3c4c967",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          12,
+          27
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          12,
+          27
+        ]
+      ],
+      "actual0ef_file_sha256": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        51,
+        86
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "9ce9591539f92f0d5da220db9cd90ac884d981bc9fea0b6ccb1dc2649c648a8e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          51,
+          86
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          51,
+          86
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/smarts/decision-log-format.md",
+      "old_span": [
+        1,
+        53
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "1d1d136e16ae1ab9a90708d89354364f51f7ffc4ab623f61a0cf4fc2b3a8635a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          53
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          53
+        ]
+      ],
+      "actual0ef_file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/references/analysis.md",
+      "old_span": [
+        62,
+        77
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "107d713693f432795a35dabddbe3f51839d3671b796365193179f9b3a511d72b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          62,
+          77
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          62,
+          77
+        ]
+      ],
+      "actual0ef_file_sha256": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        70,
+        100
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "9a721ec69c7c4d07a0fe092a816fea386cb0d5caedbe54ae1ee25ef0933d1c4b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          70,
+          100
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          70,
+          100
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/smarts/decision-log-format.md",
+      "old_span": [
+        7,
+        13
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "743f5c946cc82316e05e9c771116096b420fe150001042e5041c532cab6b452d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          7,
+          13
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          7,
+          13
+        ]
+      ],
+      "actual0ef_file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/smarts/decision-log-format.md",
+      "old_span": [
+        47,
+        53
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "537897417f2910fc42248da23dc08b8e96025dc57239100e27ca15486bff66ce",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          47,
+          53
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          47,
+          53
+        ]
+      ],
+      "actual0ef_file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        28,
+        37
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "a2401724835000b8c9a98572c288d05ec8837634f90b6d2cffc047eb8afb6fae",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          28,
+          37
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          28,
+          37
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        72,
+        86
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "32ddf2987cdbe151a2f7811ab0a0be60e6a1810d90f39513651afc4b0686637f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          72,
+          86
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          72,
+          86
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-variance/SKILL.md",
+      "old_span": [
+        102,
+        121
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "5f3c48b1ad8648a936d2cb856fa69f083405805685209b28df4cfde5a49f7283",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          102,
+          121
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          102,
+          121
+        ]
+      ],
+      "actual0ef_file_sha256": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+      "old_span": [
+        7,
+        31
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "e926f5f2a34e1f5764b213c94e380cb55e8bd8532a9d2b2c897983646d1b7a4e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          7,
+          31
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          7,
+          31
+        ]
+      ],
+      "actual0ef_file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "old_span": [
+        28,
+        34
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "block_sha256_LF": "5fdf42317d333d57d816898f1ff6da9cce8af26126b539fca7236e20ab3fb326",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          28,
+          34
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          28,
+          34
+        ]
+      ],
+      "actual0ef_file_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/knowledge.py",
+      "old_span": [
+        36,
+        139
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/raw/source-inspection.json",
+      "block_sha256_LF": "9d0549034dc39be1ef83e492c6bd3c86115dac16f6b0ede3828febd6cde50bae",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          36,
+          139
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          36,
+          139
+        ]
+      ],
+      "actual0ef_file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/knowledge.py",
+      "old_span": [
+        205,
+        243
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/raw/source-inspection.json",
+      "block_sha256_LF": "d28f0e4aa2e76e03a61e2b88b9bd049ee3d6ec791791f0df1f3d17df407db96a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          205,
+          243
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          205,
+          243
+        ]
+      ],
+      "actual0ef_file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "old_span": [
+        1,
+        85
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/raw/source-inspection.json",
+      "block_sha256_LF": "2fcaa82e26bc75f95a06f489f9da4920c7e087b8d6dc1a52324d5747f52bb11a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          85
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          85
+        ]
+      ],
+      "actual0ef_file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "knowledge-literal-directory-staleness",
+      "paths": [
+        "core/pysrc/knowledge.py"
+      ],
+      "assessment": "Only _stale changes: literal directory scopes match descendant changed/deleted paths in addition to prior glob/cited-source predicates. It reports scoped hits rather than writing/rebaselining content. Current context workflows retain exact selected writer/preimage/permission and unknown/provenance boundaries; directory matching is an explicit semantic correction, not whole-file freshness from a new hash."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

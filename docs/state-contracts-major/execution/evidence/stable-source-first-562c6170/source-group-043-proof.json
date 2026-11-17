@@ -1,0 +1,63 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-sandbox/commands/sandbox-cp.md": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+    "plugins/ca-sandbox/commands/sandbox-exec.md": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+    "plugins/ca-sandbox/commands/sandbox-shell.md": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/skills/INDEX.md": "696258850c06456b2bac2276d72a60f43918076c6f2b806c6e9e68806696ed0b",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "plugins/ca-sandbox/tools/build.ts": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+    "plugins/ca-sandbox/tools/claude-inside.js": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+    "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/sandbox.js": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f"
+  },
+  "disposition_ids": [
+    "disposition:machines:SW01",
+    "disposition:transitions:SW01:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-043-inspection.json",
+      "sha256": "8d7f0993a8ace2b8079e6e52418cc5747a51e92dd3167cce8759916cbf8755d0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/preserved.json",
+      "sha256": "d5134d4a50a835eb2fe8efd9bab7ed2f2e55fa8bbd9f47d83f6a70c85510f6fa"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-SW01-current-0c882f43/preserved.json",
+    "sha256": "d5134d4a50a835eb2fe8efd9bab7ed2f2e55fa8bbd9f47d83f6a70c85510f6fa",
+    "source_commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-043-inspection.json",
+  "scope": "OnlycorrectedSW01:01 sourceevidence successor andfinitewholeSW01sourcePRESERVED. Other23transitionstatuses/activeproofs/history untouched. Priorincorrectcatalognarrative retainedinhistorywithexplicitcorrection atactual0c882f43.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ]
+}

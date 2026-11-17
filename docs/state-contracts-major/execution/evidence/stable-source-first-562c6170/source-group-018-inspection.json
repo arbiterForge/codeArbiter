@@ -1,0 +1,791 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-018",
+  "positive_input_join": {
+    "core/pysrc/_artifactauthoritylib.py": {
+      "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "bytes": 251805,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+        "bytes": 251805
+      }
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+      "bytes": 64924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+        "bytes": 64924
+      }
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "bytes": 12221,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+        "bytes": 12221
+      }
+    },
+    "core/pysrc/_hooklib.py": {
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_prerequisitelib.py": {
+      "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "bytes": 40617,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+        "bytes": 40617
+      }
+    },
+    "core/pysrc/_replylib.py": {
+      "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "bytes": 25320,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+        "bytes": 25320
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:hooks:prerequisite",
+      "frozen_record": {
+        "machine_id": "hooks:prerequisite",
+        "name": "User prerequisite arm, confirmation, capture and supersession",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "787c514d39b509df40fef6a5fdb9469078841c4f8a7d4f72a440fa752b15e824",
+      "group": "source-group-018",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of User prerequisite arm, confirmation, capture and supersession. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:01",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:01",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "absent",
+          "event": "arm",
+          "guard": "approved/frozen plan and prerequisite record; no pending transition",
+          "to": "ARMED",
+          "effects": "Persist exact review packet, prompt and 24-hour reply validity; register reply.",
+          "failure_retry": "Malformed existing record or lock conflict refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "46e946972b2166943121bcbd5b57d49b46b98c8ad3ed38252db7077e49895f83",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:02",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:02",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "ARMED",
+          "event": "matching real user reply",
+          "guard": "within24h and current frozen plan/required reply match",
+          "to": "CONFIRMED",
+          "effects": "Persist confirmed host observation before source capture/native mutation.",
+          "failure_retry": "Expired ARMED reply cannot confirm; no manufactured reply.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bd7b226f5e5ce692639dd2fbe423a02ab71c41ef636db0b7852d86fca58a1a58",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:03",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:03",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "CONFIRMED",
+          "event": "capture observation",
+          "guard": "stored confirmation valid",
+          "to": "CAPTURED",
+          "effects": "Publish immutable source event and exact expected mutation request.",
+          "failure_retry": "Retry confirmed state even after original reply window; no new user prompt required.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3de9014a1a50f44a42a132da1972f7e81e5a2288d79a72ed353b6d1cda1444df",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:04",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:04",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "CAPTURED",
+          "event": "native prerequisite satisfaction",
+          "guard": "exact expected revision/hash and recorded request",
+          "to": "satisfied",
+          "effects": "Apply mutation and remove/retire completed pending route.",
+          "failure_retry": "Unknown result preserves captured evidence for recovery/replay.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "27c024db3d218f449a02de6a7952c1e708b678230ad453bc370fae2aa870e2b8",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:05",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:05",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "ARMED",
+          "event": "cancel / retire unanswered",
+          "guard": "no confirmation/capture",
+          "to": "absent",
+          "effects": "Remove unanswered pending/route.",
+          "failure_retry": "Confirmed or captured state cannot use unanswered cancellation.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f885458f67ca42f2aa8eea56601dc99e33126afcf37b8676f4889c4134f98161",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:06",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:06",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "CONFIRMED / CAPTURED",
+          "event": "supersede",
+          "guard": "plan identity actually changed",
+          "to": "superseded or original satisfied",
+          "effects": "Captured state attempts original request first; retire only after proven revision conflict.",
+          "failure_retry": "Uncertain original outcome blocks replacement; do not lose already observed user intent.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:06"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5c09d9a529e4d6949c7326dc05aebbb9633f070ec5d277ea198b4782fa659391",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prerequisite:07",
+      "frozen_record": {
+        "transition_id": "hooks:prerequisite:07",
+        "machine_id": "hooks:prerequisite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "CONFIRMED / CAPTURED",
+          "event": "retry after time passes",
+          "guard": "stored confirmed/captured identity valid",
+          "to": "same or satisfied",
+          "effects": "Continue durable operation; reply expiry does not erase confirmation.",
+          "failure_retry": "Malformed stored state refuses rather than reinterpreting it.",
+          "source": [
+            {
+              "path": "core/pysrc/_prerequisitelib.py",
+              "symbol": "module",
+              "lines": "1-1042",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prerequisitelib.py"
+            }
+          ],
+          "transition_id": "hooks:prerequisite:07"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "85512e06dfa29b04738ed0392f4c818c5812c9267378d36836ee39bb48947449",
+      "group": "source-group-018",
+      "assessment": "Real confirmation is persisted before capture and mutation.24h expiry limits new ARMED answers, not already durable CONFIRMED/CAPTURED continuation. Exact captured request is attempted before replacement; uncertainty blocks supersession/cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+          "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        298,
+        336
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "2cd107b76b5faa5db02b700a08f2676fde3d954c1c0fd82bae7abfb06585e08b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          298,
+          336
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          298,
+          336
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        550,
+        630
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "40c20f6485711e410d550f9103f428f1a6f69c32e071660221635b25c194035f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          550,
+          630
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          550,
+          630
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        156,
+        173
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "6ee7d67aab0a740b5c6e7799ae4fca85d75040d3014589e49a41f84e0c758113",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          156,
+          173
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          156,
+          173
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        648,
+        706
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "25973c23b3672ab9001e75315c37427d2a4f667fb0b1c38c68e91a0f3bba7b36",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          648,
+          706
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          648,
+          706
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        709,
+        814
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "e9517a93531e7917789e18ed65da565963b0f9c38b2e6b392634b5d65fde1135",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          709,
+          814
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          709,
+          814
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        457,
+        547
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "f10b8c2d783b72513a492087a4f2706910e7900d26fdb6e7bc7669061fa738aa",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          457,
+          547
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          457,
+          547
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        795,
+        814
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "359f297c56a5c59c3807382553332217629f0d76a1dbf2af30dbc3568ea7c463",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          795,
+          814
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          795,
+          814
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        817,
+        871
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "9927bba88f657c5f59242444aeeba497b9fd7b8c84a5d17ef2769a7b2b14adc0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          817,
+          871
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          817,
+          871
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        875,
+        938
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "936a12d3e9eed8211bafff8d7be2c1d6c08a2f9ba1a84074d3245bfe67a5b045",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          875,
+          938
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          875,
+          938
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        399,
+        547
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "1e8cd636ef2b91c45f788fd4d6515ec9e76b18c59836018446de43dbea59acc0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          399,
+          547
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          399,
+          547
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prerequisitelib.py",
+      "old_span": [
+        733,
+        814
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/source-inspection.json",
+      "block_sha256_LF": "97444dabee4e6a4d4b75a0c578c5110eae93d77ff831911abb91fd0ea32ed37d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          733,
+          814
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "actual0ef_spans": [
+        [
+          733,
+          814
+        ]
+      ],
+      "actual0ef_file_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "artifact-platform-dispatch",
+      "paths": [
+        "core/pysrc/_artifactlib.py"
+      ],
+      "assessment": "Actual full deltas from7ac/d594/7eba are the same: sys.platform replaces platform.system for supported OS/commandWindows/verified-descriptor launch dispatch. No protocol, gate, request/environment, JSON, root/index or recovery API shape changes. Callers retain finite unsupported-platform and transport limits; fewer platform-discovery effects are not new native qualification."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

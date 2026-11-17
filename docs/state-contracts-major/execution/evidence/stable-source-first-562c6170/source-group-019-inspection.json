@@ -1,0 +1,1623 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-019",
+  "positive_input_join": {
+    "core/pysrc/_hooklib.py": {
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_modelib.py": {
+      "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+      "bytes": 45342,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+        "bytes": 45342
+      }
+    },
+    "core/pysrc/_prunelib.py": {
+      "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "bytes": 58415,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+        "bytes": 58415
+      }
+    },
+    "core/pysrc/_prunepolicy.py": {
+      "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "bytes": 10440,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+        "bytes": 10440
+      }
+    },
+    "core/pysrc/hostapi.py": {
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "bytes": 38083,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+        "bytes": 38083
+      }
+    },
+    "core/pysrc/prune-transcript.py": {
+      "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "bytes": 10814,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+        "bytes": 10814
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:01",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:01",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "hook candidate",
+          "event": "eligibility check",
+          "guard": "active supported Claude host/transcript;1\u201350MiB;>=256KiB growth; settled tail without unpaired tool use/queue operation",
+          "to": "eligible",
+          "effects": "Run pruning only at eligible boundary.",
+          "failure_retry": "Unsupported host/path/inactive/too-small/too-large/unsettled tail returns no rewrite.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:01"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "a2f5d4453d44ff3f686abf7d662777ea2c33bea60249b5f8d1b73252b2095ad4",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:02",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:02",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "explicit execution candidate",
+          "event": "live transcript check",
+          "guard": "mtime age>=90s",
+          "to": "eligible",
+          "effects": "Permit explicit write.",
+          "failure_retry": "More recent transcript refused as live.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:02"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b3d8c479123331d3167f7def84d7a319591d86f8561710f0f996f8a88ff36c4",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:03",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:03",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "eligible",
+          "event": "execute",
+          "guard": "valid no-growth candidate and backup enabled",
+          "to": "backed-up",
+          "effects": "Create retained backup, default latest3.",
+          "failure_retry": "Backup/write safety failure aborts before destructive truncation.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:03"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6e1afdc1a77372b4d1398e695e16d7364ee36b4ca3c02671a08d81682a09c4ca",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:05",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:05",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "writing",
+          "event": "post-write verification",
+          "guard": "readback valid and expected bytes/structure",
+          "to": "verified",
+          "effects": "Persist actual metrics/audit state.",
+          "failure_retry": "Failure restores original prefix/backup while preserving concurrent append suffix when provable.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:05"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8d86c3ec5c3a58efa87be696495428e41708f5d6dd3441a4e8e4b0e8ddcc9f4c",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:06",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:06",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "single malformed truncated line",
+          "event": "self-heal",
+          "guard": "latest backup uniquely proves splice and suffix preservation",
+          "to": "repairable then restored",
+          "effects": "Repair one bad line only.",
+          "failure_retry": "Multiple/ambiguous corruption is unrepairable and refused.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:06"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d79b214cfcaeb99b48be8d1892a112efc5da8b41a23b2c16b4730439f17ffac0",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:07",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:07",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "cold session",
+          "event": "nudge decision",
+          "guard": "opted in, idle>=240s,freed>=80000 estimated tokens,not already nudged in cold window",
+          "to": "nudged",
+          "effects": "Return exit2 advisory to induce host context refresh.",
+          "failure_retry": "Warm activity resets window; other conditions no-op. Nudge is not authorization for unrelated work.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:07"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "934f0e8c28549211b77073299f00193aa6af032100ffe561e76abe5206cd46ce",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-execute:08",
+      "frozen_record": {
+        "transition_id": "hooks:prune-execute:08",
+        "machine_id": "hooks:prune-execute",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "any prune state",
+          "event": "state write",
+          "guard": "global read-modify-write accepted",
+          "to": "updated best effort",
+          "effects": "Persist pruning accounting and nudge state.",
+          "failure_retry": "No cross-process state lock; failure is fail-open and transcript validation remains separate.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "hook_run",
+              "lines": "1214-1356",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "write_in_place",
+              "lines": "932-1022",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "_post_write_check",
+              "lines": "1025-1049",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "self_heal",
+              "lines": "861-929",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "nudge_decision",
+              "lines": "1173-1211",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-execute:08"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "814f86bef54e0a96342dc558d281c10ca549e1eccb22cd6d672859c2b3802e61",
+      "group": "source-group-019",
+      "assessment": "Repaired canonical proper-descendant guard now precedes self-heal; no same-prefix sibling admission. Retain transcript/tail/growth/live-mtime, backup/readback/splice suffix and uncertain-state limits. Nudge/dry metrics are advisory, best-effort state has no cross-process global lock or runtime savings proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-plan:01",
+      "frozen_record": {
+        "transition_id": "hooks:prune-plan:01",
+        "machine_id": "hooks:prune-plan",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "off",
+          "event": "prune hook",
+          "guard": "mode disabled",
+          "to": "off",
+          "effects": "Return without transcript rewrite.",
+          "failure_retry": "No implicit opt-in.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunepolicy.py",
+              "symbol": "module",
+              "lines": "1-261",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "module",
+              "lines": "1-1437",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-plan:01"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "cd8d637b2ca9c199551e9cd9b671302af4cef83d70f8622ea426a4692f3c33b9",
+      "group": "source-group-019",
+      "assessment": "Disabled/unchanged/protected content stays unchanged; selected in-memory transforms preserve JSON count/IDs/parent/tool pairing and no-growth guards. Role applicability is the actual documented scoped rule, not universal exclusion. Dry audit/accounting is not transcript rewrite or achieved savings.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-plan:03",
+      "frozen_record": {
+        "transition_id": "hooks:prune-plan:03",
+        "machine_id": "hooks:prune-plan",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "planned",
+          "event": "apply strategies in memory",
+          "guard": "sidecar, oversize result, reasoning, aged/repeated result, MCP payload, shell tail, superseded read, reminder, image rules admit",
+          "to": "candidate rewrite",
+          "effects": "Transform selected content while preserving structural IDs/parent chain/tool pairing.",
+          "failure_retry": "No growth, unchanged line count and valid JSON required; invalid plan is rejected.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunepolicy.py",
+              "symbol": "module",
+              "lines": "1-261",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "module",
+              "lines": "1-1437",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-plan:03"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b19f59fb71568fcd749798b86f8b8f56e75c4b348f45dfd47f07e0ead2420545",
+      "group": "source-group-019",
+      "assessment": "Disabled/unchanged/protected content stays unchanged; selected in-memory transforms preserve JSON count/IDs/parent/tool pairing and no-growth guards. Role applicability is the actual documented scoped rule, not universal exclusion. Dry audit/accounting is not transcript rewrite or achieved savings.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-plan:04",
+      "frozen_record": {
+        "transition_id": "hooks:prune-plan:04",
+        "machine_id": "hooks:prune-plan",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "planned",
+          "event": "dry mode / audit",
+          "guard": "valid candidate and eligible size/growth",
+          "to": "dry-run",
+          "effects": "Report proposed token/byte savings and write dry metrics/state.",
+          "failure_retry": "Dry-run is not executed savings; no transcript mutation.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunepolicy.py",
+              "symbol": "module",
+              "lines": "1-261",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "module",
+              "lines": "1-1437",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-plan:04"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "52fd1acabd50e0bd7c26a5a15474debb50b51060e6cfbfe2339d6ff17d05c29a",
+      "group": "source-group-019",
+      "assessment": "Disabled/unchanged/protected content stays unchanged; selected in-memory transforms preserve JSON count/IDs/parent/tool pairing and no-growth guards. Role applicability is the actual documented scoped rule, not universal exclusion. Dry audit/accounting is not transcript rewrite or achieved savings.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:prune-plan:06",
+      "frozen_record": {
+        "transition_id": "hooks:prune-plan:06",
+        "machine_id": "hooks:prune-plan",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "candidate",
+          "event": "no applicable transformation",
+          "guard": "all content protected/already compact/small",
+          "to": "no-change",
+          "effects": "Return existing content.",
+          "failure_retry": "No forced modification just to meet target size.",
+          "source": [
+            {
+              "path": "core/pysrc/_prunepolicy.py",
+              "symbol": "module",
+              "lines": "1-261",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunepolicy.py"
+            },
+            {
+              "path": "core/pysrc/_prunelib.py",
+              "symbol": "module",
+              "lines": "1-1437",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+            },
+            {
+              "path": "core/pysrc/prune-transcript.py",
+              "symbol": "module",
+              "lines": "1-252",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prune-transcript.py"
+            }
+          ],
+          "transition_id": "hooks:prune-plan:06"
+        },
+        "task_ids": [
+          "HW-22",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8528e8b1cf13dca817a3ee8b052e437e4761ffefdf01dfe0fd6a4c21039c0e7b",
+      "group": "source-group-019",
+      "assessment": "Disabled/unchanged/protected content stays unchanged; selected in-memory transforms preserve JSON count/IDs/parent/tool pairing and no-growth guards. Role applicability is the actual documented scoped rule, not universal exclusion. Dry audit/accounting is not transcript rewrite or achieved savings.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "mode-and-adoption-repair-reuse",
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+          "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1214,
+        1225
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "27e647e0da32e0f0e76bc6241a0eca2b34a06a14f523d1798b5a886237a20b8a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1214,
+          1225
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1214,
+          1225
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunepolicy.py",
+      "old_span": [
+        175,
+        230
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "ad3498c6a5d79a0659334f41b7a947c9164acf7bafe790c8c7b8715eb42de24b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          175,
+          230
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          175,
+          230
+        ]
+      ],
+      "actual0ef_file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        139,
+        234
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "d0d076c779752b83858abdcee059c66f28719ac1c1a0748f7aec197069fefd23",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          139,
+          234
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          139,
+          234
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        252,
+        626
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "472c5c7b4f2fed5bf028aac28470d53ab29eca48dfcb8e159a70804b2c1b93ce",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          252,
+          626
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          252,
+          626
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        700,
+        793
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "dcbbec0930b4d72e0d0e10932598101996bf0cc89f9175a70b61aecba3f163e6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          700,
+          793
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          700,
+          793
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1305,
+        1356
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "bc6c6aeb2c884ac87b312230f7112c576786f99d069febbacb21cf39e421b33e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1307,
+          1358
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1307,
+          1358
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1373,
+        1437
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "e77e0a7b9337bda58185753573e494bc475d2ec536740dbee143d3634cca2b79",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1375,
+          1439
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1375,
+          1439
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunepolicy.py",
+      "old_span": [
+        204,
+        261
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          204,
+          261
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          204,
+          261
+        ]
+      ],
+      "actual0ef_file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/prune-transcript.py",
+      "old_span": [
+        156,
+        231
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "99f89f71ee17d56b50e5ac566d1547e315ced718da3a45e871d059780ca98798",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          156,
+          231
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          156,
+          231
+        ]
+      ],
+      "actual0ef_file_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1373,
+        1423
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "400379b844291d8d0ba9c4ec53ab1d9290e443fc91be0eb6f8c9a518523651ef",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1375,
+          1425
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1375,
+          1425
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/prune-transcript.py",
+      "old_span": [
+        163,
+        190
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "eb1c4faa7f5f0194238b8f5bdaf8fa5f66bb02b4c45ccb96a3fd41e430acbbd1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          163,
+          190
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          163,
+          190
+        ]
+      ],
+      "actual0ef_file_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/prune-transcript.py",
+      "old_span": [
+        99,
+        103
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "cfb7c84ae8d7bb6e6c8db47ee4d926855ed9894fa3cc31309a9cac52e7f3ce6a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          99,
+          103
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          99,
+          103
+        ]
+      ],
+      "actual0ef_file_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/prune-transcript.py",
+      "old_span": [
+        212,
+        229
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "369066efa23f4f1a669d90b51ec1b51923fec6cf0966e56c5ed941fb6fda4d41",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          212,
+          229
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          212,
+          229
+        ]
+      ],
+      "actual0ef_file_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        932,
+        985
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "5d19793b876b238475cbf1178ce5c873cb59ceb20cfd94ac3434e2c0cb73ebca",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          932,
+          985
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          932,
+          985
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        932,
+        988
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "3c47e475e17287ce14a090666afa28b1a51a9289a97a1f75e56ac8fba06a3da1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          932,
+          988
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          932,
+          988
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        993,
+        1049
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "3e22354dd38634a361fbd10c91a0b584851f1f37cae371538b7ff23bd439e7e8",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          993,
+          1049
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          993,
+          1049
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1312,
+        1356
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "6991126aa26332e49d2faae063176ca58fe1d8378aabd94b813a3a53af8368a1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1314,
+          1358
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1314,
+          1358
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        861,
+        929
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "486132272fc0ebfcd3b20da6180281bb7841bb568c759b148da6f0a3b0f71985",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          861,
+          929
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          861,
+          929
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1173,
+        1211
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "f2b0c158036ca8a2abbc11ead5117bcf53f1d1bff8650a6e274851fd6a35c94c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1173,
+          1211
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1173,
+          1211
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1270,
+        1283
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "be9335d72d880f624a7d39048c075332e865e2629ea0a56d5a2fdddd0760f69c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1272,
+          1285
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1272,
+          1285
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1081,
+        1102
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "3161d288a9b72994a85439172fe7d9c9023c6d603f69d5bae6e60fb421c9f407",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1081,
+          1102
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1081,
+          1102
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "old_span": [
+        1337,
+        1356
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "block_sha256_LF": "1a778af52f014ba3ce183b5c6d29c0ebc8e237f2a67ccfaf2fcfbb969908a3ec",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1339,
+          1358
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "actual0ef_spans": [
+        [
+          1339,
+          1358
+        ]
+      ],
+      "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": "core/pysrc/_prunelib.py",
+      "older_witness": {
+        "path": "core/pysrc/_prunelib.py",
+        "old_span": [
+          1214,
+          1307
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+        "block_sha256_LF": "4633aba0c073526c4805e98fb81e9d098760b3c62259de258dad4d47f21c0eb2",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "prune-and-site-containment",
+          "paths": [
+            "core/pysrc/_prunelib.py",
+            "site/scripts/link-audit/lib.ts"
+          ],
+          "assessment": "Retain actual independently reviewed component/proper-descendant refusal before prune self-heal, and URL/final filesystem containment refusal before a sibling can satisfy an internal site target. These are intended strengthened rejection boundaries. Exact unchanged caller witnesses can be reused with these helper effects, without OS/symlink/host/browser qualification."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "mode-and-adoption-repair-reuse",
+      "paths": [
+        "core/pysrc/_modelib.py",
+        "core/pysrc/_workadopt.py"
+      ],
+      "assessment": "Use the actual committed exit/enter audit repair and transition-owned persistence guidance, never global unrelated debt as replay proof. Safe regular descriptor acquisition covers optional/archive/replay with bounded reads, link/reparse refusal, before/fstat/after identity and explicit close; platform flags remain limited. Prior own repair analyses/independent closures apply only at matching bytes; no universal storage durability or OS race confinement."
+    },
+    {
+      "id": "prune-and-site-containment",
+      "paths": [
+        "core/pysrc/_prunelib.py",
+        "site/scripts/link-audit/lib.ts"
+      ],
+      "assessment": "Retain actual independently reviewed component/proper-descendant refusal before prune self-heal, and URL/final filesystem containment refusal before a sibling can satisfy an internal site target. These are intended strengthened rejection boundaries. Exact unchanged caller witnesses can be reused with these helper effects, without OS/symlink/host/browser qualification."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

@@ -1,0 +1,637 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-029",
+  "positive_input_join": {
+    ".github/fixtures/tribunal/cases.json": {
+      "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+      "bytes": 53322,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+        "bytes": 53322
+      }
+    },
+    "tools/codex-parity-fixture.py": {
+      "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+      "bytes": 6671,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+        "bytes": 6671
+      }
+    },
+    "tools/tribunal-eval.py": {
+      "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+      "bytes": 24185,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576",
+        "bytes": 24185
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:T05:01",
+      "frozen_record": {
+        "transition_id": "T05:01",
+        "machine_id": "T05",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "absent target",
+          "from": "absent target",
+          "event": "create parity fixture",
+          "guard": "one target path and optional --bare; target does not exist",
+          "to": "files created",
+          "effects": "Bare mode creates ordinary baseline file only; governed mode creates enabled context, seed audit/ADR/security/tech files and markers directory.",
+          "failure_retry": "Existing path refuses clobber; I/O failure leaves partial target and returns failure.",
+          "source": [
+            {
+              "path": "tools/codex-parity-fixture.py",
+              "symbol": "main",
+              "lines": [
+                117,
+                177
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+            }
+          ],
+          "transition_id": "T05:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "60c00a22aca14e0fa235f822715fec0bdc4ee0d2ba04f73e5d255276569df30d",
+      "group": "source-group-029",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:01",
+      "frozen_record": {
+        "transition_id": "T12:01",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "corpus unchecked",
+          "from": "corpus unchecked",
+          "event": "validate corpus",
+          "guard": "exact schema/hash, 40 opaque cases in 20 defect/clean pairs with matching neutral contracts and consistent private oracle",
+          "to": "frozen corpus valid",
+          "effects": "Validate inert source paths and expected required/forbidden contracts.",
+          "failure_retry": "Missing/extra/malformed case/family/hash rejects; source evidence is never executed.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "validate_corpus",
+              "lines": [
+                94,
+                140
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6e5dd6a4f2601a93349b764daaba9ef152dff9e57a49a16173c067af8e75aa89",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:02",
+      "frozen_record": {
+        "transition_id": "T12:02",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "frozen corpus valid",
+          "from": "frozen corpus valid",
+          "event": "export",
+          "guard": "whitelist-only public projection",
+          "to": "blind packet",
+          "effects": "Emit contracts/files/source hashes plus review instructions; private oracle/family/variant stays omitted.",
+          "failure_retry": "Output creation uses exclusive mode and refuses replacing a frozen packet.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "public_packet",
+              "lines": [
+                147,
+                160
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "aae80251442455c6c927368e64246d18fde3e3cd0a9de487fec1d434d2955b07",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:03",
+      "frozen_record": {
+        "transition_id": "T12:03",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "blind packet",
+          "from": "blind packet",
+          "event": "validate captured review",
+          "guard": "complete case accounting, exact corpus/packet/source hashes, metadata shape, literal evidence matching source, verification_status=unverified",
+          "to": "unverified findings",
+          "effects": "Accept captured or explicitly allowed synthetic raw review.",
+          "failure_retry": "Self-verified finding, missing/foreign case, wrong quote or synthetic without flag rejects.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "validate_run",
+              "lines": [
+                181,
+                217
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "123d7a387d5973255da52428c95f9ff8feb94fe62ab0fdd16af485105e01fa2e",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:04",
+      "frozen_record": {
+        "transition_id": "T12:04",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "unverified findings",
+          "from": "unverified findings",
+          "event": "validate adjudication",
+          "guard": "exact run digest, separate verifier ID, fresh/limited independence, every finding and case accounted",
+          "to": "adjudicated",
+          "effects": "Accept confirmed/narrowed/refuted/inconclusive status and explicit matches_contract/compliance evidence.",
+          "failure_retry": "Missing adjudication, stale digest, self verifier, invalid quote or refuted+matches_contract rejects.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "validate_adjudication",
+              "lines": [
+                220,
+                250
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1c65378186f23ac80c5ee72e01ff58838154b2774af252d88f5fe68e9f0a8b4d",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:05",
+      "frozen_record": {
+        "transition_id": "T12:05",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "adjudicated",
+          "from": "adjudicated",
+          "event": "score",
+          "guard": "review and adjudication valid",
+          "to": "scored eligible/ineligible",
+          "effects": "Compute preliminary recall separately from verified recall, false positives, survival, distinct oracle-root counts, compliance and optional cost.",
+          "failure_retry": "Synthetic or limited independence makes qualification_eligible false; missing tokens/duration stays unavailable, not zero.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "score",
+              "lines": [
+                257,
+                338
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:05"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "2e1ab50eb9f697bb2902546ffbb7cbdfc721473c7861a404e2d29b916ad0b83a",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:06",
+      "frozen_record": {
+        "transition_id": "T12:06",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "two scored runs",
+          "from": "two scored runs",
+          "event": "compare critical cases",
+          "guard": "same corpus; independently valid old/new evidence",
+          "to": "comparison blocked/clear",
+          "effects": "Detect lost hit/verified coverage, increased false positives or lost assignment compliance for critical cases.",
+          "failure_retry": "Noncritical improvement/cost does not erase a critical regression.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "compare",
+              "lines": [
+                341,
+                383
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:06"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6218f7c7a8da89ba9fbdbc6101eebcb96402e05119f2a72722a17b8a403966c2",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:07",
+      "frozen_record": {
+        "transition_id": "T12:07",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "comparison has critical regression",
+          "from": "comparison has critical regression",
+          "event": "bind explicit external exception",
+          "guard": "exact corpus/run/adjudication digests; current regressed case; nonempty approval evidence; approver differs from both runs/verifiers",
+          "to": "approved exception or still blocked",
+          "effects": "Subtract only explicitly approved current regressions from blocked set.",
+          "failure_retry": "Stale, self-approved or unrelated exception rejects; stored approval strings are caller evidence, not cryptographic authentication.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "compare",
+              "lines": [
+                341,
+                383
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:07"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "0fdce9dc1e0744241c05c8dcf8200361f2f3d8e32b558fb32f7926430bd6727b",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:08",
+      "frozen_record": {
+        "transition_id": "T12:08",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "comparison clear",
+          "from": "comparison clear",
+          "event": "promotion eligibility",
+          "guard": "no blocked cases and both scores captured with fresh independent verification",
+          "to": "proposal eligible",
+          "effects": "Return promotion_eligible true; no model/configuration published or recommended automatically.",
+          "failure_retry": "Clear synthetic/limited comparison returns promotion_eligible false even though CLI can exit zero; consumers must read the typed field.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "compare",
+              "lines": [
+                341,
+                383
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:08"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "100eb4dd901d4c57ba737105da1a1a91a1a313fc13f537a2a6fdcdda7d2e1215",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T12:09",
+      "frozen_record": {
+        "transition_id": "T12:09",
+        "machine_id": "T12",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "comparison blocked or invalid",
+          "from": "comparison blocked or invalid",
+          "event": "CLI return/output",
+          "guard": "blocked cases or validation exception",
+          "to": "non-success verdict",
+          "effects": "Exit 3 for blocked comparison; exit 2 for invalid input; exclusive-create optional result file.",
+          "failure_retry": "A valid score/export otherwise exits zero. No inferred adjudication or model calls occur.",
+          "source": [
+            {
+              "path": "tools/tribunal-eval.py",
+              "symbol": "main",
+              "lines": [
+                386,
+                429
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/tribunal-eval.py"
+            }
+          ],
+          "transition_id": "T12:09"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "825770d5009f1df7b0f30e335723c3615779fb278bcbe0baff38e77e70ea33a7",
+      "group": "source-group-029",
+      "assessment": "Inert corpus/export/review/adjudication/scoring typed controls remain nonexecuting. Fresh independent captured verification is required for eligible promotion; synthetic/limited comparisons stay ineligible even with exit0. Caller approval strings are not cryptographic authentication or model-quality observations.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+          "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "parity-manual-hint",
+      "paths": [
+        "tools/codex-parity-fixture.py"
+      ],
+      "assessment": "Only the printed hint changes: persona delivery is prompt-submit when due; SessionStart startup state/daily briefing are separate. Fixture creation/Git operations/target refusal are unchanged. T05:03 frozen stale session-start-injection detail needs an explicit corrected current contract note, not a claim the old hint is preserved or live host parity passed."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}
