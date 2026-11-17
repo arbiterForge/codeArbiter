@@ -589,6 +589,7 @@ def run_rpc_commands(
         _after_install()
 
     provider = home / "ca-task3-capture-provider.ts"
+    shutdown_trace = home / "ca-rpc-shutdown-trace.json"
     if invoke_enforcement_fault:
         if mutation_path is None or fault_marker_path is None:
             raise AssertionError("enforcement fault fixture requires mutation and consumed-fault paths")
@@ -698,8 +699,21 @@ export default function registerFaultProvider(pi: any) {
     elif invoke_read_context:
         if governed_read_path is None or ungoverned_read_path is None:
             raise AssertionError("read-context fixture requires governed and ungoverned paths")
+        # Keep raw argv and the natural-exit verdict. The explicit companion
+        # already has its own preload and must not install a second observer.
+        observer_source = ""
+        shutdown_handler = ""
+        if not _observe_shutdown:
+            observer_source = rpc_shutdown_observer_source(shutdown_trace, module=True)
+            shutdown_handler = (
+                "  try {\n"
+                "    pi.on('session_shutdown', () => {\n"
+                "      (globalThis as any).__caPiRpcShutdownObserve?.('session_shutdown_observer');\n"
+                "    });\n"
+                "  } catch { /* Optional diagnostics must not change provider behavior. */ }\n"
+            )
         provider.write_text(
-            """import { createAssistantMessageEventStream } from '@earendil-works/pi-ai';
+            observer_source + """import { createAssistantMessageEventStream } from '@earendil-works/pi-ai';
 
 const governedPath = __CA_PI_GOVERNED_PATH__;
 const ungovernedPath = __CA_PI_UNGOVERNED_PATH__;
@@ -801,8 +815,9 @@ export default function registerReadContextProvider(pi: any) {
       return stream;
     },
   });
-}
+__CA_PI_RPC_SHUTDOWN_HANDLER__}
 """
+            .replace("__CA_PI_RPC_SHUTDOWN_HANDLER__", shutdown_handler)
             .replace("__CA_PI_GOVERNED_PATH__", json.dumps(str(governed_read_path.resolve())))
             .replace("__CA_PI_UNGOVERNED_PATH__", json.dumps(str(ungoverned_read_path.resolve()))),
             encoding="utf-8",
@@ -873,7 +888,6 @@ export default function registerCaptureProvider(pi: any) {
             newline="\n",
         )
 
-    shutdown_trace = home / "ca-rpc-shutdown-trace.json"
     if (invoke_alias or invoke_doctor) and not _observe_shutdown:
         # Embed observation into the already-selected local provider. Raw Node
         # argv and the natural-exit verdict remain unchanged; this captures the
@@ -3886,6 +3900,56 @@ process.stdout.write('ready\n');
                 self.assertIsNone(retain_rpc_shutdown_failure(trace))
             with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(trace)}):
                 self.assertIsNone(retain_rpc_shutdown_failure(trace))
+
+    def test_rpc_read_context_observer_preserves_raw_provider_route(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-read-context-observer-") as directory:
+            root = Path(directory).resolve()
+            agent = root / "agent"
+            home = root / "home"
+            provider = home / "ca-task3-capture-provider.ts"
+            node, cli = "owned-node-stub", root / "owned-pi-cli-stub.js"
+
+            def configure_package(argv, **_kwargs):
+                self.assertEqual(argv, [node, str(cli), "install", str(root), "--no-approve"])
+                (agent / "settings.json").write_text(
+                    json.dumps({"packages": ["owned-fixture"]}), encoding="utf-8",
+                )
+                return subprocess.CompletedProcess(argv, 0, "", "")
+
+            class LaunchBoundaryReached(Exception):
+                pass
+
+            with (
+                mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
+                mock.patch.object(subprocess, "run", side_effect=configure_package),
+                mock.patch.object(subprocess, "Popen", side_effect=LaunchBoundaryReached) as launch,
+                mock.patch.object(
+                    sys.modules[__name__], "write_rpc_shutdown_observer",
+                    side_effect=AssertionError("the read-context provider needs no preload"),
+                ),
+                self.assertRaises(LaunchBoundaryReached),
+            ):
+                run_rpc_commands(
+                    root, agent, home, package_source=root, invoke_read_context=True,
+                    governed_read_path=root / "governed.txt", ungoverned_read_path=root / "ungoverned.txt",
+                )
+
+            launch.assert_called_once()
+            self.assertEqual(launch.call_args.args[0], [
+                node, str(cli), "--mode", "rpc", "--offline", "--no-session", "--approve",
+                "--no-prompt-templates", "--no-themes", "--no-context-files",
+                "--extension", str(provider), "--provider", "ca-read-context",
+                "--model", "ca-read-context-model", "--api-key", "test-only-no-network",
+            ])
+            source = provider.read_text(encoding="utf-8")
+            self.assertIn(
+                "globalThis.__caPiRpcShutdownObserve = observe;", source,
+                "raw read-context provider did not install the passive child observer",
+            )
+            self.assertIn(json.dumps(str(home / "ca-rpc-shutdown-trace.json")), source)
+            handler = "pi.on('session_shutdown'"
+            self.assertEqual(source.count(handler), 1)
+            self.assertLess(source.index("pi.registerProvider('ca-read-context'"), source.index(handler))
 
     def test_rpc_embedded_observer_is_passive_and_keeps_stdout_clean(self):
         node, _ = live_pi_cli()
