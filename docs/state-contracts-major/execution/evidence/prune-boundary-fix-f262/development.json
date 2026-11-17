@@ -1,0 +1,68 @@
+{
+ "schema": "codearbiter.major.prune-boundary-development/1",
+ "source_preimage_commit": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+ "scope": "Shared _prunelib hook_run N-1 admission only; canonical core plus3generated mirrors, dedicated7methodregression suite and existing6service controls.",
+ "cause": "Normalized lexicalprefix accepts .claude-other/.claude.old/.claude2 and reaches self_heal before size/tailgates.",
+ "repair": "Require canonical propercomponentdescendant via commonpath plus baseinequality, within unchanged exception-to0 pruner boundary.",
+ "actual_verification": "Three original sibling assertion failures; current13methodsPASS(7new6old),0skips, including actual owned outside-symlink refusal. OriginalnewtestbytesunchangedRED/GREEN; onlyhook_runproductionASTchanged. No replay or fullsuite claim byRoot.",
+ "coverage": "CTX-TECH-STACK FACT005/NOTE005 maintained no-tooling Python exemption; direct meaningfulunitchecks, no inventedpercentage.",
+ "scope_limits": "No userhome/settings/transcript or globalenvironment mutation, native/host/provider/network/install execution. No ancestor/content-race/descriptor or universalOS containment promise. Oldadvanced source/runtime observations remain historical; current717source-onlyrecords have no positive_prunelibinput and stayseparate.",
+ "retained_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/author-delivery.json",
+   "sha256": "b319935f8f93440b75bfbe89c50689a803a0894f5ed989f72e3d863555825ba6",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\delivery.json",
+   "original_sha256": "b319935f8f93440b75bfbe89c50689a803a0894f5ed989f72e3d863555825ba6"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/independent-review.json",
+   "sha256": "de99c703e4b3b437d117aa27c711fab4a0b5f82dc4d8fe77d1cf0d9bc03c3fde",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-boundary-independent-review-46iaqn2s\\review.json",
+   "original_sha256": "de99c703e4b3b437d117aa27c711fab4a0b5f82dc4d8fe77d1cf0d9bc03c3fde"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/preservation.json",
+   "sha256": "201ae7c3d91c4e2f16c06ae3366639b7273ea7da7fdb5093c259cad560c36845",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\preservation.json",
+   "original_sha256": "201ae7c3d91c4e2f16c06ae3366639b7273ea7da7fdb5093c259cad560c36845"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/target-red/result.json",
+   "sha256": "f109c8725d8ab6215864a60bb2b037a80a32b3d33c9fbdc0058260332ccb499a",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\result.json",
+   "original_sha256": "f109c8725d8ab6215864a60bb2b037a80a32b3d33c9fbdc0058260332ccb499a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/target-red/named-results.json",
+   "sha256": "be7b7c8a84e8b0b2369ca84ecd8f213736f9485315069800872cb932bf6fe2c5",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\named-results.json",
+   "original_sha256": "be7b7c8a84e8b0b2369ca84ecd8f213736f9485315069800872cb932bf6fe2c5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/target-red/stderr.log.json",
+   "sha256": "397aaf8df64c4670585faeab50df29b308be9554f738c5ef49350916dd756f5d",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\stderr.log",
+   "original_sha256": "e828cae923b3d4f97d8087d1cc7855f3c9673857e7b07f903b9eee5d1a18a09b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/focused-green/result.json",
+   "sha256": "67f5e8730539cf2c26ee97c9c4e21a83f0f5832f9571a00338aa0f346c20d209",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\result.json",
+   "original_sha256": "67f5e8730539cf2c26ee97c9c4e21a83f0f5832f9571a00338aa0f346c20d209"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/focused-green/named-results.json",
+   "sha256": "77aff2319d22fc11b194fb8410efcb86bf6f6a8a386f0ffe8571f23d4281a406",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\named-results.json",
+   "original_sha256": "77aff2319d22fc11b194fb8410efcb86bf6f6a8a386f0ffe8571f23d4281a406"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/prune-boundary-fix-f262/focused-green/stderr.log.json",
+   "sha256": "97fa001b25a256a863b11a2b174bd50993f50747cfda31cec55b8a302468b96a",
+   "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\stderr.log",
+   "original_sha256": "b57e538d43e2fd72af88c27588553348fd07d6e38f1f41a8fb077a3436ae0c84"
+  }
+ ],
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

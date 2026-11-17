@@ -1,0 +1,132 @@
+{
+ "schema": "codearbiter.private-fix-delivery/1",
+ "state": "PRIVATE_PROPOSAL_NOT_CANONICAL",
+ "actor": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+ "actual_branch_after": "codex/state-contracts-prune-boundary",
+ "bug_origin": {
+  "observed": "Canonical string prefix admits .claude-other/.claude.old/.claude2 and reaches self_heal before size/tail checks.",
+  "expected": "Only proper canonical path-component descendants of the owned Claude home may proceed; no base-equality, sibling, outside or commonpath error.",
+  "repair": "Replace lexical startswith with commonpath equality plus base-inequality inside existing fail-open exception boundary. All later guards untouched."
+ },
+ "full_subjects": [
+  {
+   "destination": "core/pysrc/_prunelib.py",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidates\\core\\pysrc\\_prunelib.py",
+    "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+    "bytes": 58415
+   },
+   "preimage": {
+    "git_commit": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+    "git_oid": "ed0626c34ca98efecb4049f9321deb8bb263ace3",
+    "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "bytes": 58271
+   },
+   "git_index_oid": null
+  },
+  {
+   "destination": "plugins/ca/hooks/tests/test_prune_containment.py",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidates\\plugins\\ca\\hooks\\tests\\test_prune_containment.py",
+    "sha256": "8ebae3c0e6b0671d828e3c8bb195dfd495d63b3e8c5eb7f727037451cff6e251",
+    "bytes": 5293
+   },
+   "preimage": {
+    "absent_in_Git": true,
+    "absent_in_current_physical": true
+   },
+   "git_index_oid": null
+  }
+ ],
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\filemap.json",
+  "sha256": "b396cfb0e090d7eeaa2712e224bd5299d9e4a6f34a010245ad62837c4f3c59f3",
+  "bytes": 1173
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidate.patch",
+  "sha256": "412107727d3ccb2787b69e7808a313b3928ac9974eeedca0095be2117a21e756",
+  "bytes": 6106
+ },
+ "source_and_tool_preparation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\preparation.json",
+  "sha256": "9a0763e2ae7587d2c2583177b180fbf591c06d9ff246b4f9af31735292af4013",
+  "bytes": 36724
+ },
+ "RED": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\result.json",
+   "sha256": "f109c8725d8ab6215864a60bb2b037a80a32b3d33c9fbdc0058260332ccb499a",
+   "bytes": 24650
+  },
+  "named_results": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\named-results.json",
+   "sha256": "be7b7c8a84e8b0b2369ca84ecd8f213736f9485315069800872cb932bf6fe2c5",
+   "bytes": 913
+  },
+  "stdout": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\stdout.log",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  "stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\stderr.log",
+   "sha256": "e828cae923b3d4f97d8087d1cc7855f3c9673857e7b07f903b9eee5d1a18a09b",
+   "bytes": 3773
+  },
+  "actual_exit": 1,
+  "methods": 1,
+  "actual_assertion_failures": 3,
+  "errors": 0,
+  "seconds": 0.011330900015309453
+ },
+ "GREEN": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\result.json",
+   "sha256": "67f5e8730539cf2c26ee97c9c4e21a83f0f5832f9571a00338aa0f346c20d209",
+   "bytes": 24702
+  },
+  "named_results": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\named-results.json",
+   "sha256": "77aff2319d22fc11b194fb8410efcb86bf6f6a8a386f0ffe8571f23d4281a406",
+   "bytes": 4845
+  },
+  "stdout": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\stdout.log",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  "stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\stderr.log",
+   "sha256": "b57e538d43e2fd72af88c27588553348fd07d6e38f1f41a8fb077a3436ae0c84",
+   "bytes": 2190
+  },
+  "actual_exit": 0,
+  "methods": 13,
+  "new_methods": 7,
+  "preexisting_methods": 6,
+  "skips": 0,
+  "unit_seconds": 0.131133899994893,
+  "outer_seconds": 0.3433301000040956
+ },
+ "controller": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\run-check.py",
+  "sha256": "899e1af035d55c44c48dff23565d4b8b28a0321bc476c4f3caf2b035d80796ce",
+  "bytes": 4057
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\preservation.json",
+  "sha256": "201ae7c3d91c4e2f16c06ae3366639b7273ea7da7fdb5093c259cad560c36845",
+  "bytes": 795
+ },
+ "limits": [
+  "WindowsAMD64 CPython3.14.6 owned unit fixtures only; seven new methods and six unchanged existing service methods.",
+  "No actual user home/transcript/settings or parent/global environment mutation; child fixture helpers use owned private HOME/TEMP and restore their process environment.",
+  "No product subprocess/native/Go/Node/Pi/provider/API/network effects; child audit denied process/network effects. Source was imported only in isolated ordinary-Python unit scope.",
+  "Owned outside symlink case actually ran and passed on this Windows host; commonpath ValueError is an inert different-root/error seam, not cross-host qualification.",
+  "Canonical path-component admission is not descriptor/ancestor race freedom or universal OS containment. Later transcript publication/race/backup/threshold/state behavior remains unchanged.",
+  "No full pruning suite, full owner, stage/commit/CI/qualification/source-evidence admission or mirrors generated. Root alone integrates/reviews/generates and binds new committed epoch."
+ ]
+}
