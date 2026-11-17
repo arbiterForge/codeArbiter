@@ -1,0 +1,32 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Major program source assessment"
+  },
+  "inputs": {
+    "core/pysrc/_bashguardlib.py": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/git-enforce.py": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+    "core/pysrc/security-pass.py": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+    "core/surface/commands/override.md": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+    "core/surface/includes/security-gate-record.md": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+  },
+  "disposition_ids": [
+    "disposition:findings:W-F06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/source-assessment.json",
+      "sha256": "0638f66d8a88d750a15c3e22060165aa8dca4d955c9bc0e0cec8f99c1455825d"
+    }
+  ]
+}

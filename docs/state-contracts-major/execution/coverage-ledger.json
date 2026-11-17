@@ -67,34 +67,58 @@
    "evidence": []
   },
   "W-F05": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/W-F05-preserved.json",
+     "sha256": "2ab1c1477f67f0bed597d5b9bbe40da755c936da1eafc7e8df79cace2918e292"
+    }
+   ],
+   "candidate_contract_note": "Current initialization and repository documentation no longer assign persona injection to SessionStart, and accurately disclose active startup maintenance. This resolves the finite documentation contradiction, without claiming all startup effects or installed host acceptance."
   },
   "W-F06": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/W-F06-preserved.json",
+     "sha256": "b702ede9a123dc9f2debfa7bcab2d03bc2562ce0c723950bd9b712c9dfd8ecfd"
+    }
+   ],
+   "candidate_contract_note": "Current override instructions and shared PASS recording explicitly describe worktree plus complete staged diff and unrelated non-sensitive staged change invalidation; the source binding matches current repaired producers/consumers."
   },
   "W-F07": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/W-F07-preserved.json",
+     "sha256": "2e4ac6f589272af2f9366bc8300a69fdbdd4714c6231ca49f9650b61a18697fa"
+    }
+   ],
+   "candidate_contract_note": "Maintained watcher instructions expressly distinguish one model-independent detached gh process from its recurring CLI API refreshes; no claim of zero network polling remains."
   },
   "W-F08": {
    "owner": null,
@@ -689,35 +713,59 @@
    ]
   },
   "HOOK-B01": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
    "task_ids": [
     "HW-07",
     "HW-08",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/HOOK-B01-preserved.json",
+     "sha256": "90cc2eeb16353e411ba24ad896e03a67ee18e17020bff83990402d82946c5b0f"
+    }
+   ],
+   "candidate_contract_note": "Finite healthy stateless semantic-validator boundary supports later source-only PRESERVED consideration."
   },
   "HOOK-B02": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HW-16",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/HOOK-B02-preserved.json",
+     "sha256": "20ec63e2decad4613bc363e1cc5755f0e89f1d1e82e70964434fdca62422ce1a"
+    }
+   ],
+   "candidate_contract_note": "Finite healthy ownership split supports later source-only PRESERVED consideration; SessionStart is active."
   },
   "HOOK-B03": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/HOOK-B03-preserved.json",
+     "sha256": "5450b2e3b58dc6427974438d5989237bea02f7c9c73bc83b252a1d818f527f1c"
+    }
+   ],
+   "candidate_contract_note": "Producer and both enforcement owners bind exact root and complete staged candidate; genuine binary override additionally retains bounded binary-byte/mode binding. This is supported after actual reviewed repair, not by pretending the old binary-only branch was correct."
   },
   "HOOK-B04": {
    "owner": null,
@@ -735,14 +783,22 @@
    "evidence": []
   },
   "HOOK-B05": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "PRESERVE_AND_VERIFY_INTEROPERABILITY",
    "task_ids": [
     "HW-25",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/HOOK-B05-preserved.json",
+     "sha256": "42f6b4e8fc32decf269951b8a1ae3cfead15a8eac8e92a95857eece0970eb723"
+    }
+   ],
+   "candidate_contract_note": "Finite healthy Native Python optional-manifest decoder boundary supports later source-only PRESERVED consideration."
   },
   "SF01": {
    "owner": null,
