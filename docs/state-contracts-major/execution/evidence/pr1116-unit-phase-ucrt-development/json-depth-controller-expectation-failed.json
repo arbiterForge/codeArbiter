@@ -1,0 +1,8 @@
+{
+  "phase": "red",
+  "returncode": 0,
+  "seconds": 0.19670669999322854,
+  "source_sha256": "4fa88650ff2717d18d0a5867a98c737f49533019e5b59a08966460c3468f0de2",
+  "stderr_sha256": "1d047e8d1c6020bbe9c3c7368a6fbcebe46a6f921ed2db593d706d0813fbd19d",
+  "scope": "Actual bounded4097-byte malformed JSON; no subprocess producer/runtime scan."
+}

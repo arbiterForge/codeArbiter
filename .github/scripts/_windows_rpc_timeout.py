@@ -429,3 +429,124 @@ def retain_failure(process, expected_node: Path, destination: Path) -> str | Non
             return Path(stream.name).name
     except Exception:
         return None
+
+
+WARM_PHASES = frozenset(('provider-select','provider-directory','provider-inbox-directory',
+    'provider-hash-cdb','provider-hash-dbgeng','provider-hash-dbghelp',
+    'worker-prepare','worker-launch','worker-result'))
+WARM_FIELDS = frozenset(('schemaVersion','kind','status','profile','filesHashed','phase','failure','elapsedMs'))
+
+
+def _warm_valid(value, *, supervised=False):
+    fields=WARM_FIELDS | ({'timed_out','containment'} if supervised else set())
+    if (type(value) is not dict or set(value)!=fields or type(value['schemaVersion']) is not int
+            or value['schemaVersion']!=1
+            or value['kind']!=('protected-provider-warm-preflight' if supervised else 'protected-provider-warm-read')
+            or value['status'] not in ('complete','unavailable','deadline','refused')
+            or value['profile'] not in (None,'sdk-v1','inbox-v1')
+            or type(value['filesHashed']) is not int or not 0<=value['filesHashed']<=3
+            or type(value['phase']) is not str or value['phase'] not in WARM_PHASES
+            or value['failure'] not in (None,'deadline','missing','refused','os-error','unexpected','decode','transport')
+            or type(value['elapsedMs']) is not int or not 0<=value['elapsedMs']<=2**31-1):
+        return False
+    if supervised and (type(value['timed_out']) is not bool
+            or value['containment'] not in ('not-started','exited','terminated','unconfirmed')):
+        return False
+    return (value['profile'] in TOOL_FILES and value['filesHashed']==len(TOOL_FILES[value['profile']])
+            and value['failure'] is None and (not supervised or (not value['timed_out'] and value['containment']=='exited'))
+        ) if value['status']=='complete' else value['profile'] is None and value['filesHashed']==0
+
+
+def provider_warm_read():
+    """Hash-only child: no DbgEng import/load, target PID, handle or attachment."""
+    started=time.monotonic();progress={'phase':'provider-select'}
+    result={'schemaVersion':1,'kind':'protected-provider-warm-read','status':'unavailable',
+        'profile':None,'filesHashed':0,'phase':'provider-select','failure':None,'elapsedMs':0}
+    try:
+        if os.name!='nt':raise ValueError('Windows provider required')
+        profile,directory,hashes=_tool_profile(started+SECONDS,_progress=progress)
+        result.update(status='complete',profile=profile,filesHashed=len(hashes))
+        del hashes  # warming is not a cached identity or later authority
+    except Exception as error:
+        result['failure']=_failure_kind(error)
+    result.update(phase=progress['phase'],elapsedMs=min(2**31-1,max(0,round((time.monotonic()-started)*1000))))
+    return result
+
+
+def preflight_provider(home):
+    """Optional owned five-second warm read before an observed Windows target.
+
+    This result is diagnostic only. Failure/worker full hashes below are never
+    replaced by a cached digest, preflight result or readiness Boolean.
+    """
+    if os.name!='nt':return None
+    from _boundedproc import run
+    started=time.monotonic()
+    result={'schemaVersion':1,'kind':'protected-provider-warm-preflight','status':'unavailable',
+        'profile':None,'filesHashed':0,'phase':'worker-prepare','failure':None,'elapsedMs':0,
+        'timed_out':False,'containment':'not-started'}
+    try:
+        parent=_regular(Path(home).resolve(strict=True),directory=True)
+        with tempfile.TemporaryDirectory(prefix='ca-rpc-provider-warm-',dir=parent) as raw:
+            root=_regular(Path(raw).resolve(strict=True),directory=True)
+            environment=_worker_environment(root)
+            environment.update(PATH='',PYTHONNOUSERSITE='1',PYTHONDONTWRITEBYTECODE='1',PYTHONUTF8='1')
+            startup=subprocess.STARTUPINFO();startup.dwFlags|=subprocess.STARTF_USESHOWWINDOW;startup.wShowWindow=subprocess.SW_HIDE
+            result['phase']='worker-launch'
+            actual=run([sys.executable,'-I','-S','-B','-X','utf8',str(_regular(Path(__file__))),
+                '--preflight-provider'],timeout=SECONDS,cwd=root,env=environment,startupinfo=startup,
+                stdin=subprocess.DEVNULL,close_fds=True)
+            result.update(timed_out=actual.timed_out,containment=actual.containment)
+            if actual.timed_out:
+                result.update(status='deadline',failure='deadline')
+            elif actual.returncode!=0 or actual.containment!='exited':
+                result['failure']='transport'
+            else:
+                result['phase']='worker-result'
+                def pairs(rows):
+                    value={}
+                    for key,item in rows:
+                        if key in value:raise ValueError('duplicate closed field')
+                        value[key]=item
+                    return value
+                data=None
+                try:
+                    if len(actual.stdout.encode('utf8'))<=MAX_JSON:
+                        data=json.loads(actual.stdout,object_pairs_hook=pairs)
+                except (ValueError,UnicodeError,RecursionError):pass
+                if _warm_valid(data):
+                    result.update({key:data[key] for key in ('status','profile','filesHashed','phase','failure')})
+                else:result.update(status='refused',failure='decode')
+    except Exception as error:
+        if result['phase']=='worker-launch' and result['containment']=='not-started':
+            # An owner/transport exception after launch was attempted supplies
+            # no quiescence proof. The caller must not start a second target.
+            result['containment']='unconfirmed'
+        result.update(status='unavailable',profile=None,filesHashed=0,
+            failure=result['failure'] or _failure_kind(error))
+    result['elapsedMs']=min(2**31-1,max(0,round((time.monotonic()-started)*1000)))
+    return result
+
+
+def retain_preflight(record, pid, destination):
+    """Separate PID association, never an installed/native qualification input."""
+    try:
+        if not _warm_valid(record,supervised=True):return None
+        if pid is None:
+            if record['containment']!='unconfirmed':return None
+        elif type(pid) is not int or not 0<pid<=0xFFFFFFFF:return None
+        destination=Path(destination).absolute()
+        _regular(destination.parent,directory=True)
+        destination.mkdir(mode=0o700,exist_ok=True)
+        destination=_regular(destination,directory=True)
+        encoded=(json.dumps({**record,'processId':pid,'targetState':'not-spawned' if pid is None else 'spawned'},separators=(',',':'))+'\n').encode('utf8')
+        if len(encoded)>MAX_JSON:return None
+        with tempfile.NamedTemporaryFile(mode='wb',prefix='rpc-native-warmup-',suffix='.json',dir=destination,delete=False) as stream:
+            stream.write(encoded);return Path(stream.name).name
+    except Exception:return None
+
+
+if __name__=='__main__':
+    if sys.argv[1:]!=['--preflight-provider']:raise SystemExit(2)
+    # Exactly one closed public diagnostic; no hashes, paths or exception text.
+    print(json.dumps(provider_warm_read(),separators=(',',':')))

@@ -46,11 +46,11 @@ def git_for_windows_bash(git: str | None) -> Path | None:
         installation = parent.parent
     elif parent.name.casefold() == "bin":
         installation = parent.parent
-        if installation.name.casefold() in ("mingw32", "mingw64"):
+        if installation.name.casefold() in ("mingw32", "mingw64", "ucrt64"):
             installation = installation.parent
     elif (parent.name.casefold() == "git-core"
           and parent.parent.name.casefold() == "libexec"
-          and parent.parent.parent.name.casefold() in ("mingw32", "mingw64")):
+          and parent.parent.parent.name.casefold() in ("mingw32", "mingw64", "ucrt64")):
         installation = parent.parent.parent.parent
     else:
         return None
@@ -75,7 +75,7 @@ class BashDiscoveryTest(unittest.TestCase):
             bash = installation / "bin/bash.exe"
             bash.parent.mkdir(parents=True)
             bash.write_bytes(b"inert discovery fixture; never executed")
-            for architecture in ("mingw32", "mingw64"):
+            for architecture in ("mingw32", "mingw64", "ucrt64"):
                 git = installation / architecture / "libexec/git-core/git.exe"
                 git.parent.mkdir(parents=True)
                 git.write_bytes(b"inert internal Git entrypoint; never executed")
@@ -104,7 +104,7 @@ class BashDiscoveryTest(unittest.TestCase):
             bash = installation / "bin/bash.exe"
             bash.parent.mkdir(parents=True)
             bash.write_bytes(b"inert discovery fixture; never executed")
-            for relative in ("cmd/git.exe", "bin/git.exe", "mingw64/bin/git.exe", "mingw32/bin/git.exe"):
+            for relative in ("cmd/git.exe", "bin/git.exe", "mingw64/bin/git.exe", "mingw32/bin/git.exe", "ucrt64/bin/git.exe"):
                 git = installation / relative
                 git.parent.mkdir(parents=True, exist_ok=True)
                 git.write_bytes(b"inert Git entrypoint; never executed")

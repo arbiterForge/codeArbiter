@@ -14,6 +14,156 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 
 
+PROGRESS_LIMIT = 32768
+PROGRESS_PHASES = ('starting','source-before','runtime-before-enumeration','runtime-before-hashing',
+    'runtime-before-done','binding','imports','launch-identities','source-after',
+    'runtime-after-enumeration','runtime-after-hashing','runtime-after-done','encode','write','complete')
+
+
+def read_producer_progress(path):
+    """Read only the closed bounded last record, never stderr/source/env data."""
+    import stat
+    path=Path(path);parent=path.parent
+    parent_before=parent.stat();before=path.lstat()
+    require= lambda ok: None if ok else (_ for _ in ()).throw(ValueError('producer progress refused'))
+    require(parent.resolve(strict=True)==parent and not parent.is_symlink()
+        and stat.S_ISREG(before.st_mode) and not stat.S_ISLNK(before.st_mode)
+        and not getattr(before,'st_file_attributes',0)&0x400
+        and before.st_nlink==1 and 0<before.st_size<=PROGRESS_LIMIT)
+    fd=os.open(path,os.O_RDONLY|getattr(os,'O_BINARY',0)|getattr(os,'O_NOFOLLOW',0))
+    try:
+        opened=os.fstat(fd)
+        identity=lambda v:(v.st_dev,v.st_ino,v.st_mode,v.st_nlink,v.st_size,v.st_mtime_ns)
+        require(identity(before)==identity(opened))
+        with os.fdopen(fd,'rb',closefd=False) as stream:raw=stream.read(PROGRESS_LIMIT+1)
+        require(len(raw)==before.st_size and len(raw)<=PROGRESS_LIMIT
+            and identity(before)==identity(os.fstat(fd))==identity(path.lstat())
+            and (parent_before.st_dev,parent_before.st_ino)==(parent.stat().st_dev,parent.stat().st_ino))
+    finally:os.close(fd)
+    def pairs(rows):
+        result={}
+        for k,v in rows:
+            require(k not in result);result[k]=v
+        return result
+    try:value=json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:require(False))
+    except (ValueError,UnicodeError,RecursionError):raise ValueError('producer progress refused') from None
+    bounds={'elapsed_ms':60000,'runtime_ordinal':2,'discovered_files':32768,'completed_files':32768,
+            'completed_bytes':512<<20,'directories':2048,'entries':65536,'links':32768}
+    require(type(value) is dict and set(value)==set(bounds)|{'format','phase'}
+        and value['format']=='codearbiter.npm-producer-progress/1' and value['phase'] in PROGRESS_PHASES)
+    require(all(type(value[k]) is int and 0<=value[k]<=limit for k,limit in bounds.items()))
+    return value
+
+
+def producer_progress_report(path):
+    try:return {'status':'recorded','record':read_producer_progress(path)}
+    except FileNotFoundError:return {'status':'unavailable','record':None}
+    except (OSError,ValueError):return {'status':'refused','record':None}
+
+
+# Executed with -c, not as an imported helper: consumed-import closure never
+# gains an uncaptured helper __file__. Original embedded Go source is unchanged.
+PRODUCER_PROFILE_BOOTSTRAP = r"""
+import sys,os,time,json
+_ca_start=time.monotonic()
+_ca_state={'format':'codearbiter.npm-producer-progress/1','phase':'starting','elapsed_ms':0,
+ 'runtime_ordinal':0,'discovered_files':0,'completed_files':0,'completed_bytes':0,'directories':0,'entries':0,'links':0}
+_ca_runtime=None
+_ca_sources=0
+_ca_bucket=-1
+_ca_progress=CA_PROGRESS_PATH
+_ca_observer=CA_OBSERVER_PATH
+_ca_authority=CA_AUTHORITY_PATH
+def _ca_flush():
+ _ca_state['elapsed_ms']=int((time.monotonic()-_ca_start)*1000)
+ _raw=json.dumps(_ca_state,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+ if len(_raw)>32768:return
+ _temporary=_ca_progress+'.new'
+ _fd=os.open(_temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,'O_NOFOLLOW',0)|getattr(os,'O_BINARY',0),0o600)
+ with os.fdopen(_fd,'wb') as _stream:_stream.write(_raw)
+ os.replace(_temporary,_ca_progress)
+def _ca_phase(value):
+ _ca_state['phase']=value;_ca_flush()
+def _ca_profile(frame,event,arg):
+ global _ca_runtime,_ca_sources,_ca_bucket
+ if event not in ('call','return'):return
+ _name=frame.f_code.co_name
+ try:
+  if frame.f_code.co_filename==_ca_authority and _name=='_bind_commands':
+   if event=='call':_ca_phase('binding')
+   return
+  if frame.f_code.co_filename!=_ca_observer:return
+  if _name=='require' and event=='call' and _ca_runtime is not None and frame.f_back.f_code.co_name=='runtime_snapshot':
+   _local=frame.f_back.f_locals
+   _ca_state.update(directories=len(_local.get('directories',{})),entries=_local.get('population',0),
+    discovered_files=len(_local.get('paths',{})),links=len(_local.get('links',{})))
+   _new_bucket=_ca_state['entries']//128
+   if _new_bucket!=_ca_bucket:_ca_bucket=_new_bucket;_ca_flush()
+  elif _name=='runtime_snapshot':
+   if event=='call':
+    _ca_state['runtime_ordinal']+=1
+    _ca_runtime='runtime-before' if _ca_state['runtime_ordinal']==1 else 'runtime-after'
+    _ca_state.update(discovered_files=0,completed_files=0,completed_bytes=0,directories=0,entries=0,links=0)
+    _ca_bucket=-1;_ca_phase(_ca_runtime+'-enumeration')
+   elif isinstance(arg,tuple) and isinstance(arg[0],dict):
+    _value=arg[0]
+    _ca_state.update(discovered_files=len(_value['files']),completed_files=len(_value['files']),
+     completed_bytes=sum(v['bytes'] for v in _value['files'].values()),directories=len(_value['directories']),
+     entries=sum(len(v) for v in _value['directories'].values()),links=len(_value['links']))
+    _ca_phase(_ca_runtime+'-done');_ca_runtime=None
+  elif _name=='file_identity' and _ca_runtime is not None:
+   if event=='call' and _ca_state['phase']==_ca_runtime+'-enumeration':_ca_phase(_ca_runtime+'-hashing')
+   elif event=='return' and isinstance(arg,dict):
+    _ca_state['completed_files']+=1;_ca_state['completed_bytes']+=arg['bytes']
+    if _ca_state['completed_files']%128==0:_ca_flush()
+  elif _name=='source_snapshot' and event=='call':
+   _ca_sources+=1;_ca_phase('source-before' if _ca_sources==1 else 'source-after')
+  elif _name=='consumed_imports':
+   if event=='call':_ca_phase('imports')
+   elif isinstance(arg,list):_ca_phase('launch-identities')
+  elif _name=='encode_record':
+   if event=='call':_ca_phase('encode')
+   elif isinstance(arg,bytes):_ca_phase('write')
+  elif _name=='observe' and event=='return' and isinstance(arg,list):_ca_phase('complete')
+ except Exception:
+  pass  # passive capture cannot replace the original producer outcome
+try:_ca_flush()
+except Exception:pass
+sys.setprofile(_ca_profile)
+try:
+ exec(compile(CA_EXACT_SCRIPT,'<string>','exec'),globals(),globals())
+finally:
+ sys.setprofile(None)
+ try:_ca_flush()
+ except Exception:pass
+"""
+
+
+def producer_child_run(argv, **kwargs):
+    """Original child/deadline with passive bounded last-phase retention."""
+    original=list(argv);position=original.index('-c')+1
+    core=Path(original[position+1]).resolve(strict=True)
+    path=Path(kwargs['cwd']).resolve(strict=True)/'producer-progress.json'
+    if path.exists() or path.is_symlink():raise ValueError('fresh producer progress required')
+    script=PRODUCER_PROFILE_BOOTSTRAP
+    for key,value in {'CA_PROGRESS_PATH':str(path),'CA_OBSERVER_PATH':str(core.parents[1]/'.github/scripts/npm_binding_observation.py'),
+                      'CA_AUTHORITY_PATH':str(core/'_artifactauthoritylib.py'),'CA_EXACT_SCRIPT':original[position]}.items():
+        script=script.replace(key,repr(value))
+    observed=list(original);observed[position]=script
+    try:
+        result=subprocess.run(observed,**kwargs)
+    except subprocess.TimeoutExpired as error:
+        report=producer_progress_report(path)
+        error.producer_progress=report
+        # Keep class, timeout and original captured streams; no -c source,
+        # private paths or arbitrary child content enters the diagnostic text.
+        error.cmd=['original-python-npm-binding-producer']
+        error.add_note('producer_progress='+json.dumps(report,sort_keys=True,separators=(',',':')))
+        raise
+    result.args=original;result.producer_progress=producer_progress_report(path)
+    return result
+
+
 class ProducerBoundaryTests(unittest.TestCase):
     def test_original_python_producer_exports_opt_in_consumed_identities(self):
         source = (ROOT / 'core/artifacts/internal/evidence/launch_binding_limits_test.go').read_text()
@@ -44,7 +194,7 @@ class ProducerBoundaryTests(unittest.TestCase):
                        GITHUB_SHA='a'*40, GITHUB_RUN_ID='7', GITHUB_RUN_ATTEMPT='1',
                        GITHUB_JOB='artifact-native-build')
             platform = {'win32':'windows','darwin':'darwin','linux':'linux'}[sys.platform] + '/amd64'
-            result = subprocess.run([sys.executable,'-I','-S','-B','-X','utf8','-c',scripts[0],
+            result = producer_child_run([sys.executable,'-I','-S','-B','-X','utf8','-c',scripts[0],
                                      str(core),str(work),'0',platform], env=env, cwd=base,
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
             self.assertEqual(result.returncode, 0, result.stderr.decode('utf8', 'replace')[-2000:])
@@ -330,6 +480,57 @@ class IdentityLimitTests(unittest.TestCase):
             with mock.patch.object(launch.os,'open',side_effect=lambda *a,**k: (_ for _ in ()).throw(OSError('closed'))):
                 with self.assertRaises(OSError):launch.file_identity(path)
 
+
+
+    def test_actual_owned_timeout_retains_closed_last_producer_phase(self):
+        # One tiny ordinary Python child; no full runtime scan or product tool.
+        with tempfile.TemporaryDirectory(prefix='producer-phase-control-') as raw:
+            base=Path(raw).resolve();core=base/'repo/core/pysrc';core.mkdir(parents=True)
+            observer=base/'repo/.github/scripts/npm_binding_observation.py';observer.parent.mkdir(parents=True)
+            tiny='import time\ndef runtime_snapshot():\n time.sleep(2)\nruntime_snapshot()\n'
+            script='exec(compile('+repr(tiny)+','+repr(str(observer))+',"exec")) # PRIVATE_PHASE_CANARY'
+            env={k:v for k,v in os.environ.items() if k.upper() in {'SYSTEMROOT','WINDIR'}}
+            env.update(HOME=str(base),USERPROFILE=str(base),TEMP=str(base),TMP=str(base),PATH='')
+            with self.assertRaises(subprocess.TimeoutExpired) as caught:
+                producer_child_run([sys.executable,'-I','-S','-B','-X','utf8','-c',script,str(core)],
+                    cwd=base,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=0.25)
+            report=getattr(caught.exception,'producer_progress',None)
+            self.assertEqual(report and report['status'],'recorded','timeout discarded the last bounded producer phase')
+            self.assertEqual(report['record']['phase'],'runtime-before-enumeration')
+            self.assertEqual(report['record']['runtime_ordinal'],1)
+            self.assertEqual(caught.exception.timeout,0.25)
+            visible=str(caught.exception)+' '.join(getattr(caught.exception,'__notes__',[]))
+            self.assertNotIn('PRIVATE_PHASE_CANARY',visible)
+            self.assertNotIn(str(base),visible)
+            self.assertLessEqual(len(json.dumps(report).encode()),32768)
+
+    def test_closed_progress_refuses_extra_payload_malformed_links_and_budgets(self):
+        with tempfile.TemporaryDirectory(prefix='producer-progress-shape-') as raw:
+            root=Path(raw).resolve();path=root/'producer-progress.json'
+            good={'format':'codearbiter.npm-producer-progress/1','phase':'runtime-before-hashing',
+                  'elapsed_ms':20,'runtime_ordinal':1,'discovered_files':128,'completed_files':127,
+                  'completed_bytes':4096,'directories':2,'entries':130,'links':0}
+            path.write_text(json.dumps(good));self.assertEqual(read_producer_progress(path),good)
+            for value in ({**good,'payload':'PRIVATE_PROGRESS_CANARY'},{**good,'phase':'PRIVATE_PROGRESS_CANARY'},
+                          {**good,'completed_bytes':(512<<20)+1},{**good,'elapsed_ms':True},
+                          {**good,'completed_files':32769},{**good,'entries':65537},
+                          {**good,'directories':2049},{**good,'runtime_ordinal':3}):
+                path.write_text(json.dumps(value))
+                with self.subTest(shape=tuple(value)),self.assertRaises(ValueError):read_producer_progress(path)
+            for data in (b'{bad',b'{"format":1,"format":2}',b'x'*32769):
+                path.write_bytes(data)
+                with self.assertRaises(ValueError):read_producer_progress(path)
+            path.write_text(json.dumps(good));link=root/'second-name';os.link(path,link)
+            with self.assertRaises(ValueError):read_producer_progress(path)
+            link.unlink()
+
+    def test_progress_refusal_never_echoes_unknown_data_or_hides_timeout(self):
+        with tempfile.TemporaryDirectory(prefix='producer-progress-refusal-') as raw:
+            root=Path(raw).resolve();path=root/'producer-progress.json'
+            path.write_text('{"unknown":"PRIVATE_PROGRESS_CANARY"}')
+            self.assertEqual(producer_progress_report(path),{'status':'refused','record':None})
+            path.unlink()
+            self.assertEqual(producer_progress_report(path),{'status':'unavailable','record':None})
 
 class RuntimePortabilityTests(unittest.TestCase):
     @classmethod

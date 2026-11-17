@@ -693,18 +693,18 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
             with self.subTest(hooks=replacement),self.assertRaises(ValueError):
                 validate_native_npm_owner(text.replace(NPM_PURE_COMMAND,replacement,1))
 
-    def test_class_selection_is_disjoint_complete_and_preserves_all_eighteen_methods(self):
+    def test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods(self):
         path=Path(__file__).with_name('test_npm_binding_observation.py')
         tree=ast.parse(path.read_text(encoding='utf8'))
         classes={node.name:{m.name for m in node.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test_')}
                  for node in tree.body if isinstance(node,ast.ClassDef)}
         selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
         self.assertEqual(set(classes),selected|{'ProducerBoundaryTests'})
-        self.assertEqual(sum(len(classes[name]) for name in selected),17)
+        self.assertEqual(sum(len(classes[name]) for name in selected),20)
         self.assertEqual(len(classes['ProducerBoundaryTests']),1)
         self.assertEqual(NPM_PURE_COMMAND.split()[2:],['AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'])
         self.assertEqual(NPM_PRODUCER_COMMAND.split()[2:],['ProducerBoundaryTests'])
-        self.assertEqual(sum(map(len,classes.values())),18)
+        self.assertEqual(sum(map(len,classes.values())),21)
 
 
 def main() -> int:

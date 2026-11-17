@@ -1,0 +1,122 @@
+{
+  "format": "codearbiter.npm-producer-test-phase-retention/1",
+  "source_epoch": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "failed_checkout": "2b4db6f13ecf55e16baf85a7915e053ef8ff355d",
+  "checkout_join": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-npm-producer-checkout-join-z3ol14lu/join.json",
+    "sha256": "a76d0ef486c997b4914c18b822c990b115197ac10e5d5a497b0be825547ab643"
+  },
+  "subjects": [
+    {
+      "path": ".github/scripts/test_npm_binding_observation.py",
+      "preimage_sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+      "sha256": "bea548375447e80b380c015af7589ae399dcf1b96fe086b8a40c8c2547486f0b",
+      "bytes": 38689,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\candidate\\.github\\scripts\\test_npm_binding_observation.py",
+      "canonical_current_sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f"
+    },
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "preimage_sha256": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7",
+      "sha256": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc",
+      "bytes": 48828,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+      "canonical_current_sha256": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7"
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\implementation.patch",
+    "sha256": "38986ae07d9f2cb53f7604eaa12f9dd2845f75005764d9ae95994a17de8e196a"
+  },
+  "proper_RED": {
+    "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\progress-target-red.json",
+    "actual_subject": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\actual-target-red-test.py",
+    "sha256": "4e9b09814841c8ca14899968e03c3f13656749456d1a442710a0bc0a09150bb7",
+    "method": "IdentityLimitTests.test_actual_owned_timeout_retains_closed_last_producer_phase",
+    "tests": 1,
+    "failure": "timeout discarded the last bounded producer phase",
+    "unittest_seconds": 0.268,
+    "scope": "Pass-through original subprocess behavior; one owned tiny Python child actually reaches its0.25s control deadline, no full runtime replay."
+  },
+  "affected_GREEN": {
+    "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\final-pure-green.json",
+    "named_outcomes": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\named-outcomes.json",
+    "methods": 72,
+    "npm_pure": 20,
+    "partition_wiring": 52,
+    "unittest_seconds": 10.73,
+    "outer_seconds": 10.912734700017609,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "source_before_after_stable": true
+  },
+  "earlier_focused_GREEN": {
+    "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\progress-controls-green.json",
+    "methods": 6,
+    "unittest_seconds": 0.343
+  },
+  "preserved": {
+    "original_producer_test_assertions_AST_equal": true,
+    "original_producer_child_timeout_seconds": 30,
+    "original_embedded_Go_script_bytes_unchanged": true,
+    "original_stdout_binding_list_and_sidecar_assertions": true,
+    "production_observer_and_qualification_grammar_unchanged": true,
+    "prior17_pure_method_ASTs_unchanged": true,
+    "exact_owning_partition": {
+      "same_three_pure_classes": true,
+      "pure_methods": 20,
+      "producer_methods": 1,
+      "total": 21,
+      "same_Hook76_command_digest": true
+    },
+    "unchanged_sources": [
+      {
+        "path": ".github/scripts/npm_binding_observation.py",
+        "sha256": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+        "canonical_matches": true
+      },
+      {
+        "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+        "sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+        "canonical_matches": true
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+        "canonical_matches": false
+      }
+    ]
+  },
+  "diagnostic_contract": {
+    "format": "codearbiter.npm-producer-progress/1",
+    "max_bytes": 32768,
+    "phase_ids": 15,
+    "fields": [
+      "format",
+      "phase",
+      "elapsed_ms",
+      "runtime_ordinal",
+      "discovered_files",
+      "completed_files",
+      "completed_bytes",
+      "directories",
+      "entries",
+      "links"
+    ],
+    "capture": "Passive sys.setprofile in original isolated -c child; no function/process replacement and no extra imported helper __file__. Phase boundaries, every128 completed runtime identities and enumeration population buckets.",
+    "parent_timeout": "Still raises original TimeoutExpired class/timeout/captured streams; cmd diagnostic uses fixed label and safe JSON note. Only strict bounded last record is reported, malformed/unavailable becomes closed status and no reflected contents.",
+    "reader": "Regular single-link file, canonical parent, descriptor identity/mode/link-count/size/mtime stable, read cap+1, strict unique JSON keys/closed fields/finite phases/integer budgets.",
+    "limits": "Last successfully flushed phase/counters, not proof exact active syscall at timeout. Passive overhead explicit; recorder failure never replaces original child behavior."
+  },
+  "compile": {
+    "files": 2,
+    "method": "compile(bytes,path,exec), no cache writes"
+  },
+  "limits": [
+    "No full-runtime producer-unit replay was performed in this implementation increment. Prior single Windows3.14.6 passive diagnostic variant remains separate.",
+    "Actual original Linux3.14.10 phase/count/byte cause remains UNKNOWN pending next original CI failure capture. No optimization, hash cache, timeout increase or new Python install.",
+    "Only three new ordinary pure controls include one tiny real owned Python timeout. No native/Go/npm/Pi/provider/network execution, acquisitions or real authority effects.",
+    "Canonical/index/ref/marker/ledger/proof/status/remote stores unchanged; Root owns integration."
+  ]
+}

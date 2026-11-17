@@ -2924,6 +2924,7 @@ jobs:
           path: |
             ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-shutdown-*.json
             ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-native-exit-*.json
+            ${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-native-warmup-*.json
           if-no-files-found: ignore
           retention-days: 7
           overwrite: false
