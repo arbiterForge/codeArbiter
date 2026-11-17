@@ -342,7 +342,7 @@ export const CONFIGURATION_ENTRIES: readonly ConfigurationEntry[] = [
     defaultValue: "fresh random id",
     accepted: "1–64 characters from `A-Z`, `a-z`, `0-9`, `.`, `_`, or `-`",
     purpose: "Pins the run receipt directory name for reproducibility.",
-    caution: "Reusing an id publishes over that run's existing receipt directory; use a fresh id per run.",
+    caution: "An existing run id is refused before any receipt stream is truncated; inspect retained effects with receipt-only recovery or use an explicit new attempt with an unused id.",
   },
   {
     name: "FARM_MUTATION",

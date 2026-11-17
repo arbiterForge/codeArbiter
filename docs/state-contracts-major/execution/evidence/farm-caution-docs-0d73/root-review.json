@@ -1,0 +1,21 @@
+{
+ "schema": "codearbiter.direct-docs-review/1",
+ "reviewer": "/root",
+ "author": "/root/ci_repair_review",
+ "verdict": "PASS",
+ "findings": [],
+ "source_preimage": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "subject": {
+  "path": "site/scripts/generator/configuration-reference.ts",
+  "preimage_sha256": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+  "preimage_bytes": 16263,
+  "candidate": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-run-id-caution-docs-8io6pqfk\\configuration-reference.ts",
+   "sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+   "bytes": 16343
+  }
+ },
+ "assessment": "Exactly one public caution string corrected. Existing createRunDirectory exclusively creates the run directory and refuses existing identities before farm.ts initializes streams; farm guide266/428 requires receipt-only recovery and explicit new unused identities. Root confirmed the exact replacement leaves all other bytes/defaults/objects and executable control flow unchanged.",
+ "validation": "Literal source/reference consistency; no test or coverage phase for non-executable prose. No actual Farm invocation or new runtime acceptance claimed.",
+ "main_merge": "HELD_FOR_USER_TESTING"
+}
