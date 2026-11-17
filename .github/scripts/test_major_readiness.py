@@ -518,6 +518,98 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         positions = [surface.index(fragment) for fragment in fragments]
         self.assertEqual(positions, sorted(positions))
 
+    def test_recovery_runtime_observer_runs_the_unfiltered_source_entry_once(self):
+        import tempfile
+        import major_qualification_report as reports
+
+        profile = 'workflow-recovery-runtime-v1'
+        relative = '.github/scripts/test_workflow_recovery.py'
+        with tempfile.TemporaryDirectory(prefix='recovery-observer-fixture-') as owner_dir:
+            directory = Path(owner_dir)
+            repo = directory / 'repo'
+            fixture = repo / relative
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text('import unittest\nclass RecoveryRuntimeTest(unittest.TestCase):\n'
+                               '    def test_owned_fixture(self):\n        self.assertTrue(True)\n'
+                               'if __name__ == "__main__":\n    unittest.main()\n', encoding='utf-8')
+            output = directory / 'observed.json'
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(reports.os.environ, {'GITHUB_RUN_ID': '7'})):
+                result = reports.observe_python(repo, relative, [], output, directory / 'source-inputs', profile)
+                with self.assertRaisesRegex(ValueError, 'original unfiltered'):
+                    reports.observe_python(repo, relative, ['-k', 'fixture'], directory / 'selected.json',
+                                           directory / 'source-inputs', profile)
+            self.assertEqual(result, 0)
+            observed = json.loads(output.read_bytes())
+            self.assertEqual(observed['tests'], [{'id': f'python:{relative}:__main__.RecoveryRuntimeTest.test_owned_fixture',
+                                                  'result': 'passed'}])
+            self.assertEqual(observed['proof_kind'], 'source-test')
+
+    def test_recovery_runtime_reader_authenticates_only_the_original_nine_cases(self):
+        import major_qualification_report as reports
+
+        profile = reports.RECOVERY_RUNTIME_PROFILE
+        spec = reports.source_profile(profile)
+        job = dict(self.jobs[0], name=spec['job'])
+        source_bytes = b'owned recovery fixture'
+        members = [{'path': name, 'sha256': owner.digest(source_bytes), 'bytes': len(source_bytes), 'git_mode': '100644'}
+                   for name in sorted(spec['paths'])]
+        manifest = {'format': reports.SOURCE_FORMAT, 'profile': profile, 'source_commit': self.req['source_commit'],
+                    'source_tree': self.req['source_tree'], 'ci_run_id': 7, 'producer_job_name': job['name'],
+                    'workflow': '.github/workflows/ci.yml', 'members': members}
+        source_manifest = json.dumps(manifest).encode()
+        files = {row['path']: source_bytes for row in members}
+        files[reports.SOURCE_MANIFEST] = source_manifest
+        source = self.archive(spec['payload'], job, spec['upload'], files)
+        load = mock.Mock(return_value=source_bytes)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+        component = reports.RECOVERY_RUNTIME_COMPONENT
+        member = component['member']
+        capture_name = component['artifact_prefix'] + self.req['source_commit'] + '-7-3'
+        observed = dict(format=reports.OBSERVATION, source_commit=self.req['source_commit'],
+                        source_tree=self.req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
+                        proof_kind='source-test', producer='python-test-result-observer',
+                        argv=['python', spec['script']], exit_code=0,
+                        source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                                  manifest_sha256=owner.digest(source_manifest)),
+                        tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+        observed['tests'].append(dict(id='python:.github/scripts/test_workflow_recovery.py:__main__.RecoveryRuntimeTest.test_other',
+                                      result='passed'))
+        self.archive(capture_name, job, component['upload'], {member: json.dumps(observed).encode()})
+        receipt = reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+        self.assertEqual(receipt['schema'], 'codearbiter.workflow-recovery-runtime-component/1')
+        self.assertEqual(len(receipt['component']['selectors']), 9)
+        self.assertEqual(receipt['component']['job_id'], job['id'])
+        self.assertEqual(receipt['source_payload']['artifact_id'], source['id'])
+        self.assertEqual(set(receipt), {'schema', 'source_commit', 'source_tree', 'ci_run_id', 'component', 'source_payload'})
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [dict(job, run_attempt=2)], load)
+        with self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+            reports.workflow_recovery_runtime_evidence(self.req, dict(self.run, conclusion=None), self.artifacts, [job], load)
+        load.return_value = b'wrong immutable input'
+        with self.assertRaisesRegex(owner.ReadinessError, 'immutable source'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+
+    def test_recovery_ci_observes_runtime_once_and_keeps_the_native_owners(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        job = workflow.split('\n  workflow-recovery:\n', 1)[1].split('\n  version-bump:\n', 1)[0]
+        self.assertIn('permissions:\n      contents: read\n', job)
+        direct, observed = job.split('      - name: Test durable runtime and concurrency\n', 1)[1].split(
+            '      - name: Observe original durable runtime and concurrency tests\n', 1)
+        self.assertIn("if: matrix.os != 'windows-latest'", direct)
+        self.assertIn('run: python .github/scripts/test_workflow_recovery.py\n', direct)
+        self.assertIn("if: matrix.os == 'windows-latest'", observed.split('      - name:', 1)[0])
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery.py'), 2)
+        fragments = ('python tools/build-artifacts.py', 'observe-python', '-- .github/scripts/test_workflow_recovery.py',
+                     'run: python .github/scripts/test_workflow_recovery_cli.py',
+                     'run: python .github/scripts/test_workflow_recovery_hosts.py',
+                     'Retain original workflow recovery runtime observation')
+        self.assertEqual([job.count(fragment) for fragment in fragments], [1] * len(fragments))
+        self.assertEqual([job.index(fragment) for fragment in fragments], sorted(job.index(fragment) for fragment in fragments))
+
 
 class CompletedPopulationTest(unittest.TestCase):
     """Exercise the full frozen corpus after every metadata task says done."""

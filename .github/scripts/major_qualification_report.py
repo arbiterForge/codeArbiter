@@ -210,7 +210,7 @@ def source_checkout(repo, profile=None):
     fresh HEAD index forces a current-policy read; the real index is checked
     independently so staged or unmerged changes cannot disappear in that view.
     """
-    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS or profile in PYTHON_FINDING_PROFILES, "unknown source identity profile")
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES) or profile in TS_PROFILE_PATHS or profile in PYTHON_FINDING_PROFILES, "unknown source identity profile")
     source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
     tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
     before, actual_raw = _source_indices(repo, retain=True)
@@ -902,6 +902,7 @@ ROUTE_RELEASE_SOURCE = {
     "job": "[CHECK] | [CORE] | Generated surface",
     "payload": "major-source-inputs-route-release-state",
     "upload": "Upload release-state classifier source-test inputs",
+    "script": ROUTE_RELEASE_SOURCE_SCRIPT,
     "paths": frozenset((
         ROUTE_RELEASE_SOURCE_SCRIPT,
         ".github/major-qualification-policy.json",
@@ -922,6 +923,50 @@ ROUTE_RELEASE_SOURCE = {
         "plugins/ca-pi/package.json",
         "tools/command_compatibility.py",
     )),
+}
+RECOVERY_RUNTIME_PROFILE = "workflow-recovery-runtime-v1"
+RECOVERY_RUNTIME_SCRIPT = ".github/scripts/test_workflow_recovery.py"
+PYTHON_COMPONENT_PROFILES = {
+    ROUTE_RELEASE_SOURCE_PROFILE: ROUTE_RELEASE_SOURCE,
+    RECOVERY_RUNTIME_PROFILE: {
+        "job": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+        "payload": "major-source-inputs-workflow-recovery-runtime",
+        "upload": "Upload workflow recovery runtime source inputs",
+        "script": RECOVERY_RUNTIME_SCRIPT,
+        "paths": frozenset((
+            RECOVERY_RUNTIME_SCRIPT,
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_activationlib.py",
+            "core/pysrc/_arbiterstatelib.py",
+            "core/pysrc/_artifactauthoritylib.py",
+            "core/pysrc/_artifactlib.py",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_artifactpromptlib.py",
+            "core/pysrc/_gitexec.py",
+            "core/pysrc/_hooklib.py",
+            "core/pysrc/_modelib.py",
+            "core/pysrc/_pathnorm.py",
+            "core/pysrc/_protectedlib.py",
+            "core/pysrc/_protectedstatelib.py",
+            "core/pysrc/_replylib.py",
+            "core/pysrc/_scopelib.py",
+            "core/pysrc/_sensitivelib.py",
+            "core/pysrc/_taskboardlib.py",
+            "core/pysrc/_workflowrecoverylib.py",
+            "core/pysrc/_worklib.py",
+            "core/pysrc/hostapi.py",
+            "core/pysrc/taskwrite.py",
+            "core/pysrc/work.py",
+            "core/pysrc/workflow-recovery.py",
+            "core/workflow-recovery-contract.json",
+        )),
+    },
 }
 Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md',
  '.codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md',
@@ -2500,8 +2545,8 @@ def _q02_python_command(argv):
 
 
 def source_profile(profile=SOURCE_PROFILE):
-    if profile == ROUTE_RELEASE_SOURCE_PROFILE:
-        return ROUTE_RELEASE_SOURCE
+    if profile in PYTHON_COMPONENT_PROFILES:
+        return PYTHON_COMPONENT_PROFILES[profile]
     if profile in PYTHON_FINDING_PROFILES:
         return {key: value for key, value in PYTHON_FINDING_PROFILES[profile].items() if key != "roots"}
     if profile == SOURCE_PROFILE:
@@ -2612,7 +2657,7 @@ def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
     require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS or relative in HOOK_REVIEW_SOURCE_PATHS
-            or relative in ROUTE_RELEASE_SOURCE["paths"]
+            or any(relative in spec["paths"] for spec in PYTHON_COMPONENT_PROFILES.values())
             or any(relative in paths for paths in TS_PROFILE_PATHS.values())
             or any(relative in spec["paths"] for spec in PYTHON_FINDING_PROFILES.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
@@ -2641,7 +2686,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     elif profile == HOOK_REVIEW_SOURCE_PROFILE:
         _source_root_members(repo)
         _hook_review_members(repo)
-    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE): _source_root_members(repo)
+    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES): _source_root_members(repo)
     elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
@@ -2787,10 +2832,10 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     elif binding["profile"] == Q02_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "Q02 source profile requires original Python observer")
         _q02_python_command(observed.get("argv"))
-    elif binding["profile"] == ROUTE_RELEASE_SOURCE_PROFILE:
+    elif binding["profile"] in PYTHON_COMPONENT_PROFILES:
         require(observed.get("producer") == "python-test-result-observer"
-                and original_python_entrypoint(observed.get("argv"), ROUTE_RELEASE_SOURCE_SCRIPT),
-                "release-state profile requires original Python observer")
+                and original_python_entrypoint(observed.get("argv"), spec["script"]),
+                "component source profile requires original Python observer")
     elif binding["profile"] == SDK_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
         _sdk_python_command(observed.get("argv"))
@@ -2847,14 +2892,15 @@ def source_member_digest(rows):
 
 
 def source_finding_input_pins(cells, source, load):
-    pins = {}
-    for profile in source_finding_profiles(cells):
-        rows = []
-        for path in sorted(source_profile(profile)["paths"]):
-            raw = load(source, path)
-            rows.append({"path": path, "bytes": len(raw), "sha256": readiness.digest(raw)})
-        pins[profile] = source_member_digest(rows)
-    return pins
+    return {profile: source_profile_input_pin(profile, source, load) for profile in source_finding_profiles(cells)}
+
+
+def source_profile_input_pin(profile, source, load):
+    rows = []
+    for path in sorted(source_profile(profile)["paths"]):
+        raw = load(source, path)
+        rows.append({"path": path, "bytes": len(raw), "sha256": readiness.digest(raw)})
+    return source_member_digest(rows)
 
 
 def source_component_archive(archive, member, *, source_paths=None, shared=False):
@@ -2963,6 +3009,34 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     return rows, payloads
 
 
+RECOVERY_RUNTIME_COMPONENT = source_component(
+    RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
+    "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json", (
+        "RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "RecoveryRuntimeTest.test_every_declared_producer_captures_before_terminal_effect",
+        "RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ))
+
+
+def workflow_recovery_runtime_evidence(req, run, artifacts, jobs, load):
+    """Read the legacy/runtime component for HOOK-B04 and W-F04."""
+    readiness.validate_run(run, req)
+    readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0,
+                      "workflow recovery original run attempt missing")
+    pin = source_profile_input_pin(RECOVERY_RUNTIME_PROFILE, req["source_commit"], load)
+    component_req = {**req, "source_finding_inputs": {RECOVERY_RUNTIME_PROFILE: pin}}
+    evidence, payload = source_component_evidence(RECOVERY_RUNTIME_COMPONENT, component_req, run, artifacts, jobs)
+    return {"schema": "codearbiter.workflow-recovery-runtime-component/1",
+            "source_commit": req["source_commit"], "source_tree": req["source_tree"], "ci_run_id": req["ci_run_id"],
+            "component": evidence, "source_payload": payload}
+
+
 def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
@@ -2970,7 +3044,7 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     relative = script.relative_to(repo).as_posix()
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
-    source_profile(profile)
+    spec = source_profile(profile)
     if profile in PYTHON_FINDING_PROFILES:
         require(arguments == [] and source_payload is not None, "single-owner profile requires its original unfiltered command and payload")
         _finding_python_command([sys.executable, relative], profile)
@@ -2980,9 +3054,9 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     elif profile == Q02_SOURCE_PROFILE:
         require(relative in Q02_SOURCE_SCRIPTS and arguments == [] and source_payload is not None,
                 "Q02 source profile requires its original unfiltered Python entry point and payload")
-    elif profile == ROUTE_RELEASE_SOURCE_PROFILE:
-        require(relative == ROUTE_RELEASE_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
-                "release-state profile requires its original unfiltered Python entry point and payload")
+    elif profile in PYTHON_COMPONENT_PROFILES:
+        require(relative == spec["script"] and arguments == [] and source_payload is not None,
+                "component source profile requires its original unfiltered Python entry point and payload")
     elif profile == SDK_SOURCE_PROFILE:
         require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
                 "SDK source profile requires its original unfiltered Python entry point and payload")
@@ -3573,8 +3647,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
                 elif profile == SDK_SOURCE_PROFILE:
                     require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
-                elif profile == ROUTE_RELEASE_SOURCE_PROFILE:
-                    require(False, "release-state source observations require an independent original component")
+                elif profile in PYTHON_COMPONENT_PROFILES:
+                    require(False, "source component observations require independent original admission")
                 else:
                     if cell in TS_FINDING_RECIPES:
                         recipe = TS_FINDING_RECIPES[cell]
@@ -3732,7 +3806,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_PROFILE, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)
