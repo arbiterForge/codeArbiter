@@ -1,0 +1,25 @@
+{
+  "source": "48bf82eb83ec674ccd4a2cde4a0440a978d26a50",
+  "previous_source": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "previous_proof_sha256": "6b37c11d2a791f2f216955a3a407a7efa3bbbd9505064a564ea1a85b7f2326ee",
+  "trigger_sha256": "64cb046f73869f2913828ffb87190aa648a3e8cedc81e4d6fa461c8a85d98ffd",
+  "site_check_sha256": "d740d3d083b2030d57f221296180f68cc97e2e3ecf58f6b0ab071315e1867d71",
+  "unchanged_build_and_deploy_sha256": "acf69f27c984092df57a3082ef2e9154ee6cf7f2ba37c46053abe7dac7972a9c",
+  "frozen_row_hashes": {
+    "disposition:machines:C29": "b4e687d947c4325a51ebfc1478ab46f5f5efed0ed3aa5f0bc6d7add20032b460",
+    "disposition:transitions:C29:01": "fa80e6003942f274d8c91e7b5f42da0a42ccdc2b6e4e06142549bb7670a48922",
+    "disposition:transitions:C29:02": "8f94f11e0638bfc4f92bfdc4119b2e470930514feb11515c5c17774e27badedd",
+    "disposition:transitions:C29:03": "cc981d16d1f3965e59730cd71c1dac836b0263d382982d9bb8b3d8e16f525036",
+    "disposition:transitions:C29:04": "c5717f53bf1bd71c9c6f6d4647b9de3ec1a87b0bdd1582c9fda1cd77f615aa28",
+    "disposition:transitions:C29:05": "17f4b2367b04d77db79882f9e5fee5f37404f0a181026216afff1014b51bb7b4"
+  },
+  "clause_assessments": {
+    "disposition:machines:C29": "The Docs generator now retains original named outcomes for the program. Existing asynchronous triggering, build, and deployment declarations retain their scope.",
+    "disposition:transitions:C29:01": "Both PR and push filters include the new Docs observer and its tests. Concurrency, release completion and qualified-run selection remain the original declarations.",
+    "disposition:transitions:C29:02": "The site-check job retains the original audit and numeric coverage gate. It chooses one original coverage route and adds separate trusted-push artifact checks. Checkout has no persisted credentials and the job has read-only source and Actions access.",
+    "disposition:transitions:C29:03": "The exact build, browser, source-admission and Pages preparation declarations are byte-identical to the original evidence epoch.",
+    "disposition:transitions:C29:04": "The ordinary deployment eligibility and the main-only exact qualified-run promotion path are byte-identical to the original evidence epoch.",
+    "disposition:transitions:C29:05": "The original dependent Pages deployment and exact-tar readback declarations are byte-identical to the original evidence epoch."
+  },
+  "scope": "Source conformance in the recorded Docs workflow. Actual hosted execution is a separate evidence class."
+}
