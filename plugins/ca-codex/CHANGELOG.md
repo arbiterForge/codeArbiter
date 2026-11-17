@@ -10,6 +10,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Changed
 
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
 - Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.
 - Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
 - Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.

@@ -278,6 +278,7 @@ def pre_commit(root):
         expected = binary_override_binding(binary_candidate_binding(
             root, preserve_index=True))
         if (worktree_marker_binding(root) not in approved
+                or added.candidate not in approved
                 or expected is None or expected not in approved):
             block("H-09b", "No audited binary override is recorded for this exact staged "
                            "candidate. " + binary_security_recovery())

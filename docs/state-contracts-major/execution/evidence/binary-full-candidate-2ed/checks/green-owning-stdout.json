@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\green-owning.stdout",
+ "original_sha256": "82bf5b968d98ffbb2d8a5ca544e5f1b14b1a4342e73019ed1cf8913cb9f986f8",
+ "original_bytes": 94,
+ "utf8_text": "{\"tests\": 77, \"failures\": 0, \"errors\": 0, \"skips\": 1, \"elapsed_seconds\": 23.914703600021312}\r\n"
+}

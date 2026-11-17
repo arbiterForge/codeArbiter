@@ -5244,6 +5244,12 @@
       "same_status_history_replacements": 133,
       "remaining_planned_findings": 49,
       "record": "docs/state-contracts-major/execution/evidence/observer-wording-304/native-adoption/development.json"
+    },
+    "binary_full_candidate_fix": {
+      "controller_anchor": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "record": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/development.json",
+      "status": "LOCAL_REGRESSION_AND_INDEPENDENT_SECURITY_REVIEW_PASS",
+      "runtime_source_restamped": false
     }
   },
   "checkpoint_history": [

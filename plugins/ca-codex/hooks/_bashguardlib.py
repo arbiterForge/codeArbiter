@@ -2667,6 +2667,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         exact_binary = binary_candidate_binding(candidate_root, preserve_index=True)
         expected = binary_override_binding(exact_binary)
         if (worktree_marker_binding(candidate_root) not in approved
+                or binaries[0].candidate not in approved
                 or expected is None or expected not in approved):
             block("H-09b", "No audited binary override is recorded for this exact staged "
                            "candidate. " + recovery)

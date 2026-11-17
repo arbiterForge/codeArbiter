@@ -1,0 +1,10 @@
+{
+ "python": {
+  "path": "C:\\Python314\\python.exe",
+  "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+ },
+ "git": {
+  "path": "C:\\Program Files\\Git\\cmd\\git.exe",
+  "sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+ }
+}
