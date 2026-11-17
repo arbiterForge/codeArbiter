@@ -1,0 +1,306 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+ "kind": "conformance-check",
+ "result": "NOT_APPLICABLE",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal47-clause current Pi source/caller inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/hooks/pi-approval.py": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+  "plugins/ca-pi/tools/src/approval-dialog.ts": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+  "plugins/ca-pi/tools/src/approval-entry.ts": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+  "plugins/ca-pi/tools/src/compatibility.ts": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83"
+ },
+ "disposition_ids": [
+  "disposition:machines:S08",
+  "disposition:transitions:S08:01",
+  "disposition:transitions:S08:02",
+  "disposition:transitions:S08:03",
+  "disposition:transitions:S08:04",
+  "disposition:transitions:S08:05",
+  "disposition:transitions:S08:06",
+  "disposition:transitions:S08:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json",
+   "sha256": "f5e00c8018474f0ac90e62529aa59e94eba6e06009665435ecae8518affda102"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/source-bindings.json",
+   "sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S08",
+   "frozen_row_sha256": "ed5fdc1208658c31c922603cacaf5396f6bbd704a6153c4a42a36b429d9906e5",
+   "clause_ids": [
+    "disposition:transitions:S08:01",
+    "disposition:transitions:S08:02",
+    "disposition:transitions:S08:03",
+    "disposition:transitions:S08:04",
+    "disposition:transitions:S08:05",
+    "disposition:transitions:S08:06",
+    "disposition:transitions:S08:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "Every real owner guard/effect/retry clause separately mapped with explicit accepted/intake corrections. No nonexistent effect asserted. S03 analytical edit composite separately N/A; S08 scope only current1.5 optional unavailable. No machine runtime/task closure."
+  },
+  {
+   "cell": "disposition:transitions:S08:01",
+   "frozen_row_sha256": "0ef6aac706040f5dcbb0d1ddf83cf2cf19a990545a660ee96d1815004f0fb165",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:02",
+   "frozen_row_sha256": "9dac07df267d96662367aef79add35597ef3d0e83b92a285c44895aa816f7e5c",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [
+    "S08:02 analytical phrase-display claim is false in baseline/current: dialog shows artifact/kind/revision/normative hash and requests already armed reply; it does not display the phrase. No new UI feature inferred."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:03",
+   "frozen_row_sha256": "b570afd605fc27756626888d8f83322927e6343a7dbc616f17908fd97f1273f5",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:04",
+   "frozen_row_sha256": "96fc44d73ddcf1b975ba383d2dc5b91e3429d2edcd3a0a8f0ace8feb6ae4c352",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:05",
+   "frozen_row_sha256": "1cb1017839c741409353ddd5950af5ea60d64d33ed2c6d0967a148e539a134e8",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:06",
+   "frozen_row_sha256": "a83f3283f4a7ce33aaa5323437b1008aa87a04696163efe0db9be8fd3cd859c8",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:07",
+   "frozen_row_sha256": "1c74b2c629c632849faaf716d20709e26d67da6f78de946cab536404591d8cf1",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "semantic_assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actual owner behavior under accepted PROGRAM/ADR0043/0049 and Pi task criteria; no runtime, installed, model, human or task qualification.",
+ "limits": [
+  "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+  "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+  "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+  "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+  "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves."
+ ],
+ "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0",
+ "rationale": "Source supports ordinary host exclusively1.5.0, where optional artifact approval is unavailable; private entry requires legacy1.0.2. This exact current-host tuple is inapplicable, not a failed test relabel. Retained legacy guards/tests remain intact; ADR0043/PI-C01 leave ordinary progress and real parent effect permission independent."
+}

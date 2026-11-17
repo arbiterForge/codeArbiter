@@ -1,0 +1,315 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/includes/fresh-verification.md": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+  "core/surface/includes/harvest.md": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+  "core/surface/includes/security-gate-record.md": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+  "core/surface/includes/verification-boundary.md": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+  "core/surface/skills/commit-gate/SKILL.md": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-11",
+  "disposition:transitions:WF-11:01",
+  "disposition:transitions:WF-11:02",
+  "disposition:transitions:WF-11:03",
+  "disposition:transitions:WF-11:04",
+  "disposition:transitions:WF-11:05",
+  "disposition:transitions:WF-11:06",
+  "disposition:transitions:WF-11:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-11",
+   "frozen_row_sha256": "9df8344d4ceba6a2262e0c50d4e0e12712a8f59309ba0daeb88ded9a9f3c260f",
+   "clause_ids": [
+    "disposition:transitions:WF-11:01",
+    "disposition:transitions:WF-11:02",
+    "disposition:transitions:WF-11:03",
+    "disposition:transitions:WF-11:04",
+    "disposition:transitions:WF-11:05",
+    "disposition:transitions:WF-11:06",
+    "disposition:transitions:WF-11:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 16,
+     "end": 57,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "dd35b9330565d22060f73bc830a5d3de610bfdfc3d02806c9dadf605155a842e"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 59,
+     "end": 95,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a53ad8264ac3ac84730a77b282fa2f5b0c65930178d59c57b95fc24441fe92a3"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 97,
+     "end": 168,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "cf4660c3bf65c0eb77b4c3545acee5b81faeeb87d3948ad2e8628ff7ffe0abca"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 183,
+     "end": 202,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "e566d7ba4a62de3a08d2232917082918bea2899c75f610260551be6caa472d3f"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 204,
+     "end": 250,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "eb8c9bbefc3254c3e978185ef1ec481cffff23ce30b4e40268d8da1533184567"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 240,
+     "end": 278,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "485bc6f39cc1fa1d51ffa2fd31dcd2afaefe4142ef137857e693cc5d28a833fa"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 119,
+     "end": 175,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "a2f82feb254e1de528969e5b97a3b66bb8e8d124a328f4cd6a406367f882f404"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 280,
+     "end": 300,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "0db15d7796642340e8862d2190bf7dd63c7e1392a677ec0f2e99096a701c2bce"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 22,
+     "end": 26,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a6ae50ec3096cc66f41e089719e44117b5de4622c1c54c089d895fb7be7afe3c"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 292,
+     "end": 315,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "b84cb2527c899beed2441d0cba8d5eac496ef3461e95ff495583cd2f85a9911d"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:01",
+   "frozen_row_sha256": "09ef586966c796144be727b643b7a65bd3276d1610268787e7338624e4fd4617",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 16,
+     "end": 57,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "dd35b9330565d22060f73bc830a5d3de610bfdfc3d02806c9dadf605155a842e"
+    }
+   ],
+   "semantic_assessment": "Commitrequestrequiresactualsame-scopeexplicitgrant; carryclearumbrellagrantuntilrevoked/completed, notlooks-good/repositorytext. BeforemutationrecordHEAD/index/allpathbytesandselectsafe nonprotectedbranchwithoutreset/stash/discard/unrelatedtransfer.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:02",
+   "frozen_row_sha256": "611564c4ea41aeae5d7f3ee0c9873b5119059c558d90b02b3927ef06a1bc0e28",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 59,
+     "end": 95,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a53ad8264ac3ac84730a77b282fa2f5b0c65930178d59c57b95fc24441fe92a3"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    }
+   ],
+   "semantic_assessment": "Classifystagedsubjecttype/scope andsplitunrelatedtypes; explicitmigration/security/CIdeploytriggersselectmandatorygates. Applicablelocalproof/lint/types/secretsrequired, exactheadhostedownsfullcrossplatformchecks; declaredcommandnotpassingrun.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:03",
+   "frozen_row_sha256": "2cd5f8b6363c27dae9a1c798fe9c91b5ea755bd509415edf126260b2c5ff4e78",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 97,
+     "end": 168,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "cf4660c3bf65c0eb77b4c3545acee5b81faeeb87d3948ad2e8628ff7ffe0abca"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 183,
+     "end": 202,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "e566d7ba4a62de3a08d2232917082918bea2899c75f610260551be6caa472d3f"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    }
+   ],
+   "semantic_assessment": "Readactualcriterion/currentoutput; reuseapplicableproof. HTMLknowledgefreshnessadvisory; intersectmanagedv2claims/dependencies withstagedtrigger, inspectcompletebindingandtypedpreview/apply/readbackonlyownedfields. Legacyrefreshsimilarlyclaimscoped, unknownnotfakefresh.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:04",
+   "frozen_row_sha256": "cc3624fc8d5b7f8d11b11eb22193d6f5c03ef9b1973985aa786da0e467cf1a36",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 204,
+     "end": 250,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "eb8c9bbefc3254c3e978185ef1ec481cffff23ce30b4e40268d8da1533184567"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    }
+   ],
+   "semantic_assessment": "Readentirestagedcandidateandblockunexpectedsecret/stub/disabledtest/outofscopebytes. NarrowADR8board/nativework/provenancecolocationchecksidentity/contentnotbroadpathwaiver. GenuineindependentsecurityPASSmarkerbindscompletecandidate/worktree; blockunstagesaffectedonly.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:05",
+   "frozen_row_sha256": "bfa6f3f02c78da1800e6fbb9e04dbe0488c33f0bb07ab4585eac7ae16217465f",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 240,
+     "end": 278,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "485bc6f39cc1fa1d51ffa2fd31dcd2afaefe4142ef137857e693cc5d28a833fa"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 119,
+     "end": 175,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "a2f82feb254e1de528969e5b97a3b66bb8e8d124a328f4cd6a406367f882f404"
+    }
+   ],
+   "semantic_assessment": "Capturequalifyingset-asideatdiscoverythenexistingPhase7authorizedharvestbeforestaging. Exactselectedowner/origin/uncertaineffectreconcile/readback retained; reviewnewworkbytes/identity andexplicitstageonly/rescanallnewfiles. No automaticissuepublication.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:06",
+   "frozen_row_sha256": "6c63c630956390e689e68447a1827f1da268008f8304c05f7b33065427d6cc3b",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 280,
+     "end": 300,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "0db15d7796642340e8862d2190bf7dd63c7e1392a677ec0f2e99096a701c2bce"
+    }
+   ],
+   "semantic_assessment": "Conventionalmessage<=72/body/featfixCHANGELOGfooter andactualgatepass precedecommit. Retainactualresult; hookfailuremeansread/fix/restage/newcommit, neverautomaticamend.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:07",
+   "frozen_row_sha256": "a0eb7c184b147dd8d094347f4e20013625d22c7ab79494acdcb125fa2d386d10",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 22,
+     "end": 26,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a6ae50ec3096cc66f41e089719e44117b5de4622c1c54c089d895fb7be7afe3c"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 292,
+     "end": 315,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "b84cb2527c899beed2441d0cba8d5eac496ef3461e95ff495583cd2f85a9911d"
+    }
+   ],
+   "semantic_assessment": "Aftercommitcompareallpreflight/newpathbytes/status/indexagainstcontentbaseline; selectedpayloadnoresidue, unrelatedpreexistingbytespreserved, unexplainednewchangespreventclosure. ReportSHA/branch/files/actualgates; no merge/releaseauthorityinferred.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

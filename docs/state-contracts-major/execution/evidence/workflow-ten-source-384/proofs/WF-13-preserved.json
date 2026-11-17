@@ -1,0 +1,207 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/commands/watch.md": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+  "core/surface/skills/finishing-a-development-branch/SKILL.md": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-13",
+  "disposition:transitions:WF-13:01",
+  "disposition:transitions:WF-13:02",
+  "disposition:transitions:WF-13:03"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-13",
+   "frozen_row_sha256": "1fbef174d0ed7795e50a8b03224800220f580ad9c1dc259ba6ffc78296771ffe",
+   "clause_ids": [
+    "disposition:transitions:WF-13:01",
+    "disposition:transitions:WF-13:02",
+    "disposition:transitions:WF-13:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 14,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "fe32c36e084aaf7d3dcdb8a3215dd0ad3473d703fb1b841045db6694fb7df13e"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 74,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "da467cb60dafd137c5eea5192bba706254cdfd3261120f2c42e230cbf8ab79d6"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 250,
+     "end": 261,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "d369004e862eb3fb664c6267495c32575270c7fc08a8b1ab7304f2f8b790a55e"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 20,
+     "end": 24,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "91911b3139528dc1359f73d6b293cfb2edaa86aa16cc6ec9d171fa214345beba"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 68,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "5ab60cb90a61ff589e4e91ceb740a11fc3df426e844d7817d3dae6b863fc6029"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 88,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "e06f8239c1696dfc4a010f8f190c41c0f62fb896a4da2098bc329d0985931773"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "60c6a3cffbaeaad2c92023dcdf755389a749ca65048873b71a6a1cebf584e3c5"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 69,
+     "end": 72,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "c1cafdac8350c6e3ad4a159b9bbe126a9c597cb8d1d29b044a9ff1e29760c7b6"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:01",
+   "frozen_row_sha256": "6ed7986f8820233ad33a92c2499684f1bb60cf7b96a102622f733a60bcad9935",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 14,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "fe32c36e084aaf7d3dcdb8a3215dd0ad3473d703fb1b841045db6694fb7df13e"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 74,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "da467cb60dafd137c5eea5192bba706254cdfd3261120f2c42e230cbf8ab79d6"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 250,
+     "end": 261,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "d369004e862eb3fb664c6267495c32575270c7fc08a8b1ab7304f2f8b790a55e"
+    }
+   ],
+   "semantic_assessment": "ExplicitknownPRwatchorconfiguredactualopt-in, defaultoff/arbiterdormancy/authpreconditions preserved. Oneghwatchprocess internallyrefreshes; notserver-side/nonpolling, nomodeltimerloop. Actualcurrentheadchecksreadoncebeforeverdict.",
+   "intake_variances": [
+    "AcceptedHW18 correctsfalsebaselineprocess/pollingclaim; configuredlocaldefault10s issourcecitedgh2.93, notnewliveAPIverification. No watcherlaunchedhere."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:02",
+   "frozen_row_sha256": "f6da7a7b52ae5a0134709643a1f0fbb640db3cda3ad9c3d03f2a2c7c423f78f6",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 20,
+     "end": 24,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "91911b3139528dc1359f73d6b293cfb2edaa86aa16cc6ec9d171fa214345beba"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 68,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "5ab60cb90a61ff589e4e91ceb740a11fc3df426e844d7817d3dae6b863fc6029"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 88,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "e06f8239c1696dfc4a010f8f190c41c0f62fb896a4da2098bc329d0985931773"
+    }
+   ],
+   "semantic_assessment": "Observedredretrievesoriginalfailedlogsandusescanonicaldepthresolver; proposehasntrackededit, branchonlyunmergeablespikeunderitsauthority. Missingauth/stoppedwatch/cancelledchecksnevergreen; timeoutred. Watchalonegrantsnorepairpermission.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:03",
+   "frozen_row_sha256": "21892058a1693dfea8921837675d6606be1fc7b30c84576eede5e8b47bcf695d",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "60c6a3cffbaeaad2c92023dcdf755389a749ca65048873b71a6a1cebf584e3c5"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 69,
+     "end": 72,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "c1cafdac8350c6e3ad4a159b9bbe126a9c597cb8d1d29b044a9ff1e29760c7b6"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 88,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "e06f8239c1696dfc4a010f8f190c41c0f62fb896a4da2098bc329d0985931773"
+    }
+   ],
+   "semantic_assessment": "Currentcompleteexactheadgreenreportsandoffersmerge; watcherneverinvokesmerge. Cancelled/incomplete/currentheadmismatchnotgreenanddefaultbranchmergehardgatesremain.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

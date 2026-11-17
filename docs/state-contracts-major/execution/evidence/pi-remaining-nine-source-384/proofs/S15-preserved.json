@@ -1,0 +1,291 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+  "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+  "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+ },
+ "disposition_ids": [
+  "disposition:machines:S15",
+  "disposition:transitions:S15:01",
+  "disposition:transitions:S15:02",
+  "disposition:transitions:S15:03",
+  "disposition:transitions:S15:04",
+  "disposition:transitions:S15:05",
+  "disposition:transitions:S15:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S15",
+   "frozen_row_sha256": "6c95acc74121ae8c52fa0152de479f166a09ddf786fef973e7a09c2b6f59ee4b",
+   "clause_ids": [
+    "disposition:transitions:S15:01",
+    "disposition:transitions:S15:02",
+    "disposition:transitions:S15:03",
+    "disposition:transitions:S15:04",
+    "disposition:transitions:S15:05",
+    "disposition:transitions:S15:06"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 274,
+     "end": 329,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "49b29dcabbfaca60ef39a23fe0858bd32110eea7826ac0ace7dedf3231e0ae6e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 389,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b8fa120a3805110b76e08a73442c4c7877cd7b9b3923040ef78fc38be3dabb5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 405,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "7ad3e93722bac88fcd45b6158c85267c793abfb8c5422c39a146a65c2fc96590"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 315,
+     "end": 369,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "229884428fff56c4abd312edd39546fd53720ff655c83c7a199819d1fb605e30"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 212,
+     "end": 261,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dcfddec8df541508fbfc45250bf6d5c6b8fad807c69e30d1dd74ae6c078e5b6c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 405,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "37dfd2af914353fce808b2fc3642e2aacbc5fbab18d22b7d9d8b1e78b4ea0848"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 344,
+     "end": 346,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a59990486256131c6fc35384d408bd5f0ee69abde4e9cb86124197d682f05b31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 417,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4ca4268b8ef4f0f18dfb5ddc6e07ae19735c6d7b97d2347d09639ffb3ed9bc22"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 370,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d23a5012bf3e1ccd35b696532bb8b0e65173cda70a7bb5a4d6bdd7c7fb1adecd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 257,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "e1edf027a31a4cb01af628362ef6ba721cd2ecdc665eb5712edb5f8f593341ce"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 368,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dbc7fed5eb672ea381f505f8182bdd313778c5713321770d1d64b2f05732f6d2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 419,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "492fa14e6ae1cc2bd23f75fd74f3b715a96d757054313eeadecefd9260e40c30"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:01",
+   "frozen_row_sha256": "3edada9a6cc7fce012510e18d9193dccb86a13b84b01d11bf79fbe4d1b4b529e",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 274,
+     "end": 329,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "49b29dcabbfaca60ef39a23fe0858bd32110eea7826ac0ace7dedf3231e0ae6e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 389,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b8fa120a3805110b76e08a73442c4c7877cd7b9b3923040ef78fc38be3dabb5c"
+    }
+   ],
+   "semantic_assessment": "Read bounded sessionID/file identity before and after getEntries; reject mixed identity/cursor shape. Each range scans<=256 raw positions and extracts only valid assistant usage/timestamp/tokens/cost.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:02",
+   "frozen_row_sha256": "be5cdd010b6a2bc4b5684df71c6ba21ec109532abe15a348fc744d0d74135663",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 405,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "7ad3e93722bac88fcd45b6158c85267c793abfb8c5422c39a146a65c2fc96590"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 315,
+     "end": 369,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "229884428fff56c4abd312edd39546fd53720ff655c83c7a199819d1fb605e30"
+    }
+   ],
+   "semantic_assessment": "Submit session-key digest and exact scanStart/scanEnd/facts; cursor remains last acknowledged value until owning response proves acceptance. Actual bridge dispatch routes to shared pi_ledger_update.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:03",
+   "frozen_row_sha256": "35c7a8eeb1eeb2f27507cca2d99acca4b1f11c36892c89ab382bdd10fc1d1477",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 212,
+     "end": 261,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dcfddec8df541508fbfc45250bf6d5c6b8fad807c69e30d1dd74ae6c078e5b6c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 405,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "37dfd2af914353fce808b2fc3642e2aacbc5fbab18d22b7d9d8b1e78b4ea0848"
+    }
+   ],
+   "semantic_assessment": "Strict totals and integer acceptedThrough/highWater shape; acceptance requires statusok/exactscanEnd and highWater within observedentries. Advance to accepted highWater and emit only actual totals.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:04",
+   "frozen_row_sha256": "74730dc2349942b128a25b145a8fdec2422fe2a80da19d34e78b0128d3eea2a8",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 344,
+     "end": 346,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a59990486256131c6fc35384d408bd5f0ee69abde4e9cb86124197d682f05b31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 417,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4ca4268b8ef4f0f18dfb5ddc6e07ae19735c6d7b97d2347d09639ffb3ed9bc22"
+    }
+   ],
+   "semantic_assessment": "Throw/malformed/statusnotok/wrongack leaves last acknowledged cursor for retry; attempted delivery is never accepted. Frozen stable raw entries yield same session/range next request, not a persisted private snapshot.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:05",
+   "frozen_row_sha256": "4f8534e764c2c2f3c68a028849f5113de87f9a0340f3701a4fce8392f8bf770e",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 370,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d23a5012bf3e1ccd35b696532bb8b0e65173cda70a7bb5a4d6bdd7c7fb1adecd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 257,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "e1edf027a31a4cb01af628362ef6ba721cd2ecdc665eb5712edb5f8f593341ce"
+    }
+   ],
+   "semantic_assessment": "Optional maxRanges must be integer1..1024; after chosen number returns morePending if raw entries remain. Footer requests maxRanges1 and serializes subsequent refresh.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:06",
+   "frozen_row_sha256": "bfe3dfe0b8e01f712b8087cd9f0e5136aa24462941f49f2744a5de72a539cc15",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 368,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dbc7fed5eb672ea381f505f8182bdd313778c5713321770d1d64b2f05732f6d2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 419,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "492fa14e6ae1cc2bd23f75fd74f3b715a96d757054313eeadecefd9260e40c30"
+    }
+   ],
+   "semantic_assessment": "Invalid/mixed session identity, nonarray entries, or an invalid/out-of-range acknowledged cursor returns retryRequired:true without a fabricated snapshot. A stable valid empty session with entries=[] and acknowledgedCursor=-1 (and valid options) returns the unchanged cursor -1 and retryRequired:false without a snapshot. No final range means no usage snapshot is invented.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

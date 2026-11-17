@@ -1,0 +1,11 @@
+{
+  "result": "NATIVE_REBASELINE_APPLIED",
+  "artifact_id": "CTX-CODE-MAP",
+  "baseline": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+  "revision": 12,
+  "inspected_record": "COMP-047",
+  "statement": "Impact routing, native/platform matrices, package/cold-install checks, coverage, and merge readiness.",
+  "selected_record_unchanged_readback": true,
+  "operation": "Installed knowledge.py rebaseline code-map; typed read COMP-047 after write. No raw HTML model parsing/writing.",
+  "qualification": false
+}

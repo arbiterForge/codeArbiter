@@ -1,0 +1,245 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Codex /root/acceptance_security_review infra-author: exact25-clause C05-C10 source/baseline/caller assessment; healthy source-only proposal, C06 partial-spawn cleanup explicitly pending"
+ },
+ "inputs": {
+  ".github/scripts/coverage_union.py": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+  ".github/workflows/ci.yml": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C09",
+  "disposition:transitions:C09:01",
+  "disposition:transitions:C09:02"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/clause-inspection.json",
+   "sha256": "d596f289beda4dac2a82addbc95848d4038ed5f19242298e498e6a8bb2dbb4c1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/source-bindings.json",
+   "sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+   "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C09",
+   "frozen_row_sha256": "f54f32b54d544ac6ee16d5a31377be3a1f317f75a53743c02c14af7500d3cff0",
+   "clause_ids": [
+    "disposition:transitions:C09:01",
+    "disposition:transitions:C09:02",
+    "disposition:transitions:C09:03",
+    "disposition:transitions:C09:04",
+    "disposition:transitions:C09:05",
+    "disposition:transitions:C09:06"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 37,
+     "end": 104,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 282,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 25,
+     "end": 49,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2013,
+     "end": 2028,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2167,
+     "end": 2168,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2194,
+     "end": 2204,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 107,
+     "end": 145,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 216,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 285,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 107,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2073,
+     "end": 2094,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2300,
+     "end": 2321,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 321,
+     "end": 333,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 148,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 268,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 300,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+   ],
+   "semantic_assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+  },
+  {
+   "cell": "disposition:transitions:C09:01",
+   "frozen_row_sha256": "fd64743028586643d3c2f7524f5b7fccce92eb0457839b83ae39415635a26e65",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 37,
+     "end": 104,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 282,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+   ],
+   "semantic_assessment": "prepare requires supported host/output name and snapshot of a supported declared tree. snapshot derives tracked config/source paths from HEAD, validates exact supported Vitest include/exclude grammar, compares each declared file byte-for-byte with its committed blob and binds lockfile Vitest version and source digests; write_new uses exclusive output. The frozen dirty/unexpected guard means these declared inputs: the function does not enumerate arbitrary untracked files or prove a globally clean checkout. No stronger inventory or Windows junction guarantee is asserted.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:02",
+   "frozen_row_sha256": "478ac1b4592209c0d064b7c425d6f5379028dd41f3fc61263ba7f5b1a0b1a6b7",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 25,
+     "end": 49,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 282,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2013,
+     "end": 2028,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2167,
+     "end": 2168,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2194,
+     "end": 2204,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "semantic_assessment": "prepare --check recomputes the same complete declared snapshot and requires exact JSON equality to original provenance, then reads bounded blob/provenance and exclusively writes checked receipt containing both raw SHA256 digests. Changed declared source/config refuses, and an existing checked receipt cannot be silently rewritten. It binds output bytes without authenticating that tests passed or preventing forgery by a hostile writer.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  }
+ ],
+ "scope": {
+  "source_only": true,
+  "families": [
+   "C09"
+  ],
+  "complete_machine": true,
+  "inspected_all_literal_clauses": [
+   "disposition:transitions:C09:01",
+   "disposition:transitions:C09:02",
+   "disposition:transitions:C09:03",
+   "disposition:transitions:C09:04",
+   "disposition:transitions:C09:05",
+   "disposition:transitions:C09:06"
+  ],
+  "existing_advanced_rows_unchanged": [
+   "disposition:transitions:C09:03",
+   "disposition:transitions:C09:04",
+   "disposition:transitions:C09:05",
+   "disposition:transitions:C09:06"
+  ],
+  "intake_variances": [
+   {
+    "id": "C09-DECLARED-TRACKED-INVENTORY",
+    "cells": [
+     "C09:01",
+     "C09"
+    ],
+    "classification": "ANALYTICAL_INTAKE_SCOPE_CORRECTION",
+    "statement": "Dirty/missing/linked/unexpected input rejection applies to declared tracked config/source bytes and merge triples, not globally arbitrary untracked files. Snapshot does not enumerate new untracked TypeScript files or Windows reparse points beyond is_symlink. Preserve actual declared-inventory behavior; no broad clean-tree/hostile-FS guarantee or new membership feature invented."
+   }
+  ]
+ },
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+  "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution."
+ ]
+}

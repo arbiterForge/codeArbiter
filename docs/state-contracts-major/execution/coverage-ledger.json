@@ -1238,8 +1238,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-02-preserved.json",
+     "sha256": "cbbbee5797395e9e405a21bf2e3b0eefc0461b2e79ac6f19b57fe0ecba325e52"
+    }
+   ]
   },
   "WF-03": {
    "owner": "hooks-workflows",
@@ -1248,8 +1255,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-04": {
    "owner": "hooks-workflows",
@@ -1258,8 +1272,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-04-preserved.json",
+     "sha256": "e7b9f7483efb6994f00dfbbcbc1cf33c55f542f52709448a99d859a767c246c4"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05": {
    "owner": "hooks-workflows",
@@ -1269,8 +1291,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06": {
    "owner": "hooks-workflows",
@@ -1279,8 +1309,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07": {
    "owner": "hooks-workflows",
@@ -1289,8 +1327,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-08": {
    "owner": "hooks-workflows",
@@ -1318,8 +1364,16 @@
     "HW-20",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-09-preserved.json",
+     "sha256": "08f87c4da7e597976db55398adb892cdb26703af0f3b8b19712ef1a27c7359c1"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-10": {
    "owner": "hooks-workflows",
@@ -1328,8 +1382,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-10-preserved.json",
+     "sha256": "c696963635446a2fcdf3856f5399f7e3ff47280dde53619380b3f414e23cdaff"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11": {
    "owner": "hooks-workflows",
@@ -1341,8 +1403,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12": {
    "owner": "hooks-workflows",
@@ -1353,8 +1423,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-13": {
    "owner": "hooks-workflows",
@@ -1363,8 +1441,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-13-preserved.json",
+     "sha256": "f905baef49e0886bdc42e9812530fe7f7dc9685ca9f4d28af1b3825aca9e4a70"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-14": {
    "owner": "hooks-workflows",
@@ -1376,8 +1462,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+     "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-15": {
    "owner": "hooks-workflows",
@@ -4119,8 +4213,16 @@
     "PI-D02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S03-machine-preserved.json",
+     "sha256": "5c647f3cfcd0d249b688e64823d257ead3751be4c74bddc6ad0c2b3b17888eaa"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S04": {
    "owner": "pi",
@@ -4164,8 +4266,16 @@
    "task_ids": [
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S06-preserved.json",
+     "sha256": "226152a36237e7a6e647b7194b94218d872842f91e6b1d6a0d4d4a24cf8ae76c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07": {
    "owner": "pi",
@@ -4178,8 +4288,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S08": {
    "owner": "pi",
@@ -4188,8 +4306,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S09": {
    "owner": "pi",
@@ -4201,8 +4328,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10": {
    "owner": "pi",
@@ -4211,8 +4346,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S11": {
    "owner": "pi",
@@ -4221,8 +4364,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12": {
    "owner": "pi",
@@ -4238,8 +4389,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S13": {
    "owner": "pi",
@@ -4249,8 +4408,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S13-preserved.json",
+     "sha256": "bdd475d4bfe36e88380ae6dfd436337166419f0eedfd3d4c408dc0924d50f2d1"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14": {
    "owner": "pi",
@@ -4259,8 +4426,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15": {
    "owner": "pi",
@@ -4269,8 +4444,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S16": {
    "owner": "pi",
@@ -4295,8 +4478,16 @@
    "task_ids": [
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S17-preserved.json",
+     "sha256": "5f2e3cbc274e831c1874ec379380caa8e601a7961a8848e545f35ac9c2d57751"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S18": {
    "owner": "pi",
@@ -4307,8 +4498,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S18-preserved.json",
+     "sha256": "0e4988583bcfd86ef115ddbea6c5aef7ea94157a09f210b6788091b0ebd90f2f"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19": {
    "owner": "pi",
@@ -4317,8 +4516,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S20": {
    "owner": "pi",
@@ -4327,8 +4534,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S20-preserved.json",
+     "sha256": "f89cea9fa2bc3a63048bd374243609d30b9d7b2dcd3710b54b4a67729f3cccca"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S21": {
    "owner": "farm",
@@ -5597,8 +5812,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C05-preserved.json",
+     "sha256": "95864e155b40032e44d463c1ca73b92233bd6d65d6b3b28f45bdf85bf17ea3f0"
+    }
+   ]
   },
   "C06": {
    "owner": "release-and-tooling",
@@ -5606,8 +5828,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+     "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+   ]
   },
   "C07": {
    "owner": "release-and-tooling",
@@ -5616,8 +5845,15 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C07-preserved.json",
+     "sha256": "858ea2a6d2eed9de6c288fc8fed6fc6a76d30da07e2a6d4a53fd020d717e288a"
+    }
+   ]
   },
   "C08": {
    "owner": "release-and-tooling",
@@ -5625,8 +5861,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C08-preserved.json",
+     "sha256": "eeab233e30cb114d7b980c266d889a89da0870bbf789825db0c37cad2fdc4c3e"
+    }
+   ]
   },
   "C09": {
    "owner": "release-and-tooling",
@@ -5634,8 +5877,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+     "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+    }
+   ]
   },
   "C10": {
    "owner": "release-and-tooling",
@@ -5643,8 +5893,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+     "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+    }
+   ]
   },
   "C11": {
    "owner": "release-and-tooling",
@@ -6388,8 +6645,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-02-preserved.json",
+     "sha256": "cbbbee5797395e9e405a21bf2e3b0eefc0461b2e79ac6f19b57fe0ecba325e52"
+    }
+   ]
   },
   "WF-03:01": {
    "owner": "hooks-workflows",
@@ -6398,8 +6662,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:02": {
    "owner": "hooks-workflows",
@@ -6408,8 +6679,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:03": {
    "owner": "hooks-workflows",
@@ -6418,8 +6696,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:04": {
    "owner": "hooks-workflows",
@@ -6428,8 +6713,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:05": {
    "owner": "hooks-workflows",
@@ -6438,8 +6730,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:06": {
    "owner": "hooks-workflows",
@@ -6448,8 +6747,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-03:07": {
    "owner": "hooks-workflows",
@@ -6458,8 +6764,15 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/proofs/WF-03-preserved.json",
+     "sha256": "4b9c04a37f52ba724b38e8325b964862b62a9bd9e60eec08630d4974a3e17707"
+    }
+   ]
   },
   "WF-04:01": {
    "owner": "hooks-workflows",
@@ -6468,8 +6781,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-04-preserved.json",
+     "sha256": "e7b9f7483efb6994f00dfbbcbc1cf33c55f542f52709448a99d859a767c246c4"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-04:02": {
    "owner": "hooks-workflows",
@@ -6478,8 +6799,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-04-preserved.json",
+     "sha256": "e7b9f7483efb6994f00dfbbcbc1cf33c55f542f52709448a99d859a767c246c4"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-04:03": {
    "owner": "hooks-workflows",
@@ -6488,8 +6817,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-04-preserved.json",
+     "sha256": "e7b9f7483efb6994f00dfbbcbc1cf33c55f542f52709448a99d859a767c246c4"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-04:04": {
    "owner": "hooks-workflows",
@@ -6498,8 +6835,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-04-preserved.json",
+     "sha256": "e7b9f7483efb6994f00dfbbcbc1cf33c55f542f52709448a99d859a767c246c4"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:01": {
    "owner": "hooks-workflows",
@@ -6509,8 +6854,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:02": {
    "owner": "hooks-workflows",
@@ -6520,8 +6873,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:03": {
    "owner": "hooks-workflows",
@@ -6531,8 +6892,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:04": {
    "owner": "hooks-workflows",
@@ -6542,8 +6911,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:05": {
    "owner": "hooks-workflows",
@@ -6553,8 +6930,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-05:06": {
    "owner": "hooks-workflows",
@@ -6564,8 +6949,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-05-preserved.json",
+     "sha256": "d68129428642371c4b1d6584a94d68e99270069fc4088f88f2eb1ebe483e2521"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:01": {
    "owner": "hooks-workflows",
@@ -6574,8 +6967,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:02": {
    "owner": "hooks-workflows",
@@ -6584,8 +6985,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:03": {
    "owner": "hooks-workflows",
@@ -6594,8 +7003,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:04": {
    "owner": "hooks-workflows",
@@ -6604,8 +7021,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:05": {
    "owner": "hooks-workflows",
@@ -6614,8 +7039,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-06:06": {
    "owner": "hooks-workflows",
@@ -6624,8 +7057,16 @@
     "HW-13",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-06-preserved.json",
+     "sha256": "60978613334fd53867ecfa7a5dd284487cb24ec10ecd4ebd0bbd173d2640d97c"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:01": {
    "owner": "hooks-workflows",
@@ -6634,8 +7075,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:02": {
    "owner": "hooks-workflows",
@@ -6644,8 +7093,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:03": {
    "owner": "hooks-workflows",
@@ -6654,8 +7111,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:04": {
    "owner": "hooks-workflows",
@@ -6664,8 +7129,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:05": {
    "owner": "hooks-workflows",
@@ -6674,8 +7147,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:06": {
    "owner": "hooks-workflows",
@@ -6684,8 +7165,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-07:07": {
    "owner": "hooks-workflows",
@@ -6694,8 +7183,16 @@
     "HW-07",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-07-preserved.json",
+     "sha256": "052864cc0700fbef1b8b22d90eb9101f327dc5778bd5de2daf179676b11957ef"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-08:01": {
    "owner": "hooks-workflows",
@@ -6865,8 +7362,16 @@
     "HW-20",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-09-preserved.json",
+     "sha256": "08f87c4da7e597976db55398adb892cdb26703af0f3b8b19712ef1a27c7359c1"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-10:01": {
    "owner": "hooks-workflows",
@@ -6946,8 +7451,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:02": {
    "owner": "hooks-workflows",
@@ -6959,8 +7472,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:03": {
    "owner": "hooks-workflows",
@@ -6972,8 +7493,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:04": {
    "owner": "hooks-workflows",
@@ -6985,8 +7514,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:05": {
    "owner": "hooks-workflows",
@@ -6998,8 +7535,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:06": {
    "owner": "hooks-workflows",
@@ -7011,8 +7556,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-11:07": {
    "owner": "hooks-workflows",
@@ -7024,8 +7577,16 @@
     "HW-17",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-11-preserved.json",
+     "sha256": "16e6c122f4de4bcbaecb02d2f94122a20a8c2cdfbb82110f4375a5bb13fc747d"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:01": {
    "owner": "hooks-workflows",
@@ -7036,8 +7597,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:02": {
    "owner": "hooks-workflows",
@@ -7048,8 +7617,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:03": {
    "owner": "hooks-workflows",
@@ -7060,8 +7637,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:04": {
    "owner": "hooks-workflows",
@@ -7072,8 +7657,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:05": {
    "owner": "hooks-workflows",
@@ -7084,8 +7677,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-12:06": {
    "owner": "hooks-workflows",
@@ -7096,8 +7697,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-12-preserved.json",
+     "sha256": "736dd73076fe55cd58dfc1410935e04b03b1fd19346a2f25c8307f334bc6e2e3"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-13:01": {
    "owner": "hooks-workflows",
@@ -7106,8 +7715,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-13-preserved.json",
+     "sha256": "f905baef49e0886bdc42e9812530fe7f7dc9685ca9f4d28af1b3825aca9e4a70"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-13:02": {
    "owner": "hooks-workflows",
@@ -7116,8 +7733,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-13-preserved.json",
+     "sha256": "f905baef49e0886bdc42e9812530fe7f7dc9685ca9f4d28af1b3825aca9e4a70"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-13:03": {
    "owner": "hooks-workflows",
@@ -7126,8 +7751,16 @@
     "HW-18",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-13-preserved.json",
+     "sha256": "f905baef49e0886bdc42e9812530fe7f7dc9685ca9f4d28af1b3825aca9e4a70"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-14:01": {
    "owner": "hooks-workflows",
@@ -7139,8 +7772,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+     "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-14:02": {
    "owner": "hooks-workflows",
@@ -7152,8 +7793,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+     "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-14:03": {
    "owner": "hooks-workflows",
@@ -7165,8 +7814,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+     "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-14:04": {
    "owner": "hooks-workflows",
@@ -7178,8 +7835,16 @@
     "HW-14",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+     "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+   ],
+   "candidate_contract_note": "Source-only actualguidance/literalclause mapping andnamedacceptedHW/PROGRAM/ADR43deltas in docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json; no actualagent/task/runtimequalification."
   },
   "WF-15:01": {
    "owner": "hooks-workflows",
@@ -24043,8 +24708,17 @@
     "PI-D02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S03-03-analytical-composite-not-applicable.json",
+     "sha256": "899d3ab74868078d79d965c9134ea9eba5fd29f4b51fcb1ef359b2ae72cc5b99"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "analytical-baseline:S03:03:public-edit-persisted-hash-revision"
   },
   "S03:04": {
    "owner": "pi",
@@ -24732,8 +25406,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:02": {
    "owner": "pi",
@@ -24746,8 +25428,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:03": {
    "owner": "pi",
@@ -24760,8 +25450,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:04": {
    "owner": "pi",
@@ -24774,8 +25472,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:05": {
    "owner": "pi",
@@ -24788,8 +25494,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:06": {
    "owner": "pi",
@@ -24802,8 +25516,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:07": {
    "owner": "pi",
@@ -24816,8 +25538,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S07:08": {
    "owner": "pi",
@@ -24830,8 +25560,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+     "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S08:01": {
    "owner": "pi",
@@ -24840,8 +25578,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:02": {
    "owner": "pi",
@@ -24850,8 +25597,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:03": {
    "owner": "pi",
@@ -24860,8 +25616,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:04": {
    "owner": "pi",
@@ -24870,8 +25635,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:05": {
    "owner": "pi",
@@ -24880,8 +25654,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:06": {
    "owner": "pi",
@@ -24890,8 +25673,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S08:07": {
    "owner": "pi",
@@ -24900,8 +25692,17 @@
     "PI-C01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S08-current-host-not-applicable.json",
+     "sha256": "64d4bd7de11f67e27be556ab96847b0ffe7d0168ef79951d20711c539e217092"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification.",
+   "contract": "runtime-scope:S08:private-artifact-dialog:current-pi-1.5.0"
   },
   "S09:01": {
    "owner": "pi",
@@ -24913,8 +25714,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:02": {
    "owner": "pi",
@@ -24926,8 +25735,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:03": {
    "owner": "pi",
@@ -24939,8 +25756,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:04": {
    "owner": "pi",
@@ -24952,8 +25777,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:05": {
    "owner": "pi",
@@ -24965,8 +25798,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:06": {
    "owner": "pi",
@@ -24978,8 +25819,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:07": {
    "owner": "pi",
@@ -24991,8 +25840,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:08": {
    "owner": "pi",
@@ -25004,8 +25861,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:09": {
    "owner": "pi",
@@ -25017,8 +25882,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:10": {
    "owner": "pi",
@@ -25030,8 +25903,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S09:11": {
    "owner": "pi",
@@ -25043,8 +25924,16 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S09-preserved.json",
+     "sha256": "36198ac7788253fe78320cd490529409d4786db574f77fe5309695d9f65cec53"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:01": {
    "owner": "pi",
@@ -25053,8 +25942,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:02": {
    "owner": "pi",
@@ -25063,8 +25960,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:03": {
    "owner": "pi",
@@ -25073,8 +25978,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:04": {
    "owner": "pi",
@@ -25083,8 +25996,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:05": {
    "owner": "pi",
@@ -25093,8 +26014,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:06": {
    "owner": "pi",
@@ -25103,8 +26032,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S10:07": {
    "owner": "pi",
@@ -25113,8 +26050,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S10-preserved.json",
+     "sha256": "bbba5c35bde979cb23a1b46e02bf0062e0d5b338fc3d69535139aecd214ac109"
+    }
+   ],
+   "candidate_contract_note": "Source-only actual-current clauses and explicit accepted/intake variances are recorded in docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json. No runtime/task qualification."
   },
   "S11:01": {
    "owner": "pi",
@@ -25123,8 +26068,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:02": {
    "owner": "pi",
@@ -25133,8 +26086,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:03": {
    "owner": "pi",
@@ -25143,8 +26104,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:04": {
    "owner": "pi",
@@ -25153,8 +26122,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:05": {
    "owner": "pi",
@@ -25163,8 +26140,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:06": {
    "owner": "pi",
@@ -25173,8 +26158,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S11:07": {
    "owner": "pi",
@@ -25183,8 +26176,16 @@
     "PI-D03",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S11-preserved.json",
+     "sha256": "67b8727db6d6b471108b1ee48ff26a7bdd65225273c2b23703061149d538a5fe"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12:01": {
    "owner": "pi",
@@ -25200,8 +26201,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12:02": {
    "owner": "pi",
@@ -25217,8 +26226,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12:03": {
    "owner": "pi",
@@ -25234,8 +26251,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12:04": {
    "owner": "pi",
@@ -25251,8 +26276,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S12:05": {
    "owner": "pi",
@@ -25268,8 +26301,16 @@
     "PI-D07",
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S12-preserved.json",
+     "sha256": "58a7f85187ce243e30a531f89333a95f215a1c959b5a2c1cab4b1c98a8bb8134"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S13:01": {
    "owner": "pi",
@@ -25530,8 +26571,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:02": {
    "owner": "pi",
@@ -25540,8 +26589,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:03": {
    "owner": "pi",
@@ -25550,8 +26607,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:04": {
    "owner": "pi",
@@ -25560,8 +26625,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:05": {
    "owner": "pi",
@@ -25570,8 +26643,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:06": {
    "owner": "pi",
@@ -25580,8 +26661,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S14:07": {
    "owner": "pi",
@@ -25590,8 +26679,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S14-preserved.json",
+     "sha256": "af461ad463ccd99297edf3053bbc61e17bd833695f3acc66f6d54bdd57b931c9"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:01": {
    "owner": "pi",
@@ -25600,8 +26697,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:02": {
    "owner": "pi",
@@ -25610,8 +26715,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:03": {
    "owner": "pi",
@@ -25620,8 +26733,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:04": {
    "owner": "pi",
@@ -25630,8 +26751,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:05": {
    "owner": "pi",
@@ -25640,8 +26769,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S15:06": {
    "owner": "pi",
@@ -25650,8 +26787,16 @@
     "HW-14",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S15-preserved.json",
+     "sha256": "1182a0d4441ab7e2290cf12fdacd008e9dfc21aea7dec03d6f011a3a798d5196"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S16:01": {
    "owner": "pi",
@@ -25761,8 +26906,16 @@
    "task_ids": [
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S17-preserved.json",
+     "sha256": "5f2e3cbc274e831c1874ec379380caa8e601a7961a8848e545f35ac9c2d57751"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S17:02": {
    "owner": "pi",
@@ -25874,8 +27027,16 @@
    "task_ids": [
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S17-preserved.json",
+     "sha256": "5f2e3cbc274e831c1874ec379380caa8e601a7961a8848e545f35ac9c2d57751"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S17:07": {
    "owner": "pi",
@@ -25883,8 +27044,17 @@
    "task_ids": [
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "NOT_APPLICABLE",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S17-07-analytical-dedup-not-applicable.json",
+     "sha256": "6506f064a364efee57710e23e28b077de153626a4258c769596335e9e489dfb2"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification.",
+   "contract": "analytical-baseline:S17:07:confirmation-identity-cache-dedup"
   },
   "S18:01": {
    "owner": "pi",
@@ -25951,8 +27121,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S18-preserved.json",
+     "sha256": "0e4988583bcfd86ef115ddbea6c5aef7ea94157a09f210b6788091b0ebd90f2f"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S18:04": {
    "owner": "pi",
@@ -26073,8 +27251,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:02": {
    "owner": "pi",
@@ -26083,8 +27269,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:03": {
    "owner": "pi",
@@ -26093,8 +27287,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:04": {
    "owner": "pi",
@@ -26103,8 +27305,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:05": {
    "owner": "pi",
@@ -26113,8 +27323,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:06": {
    "owner": "pi",
@@ -26123,8 +27341,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:07": {
    "owner": "pi",
@@ -26133,8 +27359,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S19:08": {
    "owner": "pi",
@@ -26143,8 +27377,16 @@
     "PI-L02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S19-preserved.json",
+     "sha256": "e3677acacc1de19e53f0c474b7bccd4f118f063a7661f3693a416c8d77319169"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S20:01": {
    "owner": "pi",
@@ -26180,8 +27422,16 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/proofs/S20-preserved.json",
+     "sha256": "f89cea9fa2bc3a63048bd374243609d30b9d7b2dcd3710b54b4a67729f3cccca"
+    }
+   ],
+   "candidate_contract_note": "Actual source-only guard/effect/retry mapping and explicit intake/accepted deltas: docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json. No runtime/task/real-host qualification."
   },
   "S20:03": {
    "owner": "pi",
@@ -38363,8 +39613,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+     "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+   ]
   },
   "C06:02": {
    "owner": "release-and-tooling",
@@ -38372,8 +39629,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+     "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+   ]
   },
   "C06:03": {
    "owner": "release-and-tooling",
@@ -38381,8 +39645,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+     "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+   ]
   },
   "C06:04": {
    "owner": "release-and-tooling",
@@ -38390,8 +39661,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+     "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+   ]
   },
   "C07:01": {
    "owner": "release-and-tooling",
@@ -38400,8 +39678,15 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C07-preserved.json",
+     "sha256": "858ea2a6d2eed9de6c288fc8fed6fc6a76d30da07e2a6d4a53fd020d717e288a"
+    }
+   ]
   },
   "C07:02": {
    "owner": "release-and-tooling",
@@ -38410,8 +39695,15 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C07-preserved.json",
+     "sha256": "858ea2a6d2eed9de6c288fc8fed6fc6a76d30da07e2a6d4a53fd020d717e288a"
+    }
+   ]
   },
   "C07:03": {
    "owner": "release-and-tooling",
@@ -38420,8 +39712,15 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C07-preserved.json",
+     "sha256": "858ea2a6d2eed9de6c288fc8fed6fc6a76d30da07e2a6d4a53fd020d717e288a"
+    }
+   ]
   },
   "C07:04": {
    "owner": "release-and-tooling",
@@ -38430,8 +39729,15 @@
     "DIST-M01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+     "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C07-preserved.json",
+     "sha256": "858ea2a6d2eed9de6c288fc8fed6fc6a76d30da07e2a6d4a53fd020d717e288a"
+    }
+   ]
   },
   "C08:01": {
    "owner": "release-and-tooling",
@@ -38490,8 +39796,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+     "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+    }
+   ]
   },
   "C09:02": {
    "owner": "release-and-tooling",
@@ -38499,8 +39812,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+     "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+    }
+   ]
   },
   "C09:03": {
    "owner": "release-and-tooling",
@@ -38576,8 +39896,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+     "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+    }
+   ]
   },
   "C10:02": {
    "owner": "release-and-tooling",
@@ -38585,8 +39912,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+     "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+    }
+   ]
   },
   "C10:03": {
    "owner": "release-and-tooling",
@@ -38594,8 +39928,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+     "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+     "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+    }
+   ]
   },
   "C11:01": {
    "owner": "release-and-tooling",

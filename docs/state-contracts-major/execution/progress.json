@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "major/state-contracts",
-  "head": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "head": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-17T03:24:51.763081+00:00",
+  "recorded_at": "2026-11-17T04:51:31.895427+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -19,9 +19,9 @@
       {
         "owner": "integrator",
         "assigned_agent": "/root",
-        "branch": "codex/state-contracts-acceptance-bindings",
+        "branch": "codex/state-contracts-source-and-shard-cleanup",
         "worktree": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
-        "scope": "Sole canonical acceptance-binding, source-projection and reporting writer; peer actors own private Temp only."
+        "scope": "Sole canonical program source-conformance, CI repair, ledger and reporting writer; peers own private Temp only."
       }
     ],
     "rule": "One writer per canonical owner. Preserve unrelated source/audit/artifact/worktree bytes. Child PRs target major/state-contracts. PR1098 remains OPEN/DRAFT and held from main for user testing; publication is not authorized. Standing permission covers merged local and remote program child branches, excluding integration/main branches and all worktrees."
@@ -3926,12 +3926,12 @@
     }
   ],
   "next_actions": [
-    "Observe complete next exact-head CI/Docs after the verification-budget changes; no merge while any required failure remains.",
-    "Trace authoritative public/native Pi plan-edit persistence before declaring the S03 source gap a defect.",
-    "After green child merge, collect trusted normal integration reports and execute selected real-parent-TUI observation.",
-    "Continue remaining source/runtime/human/model obligations; keep1098/main held for user testing and publication unauthorized."
+    "Deliver the checked repair/source cohort through one child PR to major/state-contracts and follow exact-head CI.",
+    "After authorized child merge, observe its original trusted normal installed Pi parent TUI; original A713 failed before TUI launch.",
+    "Continue remaining source families and actual task/scenario/installed acceptance. Windows shutdown cause remains UNKNOWN.",
+    "Keep1098/main held for Brennon testing and publication unauthorized."
   ],
-  "delivery_state": "LOCAL_FOLLOWUP_C06_SOURCE_FIX_PENDING_REVIEW_1116_EXACT_HEAD_WATCH_PARENT1098_HELD",
+  "delivery_state": "LOCAL_REPAIRS_COMMITTED_SOURCE170_CURRENT_DOCS_READY_FOR_FINAL_STAGE_PARENT1098_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -5091,9 +5091,9 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-17T02:45:47.135778+00:00",
-    "controller_anchor": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
-    "integration_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+    "recorded_at": "2026-11-17T03:51:17.687941+00:00",
+    "controller_anchor": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "integration_commit": "a7135d312e6f861703f14683f422d1f435260ebf",
     "delivery_pr": 1116,
     "previous_child": {
       "pr": 1115,
@@ -5108,30 +5108,28 @@
         "failed": 0
       }
     },
-    "normal_ci_run": 43960617519,
-    "normal_docs_run": 43960617323,
-    "normal_docs_result": "FAILURE_PUBLIC_GITIGNORE_EXACT_BYTES_MISMATCH",
-    "normal_ci_result": "SUCCESS",
+    "normal_ci_run": 44011128754,
+    "normal_docs_run": 44011128725,
+    "normal_docs_result": "SUCCESS",
+    "normal_ci_result": "FAILURE_ORIGINAL_A713_COMBINED88PASS4FAIL10SKIP",
     "new_local_pages_fix": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
     "acceptance_feature_commit": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
-    "observations": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/development.json",
+    "observations": "docs/state-contracts-major/execution/evidence/source170-followup/development.json",
     "whole_baseline_planned": {
       "findings": 49,
-      "machines": 149,
-      "transitions": 555,
-      "total": 753,
-      "meaning": "Source accounting obligations, not demonstrated missing features."
+      "machines": 116,
+      "transitions": 418,
+      "total": 583,
+      "meaning": "Source accounting and qualification obligations; not demonstrated missing features."
     },
-    "current_staged_integrity": "Final staged source/ledger authentication is separate from this checkpoint; no acceptance claim.",
+    "current_staged_integrity": "Code-only original owner PASS105frozen1407records489APPLICABLE918STALE; prior source170 prospective PASS1577/659/918 and strict259. Final source13 current stage pending separate original owner.",
     "native_component_recipes": 40,
     "source_disposition_change": {
-      "machines": 4,
-      "transitions": 25,
-      "result": "SOURCE_ONLY_PRESERVED",
-      "strict_source_total": 89,
-      "retained_existing_Pi_rows": 24,
-      "S03_pending": "Durable edit-state integration unproven",
-      "runtime_epoch_renewal": false
+      "cells": 170,
+      "machines": 33,
+      "transitions": 137,
+      "PRESERVED": 160,
+      "NOT_APPLICABLE": 10
     },
     "task_status_promotion": false,
     "runtime_epoch_renewal": false,
@@ -5139,17 +5137,15 @@
     "publication": "NOT_AUTHORIZED",
     "framework_report_fix_commit": "4875171e1a03a41bd06b0d18154be2650efae19c",
     "current_child_original": {
-      "head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
-      "CI_run": 44002348079,
-      "Docs_run": 44002348145,
-      "known_primary_failures": [
-        "Linuxamd64 original unit30s",
-        "Linuxarm64 original unit30s",
-        "Windows Pi coverage original overfull journal5s"
-      ],
-      "all_three_Pi_adapter_jobs": "PASS",
-      "successful_Windows_diagnostics": "Nine actual closed warmups completed:3 SDK files hashed,409msfirst then56-61ms. One same-PID native sidecar captured11threads. This establishes diagnostic execution only; oldPID7040 cause remainsUNKNOWN.",
-      "complete_exact_head_status": "Sole watcher retains terminal result separately; no whole-qualification claim."
+      "head": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+      "state": "MERGED",
+      "merge_commit": "a7135d312e6f861703f14683f422d1f435260ebf",
+      "CI": 44006510110,
+      "Docs": 44006509924,
+      "complete_results": "SUCCESS",
+      "passed": 92,
+      "skipped": 8,
+      "failed": 0
     },
     "actual_HW15_local_cases": 1,
     "actual_HW26_abrupt_local_cases": 1,
@@ -5213,33 +5209,23 @@
       }
     },
     "pending_child": {
-      "branch": "codex/state-contracts-acceptance-bindings",
-      "delivery_pr": 1116,
-      "folded_implementation_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
-      "observations": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/development.json",
-      "runtime_executed": false,
-      "task_status_promotion": false
+      "branch": "codex/state-contracts-source-and-shard-cleanup",
+      "delivery_pr": null,
+      "target": "major/state-contracts",
+      "main_merge": "HELD_FOR_USER_TESTING"
     },
     "next_private_followup": {
       "branch": "codex/state-contracts-source-and-shard-cleanup",
-      "observations": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/development.json",
-      "current_canonical_PLANNED": 753,
-      "unadopted_private_source_proposals": 114,
-      "unadopted_proposed_PLANNED": 639,
-      "local_checks": {
-        "proper_named_target_RED": true,
-        "new_controls": 4,
-        "new_GREEN": 4,
-        "focused_total_PASS": 13,
-        "focused_original": 9,
-        "original_real_four_child_case_PASS": 1,
-        "original_real_four_child_case_seconds": 1.879,
-        "tiny_fixture_effects_once": 4,
-        "fixture_outcomes": "4pass+1deliberate supported skip; outercase no skip"
-      },
+      "delivery_pr": null,
+      "code_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+      "observations": "docs/state-contracts-major/execution/evidence/source170-followup/development.json",
+      "canonical_PLANNED": 583,
       "task_status_promotion": false,
-      "runtime_epoch_renewal": false
-    }
+      "runtime_epoch_renewal": false,
+      "source13_revalidated_cells": 13
+    },
+    "native_shutdown": "Original4260 cause unknown; diagnostic-loss repair passes focused/inert checks, not a Node exit fix.",
+    "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_IN_INTEGRATION_RUNTIME_QUALIFICATION_SEPARATE"
   },
   "checkpoint_history": [
     {
@@ -6229,6 +6215,160 @@
           "observations": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/development.json",
           "runtime_executed": false,
           "task_status_promotion": false
+        }
+      }
+    },
+    {
+      "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+      "superseded_live_checkpoint": {
+        "recorded_at": "2026-11-17T02:45:47.135778+00:00",
+        "controller_anchor": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+        "integration_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+        "delivery_pr": 1116,
+        "previous_child": {
+          "pr": 1115,
+          "state": "MERGED",
+          "exact_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "merge_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+          "ci_run": 43954090117,
+          "docs_run": 43954091033,
+          "checks": {
+            "successful": 92,
+            "expected_skipped": 8,
+            "failed": 0
+          }
+        },
+        "normal_ci_run": 43960617519,
+        "normal_docs_run": 43960617323,
+        "normal_docs_result": "FAILURE_PUBLIC_GITIGNORE_EXACT_BYTES_MISMATCH",
+        "normal_ci_result": "SUCCESS",
+        "new_local_pages_fix": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+        "acceptance_feature_commit": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
+        "observations": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/development.json",
+        "whole_baseline_planned": {
+          "findings": 49,
+          "machines": 149,
+          "transitions": 555,
+          "total": 753,
+          "meaning": "Source accounting obligations, not demonstrated missing features."
+        },
+        "current_staged_integrity": "Final staged source/ledger authentication is separate from this checkpoint; no acceptance claim.",
+        "native_component_recipes": 40,
+        "source_disposition_change": {
+          "machines": 4,
+          "transitions": 25,
+          "result": "SOURCE_ONLY_PRESERVED",
+          "strict_source_total": 89,
+          "retained_existing_Pi_rows": 24,
+          "S03_pending": "Durable edit-state integration unproven",
+          "runtime_epoch_renewal": false
+        },
+        "task_status_promotion": false,
+        "runtime_epoch_renewal": false,
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "framework_report_fix_commit": "4875171e1a03a41bd06b0d18154be2650efae19c",
+        "current_child_original": {
+          "head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+          "CI_run": 44002348079,
+          "Docs_run": 44002348145,
+          "known_primary_failures": [
+            "Linuxamd64 original unit30s",
+            "Linuxarm64 original unit30s",
+            "Windows Pi coverage original overfull journal5s"
+          ],
+          "all_three_Pi_adapter_jobs": "PASS",
+          "successful_Windows_diagnostics": "Nine actual closed warmups completed:3 SDK files hashed,409msfirst then56-61ms. One same-PID native sidecar captured11threads. This establishes diagnostic execution only; oldPID7040 cause remainsUNKNOWN.",
+          "complete_exact_head_status": "Sole watcher retains terminal result separately; no whole-qualification claim."
+        },
+        "actual_HW15_local_cases": 1,
+        "actual_HW26_abrupt_local_cases": 1,
+        "local_corrective_observations": {
+          "unit_diagnostics": {
+            "proper_tiny_owned_timeout_RED": 1,
+            "new_controls": 3,
+            "pure_npm_plus_partition_passed": 72,
+            "seconds": 10.73,
+            "canonical_partition_after_Pi_fold_passed": 52,
+            "canonical_partition_seconds": 0.128,
+            "pure_method_ownership": 20,
+            "full_runtime_unit_ownership": 1
+          },
+          "ucrt": {
+            "proper_RED_methods": 4,
+            "proper_RED_failing_subcases": 2,
+            "GREEN_methods": 9,
+            "GREEN_original_real_shell_methods": 5,
+            "GREEN_seconds": 10.225,
+            "local_actual_UCRT_install_exercised": false
+          },
+          "native_preflight": {
+            "author_affected": 18,
+            "author_seconds": 0.685,
+            "Root_missing_directory_RED": 1,
+            "Root_final_class_PASS": 15,
+            "Root_final_seconds": 0.46
+          },
+          "verification_phase_budgets": {
+            "unit_verification_seconds": 120,
+            "original_unit_seconds": 30,
+            "rationale": "The verification now hashes two full runtime inventories. Actual Linux last-flushed progress reached required hashing at29.4/30.0seconds. This is a finite verification budget change, not a demonstrated production hash defect or exact syscall diagnosis.",
+            "journal_fixture_hook_seconds": 60,
+            "journal_body_seconds": 5,
+            "journal_rationale": "Move original4097-file preparation to separately bounded beforeEach for its exact existing test title. Retain both original assertions and explicit5second scan body. Original Windows failure did not retain inner phase; setup cause is not claimed.",
+            "local_checks": {
+              "python_full_original_producer_plus_pure": {
+                "passed": 21,
+                "failed": 0,
+                "skipped": 0,
+                "unittest_seconds": 16.19
+              },
+              "unchanged_wiring_owner": {
+                "passed": 3,
+                "failed": 0,
+                "skipped": 0,
+                "unittest_seconds": 0.036
+              },
+              "journal": {
+                "total": 20,
+                "passed": 19,
+                "existing_windows_privilege_skip": 1,
+                "failed": 0,
+                "coverage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+                "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+              }
+            },
+            "production_RPC_seconds": 30,
+            "parallel_hashing_or_cache": false
+          }
+        },
+        "pending_child": {
+          "branch": "codex/state-contracts-acceptance-bindings",
+          "delivery_pr": 1116,
+          "folded_implementation_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+          "observations": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/development.json",
+          "runtime_executed": false,
+          "task_status_promotion": false
+        },
+        "next_private_followup": {
+          "branch": "codex/state-contracts-source-and-shard-cleanup",
+          "observations": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/development.json",
+          "current_canonical_PLANNED": 753,
+          "unadopted_private_source_proposals": 114,
+          "unadopted_proposed_PLANNED": 639,
+          "local_checks": {
+            "proper_named_target_RED": true,
+            "new_controls": 4,
+            "new_GREEN": 4,
+            "focused_total_PASS": 13,
+            "focused_original": 9,
+            "original_real_four_child_case_PASS": 1,
+            "original_real_four_child_case_seconds": 1.879,
+            "tiny_fixture_effects_once": 4,
+            "fixture_outcomes": "4pass+1deliberate supported skip; outercase no skip"
+          },
+          "task_status_promotion": false,
+          "runtime_epoch_renewal": false
         }
       }
     }

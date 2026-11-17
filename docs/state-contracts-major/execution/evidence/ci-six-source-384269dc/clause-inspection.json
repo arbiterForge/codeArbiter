@@ -1,0 +1,1729 @@
+{
+ "schema": "codearbiter.ci-six-clause-inspection/1",
+ "actor": "/root/acceptance_security_review acting infra-author (author, not independent reviewer of this proposal)",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "clause_count": 25,
+ "families": [
+  "C05",
+  "C06",
+  "C07",
+  "C08",
+  "C09",
+  "C10"
+ ],
+ "source_bindings_sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79",
+ "rows": [
+  {
+   "cell": "disposition:transitions:C05:01",
+   "frozen_row_sha256": "87183815540c4c760285d4ee4e57f9147fe65061c69fa74636610ee39361c195",
+   "frozen_baseline": {
+    "from_state": "declared",
+    "from": "declared",
+    "event": "parse suite arguments",
+    "guard": "unique existing suite paths and valid timeout/interpreter",
+    "to": "running",
+    "effects": "Launch bounded concurrent child interpreters.",
+    "failure_retry": "Duplicate/missing paths or invalid invocation fail before execution.",
+    "source": [
+     {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "symbol": "parse",
+      "lines": [
+       29,
+       52
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+     }
+    ],
+    "transition_id": "C05:01"
+   },
+   "current_status": "TESTED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "parse retains declaration order, interpreter-env applies to following scripts, nonempty unique lexical script paths must be files. Current main additionally checks finite positive timeout and available interpreters before constructing the pool. Up to min(suites,max(2,cpu_count)) inherited-environment direct children are scheduled. Interpreter/timeout validation is a previously implemented strengthening, not a new test result or new feature in this packet.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 27,
+     "end": 55,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 93,
+     "end": 107,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1192,
+     "end": 1206,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "symbol": "parse",
+     "lines": [
+      29,
+      52
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C05:02",
+   "frozen_row_sha256": "3de7482c73a0d6dbeedac7524d10cf1dd333e32c6c1dc75f0bde7a4f4648336e",
+   "frozen_baseline": {
+    "from_state": "running",
+    "from": "running",
+    "event": "child exits within deadline",
+    "guard": "process output available",
+    "to": "exited",
+    "effects": "Capture stdout/stderr and return code; print grouped outputs after collection.",
+    "failure_retry": "A zero exit alone is insufficient proof.",
+    "source": [
+     {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "symbol": "run",
+      "lines": [
+       55,
+       68
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+     }
+    ],
+    "transition_id": "C05:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Each direct Popen child writes combined stdout/stderr to an owned TemporaryFile; wait completion precedes seek/read/decode replacement and actual return code. Pool.map is fully collected before grouped output. This preserves inherited environment and unbounded log-size behavior; it does not promise credential isolation, an output byte cap or child-tree settlement.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 58,
+     "end": 71,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 105,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "symbol": "run",
+     "lines": [
+      55,
+      68
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C05:03",
+   "frozen_row_sha256": "e0f518bd0bd5dbde15e7c7ef8b440eb487647f6b2881f330c7aea3c5f8e7f3a6",
+   "frozen_baseline": {
+    "from_state": "running",
+    "from": "running",
+    "event": "timeout expires",
+    "guard": "per-child timeout exceeded",
+    "to": "timed out",
+    "effects": "Subprocess helper terminates the direct child and collects timeout diagnostic.",
+    "failure_retry": "Not a declared process-tree kill; timeout rejects the suite.",
+    "source": [
+     {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "symbol": "run",
+      "lines": [
+       55,
+       68
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+     }
+    ],
+    "transition_id": "C05:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "TimeoutExpired kills and waits only its direct child, produces code -1 and appends timeout diagnostic. Nonzero fails problems and the group. No process-tree containment, bounded post-kill wait or descendant quiescence is inferred.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 58,
+     "end": 80,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 109,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "symbol": "run",
+     "lines": [
+      55,
+      68
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C05:04",
+   "frozen_row_sha256": "284d24b484eb36053291ab0d5535161053cc628fc5343bba281d4b74d92d90c0",
+   "frozen_baseline": {
+    "from_state": "exited",
+    "from": "exited",
+    "event": "output observation check",
+    "guard": "exit zero, a positive observed Ran count, accepted final count and OK marker",
+    "to": "suite verified",
+    "effects": "Record observed execution rather than treating empty success as tests run.",
+    "failure_retry": "Missing/contradictory/zero-test output fails.",
+    "source": [
+     {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "symbol": "problems",
+      "lines": [
+       71,
+       80
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+     }
+    ],
+    "transition_id": "C05:04"
+   },
+   "current_status": "TESTED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exit zero is necessary but insufficient. Every observed Ran count must be positive and have exactly one subsequent OK verdict before any next summary; FAILED, missing, extra, misordered or zero-count summaries reject. This strengthens the pinned last-count/any-OK parser under the already retained C05 correction, while preserving ordinary skip/expected-failure OK summaries. Existing TESTED row and evidence remain untouched.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 27,
+     "end": 29,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 74,
+     "end": 90,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "symbol": "problems",
+     "lines": [
+      71,
+      80
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C05:05",
+   "frozen_row_sha256": "be9a3912d862d4afb561a51fb977484def8ff71124ba412ba0783ac74d1e7af7",
+   "frozen_baseline": {
+    "from_state": "all suite results settled",
+    "from": "all suite results settled",
+    "event": "group join",
+    "guard": "every suite observation verified",
+    "to": "group complete",
+    "effects": "Return success after all children are collected.",
+    "failure_retry": "Any error returns nonzero after reporting each result; rerun explicitly.",
+    "source": [
+     {
+      "path": ".github/scripts/run_concurrent_suites.py",
+      "symbol": "main",
+      "lines": [
+       83,
+       103
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+     }
+    ],
+    "transition_id": "C05:05"
+   },
+   "current_status": "TESTED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Collect every pool result, group each original script output and list every returned observation failure. Return 1 if any returned result fails, otherwise 0. Explicit rerun is caller-owned. This settled-results join does not claim cleanup after an unrelated Popen exception before results exist.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 93,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "symbol": "main",
+     "lines": [
+      83,
+      103
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_concurrent_suites.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:01",
+   "frozen_row_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+   "frozen_baseline": {
+    "from_state": "undiscovered",
+    "from": "undiscovered",
+    "event": "discover and partition",
+    "guard": "nonempty unique actual test inventory; shard count within 1..32",
+    "to": "partitioned",
+    "effects": "Group by fixture class, use weights only for scheduling, create nonempty disjoint plan and digest.",
+    "failure_retry": "Invalid inventory/weights/partition fails; weights cannot remove tests.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "partition",
+      "lines": [
+       78,
+       106
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "discover imports the real suite and refuses loader errors/empty inventory. partition admits integer 1..32, nonempty unique actual test IDs and enough fixture classes; sorts indivisible class groups by finite measured scheduling cost, assigns all cases and proves complete disjoint nonempty membership. Weights do not select tests. group_indexes selects disjoint job-local indexes; plan_digest binds ordered membership with SHA256. Normal CI explicitly chooses all four.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 35,
+     "end": 107,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 157,
+     "end": 166,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 396,
+     "end": 418,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1300,
+     "end": 1308,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "symbol": "partition",
+     "lines": [
+      78,
+      106
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:02",
+   "frozen_row_sha256": "349fffed5fad871f9d8ec2cab349e8287d8bb6d1f6f4ee818bbcf49e59d0df39",
+   "frozen_baseline": {
+    "from_state": "partitioned",
+    "from": "partitioned",
+    "event": "run-all",
+    "guard": "valid plan",
+    "to": "running shards",
+    "effects": "Run up to four child shards with common deadline and plan identity.",
+    "failure_retry": "Spawn/deadline failures kill direct children and make the run fail; no broad process-tree guarantee.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "run_all",
+      "lines": [
+       185,
+       238
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PENDING_SOURCE_GAP",
+   "assessment": "PENDING SOURCE GAP: for the declared CI four-shard caller, run_all uses one common wait deadline after its launch loop and kills/waits timed-out direct children. A later Popen spawn exception has no try/finally around earlier successful launches; it exits before the wait loop and does not attempt their cleanup. The pinned source has the same missing branch, so the audit statement that spawn failures kill direct children overstates baseline. This is not N/A and does not justify a source-only PRESERVED outcome. Bounded diagnosis follows separately before any implementation.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 311,
+     "end": 358,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1300,
+     "end": 1314,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "symbol": "run_all",
+     "lines": [
+      185,
+      238
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:03",
+   "frozen_row_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+   "frozen_baseline": {
+    "from_state": "running shards",
+    "from": "running shards",
+    "event": "child executes selected tests",
+    "guard": "selection matches actual discoverable tests",
+    "to": "observed shards",
+    "effects": "Collect per-test outcomes/timings and exclusive JSON observation.",
+    "failure_retry": "wasSuccessful, testsRun, selected population and non-vacuous execution are checked; skips/expected failures do not supply missing substantive execution.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "main",
+      "lines": [
+       241,
+       290
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Each child rediscovers/partitions actual inventory, validates index, runs exactly its selected TestSuite with TimedResult, and records each actual start/stop outcome and duration. passed requires wasSuccessful, testsRun equal selected and strictly more executions than skip plus expectedFailure. Optional timing destination is exclusive create. Native-only skips remain legitimate; a wholly unexercised shard is refused. This is source behavior, not a current test observation.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 110,
+     "end": 154,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 414,
+     "end": 445,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "symbol": "main",
+     "lines": [
+      241,
+      290
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:04",
+   "frozen_row_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+   "frozen_baseline": {
+    "from_state": "observed shards",
+    "from": "observed shards",
+    "event": "coverage join",
+    "guard": "same plan digest, every selected test appears exactly once, all required outcomes pass",
+    "to": "exact pass",
+    "effects": "Return success and timings.",
+    "failure_retry": "Missing, duplicate, foreign or failing observation rejects; no averaging over missing shards.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "coverage_problems",
+      "lines": [
+       168,
+       182
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "coverage_problems refuses any child nonzero/missing report, conflicting or wrong plan digest, duplicate/missing/foreign selected IDs and any passed field not true. Expected IDs come from actual selected shard populations. Current opt-in retention additionally checks exact four named observations against original timing rows, stable source/native candidate and actual argv, then writes raw bytes exclusively with bundle descriptor last. The successful join makes no promise about the unhandled spawn-failure branch in C06:02; malformed data may throw rather than produce a graceful diagnostic, still without success.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 169,
+     "end": 183,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 204,
+     "end": 308,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 359,
+     "end": 393,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 197,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+     "path": ".github/scripts/major_qualification_report.py",
+     "start": 1700,
+     "end": 1785,
+     "file_sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "symbol": "coverage_problems",
+     "lines": [
+      168,
+      182
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:01",
+   "frozen_row_sha256": "6e4c7654a7bf45537c88c1fec348c5b6a5248bf9b45f29cf083eb55a539cb69a",
+   "frozen_baseline": {
+    "from_state": "unmeasured",
+    "from": "unmeasured",
+    "event": "run named Go case",
+    "guard": "declared case and available exact toolchain/executable",
+    "to": "isolated case running",
+    "effects": "Snapshot source/module inputs; run offline isolated Go invocation with 120-second and output bounds.",
+    "failure_retry": "Spawn, timeout or oversized output fails.",
+    "source": [
+     {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "symbol": "run_go_case",
+      "lines": [
+       204,
+       287
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+     }
+    ],
+    "transition_id": "C07:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Finite approved Go selector and unique declared subtests are validated; exact executable/source/module SHA256, go filename, module marker and source containment are checked. Fresh scratch caches, local toolchain, proxy/sumdb/work/env overrides and CGO off precede fixed go test ./... -count=1 -v -run ^case$ -json. Polling rejects stdout/stderr over 1MiB or 120-second execution deadline, killing/waiting the direct child. Post-run executable/source/module hashes must still match. Environment is inherited with Go/compiler/PATH overrides; this is not a blanket credential-isolation or process-tree guarantee.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 36,
+     "end": 103,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 156,
+     "end": 162,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 226,
+     "end": 309,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "symbol": "run_go_case",
+     "lines": [
+      204,
+      287
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:02",
+   "frozen_row_sha256": "7f80318b27449b9ff6a1d487e89dda144acc50ad0af048d4f86dceb98857e86c",
+   "frozen_baseline": {
+    "from_state": "isolated case running",
+    "from": "isolated case running",
+    "event": "parse completed Go JSON",
+    "guard": "named test/subtest population runs exactly once and passes; selected package passes once; no failed required test; source hashes unchanged",
+    "to": "exact observed pass",
+    "effects": "Return bounded observation and execution duration.",
+    "failure_retry": "Missing/repeated/skipped named test, malformed or too many records, source drift or package failure rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "symbol": "verify_go_output",
+      "lines": [
+       143,
+       201
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+     }
+    ],
+    "transition_id": "C07:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Raw bytes and exit0 are required; output is bounded to 1MiB/stream, <=8192 lines and <=65536 bytes/line, final newline mandatory. Duplicate JSON keys, invalid record/action/package, any fail, named skip, unexpected name or cross-package name reject. Every expected selected test/subtest has exactly run then pass and exactly one package pass. Unselected packages may package-skip only. Returned GoObservation remains fixture/live_qualified false.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 106,
+     "end": 120,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 147,
+     "end": 223,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "symbol": "verify_go_output",
+     "lines": [
+      143,
+      201
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:03",
+   "frozen_row_sha256": "cf46a611386a2464371eb0b6ee77b15be166e7288be6a211ede8c0703ed1815b",
+   "frozen_baseline": {
+    "from_state": "unbound installed package",
+    "from": "unbound installed package",
+    "event": "bind candidate package",
+    "guard": "exact cohort/source/hash/platform/member set; release manifest is five fields or five plus context_qualification",
+    "to": "candidate bound",
+    "effects": "Verify contained regular package payload and required qualified native binary.",
+    "failure_retry": "No acceptance of substituted/linked/wrong-source candidate; error stops admission.",
+    "source": [
+     {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "symbol": "_bind_candidate_package",
+      "lines": [
+       298,
+       381
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+     }
+    ],
+    "transition_id": "C07:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cohort raw hash/source commit/tree and installed member population/sizes/SHA256 bind to the chosen host prefix; lexical escaping and observed symlinks reject. Release input is bounded, duplicate-safe, and now passes shared validate_release_manifest before the original closed five-field or optional-context shape check. Platform filename, native_tested true, binary digest and location remain required. DIST-M01 authorizes validating optional context data; it remains a declaration, not independently authenticated installed qualification. Trusted normalized package paths and cooperative filesystem are assumed; no hostile replacement/Windows junction immunity is invented.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 312,
+     "end": 407,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "symbol": "_bind_candidate_package",
+     "lines": [
+      298,
+      381
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:04",
+   "frozen_row_sha256": "7c98347098c2edfdb4841f1241df15fb258d84b9a1a2aa8c50a55cfc5a15f552",
+   "frozen_baseline": {
+    "from_state": "candidate bound",
+    "from": "candidate bound",
+    "event": "build-installed-invocation",
+    "guard": "candidate preflight mode, plugin outside owned test repo, exact installed helper and absolute Python",
+    "to": "invocation admitted",
+    "effects": "Return argv/env with empty PATH and Python -I -B; evidence records live_qualified=false.",
+    "failure_retry": "Returns an invocation plan, not execution or live provider qualification; unsupported mode rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/_contextverificationlib.py",
+      "symbol": "build_installed_invocation",
+      "lines": [
+       384,
+       439
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+     }
+    ],
+    "transition_id": "C07:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only supported host and candidate-preflight mode are admitted with exact digest/Git IDs. Candidate/plugin/repo/interpreter/empty PATH paths resolve; plugin must be inside candidate and repository disjoint, Python absolute and named appropriately, PATH an existing empty directory. Binding precedes fixed runner argv Python -I -B and a finite host environment allowlist. It returns InstalledInvocation with proof_kind candidate-preflight/live_qualified false; it launches nothing. The actual installed context caller appends its own context/identity flags, executes and checks its separate result, so planning is not confused with execution.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 123,
+     "end": 136,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 410,
+     "end": 465,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/test_context_installed.py",
+     "start": 46,
+     "end": 91,
+     "file_sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19"
+    },
+    {
+     "path": ".github/scripts/test_artifact_installed_host.py",
+     "start": 1527,
+     "end": 1584,
+     "file_sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "symbol": "build_installed_invocation",
+     "lines": [
+      384,
+      439
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_contextverificationlib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C08:01",
+   "frozen_row_sha256": "00d14f4d856beff2f596c6878abe060d57de97d935c0c9ffda988843d1122418",
+   "frozen_baseline": {
+    "from_state": "catalog unchecked",
+    "from": "catalog unchecked",
+    "event": "load/validate catalog",
+    "guard": "closed fields, safe paths, exact bound fixture/case identities and valid contents",
+    "to": "catalog validated",
+    "effects": "Normalize a bounded fixture description and digest.",
+    "failure_retry": "Duplicate keys, invalid paths/shapes or undeclared case rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/_context_fixturelib.py",
+      "symbol": "validate_catalog",
+      "lines": [
+       102,
+       171
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+     }
+    ],
+    "transition_id": "C08:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Closed catalog/case/task/oracle fields, 1..32 cases, <=64 files, <=32KiB per file, safe path grammar/case/collision checks, setup/kind/tag enums, exact UTF8 content/snapshot/oracle digests and bound evaluator check strings are validated. load_catalog bounds raw256KiB and refuses duplicate keys/nonfinite/invalid UTF8. No catalog disposition authorizes native instruction generation or execution of declared commands.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 21,
+     "end": 40,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 43,
+     "end": 196,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "symbol": "validate_catalog",
+     "lines": [
+      102,
+      171
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C08:02",
+   "frozen_row_sha256": "8841e27894b78fbda853480647d4842a28b566135c4c5696e0be197cbf6d511a",
+   "frozen_baseline": {
+    "from_state": "catalog validated",
+    "from": "catalog validated",
+    "event": "materialize",
+    "guard": "trusted parent, create-only empty destination, input source hashes unchanged",
+    "to": "materializing",
+    "effects": "Create declared files and committed/unborn/detached/linked/sparse Git arrangement; keep evaluator data outside solver view.",
+    "failure_retry": "Existing destination, linked/untrusted path or changed source rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/_context_fixturelib.py",
+      "symbol": "materialize",
+      "lines": [
+       225,
+       296
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+     }
+    ],
+    "transition_id": "C08:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "materialize revalidates the in-memory catalog and unique selected case before effects; requires a fresh destination beneath an existing caller-trusted parent, checking destination/ancestors for links/reparse points. Fixed Git commands with sanitized GIT_ environment, private global config, check=True and 20s timeouts construct committed/unborn/detached/linked/sparse arrangements plus staged/working edits. Evaluator is a sibling of solver. No second concurrent-source CAS, hostile filesystem confinement or execution of evaluator/task commands is added.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 225,
+     "end": 288,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "symbol": "materialize",
+     "lines": [
+      225,
+      296
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C08:03",
+   "frozen_row_sha256": "f2575980505b4f64e265544dfe14525f0d0410ce985ac05d67fb4007e0ab0ca5",
+   "frozen_baseline": {
+    "from_state": "materializing",
+    "from": "materializing",
+    "event": "all filesystem/Git setup succeeds",
+    "guard": "postconditions and fixture snapshots hold",
+    "to": "materialized",
+    "effects": "Return fixture evidence and paths for later tests.",
+    "failure_retry": "Failure can leave a partial owned fixture; a new destination or explicit cleanup is required for retry.",
+    "source": [
+     {
+      "path": ".github/scripts/_context_fixturelib.py",
+      "symbol": "materialize",
+      "lines": [
+       225,
+       296
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+     }
+    ],
+    "transition_id": "C08:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only successful fixed filesystem/Git operations reach oracle/identity records and returned solver/evaluator/task/setup/files. snapshot refuses links/reparse/nonregular content and records actual raw-file hashes, excluding Git storage. It is placement/readback evidence; not an independent expected-output oracle or solver sandbox. Failure may leave owned partial output and retry needs fresh destination/explicit cleanup. Current paired-fixture caller additionally compares A/B snapshots and moves evaluator records under controller, still expressly unverified until host observations.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 199,
+     "end": 222,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 260,
+     "end": 296,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/test_context_evaluation.py",
+     "start": 368,
+     "end": 424,
+     "file_sha256": "2419cb4d6dcb1fd0096f00aa6f90fc3a9b7bcef69434ab3227150fc934ee2c12"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "symbol": "materialize",
+     "lines": [
+      225,
+      296
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_context_fixturelib.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:01",
+   "frozen_row_sha256": "fd64743028586643d3c2f7524f5b7fccce92eb0457839b83ae39415635a26e65",
+   "frozen_baseline": {
+    "from_state": "unbound",
+    "from": "unbound",
+    "event": "prepare",
+    "guard": "tracked committed tree, exact declared Vitest configs/source maps and new output receipt",
+    "to": "pre-test bound",
+    "effects": "Write exclusive snapshot of source/config identities before tests.",
+    "failure_retry": "Dirty/missing/linked/unexpected input rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "prepare",
+      "lines": [
+       271,
+       282
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "prepare requires supported host/output name and snapshot of a supported declared tree. snapshot derives tracked config/source paths from HEAD, validates exact supported Vitest include/exclude grammar, compares each declared file byte-for-byte with its committed blob and binds lockfile Vitest version and source digests; write_new uses exclusive output. The frozen dirty/unexpected guard means these declared inputs: the function does not enumerate arbitrary untracked files or prove a globally clean checkout. No stronger inventory or Windows junction guarantee is asserted.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 37,
+     "end": 104,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 282,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "prepare",
+     "lines": [
+      271,
+      282
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:02",
+   "frozen_row_sha256": "478ac1b4592209c0d064b7c425d6f5379028dd41f3fc61263ba7f5b1a0b1a6b7",
+   "frozen_baseline": {
+    "from_state": "pre-test bound",
+    "from": "pre-test bound",
+    "event": "prepare --check after tests",
+    "guard": "same exact snapshot; coverage data file present and bounded",
+    "to": "post-test checked",
+    "effects": "Bind output blob digest in new checked receipt.",
+    "failure_retry": "Source or configuration drift after measurement rejects; cannot rewrite old proof as current.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "prepare",
+      "lines": [
+       271,
+       282
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "prepare --check recomputes the same complete declared snapshot and requires exact JSON equality to original provenance, then reads bounded blob/provenance and exclusively writes checked receipt containing both raw SHA256 digests. Changed declared source/config refuses, and an existing checked receipt cannot be silently rewritten. It binds output bytes without authenticating that tests passed or preventing forgery by a hostile writer.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 25,
+     "end": 49,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 282,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2013,
+     "end": 2028,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2167,
+     "end": 2168,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2194,
+     "end": 2204,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "prepare",
+     "lines": [
+      271,
+      282
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:03",
+   "frozen_row_sha256": "13159a2d0fb49944951d3e46720408474dd6ba9cdc5c5847aeba986b9f50efeb",
+   "frozen_baseline": {
+    "from_state": "one checked host",
+    "from": "one checked host",
+    "event": "verify merge inputs",
+    "guard": "complete closed triple of provenance, checked receipt and blob; same commit/tree/Vitest maps",
+    "to": "partial one-host",
+    "effects": "Normalize coverage into fresh output and label PARTIAL.",
+    "failure_retry": "Missing components or mismatched hashes fail; one-host evidence is not labeled a union.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "verify",
+      "lines": [
+       285,
+       309
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Verify requires a nonempty closed set of host triples and exact checked raw digest joins, recomputes current snapshot and admits unique known hosts with identical source/config/head/tree/Vitest maps. Bounded coverage graph/path/map normalization produces fresh host output; exactly one known host is labeled PARTIAL. Unkeyed receipt consistency does not itself prove executed Vitest outcomes.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 107,
+     "end": 145,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 216,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 285,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "verify",
+     "lines": [
+      285,
+      309
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:04",
+   "frozen_row_sha256": "0c886f4080e6414225a639a729c98bf7bdda484bd2c7e98a2d522a06620f9425",
+   "frozen_baseline": {
+    "from_state": "two checked hosts",
+    "from": "two checked hosts",
+    "event": "verify merge inputs",
+    "guard": "both complete triples bind identical source identities",
+    "to": "union two-host",
+    "effects": "Normalize filesystem paths, validate coverage graphs and combine host evidence; label UNION.",
+    "failure_retry": "Foreign/malformed graph or differing source identity fails.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "verify",
+      "lines": [
+       285,
+       309
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Both distinct expected hosts must pass closed triple and identical-source checks. Decoder bounds graph references/depth/cycles/nodes and normalization validates canonical source population, count/maps/locations, Vitest version and identical map layouts. Only seen==both hosts returns UNION; later Vitest merge remains the workflow-owned operation, not performed by this Python helper or by this proposal.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 107,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 285,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2073,
+     "end": 2094,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2300,
+     "end": 2321,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "verify",
+     "lines": [
+      285,
+      309
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:05",
+   "frozen_row_sha256": "471840303688497684b1c01a864e161eac6ca8908536d4204cff1aabe9a0a21f",
+   "frozen_baseline": {
+    "from_state": "zero checked hosts or unexpected input entries",
+    "from": "zero checked hosts or unexpected input entries",
+    "event": "verify merge inputs",
+    "guard": "closed set is empty or malformed",
+    "to": "rejected",
+    "effects": "Return error before the workflow\u2019s later zero-blob branch.",
+    "failure_retry": "The workflow\u2019s zero-blob graceful fallback is unreachable after this validation succeeds.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "verify",
+      "lines": [
+       285,
+       309
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Empty host set, missing triple members, unexpected directory entries or invalid digest/identity fail before output creation. Since the Bash workflow uses the verifier before its blobs==0 branch, successful verify cannot reach zero normalized blobs. One-host advisory degradation is supported; an empty successful union is not.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 285,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 321,
+     "end": 333,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2073,
+     "end": 2094,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2300,
+     "end": 2321,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "verify",
+     "lines": [
+      285,
+      309
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C09:06",
+   "frozen_row_sha256": "dcbd9f18d1b7c82025b98aa7b0839952caa549c86ce61c279b23ffb2544c581d",
+   "frozen_baseline": {
+    "from_state": "valid merge inputs",
+    "from": "valid merge inputs",
+    "event": "write normalized output",
+    "guard": "destination is fresh and safe",
+    "to": "partial or union written",
+    "effects": "Write normalized files, preserving meaningful positive branch counts while handling negative implicit-else artifacts.",
+    "failure_retry": "I/O failure may leave partial scratch output; does not publish a successful receipt.",
+    "source": [
+     {
+      "path": ".github/scripts/coverage_union.py",
+      "symbol": "write_new",
+      "lines": [
+       261,
+       268
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+     }
+    ],
+    "transition_id": "C09:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only valid maps/counts and exact implicit-else negative artifact shape are admitted; positive observations cannot cancel in addition, and sum magnitudes remain within exact JSON integer range. Private appended graph preserves unrelated references. Serialization/size checks complete before fresh output directory; exclusive file writes may leave partial scratch output on I/O failure, with no successful return/atomic multiblob publication claim.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 148,
+     "end": 258,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 261,
+     "end": 268,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "start": 300,
+     "end": 309,
+     "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/coverage_union.py",
+     "symbol": "write_new",
+     "lines": [
+      261,
+      268
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C10:01",
+   "frozen_row_sha256": "1b521bd340b4e6549d7d1ec96bb4c4d46a2c30f7a2f252dbfe7833551d43a8c1",
+   "frozen_baseline": {
+    "from_state": "declared layer set",
+    "from": "declared layer set",
+    "event": "discover test declarations",
+    "guard": "every declared layer has unique source/name and source inventory is nonempty",
+    "to": "validated declarations",
+    "effects": "Build the expected execution-layer population from test files.",
+    "failure_retry": "Duplicate, missing or malformed declarations reject.",
+    "source": [
+     {
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "symbol": "declared_layer_sites",
+      "lines": [
+       65,
+       72
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+     }
+    ],
+    "transition_id": "C10:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Static scanner enumerates non-fixture/non-node_modules *.test.ts except docker-gate.test.ts and recognizes supported double-quoted literal dockerGate names. Per-file repeated names collapse; cross-file shared names and wholly empty recognized population reject. Current recognized population is16 unique names in16 source files out of28 scanned files, each with one site. The audit malformed-declaration phrase is limited to this supported grammar/inventory; this regex is not a TypeScript parser and does not diagnose arbitrary syntactic calls. Actual supported declarations, not invented parser behavior, are preserved.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "start": 39,
+     "end": 104,
+     "file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/__tests__/isolation.test.ts",
+     "start": 43,
+     "end": 43,
+     "file_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/build.test.ts",
+     "start": 264,
+     "end": 264,
+     "file_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+     "start": 38,
+     "end": 38,
+     "file_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+     "start": 212,
+     "end": 212,
+     "file_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/cli-resolve.test.ts",
+     "start": 48,
+     "end": 48,
+     "file_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/cp.test.ts",
+     "start": 85,
+     "end": 85,
+     "file_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+     "start": 11,
+     "end": 11,
+     "file_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/create.test.ts",
+     "start": 298,
+     "end": 298,
+     "file_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+     "start": 215,
+     "end": 215,
+     "file_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/exec.test.ts",
+     "start": 130,
+     "end": 130,
+     "file_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+     "start": 16,
+     "end": 16,
+     "file_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/layering.test.ts",
+     "start": 74,
+     "end": 74,
+     "file_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/lifecycle.test.ts",
+     "start": 249,
+     "end": 249,
+     "file_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/multistack.test.ts",
+     "start": 128,
+     "end": 128,
+     "file_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/network.test.ts",
+     "start": 208,
+     "end": 208,
+     "file_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/run.test.ts",
+     "start": 124,
+     "end": 124,
+     "file_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "symbol": "declared_layer_sites",
+     "lines": [
+      65,
+      72
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C10:02",
+   "frozen_row_sha256": "7050291bc7b342bfe9d04e85547bf458366a7c7a07c186bf4d5f020c284d4a73",
+   "frozen_baseline": {
+    "from_state": "execution recorded",
+    "from": "execution recorded",
+    "event": "verify runtime records",
+    "guard": "all declared layers present, no unknown layers; enclosing npm test succeeded",
+    "to": "complete observed starts",
+    "effects": "Return successful layer-coverage observation.",
+    "failure_retry": "Records prove starts, not independent test finishes; test-run success supplies the completion prerequisite.",
+    "source": [
+     {
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "symbol": "verify",
+      "lines": [
+       89,
+       137
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+     }
+    ],
+    "transition_id": "C10:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "recordLayer appends configured layer name only from beforeAll of a runnable gated suite; unavailable required Docker throws at module collection, while optional local mode skips without sentinel. Scanner requires nonempty declarations/sentinel and exact recorded-name set, then returns complete observed starts. Original CI sets required Docker/sentinel and runs npm test through its observer before scanner, so normal step sequencing supplies successful test-run prerequisite; sentinel alone proves starts, not independent finishes/containment.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "start": 89,
+     "end": 137,
+     "file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+     "start": 87,
+     "end": 125,
+     "file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+     "start": 140,
+     "end": 163,
+     "file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2420,
+     "end": 2437,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2523,
+     "end": 2541,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "symbol": "verify",
+     "lines": [
+      89,
+      137
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C10:03",
+   "frozen_row_sha256": "8f6d723f6df9851e8509677fe16da635127fc080b5967b5c5170e6dc4e6bc129",
+   "frozen_baseline": {
+    "from_state": "execution recorded",
+    "from": "execution recorded",
+    "event": "verify missing/empty/unknown runtime records",
+    "guard": "one expected observation absent or foreign",
+    "to": "incomplete/unknown",
+    "effects": "Exit nonzero with layer-specific errors.",
+    "failure_retry": "No skip converted to proof; rerun suite with real declared layers.",
+    "source": [
+     {
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "symbol": "verify",
+      "lines": [
+       89,
+       137
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+     }
+    ],
+    "transition_id": "C10:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Missing/empty sentinel, missing recognized layer, unknown recorded layer or cross-file duplicate declaration returns nonzero with explicit layer errors. Recorded repeats collapse and do not supply proof of extra executions. Main preserves nonzero error exit. No skip is promoted to proof; actual Docker/runtime qualification requires separate original suite execution.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "start": 80,
+     "end": 159,
+     "file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+     "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+     "start": 140,
+     "end": 161,
+     "file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2523,
+     "end": 2541,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "baseline_witnesses": [
+    {
+     "path": ".github/scripts/check_sandbox_docker_layers.py",
+     "symbol": "verify",
+     "lines": [
+      89,
+      137
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+    }
+   ],
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  }
+ ],
+ "machine_assessments": [
+  {
+   "cell": "disposition:machines:C05",
+   "frozen_row_sha256": "2c9f2ffcc6d5570cb396da00e1c06cb3558cc4de5f279f6169625c4dfbce66c4",
+   "clause_ids": [
+    "disposition:transitions:C05:01",
+    "disposition:transitions:C05:02",
+    "disposition:transitions:C05:03",
+    "disposition:transitions:C05:04",
+    "disposition:transitions:C05:05"
+   ],
+   "result": "PRESERVED",
+   "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:machines:C06",
+   "frozen_row_sha256": "cf6747c6f7564a43259ccc5c8a58095e3bc3d251cfd9f18c7d55ab50e3ead6e1",
+   "clause_ids": [
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+   ],
+   "result": "PENDING_SOURCE_GAP",
+   "assessment": "Whole machine remains pending because C06:02 cannot prove partial-spawn cleanup.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:machines:C07",
+   "frozen_row_sha256": "60b2c015a49fe0a8e9555b7168350e4edc0de1fb65951260ca40b897b3b94077",
+   "clause_ids": [
+    "disposition:transitions:C07:01",
+    "disposition:transitions:C07:02",
+    "disposition:transitions:C07:03",
+    "disposition:transitions:C07:04"
+   ],
+   "result": "PRESERVED",
+   "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:machines:C08",
+   "frozen_row_sha256": "fadd1be70a50d53473fd3765241859e4a32a4825a751c8b5db81541f2d229188",
+   "clause_ids": [
+    "disposition:transitions:C08:01",
+    "disposition:transitions:C08:02",
+    "disposition:transitions:C08:03"
+   ],
+   "result": "PRESERVED",
+   "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:machines:C09",
+   "frozen_row_sha256": "f54f32b54d544ac6ee16d5a31377be3a1f317f75a53743c02c14af7500d3cff0",
+   "clause_ids": [
+    "disposition:transitions:C09:01",
+    "disposition:transitions:C09:02",
+    "disposition:transitions:C09:03",
+    "disposition:transitions:C09:04",
+    "disposition:transitions:C09:05",
+    "disposition:transitions:C09:06"
+   ],
+   "result": "PRESERVED",
+   "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:machines:C10",
+   "frozen_row_sha256": "b61495ff2d1970523e91ec4f4d25e444af613f32e112339c68f1ff88d70e70aa",
+   "clause_ids": [
+    "disposition:transitions:C10:01",
+    "disposition:transitions:C10:02",
+    "disposition:transitions:C10:03"
+   ],
+   "result": "PRESERVED",
+   "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  }
+ ],
+ "intake_variances": [
+  {
+   "id": "C05-PINNED-VERDICT-STRENGTHENING",
+   "cells": [
+    "C05:01",
+    "C05:04",
+    "C05:05"
+   ],
+   "classification": "PREVIOUS_IMPLEMENTED_STRENGTHENING_RETAINED",
+   "statement": "Pinned parse/main did not prevalidate finite timeout/available interpreter, and pinned verdict used last Ran plus any OK. Current source checks all summaries and admission; existing three TESTED rows and evidence are preserved exactly. This packet does not requalify tests."
+  },
+  {
+   "id": "C06-PARTIAL-SPAWN-CLEANUP",
+   "cells": [
+    "C06:02",
+    "C06"
+   ],
+   "classification": "SOURCE_GAP_PENDING_BOUNDED_DIAGNOSIS",
+   "statement": "Both pinned and current run_all lack cleanup for already-started owned direct children when a later Popen raises. Frozen spawn-failure cleanup claim overstates baseline but remains an actual accepted cleanup obligation; no N/A or preservation proposed for this edge/aggregate. No fix authored here."
+  },
+  {
+   "id": "C07-OPTIONAL-MANIFEST-VALIDATION",
+   "cells": [
+    "C07:03"
+   ],
+   "classification": "ACCEPTED_DIST_M01_STRENGTHENING",
+   "statement": "Current shared manifest validation closes optional context shape/value validation before existing host binary checks. Manifest declarations remain distinct from trusted native/installed qualification; DIST-M01 task status and runtime cells unchanged."
+  },
+  {
+   "id": "C08-COOPERATIVE-PLACEMENT-BOUNDARY",
+   "cells": [
+    "C08:02",
+    "C08:03"
+   ],
+   "classification": "EXISTING_SOURCE_LIMIT_RETAINED",
+   "statement": "Catalog validates initial digest; materialize writes and returns actual snapshot rather than independently proving hostile solver confinement or concurrent source CAS. The frozen guard is interpreted as successful bounded setup/readback; existing three source-preserved rows already state this limit. No claim of an independent expected final-oracle validator."
+  },
+  {
+   "id": "C09-DECLARED-TRACKED-INVENTORY",
+   "cells": [
+    "C09:01",
+    "C09"
+   ],
+   "classification": "ANALYTICAL_INTAKE_SCOPE_CORRECTION",
+   "statement": "Dirty/missing/linked/unexpected input rejection applies to declared tracked config/source bytes and merge triples, not globally arbitrary untracked files. Snapshot does not enumerate new untracked TypeScript files or Windows reparse points beyond is_symlink. Preserve actual declared-inventory behavior; no broad clean-tree/hostile-FS guarantee or new membership feature invented."
+  },
+  {
+   "id": "C10-DECLARATION-GRAMMAR",
+   "cells": [
+    "C10:01",
+    "C10"
+   ],
+   "classification": "ANALYTICAL_INTAKE_SCOPE_CORRECTION",
+   "statement": "Recognized double-quoted literal calls and unique source/name sites are scanned; per-file names deduplicate, malformed/unrecognized calls are not parsed as TypeScript errors. Complete source coverage applies to actual supported declarations. Sentinel proves starts, and caller success supplies test-run completion separately. No new TS parser, finishes receipt or container feature invented."
+  }
+ ],
+ "pending_cells": [
+  "disposition:transitions:C06:02",
+  "disposition:machines:C06"
+ ],
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "Source critical primary owners/current callers/frozen contracts inspected; unchanged old TESTED/advanced rows are never downgraded or reassigned."
+ ]
+}

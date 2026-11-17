@@ -1,0 +1,374 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/includes/author-tdd-workflow.md": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+  "core/surface/includes/fresh-verification.md": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+  "core/surface/includes/maturity-coverage.md": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+  "core/surface/includes/verification-boundary.md": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+  "core/surface/skills/tdd/SKILL.md": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-06",
+  "disposition:transitions:WF-06:01",
+  "disposition:transitions:WF-06:02",
+  "disposition:transitions:WF-06:03",
+  "disposition:transitions:WF-06:04",
+  "disposition:transitions:WF-06:05",
+  "disposition:transitions:WF-06:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-06",
+   "frozen_row_sha256": "ecf703ced63cad0eb9d98053517470b29d7207ce64faa0a4fb12ceb7bcdb0cd9",
+   "clause_ids": [
+    "disposition:transitions:WF-06:01",
+    "disposition:transitions:WF-06:02",
+    "disposition:transitions:WF-06:03",
+    "disposition:transitions:WF-06:04",
+    "disposition:transitions:WF-06:05",
+    "disposition:transitions:WF-06:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 12,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c82e86bf115b67e3d923d69cdd8c68a6a11b0c0a262a06ee19b79a342a729cf1"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 101,
+     "end": 110,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "f37eeec1514638e2c904cf884944e6e781a9c712556762ba91f2f788bd120a9e"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 3,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "abcab04243de9110c3f10bb0396b24097034cd9cfb0f85fb2513befe1526205b"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 63,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9a687b924c1094dce87abf81afeb0f90f7ee6d7841aa2e8d3fdb39c058d92fae"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 92,
+     "end": 99,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "5b297220a69fc93e44868fd18db56be01c4e6324edd1bbea039e048c75cd1d66"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 29,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "e7649f78229a8f4acfefba25aa64b9f25317d09607b0b3e59f347e708ec2d29f"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 46,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9cc6e72a3d6cd9077b07fb6eae04b032e0d9755754b6b158ed2a2d4c6a484e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "d3dfabc4c8cabf29903341318cc354843b606843c8a6effd64026e1e566eb6ef"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 83,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "a86382f2a3319670b0621a216f3a76f60fb78c61978fa4c071bd601dd7465e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 31,
+     "end": 38,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "2104bd26fb6ac06f8e90456c98459f47bbe9b874847fecb4569954ee15b23b5e"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    },
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 1,
+     "end": 75,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "6d1ba663c6b740534965b7403630351a3c5472be399659f0a7f8185440dba1d6"
+    },
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 77,
+     "end": 142,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "32c26c6d038462bce7f26bdd5a7b41a398aabdcbc9c6660ebbfaa396165e00e6"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 112,
+     "end": 124,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c8953c16f8cb8a6618f8ce46e92673326ecdf4c6b2ab7ebbfa4b81d517bd2443"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 52,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "e7e68d46c4f213e452ca35a7dd7736a952dfc016a5eed1782826b3a71f457d80"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 126,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "bee78f636613cd5a0e23d12b080db775a48adc4113a765fb5319a7264788c95a"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 11,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "b48d8b762fe4383e8aa31c8889413722790a68f0005c43eb6e2f1cf3126eb7d0"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:01",
+   "frozen_row_sha256": "606961d5d334f8621f653037bd693952a992ff667891214f164d9e8e1bf195cf",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 12,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c82e86bf115b67e3d923d69cdd8c68a6a11b0c0a262a06ee19b79a342a729cf1"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 101,
+     "end": 110,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "f37eeec1514638e2c904cf884944e6e781a9c712556762ba91f2f788bd120a9e"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 3,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "abcab04243de9110c3f10bb0396b24097034cd9cfb0f85fb2513befe1526205b"
+    }
+   ],
+   "semantic_assessment": "Selectedfeature/fix/refactor source obligations each have ID/provingcheck; OPEN/MAPPED/COVERED requires actualadequateevidence, otherwise MISSING. Unrelatedpassingtests cannotcovermissingcriterion.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:02",
+   "frozen_row_sha256": "0b1970ef7f5aa48732fd58d84d2a241967ac858798e6e204b74d2336f1b16ab2",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 63,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9a687b924c1094dce87abf81afeb0f90f7ee6d7841aa2e8d3fdb39c058d92fae"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 92,
+     "end": 99,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "5b297220a69fc93e44868fd18db56be01c4e6324edd1bbea039e048c75cd1d66"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 29,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "e7649f78229a8f4acfefba25aa64b9f25317d09607b0b3e59f347e708ec2d29f"
+    }
+   ],
+   "semantic_assessment": "Confirmedfix retains genuine namedtargetRED beforeimplementation then sameunchangedassertionsGREEN; adequatecurrentbug-originRED reusable. Setup/import/unrelatederror and alreadygreencheck are not targetRED; materialfixturechange renewsbaseline.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:03",
+   "frozen_row_sha256": "a5f15e8a084c0c5da6f931244c540f9522e4c1f862a551b4745842741841e330",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 46,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9cc6e72a3d6cd9077b07fb6eae04b032e0d9755754b6b158ed2a2d4c6a484e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "d3dfabc4c8cabf29903341318cc354843b606843c8a6effd64026e1e566eb6ef"
+    }
+   ],
+   "semantic_assessment": "Featureprefers testfirst but alreadyimplementedclaim may use actualcriterionchecks/negativecontrols; refactor/backfill uses passingcharacterization withpreservedassertions. No manufacturedRED by breakinghealthyproduction.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:04",
+   "frozen_row_sha256": "cf358300616d18f01bb2beab221c2685bcff8aa424082bde510c15848b2c2624",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 83,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "a86382f2a3319670b0621a216f3a76f60fb78c61978fa4c071bd601dd7465e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 31,
+     "end": 38,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "2104bd26fb6ac06f8e90456c98459f47bbe9b874847fecb4569954ee15b23b5e"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    }
+   ],
+   "semantic_assessment": "Authorizedscope only; run proving/affectedexistingchecks then relevantcoverage/lint/typechecks and recordrealoutcomes. Contradictory/stale/missingproof stays pending until correctedaffectedcheck, neverwaive to pass.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:05",
+   "frozen_row_sha256": "bb8b5e0ad21d3f84bfa347ab0ab91a48e27a22108ca68b5fcc82548fd57887e2",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 1,
+     "end": 75,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "6d1ba663c6b740534965b7403630351a3c5472be399659f0a7f8185440dba1d6"
+    },
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 77,
+     "end": 142,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "32c26c6d038462bce7f26bdd5a7b41a398aabdcbc9c6660ebbfaa396165e00e6"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 112,
+     "end": 124,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c8953c16f8cb8a6618f8ce46e92673326ecdf4c6b2ab7ebbfa4b81d517bd2443"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    }
+   ],
+   "semantic_assessment": "Declaredlanguageprofile/maturity determine metrics and60/70/85/90threshold. Statement-onlyGo staysunmeasuredforlines/branches; fullhostunion and criticalpathoraclesrequired; scopedlocalPARTIAL separatefromexactheadhosted. No-toolingexemption needs namedfullsourcecitation, never silence or guessedabsence.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:06",
+   "frozen_row_sha256": "1d6694462c808b546a3cec23b683fdf3adff5a68c68ccf3140c941138dcbd287",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 52,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "e7e68d46c4f213e452ca35a7dd7736a952dfc016a5eed1782826b3a71f457d80"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 126,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "bee78f636613cd5a0e23d12b080db775a48adc4113a765fb5319a7264788c95a"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 11,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "b48d8b762fe4383e8aa31c8889413722790a68f0005c43eb6e2f1cf3126eb7d0"
+    }
+   ],
+   "semantic_assessment": "Documentation/nonexecutables use concrete reference/generation/schema/rendering validation and explicitlyinapplicable behavioral/coveragephase. No inventedtestsuccess/silentexemption; claimboundaries remain explicit.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

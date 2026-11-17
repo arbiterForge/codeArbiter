@@ -1,0 +1,274 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Root: reinspection of unchanged owning literal spans after independently reviewed optional Pi observer argument repair; no runtime renewal"
+ },
+ "inputs": {
+  ".github/scripts/run_artifact_authority_shard.py": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+  ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+  ".github/scripts/major_qualification_report.py": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+  ".github/workflows/ci.yml": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+  ".github/scripts/test_ci20_native_pipeline.py": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+  ".github/scripts/test_artifact_authority_retention.py": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+ },
+ "disposition_ids": [
+  "disposition:machines:C06",
+  "disposition:transitions:C06:01",
+  "disposition:transitions:C06:02",
+  "disposition:transitions:C06:03",
+  "disposition:transitions:C06:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/c06-current-source/clause-inspection.json",
+   "sha256": "121462b1ab5f486073d1daae4d1639630cb7b597adc8d0ab32e41037c4a83b68"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/c06-current-source/source-bindings.json",
+   "sha256": "9f17f219f286efe69c421c1ed2935a2babbfddfcbefd92a51eba6bce659df573"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/observations.json",
+   "sha256": "e71f4848d563f86669a85b3e862e07d445744f5ae01a82bd06d4521f63a92e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/original-retention-positive.json",
+   "sha256": "ef684fd7eb75a578a0914270230a53c35bfad7a13fd05d57460ceb050faab43a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/reinspection.json",
+   "sha256": "ad167a3edc925f285d324314a0d9cbbdde1ad2874fea1cbbb54b96ee8676ee52"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C06",
+   "frozen_row_sha256": "cf6747c6f7564a43259ccc5c8a58095e3bc3d251cfd9f18c7d55ab50e3ead6e1",
+   "clause_ids": [
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 35,
+     "end": 51,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 60,
+     "end": 76,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 79,
+     "end": 107,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 157,
+     "end": 161,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 164,
+     "end": 166,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 435,
+     "end": 484,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 314,
+     "end": 330,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 333,
+     "end": 432,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 110,
+     "end": 154,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 169,
+     "end": 183,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 226,
+     "end": 283,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 286,
+     "end": 308,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "semantic_assessment": "Complete current discovery/launch/settlement/measurement/join source contract with named corrected spawn-failure behavior; no process-tree or installed claim."
+  },
+  {
+   "cell": "disposition:transitions:C06:01",
+   "frozen_row_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+   "clause_ids": [
+    "disposition:transitions:C06:01"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 35,
+     "end": 51,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 60,
+     "end": 76,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 79,
+     "end": 107,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 157,
+     "end": 161,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 164,
+     "end": 166,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 435,
+     "end": 484,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "semantic_assessment": "Actual discoverable unique inventory and whole fixture classes own membership. Weight hints only balance; count1..32/nonempty/disjoint/completeness and exact orderedplanSHA256 remain. Declared CI calls four shards; source correction does not change discovery/selection."
+  },
+  {
+   "cell": "disposition:transitions:C06:02",
+   "frozen_row_sha256": "349fffed5fad871f9d8ec2cab349e8287d8bb6d1f6f4ee818bbcf49e59d0df39",
+   "clause_ids": [
+    "disposition:transitions:C06:02"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 314,
+     "end": 330,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 333,
+     "end": 432,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "semantic_assessment": "Run-all retains exact child argv/environment and common execution deadline, default2100seconds after launch. On later Popen or wait exception, attempt kill for every acquired direct child before a common5second wait pass; one cleanup failure cannot abandon later children. Wait-unconfirmed slots produce an explicit RuntimeError chained from the original failure. Temp cleanup failure adds a bounded note while preserving the original cause. Timeout path retains failingcode/log and bounds its post-kill wait, with separately bounded exception cleanup if it fails. No strict5secondtotalwall, descendant/process-tree or OS containment guarantee."
+  },
+  {
+   "cell": "disposition:transitions:C06:03",
+   "frozen_row_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+   "clause_ids": [
+    "disposition:transitions:C06:03"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 110,
+     "end": 154,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 435,
+     "end": 484,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "semantic_assessment": "Each child rediscovers/partitions and runs its exact selected population. TimedResult records observed outcomes and durations. Passing requires wasSuccessful, testsRun equals selected and substantive execution beyond skip/expectedFailure; raw timing is exclusive create. No supported skip is silently promoted to execution."
+  },
+  {
+   "cell": "disposition:transitions:C06:04",
+   "frozen_row_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+   "clause_ids": [
+    "disposition:transitions:C06:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 169,
+     "end": 183,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 226,
+     "end": 283,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 286,
+     "end": 308,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 333,
+     "end": 432,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "semantic_assessment": "Join rejects nonzero/missing/mismatched plans, duplicate/missing/foreign selected tests and nonpassing observations. Optional four-shard retention binds original timing/observation/argv, stable source/native context and exact exclusive output, descriptor last. Original real-four-child retention case passes on exact code bytes. This proof is source conformance; local inert/fixture tests do not qualify native targets or installed/wholeprogram outcomes."
+  }
+ ],
+ "scope": "Current source-only originalC06disposition; no task/runtime/host promotion",
+ "limits": [
+  "Four canonical regressions and original real-four-child positive are retained in the code commit, not replayed or restated as installed/OS proof.",
+  "Only source-only PRESERVED dispositions; task/runtime/host/publication status unchanged."
+ ],
+ "revalidated_from": {
+  "path": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+  "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07",
+  "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+ }
+}
