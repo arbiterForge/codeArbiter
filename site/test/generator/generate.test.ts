@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import * as fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
@@ -11,6 +12,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { generate } from "../../scripts/generator/generate";
+
+vi.mock("node:fs", async original => {
+  const actual = await original<typeof import("node:fs")>();
+  return { ...actual, renameSync: vi.fn(actual.renameSync) };
+});
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pluginDir = join(here, "..", "fixtures", "plugin");
@@ -74,6 +80,60 @@ describe("generate", () => {
     generate(pluginDir, outDir);
     const second = snapshot(outDir);
     expect(second).toEqual(first);
+  });
+
+  it("restores the previous pages and sidebar after a late promotion failure and converges on rerun", async () => {
+    const fixture = fs.realpathSync(fs.mkdtempSync(join(tmpdir(), "ca-reference-publication-")));
+    const owner = join(fixture, "src");
+    const output = join(owner, "content", "docs", "reference");
+    const sidebar = join(owner, "generated", "sidebar.json");
+    const plugin = join(fixture, "plugin");
+    const sample = join(plugin, "commands", "sample.md");
+    const changed = join(output, "commands", "sample.md");
+    const obsolete = join(output, "commands", "000-obsolete.md");
+    const handwritten = join(owner, "content", "docs", "handwritten.md");
+    try {
+      fs.cpSync(pluginDir, plugin, { recursive: true });
+      generate(plugin, output, sidebar);
+      writeFileSync(obsolete, "previous generated page");
+      writeFileSync(handwritten, "handwritten page");
+      const before = snapshot(owner);
+      const newBody = "New body for the late Reference publication fixture.";
+      const oldSource = readFileSync(sample, "utf8");
+      expect(oldSource).toContain("Body content for the sample command.");
+      writeFileSync(sample, oldSource.replace("Body content for the sample command.", newBody));
+      const real = (await vi.importActual<typeof import("node:fs")>("node:fs")).renameSync;
+      let failedPromotions = 0;
+      vi.mocked(fs.renameSync).mockImplementation((from, to) => {
+        if (String(from).endsWith(".new") && to === sidebar) {
+          expect(readFileSync(changed, "utf8")).toContain(newBody);
+          expect(existsSync(obsolete)).toBe(false);
+          failedPromotions++;
+          throw new Error("controlled late Reference promotion failure");
+        }
+        real(from, to);
+      });
+      try {
+        expect(() => generate(plugin, output, sidebar))
+          .toThrow("controlled late Reference promotion failure");
+      } finally {
+        vi.mocked(fs.renameSync).mockImplementation(real);
+      }
+      expect(failedPromotions).toBe(1);
+      expect(snapshot(owner)).toEqual(before);
+      expect(readdirSync(owner).filter(name => name.startsWith(".generated-"))).toEqual([]);
+
+      generate(plugin, output, sidebar);
+      expect(readFileSync(changed, "utf8")).toContain(newBody);
+      expect(existsSync(obsolete)).toBe(false);
+      expect(readFileSync(handwritten, "utf8")).toBe("handwritten page");
+      const settled = snapshot(owner);
+      generate(plugin, output, sidebar);
+      expect(snapshot(owner)).toEqual(settled);
+      expect(readdirSync(owner).filter(name => name.startsWith(".generated-"))).toEqual([]);
+    } finally {
+      rmSync(fixture, { recursive: true, force: true });
+    }
   });
 
   describe("per-collection slug dedup", () => {
