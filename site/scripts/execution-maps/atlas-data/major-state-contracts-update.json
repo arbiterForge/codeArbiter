@@ -57,8 +57,9 @@
     },
     {
       "path": "core/pysrc/prompt-submit.py",
-      "blob": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
-      "summary": "Startup emits mode and project state; prompt delivery tracks the last delivered mode and compaction generation. A return to a previous mode redelivers its persona, while unchanged turns do not. Recovery notices use a separate identity.",
+      "blob": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+      "revision": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+      "summary": "Startup emits mode and project state; ordinary prompts compose safety-core with the current ledger-backed persona. Delivery tracks the last emitted mode and compaction generation, so an observed A-to-B-to-A sequence redelivers A while unchanged turns do not. If recording a delivery fails, the owner attempts to invalidate the stale session record. If update and invalidation both fail, it diagnoses unconfirmed dedup; durable invalidation and later redelivery are not guaranteed. Recovery notices use a separate identity.",
       "nodes": [
         "o-runtime",
         "c-live",

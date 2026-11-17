@@ -1,0 +1,19 @@
+{
+ "argv": [
+  "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+  "run",
+  "--root",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture",
+  "--config",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+  "--reporter=json",
+  "--outputFile",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.named.json",
+  "-t",
+  "rejects invalid optional current-source revisions instead of falling back"
+ ],
+ "exit": 1,
+ "seconds": 0.6369522000022698,
+ "test_sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada"
+}

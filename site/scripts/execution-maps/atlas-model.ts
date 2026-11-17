@@ -22,7 +22,7 @@ export interface AtlasCommand {
   /** Date a route was retired after this snapshot; no host exposes it. */
   removed?: string;
 }
-export interface AtlasSourceUpdate { revision:string; title:string; summary:string; changes:{path:string;blob:string;summary:string;nodes:string[]}[] }
+export interface AtlasSourceUpdate { revision:string; title:string; summary:string; changes:{path:string;blob:string;revision?:string;summary:string;nodes:string[]}[] }
 export interface Atlas { sourceUpdate?:AtlasSourceUpdate; repository:string; commit:string; checked_at:string; scope:string; sources:AtlasSource[]; commands:AtlasCommand[]; views:AtlasView[]; caveats:string[]; lensCount?:number }
 export interface HostDescriptor { name: string; command_form: string; surface: { rules: Array<{ source_prefix: string; exclude: string[] }> } }
 export const REVIEWED_AT = '9496cff6332fe0b97195b7ebe67b73f62f30e5b3';
@@ -33,7 +33,7 @@ export const relations: Record<AtlasRelation,string> = {flow:'Execution',context
 export function escape(value:unknown):string { return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!)); }
 export function validSourcePath(path:string):boolean { return /^(?:(?:core|site|docs)\/[A-Za-z0-9_./-]+|CHANGELOG\.md)$/.test(path) && !path.split('/').some(p=>!p || p==='.' || p==='..'); }
 export function sourceHref(source: {path:string;revision:string}):string {
-  if (!/^[0-9a-f]{40}$/.test(source.revision) || !validSourcePath(source.path)) throw new Error('Invalid atlas source');
+  if (typeof source.revision!=='string' || !/^[0-9a-f]{40}$/.test(source.revision) || !validSourcePath(source.path)) throw new Error('Invalid atlas source');
   return `https://github.com/arbiterForge/codeArbiter/blob/${source.revision}/${source.path}`;
 }
 export function invocation(host:HostDescriptor,entry:string):string|null {
@@ -109,7 +109,7 @@ export function validateAtlas(atlas:Atlas):string[] {
     if(!/^[0-9a-f]{40}$/.test(update.revision)||!update.title.trim()||!update.summary.trim()||!update.changes.length)errors.push('Invalid atlas source update');
     const paths=new Set<string>();
     for(const change of update.changes) {
-      if(!validSourcePath(change.path)||paths.has(change.path)||!/^[0-9a-f]{40}$/.test(change.blob)||!change.summary.trim()||!change.nodes.length)errors.push('Invalid atlas update source');
+      if(!validSourcePath(change.path)||paths.has(change.path)||!/^[0-9a-f]{40}$/.test(change.blob)||(change.revision!==undefined&&(typeof change.revision!=='string'||!/^[0-9a-f]{40}$/.test(change.revision)))||!change.summary.trim()||!change.nodes.length)errors.push('Invalid atlas update source');
       paths.add(change.path);
       for(const id of change.nodes)if(!nodesGlobal.has(id))errors.push(`Unknown updated node ${id}`);
     }

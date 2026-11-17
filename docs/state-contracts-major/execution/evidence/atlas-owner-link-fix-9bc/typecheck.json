@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\bin\\tsc",
+  "--project",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\tsconfig.json",
+  "--pretty",
+  "false"
+ ],
+ "exit": 0,
+ "seconds": 0.6748442999960389,
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

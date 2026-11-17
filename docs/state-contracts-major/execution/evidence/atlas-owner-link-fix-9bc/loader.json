@@ -1,0 +1,13 @@
+{
+ "argv": [
+  "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\loader-readback.ts",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\current-inventory.json"
+ ],
+ "exit": 0,
+ "seconds": 3.664356299996143,
+ "stdout_sha256": "1334db2b25da1709fb625871b625c1c9beb6578a3d55ab461b9ad845f2280cf5",
+ "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
