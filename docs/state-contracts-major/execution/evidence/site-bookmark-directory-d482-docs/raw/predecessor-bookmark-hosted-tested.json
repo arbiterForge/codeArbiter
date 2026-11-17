@@ -1,0 +1,141 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "hosted",
+    "identity": "GitHub normal Deploy docs push43582198099 original build132409108684 Browser publication gate; original list reporter + uploaded readbacks"
+  },
+  "platform": "Ubuntu26.04.1 hosted Chrome157.0.8103.50",
+  "inputs": {
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/playwright.config.ts": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/base.mjs": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+    ".github/workflows/docs.yml": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+    "site/test/browser/academy-wayfinding.spec.ts": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/styles/academy-wayfinding.css": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+    "site/src/components/AcademyWayfinding.astro": "6796af6ab581bd06ed30a6282a9014d0b12344297b4d96dae499076bcea3ec3f",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:browser"
+      ],
+      "cwd": "site",
+      "exit_code": 0,
+      "observed_exit_basis": "Original named successful Browser publication gate step; exact command appears in original private log. No new command executed."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/academy-wayfinding-context.json",
+      "sha256": "8471a6998797bd093b3574643dc56f2a66ba09da5fd2d47cc82050b7c9c3b727"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/guide-discovery-geometry.json",
+      "sha256": "17d41ffe863678e49da064cdd11a27a37550eab9df842e95aa308a4c9b8f992b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/original-named-outcomes-projection.json",
+      "sha256": "7b61ac8f4864383cfff7b41c0549549f36e52f6bc2b66849a0159f5fc235d4eb"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/origin-projection.json",
+      "sha256": "bedda51941c73999b84565daa7c9869f858abb9fcf69a3162a707ebeeadc4492"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/original-artifact-admission.json",
+      "sha256": "ea5238049b37eedc0292673f84c4ab35913d97e2c5d18171d9f048b18ffbd186"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/finite-source-clause-observations.json",
+      "sha256": "9c4890ebbe52dc608f078d63bf3c30bf3bc57981281ae8e736abc83f8c8e7005"
+    },
+    {
+      "run_id": 43582198099,
+      "job_id": 132409108684,
+      "artifact_id": 14107944699,
+      "sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S56:01",
+    "disposition:transitions:S56:02",
+    "disposition:transitions:S56:04",
+    "disposition:transitions:S56:05",
+    "disposition:transitions:S56:06"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S56:01",
+      "observed_named_cases": [
+        "a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "assertion_scope": "Valid current bookmark saved by the explicit button survives lesson/all-lessons/back navigation and resolves only to the current declared practitioner lesson URL; source validates exact schema/release/commit/lesson before constructing its inventory-based URL."
+    },
+    {
+      "cell": "disposition:transitions:S56:02",
+      "observed_named_cases": [
+        "a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "assertion_scope": "Initial declared owned key is null while the Save control is visible. Visiting the lesson does not create a record; saving is opt-in and the UI explicitly says completion is not checked."
+    },
+    {
+      "cell": "disposition:transitions:S56:04",
+      "observed_named_cases": [
+        "denied storage retains the full lesson and an actionable explanation"
+      ],
+      "assertion_scope": "A denied localStorage getter exercises unavailable reading, then Save failure yields actionable could-not-be-saved text while the full lesson/action and curriculum link remain visible. This is deliberate storage denial, not ordinary empty state."
+    },
+    {
+      "cell": "disposition:transitions:S56:05",
+      "observed_named_cases": [
+        "a bookmark is opt-in, survives navigation, and never becomes completion",
+        "saving and removing a place work by keyboard in forced colors"
+      ],
+      "assertion_scope": "Explicit click and keyboard Save create the exact four-field current source/lesson record and update does-not-mark-complete feedback. Source inspection supplies the only-scoped-key clause: one derived-key setItem call inside saveBookmark, no other write route; no unobserved arbitrary account data claim."
+    },
+    {
+      "cell": "disposition:transitions:S56:06",
+      "observed_named_cases": [
+        "a bookmark is opt-in, survives navigation, and never becomes completion",
+        "stale source identity has no resume URL and clearing retains command preferences",
+        "saving and removing a place work by keyboard in forced colors"
+      ],
+      "assertion_scope": "Explicit clear removes the scoped bookmark, preserves independent academy-os=linux, hides resume and restores status/Save focus. Unknown verifier progress is never created or changed."
+    }
+  ],
+  "execution_context": {
+    "product_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+    "normal_docs_R": 43582198099,
+    "original_job": 132409108684,
+    "original_browser_artifact": 14107944699,
+    "original_archive_sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d",
+    "original_job_log_sha256": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+    "source_epoch": "Original hosted M, not current Temp inspection execution",
+    "later_inspection": "Original metadata/ZIP/list output read-only now; no API/browser/test rerun",
+    "selected_criterion_named_outcomes": 7,
+    "selected_capture_provenance_outcomes": 2
+  },
+  "scope": "Finite bookmark clauses only, no whole machine or SITE task promotion.",
+  "limits": [
+    "Genuine hosted normal docs push R43582198099 at product M; no relabeling to a local browser or another source. Original names come from list output, not an invented Playwright JSON reporter.",
+    "Runtime cases use original CI Chrome157.0.8103.50 on Ubuntu26.04.1. No exact hosted browser executable digest, platform union or installed/native/host/provider claim.",
+    "Actual storage-denial fixture intentionally overrides acquisition. Bookmark is reading convenience, not completion or authority. No real cross-tab dispatch or disconnected listener invocation is claimed.",
+    "Finite helper source inspection supplements explicit guards and effects; unexecuted malformed/Unicode/oversized vectors are identified rather than called new passing tests.",
+    "Immutable built product/source M and original artifact/readback IDs are retained. These inputs do not create a generic full site-build membership claim or establish a later rebuilt site from owner-file equality.",
+    "Original whole acquisition/joblog/ZIP remain private. Hosted raw artifact expiry/unavailability may make future owning authentication unavailable; no reader exception or policy relaxation is proposed."
+  ]
+}

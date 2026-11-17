@@ -4561,6 +4561,44 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
 
 class ArtifactEngineCIContractTest(unittest.TestCase):
+    def test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard(self):
+        # Read only the literal suite registry: importing it could run/build
+        # native code. The oracle here is actual workflow path selection.
+        registry_path = REPO_ROOT / ".github/scripts/test_artifact_conformance.py"
+        declarations = [node for node in ast.parse(registry_path.read_text(encoding="utf-8")).body
+                        if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                            and target.id == "EXPECTED_SUITES" for target in node.targets)]
+        self.assertEqual(len(declarations), 1)
+        owners = ast.literal_eval(declarations[0].value)
+        self.assertIsInstance(owners, dict)
+        self.assertTrue(owners)
+        subjects = {".github/scripts/test_artifact_conformance.py"}
+        for name in owners:
+            self.assertIsInstance(name, str)
+            self.assertEqual(Path(name).name, name)
+            self.assertTrue(name.startswith("test_") and name.endswith(".py"))
+            subjects.add(".github/scripts/" + name)
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        def check(text):
+            selected = paths_filter(text, "impact")
+            self.assertIn("tools/ci-impact.py", selected)
+            job = workflow_jobs(text)["ci-impact"]
+            self.assertIn("if: needs.changes.outputs.impact == 'true'", job)
+            self.assertIn("python .github/scripts/test_ci_impact.py", job)
+            missing = [subject for subject in sorted(subjects)
+                       if not any(fnmatch.fnmatchcase(subject, pattern) for pattern in selected)]
+            self.assertEqual(missing, [], "edits skip their existing fast registry guard")
+        check(ci)
+        # Every newly-owned edge matters; removing any one must fail closed.
+        begin = ci.index("            impact:\n")
+        end = ci.index("            codex-resources:\n", begin)
+        original = ci[begin:end]
+        for subject in sorted(subjects):
+            entry = "              - '" + subject + "'\n"
+            self.assertIn(entry, original)
+            mutated = ci[:begin] + original.replace(entry, "", 1) + ci[end:]
+            with self.subTest(missing_input=subject), self.assertRaises(AssertionError): check(mutated)
+
     def test_retained_recovery_receives_independent_production_context(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         block = workflow_jobs(ci)["artifact-package-cold"]

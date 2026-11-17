@@ -8,6 +8,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
+- Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.
 - Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
 - Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
 - Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.

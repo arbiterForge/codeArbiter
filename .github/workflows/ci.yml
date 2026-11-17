@@ -392,6 +392,16 @@ jobs:
               - '.github/scripts/run_artifact_authority_shard.py'
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
+              # The fast strict native-suite registry guard reads these owners.
+              - '.github/scripts/test_artifact_authoring.py'
+              - '.github/scripts/test_artifact_bridge.py'
+              - '.github/scripts/test_artifact_conformance.py'
+              - '.github/scripts/test_artifact_farm.py'
+              - '.github/scripts/test_artifact_package.py'
+              - '.github/scripts/test_artifact_work_cli.py'
+              - '.github/scripts/test_artifact_workflow.py'
+              - '.github/scripts/test_work_adopt.py'
+              - '.github/scripts/test_work_github.py'
               - '.github/scripts/project_knowledge.py'
               # The site CVE gate's accepted-advisory judge and its only guard.
               - '.github/scripts/npm_audit_gate.py'
@@ -3252,12 +3262,31 @@ jobs:
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
+      - name: Prepare hook finding source-test inputs
+        id: hook_finding_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile hooks-finding-contracts-v1
+          --output "${{ runner.temp }}/hook-finding-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Run read-only review funnel contract
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # RA-03: working-diff and inbound-PR review both terminate at the
         # read-only verdict aggregator, leave repository bytes unchanged, and
         # keep checkpoint persistence as a separate non-overwriting writer.
         run: python .github/scripts/test_review_funnel.py
+      - name: Observe original review funnel contract
+        id: hook_review_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-finding-contracts-v1
+          --source-payload "${{ runner.temp }}/hook-finding-source-inputs"
+          --output "${{ runner.temp }}/python-hook-review-observation.json"
+          -- .github/scripts/test_review_funnel.py
       - name: Run §6 routing + post-merge-cleanup surface contract
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
@@ -3585,6 +3614,17 @@ jobs:
           --repo . --source-payload "${{ runner.temp }}/python-source-inputs"
           --output "${{ runner.temp }}/python-proof-observation.json"
           -- .github/scripts/test_check_skill_proof_fresh.py
+      - name: Upload hook finding source-test inputs
+        id: hook_finding_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.hook_finding_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-findings-windows-contracts
+          path: ${{ runner.temp }}/hook-finding-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
       - name: Upload Python source-test inputs
         id: python_source_upload
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
@@ -3619,7 +3659,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3628,11 +3668,13 @@ jobs:
             --repo . --output "${{ runner.temp }}/qualification.json" \
             --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
             --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
+            --observation "hook-review=${{ runner.temp }}/python-hook-review-observation.json" \
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
             --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
             --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
             --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
-            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}"
+            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \
+            --payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"
           python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
       - name: Upload major qualification report
         if: steps.python_qualification_emit.outcome == 'success'

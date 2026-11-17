@@ -1,0 +1,664 @@
+[
+ {
+  "cell": "disposition:transitions:N04:01",
+  "frozen_contract_sha256": "30250acfde135333831160aac62ecbf7e6fecea0f50a851a60d1f9a857af42a2",
+  "frozen_baseline_literal": {
+   "from_state": "absent",
+   "from": "absent",
+   "event": "create spec/plan/knowledge/decomposition",
+   "guard": "closed supported kind and schema, unique identity/path",
+   "to": "valid current",
+   "effects": "Create revision 1, typed normative state, presentation, checksums; plan tasks PENDING, governance draft.",
+   "failure_retry": "Duplicate identity, existing canonical slug or catalog bounds refuse.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/operations/mutations.go",
+     "symbol": "New",
+     "lines": [
+      19
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go"
+    }
+   ],
+   "transition_id": "N04:01"
+  },
+  "current_semantic_mapping": "Typed create/refusal recipe covers all four supported kinds, revision1/initial task-governance state, duplicate authorities and public/save-byte catalog bounds without writes on refusal.",
+  "complete_recipe_assertions": 72,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 78,
+    "symbol": "TestClosedSchema",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/repository/catalog_test.go",
+    "line": 17,
+    "symbol": "TestContextRepresentationBoundary",
+    "sha256": "4b148444a8d0099d5c212ea34ec31ff95da33add80abbce17d2eeaf1f57f3f1b"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 747,
+    "symbol": "TestCreateDoesNotShadowLegacy",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 756,
+    "symbol": "TestDuplicateCanonicalAuthoritiesFailClosed",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 137,
+    "symbol": "TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 50,
+    "symbol": "TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N07:01",
+  "frozen_contract_sha256": "016b0729c0bd1f6b7941d3dc3159b02e674a3952d2347e9ac272f032763f1e84",
+  "frozen_baseline_literal": {
+   "from_state": "open decision",
+   "from": "open decision",
+   "event": "record.update status=resolved",
+   "guard": "nonblank resolution; valid references",
+   "to": "resolved",
+   "effects": "Update normative record; formerly blocking readiness may clear.",
+   "failure_retry": "Resolved without resolution is structurally invalid.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/validate/validate.go",
+     "symbol": "Structural",
+     "lines": [
+      96
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+    }
+   ],
+   "transition_id": "N07:01"
+  },
+  "current_semantic_mapping": "Named decision update covers blank resolution and dangling reference refusal plus resolved transition; role binding/spec-readiness complements keep this from becoming approval.",
+  "complete_recipe_assertions": 36,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+    "line": 90,
+    "symbol": "TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 45,
+    "symbol": "TestRoleBoundReferences",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 11,
+    "symbol": "TestSpecReadiness",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N07:03",
+  "frozen_contract_sha256": "2d0ebd31dd3bef2743739904587ce4e7425e9f58c630b68882192ea3102c8d5d",
+  "frozen_baseline_literal": {
+   "from_state": "structural draft",
+   "from": "structural draft",
+   "event": "validate ready",
+   "guard": "all required semantic fields; named tests for test commands; DAG/partition/input coverage; spec criterion mapping",
+   "to": "ready or not ready",
+   "effects": "Return deterministic diagnostics; does not approve.",
+   "failure_retry": "OPEN_BLOCKER, uncovered criterion/scope/input, invalid command etc remain diagnostic.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/validate/validate.go",
+     "symbol": "Ready",
+     "lines": [
+      437
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+    }
+   ],
+   "transition_id": "N07:03"
+  },
+  "current_semantic_mapping": "Exact ready diagnostics cover invalid partition, missing statement, uncovered criterion/input/scope and positive readiness; draft/graph/mapping/command and role-bound complements remain mandatory and nonauthorizing.",
+  "complete_recipe_assertions": 96,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 22,
+    "symbol": "TestDraftIncompleteRecords",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+    "line": 130,
+    "symbol": "TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 30,
+    "symbol": "TestPlanGraphAndCoverage",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/review_policy_test.go",
+    "line": 108,
+    "symbol": "TestReadyRefusesGitDirectoryTaskPaths",
+    "sha256": "ec3a2293f83f6fd239431f04099d221b62f732182c93c0575cd49e01a679a4f0"
+   },
+   {
+    "path": "core/artifacts/internal/validate/review_policy_test.go",
+    "line": 71,
+    "symbol": "TestReadyRefusesRuntimeMarkerInputs",
+    "sha256": "ec3a2293f83f6fd239431f04099d221b62f732182c93c0575cd49e01a679a4f0"
+   },
+   {
+    "path": "core/artifacts/internal/validate/review_policy_test.go",
+    "line": 13,
+    "symbol": "TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "sha256": "ec3a2293f83f6fd239431f04099d221b62f732182c93c0575cd49e01a679a4f0"
+   },
+   {
+    "path": "core/artifacts/internal/validate/review_policy_test.go",
+    "line": 51,
+    "symbol": "TestReviewNamedTestRequirementAtReadiness",
+    "sha256": "ec3a2293f83f6fd239431f04099d221b62f732182c93c0575cd49e01a679a4f0"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 45,
+    "symbol": "TestRoleBoundReferences",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 85,
+    "symbol": "TestSpecBinding",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 11,
+    "symbol": "TestSpecReadiness",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N07:04",
+  "frozen_contract_sha256": "b00743ff708d502a6ffb19c0b5e2f8cd7822db8ab24377425be07b6547c23ec4",
+  "frozen_baseline_literal": {
+   "from_state": "active criterion",
+   "from": "active criterion",
+   "event": "mark not_applicable / dispose mandatory",
+   "guard": "Ready/Binding checks",
+   "to": "not ready",
+   "effects": "Refuse active not-applicable criterion or mandatory criterion disposition.",
+   "failure_retry": "Must explicitly revise/retire outcome with reason; no automatic task execution.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/validate/validate.go",
+     "symbol": "Ready",
+     "lines": [
+      437
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+    }
+   ],
+   "transition_id": "N07:04"
+  },
+  "current_semantic_mapping": "Active not-applicable and mandatory disposition refusals plus optional control and typed retirement collection preservation cover the literal refusal/revision boundary; no automatic execution claim.",
+  "complete_recipe_assertions": 36,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/readiness_decision_contract_test.go",
+    "line": 188,
+    "symbol": "TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "sha256": "3aa7d2b6be9382fef5d37bb45f383740ffbd2ec4a0565cc246716c14ccd1afff"
+   },
+   {
+    "path": "core/artifacts/internal/operations/retirement_test.go",
+    "line": 36,
+    "symbol": "TestRetiringCriterionKeepsNestedCollectionKinds",
+    "sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 85,
+    "symbol": "TestSpecBinding",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N10:01",
+  "frozen_contract_sha256": "5850e7105c9d3901617add1b24a9eeb2677d195966298d03cd717a2b0d44185e",
+  "frozen_baseline_literal": {
+   "from_state": "IN_PROGRESS/REVIEW/DONE/ACCEPTED/STALE",
+   "from": "IN_PROGRESS/REVIEW/DONE/ACCEPTED/STALE",
+   "event": "task-review with verification+review receipts",
+   "guard": "Ready approved plan+spec, approved_source binding, strict prereqs, current snapshot, both exact receipts, completion rules",
+   "to": "REVIEW",
+   "effects": "Append both refs, set/retain exact completion receipt selection; establish scope baseline if absent.",
+   "failure_retry": "Stale plan baseline needs scope-reconcile; failed/missing named tests/stale refs reject.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/operations/lifecycle.go",
+     "symbol": "progress",
+     "lines": [
+      278
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+    }
+   ],
+   "transition_id": "N10:01"
+  },
+  "current_semantic_mapping": "Explicit receipted-mode review controls cover five prior progress states, baseline/failed or missing named test/ordinary-prerequisite/source drift refusals, exact two selected refs and completion selection. Current ADR0046 independent-progress semantics and distinct ordinary mode are not relabelled as legacy dependency invalidation or actual user permission.",
+  "complete_recipe_assertions": 234,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/native_v1_review_test.go",
+    "line": 111,
+    "symbol": "TestCodexNativeV1CaptureAndPublication",
+    "sha256": "da259968451726234a7d2d8bd8d19c406eb07fbc8e11823bbd942ea9daa1e00b"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_v2_review_test.go",
+    "line": 44,
+    "symbol": "TestCodexNativeV2CaptureAndPublication",
+    "sha256": "346f2e56ab950209ac774a8d249c8b3c00b9c266df42cf75c80492da7cab3ba9"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_v2_review_test.go",
+    "line": 111,
+    "symbol": "TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "sha256": "346f2e56ab950209ac774a8d249c8b3c00b9c266df42cf75c80492da7cab3ba9"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 257,
+    "symbol": "TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 75,
+    "symbol": "TestCompletionReviewNativeCapturePublicationAndScope",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 50,
+    "symbol": "TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 141,
+    "symbol": "TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 287,
+    "symbol": "TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 196,
+    "symbol": "TestCompletionReviewSelectionAndDecisionAreExact",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 118,
+    "symbol": "TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 766,
+    "symbol": "TestMissingOrSkippedNamedTests",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 271,
+    "symbol": "TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 201,
+    "symbol": "TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 30,
+    "symbol": "TestPlanGraphAndCoverage",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 85,
+    "symbol": "TestSpecBinding",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   },
+   {
+    "path": "core/artifacts/internal/validate/validate_test.go",
+    "line": 11,
+    "symbol": "TestSpecReadiness",
+    "sha256": "e22ef761560c02b637088ab775a3aed6f3713799ceac24df91c39956c060a3d2"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N10:03",
+  "frozen_contract_sha256": "465eba1781e4df640e2385f6be7c92c0c091e0abb3bb63520d8a0b0ffb12668b",
+  "frozen_baseline_literal": {
+   "from_state": "missing/stale scope baseline",
+   "from": "missing/stale scope baseline",
+   "event": "scope-reconcile",
+   "guard": "current exact reconciliation receipt for scope/input",
+   "to": "current baseline",
+   "effects": "Set base input and plan hashes; append reconciliation to member tasks.",
+   "failure_retry": "Preserve prior evidence; cannot silently convert stale baseline.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/operations/lifecycle.go",
+     "symbol": "progress",
+     "lines": [
+      278
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+    }
+   ],
+   "transition_id": "N10:03"
+  },
+  "current_semantic_mapping": "Current exact scope/input/authority receipt controls cover missing/stale baselines, wrong binding/definition/subject/source refusals, successful baseline update and every member history; legacy evidence remains inspectable without current authority.",
+  "complete_recipe_assertions": 66,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 118,
+    "symbol": "TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 573,
+    "symbol": "TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 510,
+    "symbol": "TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N10:04",
+  "frozen_contract_sha256": "406f39ebec6f5895722e3b9814a272cbac46e5ecb9be0e2f2563edab4fc84bf1",
+  "frozen_baseline_literal": {
+   "from_state": "scope tasks REVIEW or ACCEPTED",
+   "from": "scope tasks REVIEW or ACCEPTED",
+   "event": "accept-scope with quality receipt",
+   "guard": "previous checkpoint accepted fresh; every member TaskFresh; exact current quality/completion evidence",
+   "to": "ACCEPTED",
+   "effects": "Accept entire scope atomically, append quality receipt.",
+   "failure_retry": "Any failed member or prior scope refuses entire transition.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/operations/lifecycle.go",
+     "symbol": "progress",
+     "lines": [
+      278
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+    }
+   ],
+   "transition_id": "N10:04"
+  },
+  "current_semantic_mapping": "Exact current quality/completion and every-member receipts cover review/mixed/later-scope success plus failed/stale member/prior-scope refusal atomically; no prior task receipt is relabelled or reused after source drift.",
+  "complete_recipe_assertions": 102,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/native_v1_review_test.go",
+    "line": 111,
+    "symbol": "TestCodexNativeV1CaptureAndPublication",
+    "sha256": "da259968451726234a7d2d8bd8d19c406eb07fbc8e11823bbd942ea9daa1e00b"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_v2_review_test.go",
+    "line": 44,
+    "symbol": "TestCodexNativeV2CaptureAndPublication",
+    "sha256": "346f2e56ab950209ac774a8d249c8b3c00b9c266df42cf75c80492da7cab3ba9"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_v2_review_test.go",
+    "line": 111,
+    "symbol": "TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "sha256": "346f2e56ab950209ac774a8d249c8b3c00b9c266df42cf75c80492da7cab3ba9"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_rerun_test.go",
+    "line": 83,
+    "symbol": "TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "sha256": "558437da0248c21d8e09629f2add7f3f721f8065f9ec793af27021b267952217"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_rerun_test.go",
+    "line": 13,
+    "symbol": "TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "sha256": "558437da0248c21d8e09629f2add7f3f721f8065f9ec793af27021b267952217"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 75,
+    "symbol": "TestCompletionReviewNativeCapturePublicationAndScope",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/completion_review_test.go",
+    "line": 346,
+    "symbol": "TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 118,
+    "symbol": "TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 383,
+    "symbol": "TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   },
+   {
+    "path": "core/artifacts/internal/operations/creation_review_scope_contract_test.go",
+    "line": 331,
+    "symbol": "TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "sha256": "829f4ad6ee818babbb5f7b0d46530875f00313dd86e8c04479773252ace05eea"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ },
+ {
+  "cell": "disposition:transitions:N12:04",
+  "frozen_contract_sha256": "280ebd9c5db6ed8f1356871a1ec61016d869a052b9b5c33b4f8634de11a4ac38",
+  "frozen_baseline_literal": {
+   "from_state": "any",
+   "from": "any",
+   "event": "receipted prerequisite",
+   "guard": "strict guards+snapshot; exact current prerequisite receipt",
+   "to": "legacy satisfied",
+   "effects": "Delete ordinary observation for ID, set legacy satisfied and append receipt.",
+   "failure_retry": "Strict consumers require legacy receipts and reject presence of ordinary observation.",
+   "source": [
+    {
+     "path": "core/artifacts/internal/operations/lifecycle.go",
+     "symbol": "progress",
+     "lines": [
+      278
+     ],
+     "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+    }
+   ],
+   "transition_id": "N12:04"
+  },
+  "current_semantic_mapping": "The actual receipted prerequisite test explicitly deletes only the ordinary observation, sets legacy satisfied, appends exact retained receipt history and preserves independent work/normative state. Replays have no duplicate effect; authority/subject/definition/source/stale receipt negatives and ordinary adverse-observation controls remain required.",
+  "complete_recipe_assertions": 72,
+  "six_platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "every_required_parent_and_all_original_descendants_passed": true,
+  "test_function_witnesses": [
+   {
+    "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+    "line": 63,
+    "symbol": "TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+   },
+   {
+    "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+    "line": 128,
+    "symbol": "TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+   },
+   {
+    "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+    "line": 161,
+    "symbol": "TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+   },
+   {
+    "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+    "line": 36,
+    "symbol": "TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 683,
+    "symbol": "TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   },
+   {
+    "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+    "line": 631,
+    "symbol": "TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "sha256": "7aa10292d2b73eb19ab46867f744a94dc8a141c70083396088ee031a5f9383da"
+   }
+  ],
+  "exact_recipe_ref": "raw/exact-eight-compositions.json",
+  "named_original_ref": "raw/selected-original-named-outcomes.json",
+  "current_applicability": "All positive module/driver file bytes and both actual module path-order hashes unchanged D482\u2192304; source/runtime epochs remain original."
+ }
+]

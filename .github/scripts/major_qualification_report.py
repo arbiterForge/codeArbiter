@@ -210,7 +210,7 @@ def source_checkout(repo, profile=None):
     fresh HEAD index forces a current-policy read; the real index is checked
     independently so staged or unmerged changes cannot disappear in that view.
     """
-    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
     source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
     tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
     before, actual_raw = _source_indices(repo, retain=True)
@@ -1410,6 +1410,38 @@ Q02_REQUIRED_SELECTORS = frozenset(('python:.github/scripts/test_major_readiness
  'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_releases_follow_successful_main_ci_and_manual_retry'))
 
 
+# Exact declarative W-F03 severity-policy composition; shared task links do
+# not make this a model, whole-task or installed-host qualification.
+HOOK_REVIEW_SOURCE_PROFILE = "hooks-finding-contracts-v1"
+HOOK_REVIEW_SOURCE_JOB = SOURCE_JOB
+HOOK_REVIEW_SOURCE_PAYLOAD = "major-source-inputs-hooks-findings-windows-contracts"
+HOOK_REVIEW_SOURCE_UPLOAD = "Upload hook finding source-test inputs"
+HOOK_REVIEW_SOURCE_SCRIPT = ".github/scripts/test_review_funnel.py"
+HOOK_REVIEW_SOURCE_PATHS = SOURCE_PATHS | frozenset(['.github/major-qualification-policy.json', '.github/major-test-selections.json', '.github/scripts/test_hook_ci_partition.py', '.github/scripts/test_review_funnel.py', '.github/workflows/ci.yml', 'docs/state-contracts-major/PROGRAM.md', 'docs/state-contracts-major/contracts/decisions.json', 'docs/state-contracts-major/contracts/finding-dispositions.json', 'docs/state-contracts-major/contracts/tasks.json', 'plugins/ca-codex/agents/INDEX.md', 'plugins/ca-codex/agents/architecture-drift-reviewer.md', 'plugins/ca-codex/agents/auth-crypto-reviewer.md', 'plugins/ca-codex/agents/backend-author.md', 'plugins/ca-codex/agents/checkpoint-aggregator.md', 'plugins/ca-codex/agents/coverage-auditor.md', 'plugins/ca-codex/agents/decision-challenger.md', 'plugins/ca-codex/agents/dependency-reviewer.md', 'plugins/ca-codex/agents/design-quality-reviewer.md', 'plugins/ca-codex/agents/finding-triage.md', 'plugins/ca-codex/agents/frontend-author.md', 'plugins/ca-codex/agents/grader.md', 'plugins/ca-codex/agents/infra-author.md', 'plugins/ca-codex/agents/map-deps.md', 'plugins/ca-codex/agents/map-structure.md', 'plugins/ca-codex/agents/migration-reviewer.md', 'plugins/ca-codex/agents/scout.md', 'plugins/ca-codex/agents/security-reviewer.md', 'plugins/ca-codex/agents/tribunal-lens-reviewer.md', 'plugins/ca-codex/agents/verdict-aggregator.md', 'plugins/ca-codex/includes/reviewer-contract.md', 'plugins/ca-pi/agents/INDEX.md', 'plugins/ca-pi/agents/architecture-drift-reviewer.md', 'plugins/ca-pi/agents/auth-crypto-reviewer.md', 'plugins/ca-pi/agents/backend-author.md', 'plugins/ca-pi/agents/checkpoint-aggregator.md', 'plugins/ca-pi/agents/coverage-auditor.md', 'plugins/ca-pi/agents/decision-challenger.md', 'plugins/ca-pi/agents/dependency-reviewer.md', 'plugins/ca-pi/agents/design-quality-reviewer.md', 'plugins/ca-pi/agents/finding-triage.md', 'plugins/ca-pi/agents/frontend-author.md', 'plugins/ca-pi/agents/grader.md', 'plugins/ca-pi/agents/infra-author.md', 'plugins/ca-pi/agents/map-deps.md', 'plugins/ca-pi/agents/map-structure.md', 'plugins/ca-pi/agents/migration-reviewer.md', 'plugins/ca-pi/agents/scout.md', 'plugins/ca-pi/agents/security-reviewer.md', 'plugins/ca-pi/agents/tribunal-lens-reviewer.md', 'plugins/ca-pi/agents/verdict-aggregator.md', 'plugins/ca-pi/includes/reviewer-contract.md', 'plugins/ca/agents/INDEX.md', 'plugins/ca/agents/architecture-drift-reviewer.md', 'plugins/ca/agents/auth-crypto-reviewer.md', 'plugins/ca/agents/authority-reviewer.md', 'plugins/ca/agents/backend-author.md', 'plugins/ca/agents/checkpoint-aggregator.md', 'plugins/ca/agents/coverage-auditor.md', 'plugins/ca/agents/decision-challenger.md', 'plugins/ca/agents/dependency-reviewer.md', 'plugins/ca/agents/design-quality-reviewer.md', 'plugins/ca/agents/finding-triage.md', 'plugins/ca/agents/frontend-author.md', 'plugins/ca/agents/grader.md', 'plugins/ca/agents/infra-author.md', 'plugins/ca/agents/map-deps.md', 'plugins/ca/agents/map-structure.md', 'plugins/ca/agents/migration-reviewer.md', 'plugins/ca/agents/scout.md', 'plugins/ca/agents/security-reviewer.md', 'plugins/ca/agents/tribunal-lens-reviewer.md', 'plugins/ca/agents/verdict-aggregator.md', 'plugins/ca/includes/reviewer-contract.md', 'site/src/curated/commands/review.md'])
+HOOK_REVIEW_REQUIRED_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_author_collection_does_not_invoke_review_verdict', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_persistence_is_explicit_and_non_overwriting', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_writer_reports_the_selected_dated_filename', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_curated_review_projection_uses_the_read_only_terminal', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_dispatch_contract_uses_canonical_routes_and_preserves_findings', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_inbound_pr_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_triage_requires_the_complete_batch_contract', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_verdict_has_unambiguous_incomplete_precedence_and_schema', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_working_diff_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+HOOK_REVIEW_FINDING_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+HOOK_REVIEW_FINDING_CELL = "disposition:findings:W-F03"
+
+
+def _hook_review_python_command(argv):
+    require(isinstance(argv, list) and len(argv) == 2 and all(type(v) is str and v for v in argv)
+            and (argv[1].replace("\\", "/") == HOOK_REVIEW_SOURCE_SCRIPT
+                 or argv[1].replace("\\", "/").endswith("/" + HOOK_REVIEW_SOURCE_SCRIPT)),
+            "hook review profile requires its original unfiltered Python entry point")
+
+
+def _hook_review_members(repo):
+    for tree in ("core/surface", "plugins/ca", "plugins/ca-codex", "plugins/ca-pi"):
+        folder = Path(repo) / tree / "agents"
+        info = folder.lstat()
+        require(stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "hook review agent directory is unsafe")
+        actual = {p.relative_to(repo).as_posix() for p in folder.glob("*.md")}
+        expected = {p for p in HOOK_REVIEW_SOURCE_PATHS if p.startswith(tree + "/agents/")}
+        require(actual == expected, "hook review agent inventory differs")
+
+
 def _q02_python_command(argv):
     require(isinstance(argv, list) and len(argv) == 2 and all(type(v) is str and v for v in argv)
             and any(argv[1].replace("\\", "/") == script or argv[1].replace("\\", "/").endswith("/" + script)
@@ -1422,6 +1454,8 @@ def source_profile(profile=SOURCE_PROFILE):
         return {"paths": SOURCE_PATHS, "job": SOURCE_JOB, "payload": SOURCE_PAYLOAD, "upload": SOURCE_UPLOAD}
     if profile == SDK_SOURCE_PROFILE:
         return {"paths": SDK_SOURCE_PATHS, "job": SDK_SOURCE_JOB, "payload": SDK_SOURCE_PAYLOAD, "upload": SDK_SOURCE_UPLOAD}
+    if profile == HOOK_REVIEW_SOURCE_PROFILE:
+        return {"paths": HOOK_REVIEW_SOURCE_PATHS, "job": HOOK_REVIEW_SOURCE_JOB, "payload": HOOK_REVIEW_SOURCE_PAYLOAD, "upload": HOOK_REVIEW_SOURCE_UPLOAD}
     if profile == Q02_SOURCE_PROFILE:
         return {"paths": Q02_SOURCE_PATHS, "job": Q02_SOURCE_JOB, "payload": Q02_SOURCE_PAYLOAD, "upload": Q02_SOURCE_UPLOAD}
     require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
@@ -1523,7 +1557,7 @@ def _source_root_members(repo):
 def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
-    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS
+    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS or relative in HOOK_REVIEW_SOURCE_PATHS
             or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
     require(type(expected) is bytes and type(actual) is bytes
@@ -1546,7 +1580,10 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     paths = spec["paths"]
     identity = source_identity(repo, profile)
     require(identity["clean"], "source payload checkout is not clean")
-    if profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE): _source_root_members(repo)
+    if profile == HOOK_REVIEW_SOURCE_PROFILE:
+        _source_root_members(repo)
+        _hook_review_members(repo)
+    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE): _source_root_members(repo)
     elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
@@ -1587,7 +1624,7 @@ def validate_source_manifest(record, req, job_name, members):
     paths = spec["paths"]
     fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
     require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
-            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
+            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
             and job_name == record["producer_job_name"] == spec["job"]
             and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
             and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
@@ -1678,12 +1715,15 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     binding = observed.get("source_input_binding")
     spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
     require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
-            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS)
+            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS)
             and binding["payload_name"] == spec["payload"]
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
             "source test payload binding missing or differs")
-    if binding["profile"] == Q02_SOURCE_PROFILE:
+    if binding["profile"] == HOOK_REVIEW_SOURCE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer", "hook review profile requires original Python observer")
+        _hook_review_python_command(observed.get("argv"))
+    elif binding["profile"] == Q02_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "Q02 source profile requires original Python observer")
         _q02_python_command(observed.get("argv"))
     elif binding["profile"] == SDK_SOURCE_PROFILE:
@@ -1705,7 +1745,10 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
     source_profile(profile)
-    if profile == Q02_SOURCE_PROFILE:
+    if profile == HOOK_REVIEW_SOURCE_PROFILE:
+        require(relative == HOOK_REVIEW_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
+                "hook review profile requires its original unfiltered Python entry point and payload")
+    elif profile == Q02_SOURCE_PROFILE:
         require(relative in Q02_SOURCE_SCRIPTS and arguments == [] and source_payload is not None,
                 "Q02 source profile requires its original unfiltered Python entry point and payload")
     elif profile == SDK_SOURCE_PROFILE:
@@ -2251,7 +2294,11 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 profile = binding.get("profile") if isinstance(binding, dict) else None
                 spec = source_profile(profile)
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
-                if profile == Q02_SOURCE_PROFILE:
+                if profile == HOOK_REVIEW_SOURCE_PROFILE:
+                    require(set(group["cells"]) == {HOOK_REVIEW_FINDING_CELL}
+                            and set(group["selectors"]) == HOOK_REVIEW_FINDING_SELECTORS,
+                            "hook finding profile requires its complete exact declarative finding composition")
+                elif profile == Q02_SOURCE_PROFILE:
                     require(set(group["cells"]) <= Q02_SOURCE_CELLS
                             and set(group["selectors"]) <= Q02_REQUIRED_SELECTORS,
                             "Q02 implementation profile cannot qualify another task or scope")
@@ -2409,7 +2456,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)
@@ -2473,7 +2520,7 @@ def main(argv=None):
                 require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
             else:
                 payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
-                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
+                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, HOOK_REVIEW_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

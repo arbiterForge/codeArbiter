@@ -74,6 +74,27 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
 # does not become a merge-queue test. Exact blocks keep commands, guards,
 # credentials and uploader pins reviewable, as for native qualification above.
 PYTHON_SOURCE_ROLES = {
+    'Prepare hook finding source-test inputs': r"""      - name: Prepare hook finding source-test inputs
+        id: hook_finding_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile hooks-finding-contracts-v1
+          --output "${{ runner.temp }}/hook-finding-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+""",
+    'Observe original review funnel contract': r"""      - name: Observe original review funnel contract
+        id: hook_review_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-finding-contracts-v1
+          --source-payload "${{ runner.temp }}/hook-finding-source-inputs"
+          --output "${{ runner.temp }}/python-hook-review-observation.json"
+          -- .github/scripts/test_review_funnel.py
+""",
     'Prepare Python source-test inputs': r"""      - name: Prepare Python source-test inputs
         id: python_source_prepare
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -135,6 +156,18 @@ PYTHON_SOURCE_ROLES = {
           --output "${{ runner.temp }}/python-proof-observation.json"
           -- .github/scripts/test_check_skill_proof_fresh.py
 """,
+    'Upload hook finding source-test inputs': r"""      - name: Upload hook finding source-test inputs
+        id: hook_finding_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.hook_finding_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-findings-windows-contracts
+          path: ${{ runner.temp }}/hook-finding-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+""",
     'Upload Python source-test inputs': r"""      - name: Upload Python source-test inputs
         id: python_source_upload
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
@@ -172,7 +205,7 @@ PYTHON_SOURCE_ROLES = {
 """,
     'Emit original Python source qualification report': r"""      - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -181,11 +214,13 @@ PYTHON_SOURCE_ROLES = {
             --repo . --output "${{ runner.temp }}/qualification.json" \
             --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
             --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
+            --observation "hook-review=${{ runner.temp }}/python-hook-review-observation.json" \
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
             --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
             --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
             --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
-            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}"
+            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \
+            --payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"
           python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
 """,
     'Upload major qualification report': r"""      - name: Upload major qualification report
@@ -259,6 +294,7 @@ def python_source_roles(block: str) -> dict[str,str]:
     expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in PYTHON_SOURCE_ROLES]
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
     for name,entry in (('Test interrupted output publication','test_generated_output.py'),
+                       ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
                        ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
                        ('Run hosted release-workflow contract tests','test_release_workflow.py')):
@@ -335,7 +371,8 @@ def validate(
         kind='isolation' if cmd==ISOLATION else 'contracts'
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
-        observed_original = roles and cmd in ('python .github/scripts/test_generated_output.py',
+        observed_original = roles and cmd in ('python .github/scripts/test_review_funnel.py',
+                                               'python .github/scripts/test_generated_output.py',
                                                'python .github/scripts/test_check_skill_proof_fresh.py',
                                                'python .github/scripts/test_major_readiness.py',
                                                'python .github/scripts/test_release_workflow.py')

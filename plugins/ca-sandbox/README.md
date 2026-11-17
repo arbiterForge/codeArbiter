@@ -47,7 +47,7 @@ State is label-only: the set of sandboxes IS the set of docker objects labeled `
 
 Ordinary exploration runtime is **offline** (`--network none`). The accepted request names `clone-then-cut` and `allowlist` also currently resolve to offline; the experimental allowlist helper is not integrated into ordinary create. Results distinguish requested and effective policy. Clone/build helpers still fetch repositories and dependencies. Never expand network access incidentally.
 
-The clone lives on a named volume. Build copies it into a temporary host build-context directory, removes that staging copy after use, and reports uncertain cleanup with its identity. The running sandbox has no host bind or socket; this does not mean source never touches host staging. Shell exit detaches; explicitly destroy the exact sandbox id when finished. Broad `sandbox prune` is separate and targets its discovery snapshot.
+The clone lives on a named volume. Build copies it into a temporary host build-context directory, removes that staging copy after use, and reports uncertain cleanup with its identity. The running sandbox has no host bind or socket; this does not mean source never touches host staging. Shell exit detaches; explicitly destroy the exact sandbox id when finished. Broad `sandbox prune` is separate and targets its container and volume discovery sets, captured at different times.
 
 ## Image caching
 

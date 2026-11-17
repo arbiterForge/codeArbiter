@@ -6210,6 +6210,146 @@ class DebuggerInboxTests(unittest.TestCase):
         return len(value)
 
 
+
+class DebuggerPhaseProgressTests(unittest.TestCase):
+    def test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        real_popen = subprocess.Popen
+        real_startup = getattr(subprocess, "STARTUPINFO", SimpleNamespace)
+        program = r"""# CA_OWNED_SDK_PHASE_WORKER
+import json,os,sys,time
+request=json.loads(sys.stdin.buffer.read(4097))
+record={"schemaVersion":1,"pid":request["pid"],"created":request["created"],
+        "profile":request["profile"],"workerPid":os.getpid(),"phase":"wait"}
+sys.stdout.buffer.write(b"CA_SDK_PHASE "+json.dumps(record,separators=(",",":")).encode()+b"\n")
+sys.stdout.buffer.flush()
+time.sleep(10)
+"""
+        children=[];readers=[];pending=bytearray();lock=threading.Lock()
+        class Worker:
+            def __init__(self, child):
+                self.child=child;self.pid=child.pid;self.stdin=child.stdin;self.stdout=child.stdout
+                self._handle=SimpleNamespace(Close=mock.Mock())
+            @property
+            def returncode(self): return self.child.returncode
+            def poll(self): return self.child.poll()
+            def wait(self, timeout): return self.child.wait(timeout=timeout)
+            def kill(self): return self.child.kill()
+        def launch(argv, **kwargs):
+            with mock.patch.object(subprocess,"STARTUPINFO",real_startup,create=True):
+                child=real_popen([sys.executable,"-I","-S","-B","-c",program],cwd=kwargs["cwd"],
+                    env=kwargs["env"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=0)
+            children.append(child)
+            def drain():
+                while chunk:=child.stdout.read(4096):
+                    with lock: pending.extend(chunk)
+            thread=threading.Thread(target=drain,daemon=True);thread.start();readers.append(thread)
+            return Worker(child)
+        def available(stream):
+            with lock:return len(pending)
+        def read(stream,count):
+            with lock:
+                raw=bytes(pending[:count]);del pending[:count];return raw
+        collect=native._collect
+        def collect_owned(child, probe, *, deadline, **kwargs):
+            return collect(child,probe,deadline=deadline,_read=read,**kwargs)
+        kernel=SimpleNamespace(duplicate_query=mock.Mock(return_value=77),close=mock.Mock(),available=available)
+        try:
+            with tempfile.TemporaryDirectory(prefix="ca-sdk-phase-test-") as directory:
+                root=Path(directory).resolve();owner_temp=tempfile.TemporaryDirectory
+                with mock.patch.object(native.tempfile,"TemporaryDirectory",side_effect=lambda **kw:owner_temp(dir=root,**kw)), \
+                     mock.patch.object(native,"_tool_profile",return_value=("inbox-v1",root,{"dbgeng.dll":"a"*64,"dbghelp.dll":"b"*64})), \
+                     mock.patch.object(native.subprocess,"STARTUPINFO",side_effect=SimpleNamespace,create=True), \
+                     mock.patch.object(native.subprocess,"CREATE_NO_WINDOW",0x08000000,create=True), \
+                     mock.patch.object(native.subprocess,"Popen",side_effect=launch), \
+                     mock.patch.object(native,"_collect",side_effect=collect_owned):
+                    started=time.monotonic()
+                    result=native._debugger(33,kernel,started+1.0,
+                        binding={"handle":11,"created":44,"image":str(root/"inert-node.exe")})
+                self.assertTrue(result["diagnostic"]["workerSpawned"], "owned inert worker must actually launch")
+                self.assertEqual(len(children),1)
+                self.assertEqual(result["diagnostic"]["phase"],"sdk-wait",
+                    "the last closed owned SDK phase was lost when final JSON never arrived")
+                self.assertIn(result["status"],("deadline","cleanup_unknown"))
+                self.assertEqual(result["diagnostic"]["primaryStatus"],"deadline")
+                self.assertEqual(result["diagnostic"]["failure"],"deadline")
+                self.assertEqual(result["threads"],[]);self.assertIsNone(result["worker"])
+                self.assertEqual(native.SECONDS,5.0)
+                self.assertLess(time.monotonic()-started,3.0)
+                kernel.duplicate_query.assert_called_once_with(11)
+                self.assertEqual(kernel.close.call_args_list,[mock.call(77)])
+        finally:
+            for child in children:
+                if child.poll() is None:child.kill()
+                child.wait(timeout=2)
+                if child.stdout is not None and not child.stdout.closed:child.stdout.close()
+            for reader in readers:reader.join(timeout=2);self.assertFalse(reader.is_alive())
+
+    def test_progress_decoder_refuses_unbound_malformed_partial_and_unbounded_rows(self):
+        import _windows_dbgeng as sdk
+        good={"schemaVersion":1,"pid":33,"created":44,"profile":"inbox-v1","workerPid":123,"phase":"wait"}
+        def encode(row):return b"CA_SDK_PHASE "+json.dumps(row,separators=(",",":")).encode()+b"\n"
+        def decode(raw):return sdk.decode_progress(raw,33,44,profile="inbox-v1",worker_pid=123)
+        self.assertEqual(decode(encode(good)),("wait",b""))
+        self.assertEqual(decode(b'{"legacy":true}'),(None,b'{"legacy":true}'))
+        bad=[b"",b"CA_SDK_PHASE {",b"CA_SDK_PHASE {broken}\n",b"CA_SDK_PHASE "+b"x"*300+b"\n",
+             b'CA_SDK_PHASE {"schemaVersion":1,"schemaVersion":1,"pid":33,"created":44,"profile":"inbox-v1","workerPid":123,"phase":"wait"}\n']
+        for key,value in (("schemaVersion",True),("pid",34),("pid",True),("created",45),("workerPid",124),
+                          ("profile","sdk-v1"),("phase","PRIVATE_PHASE_CANARY"),("extra","PRIVATE_PHASE_CANARY")):
+            bad.append(encode({**good,key:value}))
+        bad.extend((encode(good)+encode(good),encode(good)+encode({**good,"phase":"attach"})))
+        for raw in bad:
+            with self.subTest(kind=hashlib.sha256(raw).hexdigest()[:8]):self.assertIsNone(decode(raw)[0])
+        partial=b"CA_SDK_PHASE {"
+        self.assertEqual(decode(encode(good)+partial),("wait",partial))
+        with_final=encode(good)+b'{"legacy":true}'
+        self.assertEqual(decode(with_final),("wait",b'{"legacy":true}'))
+        self.assertIsNone(sdk.decode_progress(encode(good),33,44,profile="inbox-v1",worker_pid=None)[0])
+        self.assertIsNone(sdk.decode_progress(encode(good),33,45,profile="inbox-v1",worker_pid=123)[0])
+
+    def test_real_worker_phase_callbacks_precede_inert_boundaries_and_keep_final_schema(self):
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        request={"schemaVersion":3,"profile":"inbox-v1","handle":77,"pid":33,"created":44,
+                 "image":"inert-node.exe","sdk":"inert-profile","hashes":{"dbgeng.dll":"a"*64,"dbghelp.dll":"b"*64},
+                 "deadline":time.monotonic()+5,"progress":True}
+        stream=io.BytesIO();emit=sdk._progress_writer(request,stream);self.assertIsNotNone(emit)
+        emit("input");seen=[]
+        def check_phase(expected):
+            actual,tail=sdk.decode_progress(stream.getvalue(),33,44,profile="inbox-v1",worker_pid=os.getpid())
+            self.assertEqual(actual,expected);self.assertEqual(tail,b"");seen.append(expected)
+        def snapshot(handle):
+            check_phase("identity")
+            return {"pid":33,"created":44,"state":"running","image":"inert-node.exe"}
+        kernel=SimpleNamespace(snapshot=snapshot,close=mock.Mock())
+        def provider(*args):check_phase("provider-bind");return Path("inert-profile")
+        def policy():check_phase("policy");return sdk.POLICY
+        def call(name,index,*args):check_phase("attach" if name=="client" else "wait");return 0
+        def threads(deadline,*,include_instruction):
+            check_phase("stack")
+            return [{"frames":[{"module":"node","returnOffset":1,"instructionModule":"kernelbase","instructionOffset":2}]}],False
+        def close():check_phase("detach");return True
+        engine=SimpleNamespace(check=sdk.Engine.check,policy=policy,call=call,threads=threads,close=close)
+        def factory(path):check_phase("engine-create");return engine
+        native=SimpleNamespace(WindowsKernel=lambda:kernel,_regular=lambda path,**kwargs:path,_bound_tool_profile=provider)
+        result=sdk.run(request,native,engine_factory=factory,_progress=emit)
+        self.assertEqual(seen,["identity","provider-bind","engine-create","policy","attach","wait","stack","detach"])
+        self.assertEqual(result["status"],"captured")
+        self.assertEqual(sdk.decode_result(json.dumps(result).encode(),33,44,profile="inbox-v1",version=3),result)
+        self.assertEqual(set(result),{"schemaVersion","profile","phase","elapsedMs","status","threads","truncated",
+                                     "pid","created","bound","attached","policy","detached","hresult"})
+        raw=stream.getvalue();self.assertLessEqual(len(raw),sdk.MAX_PROGRESS_BYTES)
+        self.assertEqual(len(raw.splitlines()),9)
+        emit("PRIVATE_PHASE_CANARY");emit("wait");self.assertEqual(stream.getvalue(),raw)
+        legacy=dict(request);legacy.pop("progress");self.assertIsNone(sdk._progress_writer(legacy,io.BytesIO()))
+        refused={**request,"progress":False};self.assertIsNone(sdk._progress_writer(refused,io.BytesIO()))
+        self.assertEqual(sdk.run(refused,native,engine_factory=factory)["status"],"input_refused")
+        class Broken:
+            def write(self,raw):raise OSError("PRIVATE_PHASE_CANARY")
+            def flush(self):raise AssertionError("must not flush after failed write")
+        writer=sdk._progress_writer(request,Broken());writer("input");writer("identity")
+
 if __name__ == "__main__":
     if "--platform-partition" in sys.argv:
         parser = argparse.ArgumentParser()

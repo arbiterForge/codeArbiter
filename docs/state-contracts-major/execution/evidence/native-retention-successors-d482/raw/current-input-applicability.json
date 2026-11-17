@@ -1,0 +1,50 @@
+[
+ {
+  "proof": "pure120-windows-tested.json",
+  "positive_inputs": 266,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ },
+ {
+  "proof": "native-remaining-M94-6fe3-binding-tested.json",
+  "positive_inputs": 266,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ },
+ {
+  "proof": "native-remaining-M94-6fe3-pair-tested.json",
+  "positive_inputs": 266,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ },
+ {
+  "proof": "native-remaining-M94-6fe3-smarts-tested.json",
+  "positive_inputs": 266,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ },
+ {
+  "proof": "nf05-native-M94-six-platform-tested.json",
+  "positive_inputs": 266,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ },
+ {
+  "proof": "mixed-eight-go-component.json",
+  "positive_inputs": 271,
+  "changed": [],
+  "unavailable": [],
+  "recorded_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "current_candidate": "304ceff554bf1dc70afd7936898983e0d4fe076f"
+ }
+]

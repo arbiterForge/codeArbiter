@@ -1,0 +1,16 @@
+{
+ "result": "PASS_PRIVATE_BYTES_AND_CURRENT_INPUTS_ONLY",
+ "changed": [],
+ "unavailable": [],
+ "input_count": 266,
+ "go_module_files": 261,
+ "cells": 8,
+ "full_semantic_cells": 8,
+ "actual_assertions": 714,
+ "hosted_raw_entries": 6,
+ "local_raw_entries": 5,
+ "original_scope": "D482",
+ "current_scope": "304ce",
+ "canonical_adoption": "NOT_APPLIED",
+ "strict_hosted_original_owner_admission": "ROOT_PENDING_NO_DUPLICATE_NETWORK_PASS"
+}

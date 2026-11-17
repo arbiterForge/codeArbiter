@@ -1008,6 +1008,25 @@
         "task:Q-02"
       ],
       "scope": "Q02 verifier/regression implementation on integration: original release source assertions and finite protocol fixtures; excludes actual final-main receipt instance, built/installed/model/user acceptance and Q03 publication/distribution settlement."
+    },
+    {
+      "id": "hook-review-severity-policy",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-findings-windows-contracts",
+      "observation": "hook-review",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking"
+      ],
+      "cells": [
+        "disposition:findings:W-F03"
+      ],
+      "scope": "Original unfiltered review suite: W-F03 declarative maintenance MEDIUM/security HIGH and owner/index/triage/shared disposition conformance across four generated surfaces. Not model behavior, whole HW09/HW20/HW27 tasks or installed-host acceptance."
     }
   ]
 }

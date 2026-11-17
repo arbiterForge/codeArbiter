@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Clarify initialization and Sandbox discovery owners; retain original review-policy evidence and select fast native-suite guards for every owned input.
 - Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
 - Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
 - Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.

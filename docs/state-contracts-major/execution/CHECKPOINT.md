@@ -1,5 +1,13 @@
 # State-contract program checkpoint
 
+The current local successor binds a finite W-F03 original policy observation, selects the fast native registry guard on all nine actual inputs, retains bounded SDK diagnostic phases, and corrects initialization/Sandbox prose. Proper affected regressions and scoped independent reviews are retained. The Windows Pi shutdown cause remains unresolved; no runtime deadline was increased.
+
+Eight remaining native transitions now have exact six-platform named test compositions at original D482.133 native component records and7 bookmark/directory records receive same-status successors with old history preserved, replacing expired/near-expiry artifacts without new execution.49 findings remain PLANNED; this is accounting, not49 missing features.65 changed source-only bindings have provisional clause reassessment and require successors at the actual new committed code/docs epoch.
+
+The original D482 CI passed. Docs attempt1 failed a Generator timeout; one failed-only retry passed at attempt2. The retained successful browser/report is still attempt1, not a new browser run or final-main Pages qualification.1119 head304 had86 successful checks,2 failures and11 skips: Windows Pi EOF was primary and merge readiness consequential. The current successor requires original staged admission and fresh exact-head CI/Docs before authorized integration merge. #1098 remains held from main for Brennon testing; publication is unauthorized. [Current development observations](evidence/observer-wording-304/development.json).
+
+## Previous retained checkpoint
+
 The #1119 successor includes the already reviewed mode/reader and prune repairs, final source60 admission and an exact eight-name native-suite registry correction. The original reader tests passed; snapshot membership failed because the expected list still named seven tests. The existing static eight-suite guard reproduced that mismatch and now passes. The next committed head requires fresh CI and Docs before merge.
 
 Original normal `d4822a56` CI44046125471 finished SUCCESS; Docs44046125414 failed the single five-second Generator timeout (91 successful checks,1 failure,10 skipped). Its scoped Linux Pi RPC/scripted-parent package observation passed with all273 installed files unchanged. This does not qualify other hosts, human consent/fullPI-D07 or the whole normal run. Source777 is committed and authenticated;57 disposition obligations remain. #1098 stays held from `main` and publication remains unauthorized. [Current observations](evidence/work-adopt-registry-e408/development.json).

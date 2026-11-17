@@ -1313,6 +1313,10 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") == "major-source-inputs-hooks-findings-windows-contracts":
+                        require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                                "hook finding source-test payload original owner differs")
+                        validate_upload(job, payload, "Upload hook finding source-test inputs")
                     elif payload.get("name") == "major-source-inputs-q02-implementation":
                         require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
                                 "Q02 source-test payload original owner differs")

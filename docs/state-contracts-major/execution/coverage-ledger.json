@@ -127,9 +127,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -168,6 +168,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -181,9 +187,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -222,6 +228,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -252,9 +264,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -293,6 +305,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -306,12 +324,20 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/nf05-native-M94-six-platform-tested.json",
+     "sha256": "ca3c9ba096bf1209f18fc3afc1a7962523d4d53315b7b25913b3a24975b231b5"
+    }
+   ],
+   "candidate_contract_note": "Original successful M94 six-platform native observations prove full read-mode/metadata/lock effects and scoped bounded task-context/currentness boundary; native module245+four owners remain byte-identical. No installed, task or program completion.",
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
      "ref": "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
      "sha256": "a08932f7897ed9943cdd546913348626fb6769e512c5105e916469da47a383da"
     }
-   ],
-   "candidate_contract_note": "Original successful M94 six-platform native observations prove full read-mode/metadata/lock effects and scoped bounded task-context/currentness boundary; native module245+four owners remain byte-identical. No installed, task or program completion."
+   ]
   },
   "N-F06": {
    "owner": null,
@@ -323,9 +349,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -349,6 +375,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -362,9 +394,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -403,6 +435,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -416,9 +454,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -442,6 +480,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -455,9 +499,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -501,6 +545,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -514,9 +564,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -555,6 +605,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2128,9 +2184,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2169,6 +2225,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2202,9 +2264,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2243,6 +2305,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2278,9 +2346,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2319,6 +2387,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2334,9 +2408,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2375,6 +2449,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2408,9 +2488,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2449,6 +2529,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2465,9 +2551,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -2511,6 +2597,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -2578,9 +2670,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2619,6 +2711,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2632,9 +2730,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2673,6 +2771,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2686,9 +2790,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2727,6 +2831,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2740,9 +2850,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2781,6 +2891,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2850,9 +2966,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2891,6 +3007,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2922,9 +3044,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -2963,6 +3085,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -2976,9 +3104,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -3017,6 +3145,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -3064,9 +3198,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -3105,6 +3239,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -3119,9 +3259,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -3160,6 +3300,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -3228,9 +3374,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -3269,6 +3415,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11495,9 +11647,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -11536,6 +11688,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11574,9 +11732,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11600,6 +11758,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11617,9 +11781,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11643,6 +11807,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11660,9 +11830,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11686,6 +11856,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11703,9 +11879,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11729,6 +11905,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11801,9 +11983,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11827,6 +12009,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11841,9 +12029,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11867,6 +12055,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11881,9 +12075,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11907,6 +12101,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11921,9 +12121,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11947,6 +12147,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -11961,9 +12167,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -11987,6 +12193,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12001,9 +12213,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12027,6 +12239,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12041,9 +12259,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12067,6 +12285,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12081,9 +12305,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12107,6 +12331,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12121,9 +12351,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12147,6 +12377,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12161,9 +12397,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12187,6 +12423,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12201,9 +12443,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12227,6 +12469,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12241,9 +12489,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12267,6 +12515,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12281,9 +12535,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12307,6 +12561,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12318,8 +12578,15 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N04:02": {
    "owner": "native",
@@ -12333,9 +12600,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12359,6 +12626,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12374,9 +12647,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12400,6 +12673,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12563,9 +12842,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12589,6 +12868,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12603,9 +12888,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -12644,6 +12929,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12658,9 +12949,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -12684,6 +12975,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12695,8 +12992,15 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N07:02": {
    "owner": "native",
@@ -12762,8 +13066,15 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N07:04": {
    "owner": "native",
@@ -12773,8 +13084,15 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N08:01": {
    "owner": "native",
@@ -12844,12 +13162,20 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/native-remaining-M94-6fe3-binding-tested.json",
+     "sha256": "c657f4d144bd73df8f2302e313d62063c6b5cf4a7ee2b0e2982ebf584d195f91"
+    }
+   ],
+   "candidate_contract_note": "Original all-six-platform named assistive/context tests observe stale binding_current=false without changing recorded source or blocking ordinary start, and preserve blocked stops/history. Original two-Linux named strict tests reject changed source or draft binding in explicit verification/SMARTS consumers. validate.Ready/Binding and guards own the strict rejection; ordinary task progress never silently rebinds. Execution scopes are reported separately.",
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
      "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json",
      "sha256": "6d5aa7c0cb33b71141288cb5502bf51b382a9dff7e211e6a804cdc353a039fdb"
     }
-   ],
-   "candidate_contract_note": "Original all-six-platform named assistive/context tests observe stale binding_current=false without changing recorded source or blocking ordinary start, and preserve blocked stops/history. Original two-Linux named strict tests reject changed source or draft binding in explicit verification/SMARTS consumers. validate.Ready/Binding and guards own the strict rejection; ordinary task progress never silently rebinds. Execution scopes are reported separately."
+   ]
   },
   "N09:01": {
    "owner": "native",
@@ -12863,9 +13189,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -12904,6 +13230,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12919,9 +13251,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -12960,6 +13292,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -12975,9 +13313,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13016,6 +13354,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13031,9 +13375,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13072,6 +13416,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13087,9 +13437,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13128,6 +13478,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13139,8 +13495,15 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N10:02": {
    "owner": "native",
@@ -13169,8 +13532,15 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N10:04": {
    "owner": "native",
@@ -13180,8 +13550,15 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N10:05": {
    "owner": "native",
@@ -13222,9 +13599,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13263,6 +13640,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13277,9 +13660,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13318,6 +13701,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13332,9 +13721,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13373,6 +13762,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13387,9 +13782,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13428,6 +13823,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13443,9 +13844,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -13469,6 +13870,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13484,9 +13891,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -13510,6 +13917,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13563,8 +13976,15 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-d482-r44046125471/native-eight-hosted.json",
+     "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d"
+    }
+   ]
   },
   "N13:01": {
    "owner": "native",
@@ -13579,9 +13999,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13620,6 +14040,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13636,9 +14062,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13677,6 +14103,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13693,9 +14125,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13734,6 +14166,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13750,9 +14188,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13791,6 +14229,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13806,9 +14250,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13847,6 +14291,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13862,9 +14312,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13903,6 +14353,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13918,9 +14374,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -13959,6 +14415,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -13974,9 +14436,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14015,6 +14477,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14030,9 +14498,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14071,6 +14539,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14161,9 +14635,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14202,6 +14676,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14216,9 +14696,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14257,6 +14737,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14271,9 +14757,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14312,6 +14798,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14326,9 +14818,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14367,6 +14859,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14383,9 +14881,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -14429,6 +14927,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -14445,9 +14949,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -14491,6 +14995,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -14507,9 +15017,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -14553,6 +15063,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -14569,9 +15085,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -14615,6 +15131,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -14631,9 +15153,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -14677,6 +15199,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-producer-tested.json",
      "sha256": "8a1260d18c5e9f7ff4460974f3876cede7839e2ed242299613149fd54789e161",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -14690,12 +15218,20 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/native-remaining-M94-6fe3-pair-tested.json",
+     "sha256": "6cc678c5556e24eb97bb0a8aec20bfd1a0950506c958024b1d1dfd3dedee46cc"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux initial pair fixture asks the public sprint-approval-context API, consumes separately retained spec/plan contexts in one same prompt, and rejects already-approved or worked pairs. Source initialDraftPair checks kind/same slug, draft with zero approvals, draft binding, PENDING tasks without evidence/completion, and no scope/prerequisite baseline; initialPair validates Ready and projects only the plan binding. No actual user reply/host permission is claimed.",
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
      "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
      "sha256": "0ab5c22c3095e45b543187a3ab5da0a9b6e2514c508e07c414cfbeeea69b0b4e"
     }
-   ],
-   "candidate_contract_note": "Actual two-Linux initial pair fixture asks the public sprint-approval-context API, consumes separately retained spec/plan contexts in one same prompt, and rejects already-approved or worked pairs. Source initialDraftPair checks kind/same slug, draft with zero approvals, draft binding, PENDING tasks without evidence/completion, and no scope/prerequisite baseline; initialPair validates Ready and projects only the plan binding. No actual user reply/host permission is claimed."
+   ]
   },
   "N18:02": {
    "owner": "native",
@@ -14707,12 +15243,20 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/native-remaining-M94-6fe3-pair-tested.json",
+     "sha256": "6cc678c5556e24eb97bb0a8aec20bfd1a0950506c958024b1d1dfd3dedee46cc"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux original cases approve both artifacts atomically, retain approved_source plan binding, replay without mutation, refuse stale spec or plan and wrong source without partial approval, and refuse generic paired receipt capture/single-artifact use. Injected first-canonical-replacement failure blocks all partial authority with RECOVERY_REQUIRED; complete/rollback recovery is checked. Source also matches both loaded observations to the same reply/result/pair and exact dual CAS before one two-edit Commit.",
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
      "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
      "sha256": "0ab5c22c3095e45b543187a3ab5da0a9b6e2514c508e07c414cfbeeea69b0b4e"
     }
-   ],
-   "candidate_contract_note": "Actual two-Linux original cases approve both artifacts atomically, retain approved_source plan binding, replay without mutation, refuse stale spec or plan and wrong source without partial approval, and refuse generic paired receipt capture/single-artifact use. Injected first-canonical-replacement failure blocks all partial authority with RECOVERY_REQUIRED; complete/rollback recovery is checked. Source also matches both loaded observations to the same reply/result/pair and exact dual CAS before one two-edit Commit."
+   ]
   },
   "N19:01": {
    "owner": "native",
@@ -14724,12 +15268,20 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/native-remaining-M94-6fe3-smarts-tested.json",
+     "sha256": "800599b8c5536d8bc35b3e6b9f52c5b6bc3e266739163b91cbb23fd57f0bffc0"
+    }
+   ],
+   "candidate_contract_note": "Actual two-Linux named cases require explicit current user pair delegation, reject invented/stale/amended protected scope, validate bounded options and unchanged-decision refusal. Successful actual smarts-apply changes only authorized method steps, records workflow observation/current profile and new approval without acceptance, expands reset through checkpoint siblings and dependencies, and retains historical evidence/blocked reasons. All-six epoch-case data is used here only on the explicitly listed two-Linux platforms; no user/model execution or approval grant is inferred.",
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
      "ref": "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/smarts-tested.json",
      "sha256": "f576ed24208aa31d2c42d651c34ce5fcccf0dd9f8b83b3b82a613145c1571bd9"
     }
-   ],
-   "candidate_contract_note": "Actual two-Linux named cases require explicit current user pair delegation, reject invented/stale/amended protected scope, validate bounded options and unchanged-decision refusal. Successful actual smarts-apply changes only authorized method steps, records workflow observation/current profile and new approval without acceptance, expands reset through checkpoint siblings and dependencies, and retains historical evidence/blocked reasons. All-six epoch-case data is used here only on the explicitly listed two-Linux platforms; no user/model execution or approval grant is inferred."
+   ]
   },
   "N19:02": {
    "owner": "native",
@@ -14807,9 +15359,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -14833,6 +15385,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14903,9 +15461,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14944,6 +15502,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -14958,9 +15522,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -14999,6 +15563,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15013,9 +15583,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15054,6 +15624,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15068,9 +15644,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15109,6 +15685,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15123,9 +15705,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15164,6 +15746,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15178,9 +15766,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15219,6 +15807,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15232,9 +15826,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15273,6 +15867,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15286,9 +15886,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15327,6 +15927,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15340,9 +15946,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15381,6 +15987,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15394,9 +16006,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15435,6 +16047,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15448,9 +16066,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15489,6 +16107,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15502,9 +16126,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15543,6 +16167,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15556,9 +16186,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15597,6 +16227,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15610,9 +16246,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15651,6 +16287,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15664,9 +16306,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -15705,6 +16347,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -15971,9 +16619,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -15997,6 +16645,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16013,9 +16667,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -16039,6 +16693,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16055,9 +16715,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -16081,6 +16741,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16095,9 +16761,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16136,6 +16802,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16150,9 +16822,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16191,6 +16863,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16205,9 +16883,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16246,6 +16924,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16260,9 +16944,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16301,6 +16985,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16423,9 +17113,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -16449,6 +17139,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16462,9 +17158,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16503,6 +17199,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16516,9 +17218,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16557,6 +17259,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16570,9 +17278,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16611,6 +17319,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16624,9 +17338,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16665,6 +17379,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16678,9 +17398,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16719,6 +17439,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16732,9 +17458,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16773,6 +17499,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16786,9 +17518,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16827,6 +17559,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16840,9 +17578,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16881,6 +17619,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16894,9 +17638,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16935,6 +17679,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -16948,9 +17698,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -16989,6 +17739,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17274,9 +18030,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17315,6 +18071,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17328,9 +18090,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17369,6 +18131,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17382,9 +18150,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17423,6 +18191,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17436,9 +18210,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17477,6 +18251,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17490,9 +18270,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17531,6 +18311,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17545,9 +18331,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17586,6 +18372,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17600,9 +18392,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17641,6 +18433,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17655,9 +18453,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17696,6 +18494,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17710,9 +18514,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -17736,6 +18540,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17750,9 +18560,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -17776,6 +18586,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -17832,9 +18648,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -17873,6 +18689,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18055,9 +18877,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -18081,6 +18903,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18177,9 +19005,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -18203,6 +19031,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18217,9 +19051,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "evidence_history": [
@@ -18243,6 +19077,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18256,9 +19096,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -18297,6 +19137,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18310,9 +19156,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -18351,6 +19197,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -18364,9 +19216,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
-     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
-     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/pure120-windows-tested.json",
+     "sha256": "b2aac4b7c7e9b7514184e4f02431e839e429c210a078259ef6b09ac017779d2c"
     }
    ],
    "candidate_contract_note": "Current native fixture semantics are tested. Named intentional changes use D-PROGRESS=B or typed retirement; old destructive dependency invalidation/orphan-retirement failure is not preserved.",
@@ -18405,6 +19257,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/native-M46-R43582198115/native-go120-hosted.json",
      "sha256": "fc5f84038bdda3ba29da0bcf2503bbff83945d980d60f2d739e8f116112b1e21",
      "ref_commit": "bbf5aa51d6749c0808f7a00ba1f381947561bc35"
+    },
+    {
+     "kind": "test",
+     "commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "ref": "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+     "sha256": "765e7310413276e52c9370250ee7897d4f0c5ada399bea1e3e9a3e9258b321e4"
     }
    ]
   },
@@ -21284,9 +22142,9 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
-     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
-     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/native-retention-successors-d482/proofs/mixed-eight-go-component.json",
+     "sha256": "591989d6326148aa7e91cb99423807ae5c47ab97afc8da31dc9dc01e2b22a107"
     },
     {
      "kind": "test",
@@ -21316,6 +22174,12 @@
      "ref": "docs/state-contracts-major/execution/evidence/hooks-verifier07-successor/hooks-verifier07-tested-successor.json",
      "sha256": "6d6441230526abdbcf44ba0dc691d59cb4c6ec5669316cd6c4cb6560dc16646a",
      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+    },
+    {
+     "kind": "test",
+     "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+     "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
     }
    ]
   },
@@ -38668,6 +39532,14 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
@@ -38682,6 +39554,14 @@
    ],
    "status": "TESTED",
    "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+    }
+   ],
+   "evidence_history": [
     {
      "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
@@ -38716,6 +39596,14 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
@@ -38732,6 +39620,14 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
@@ -38746,6 +39642,14 @@
    ],
    "status": "TESTED",
    "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+    }
+   ],
+   "evidence_history": [
     {
      "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
@@ -38915,6 +39819,14 @@
    "evidence": [
     {
      "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
+     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/directory-hosted-tested.json",
      "sha256": "883539ae821b49d48ebb4b069db165d61c696d2981ee1b8f3272b73466393762"
@@ -38929,6 +39841,14 @@
    ],
    "status": "TESTED",
    "evidence": [
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
+     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
+    }
+   ],
+   "evidence_history": [
     {
      "kind": "test",
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",

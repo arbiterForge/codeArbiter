@@ -1,0 +1,40 @@
+{
+ "result": "SCOPED_NATIVE_RETENTION_SUCCESSOR_PROPOSAL",
+ "base_source": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "original_new_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "successor_proofs": 6,
+ "same_status_rows": 133,
+ "status_promotions": 0,
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\adoption-filemap.json",
+  "sha256": "b9a0e9054e27c93cdb02dea2514738aeb070267deba739d9ddcacd6a188bd1c8",
+  "bytes": 5269
+ },
+ "cas": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\cas-proposal.json",
+  "sha256": "37fdfabe4ce5eb8519d306f083eae032491799be589c08209a776ed43fbd825d",
+  "bytes": 226731
+ },
+ "preimages": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\ledger-preimages.json",
+  "sha256": "6d7f055bfa792ded58a281b52be510ede84576a4eb9428dc941fbe0cb5748713",
+  "bytes": 298245
+ },
+ "successors": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\successor-rows.json",
+  "sha256": "4ea3ff597e3ac675725b52a04c13141c2f40c458ef6b4b5955eccb8bb8bc6013",
+  "bytes": 338921
+ },
+ "applicability": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\raw\\current-input-applicability.json",
+  "sha256": "6087f2bc64f422782c5fc7c442a40d5f3c89dd347019dc94ef1192af1ec611b0",
+  "bytes": 1580
+ },
+ "prior_authenticated_components": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\authentication.json",
+  "sha256": "15c457df4113d635ccfa6610ebb0b8a39f5ca90a59ba1b3a1f3b04ee12478316",
+  "bytes": 12684
+ },
+ "remaining_pages_gap": 7,
+ "admission": "Root independent review and genuine original-record owner admission pending; no duplicate API/ZIP acquisition or full-owner execution by actor"
+}

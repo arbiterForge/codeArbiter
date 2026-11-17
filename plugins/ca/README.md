@@ -29,8 +29,9 @@ declared command or test discovery.
   `/ca:commit`, `/ca:audit`. [`COMMANDS.md`](./COMMANDS.md) lists everything.
 - **Local writes:** governance records live in `.codearbiter/`. Opted-in operation also maintains
   managed Git hooks and their Git-common enforcer registry, trusted executable identities and
-  bookkeeping. The task-board writer retains its OS-lock sidecar and adds its exact ignore rule
-  through Git-common `info/exclude` under an exclusive lock. These existing owners preserve
+  bookkeeping. The task-board writer retains its OS-lock sidecar. Initialization adds that
+  sidecar's exact ignore rule through Git-common `info/exclude` under an exclusive lock.
+  These existing owners preserve
   foreign hooks and unrelated configuration. Uninstalling leaves your project record intact.
 
 ## Feature Forge (preview)

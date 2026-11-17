@@ -3309,5 +3309,209 @@ class QualificationOutputFilenameTests(unittest.TestCase):
             self.assertNotIn(legacy,source)
 
 
+
+HOOK_REVIEW_FIXTURE_PATHS = frozenset(['.codearbiter/reports/agent-lane-proof.json', '.github/major-qualification-policy.json', '.github/major-test-selections.json', '.github/scripts/_boundedproc.py', '.github/scripts/_contextverificationlib.py', '.github/scripts/_immutable_git_blobs.py', '.github/scripts/check_skill_proof_fresh.py', '.github/scripts/ci20_native_binding.py', '.github/scripts/major_qualification_report.py', '.github/scripts/major_readiness.py', '.github/scripts/test_check_skill_proof_fresh.py', '.github/scripts/test_generated_output.py', '.github/scripts/test_hook_ci_partition.py', '.github/scripts/test_review_funnel.py', '.github/workflows/ci.yml', 'core/artifact-release-manifest.json', 'core/hosts.json', 'core/pysrc/_artifactmanifestlib.py', 'core/pysrc/_gitexec.py', 'core/surface/COMMANDS.md', 'core/surface/README.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/agents/architecture-drift-reviewer.md', 'core/surface/agents/auth-crypto-reviewer.md', 'core/surface/agents/authority-reviewer.md', 'core/surface/agents/backend-author.md', 'core/surface/agents/checkpoint-aggregator.md', 'core/surface/agents/coverage-auditor.md', 'core/surface/agents/decision-challenger.md', 'core/surface/agents/dependency-reviewer.md', 'core/surface/agents/design-quality-reviewer.md', 'core/surface/agents/finding-triage.md', 'core/surface/agents/frontend-author.md', 'core/surface/agents/grader.md', 'core/surface/agents/infra-author.md', 'core/surface/agents/map-deps.md', 'core/surface/agents/map-structure.md', 'core/surface/agents/migration-reviewer.md', 'core/surface/agents/scout.md', 'core/surface/agents/security-reviewer.md', 'core/surface/agents/tribunal-lens-reviewer.md', 'core/surface/agents/verdict-aggregator.md', 'core/surface/arbiter.md', 'core/surface/command-routes.json', 'core/surface/commands/add-dep.md', 'core/surface/commands/adr-status.md', 'core/surface/commands/adr.md', 'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md', 'core/surface/commands/chore.md', 'core/surface/commands/cleanup.md', 'core/surface/commands/commit.md', 'core/surface/commands/conflict.md', 'core/surface/commands/context-check.md', 'core/surface/commands/create-context.md', 'core/surface/commands/debug.md', 'core/surface/commands/decompose.md', 'core/surface/commands/doctor.md', 'core/surface/commands/feature.md', 'core/surface/commands/fix.md', 'core/surface/commands/init.md', 'core/surface/commands/override.md', 'core/surface/commands/pr.md', 'core/surface/commands/prune.md', 'core/surface/commands/reconcile.md', 'core/surface/commands/refactor.md', 'core/surface/commands/release.md', 'core/surface/commands/review.md', 'core/surface/commands/spike.md', 'core/surface/commands/sprint.md', 'core/surface/commands/standup.md', 'core/surface/commands/status.md', 'core/surface/commands/statusline.md', 'core/surface/commands/task.md', 'core/surface/commands/threat-model.md', 'core/surface/commands/tribunal.md', 'core/surface/commands/watch.md', 'core/surface/includes/anti-slop-design/INDEX.md', 'core/surface/includes/anti-slop-design/color.md', 'core/surface/includes/anti-slop-design/core.md', 'core/surface/includes/anti-slop-design/images.md', 'core/surface/includes/anti-slop-design/layout.md', 'core/surface/includes/anti-slop-design/medium-cli.md', 'core/surface/includes/anti-slop-design/medium-dataviz.md', 'core/surface/includes/anti-slop-design/medium-diagram.md', 'core/surface/includes/anti-slop-design/medium-documents.md', 'core/surface/includes/anti-slop-design/medium-slides.md', 'core/surface/includes/anti-slop-design/medium-web.md', 'core/surface/includes/anti-slop-design/typography.md', 'core/surface/includes/artifacts-attestation.md', 'core/surface/includes/artifacts.md', 'core/surface/includes/author-tdd-workflow.md', 'core/surface/includes/codex-host-notes.md', 'core/surface/includes/command-compatibility.md', 'core/surface/includes/compaction-charter.md', 'core/surface/includes/cut-docs.md', 'core/surface/includes/dangerous-mode.md', 'core/surface/includes/farm.md', 'core/surface/includes/fresh-verification.md', 'core/surface/includes/harvest.md', 'core/surface/includes/helper-invocation.md', 'core/surface/includes/knowledge.md', 'core/surface/includes/maturity-coverage.md', 'core/surface/includes/ops-mode.md', 'core/surface/includes/pi-host-notes.md', 'core/surface/includes/redirect.md', 'core/surface/includes/reference-map.md', 'core/surface/includes/review-matrix.md', 'core/surface/includes/reviewer-contract.md', 'core/surface/includes/routing-table.md', 'core/surface/includes/safety-core.md', 'core/surface/includes/security-gate-record.md', 'core/surface/includes/smarts/core.md', 'core/surface/includes/smarts/decision-log-format.md', 'core/surface/includes/smarts/lenses.md', 'core/surface/includes/sprint-authority.md', 'core/surface/includes/verification-boundary.md', 'core/surface/skills/INDEX.md', 'core/surface/skills/brainstorming/SKILL.md', 'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md', 'core/surface/skills/context-creation/SKILL.md', 'core/surface/skills/context-creation/references/markdown-format.md', 'core/surface/skills/crypto-compliance/SKILL.md', 'core/surface/skills/debug/SKILL.md', 'core/surface/skills/debug/references/debug-handoff.schema.json', 'core/surface/skills/debug/references/handoff.md', 'core/surface/skills/debug/references/minimal-unresolved.json', 'core/surface/skills/debug/references/preparation.md', 'core/surface/skills/decision-lifecycle/SKILL.md', 'core/surface/skills/decision-lifecycle/references/adr-template.md', 'core/surface/skills/decision-lifecycle/references/authoring.md', 'core/surface/skills/decision-variance/SKILL.md', 'core/surface/skills/decision-variance/references/analysis.md', 'core/surface/skills/decompose/SKILL.md', 'core/surface/skills/decompose/references/markdown-format.md', 'core/surface/skills/dispatching-parallel-agents/SKILL.md', 'core/surface/skills/executing-plans/SKILL.md', 'core/surface/skills/finishing-a-development-branch/SKILL.md', 'core/surface/skills/post-merge-cleanup/SKILL.md', 'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md', 'core/surface/skills/secret-handling/SKILL.md', 'core/surface/skills/security-architecture/SKILL.md', 'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/subagent-driven-development/references/farm-dispatch.md', 'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'core/surface/skills/tribunal/references/ai-markers.md', 'core/surface/skills/tribunal/references/cost-and-models.md', 'core/surface/skills/tribunal/references/finding-record.md', 'core/surface/skills/tribunal/references/issue-filing.md', 'core/surface/skills/tribunal/references/lenses/appsec.md', 'core/surface/skills/tribunal/references/lenses/architecture.md', 'core/surface/skills/tribunal/references/lenses/change-closure.md', 'core/surface/skills/tribunal/references/lenses/coverage.md', 'core/surface/skills/tribunal/references/lenses/infra.md', 'core/surface/skills/tribunal/references/lenses/migration.md', 'core/surface/skills/tribunal/references/lenses/observability.md', 'core/surface/skills/tribunal/references/lenses/performance.md', 'core/surface/skills/tribunal/references/lenses/reliability.md', 'core/surface/skills/tribunal/references/lenses/secrets-supply.md', 'core/surface/skills/tribunal/references/lenses/semantic-contract.md', 'core/surface/skills/tribunal/references/lenses/test-fidelity.md', 'core/surface/skills/tribunal/references/lenses/typesafety.md', 'core/surface/skills/tribunal/references/report.md', 'core/surface/skills/tribunal/references/review-risk.md', 'core/surface/skills/tribunal/references/schemas.md', 'core/surface/skills/tribunal/references/telemetry.md', 'core/surface/skills/tribunal/references/triage.md', 'core/surface/skills/tribunal/references/verification-quality.md', 'core/surface/skills/using-git-worktrees/SKILL.md', 'core/surface/skills/writing-plans/SKILL.md', 'core/surface/skills/writing-plans/references/farm-plan.md', 'docs/state-contracts-major/PROGRAM.md', 'docs/state-contracts-major/contracts/decisions.json', 'docs/state-contracts-major/contracts/finding-dispositions.json', 'docs/state-contracts-major/contracts/tasks.json', 'plugins/ca-codex/agents/INDEX.md', 'plugins/ca-codex/agents/architecture-drift-reviewer.md', 'plugins/ca-codex/agents/auth-crypto-reviewer.md', 'plugins/ca-codex/agents/backend-author.md', 'plugins/ca-codex/agents/checkpoint-aggregator.md', 'plugins/ca-codex/agents/coverage-auditor.md', 'plugins/ca-codex/agents/decision-challenger.md', 'plugins/ca-codex/agents/dependency-reviewer.md', 'plugins/ca-codex/agents/design-quality-reviewer.md', 'plugins/ca-codex/agents/finding-triage.md', 'plugins/ca-codex/agents/frontend-author.md', 'plugins/ca-codex/agents/grader.md', 'plugins/ca-codex/agents/infra-author.md', 'plugins/ca-codex/agents/map-deps.md', 'plugins/ca-codex/agents/map-structure.md', 'plugins/ca-codex/agents/migration-reviewer.md', 'plugins/ca-codex/agents/scout.md', 'plugins/ca-codex/agents/security-reviewer.md', 'plugins/ca-codex/agents/tribunal-lens-reviewer.md', 'plugins/ca-codex/agents/verdict-aggregator.md', 'plugins/ca-codex/includes/reviewer-contract.md', 'plugins/ca-pi/agents/INDEX.md', 'plugins/ca-pi/agents/architecture-drift-reviewer.md', 'plugins/ca-pi/agents/auth-crypto-reviewer.md', 'plugins/ca-pi/agents/backend-author.md', 'plugins/ca-pi/agents/checkpoint-aggregator.md', 'plugins/ca-pi/agents/coverage-auditor.md', 'plugins/ca-pi/agents/decision-challenger.md', 'plugins/ca-pi/agents/dependency-reviewer.md', 'plugins/ca-pi/agents/design-quality-reviewer.md', 'plugins/ca-pi/agents/finding-triage.md', 'plugins/ca-pi/agents/frontend-author.md', 'plugins/ca-pi/agents/grader.md', 'plugins/ca-pi/agents/infra-author.md', 'plugins/ca-pi/agents/map-deps.md', 'plugins/ca-pi/agents/map-structure.md', 'plugins/ca-pi/agents/migration-reviewer.md', 'plugins/ca-pi/agents/scout.md', 'plugins/ca-pi/agents/security-reviewer.md', 'plugins/ca-pi/agents/tribunal-lens-reviewer.md', 'plugins/ca-pi/agents/verdict-aggregator.md', 'plugins/ca-pi/includes/reviewer-contract.md', 'plugins/ca/agents/INDEX.md', 'plugins/ca/agents/architecture-drift-reviewer.md', 'plugins/ca/agents/auth-crypto-reviewer.md', 'plugins/ca/agents/authority-reviewer.md', 'plugins/ca/agents/backend-author.md', 'plugins/ca/agents/checkpoint-aggregator.md', 'plugins/ca/agents/coverage-auditor.md', 'plugins/ca/agents/decision-challenger.md', 'plugins/ca/agents/dependency-reviewer.md', 'plugins/ca/agents/design-quality-reviewer.md', 'plugins/ca/agents/finding-triage.md', 'plugins/ca/agents/frontend-author.md', 'plugins/ca/agents/grader.md', 'plugins/ca/agents/infra-author.md', 'plugins/ca/agents/map-deps.md', 'plugins/ca/agents/map-structure.md', 'plugins/ca/agents/migration-reviewer.md', 'plugins/ca/agents/scout.md', 'plugins/ca/agents/security-reviewer.md', 'plugins/ca/agents/tribunal-lens-reviewer.md', 'plugins/ca/agents/verdict-aggregator.md', 'plugins/ca/includes/reviewer-contract.md', 'plugins/ca/skills/release/SKILL.md', 'site/src/curated/commands/review.md', 'tools/build-artifact-manifest-contract.py', 'tools/build-surface.py', 'tools/command_compatibility.py', 'tools/host_descriptors.py', 'tools/owned_output.py'])
+HOOK_REVIEW_FIXTURE_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_author_collection_does_not_invoke_review_verdict', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_persistence_is_explicit_and_non_overwriting', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_writer_reports_the_selected_dated_filename', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_curated_review_projection_uses_the_read_only_terminal', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_dispatch_contract_uses_canonical_routes_and_preserves_findings', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_inbound_pr_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_triage_requires_the_complete_batch_contract', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_verdict_has_unambiguous_incomplete_precedence_and_schema', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_working_diff_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+
+
+class HookReviewObservationProfileTests(unittest.TestCase):
+    """Original unfiltered suite; only its complete W-F03 policy group is mapped."""
+    fixture = None
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.fixture is not None:
+            cls.fixture["environment"].stop()
+            cls.fixture["temporary"].cleanup()
+            cls.fixture = None
+
+    def original(self):
+        cls = type(self)
+        if cls.fixture is None:
+            temporary = tempfile.TemporaryDirectory(prefix="ca-hook-review-profile-")
+            base = Path(temporary.name).resolve(); repo = base / "repo"; repo.mkdir()
+            canonical = Path(os.environ.get("CA_HOOKS_CANONICAL_ROOT", owner.ROOT))
+            for relative in HOOK_REVIEW_FIXTURE_PATHS:
+                target = repo / relative; target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((canonical / relative).read_bytes())
+            git = shutil.which("git"); self.assertIsNotNone(git)
+            env = {k: v for k, v in os.environ.items() if k.upper() in
+                   ("SYSTEMROOT", "WINDIR", "SYSTEMDRIVE", "COMSPEC", "PATHEXT")}
+            env.update(PATH=os.pathsep.join([str(Path(git).parent), str(Path(sys.executable).parent)]),
+                       HOME=str(base), USERPROFILE=str(base), TEMP=str(base), TMP=str(base),
+                       GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1", GIT_OPTIONAL_LOCKS="0",
+                       GIT_AUTHOR_NAME="fixture", GIT_AUTHOR_EMAIL="fixture@invalid",
+                       GIT_COMMITTER_NAME="fixture", GIT_COMMITTER_EMAIL="fixture@invalid",
+                       GITHUB_RUN_ID="7", PYTHONDONTWRITEBYTECODE="1")
+            environment = mock.patch.dict(os.environ, env, clear=True); environment.start()
+            cls.fixture = f = dict(temporary=temporary, environment=environment, base=base, repo=repo,
+                staged=base/"inputs", output=base/"observation.json", profile="hooks-finding-contracts-v1",
+                job="[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                payload="major-source-inputs-hooks-findings-windows-contracts")
+            for args in (["init"], ["config", "core.autocrlf", "false"], ["add", "."],
+                         ["-c", "commit.gpgsign=false", "commit", "-qm", "Hook source fixture"]):
+                run_git_phase([git, "-C", str(repo), *args], phase="init" if args[0] in ("init", "config")
+                              else "index" if args[0] == "add" else "commit", trace_dir=base)
+            try:
+                owner.prepare_source_payload(repo, f["staged"], f["job"], f["profile"])
+                with mock.patch.object(owner.runpy, "run_path", wraps=owner.runpy.run_path) as original:
+                    self.assertEqual(owner.observe_python(repo, ".github/scripts/test_review_funnel.py", [],
+                        f["output"], f["staged"], f["profile"]), 0)
+                    self.assertEqual(original.call_count, 1)
+            except ValueError as error:
+                self.fail("The existing original review-suite observation route is unavailable: " + str(error))
+            f["observed"] = owner.load_json(f["output"])
+            archive = io.BytesIO()
+            with zipfile.ZipFile(archive, "w") as z:
+                for path in sorted(f["staged"].rglob("*")):
+                    if path.is_file(): z.writestr(path.relative_to(f["staged"]).as_posix(), path.read_bytes())
+            f["req"] = {**owner.source_identity(repo, f["profile"]), "ci_run_id": 7}
+            job = {"id": 9, "name": f["job"], "status": "in_progress", "conclusion": None,
+                   "steps": [{"name": "Upload hook finding source-test inputs", "status": "completed", "conclusion": "success"}]}
+            with mock.patch.object(owner.readiness, "artifact_bytes", return_value=archive.getvalue()),                  mock.patch.object(owner.readiness, "validate_upload", side_effect=AssertionError("producer has no completed job log")):
+                f["authenticated"] = owner.authenticated_payload({"id": 8, "name": f["payload"]},
+                    f["req"], repo, source_job=job)
+        self.assertIn("observed", cls.fixture, "Earlier original invocation must succeed before admission controls")
+        return cls.fixture
+
+    def selection(self, f):
+        return {"schema": owner.SELECTIONS, "groups": [{"id": "hook-severity-policy", "job": f["job"],
+            "payload_name": f["payload"], "observation": "review", "proof_kind": "source-test",
+            "selectors": sorted(s for s in HOOK_REVIEW_FIXTURE_SELECTORS if ".SeverityDispositionPolicyTest." in s),
+            "cells": ["disposition:findings:W-F03"],
+            "scope": "W-F03 declarative severity policy only, not model behavior or task/installed acceptance"}]}
+
+    def admit(self, f, observed=None, payload=None, req=None, job=None, selection=None):
+        req = req or {**f["req"], "cells": ["disposition:findings:W-F03"],
+                      "cell_jobs": {"disposition:findings:W-F03": f["job"]}}
+        return owner.build_report(req, job_name=job or f["job"], job_id=9,
+            selections=selection or self.selection(f), observations={"review": observed or copy.deepcopy(f["observed"])},
+            payloads={f["payload"]: payload if payload is not None else copy.deepcopy(f["authenticated"])})
+
+    def test_a_original_unfiltered_review_suite_is_observed_once_with_only_its_finite_finding(self):
+        f = self.original()
+        self.assertEqual({t["id"] for t in f["observed"]["tests"]}, HOOK_REVIEW_FIXTURE_SELECTORS)
+        self.assertTrue(all(t["result"] == "passed" for t in f["observed"]["tests"]))
+        report = self.admit(f)
+        self.assertEqual([r["cell"] for r in report["results"]], ["disposition:findings:W-F03"])
+        self.assertEqual(report["results"][0]["selected_population"], 6)
+        self.assertEqual(report["results"][0]["executed_population"], 6)
+
+    def test_b_foreign_filtered_and_missing_payload_commands_refuse_before_original_execution(self):
+        f = self.original()
+        with mock.patch.object(owner.runpy, "run_path", side_effect=AssertionError("must not execute")):
+            for script, args, payload in ((".github/scripts/test_review_funnel.py", ["SeverityDispositionPolicyTest"], f["staged"]),
+                 (".github/scripts/major_qualification_report.py", [], f["staged"]),
+                 (".github/scripts/test_review_funnel.py", [], None)):
+                with self.subTest(script=script, args=args, payload=payload), self.assertRaises(ValueError):
+                    owner.observe_python(f["repo"], script, args, f["base"]/"refused.json", payload, f["profile"])
+        self.assertFalse((f["base"]/"refused.json").exists())
+
+    def test_c_reader_refuses_missing_duplicate_skipped_and_failed_selected_results(self):
+        f = self.original()
+        for failure in ("missing", "duplicate", "skipped", "failed"):
+            bad = copy.deepcopy(f["observed"])
+            index = next(i for i, row in enumerate(bad["tests"]) if ".SeverityDispositionPolicyTest." in row["id"])
+            if failure == "missing": bad["tests"].pop(index)
+            elif failure == "duplicate": bad["tests"].append(copy.deepcopy(bad["tests"][index]))
+            else: bad["tests"][index]["result"] = failure
+            with self.subTest(failure=failure), self.assertRaises(ValueError): self.admit(f, bad)
+
+    def test_d_reader_refuses_foreign_source_run_job_payload_profile_and_arguments(self):
+        f = self.original()
+        for key, value in (("source_commit", "f"*40), ("source_tree", "f"*40), ("ci_run_id", 8),
+                           ("source_stable", False), ("exit_code", 1), ("argv", ["python", ".github/scripts/test_review_funnel.py", "-k", "partial"])):
+            bad = copy.deepcopy(f["observed"]); bad[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): self.admit(f, bad)
+        for key, value in (("profile", owner.SOURCE_PROFILE), ("payload_name", "foreign"), ("manifest_sha256", "f"*64)):
+            bad = copy.deepcopy(f["observed"]); bad["source_input_binding"][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): self.admit(f, bad)
+        with self.assertRaises(ValueError): self.admit(f, payload={})
+        with self.assertRaises(ValueError): self.admit(f, job="other job")
+        bad = copy.deepcopy(f["authenticated"]); bad["source_upload_job_id"] = 10
+        with self.assertRaises(ValueError): self.admit(f, payload=bad)
+
+    def test_e_changed_source_or_agent_inventory_cannot_be_freshened(self):
+        f = self.original(); path = f["repo"]/"plugins/ca/agents/dependency-reviewer.md"; raw = path.read_bytes()
+        try:
+            path.write_bytes(raw+b"\nchanged\n")
+            with self.assertRaises(ValueError): owner.source_observation_binding(f["repo"], f["staged"], f["req"], f["profile"])
+        finally: path.write_bytes(raw)
+        extra = f["repo"]/"plugins/ca/agents/unreviewed.md"
+        try:
+            extra.write_text("unreviewed", encoding="utf-8")
+            with self.assertRaises(ValueError): owner._hook_review_members(f["repo"])
+        finally: extra.unlink()
+
+    def test_f_profile_rejects_incomplete_composition_other_findings_tasks_and_hosts(self):
+        f = self.original()
+        for cell in ("disposition:findings:W-F08", "task:HW-09", "installed:claude:workflow"):
+            req = {**f["req"], "cells": [cell], "cell_jobs": {cell: f["job"]}}
+            selection = self.selection(f); selection["groups"][0]["cells"] = [cell]
+            with self.subTest(cell=cell), self.assertRaises(ValueError): self.admit(f, req=req, selection=selection)
+        for changed in ("missing-selector", "extra-selector", "duplicate-selector"):
+            selection = self.selection(f); selectors = selection["groups"][0]["selectors"]
+            if changed == "missing-selector": selectors.pop()
+            elif changed == "extra-selector": selectors.append(next(s for s in HOOK_REVIEW_FIXTURE_SELECTORS if ".ReadOnlyReviewFunnelTest." in s))
+            else: selectors.append(selectors[0])
+            with self.subTest(change=changed), self.assertRaises(ValueError): self.admit(f, selection=selection)
+
+    def test_g_final_reader_authenticates_original_hook_source_upload_and_owner(self):
+        cell="disposition:findings:W-F03";job_name="[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("source-member",b"inert")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":"major-source-inputs-hooks-findings-windows-contracts"};artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":job_name,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],"cell_jobs":{cell:job_name},"required_artifact_names":[source["name"]]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in ("source_commit","source_tree","ci_run_id")},"job_id":9,
+          "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+          "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python",".github/scripts/test_review_funnel.py"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[mock.call(job,artifact,"Upload major qualification report"),
+                mock.call(job,source,"Upload hook finding source-test inputs")])
+            for failure in ("wrong-owner","in-progress","upload-refused"):
+                modified=copy.deepcopy(jobs);requirements=copy.deepcopy(req)
+                attribution.side_effect=None
+                if failure=="wrong-owner":
+                    modified[0]["name"]="other";requirements["cell_jobs"][cell]="other"
+                elif failure=="in-progress":modified[0].update(status="in_progress",conclusion=None)
+                else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
+                with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(requirements,[source,artifact],modified)
+
+
+    def test_h_ci_wraps_one_original_execution_and_keeps_closed_source_roles(self):
+        import test_hook_ci_partition as partition
+        text = (owner.ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        def check(value):
+            block = partition.job_block(value, "hooks")
+            self.assertEqual(block.count("--source-profile hooks-finding-contracts-v1"), 2)
+            self.assertEqual(block.count("-- .github/scripts/test_review_funnel.py\n"), 1)
+            self.assertEqual(block.count("run: python .github/scripts/test_review_funnel.py\n"), 1)
+            fallback = next(step for step in partition.step_blocks(block)
+                            if step.startswith("      - name: Run read-only review funnel contract\n"))
+            self.assertIn("if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')", fallback)
+            self.assertLess(block.index("id: hook_finding_source_prepare"), block.index("id: hook_review_observed"))
+            self.assertLess(block.index("id: hook_review_observed"), block.index("id: hook_finding_source_upload"))
+            self.assertIn("steps.hook_review_observed.outcome == 'success'", block)
+            self.assertIn("steps.hook_finding_source_upload.outcome == 'success'", block)
+            self.assertIn('--observation "hook-review=${{ runner.temp }}/python-hook-review-observation.json"', block)
+            self.assertIn('--payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"', block)
+            self.assertEqual(partition.validate(value)["contracts"], 75)
+        check(text)
+        for before, after in (("-- .github/scripts/test_review_funnel.py\n", "-- .github/scripts/test_review_funnel.py -k partial\n"),
+             ("steps.hook_review_observed.outcome == 'success'", "true"),
+             ("steps.hook_finding_source_upload.outcome == 'success'", "true"),
+             ("--source-profile hooks-finding-contracts-v1", "--source-profile unreviewed"),
+             ("Upload hook finding source-test inputs", "Upload unknown inputs")):
+            self.assertIn(before, text)
+            with self.subTest(change=before), self.assertRaises((AssertionError, ValueError)): check(text.replace(before, after, 1))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
