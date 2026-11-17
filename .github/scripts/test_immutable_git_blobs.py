@@ -56,6 +56,27 @@ class ImmutableBlobReaderTest(unittest.TestCase):
                 self.assertEqual(owner.blob(self.repo, self.source, "data/file0.txt"), self.expected["data/file0.txt"])
         self.assertEqual(len(calls), 1, "immutable transaction must use one Git child, not per-blob process starts")
 
+    def test_identical_blobs_across_commits_do_not_consume_payload_budget_twice(self):
+        path = "data/file0.txt"
+        payload = self.expected[path]
+        alias = "data/alias.txt"
+        (self.repo / alias).write_bytes(payload)
+        self.git("add", alias)
+        self.git("commit", "-qm", "Same immutable blob under another name and commit")
+        later = self.git("rev-parse", "HEAD").decode().strip()
+        self.assertNotEqual(later, self.source)
+        self.assertEqual(self.git("rev-parse", self.source + ":" + path),
+                         self.git("rev-parse", later + ":" + alias))
+        with mock.patch.object(transport, "MAX_TOTAL", len(payload)), transport.transaction(self.repo) as reader:
+            try:
+                self.assertEqual(reader.read(self.source, path), payload)
+                self.assertEqual(reader.read(later, path), payload)
+                self.assertEqual(reader.read(later, alias), payload)
+            except transport.BlobReadError as error:
+                self.fail("identical immutable blob aliases exhausted the payload budget: " + str(error))
+            self.assertEqual(reader.queries, 3, "new literal aliases must still resolve through Git")
+            self.assertEqual(reader.total, len(payload), "only one verified payload body was needed")
+
     def test_invalid_source_and_literal_path_reject_before_spawn(self):
         bad = [(source, "data/file0.txt") for source in ("HEAD", "a" * 39, "0" * 40, "a" * 40 + "\nHEAD")]
         bad += [(self.source, path) for path in ("", ".", "../x", "/x", "data//x", "data/./x",
@@ -128,12 +149,22 @@ class ImmutableBlobReaderTest(unittest.TestCase):
             return child
         return mock.patch.object(transport, "start", spawn), processes
 
+    def _fake_protocol(self, info, contents=None, *, tail="", wait=False):
+        body = "import sys;sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(info) + ");sys.stdout.buffer.flush();"
+        if contents is not None:
+            body += "sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(contents) + ");sys.stdout.buffer.flush();"
+        if wait:
+            body += "sys.stdin.buffer.read();"
+        return self._fake_spawn(body + tail)
+
     def test_corrupt_headers_types_payloads_framing_and_bounds_kill_transaction(self):
-        responses = [b"bad\n", b"a" * 40 + b" tree 1\nx\n", b"a" * 40 + b" blob 3\nab",
-                     b"a" * 40 + b" blob 1\nx!", b"a" * 40 + b" blob 16777217\n", b"x" * 4352]
-        for response in responses:
-            with self.subTest(response=response[:90]):
-                seam, children = self._fake_spawn("import sys;sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(response) + ");sys.stdout.buffer.flush()")
+        responses = [(b"bad\n", None), (b"a" * 40 + b" tree 1\n", None),
+                     (b"a" * 40 + b" blob 3\n", b"a" * 40 + b" blob 3\nab"),
+                     (b"a" * 40 + b" blob 1\n", b"a" * 40 + b" blob 1\nx!"),
+                     (b"a" * 40 + b" blob 16777217\n", None), (b"x" * 4352, None)]
+        for info, contents in responses:
+            with self.subTest(response=info[:90], contents=contents):
+                seam, children = self._fake_protocol(info, contents)
                 with seam, transport.transaction(self.repo) as reader:
                     with self.assertRaises(transport.BlobReadError):
                         reader.read(self.source, "data/file0.txt")
@@ -172,9 +203,8 @@ class ImmutableBlobReaderTest(unittest.TestCase):
 
     def test_trailing_stdout_and_failed_final_exit_refuse(self):
         for tail in ("sys.stdout.buffer.write(b'EXTRA');sys.stdout.buffer.flush()", "sys.exit(3)"):
-            response = b"a" * 40 + b" blob 1\nx\n"
-            body = "import sys;sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(response) + ");sys.stdout.buffer.flush();sys.stdin.buffer.read();" + tail
-            seam, children = self._fake_spawn(body)
+            info = b"a" * 40 + b" blob 1\n"
+            seam, children = self._fake_protocol(info, info + b"x\n", tail=tail, wait=True)
             with self.subTest(tail=tail), seam, self.assertRaises(transport.BlobReadError):
                 with transport.transaction(self.repo) as reader:
                     self.assertEqual(reader.read(self.source, "data/file0.txt"), b"x")
@@ -206,9 +236,8 @@ class ImmutableBlobReaderTest(unittest.TestCase):
 
     def test_primary_exception_cause_and_context_survive_cleanup_failure(self):
         for tail in ("sys.stdout.buffer.write(b'EXTRA');sys.stdout.buffer.flush()", "sys.exit(3)"):
-            response = b"a" * 40 + b" blob 1\nx\n"
-            body = "import sys;sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(response) + ");sys.stdout.buffer.flush();sys.stdin.buffer.read();" + tail
-            seam, children = self._fake_spawn(body)
+            info = b"a" * 40 + b" blob 1\n"
+            seam, children = self._fake_protocol(info, info + b"x\n", tail=tail, wait=True)
             previous = transport.Reader(self.repo.parent)
             token = transport._active.set(previous)
             primary = TypeError("original validation failure")
@@ -231,6 +260,98 @@ class ImmutableBlobReaderTest(unittest.TestCase):
                     self.assertFalse(reader.worker.is_alive())
             finally:
                 transport._active.reset(token)
+
+    def test_contents_identity_and_cached_alias_size_must_match_metadata(self):
+        info = b"a" * 40 + b" blob 1\n"
+        wrong = [b"b" * 40 + b" blob 1\nx\n",
+                 b"a" * 40 + b" tree 1\nx\n",
+                 b"a" * 40 + b" blob 2\nxx\n"]
+        for contents in wrong:
+            seam, children = self._fake_protocol(info, contents)
+            with self.subTest(contents=contents), seam, transport.transaction(self.repo) as reader:
+                with self.assertRaisesRegex(transport.BlobReadError, "contents identity"):
+                    reader.read(self.source, "data/file0.txt")
+                self.assertTrue(reader.closed)
+                self.assertEqual(reader.cache, {})
+                self.assertEqual(reader.objects, {})
+            self.assertIsNotNone(children[0].poll())
+            self.assertFalse(reader.worker.is_alive())
+        # A repeated opaque OID with a changed claimed size is not a cache hit.
+        body = ("import sys;sys.stdin.buffer.readline();sys.stdout.buffer.write(" + repr(info) +
+                ");sys.stdout.buffer.flush();sys.stdin.buffer.readline();sys.stdout.buffer.write(" +
+                repr(info + b"x\n") + ");sys.stdout.buffer.flush();sys.stdin.buffer.readline();" +
+                "sys.stdout.buffer.write(" + repr(b"a" * 40 + b" blob 2\n") + ");sys.stdout.buffer.flush()")
+        seam, children = self._fake_spawn(body)
+        with seam, transport.transaction(self.repo) as reader:
+            self.assertEqual(reader.read(self.source, "data/file0.txt"), b"x")
+            with self.assertRaisesRegex(transport.BlobReadError, "metadata differs"):
+                reader.read(self.source, "data/file1.txt")
+            self.assertEqual(reader.cache, {})
+            self.assertEqual(reader.objects, {})
+        self.assertIsNotNone(children[0].poll())
+
+    def test_unique_changed_blob_still_consumes_budget_and_refuses_before_contents(self):
+        path = "data/file0.txt"
+        payload = self.expected[path]
+        (self.repo / path).write_bytes(b"different immutable bytes")
+        self.git("add", path)
+        self.git("commit", "-qm", "New object must not reuse prior bytes")
+        later = self.git("rev-parse", "HEAD").decode().strip()
+        with mock.patch.object(transport, "MAX_TOTAL", len(payload)), transport.transaction(self.repo) as reader:
+            self.assertEqual(reader.read(self.source, path), payload)
+            with self.assertRaisesRegex(transport.BlobReadError, "byte bound"):
+                reader.read(later, path)
+            self.assertTrue(reader.closed)
+            self.assertEqual(reader.cache, {})
+            self.assertEqual(reader.objects, {})
+        # With no remaining body budget, only metadata may be sent to Git.
+        class CapturedInput(io.BytesIO):
+            def close(self):
+                self.sent = self.getvalue()
+                super().close()
+        channel = CapturedInput()
+        reader = transport.Reader(self.repo)
+        reader.total = 1
+        reader.process = SimpleNamespace(stdin=channel, stdout=io.BytesIO(b"b" * 40 + b" blob 1\n"), wait=lambda: 0)
+        reader.requests.put(transport._query(self.source, path))
+        with mock.patch.object(transport, "MAX_TOTAL", 1):
+            reader._io()
+        self.assertEqual(channel.sent, b"info " + transport._query(self.source, path) + b"\n")
+        success, error = reader.results.get_nowait()
+        self.assertFalse(success)
+        self.assertIn("byte bound", str(error))
+
+    def test_aborted_late_worker_cannot_repopulate_positive_caches(self):
+        ready, release = threading.Event(), threading.Event()
+        info = b"a" * 40 + b" blob 1\n"
+        reader = transport.Reader(self.repo)
+        reader.process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(info + info + b"x\n"), wait=lambda: 0, poll=lambda: 0)
+        exact = transport._exact
+        def delayed(stream, count):
+            ready.set()
+            if not release.wait(timeout=2):
+                raise RuntimeError("owned late-worker fixture not released")
+            return exact(stream, count)
+        reader.worker = threading.Thread(target=reader._io, daemon=True)
+        join = reader.worker.join
+        # Return from abort before releasing the inert pipe worker; no OS child exists.
+        reader.worker.join = lambda timeout=None: None
+        with mock.patch.object(transport, "_exact", delayed), mock.patch.object(transport, "QUERY_SECONDS", 0.05), mock.patch.object(transport, "terminate_tree", return_value="unconfirmed"):
+            reader.worker.start()
+            try:
+                with self.assertRaisesRegex(transport.BlobReadError, "timed out"):
+                    reader.read(self.source, "data/file0.txt")
+                self.assertTrue(ready.is_set())
+                self.assertTrue(reader.closed)
+                release.set()
+                join(timeout=1)
+                self.assertFalse(reader.worker.is_alive())
+                self.assertEqual(reader.total, 0)
+                self.assertEqual(reader.cache, {})
+                self.assertEqual(reader.objects, {})
+            finally:
+                release.set()
+                join(timeout=1)
 
 if __name__ == "__main__":
     unittest.main()

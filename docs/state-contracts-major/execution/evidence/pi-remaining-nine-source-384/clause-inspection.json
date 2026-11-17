@@ -1,0 +1,3484 @@
+{
+ "schema": "codearbiter.pi-clause-inspection/1",
+ "actor": "/root/ci_repair_review",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "S11",
+  "S12",
+  "S13",
+  "S14",
+  "S15",
+  "S17",
+  "S18",
+  "S19",
+  "S20"
+ ],
+ "clause_count": 62,
+ "source_bindings_sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f",
+ "rows": [
+  {
+   "cell": "disposition:transitions:S11:01",
+   "frozen_row_sha256": "50da942ae092a59a57f13b4ab7d92444d5653dd58c4e572ba20e885d85782e73",
+   "frozen_baseline": {
+    "event": "create broker",
+    "guard": "loopback only, ephemeral port",
+    "to": "listening unarmed",
+    "effects": "Bind port zero; mint token/nonce; reject inference until upstream authorized.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "none",
+    "transition_id": "S11:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Broker requires a 32-hex owning nonce, mints an independent random 256-bit token, binds exclusively to literal127.0.0.1/port0, and starts without upstream authority.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 351,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5a763c6a061fd028daad8a814d8087a9f253fe03c4adf384a621b331a0316d40"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a0483854b35ad5f4c0cedc5045d2f1c53b620f0678c110b42baf2922e6408b7f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:02",
+   "frozen_row_sha256": "4a587d4d4ebf829548ce8d4c5514639de029e5b79155760b29725f6175f68098",
+   "frozen_baseline": {
+    "event": "request",
+    "guard": "upstream unset",
+    "to": "same",
+    "effects": "Return 503; no upstream request.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "listening unarmed",
+    "transition_id": "S11:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Unarmed or revoked request drains its incoming body and returns fixed503 before constructing an upstream request.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 369,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "6226af26d5d730feca886a1ce98fab95ac89ab58cf048837b13424d01ee549a0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 338,
+     "end": 349,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "bb006c738dcd7681335089c93385614f4eab84a3c358fb9dedaf3d3ecbdc447b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:03",
+   "frozen_row_sha256": "28322a5041536daf30976b30f6ff793c3deb9eb73b007ffecbe1d579d2a3a571",
+   "frozen_baseline": {
+    "event": "authorize",
+    "guard": "exact selected provider/route and parent-owned credential",
+    "to": "authorized",
+    "effects": "Install narrowly scoped upstream configuration; child never receives actual key.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "listening unarmed",
+    "transition_id": "S11:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only parent authorize binds matching nonce, nonempty bounded credential/header values, the required sensitive predicate, and structurally bounded upstream. The selected credential remains in the parent. Token substitution applies to every scalar request header admitted by the finite FORWARDED_REQUEST_HEADERS allowlist, including non-auth names: the whole token or its exact single-word-scheme argument can match, and multiple matching headers are allowed. Array-valued headers cannot authenticate. Parent headers apply last. ADR49 requires HTTPS except raw numeric127.0.0.1 HTTP.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 242,
+     "end": 257,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "b439136218f114bc0850bbc5322339b186f8c9e871727add2c2d6226f3cc7953"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 283,
+     "end": 318,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "3e2024457712b9ca4037be9a6c7286e839aa525a06f9121a9dc1367f5b31deba"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 79,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a793eb64d2bdb781850ba3eeb52676debcc92395dc12fc21201e1cfaf171d4c7"
+    }
+   ],
+   "intake_variances": [
+    "Named accepted ADR0049 supersedes baseline externalHTTP allowance without replacing other endpoint/credential guards."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:04",
+   "frozen_row_sha256": "8a8c071441bf9a6fd77f4e4dd3dab895ca6ba4477cff178dab12d98be3d28325",
+   "frozen_baseline": {
+    "event": "child request",
+    "guard": "exact capability token/nonce, route/method/body/header constraints",
+    "to": "forwarding",
+    "effects": "Proxy to allowed upstream and scan output with 4,096-byte overlap for forbidden sensitive material.",
+    "failure_retry": "Bad request fails before forwarding; upstream failure sanitized.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "authorized",
+    "transition_id": "S11:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A request requires a bounded /v1 target without encoded separators and at least one matching scalar allowlisted header. Every scalar header admitted by FORWARDED_REQUEST_HEADERS is eligible for token substitution; multiple matches are allowed, while array-valued headers cannot authenticate. Parent headers apply last and the actual credential remains parent-side. Plaintext response is scanned with4096-byte overlap and backpressure. Nonce binds parent authorize, not each HTTP request.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 104,
+     "end": 120,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "514d624c0cfd359ccaa9f97a32d28031d8bbbe680e22846363e7797064a83912"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 205,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "350ff7c25115099ee945a7108ac06bb30b57c4d4ef02bae9a7818ce2dd26053e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 260,
+     "end": 335,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "71853f5bdc0f171cf6bf358b48ca7079bc42548c8a7c95a59327e3309c79fbe7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "948232e1e99c08eabe7994b40510a664d4e9a847564f0ca4fc34c6aa5d712d5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 429,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "04d50242934ef707a03e649b64f3e9bfd56119e38dfadc0550a8fb436c2388e2"
+    }
+   ],
+   "intake_variances": [
+    "Frozen request nonce/method/body constraints compress a stronger contract than literal baseline/current: actual code forwards request.method/body rather than applying a method allowlist/body-size cap. Exact token/route/header constraints exist; no invented request nonce or method/body guard is claimed. Same-user token replay residual is explicit in owner lines9-30."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:05",
+   "frozen_row_sha256": "d6d8339f985ec21811eb9f56a6ccbec884e93ee87879cb87b9222d526b80282d",
+   "frozen_baseline": {
+    "event": "sensitive or invalid response",
+    "guard": "scanner or header guard fails",
+    "to": "authorized or request failed",
+    "effects": "Return 502 if headers not sent; otherwise destroy partial response stream.",
+    "failure_retry": "Partial stream delivery is possible before late detection; no success classification follows.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "forwarding",
+    "transition_id": "S11:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invalid sensitive/encoded/transport-redirect headers destroy upstream and return fixed502. Body sensitive detection holds headers until first clean chunk, then resets partial stream on later detection; no successful intact response is claimed after detected leakage.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 219,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "9d132fcd12abb5567a174447a2266de1bb2b11b521f1dcdaf50274ad689c3548"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 391,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e6efd3ff7e30fabdf3dfd174194da6e1fe5b26cf3bc599445c7f3a7320ccbf16"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 431,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e591fbf4e6a5e2daa4c93b7c0c15c70a05dab8246658431ccdbc1f410483ea7f"
+    }
+   ],
+   "intake_variances": [
+    "Leading fragments may already be delivered before a later chunk completes sensitive match; this explicitly retained streaming residual is not zero-disclosure confinement."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:06",
+   "frozen_row_sha256": "55bf40c093d3d0a94125080b61d029d61bc06752802cf152cf10804319de51fa",
+   "frozen_baseline": {
+    "event": "revoke",
+    "guard": "lifecycle invalidated",
+    "to": "revoked",
+    "effects": "Block future requests; existing socket handling is separate.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "authorized or forwarding",
+    "transition_id": "S11:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Revoke permanently latches revoked and clears upstream; already forwarding request retains its local bound record, while future requests fail503. Socket shutdown belongs to close.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 358,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "1b31ebb8cac4586ce60a9fedb8c1eb0d5994f265e6fc9cf6cbeec099726a9405"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 529,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5e374b4f697fc11ab4a197e02a51707db532e23c5ba9d3d2537d97ae4fb29722"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:07",
+   "frozen_row_sha256": "bf4f4087f98145e8e8794c7f5a9ef7f4ab3c46468cf1c4b2ec291dfe116f4bff",
+   "frozen_baseline": {
+    "event": "close",
+    "guard": "cleanup requested",
+    "to": "closing then closed",
+    "effects": "Revoke, destroy active sockets and close server; share cached close promise.",
+    "failure_retry": "Repeated close is idempotent; no reauthorization after close.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+      "symbol": "broker lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/inference-broker.ts",
+      "lines": "1-510"
+     }
+    ],
+    "from": "any open",
+    "transition_id": "S11:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Close revokes/clears upstream, caches one close promise, closes listener and destroys tracked accepted sockets. Repeated calls await same promise; authorize refuses after revocation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 486,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "97629d20b580167e33612c98dacc996d74e9bdb8e8df97abf3848e39391b3d5b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "2afa5ae70514df64d8f5f586af6dcc932d0cc07881f2a18482e86ec681054270"
+    }
+   ],
+   "intake_variances": [
+    "This is a source-level owned socket/lifecycle contract, not an observed guarantee about every OS socket or native process."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:01",
+   "frozen_row_sha256": "9b12e0bca876c84aa2f671f2e488a29ded10ff5ff5280ac8387c00ea5a9181c8",
+   "frozen_baseline": {
+    "event": "resolve active runtime",
+    "guard": "canonical active CLI; supported package/version/exports and Node executable",
+    "to": "validated identity",
+    "effects": "Issue opaque identity object; no arbitrary PATH runtime substitution.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "symbol": "resolve/revalidate active runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "lines": "1-208"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "symbol": "supported runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+      "lines": "1-43"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "load metrics library",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     }
+    ],
+    "from": "unresolved",
+    "transition_id": "S12:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Resolver anchors to absolute process.argv[1], canonical active CLI and shipped ca-pi package, exact Pi package/bin/export ownership; it issues a frozen WeakSet-recognized identity. Public entry applies exact supportedPi1.5.0 and Node>=22.19 compatibility before loading.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 54,
+     "end": 95,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "65b38f52dce7042b76540613a57b0dd0555397a1504ada7b9a6ca82389492b5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 106,
+     "end": 161,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "a45cc1df1286bbbbaf52631170f9ea5d498d7546153c952f3d7632c84ce4d0da"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "c8609eecd32f2df6f28bab8594f346ade994f7f3f9b7e74539d55b9a3a4da02b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 969,
+     "end": 979,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "02367b78be7d4e9cd2e2a61c1a59f5b73655a4ee527fe5b72cc1d925d2df704d"
+    }
+   ],
+   "intake_variances": [
+    "Opaque identity is path/package/version identity, not cryptographic publisher authenticity or an executable hash. Active Node is process runtime plus compatibility; child runner has its separate launch check."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:02",
+   "frozen_row_sha256": "fa76534b32948474d16a9c8d81406ad7af995beb76d22d15d98265e078d158f3",
+   "frozen_baseline": {
+    "event": "import Pi API/metrics",
+    "guard": "identity issued by resolver and pre-import revalidation passes",
+    "to": "import pending",
+    "effects": "Import exact resolved module; concurrent metrics callers share one pending promise.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "symbol": "resolve/revalidate active runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "lines": "1-208"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "symbol": "supported runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+      "lines": "1-43"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "load metrics library",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     }
+    ],
+    "from": "validated identity",
+    "transition_id": "S12:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "loadPiRuntime requires an issued identity and repeats current resolution before importing its exact moduleURL. Runtime-scoped footer metrics loader uses a separate shared pending promise and exact package-local module.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 170,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "24b11c82aa0c26c6ff0a7c0b95a152ce1a44acde748e6e91116f26afc645a911"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 928,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "f7ad10671288268b05b7638d611bfcb917d1dee299b26d92a462b48c4b58b067"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:03",
+   "frozen_row_sha256": "5a6a345f7227437a5b3ea9cad9d5d67b39ee7b4b8d95f8da0f082708732efc61",
+   "frozen_baseline": {
+    "event": "module loaded",
+    "guard": "post-import identity revalidation and required exports/VERSION pass",
+    "to": "admitted",
+    "effects": "Return trusted exports bound to current runtime.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "symbol": "resolve/revalidate active runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "lines": "1-208"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "symbol": "supported runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+      "lines": "1-43"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "load metrics library",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     }
+    ],
+    "from": "import pending",
+    "transition_id": "S12:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pi API requires VERSION/ModelRegistry/SettingsManager/finite tool functions and post-import identity equality. Metrics import requires both width functions and pre/post directory/file identity equality before caching exports.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 170,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6b0b360c123b898efcb9a5c6dec7e73eaeaa252db4edd964967ee38c3df16505"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 924,
+     "end": 955,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "9ef0c37e1c09ddb491f02a2b83df58c0f7539b6fd51fa31fd1d6c21c57327632"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:04",
+   "frozen_row_sha256": "46ea28f74bab0c0481b49c259575f90cd60518a1afff4d7112345cfe637e96c8",
+   "frozen_baseline": {
+    "event": "path/version/export/identity drift",
+    "guard": "guard fails",
+    "to": "refused",
+    "effects": "Fixed diagnosis; no alternative runtime fallback.",
+    "failure_retry": "Lazy metrics failure clears pending cache so a subsequent request may retry, but identity guards remain.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "symbol": "resolve/revalidate active runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "lines": "1-208"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "symbol": "supported runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+      "lines": "1-43"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "load metrics library",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     }
+    ],
+    "from": "any admission",
+    "transition_id": "S12:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Path/package/version/export mismatch raises the fixed owning diagnosis; no alternate runtime fallback. Metrics failure clears pending promise so later request can retry with the same strict ownership checks.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 48,
+     "end": 52,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "8b87c72e9b9eb8db91b31c16efe953e38f2dfbe7d25f0aabadfb351e5c77ce5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 158,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6994037356955a24ec0062d48e22ea4b748a8019a56d0dc8a5e6fd739bca02bd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 956,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "d95e9d83fae92216e124d3a110c51b4dec0968b12910fb7bc61acffe5dc84502"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:05",
+   "frozen_row_sha256": "fe7ae18fb0db6bc2857848b4abe5ba5ace0c94e565ac430b7721a650113ee2fe",
+   "frozen_baseline": {
+    "event": "later use",
+    "guard": "identity revalidated at authority boundary",
+    "to": "admitted or refused",
+    "effects": "Recheck actual executable/package identity; cached JavaScript object alone is insufficient authority.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "symbol": "resolve/revalidate active runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runtime-resolver.ts",
+      "lines": "1-208"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "symbol": "supported runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+      "lines": "1-43"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "load metrics library",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     }
+    ],
+    "from": "admitted",
+    "transition_id": "S12:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Runtime load re-resolves active CLI and compares all identity fields both sides of import; cached JS identity alone cannot be passed as newly issued authority. Lazy metrics cache is scoped to the admitted runtime and its own first-import identity checks.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 98,
+     "end": 104,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "3b75321d697df77b2dd75ecfd6db032b0189f08c39a0dd215845f4c4e60f5027"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "86980426bc4fc85dce501617b250dfe1e73872a64eab4afc717f27cfddda3ad0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7d78632c998ede579403c841fc22bbdd04b938b66f1002402ab4f610af6ff34e"
+    }
+   ],
+   "intake_variances": [
+    "No per-call content hash or perpetual cache revalidation is present or claimed; source contract is the actual authority-boundary re-resolution, not universal read-time hashing."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:01",
+   "frozen_row_sha256": "6e0e93e9bd1f2cef4fc00987d55fc73a1b67ddcaddc4f41c737d2ab78f376158",
+   "frozen_baseline": {
+    "event": "POSIX child spawn",
+    "guard": "detached process with valid group identity",
+    "to": "ready",
+    "effects": "Own process group before handing execution authority to caller.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "spawning",
+    "transition_id": "S13:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Canonical command/cwd checked; POSIX spawn is detached with shellfalse, and cleanup uses negative PID process-group identity. Managed owner pairs returned child with cleanup before handing execution onward.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 392,
+     "end": 403,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "8beb64359ded79b9f1c5d512d880a8b731193e7b2bbc3ae41210aa603f28f70a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 862,
+     "end": 870,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ad7afe2a48161264c1f14cbfa830bd40179af646c4857583c91bb4bbfea59f6f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 915,
+     "end": 929,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "325d3724cf9116d4f6d9893b5e3e4ab0c91f40cdffd191533a6df163abac0d24"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 990,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "be0b1e9b98197024b04a831be669bd577917990ba80841dbdb35774ae8f31aa0"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:02",
+   "frozen_row_sha256": "ec37ef37922797a0d3fbe1c62e929ef2db94679dc58d30ec6181f11b3a6b9f0f",
+   "frozen_baseline": {
+    "event": "Windows inert supervisor starts",
+    "guard": "bounded environment/launch material",
+    "to": "admitting",
+    "effects": "Wait STARTING\u2192COMPILED\u2192PID_ACCEPTED\u2192ATTACHED; idle bound 15s and absolute bound 30s; transcript \u226464 records.",
+    "failure_retry": "No target launch before JobObject attachment.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "spawning",
+    "transition_id": "S13:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Inert Windows supervisor is launched before target; helper attaches kill-on-close JobObject and ordered STARTING/COMPILED/PID_ACCEPTED/ATTACHED before release. Idle15s/ceiling30s and bounded startup parser failclosed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 31,
+     "end": 42,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "bccac98f2f672ef6eebacb38e3d1014d4d70d4e742d9e567b0b9fed7bb141719"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 103,
+     "end": 121,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "0a3a385dd0458c79d8c9566bd13ba1fba3e6142079fb16ffc6ffd3cbe15023de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 152,
+     "end": 190,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "d6cd06ae29afd7cd7ec8972d2739d843db15c2c9845a8d6bf17db996eb2a8103"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 352,
+     "end": 389,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "65509aab58f6f3677bc46b3d3cd7ed71f0c8658845f424feef39df2e4856c461"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 617,
+     "end": 677,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "6991200bc21fe1a7c6564bb7a203635926c99d3db41eaba9e40bc000c5740359"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 871,
+     "end": 888,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "d327a3016e135a1a90f717911be42de4e3b3ef3e93416beac22f464a0052488d"
+    }
+   ],
+   "intake_variances": [
+    "Frozen transcript <=64 records is inaccurate: MAX_JOB_PROTOCOL_BYTES=64 bounds queued output bytes, and fixed staged token list bounds token progression. Stronger literal byte bound is retained."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:03",
+   "frozen_row_sha256": "122c909f73dc24b87de2d3e757dbcdce0265b41bce61656174036b904b7beb45",
+   "frozen_baseline": {
+    "event": "launch payload then exact START",
+    "guard": "fd4 \u22643 MiB; fd5 exact START \u226416 bytes; env \u2264256 entries/262,144 bytes",
+    "to": "ready",
+    "effects": "Supervisor launches child and emits STARTED/WATCHING; parent leash remains active.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "admitting",
+    "transition_id": "S13:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After attachment, bounded launch record is delivered onfd4, exact START onfd5, then STARTED positive distinctPID and WATCHING root/parent observation are required. Supervisor validates3MiB launch/16byte control/256env entries/262144envbytes before child spawn.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 889,
+     "end": 912,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "c3e86ad7f9758e146811683cad1d7070374e5db92916de22b52526a2f4458826"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 15,
+     "end": 20,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "14a250994aa2d301ae00987c3f20237f22a482cd9e5cbdb4ebdbd8b2b6cc9b96"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 47,
+     "end": 94,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "51acdc4b9e83bfbba8c2f8ad1adb05c73c83581afe853023b335485f3de8a33f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 155,
+     "end": 179,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "faed9e2fa21e0e6ec5c7b05f1e01ee14cb4db30a2a047a6a8fd5736b545fb7d8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 208,
+     "end": 227,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "6f92d41def3c1cc092454fc883dfb1bd8c1ca6f5d5ee209eb68562497aa7c88b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:04",
+   "frozen_row_sha256": "474f00a17b35f69cf91cc07aef6c66e4d5a5e048aa62b3a7baf969799f5b88d7",
+   "frozen_baseline": {
+    "event": "bad order/timeout/parent death",
+    "guard": "any failed admission guard",
+    "to": "refused",
+    "effects": "Fail closed before target authority; cleanup supervisor and job.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "admitting",
+    "transition_id": "S13:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Malformed ordering/overflow/error/startup timeout refuses before target capability release; failed later admitted launch closes leash/job and kills supervisor. No readiness success is inferred from a buffered token after overflow.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 617,
+     "end": 677,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "6991200bc21fe1a7c6564bb7a203635926c99d3db41eaba9e40bc000c5740359"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 862,
+     "end": 912,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "917ff7c6f0a0da07def8a9957e16239225bd67388a264b8236ee79f4e987c7da"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 107,
+     "end": 114,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "563cc973b122916fa0aaf0bcc46363b36aa25a375dab9da2c4a2c81cb390e0e8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 228,
+     "end": 242,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "9be6e825848fc9b2cf14fcd9dc11757332c38953afe154d84c6499dfa6a14977"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:05",
+   "frozen_row_sha256": "b95de9b9ca9478a1e434d3f22b642c3ebe29d9685eb93874e2f32bd9a6e5d3ec",
+   "frozen_baseline": {
+    "event": "terminate",
+    "guard": "first termination request",
+    "to": "terminating",
+    "effects": "Cache one termination promise. POSIX SIGTERM then 500ms grace, SIGKILL and 2s verification; Windows taskkill/root plus JobObject close and root/supervisor verification.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S13:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cleanup caches a single termination promise; POSIX TERM/grace500/KILL/verify2000, Windows trusted taskkill/root plus owned JobObject close and target/supervisor verification; timings have bounded validation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 328,
+     "end": 339,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "9ca442b6fa26240b5e528b4de8addf9e12636f0f48731ef8e73efd7477af41a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 396,
+     "end": 412,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "9a16647a710921e3e7fd25f0a527b0f81bbaba4ff475f510e1db6aa804656d23"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 943,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "7b3bcd913b46db84362545c461b2ac1d05501b176a3c061fbc9935ab2d087302"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:06",
+   "frozen_row_sha256": "24e024cc30b1e02abf5c7ac65c7b5349502a0a3cd154adc30beca77e337d9243",
+   "frozen_baseline": {
+    "event": "absence verified",
+    "guard": "owned group/job no longer live",
+    "to": "clean",
+    "effects": "Resolve cleanup success; later terminate calls reuse result.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "terminating",
+    "transition_id": "S13:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only verified absence/closed job can return terminated/already_exited with verifiedtrue. Later termination reuses existing result.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 927,
+     "end": 941,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ac3bb0f5ba6784054194d4c0d3a8350a80fa37b9bff2d777476e4a7ff6a58202"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 955,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "64c4927e0f5f4e4f49af1a4db58ac3bd4c0321332b1bba115771978ab168e8f3"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:07",
+   "frozen_row_sha256": "92d0bdf1b5109643e7ce93e666f65e4b71b41747639b70928abc06281f7d3eb1",
+   "frozen_baseline": {
+    "event": "unverifiable ownership/liveness",
+    "guard": "checks fail or process remains",
+    "to": "cleanup failed",
+    "effects": "Return refused/failed result; caller must not call this clean.",
+    "failure_retry": "Cached termination result offers no new cleanup attempt by itself.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "terminating",
+    "transition_id": "S13:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invalid PID/unowned Windows target/failed readiness/liveness still present/verification exception produce refused or failed and verifiedfalse. Cached failure does not itself grant a fresh cleanup attempt.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 955,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "64c4927e0f5f4e4f49af1a4db58ac3bd4c0321332b1bba115771978ab168e8f3"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:08",
+   "frozen_row_sha256": "77ef443306631e706b1540a3985b9c64eb4db924b12c21e0d4af77b7971f8ea1",
+   "frozen_baseline": {
+    "event": "parent leash closes",
+    "guard": "parent vanished",
+    "to": "terminating then refused",
+    "effects": "Supervisor fails closed (70) and job cleanup removes child tree.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "Windows ready",
+    "transition_id": "S13:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Parent EOF/disconnect takes failClosed70 in supervisor; separate native holder watches parent/stop and closes kill-on-close JobObject. This conditionally preserves failclosed lifetime ownership, not live containment proof.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 107,
+     "end": 114,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "563cc973b122916fa0aaf0bcc46363b36aa25a375dab9da2c4a2c81cb390e0e8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 150,
+     "end": 153,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "54570857764fb13515736c4ae6770b1a629892a01b4273b725eeb963c827c505"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 140,
+     "end": 190,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ef314c4897012ba6fb1216796169169ae4fa10b27ea1c94192e0d79de018209b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S13:09",
+   "frozen_row_sha256": "1403446378336905fb3e02c440c5da151f8e5225e5d5a5d75d99d0530c73b67d",
+   "frozen_baseline": {
+    "event": "child exits",
+    "guard": "normal managed child",
+    "to": "terminal",
+    "effects": "Drain read/write streams for bounded 500ms each; preserve exit code, use 71 for missing code; refusal flush bounded 500ms before 70.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/process-tree.ts",
+      "symbol": "managed process tree",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/process-tree.ts",
+      "lines": "1-1005"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "symbol": "supervised launch and parent leash",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/windows-supervisor.ts",
+      "lines": "1-242"
+     }
+    ],
+    "from": "Windows ready",
+    "transition_id": "S13:09"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Child exit is latched before proxy readiness if needed; read and write drains each500ms then preserve exit code/missingcode71. Refusal flush races500ms before70. Parent facade prefers native exit observation, closes pipes/job, drains and distinguishes missing native proof72.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 116,
+     "end": 147,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "608147955d03efd16072bb23457b22fc461735119fbb49162bc8bdac824962ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 180,
+     "end": 242,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "18415d1785c8ac0c43a14450b2bd0daa037f1f2349263434a9c4f60351427576"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 784,
+     "end": 858,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "6e54548f17372698b7029d6203a8eb06b8ff4c4a466afa1a538d0f00d8ccc234"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:01",
+   "frozen_row_sha256": "31130837d480796cc7f4143519b4af56abeacfcc4e5ed3340c2ee19fb94c103e",
+   "frozen_baseline": {
+    "event": "validate paths",
+    "guard": "canonical project/home/package; home outside project; trusted Python/Git",
+    "to": "ready or unavailable",
+    "effects": "Resolve bridge executable/package once.",
+    "failure_retry": "Constructor validation failure is cached; call does not auto-resolve a new installation.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "construct",
+    "transition_id": "S14:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Bridge constructor caches one validatePaths promise for absolute canonical Git/Python/script/package; script must be package-local, tool executables valid. Each call checks canonical project excludes executables and home outside project/package. Failed constructor admission does not silently resolve a replacement installation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 112,
+     "end": 143,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "ec0156eb79544b56299ca9ebf4dca80c051cff79788176cd7d5befe7efa455de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 740,
+     "end": 777,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "16fbcd68ecb44e3b22ec05ab98159770b626bf6dd09a52ff0d1f118ef1411520"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 849,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "358a169df4847876bf8fd09a18765a14d129feb64047151be8f1518b1ec9f978"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:02",
+   "frozen_row_sha256": "f6c17b93f6273059f4a5a58140f640c0c91279fc7eb19f188aaaaf857e41a996",
+   "frozen_baseline": {
+    "event": "call",
+    "guard": "request \u2264262,144 bytes; not pre-aborted",
+    "to": "request running",
+    "effects": "Spawn trusted Python in package cwd with minimal environment; write one JSON request.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S14:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Serialize one request<=262144bytes then spawn cached Python with-B/script in canonical packagecwd, minimal OS/home and exact tool dirs, shellfalse, detachedPOSIX, pipeJSON. Stream default cap1MiB each.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 84,
+     "end": 110,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "42f19a9e8f9c788c8f84195d62a58f759f721eaba08ca12f22aaec6aeeeca69e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 746,
+     "end": 749,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "5e4477b8cadac24b2583307662b8acf35fb00500e89890ac43d44249b1e9e400"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 850,
+     "end": 877,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b5339e5f3f301bcdad3e7469e7eedf8d800906064e0d3c1a414622a7306a5622"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 934,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "1c4ed67b55a5d05cb4bcce6e210d4db7e831edb52f49ae9be6ce40b63bba15cf"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:03",
+   "frozen_row_sha256": "8f66bd8b6583766db7c22cd48c2ba8c8cf305d71d8e701dbee3346be7895292e",
+   "frozen_baseline": {
+    "event": "call pre-aborted",
+    "guard": "signal already aborted",
+    "to": "ready",
+    "effects": "Return cancellation failure without spawn.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S14:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Already-aborted signal returns owning sanitized cancelled failure after path/request checks and before spawn.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 857,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dc7679b05dde5ebefd7aaa8452ef00a6d3c6eace0d3b3fa0b947e39e740208c2"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:04",
+   "frozen_row_sha256": "aa8780b0c739c97312a13eb34c1584c9726a938764fbc12fd9969154c89c92e7",
+   "frozen_baseline": {
+    "event": "timeout/abort/output overflow",
+    "guard": "10s deadline; each bounded stream",
+    "to": "failure latched",
+    "effects": "Preserve first reason; kill tree via POSIX SIGKILL or Windows taskkill; start 2s backstop.",
+    "failure_retry": "Bridge kill result does not carry the stronger verified-containment state used by managed child runner.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "request running",
+    "transition_id": "S14:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The first timeout10s/abort/stream overflow latches a reason, initiates POSIX group kill or bounded async Windows taskkill/fallback, and starts the2s settlement backstop. Close and the backstop use that latched reason if they win settlement. The separate child error callback can instead start settlement first with generic bridge launch failed, even after a reason was latched. This is not managed-runner verified containment.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 637,
+     "end": 703,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "3860a81d5358ff5e0e187f867b8c3694d49358667cb6c04e93262b5122c012b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 894,
+     "end": 921,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "9108fe198fbc627ab9026fa4f0a02ca27611ad54ec2cd905ffac7c4e7ef9bcf1"
+    }
+   ],
+   "intake_variances": [
+    "The frozen universal first-reason description overstates the pinned/current callback ordering: close/backstop select the latched reason, but child error can win settlement with the generic launch-failure detail. This records existing source behavior only, not runtime incidence or a newly authorized behavior change."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:05",
+   "frozen_row_sha256": "0d0c5de31dc6c13a183ff8aea4db88585c3eacc918ee3270541fb8b9bad9f293",
+   "frozen_baseline": {
+    "event": "process close",
+    "guard": "zero exit and valid JSON/envelope",
+    "to": "closed",
+    "effects": "Return bridge result; caller decides hard block versus degradation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "request running",
+    "transition_id": "S14:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only close0 and valid bounded JSON version1/allowlisted fields/outcome yields sanitized response; caller applies separate mutation versus advisory policy.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4256c2611dd2ecc2a9c5b3fa8222df73fa048bb1a2f300e49521e86394861e81"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 713,
+     "end": 731,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "05b595ae8438e9c349d99a9a1a71e0986bcc36e9f361d4e1ac7b99feee2a0c8e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 923,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b0fbd1c361a57fcd3fd577a5cb7e5d0b073deb9d5ce5612f9b4c013aa7c7626b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:06",
+   "frozen_row_sha256": "efd0c0c86cec3a4c6abce5987d82f6df886aaf36a8fd3b7485f94903a3268daf",
+   "frozen_baseline": {
+    "event": "nonzero/error/malformed envelope",
+    "guard": "any failure",
+    "to": "closed",
+    "effects": "Return bounded sanitized failure; mutation gate refuses; lifecycle/read refresh may warn/degrade.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "request running",
+    "transition_id": "S14:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Launch/error/nonzero/malformed/overflow produces fixed sanitized warn for advisory/read or block for mutation; bounded metadata-only failure audit cannot change fail direction, and selected footer/recovery observations avoid redundant audit.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 79,
+     "end": 82,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d5fcc0ecdb1cc353775f572d0bfe1fabb54b854d742247925b7fa800f0e88e37"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 779,
+     "end": 827,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "c52f6403d5189afa2be2a6abe5a558e1fdfc0865422b049b0ce62474a8003e29"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 870,
+     "end": 875,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "24616b70971ad6fc2a7136bf18c5ffc6d1764d9d09d6775837e5a53de9528469"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "329d726562a060da2cd6e0f4d9ac221f76e7dd3179e137d009f03fb790d1c742"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:07",
+   "frozen_row_sha256": "59e984404dfb090c0de35057700924481103e14028579f64e5c2fe499563dae5",
+   "frozen_baseline": {
+    "event": "close OR 2s backstop",
+    "guard": "whichever observed first",
+    "to": "closed or backstop resolved",
+    "effects": "Return original failure even if process never emitted close.",
+    "failure_retry": "A resolved bridge promise is not evidence that all descendants are gone.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "BridgeClient and bounded process collection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "failure latched",
+    "transition_id": "S14:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Close uses the latched failure reason and the2s backstop uses its recorded failure value if either wins settlement. The separate child error callback does not consult the latched reason and can settle first with generic bridge launch failed. Single settlement removes abort/timer state. Promise settlement is not evidence that descendants died; no universal first-reason-retention guarantee is claimed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 882,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a88a0d43ce7ecfaf29ed83ac81cc37128a4fae4639e153f6c2a11819c9e3e752"
+    }
+   ],
+   "intake_variances": [
+    "The frozen universal first-reason description overstates the pinned/current callback ordering: close/backstop select the latched reason, but child error can win settlement with the generic launch-failure detail. This records existing source behavior only, not runtime incidence or a newly authorized behavior change."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:01",
+   "frozen_row_sha256": "3edada9a6cc7fce012510e18d9193dccb86a13b84b01d11bf79fbe4d1b4b529e",
+   "frozen_baseline": {
+    "event": "refresh usage",
+    "guard": "same session identity before/after reading entries",
+    "to": "range collected",
+    "effects": "Scan at most 256 entries per range; extract only valid assistant usage facts with raw positions.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "unscanned or acknowledged",
+    "transition_id": "S15:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Read bounded sessionID/file identity before and after getEntries; reject mixed identity/cursor shape. Each range scans<=256 raw positions and extracts only valid assistant usage/timestamp/tokens/cost.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 274,
+     "end": 329,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "49b29dcabbfaca60ef39a23fe0858bd32110eea7826ac0ace7dedf3231e0ae6e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 389,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b8fa120a3805110b76e08a73442c4c7877cd7b9b3923040ef78fc38be3dabb5c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:02",
+   "frozen_row_sha256": "be5cdd010b6a2bc4b5684df71c6ba21ec109532abe15a348fc744d0d74135663",
+   "frozen_baseline": {
+    "event": "submit bridge usage",
+    "guard": "bounded valid facts/range",
+    "to": "delivery pending",
+    "effects": "Send session identity and exact scan range; do not advance local cursor yet.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "range collected",
+    "transition_id": "S15:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Submit session-key digest and exact scanStart/scanEnd/facts; cursor remains last acknowledged value until owning response proves acceptance. Actual bridge dispatch routes to shared pi_ledger_update.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 405,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "7ad3e93722bac88fcd45b6158c85267c793abfb8c5422c39a146a65c2fc96590"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 315,
+     "end": 369,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "229884428fff56c4abd312edd39546fd53720ff655c83c7a199819d1fb605e30"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:03",
+   "frozen_row_sha256": "35c7a8eeb1eeb2f27507cca2d99acca4b1f11c36892c89ab382bdd10fc1d1477",
+   "frozen_baseline": {
+    "event": "acknowledgment",
+    "guard": "acceptedThrough==scanEnd and high-water within observed entry bounds",
+    "to": "acknowledged",
+    "effects": "Advance cursor to acknowledged raw position; preserve exact duplicate-resistant range identity.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "delivery pending",
+    "transition_id": "S15:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Strict totals and integer acceptedThrough/highWater shape; acceptance requires statusok/exactscanEnd and highWater within observedentries. Advance to accepted highWater and emit only actual totals.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 212,
+     "end": 261,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dcfddec8df541508fbfc45250bf6d5c6b8fad807c69e30d1dd74ae6c078e5b6c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 405,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "37dfd2af914353fce808b2fc3642e2aacbc5fbab18d22b7d9d8b1e78b4ea0848"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:04",
+   "frozen_row_sha256": "74730dc2349942b128a25b145a8fdec2422fe2a80da19d34e78b0128d3eea2a8",
+   "frozen_baseline": {
+    "event": "bridge failure or invalid acknowledgment",
+    "guard": "ack does not prove range acceptance",
+    "to": "retry pending",
+    "effects": "Keep last acknowledged cursor; next refresh resends exact range.",
+    "failure_retry": "Do not drop facts by treating attempted delivery as accepted.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "delivery pending",
+    "transition_id": "S15:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Throw/malformed/statusnotok/wrongack leaves last acknowledged cursor for retry; attempted delivery is never accepted. Frozen stable raw entries yield same session/range next request, not a persisted private snapshot.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 344,
+     "end": 346,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a59990486256131c6fc35384d408bd5f0ee69abde4e9cb86124197d682f05b31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 390,
+     "end": 417,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4ca4268b8ef4f0f18dfb5ddc6e07ae19735c6d7b97d2347d09639ffb3ed9bc22"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:05",
+   "frozen_row_sha256": "4f8534e764c2c2f3c68a028849f5113de87f9a0340f3701a4fce8392f8bf770e",
+   "frozen_baseline": {
+    "event": "maximum ranges reached",
+    "guard": "entries remain",
+    "to": "more pending",
+    "effects": "Return morePending=true; continue in later refresh without skipping.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "range loop",
+    "transition_id": "S15:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Optional maxRanges must be integer1..1024; after chosen number returns morePending if raw entries remain. Footer requests maxRanges1 and serializes subsequent refresh.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 370,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d23a5012bf3e1ccd35b696532bb8b0e65173cda70a7bb5a4d6bdd7c7fb1adecd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 257,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "e1edf027a31a4cb01af628362ef6ba721cd2ecdc665eb5712edb5f8f593341ce"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S15:06",
+   "frozen_row_sha256": "bfe3dfe0b8e01f712b8087cd9f0e5136aa24462941f49f2744a5de72a539cc15",
+   "frozen_baseline": {
+    "event": "session changed or no entries",
+    "guard": "identity mismatch or empty session",
+    "to": "unscanned or unchanged",
+    "effects": "Suppress mixed-session snapshot; no empty success snapshot is invented.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/bridge.ts",
+      "symbol": "usage extraction and cursor advancement",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/bridge.ts",
+      "lines": "1-940"
+     }
+    ],
+    "from": "scan",
+    "transition_id": "S15:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invalid/mixed session identity, nonarray entries, or an invalid/out-of-range acknowledged cursor returns retryRequired:true without a fabricated snapshot. A stable valid empty session with entries=[] and acknowledgedCursor=-1 (and valid options) returns the unchanged cursor -1 and retryRequired:false without a snapshot. No final range means no usage snapshot is invented.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 348,
+     "end": 368,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dbc7fed5eb672ea381f505f8182bdd313778c5713321770d1d64b2f05732f6d2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 419,
+     "end": 427,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "492fa14e6ae1cc2bd23f75fd74f3b715a96d757054313eeadecefd9260e40c30"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:01",
+   "frozen_row_sha256": "a605b2b019e05f47316cc283546fd8decd9f7548a93225b9048f935f64dc3a71",
+   "frozen_baseline": {
+    "event": "compaction request",
+    "guard": "trusted lease; bounded \u2264100,000 context descriptors; semantic IDs unique",
+    "to": "eligible prefix",
+    "effects": "Plan prefix pruning while keeping final ten messages and protected tail; bound compacted prefix to 8,192 descriptors.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "unexamined",
+    "transition_id": "S17:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Trusted live lifecycle gate parses<=100000 host entries and unique bounded semantic IDs, asks actual bridge for standard keepRecent10/maxBytes8192 policy, validates protected boundary/actions/metrics/fingerprint. Actual bridge rejects>10000semantic rows and oversized serialized request.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 138,
+     "end": 165,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c05f3352a2e508880e63d9431bf6c53436e553d808b19f7e6b1618854b415338"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 201,
+     "end": 219,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "6d23faef3c0291821bfb5f575eac1a62a24297290ad37e9acf42b92c9a151134"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 254,
+     "end": 275,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "71242fec3069469cb5b02822377367023d7a850ec2505e146850134780cc08ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 338,
+     "end": 360,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "57b52e4e406aef66b7bc66a750059ee616c4a258b6884ea2273a279b1b9b544c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 477,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "7cd27a4d63d3770ab78bc363aa0e737be0203341c271ca51388205aa7cff25bb"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 234,
+     "end": 292,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "start": 173,
+     "end": 250,
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "d9dbc389d593ed7b2e25424e24f13357cf1244ef3bd53da9501cf8ac966cbb8f"
+    }
+   ],
+   "intake_variances": [
+    "Intake last10messages/8192descriptors is false: keepRecent counts tool-bearing/result anchors plus lastassistant;8192 is byte-size policy for oversize tool-result selection, not prefix descriptor cap. No new message retention algorithm inferred."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:02",
+   "frozen_row_sha256": "f6d93f753665ce6aef886e084271fc5e09de7c1f2d9e14b9076a500fc799529c",
+   "frozen_baseline": {
+    "event": "plan validates",
+    "guard": "zero removable prefix/already compacted/same prior fingerprint",
+    "to": "no-op",
+    "effects": "Return no change; no child launch.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "eligible prefix",
+    "transition_id": "S17:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "No-op already-compacted tail, zero candidate prefix, or existing codearbiter plan fingerprint returns without child launch; current plan/refusal checks still apply.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 278,
+     "end": 298,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "f99ac485703277c810b09f888b85189d97d626bcff5ef189a0a3425d3188f5a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 388,
+     "end": 407,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c77a984ad265e7c888814c53a0c3b441d1e603777fc74186828c57d1df68d311"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:03",
+   "frozen_row_sha256": "6fd78915ca2095f6f761f9320d466c4df70fd0350d24b4ef38532dd76ac060cf",
+   "frozen_baseline": {
+    "event": "plan validates actionable",
+    "guard": "protected tail/actions/metrics/fingerprint consistent",
+    "to": "child summarizing",
+    "effects": "Serialize redacted prefix \u226448KiB, previous summary \u22648KiB and custom instructions \u22644KiB; run isolated child with no tools or skills.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "eligible prefix",
+    "transition_id": "S17:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Actionable validated plan serializes redacted prefix<=48000bytes, previoussummary<=8000, custominstructions<=4096 into bounded task; isolated child request has empty tools/skills and exact runtime/provider/model.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 168,
+     "end": 190,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "004ca8898902a97cbeef3cff404e394b1c14358a1befedf144515f863dc8c6c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 221,
+     "end": 240,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "85f5fc11f0c689003470a2e9889f063c0e3039679dc889ca49a49113dfccb7ec"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 406,
+     "end": 420,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "9eb2a1a0cef979d2543c96f612b89d149494d4e242a6296539321b2c4fc1d06a"
+    }
+   ],
+   "intake_variances": [
+    "Frozen KiB labels are rounded prose: actual constants are48000/8000/16000bytes,4096 custombytes. Actual limits retained literally."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:04",
+   "frozen_row_sha256": "810f4d547c7eb893ded22c7e849a78c04e7424102d77e99a0d77c0a6dec938aa",
+   "frozen_baseline": {
+    "event": "valid bounded summary",
+    "guard": "\u226416KiB; same lease/fingerprint",
+    "to": "proposal ready",
+    "effects": "Return compaction proposal; the host, not this helper, mutates conversation context.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "child summarizing",
+    "transition_id": "S17:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Require nonempty completed child summary then redact/truncate<=16000bytes and return host-owned compaction proposal with exact boundary/fingerprint/metrics. Current lifecycle must still match after await; helper does not mutate conversation context.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 221,
+     "end": 240,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "85f5fc11f0c689003470a2e9889f063c0e3039679dc889ca49a49113dfccb7ec"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 421,
+     "end": 433,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c2d3606e18ac95e15f4a96a1a0ed11157a2939532fa20a6df29e6042e1daa868"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 490,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "43cc115d6df89060a29551f9fdc2cd50a23d71f7a005141235b965fd6728791c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:05",
+   "frozen_row_sha256": "3b4dfa093367322d12aa9bbb3eeeda8a1a5fc66dd03e3314cef979afd4e6b4b9",
+   "frozen_baseline": {
+    "event": "abort/stale/error/invalid summary",
+    "guard": "any fault",
+    "to": "stale/refused",
+    "effects": "Throw or suppress proposal; no partial context mutation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "child summarizing",
+    "transition_id": "S17:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invalid event/provider/plan/summary/abort produces bounded owning error; stale lifecycle suppresses proposal after await. No partial conversation mutation occurs in helper.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 383,
+     "end": 441,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "422b79432d63a4945af20bfff02be57b45bcfddcb69128a62b07096cd6ed30b7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 466,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "de44aaf068ffa6db10f21806f22f25cd55d777158324e35ad0b42e88db5f8138"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:06",
+   "frozen_row_sha256": "0a28cd0b55010ca2da543092e094f8629be7413b0e26702bf0dde885d13b4d68",
+   "frozen_baseline": {
+    "event": "host confirms compaction event",
+    "guard": "matching event identity",
+    "to": "host confirmed",
+    "effects": "Best-effort audit; retain 16 recent confirmation identities to deduplicate.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "proposal ready",
+    "transition_id": "S17:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only a valid host-confirmed fromExtension event with valid codearbiter detail fingerprint/auditCodes/metrics is considered; current lease/trust gate surrounds best-effort append. Sink verifies regular single-linked project-owned log before/after append andfsync; source only.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 370,
+     "end": 380,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "fcb86c3161d689c9e6701b8bc8142f720b096d85ed9734ea0a23439b1c83f3ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 445,
+     "end": 463,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "54180d523f09b8fb0cfc5f92ebe3d39854a8c3a316cccd0825fe2f805df2f08b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 502,
+     "end": 532,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "e5456eb1171d2f92aadebb67bda8f0bb1f8dabf43d354d4bb7ce439a58f33fa6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+     "start": 156,
+     "end": 204,
+     "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+     "span_sha256": "b0fcd0984f4ebc0cbeb9443e04b5f0968fb33e75c21b7aad85585d5b127eb418"
+    }
+   ],
+   "intake_variances": [
+    "Intake cache16confirmationIDs does not exist in baseline/current. MAX_AUDIT_METRICS16 bounds projected metricfields. Matching event means valid extension provenance/detail shape plus live lifecycle, not a stored prior proposal-ID lookup."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:07",
+   "frozen_row_sha256": "8cd6645aa9b2b0e1a9dd15fcb7b63b8365204f03094d727d4f6cd1c82b5dfaa1",
+   "frozen_baseline": {
+    "event": "duplicate host event",
+    "guard": "already recorded identity",
+    "to": "host confirmed",
+    "effects": "Do not duplicate confirmation audit.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/compaction.ts",
+      "symbol": "compaction planning and event handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compaction.ts",
+      "lines": "1-533"
+     }
+    ],
+    "from": "host confirmed",
+    "transition_id": "S17:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "Exact dedup-only analytical composite is unsupported: neither baseline nor current confirmation handler has a prior event identity cache; each accepted event calls audit.record, renderer mints fresh randomUUID and sink appends. Real no-op proposal/fingerprint logic remains distinct and supported.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 278,
+     "end": 298,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "f99ac485703277c810b09f888b85189d97d626bcff5ef189a0a3425d3188f5a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 445,
+     "end": 463,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "54180d523f09b8fb0cfc5f92ebe3d39854a8c3a316cccd0825fe2f805df2f08b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 502,
+     "end": 532,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "e5456eb1171d2f92aadebb67bda8f0bb1f8dabf43d354d4bb7ce439a58f33fa6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+     "start": 156,
+     "end": 204,
+     "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+     "span_sha256": "b0fcd0984f4ebc0cbeb9443e04b5f0968fb33e75c21b7aad85585d5b127eb418"
+    }
+   ],
+   "intake_variances": [
+    "PROGRAM actual-source precedence; reviewed PI-C01 and PI-D03/05/06/07 contain no compaction confirmation-ID-cache mandate. No failed test relabeled or supported compaction route retired. Only nonexistent duplicate-audit-suppression route is inapplicable."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:01",
+   "frozen_row_sha256": "30e546457bca56cd69b2c91dedbb6e7a9431bc8c3e7e6f3a0b3542799f8ce3f4",
+   "frozen_baseline": {
+    "event": "start session",
+    "guard": "interactive hasUI and mode absent/TUI",
+    "to": "install pending",
+    "effects": "Dispose prior generation; await metrics library; retain native footer until safe installation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S18:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Footer start disposes old owner, advances generation and resets facts/cursor. Only hasUI with absentmode/TUI attemptsmetrics; native footer retained until current safe factory installation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 24,
+     "end": 38,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "1c69d4202e86dbec5282e4984d0fa786103646d90571edf44a9e5c23af6c6b10"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 135,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "b379ddd0a43b041ffb473d45d5af4e0c8c21c3e875053dd6c7c11f93b3cdd4e5"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:02",
+   "frozen_row_sha256": "391f4d4c0a27b293b530a0a9bde39ba005eafaa5b4c252956be8a6d9da03b82d",
+   "frozen_baseline": {
+    "event": "metrics ready",
+    "guard": "generation still current",
+    "to": "installed",
+    "effects": "Install owned footer; guard against stale async completion.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "install pending",
+    "transition_id": "S18:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After metrics exports validate, context+generation still current before setFooter. Factory also checkscurrent and tracks componentownership before subscriptions/render state.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 120,
+     "end": 151,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "a284ad39f9fb05d2b1cdde323342e3113aaf9e14e630a499c0bef484f0ea79ca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 211,
+     "end": 219,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "88647cc4659de77b365cb030a8fe3ea94301d85186ee6a8ca07f963a008e5c30"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:03",
+   "frozen_row_sha256": "bada1aa9749d6ec4497d946667920edc0bb6909f0d8171289d810e77ad0b6654",
+   "frozen_baseline": {
+    "event": "metrics unavailable/noninteractive/stale",
+    "guard": "cannot safely install",
+    "to": "degraded/native fallback",
+    "effects": "Keep native footer and bounded notice; stale completion does nothing.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "install pending",
+    "transition_id": "S18:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Noninteractive exits before installation; missing/invalid metrics or install exception emits fixed notice and restoresnative, while stale completion does nothing. No host render or width runtime success inferred.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 24,
+     "end": 30,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c0f31044bb138b5f315c2c82afe27db8712eca58e09f8b2dc5c354dce7deab0c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 138,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "710733a49c53025ecea8fb885c0ef770083b3f4a07a22fe5cb01660feb3e8468"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 211,
+     "end": 219,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "88647cc4659de77b365cb030a8fe3ea94301d85186ee6a8ca07f963a008e5c30"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:04",
+   "frozen_row_sha256": "10c2895d7fc4ea3a829125f1f3043462606610723b417d354d540a81f8b5cb47",
+   "frozen_baseline": {
+    "event": "refresh",
+    "guard": "current lease/generation",
+    "to": "refreshing",
+    "effects": "Serialize refreshes; softly prepare bridge; independently await usage/governance/Git using allSettled.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "installed",
+    "transition_id": "S18:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Refresh queues serially, captures generation, best-effort prepareBridge then verifies current owner; usage/governance/Git promises settle independently, updateversion separately bounded by its owning read.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 254,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "a89bc7e49a6f582fa12237f78643c4f30b7627b4e8aef3babd36bae07a2c907e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:05",
+   "frozen_row_sha256": "7a1e587e5d06ee55d1c1d2a7f05954b383d36c1a2fe8a52cebb623c9a15760f7",
+   "frozen_baseline": {
+    "event": "partial data success",
+    "guard": "same current lifecycle",
+    "to": "installed",
+    "effects": "Use fulfilled usage cursor; keep prior governance if a trusted refresh fails; clear governance if inactive/untrusted; unavailable Git remains unknown.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "refreshing",
+    "transition_id": "S18:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only fulfilled usage advancescursor/snapshot; trustedactive governance retains prior snapshot on absent/failed refresh, clears on inactive/untrusted; Git absent/failure staysunknown; render uses sanitized bounded state. No unknown fact converted to clean.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 154,
+     "end": 190,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "4216a8dfaa30d19ef3f72a4e0cdb3d0d9312a1e72d15349a100ef5f4a8f33884"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 239,
+     "end": 264,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "746b13305fe8251d166cf55e1373c8f2f6cc9a843086e6313e933828cdb450ac"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer-state.ts",
+     "start": 188,
+     "end": 230,
+     "file_sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+     "span_sha256": "02538942e57670cbdc1de3c2858fa7db6e1a564b706b7b57cbc3caea80ed89d9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/git-facts.ts",
+     "start": 125,
+     "end": 149,
+     "file_sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+     "span_sha256": "31a39abaa8a91e9d9d349c8f4042d84b523df61a4d54fe7f2bd668cea10507aa"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:06",
+   "frozen_row_sha256": "b3f7279763947b0e2ae7b3ccf5b18279e0f0a6c524a4a65c403d2b5897d9475a",
+   "frozen_baseline": {
+    "event": "stale completion",
+    "guard": "generation changed",
+    "to": "disposed or newer installed",
+    "effects": "Ignore result rather than overwrite new session.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "refreshing",
+    "transition_id": "S18:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Owner context/generation is checked at refresh entry, after prepareBridge, and after the optional readUpdateVersion step before final state commits. If the generation retires while Promise.allSettled is pending, the optional update-version read may still run; the final guard suppresses stale usage/governance/Git/update state commits and render. Component disposal retires only current component ownership. This is not a guard at every await boundary.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 193,
+     "end": 207,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "19fb5c9a1218775b7a972f798bbb68802e4ec139093ea6cd5c5025ded93fe5e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 229,
+     "end": 264,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c777afccab7e99858fe31210dd14ea5726edc5ac6e42be07bcfbce8f6df91131"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:07",
+   "frozen_row_sha256": "e3f00d41773cbaaac96a71d36b181e6c8e96196d92baa9754d7e32e702083313",
+   "frozen_baseline": {
+    "event": "dispose",
+    "guard": "owned instance",
+    "to": "disposed then native",
+    "effects": "Advance generation; release subscription and restore native footer only if owned.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/footer.ts",
+      "symbol": "footer integration",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+      "lines": "1-489"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/footer-state.ts",
+      "symbol": "footer projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+      "lines": "1-230"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/git-facts.ts",
+      "symbol": "bounded Git observations",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+      "lines": "1-150"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/status.ts",
+      "symbol": "status projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+      "lines": "1-274"
+     }
+    ],
+    "from": "any footer",
+    "transition_id": "S18:07"
+   },
+   "current_status": "TESTED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dispose incrementsgeneration, clears sessionfacts/queue/owner, restoresnative only when thisowner still installed. Subscription released by component disposal; foreign replacement first retiresoldowner so laterdispose doesnoteraseit.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 193,
+     "end": 207,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "19fb5c9a1218775b7a972f798bbb68802e4ec139093ea6cd5c5025ded93fe5e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 267,
+     "end": 289,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c04ef91a454eac1fffede09ce5fb33f17c76f41ce9b69d6b45c034b7e7ad43bf"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:01",
+   "frozen_row_sha256": "2bcc7f8a757ef31695d78032cc30312260110cd2c07ae6c3dfec08739a4be287",
+   "frozen_baseline": {
+    "event": "register",
+    "guard": "trusted TUI",
+    "to": "registered",
+    "effects": "Register sidebar command once; preserve user width choice between 24 and 60 columns in memory.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "unregistered",
+    "transition_id": "S19:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Trusted interactiveParent only; register exactlyonce, sessionwidth clamped24..60 and reset ondispose. No command or painting on child/RPC/JSON/print.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 55,
+     "end": 94,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "8ec47a1bc534fbb134b98878a26d138a07911719a892d1ce6a6ed93dadcf5a4c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/session-identity.ts",
+     "start": 15,
+     "end": 22,
+     "file_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+     "span_sha256": "a879fd31227e55da58ef0b727c9493ca059e530b4df3ce07d6291e27ec776e07"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:02",
+   "frozen_row_sha256": "32a6735f1335e079c0727fdc8a540e70656952940cf5dd3ae7cd28072dc5b8a4",
+   "frozen_baseline": {
+    "event": "autoInstall",
+    "guard": "footer TUI available; raw width \u2265120; first automatic decision",
+    "to": "install pending",
+    "effects": "Await metrics and install compositor if terminal capability probe passes.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "registered",
+    "transition_id": "S19:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Automatic install waits for footerTUI, makes firstgeometrydecision, width>=120 then metrics and capabilityprobe; install reads liveTUI/terminal after await.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 108,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "40e03ecd6ca410b60cc7017e0c461722a18efec2e11053ec6198b79a2138e7f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 179,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "a1ae8b6e85ef286869da3e5494442282bb3d412d975dad0456657958fbe202c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 81,
+     "end": 95,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "4003b15b54d7b24992e1ae103f69b062f3e1bd0b5e1361cb9d8a209d2daad871"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 291,
+     "end": 323,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "fce83700cbc98748a590194d0153895cd40a5323dabe085e1319907c75927a5c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:03",
+   "frozen_row_sha256": "0b2c3de22347938897751347aafd842ea4a58cf116e96dd470e8e4e9059dc242",
+   "frozen_baseline": {
+    "event": "autoInstall narrow",
+    "guard": "raw width <120",
+    "to": "too narrow/off",
+    "effects": "Record automatic decision; user may later toggle explicitly.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "registered",
+    "transition_id": "S19:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "First auto decision with rawcolumns<120 records auto-off-narrow; explicit on/toggle remains available. Missing TUI/geometry retries later rather than prematurely recording decision.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 108,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "40e03ecd6ca410b60cc7017e0c461722a18efec2e11053ec6198b79a2138e7f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 186,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "3119005f26bd97a1770a443276516878614213d1c9b53ef39858e58086e8e4be"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:04",
+   "frozen_row_sha256": "899a7a3ea0d46b30d77efccdbb83ac41199989eb36310719985c98c1f0ad29db",
+   "frozen_baseline": {
+    "event": "user on/toggle",
+    "guard": "trusted TUI and enough raw width for sidebar +60",
+    "to": "install pending then installed",
+    "effects": "Patch configurable columns getter/doRender; reserve sidebar width; paint alongside main UI.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "registered or off",
+    "transition_id": "S19:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Expliciton/toggle requires trustedTUI; metrics/probe and rawwidth>=clampedsidebar+60 before patching configurablecolumns/renderer, using live geometry. Existinginstalled doesnotduplicate hooks.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 196,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "562ba661ec2311b9f9a34755b4ad87a0dcdeb6f46a6970d29ed331f419ccf501"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 209,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "9b9b403f2178fd6c730699ece10c25e45722feba3d6b66538ce4e95e19819958"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 124,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "336e582b2dfe25518b6ceec1ecc40dc3e3469e12626683bdc1b3ec4f1f4a83d5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 291,
+     "end": 323,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "fce83700cbc98748a590194d0153895cd40a5323dabe085e1319907c75927a5c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:05",
+   "frozen_row_sha256": "03adc3df2eb19825390d3bcdf39c873e67b0cb20364355f524aa0c3a72c4c104",
+   "frozen_baseline": {
+    "event": "resize/width choice",
+    "guard": "live compositor",
+    "to": "installed or disposed",
+    "effects": "Update derived width; bounded painting; unsupported metrics or repeated invalid paint (three) dispose; exception disposes and warns once.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "installed",
+    "transition_id": "S19:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Live width changes clamp and request render; paint revalidates currenthook/finitegeometry, narrowtemporary skips; threeinvalidgeometrycycles dispose. Exceptions dispose and notifyonce; synchronized bounded rows preserve native render result.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 150,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "155f021841fb231c12cf0f1fcafbcb3c1ae20ae8d90e5fb9d4a54136333930a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 189,
+     "end": 288,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "6986393375d807c854018c5e3306e937405be6378080a05461797a96c7c32b15"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:06",
+   "frozen_row_sha256": "2b7089caa10b52c825200e1eeb01d84b545dd7ffab0d4f2f6f78cc94c754e5e7",
+   "frozen_baseline": {
+    "event": "off/dispose",
+    "guard": "owned patches",
+    "to": "disposed",
+    "effects": "Restore only hooks still owned by compositor; preserve third-party replacement hooks.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "installed",
+    "transition_id": "S19:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dispose only restores own getter/wrapper, correctly deletes ownshadows of inheritedhooks and preservesforeignreplacements/currentrawresize; subsequentdispose no-op.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 157,
+     "end": 187,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "a358344bd8ae07c3a8fc6653e4b8d48de8aa92c102cc1b72a2e7fb2d9818f76e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:07",
+   "frozen_row_sha256": "8e1f68c67f5f17d97273e2993c33b8ef4906ac5101be618086a402ff14c8924b",
+   "frozen_baseline": {
+    "event": "dispose before metrics resolves",
+    "guard": "manager resets flags but does not invalidate pending await",
+    "to": "disposed",
+    "effects": "Current compositor disposed, but pending install remains alive.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "install pending",
+    "transition_id": "S19:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Accepted PI-L02 correction: dispose/off incrementsgeneration before clearingcompositor, invalidating pendinginstall. Late metrics maycache but cannotupdate reason or patch retiredgeneration.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 77,
+     "end": 79,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "81e312d4e2ca2764af63936cff1de292eb0731a4db30c206a602cc7aa14290fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 156,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "25f05e73aad956bd57eb19a9eecfea49229660efb98e2fc2aa98eb22be0cd1ba"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "intake_variances": [
+    "Frozen baseline no-invalidation bug intentionally corrected by acceptedPI-L02; no claim oldpending-install survival preserved."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:08",
+   "frozen_row_sha256": "ed8958e39ab33e7ec03582c4672230830042d7963c0e0a2251b709f394413a38",
+   "frozen_baseline": {
+    "event": "metrics promise resolves",
+    "guard": "missing lifecycle generation check",
+    "to": "resurrected after disposal",
+    "effects": "Install fresh compositor, patch terminal columns/doRender, mark installed=true after disposal.",
+    "failure_retry": "Confirmed isolated probe: 140 columns\u219299 after dispose; final second dispose restores 140. Mirror footer generation guard to prevent this.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "symbol": "register, autoInstall, dispose",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+      "lines": "1-212"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "symbol": "private hook compositor",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-compositor.ts",
+      "lines": "1-323"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar.ts",
+      "symbol": "sidebar rendering",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar.ts",
+      "lines": "1-314"
+     }
+    ],
+    "from": "disposed with pending install",
+    "transition_id": "S19:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After metricspromise, actualgenerationcomparison refuses retiredinstall and concurrent samegeneration completion installs atmostonce againstliveTUI/terminal. Accepted replacement effect is no resurrection; newvalidsession can install.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 179,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "a1ae8b6e85ef286869da3e5494442282bb3d412d975dad0456657958fbe202c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "intake_variances": [
+    "Old analytical/probe effect140->99afterdispose is historicalbug, not currentqualification or effectPASSED. Current guardimplementsPI-L02; no actualterminalprobe executed."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:01",
+   "frozen_row_sha256": "71a284a7fd334e201d7dcbc9bd96a7717910d6f5384c0a15db5e6d8689a84452",
+   "frozen_baseline": {
+    "event": "register command",
+    "guard": "catalog/skill/extension canonical ownership exact",
+    "to": "owned",
+    "effects": "Register only eligible surfaced commands; preserve native replacements.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "unregistered",
+    "transition_id": "S20:01"
+   },
+   "current_status": "INSTALLED_QUALIFIED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Catalog aliases validate exact lowercase/path form, manifest package/extension/skill source identity and collisionownership; invocations recheck currentcommandset and preserve native owner routes. Registration itself installs catalogaliases and laterownership checks determine eligible invocation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+     "start": 42,
+     "end": 147,
+     "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+     "span_sha256": "fb6858d668d34c70444da3d0557da289f09910dc4dda534a9cfaaecc334b0b9b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 73,
+     "end": 125,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "d27b0824905ec9d0b5db8cccc31a7beb48274deb7b89b51edf2c3cfe424a7cfd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    }
+   ],
+   "intake_variances": [
+    "Frozen registration-onlyeligible/livelease description compresses actualcode: aliases register catalog entries before sessionactivation; currentfileownership gates invocation. No nonexistent universalleasecheck is inferred."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:02",
+   "frozen_row_sha256": "111674cfcb5f4c59166b10772da94c9a3a08802b85e0469cb91d3a8f7eedeb52",
+   "frozen_baseline": {
+    "event": "invoke",
+    "guard": "live lease and current command ownership at entry",
+    "to": "invocation loading",
+    "effects": "Read bounded UTF-8 skill, strip frontmatter, reject unsafe closing skill tag; doctor can generate dedicated content.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "owned",
+    "transition_id": "S20:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invocation rechecks exact extension+skill ownership, no symlinkcomponents/canonicalpackageescape, strictUTF8 file, frontmatterstrip, closing-skill-tag/path envelope safety. Doctor may append separately bounded report.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 54,
+     "end": 125,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "cb5f0fdd7b62f6b35d4ad2a32d3db194be20ae3eb656b415c2545b7045af8f2f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+     "start": 53,
+     "end": 98,
+     "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+     "span_sha256": "e9f436b4f794d986f8707915911573fc85b3ca0ec722637bf07729511956b6b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 831,
+     "end": 868,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "681db6149043acad05052ff110fe237ca190c2a38193f49ed59977f52dd7e7ca"
+    }
+   ],
+   "intake_variances": [
+    "Literal baseline/current strictUtf8 uses readFileSync without a skill-bytecap; frozen boundedUTF8/livelease language overstatesthisadapter. No new bytecap/authoritygrant or impliedruntimecontainment claimed."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:03",
+   "frozen_row_sha256": "43b575c81c66134930f331970a21d634d4a49d74c7fc7d2fa96e1c890d85c6e9",
+   "frozen_baseline": {
+    "event": "read succeeds",
+    "guard": "valid body",
+    "to": "prompt queued",
+    "effects": "sendUserMessage as follow-up; this queues workflow text rather than executing its claimed lifecycle.",
+    "failure_retry": "No post-await lease recheck at this adapter boundary; source ownership was checked before await.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "invocation loading",
+    "transition_id": "S20:03"
+   },
+   "current_status": "INSTALLED_QUALIFIED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After valid skillread and optionalgenerateddoctorawait, sendUserMessage queues followUp envelope. It does not execute claimed workflowlifecycle or confer permission. No post-await leasecheck exists at this adapter boundary.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 105,
+     "end": 127,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "790b2505f71fd2e5af11c016c3bf937e71f8e4e1f3500304d2b07ec73fd25d92"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:04",
+   "frozen_row_sha256": "229b9b5b105a8642becba631599d028a388c457deefcc6234f623c9690f58879",
+   "frozen_baseline": {
+    "event": "read/ownership failure",
+    "guard": "guard fails",
+    "to": "degraded",
+    "effects": "Report actionable command failure and retain degraded flag; no workflow prompt success.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "invocation loading",
+    "transition_id": "S20:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Ownership/read/envelope/generator failure catches to fixed actionable diagnosis, notifieserror and latches owning commanddegradation. It doesnot queue workflow success; bridge success doesnotclear commandflag.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 105,
+     "end": 127,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "790b2505f71fd2e5af11c016c3bf937e71f8e4e1f3500304d2b07ec73fd25d92"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 477,
+     "end": 479,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7f9a3d241235a02c0af6167d8ff75cfea088b45d61df9e6e8d84915a315677a4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 574,
+     "end": 575,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "69bd1e0d4e020936d44d4c83128c6ca51dcfa0bc8e53b98235467b07a54c3310"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:05",
+   "frozen_row_sha256": "f9b855b16bd8f548ff40cf689df563fd2527cf71d2add9678ea8305282490876",
+   "frozen_baseline": {
+    "event": "append notice",
+    "guard": "normalized rule/body ID not already present",
+    "to": "same + notice",
+    "effects": "Deduplicate owned notice identity; bounded 16KiB projection.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "any notice set",
+    "transition_id": "S20:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only notice/warn nonemptynormalizedredactedbody gets rule+bodySHA256 identity; existing ownedblockwithmatchingmarker suppressesduplicate. Newblock retainsoriginalcontent and<=16000byte projection.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/notices.ts",
+     "start": 25,
+     "end": 80,
+     "file_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+     "span_sha256": "16058fd3f771de8cebcb6ce1ee9c2d3c879bbc91de4c35da6247111d913a6dc0"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:06",
+   "frozen_row_sha256": "020bbae4a0541e9c0a33d0b6d8149fd1f8fd21d903dc2f6e75f952faa7b70f9a",
+   "frozen_baseline": {
+    "event": "doctor",
+    "guard": "read-only observations and H03 dry-run probe",
+    "to": "diagnosed",
+    "effects": "Aggregate unhealthy > degraded > healthy; active dispatch is always degraded while running.",
+    "failure_retry": "Doctor reports observed capability; it does not grant tool authority or repair state.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+      "symbol": "ownership inspection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+      "lines": "1-201"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/commands.ts",
+      "symbol": "command adapters",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+      "lines": "1-129"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/notices.ts",
+      "symbol": "deduplicated notices",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/doctor.ts",
+      "symbol": "doctor facts and outcome",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+      "lines": "1-502"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S20:06"
+   },
+   "current_status": "INSTALLED_QUALIFIED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Doctor collects source/runtime/trust/currentwrapper/bridge/artifact/display observations without grantingauthority; H03 wrapper dry-run expects exactBLOCKED. Aggregate unhealthy>degraded>healthy. Active-dispatch proof remains degraded because wrapper selftest cannot establish real dispatcher.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 122,
+     "end": 215,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "684cfe9c23edaef47560d6536eaef7f51aa4214cec79f70f397b5d511a3fe00a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 256,
+     "end": 300,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "c191a073903de9a709dd4b94ac02867c89042ac719a8371f5e102d2314823489"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 420,
+     "end": 502,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "9a38c55cd5aeeba164fe52a0244b4a43a45275a9698db8b3f45ba1a0595fe98b"
+    }
+   ],
+   "intake_variances": [
+    "Frozen while-running qualifier is too narrow: active-dispatch diagnostic is alwaysdegraded for this selftest capability, not a runtime detector that becomesqualified when idle. AcceptedPI-D06 preserves capability/evidence separation."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "intake_interpretations": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

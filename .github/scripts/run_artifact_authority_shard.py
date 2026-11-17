@@ -308,6 +308,28 @@ def retain_observations(target: Path, indexes: list[int], timing_raw: list[bytes
         stream.write("\n")
 
 
+DIRECT_CHILD_CLEANUP_SECONDS = 5.0
+
+
+def settle_direct_children(children: list[Any]) -> list[int]:
+    """Kill every owned direct child, then bound the complete settlement pass."""
+    for child in children:
+        try:
+            child.kill()
+        except BaseException:
+            # A failed signal must not abandon later children. Wait below is
+            # the settlement observation, including a child that already exited.
+            pass
+    deadline = time.monotonic() + DIRECT_CHILD_CLEANUP_SECONDS
+    unconfirmed = []
+    for slot, child in enumerate(children):
+        try:
+            child.wait(timeout=max(0.0, deadline - time.monotonic()))
+        except BaseException:
+            unconfirmed.append(slot)
+    return unconfirmed
+
+
 def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
             plan_sha256: str | None = None) -> bool:
     """Run every shard as a concurrent child on this host and prove complete coverage.
@@ -327,57 +349,74 @@ def run_all(count: int, expected: list[str], indexes: list[int] | None = None,
     context_before = retention_context() if retained is not None else None
     import subprocess
     import tempfile
-    with tempfile.TemporaryDirectory(prefix="authority-shards-") as raw:
-        reports = [Path(raw) / f"shard-{index}.json" for index in indexes]
-        observations = [Path(raw) / f"shard-{index}-observation.json" for index in indexes]
-        logs = [Path(raw) / f"shard-{index}.log" for index in indexes]
-        children = []
-        for slot, index in enumerate(indexes):
-            env = dict(os.environ, AUTHORITY_SHARD=str(index), AUTHORITY_SHARD_COUNT=str(count),
-                       AUTHORITY_TIMING_OUTPUT=str(reports[slot]))
-            with logs[slot].open("wb") as log:
-                argv = [sys.executable, str(Path(__file__).resolve())]
-                if retained is not None:
-                    argv = [sys.executable, str(HERE / "major_qualification_report.py"), "observe-python",
-                            "--repo", str(HERE.parents[1]), "--output", str(observations[slot]),
-                            ".github/scripts/run_artifact_authority_shard.py"]
-                children.append(subprocess.Popen(argv,
-                                                 env=env, stdout=log, stderr=subprocess.STDOUT))
-        # Bound each child below the job timeout so a hung shard still yields
-        # every partition's log instead of the runner discarding them all.
-        deadline = time.monotonic() + float(os.environ.get("AUTHORITY_CHILD_TIMEOUT_SECONDS", "2100"))
-        codes = []
-        for index, child in enumerate(children):
+    failure = None
+    unconfirmed = []
+    try:
+        with tempfile.TemporaryDirectory(prefix="authority-shards-") as raw:
+            reports = [Path(raw) / f"shard-{index}.json" for index in indexes]
+            observations = [Path(raw) / f"shard-{index}-observation.json" for index in indexes]
+            logs = [Path(raw) / f"shard-{index}.log" for index in indexes]
+            children = []
             try:
-                codes.append(child.wait(timeout=max(0.0, deadline - time.monotonic())))
-            except subprocess.TimeoutExpired:
-                child.kill()
-                child.wait()
-                with logs[index].open("ab") as log:
-                    log.write(b"\nauthority shard timed out and was terminated\n")
-                codes.append(-1)
-        loaded: list[dict[str, Any] | None] = []
-        observed_loaded: list[dict[str, Any] | None] = []
-        timing_raw, observation_raw = [], []
-        for slot, index in enumerate(indexes):
-            print(f"::group::authority shard {index}/{count} (exit {codes[slot]})", flush=True)
-            print(logs[slot].read_text(encoding="utf-8", errors="replace"), flush=True)
-            print("::endgroup::", flush=True)
-            try:
-                if retained is not None:
-                    from ci20_native_binding import read_regular, unique_object
-                    timing = read_regular(reports[slot], 16 * 1024 * 1024)
-                    observed = read_regular(observations[slot], 16 * 1024 * 1024)
-                    timing_value = json.loads(timing, object_pairs_hook=unique_object)
-                    observation_value = json.loads(observed, object_pairs_hook=unique_object)
-                    loaded.append(timing_value)
-                    observed_loaded.append(observation_value)
-                    timing_raw.append(timing); observation_raw.append(observed)
-                else:
-                    loaded.append(json.loads(reports[slot].read_text(encoding="utf-8")))
-            except (OSError, ValueError):
-                loaded.append(None)
-                observed_loaded.append(None)
+                for slot, index in enumerate(indexes):
+                    env = dict(os.environ, AUTHORITY_SHARD=str(index), AUTHORITY_SHARD_COUNT=str(count),
+                               AUTHORITY_TIMING_OUTPUT=str(reports[slot]))
+                    with logs[slot].open("wb") as log:
+                        argv = [sys.executable, str(Path(__file__).resolve())]
+                        if retained is not None:
+                            argv = [sys.executable, str(HERE / "major_qualification_report.py"), "observe-python",
+                                    "--repo", str(HERE.parents[1]), "--output", str(observations[slot]),
+                                    ".github/scripts/run_artifact_authority_shard.py"]
+                        children.append(subprocess.Popen(argv,
+                                                         env=env, stdout=log, stderr=subprocess.STDOUT))
+                # Bound each child below the job timeout so a hung shard still yields
+                # every partition's log instead of the runner discarding them all.
+                deadline = time.monotonic() + float(os.environ.get("AUTHORITY_CHILD_TIMEOUT_SECONDS", "2100"))
+                codes = []
+                for index, child in enumerate(children):
+                    try:
+                        codes.append(child.wait(timeout=max(0.0, deadline - time.monotonic())))
+                    except subprocess.TimeoutExpired:
+                        child.kill()
+                        child.wait(timeout=DIRECT_CHILD_CLEANUP_SECONDS)
+                        with logs[index].open("ab") as log:
+                            log.write(b"\nauthority shard timed out and was terminated\n")
+                        codes.append(-1)
+            except BaseException as error:
+                failure = error
+                unconfirmed = settle_direct_children(children)
+                raise
+            loaded: list[dict[str, Any] | None] = []
+            observed_loaded: list[dict[str, Any] | None] = []
+            timing_raw, observation_raw = [], []
+            for slot, index in enumerate(indexes):
+                print(f"::group::authority shard {index}/{count} (exit {codes[slot]})", flush=True)
+                print(logs[slot].read_text(encoding="utf-8", errors="replace"), flush=True)
+                print("::endgroup::", flush=True)
+                try:
+                    if retained is not None:
+                        from ci20_native_binding import read_regular, unique_object
+                        timing = read_regular(reports[slot], 16 * 1024 * 1024)
+                        observed = read_regular(observations[slot], 16 * 1024 * 1024)
+                        timing_value = json.loads(timing, object_pairs_hook=unique_object)
+                        observation_value = json.loads(observed, object_pairs_hook=unique_object)
+                        loaded.append(timing_value)
+                        observed_loaded.append(observation_value)
+                        timing_raw.append(timing); observation_raw.append(observed)
+                    else:
+                        loaded.append(json.loads(reports[slot].read_text(encoding="utf-8")))
+                except (OSError, ValueError):
+                    loaded.append(None)
+                    observed_loaded.append(None)
+    except BaseException as error:
+        if failure is None:
+            raise
+        if error is not failure:
+            failure.add_note("authority scratch cleanup failed; directory: " + raw)
+        if unconfirmed:
+            raise RuntimeError("authority direct-child cleanup unconfirmed for slots "
+                               + str(unconfirmed)) from failure
+        raise failure
     problems = coverage_problems(codes, loaded, expected, plan_sha256)
     if retained is not None:
         problems += observation_problems(loaded, observed_loaded, context_before, retention_context(),

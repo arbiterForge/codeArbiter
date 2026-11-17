@@ -1,0 +1,445 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+  "core/surface/includes/helper-invocation.md": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+  "core/surface/skills/debug/SKILL.md": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+  "core/surface/skills/debug/references/handoff.md": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148",
+  "core/surface/skills/debug/references/preparation.md": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-07",
+  "disposition:transitions:WF-07:01",
+  "disposition:transitions:WF-07:02",
+  "disposition:transitions:WF-07:03",
+  "disposition:transitions:WF-07:04",
+  "disposition:transitions:WF-07:05",
+  "disposition:transitions:WF-07:06",
+  "disposition:transitions:WF-07:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-07",
+   "frozen_row_sha256": "d8851fbecc50df06505c06a2a7653576517958c6a1bf21a6daae855145c1201a",
+   "clause_ids": [
+    "disposition:transitions:WF-07:01",
+    "disposition:transitions:WF-07:02",
+    "disposition:transitions:WF-07:03",
+    "disposition:transitions:WF-07:04",
+    "disposition:transitions:WF-07:05",
+    "disposition:transitions:WF-07:06",
+    "disposition:transitions:WF-07:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "e76db0b90abea8d4533f8d2b2323b8c3e1d87b797a37f4ce16f5b008945b344c"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 53,
+     "end": 87,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "5d94dc5b7a4e05209e5eb2e184b53c99625765f04679ba6047900a03e070e34a"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 112,
+     "end": 185,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d1cdc01686dc0c55cd9c963238dbee3ef0fbe3e24e35e5156529a9883e7df5de"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 89,
+     "end": 110,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "2a516fd03d89aa209a29846a80047adc1ae490973e24e69014d74ac23fb0cac4"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 158,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d5b13fd9a4d7899d539560e1b18b5a99319cb4c514657b0dce9d89b163a70478"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 249,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "7b05c0be2a229e7bfd4fb2ab652049ca83b578564cd134320c49e62fc9eaf28b"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 1,
+     "end": 41,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "de34211e4da366ec92e7382c389448ad726146e285990a395f88d7b960be5c12"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "eeb25f2187110f32454d495a142f61e29f6c8c5815d33282864a5b8ddb788980"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 74,
+     "end": 87,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "1181c8c50511edc2376e2e27aec03578ae79f91ca67a0343e8476496b99b7ea8"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 184,
+     "end": 223,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "78c26e11f8e6a3bcdfd5fbc337e03431b3f440c97dac13025b9f6301066c4f0d"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 62,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "d624b7eb6f5be6c59e9f0740acd06ce896f2e083c40f5528b563c394260e6f70"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 292,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ceb7d1120ba9649d4f1d3afdc47be55d32e72a0c9be0f7acbfead7b13936b123"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 324,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "80d0ddd8e0908a20b4ea683cddf3407617577046ca52f7f29d9889758a765e47"
+    },
+    {
+     "path": "core/surface/skills/debug/references/handoff.md",
+     "start": 1,
+     "end": 8,
+     "file_sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148",
+     "span_sha256": "ba8fa6d7b883132f5be7e8cb1086a0351436eae7100955adb4e7f503218bade9"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 59,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "a07fcfbfc10075516553453b09f77f93171cd2034655a0308fcd1736b9d3ae66"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "61d74140fb6232f87e5a5bda77d7ce99e3884f7a033a90a804cb07265d0f9944"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 43,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "1a76af4970d5479110aed72d3e8335234619b75d746cfd72b6999304eb777b39"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 61,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "37dc45e4f2e565af68f0e19fd0f2cdf7a2b9bc72c03ff9b3dd61d0f3c6e81b19"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "bf0574f925064811979407ec4cef9b9907876220b59275974b097c4460f4fb78"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 209,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "85ad866c0d555966eb51902f7529895796f214fef3e9c8b927dae64be885481d"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 330,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ca05e5330909e09dced8817f96dc1302bb8d5108e20ede09b2a18fcff39d0275"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:01",
+   "frozen_row_sha256": "a100b36cd9758649c49b1a847b7c01d96deb8f26e0e72f7f151d3bdb22c69183",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "e76db0b90abea8d4533f8d2b2323b8c3e1d87b797a37f4ce16f5b008945b344c"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 53,
+     "end": 87,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "5d94dc5b7a4e05209e5eb2e184b53c99625765f04679ba6047900a03e070e34a"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 112,
+     "end": 185,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d1cdc01686dc0c55cd9c963238dbee3ef0fbe3e24e35e5156529a9883e7df5de"
+    }
+   ],
+   "semantic_assessment": "Diagnosis keeps symptom/expectation/source/runtime/callerauthority explicit and changes noapplication/test/config/index/history. Eachprobe has separate effects/authority/time/output/disclosurebounds and is refused ifunsafe; no repairauthorization from finding.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:02",
+   "frozen_row_sha256": "d6c668ef2b1ca6ec77dba0a7fe6bfd3b7af805a0e67db1bcf220532e2f210a81",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 89,
+     "end": 110,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "2a516fd03d89aa209a29846a80047adc1ae490973e24e69014d74ac23fb0cac4"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 158,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d5b13fd9a4d7899d539560e1b18b5a99319cb4c514657b0dce9d89b163a70478"
+    }
+   ],
+   "semantic_assessment": "Hypotheses are grounded discriminators withoutfixedcount; supported/refuted/inconclusive require applicablecapturecoverage. Exactlyfive outcomes withpositive no_action and honestunresolved; cause/evidence/reproduction/permission are separate.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:03",
+   "frozen_row_sha256": "ac316dc6d1295393f140936be425c76d907e2870dde2fa42a97d48450f7f6070",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 249,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "7b05c0be2a229e7bfd4fb2ab652049ca83b578564cd134320c49e62fc9eaf28b"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 1,
+     "end": 41,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "de34211e4da366ec92e7382c389448ad726146e285990a395f88d7b960be5c12"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "eeb25f2187110f32454d495a142f61e29f6c8c5815d33282864a5b8ddb788980"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 74,
+     "end": 87,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "1181c8c50511edc2376e2e27aec03578ae79f91ca67a0343e8476496b99b7ea8"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 184,
+     "end": 223,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "78c26e11f8e6a3bcdfd5fbc337e03431b3f440c97dac13025b9f6301066c4f0d"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 62,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "d624b7eb6f5be6c59e9f0740acd06ce896f2e083c40f5528b563c394260e6f70"
+    }
+   ],
+   "semantic_assessment": "Privatehandoff uses generatedclosedreference/schema, measuresUTF8<=65536 beforeinstalledvalidator invocation, selectsonecompatiblePython/helper andliteralvalidate/stdin, retainsactualexit/stdout/stderr, neveralternatevalidator/interpreter afterverdict.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:04",
+   "frozen_row_sha256": "2087f3e1dd388a81538540ad3bd95c621e5fcef79e23a0b89bf569903d6c5224",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 292,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ceb7d1120ba9649d4f1d3afdc47be55d32e72a0c9be0f7acbfead7b13936b123"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 324,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "80d0ddd8e0908a20b4ea683cddf3407617577046ca52f7f29d9889758a765e47"
+    },
+    {
+     "path": "core/surface/skills/debug/references/handoff.md",
+     "start": 1,
+     "end": 8,
+     "file_sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148",
+     "span_sha256": "ba8fa6d7b883132f5be7e8cb1086a0351436eae7100955adb4e7f503218bade9"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 59,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "a07fcfbfc10075516553453b09f77f93171cd2034655a0308fcd1736b9d3ae66"
+    }
+   ],
+   "semantic_assessment": "Only exit0 plusvalidtrue/noerrors permits validatedtransfer. It verifiesfinitepacketshape/consistency, not causaltruth/freshness/actionpermission. Callerretainsdiagnosis-only/fixauthority andrealregressionRED obligation.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:05",
+   "frozen_row_sha256": "81f45d3d9a971faff525fe8c3eb890eeef6111d276c5025be31a83d8b00ac78e",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "61d74140fb6232f87e5a5bda77d7ce99e3884f7a033a90a804cb07265d0f9944"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 43,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "1a76af4970d5479110aed72d3e8335234619b75d746cfd72b6999304eb777b39"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 62,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "d624b7eb6f5be6c59e9f0740acd06ce896f2e083c40f5528b563c394260e6f70"
+    }
+   ],
+   "semantic_assessment": "AcceptedHW07 replacement preservesrejectedattemptbutpermitsopen correctedsubmission throughsamevalidator: shape fromactualfacts, semanticcause newevidence/notrelabel, staleidentityrealobservation; unchangedrefusal not blindlyretried andactualdenial staysdenied.",
+   "intake_variances": [
+    "Frozen terminal blanketone-shot prohibition is intentionally supersededbyHW07; statelessvalidatorneverhadrejectionledger, and no newpersistentdebugstore isclaimed. This sourceproof doesnot itselfsubmitapacket."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:06",
+   "frozen_row_sha256": "14ed1e79ebffd1bfa07235a11c53aea1a16885fca6c501c6a899963b0feade40",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 292,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ceb7d1120ba9649d4f1d3afdc47be55d32e72a0c9be0f7acbfead7b13936b123"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 61,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "37dc45e4f2e565af68f0e19fd0f2cdf7a2b9bc72c03ff9b3dd61d0f3c6e81b19"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "bf0574f925064811979407ec4cef9b9907876220b59275974b097c4460f4fb78"
+    }
+   ],
+   "semantic_assessment": "Exit3/unavailablehelper blocksvalidatedhandoffandpreservesactualfailure; onlyafteroperationalcausechanges maysamebytesretrythroughsameinstalledvalidator. No alternateinterpreter/inventedresult/authoritybypass.",
+   "intake_variances": [
+    "HW07 authorizes changed-condition operationalrecovery; frozen stop-this-handoff remainstrueforcurrentfailure, not a permanentban on futurecorrectedcondition."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:07",
+   "frozen_row_sha256": "e4daeef040076bc6f0478cb6da212b47e20a2f843df040025e20158a04514d58",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 209,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "85ad866c0d555966eb51902f7529895796f214fef3e9c8b927dae64be885481d"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 330,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ca05e5330909e09dced8817f96dc1302bb8d5108e20ede09b2a18fcff39d0275"
+    }
+   ],
+   "semantic_assessment": "no_action/unresolved/design_question returnciteduncertainty/owner/nextdiscriminatorwithoutautomaticADR/task/ticket/statewrite. Anyseparatelyauthorizedfollowup goes selectedtaskowner; disposition itselfcannotcallit.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

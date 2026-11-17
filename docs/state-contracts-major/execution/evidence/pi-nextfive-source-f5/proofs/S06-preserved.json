@@ -1,0 +1,137 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal47-clause current Pi source/caller inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+  "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+  "plugins/ca-pi/tools/src/sidebar-data.ts": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47"
+ },
+ "disposition_ids": [
+  "disposition:machines:S06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json",
+   "sha256": "f5e00c8018474f0ac90e62529aa59e94eba6e06009665435ecae8518affda102"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/source-bindings.json",
+   "sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S06",
+   "frozen_row_sha256": "0addef76884d51bac64f962804734a8d0214aff6a5e8f79bc71128ffc6424e0d",
+   "clause_ids": [
+    "disposition:transitions:S06:01",
+    "disposition:transitions:S06:02",
+    "disposition:transitions:S06:03",
+    "disposition:transitions:S06:04",
+    "disposition:transitions:S06:05"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 5,
+     "end": 14,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "7e60f8c59667d9f1c92dfe1f5b30f7dff0b8ce50703eb04693be27dd4adc86ce"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 148,
+     "end": 185,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "feeb9cc7857e5ca12cec83ce6000cced07cb5f04421dd451244539a00627f852"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 163,
+     "end": 188,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "4892f1501a25c315c80ab3adb6f1718b1453233d7dab22dae86d806bc6652b57"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+     "start": 32,
+     "end": 60,
+     "file_sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+     "span_sha256": "9d6e4cb2db70edc7d957a7d291157fc2b8ba4e2f861bff6cb3cd1555199dac7f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 171,
+     "end": 188,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "d16f9099acf3ec71b14f301176968eb95ea28904618fc4a36e83e256ce32d92c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 190,
+     "end": 211,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "334ce334a8d43401f3df9a77bf90399d00372f1898f023ed3c2991c7ace415ac"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 232,
+     "end": 249,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "dc997cb39d1706f3638b53862f8ce7ece52273935d174fec8e5fb3440559bd9f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 152,
+     "end": 159,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "83ef4cf2f34cb19c7e53bb144d36ad3651bc836172f2f7f154910601fb1cf9e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 190,
+     "end": 218,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "b12c2fba6b2f62eca84d8b0ccf87a811cbaa25f982bbb4c6d5efdcd73b87b356"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 641,
+     "end": 653,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "edb8f2f64cfaf67d9551daef41a0167b98f130fb47e21e8b00b2d0b1329f3723"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 821,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "c33a76f54bb9431d7656e00e5baad4c6256db0bab10aa14a65cefb3244c3d784"
+    }
+   ],
+   "semantic_assessment": "Every real owner guard/effect/retry clause separately mapped with explicit accepted/intake corrections. No nonexistent effect asserted. S03 analytical edit composite separately N/A; S08 scope only current1.5 optional unavailable. No machine runtime/task closure."
+  }
+ ],
+ "scope": "Source-only actual owner behavior under accepted PROGRAM/ADR0043/0049 and Pi task criteria; no runtime, installed, model, human or task qualification.",
+ "limits": [
+  "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+  "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+  "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+  "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+  "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves."
+ ]
+}

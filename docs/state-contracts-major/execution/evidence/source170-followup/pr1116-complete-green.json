@@ -1,0 +1,643 @@
+{
+  "schema": "exact-pr-whole-watch-delivery/1",
+  "verdict": "PASS",
+  "expected_head": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "observed_head": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "ci": {
+    "id": 44006510110,
+    "head_sha": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/ci.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "codex/state-contracts-acceptance-bindings",
+    "created_at": "2026-11-17T02:55:44Z",
+    "updated_at": "2026-11-17T03:31:53Z"
+  },
+  "docs": {
+    "id": 44006509924,
+    "head_sha": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/docs.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "codex/state-contracts-acceptance-bindings",
+    "created_at": "2026-11-17T02:55:44Z",
+    "updated_at": "2026-11-17T03:06:46Z"
+  },
+  "counts": {
+    "skipping": 8,
+    "pass": 92
+  },
+  "all_checks_terminal": true,
+  "required": [
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/44006510110/job/133797231285",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "SUCCESS"
+    }
+  ],
+  "merge_readiness": [
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/44006510110/job/133797231285",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "SUCCESS"
+    }
+  ],
+  "original_terminal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-receipt.json",
+    "sha256": "1e20a205133f08f70a036a1e6c0b7250cbbba7001da5e9911634da35f89c6138",
+    "bytes": 77841
+  },
+  "controls_coverage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\original-controls-coverage.json",
+    "sha256": "d6d8346f27df0954001b8b887acc53c94ac49e52ee4acbd68c2077df823c3db4",
+    "bytes": 5229
+  },
+  "repaired_cohorts": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\original-repaired-cohorts.json",
+    "sha256": "9217299402cc501835ffad8232436c1030a48f0080ef37c773e200ea76da7e0b",
+    "bytes": 1965
+  },
+  "limits": [
+    "ExactchildPR outcomes do not establish normalintegration/installed/program/task/publication qualification.",
+    "Root alone owns freshpremerge and authorizedtrue merge;1098main remainsheld.",
+    "Originalf5failure retained separately; no retry/cancel/source/index/ref/marker/runtimeprobe. Solewatchnaturallyended."
+  ],
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-ci.command.json",
+      "sha256": "4dafe660bf313373a5a52cec34fe0486ef23be02089d0788535d30e2515bfaa6",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-ci.json",
+      "sha256": "158ab345e18c311778529018cccd2b772fb3bf0ba987ff4a4ff1dcf742ade6f9",
+      "bytes": 15325
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-ci.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-ci.stdout",
+      "sha256": "f62c3da3717658c23d594713e1fd64c289863f90ca0a2aadf6564f7f99f78d36",
+      "bytes": 13779
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-docs.command.json",
+      "sha256": "6f170aad2d396928407c9e29b59d3912409a7aced6b216cdba98d876627ddb1c",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-docs.json",
+      "sha256": "43522e0a90914c87ccf8a72436d8eeefd2dacdc8ed60c4e1ac9b8be96ab9903a",
+      "bytes": 15336
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-docs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\after-checks-docs.stdout",
+      "sha256": "d6bd32d60c56c5b6f5612de83bab668310fdbd6368911f3eba03989f4c97d177",
+      "bytes": 13790
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\auth-status.command.json",
+      "sha256": "fa28e074c555b5224a9aa5183e455e633b80c37ceb8c912dc139bf9b299b02ea",
+      "bytes": 292
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\auth-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\auth-status.stdout",
+      "sha256": "1d1d530b63957e483fb98ee7f3d89162d058dc39878336f221a629d82d80c6df",
+      "bytes": 247
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\babysit-resolved.command.json",
+      "sha256": "c797b42a64d0b06a651a9503455a554647e00983bc464b0799731adbd5773e8d",
+      "bytes": 474
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\babysit-resolved.json",
+      "sha256": "79a94635d93dae954a76d93b4ff29577e1d4d047ccb50f76cd4b6e6fec484a23",
+      "bytes": 46
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\babysit-resolved.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\babysit-resolved.stdout",
+      "sha256": "ec36e5ad1305741794dff4ff9aa6b4d6ccc52e910c5ff7f6abb5a3d341394c57",
+      "bytes": 41
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\capture-failures.py",
+      "sha256": "5f09547bee7eed73cb40ed85a4e32aeb307b9069060a4f09f6d9a0a386b55d10",
+      "bytes": 2714
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-pr.command.json",
+      "sha256": "fddf23eede00167e4b1c14046ccbb8e0a3d767f8a1698297d0ccdd0ca4a900b1",
+      "bytes": 281
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-pr.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-pr.stdout",
+      "sha256": "4bf3ff892446b15cd3b90dd185240a5c49db99585d4d4b91d384a3d8f82ee9ce",
+      "bytes": 20362
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-runs.command.json",
+      "sha256": "6f8ea83d11cd511b5afe9bbf14b756a63b93f9d40354b95de99813c919e0ad30",
+      "bytes": 365
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-runs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\discovery-runs.stdout",
+      "sha256": "6fe8bbd44fbade6f801d7c8fb17d70b555d7924bfd3bec4a81bc4e61ea588825",
+      "bytes": 27595
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\finalize.py",
+      "sha256": "f37cc8977aa0771a4298cbbfeaf31417793f11d49f83dead61f44f07b945a107",
+      "bytes": 4913
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-ci.command.json",
+      "sha256": "a8a9a6fefdf9fa5060d197ca2b98df87e043049c52a9bdcc1ae70d12fe52da3f",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-ci.json",
+      "sha256": "a1615fc5ea332d66cd4dad1f4c97842d0ad40f71ffdaacf87fa709877ec34a67",
+      "bytes": 15317
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-ci.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-ci.stdout",
+      "sha256": "d23ad354341ba58ebe4014263c592638ec1af54e0a8f3f0c06f1320bb6237350",
+      "bytes": 13771
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-docs.command.json",
+      "sha256": "27acaa07b67134b080dd511f80a93a9701a57b71d55a7cbd09f482367aab091e",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-docs.json",
+      "sha256": "4aa77528fadd968640d401bac3c568dd4e45861060ff9ce56894f1dc50b74db7",
+      "bytes": 15333
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-docs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-docs.stdout",
+      "sha256": "b69488bb0b6c86e6fe29ddbb654e1f67c5f23847cc1f657f0c051c2fcc6b0795",
+      "bytes": 13787
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-pr.command.json",
+      "sha256": "41c487b257bd821a146ba3cc8c8a63b6994fdbb26a2cda6b3826f2936a9e45d4",
+      "bytes": 326
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-pr.json",
+      "sha256": "f59b3991966646c99f890c35bed5ad4633526a5b58fc12e7756243a980305609",
+      "bytes": 23396
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-pr.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\initial-pr.stdout",
+      "sha256": "4bf3ff892446b15cd3b90dd185240a5c49db99585d4d4b91d384a3d8f82ee9ce",
+      "bytes": 20362
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\last-running-133783169776.json",
+      "sha256": "8cb7bf22144ddd7cf10b31c9fc0a42356017245fa29e557b9af930d816e9b905",
+      "bytes": 17974
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\last-running-133787565008.json",
+      "sha256": "ad7c063d8e5bc36bb6488aecbd2814d025187c683c2307ef4fa53114e284d656",
+      "bytes": 7207
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\latest-local-check-snapshot.json",
+      "sha256": "669b5389f53d07c9cee6775bc7477dede43d83536ac1b1f60dbd9e5bf03fb41a",
+      "bytes": 21958
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\linux-original-unit-step-status.json",
+      "sha256": "1d225ad4f0b66003c5001f0ed6ce27e08b1af91b259bec77ca5dac17361034bd",
+      "bytes": 1179
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\linux-progress-job-133783169123.json",
+      "sha256": "a0578d5b7256dde9c7752f5537a2e0b10ebecb11216f16e0b1c3a42249151268",
+      "bytes": 3854
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\linux-progress-job-133783169274.json",
+      "sha256": "b7b662a06d6b618e4ab87b2aacddc1f617a367b22f1b98e26ad1ef652600a1bd",
+      "bytes": 4605
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\linux-step-progress.py",
+      "sha256": "b90ec165631432df8be45dc5bb8950c52182319d4203bdd5e3640c20f41bf9b2",
+      "bytes": 1169
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\original-controls-coverage.json",
+      "sha256": "d6d8346f27df0954001b8b887acc53c94ac49e52ee4acbd68c2077df823c3db4",
+      "bytes": 5229
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\original-repaired-cohorts.json",
+      "sha256": "9217299402cc501835ffad8232436c1030a48f0080ef37c773e200ea76da7e0b",
+      "bytes": 1965
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\snapshot.py",
+      "sha256": "7b528f8b4225769720e1f0a2c83184b7aa97f1af7831c469f8d15b68016b05aa",
+      "bytes": 1171
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\start.json",
+      "sha256": "321beaf3df0112832ea363efc81e266ad0b7a1d67e4124ace007ff7e11512436",
+      "bytes": 1422
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169078.log",
+      "sha256": "beb4a9e6a9f1bbf1da10d3af28419202b6fdc9a4432f3d33a4a9ad99b2d62dfd",
+      "bytes": 50673
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169078.log.command.json",
+      "sha256": "f76927bd330095256b0b76ee5e46b40701d19a294898a296bbae67a6799c1f7f",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169078.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169123.log",
+      "sha256": "6b08756a33d99d297cee15f02de70771b82b718cf0708bedd6b2800f3d5bbee1",
+      "bytes": 97848
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169123.log.command.json",
+      "sha256": "a8fd9fc201aed3d5691e3e9d4dc3283557d5975cb2ee3b00317dbf891b5211e7",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169123.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169274.log",
+      "sha256": "db2f338bd65e55ee84e53eda993a0ba0c202604b33f857bfa086ade41f90cd8a",
+      "bytes": 97677
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169274.log.command.json",
+      "sha256": "b518d377fc1aa9ee54d13918a8d2941ae74fe6da9142f7bda4ba424100dbacd5",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169274.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169483.log",
+      "sha256": "d1fffca5c55ad7f8edc8426dc1067e81c5f74be53671c593c285a553e78b598d",
+      "bytes": 953142
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169483.log.command.json",
+      "sha256": "bbcafa4bdecb1cf44b66cdc4dd376ba3bedbcdb282bedf323da6d75c33d50597",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169483.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169523.log",
+      "sha256": "04ea11aa591d463258c11bfdd53a1a7914b33f1a48f978a8e58be86295dd241c",
+      "bytes": 938756
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169523.log.command.json",
+      "sha256": "a896532ae093d72b070a071a7b6023dbe8b3aacc435f0c170c9fbf5a7022a8d0",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169523.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169773.log",
+      "sha256": "6e7ef95b14860c343bf9d8c4819d27a1b1378bd3d2f82bd58f2e1f9d95f990ce",
+      "bytes": 936381
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169773.log.command.json",
+      "sha256": "b4ada54ac88cff3a3c076430c171d3610418fd693fadd12b109f602fa6232492",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133783169773.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133784320434.log",
+      "sha256": "3acd5632fbe1b41c0fd979d78fc809ce30a800078fe8e6fdcf9e67ffaa32288d",
+      "bytes": 43762
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133784320434.log.command.json",
+      "sha256": "fa52f72b4ba73d60665718f8bd59c55d2ead8c1c9186a4c53077687637be5ed5",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133784320434.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133786451512.log",
+      "sha256": "e3c3a959a0a7d13476569934448f57a111ca06dd1c72358b2109210e4f811739",
+      "bytes": 97102
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133786451512.log.command.json",
+      "sha256": "f75f3bbb4b9d01cdd886e000bc0db2feca8e065d331a397bc1981518dfa9efaf",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133786451512.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133787333690.log",
+      "sha256": "ffecb026dd6069958ef9f86d6f5b91ebc43d6e1ffab29320676bf3581eb743bd",
+      "bytes": 36601
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133787333690.log.command.json",
+      "sha256": "f2a1e6d69f25c013aa2ba85e0485b81b2f0aae85a4d491ff2f59c3fed704df1f",
+      "bytes": 301
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\successful-job-133787333690.log.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-all.command.json",
+      "sha256": "2043de5b34366a897a147057d076bef7582521ce9ed84ee2411399cb9ffb952d",
+      "bytes": 392
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-all.json",
+      "sha256": "64389614dc9309db5640ec123f4b0989d99bd6431a578a70be7292e3806fb957",
+      "bytes": 22443
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-all.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-all.stdout",
+      "sha256": "60c3730e8df540cbc30cac57ccf14d3c744e7dcc5a2560353c089de4a5b2536e",
+      "bytes": 19414
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-required.command.json",
+      "sha256": "cb309dc9be8fc11b0bf8b7b28e4230c4e5a7a43b365a39c9cca15599a2d502d8",
+      "bytes": 410
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-required.json",
+      "sha256": "b0c9d4684d392687679d1cd83f22088ff4e70571d549e7837acbcc42c72f39dd",
+      "bytes": 208
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-required.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-checks-required.stdout",
+      "sha256": "7ae776a239fddfc0edb3166dba89f684bb1af523c04130c5d682e1b18a16256d",
+      "bytes": 177
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-artifacts.command.json",
+      "sha256": "fc8acdf81d27d2d8ed108b6334f37c81e0fe56720478d975c5c6e01307952165",
+      "bytes": 396
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-artifacts.json",
+      "sha256": "cf830acf4098aef0d7e32998c480e1866579bc6dd4d01dde9de9141fa2e6515e",
+      "bytes": 78373
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-artifacts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-artifacts.stdout",
+      "sha256": "8f16b6a3b5e070baeaee87f44f6585559aacd70554dbe7b703f5a5c3228c47e7",
+      "bytes": 61905
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-jobs.command.json",
+      "sha256": "a9604ee8021071454c14ddd9380da83158264f1229b23804655720b5df84ec14",
+      "bytes": 405
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-jobs.json",
+      "sha256": "52aedf65c630a4b9a53a460e96def53d18d9c967428badc1b5e3ee1bcecf7e3e",
+      "bytes": 633607
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-jobs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci-jobs.stdout",
+      "sha256": "3a74d4c23a501d2dc62ee739d3da7a9e440d7f3e8cdc76df3208bb1e638ddfd9",
+      "bytes": 422962
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci.command.json",
+      "sha256": "2b85ff5e79714cfe73401e7f958d65dfac0ee80299cce143c1c89e2927ca01b8",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci.json",
+      "sha256": "158ab345e18c311778529018cccd2b772fb3bf0ba987ff4a4ff1dcf742ade6f9",
+      "bytes": 15325
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-ci.stdout",
+      "sha256": "f62c3da3717658c23d594713e1fd64c289863f90ca0a2aadf6564f7f99f78d36",
+      "bytes": 13779
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-artifacts.command.json",
+      "sha256": "e68f629ec943589ef69ff374820ceb840166fbe56aa6b67f332705d57d3d2970",
+      "bytes": 396
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-artifacts.json",
+      "sha256": "095c9a42f0ad0df1ece794af0e86828f10858aea7caa15ea1689c2c3792d65ea",
+      "bytes": 2898
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-artifacts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-artifacts.stdout",
+      "sha256": "aefc1bf6f113d159ce213124d86f546cc623aec6166990de10972f186139972c",
+      "bytes": 2264
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-jobs.command.json",
+      "sha256": "c3351d68a51e09eec1af22eaa49c793d9ac0c1c2ed3390177a9acc97fea23349",
+      "bytes": 405
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-jobs.json",
+      "sha256": "996715bd1d470c105f5da0ecee4ef953d8147dcfabb3938ea51c293881a7a3e9",
+      "bytes": 17200
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-jobs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs-jobs.stdout",
+      "sha256": "4ca688791788147abd3f206ddf38d744f6cc0f420185fe49644187579d0e32d5",
+      "bytes": 11703
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs.command.json",
+      "sha256": "55167092dbd270bc63635ee33bb4b536788a351254b1d348b1e0f0700dd14e43",
+      "bytes": 340
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs.json",
+      "sha256": "43522e0a90914c87ccf8a72436d8eeefd2dacdc8ed60c4e1ac9b8be96ab9903a",
+      "bytes": 15336
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-docs.stdout",
+      "sha256": "d6bd32d60c56c5b6f5612de83bab668310fdbd6368911f3eba03989f4c97d177",
+      "bytes": 13790
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-pr.command.json",
+      "sha256": "8e6bf3deb81a8eb1e048ee5c38c0385a3b85f8041777beeae193dda25607c5e6",
+      "bytes": 326
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-pr.json",
+      "sha256": "c25db6e9104889223d1fb67211942e9d3e27fa3cc9fd70e24a91f0d649986a80",
+      "bytes": 23394
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-pr.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-pr.stdout",
+      "sha256": "674a59a34da08eb15087792dc76c5b74f082345fb406d7f341182d54b55f7dfb",
+      "bytes": 20360
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\terminal-receipt.json",
+      "sha256": "1e20a205133f08f70a036a1e6c0b7250cbbba7001da5e9911634da35f89c6138",
+      "bytes": 77841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\watch-exit.json",
+      "sha256": "5a44b33d4d8f30678a3fc3fb7881c75916c13b5748e4e3cd98f2d63d77a7e4fb",
+      "bytes": 81
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\watch-process.json",
+      "sha256": "bb90ea3837c1e29c53da09b2cc7bbdb79bdc190229f3e05374027d35c435c1a8",
+      "bytes": 240
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\watch.log",
+      "sha256": "c3c4ff04d0ebe4f73853128b3f910214b250192df37afb97654c9fcef3969673",
+      "bytes": 913920
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-384269dc-watch-x73o2k0f\\watch.py",
+      "sha256": "2c87703e9574e96848079e53b59f4b220a65ccec378d4e03fdc5607de14fba63",
+      "bytes": 6667
+    }
+  ]
+}

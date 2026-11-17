@@ -1,0 +1,121 @@
+{
+  "schema": "bounded-private-fix-delivery/1",
+  "result": "IMPLEMENTED_LOCAL_PASS",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "subjects": {
+    ".github/scripts/observe_pi_installed_rpc.py": {
+      "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\preimages\\observe_pi_installed_rpc.py",
+      "before_sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "before_bytes": 27952,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\repo\\.github\\scripts\\observe_pi_installed_rpc.py",
+      "sha256": "d938a17303589d102770cd8f3e62b46b29f45d3d2e001cfd314bf3fe9cf656c5",
+      "bytes": 28068,
+      "root_current_sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1"
+    },
+    ".github/scripts/test_pi_parent_tui_observation.py": {
+      "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\preimages\\test_pi_parent_tui_observation.py",
+      "before_sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+      "before_bytes": 23571,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\repo\\.github\\scripts\\test_pi_parent_tui_observation.py",
+      "sha256": "0bfc8dab49c2f78310e240aafef3144c08260a68c8ca557f45db6066b38cf3d2",
+      "bytes": 28479,
+      "root_current_sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5"
+    }
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\fix.patch",
+    "sha256": "40aad66588e1973c0ef77dd02af9105b8f24fa246fcd7bc66f9691dc02c22dd5",
+    "bytes": 6302
+  },
+  "checks": {
+    "red": {
+      "controller_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\red-controller.json",
+      "controller_sha256": "d3e33450b7dd2ea9d45c3e0a183c518fdee1383cba4786f129ab71ae886ef9f0",
+      "result": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "successful": false,
+        "selectors": [
+          "InstalledLinuxWiringTests.test_parent_author_projects_authenticated_roles_with_bytes_documents"
+        ]
+      },
+      "result_sha256": "841b77a23b8beda9cd1f42952915a897558b3cd9b52906573827dbaf0953f828",
+      "stderr_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\red.stderr",
+      "stderr_sha256": "9c0836a4d41e3dbcef383d78daa7843a5949d0019d9b6490d2e2680af701e9ec"
+    },
+    "green": {
+      "controller_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\green-controller.json",
+      "controller_sha256": "7b63579adc313c73db7e98f747d6720962f273cda07443d940a0344ebce8ffc9",
+      "result": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "successful": true,
+        "selectors": [
+          "InstalledLinuxWiringTests.test_parent_author_projects_authenticated_roles_with_bytes_documents"
+        ]
+      },
+      "result_sha256": "07fee881a6af56cb0e943f1e4520b581c50653cdf456f10d929339d347973dc1",
+      "stderr_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\green.stderr",
+      "stderr_sha256": "d4ca15cc215cae6388622b82108eaf337341eaa543705bff2aa91937ce0950f2"
+    },
+    "affected-existing": {
+      "controller_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\affected-existing-controller.json",
+      "controller_sha256": "97534ebc38b6affdecb68da0911c7a374031c1b617faadd7ee9d94f16b497ae8",
+      "result": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "successful": true,
+        "selectors": [
+          "InstalledLinuxWiringTests.test_selected_parent_runs_once_after_rpc_with_original_authorities_before_cleanup",
+          "InstalledLinuxWiringTests.test_failed_rpc_prevents_parent_and_parent_timeout_cannot_emit_success",
+          "InstalledLinuxWiringTests.test_public_selection_refuses_nonlinux_nonboolean_and_untrusted_context_before_effects",
+          "test_observe_pi_installed_rpc.OrchestrationTests"
+        ]
+      },
+      "result_sha256": "d56c7c296040e4231c04ef23a917080210962aea70fa5523de76bfb8534a4afa",
+      "stderr_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\affected-existing.stderr",
+      "stderr_sha256": "00b7ea8cac50bba7cc87b400316159e7453c1b7c1bc418110b5feb723daad382"
+    }
+  },
+  "preservation": {
+    "old_test_method_AST_count": 23,
+    "old_test_method_AST_unchanged": true,
+    "added_methods": [
+      "InstalledLinuxWiringTests.test_parent_author_projects_authenticated_roles_with_bytes_documents"
+    ],
+    "new_test_AST_unchanged_RED_to_GREEN": true,
+    "production_AST_outside_parent_author_fixture_unchanged": true,
+    "parent_physical_role_validator_fullfile_unchanged_sha256": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a"
+  },
+  "functional_scope": "The inert parent handoff receives exact three-field authenticated role projections; original bytes-bearing full payload remains intact for RPC/report. No byte codec, new decoder, cap increase or trust relaxation.",
+  "negative_controls": [
+    "missing role",
+    "invalid archive digest",
+    "changed member digest",
+    "duplicate artifact roles",
+    "physical member mismatch",
+    "worker failure prevents parent",
+    "parent timeout blocks success",
+    "untrusted/nonlinux selection refuses",
+    "cleanup unknown blocks original observation"
+  ],
+  "coverage": {
+    "profile": "Python no-tooling exemption CTX-TECH-STACK#FACT-005; direct critical-path unittest controls",
+    "local_host": "Windows CPython3.14; pure/inert effect seam only",
+    "hosted_exact_head": "PENDING",
+    "installed_parent_TUI": "NOT_EXECUTED; requires fresh authentic normal owner"
+  },
+  "limits": [
+    "No canonical/index/ref/marker/Git writes.",
+    "No Pi/provider/network/native/install execution.",
+    "Root must merge distinct test methods with ci-author Darwin hunks; do not overwrite its full candidate test file.",
+    "Parent1098 main/publication held."
+  ]
+}

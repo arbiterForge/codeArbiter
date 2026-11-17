@@ -232,6 +232,70 @@ class OwnedProcessCleanupTests(unittest.TestCase):
         self.assertTrue(error.owned_process_observation['forced_cleanup'])
 
 class InstalledLinuxWiringTests(unittest.TestCase):
+    def test_parent_author_projects_authenticated_roles_with_bytes_documents(self):
+        import sys,tempfile
+        from types import SimpleNamespace
+        import observe_pi_installed_rpc as producer
+        from test_observe_pi_installed_rpc import fixture
+        expected,_,payloads,acquisition=fixture()
+        package_name='artifact-release-packages-'+expected['source_commit']
+        original_document=b'{"owned-cohort-document":true}\n'
+        payloads[package_name]['documents']={'artifact-package-cohort.json':original_document}
+        payloads[package_name]['native_bindings']=[{'format':'owned-inert-binding'}]
+        before=copy.deepcopy(payloads)
+        projected={name:{key:value[key] for key in ('artifact_id','archive_sha256','members')}
+                   for name,value in before.items()}
+        physical={role:{m['path']:m['sha256'] for m in projected[prefix+expected['source_commit']]['members']}
+                  for role,prefix in (('promoted-stage','artifact-host-payloads-'),('release-packages','artifact-release-packages-'))}
+        calls=[]
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve();workspace=root/'workspace';output=root/'output'
+            workspace.mkdir();output.mkdir()
+            config={key:sys.executable for key in ('python','node','git','npm_launcher','npm_cli','npm_node')}
+            config.update(repo=str(root/'repo'),stage=str(root/'stage'),packages=str(root/'packages'),
+                          workspace=str(workspace),output=str(output),expected=expected,authenticated_payloads=payloads)
+            def spawn(argv,**kwargs):
+                # This is the sole effect seam: no child, Pi or provider starts.
+                calls.append((list(argv),kwargs))
+                self.assertEqual(kwargs['timeout'],120)
+                self.assertEqual(argv[1:3],['-I','-B'])
+                transmitted=producer.load(argv[argv.index('--authenticated-payloads')+1])
+                self.assertEqual(transmitted,projected,'retain exact authenticated IDs, archive digests and member rows')
+                self.assertNotIn('documents',transmitted[package_name])
+                self.assertNotIn('native_bindings',transmitted[package_name])
+                roles=owner.authenticated_roles(expected,transmitted,physical)
+                self.assertEqual({role:value['artifact_id'] for role,value in roles.items()},
+                                 {'promoted-stage':12,'release-packages':11})
+                for boundary in ('missing-role','invalid-digest','changed-member','duplicate-role-id'):
+                    invalid=copy.deepcopy(transmitted)
+                    if boundary=='missing-role':invalid.pop(package_name)
+                    elif boundary=='invalid-digest':invalid[package_name]['archive_sha256']='not-a-digest'
+                    elif boundary=='changed-member':invalid[package_name]['members'][0]['sha256']='0'*64
+                    else:invalid[package_name]['artifact_id']=12
+                    with self.subTest(boundary=boundary),self.assertRaises(ValueError):
+                        owner.authenticated_roles(expected,invalid,physical)
+                changed=copy.deepcopy(physical);changed['release-packages'].clear()
+                with self.assertRaisesRegex(ValueError,'authenticated-physical-payload'):
+                    owner.authenticated_roles(expected,transmitted,changed)
+                case=producer.load(argv[argv.index('--config')+1])
+                self.assertEqual(case['expected'],expected)
+                self.assertEqual(case['acquisition'],acquisition)
+                self.assertEqual(case['installed'],str(workspace/'installed-pi'))
+                for name in ('GH_TOKEN','GITHUB_TOKEN','OPENAI_API_KEY'):
+                    self.assertNotIn(name,kwargs['env'])
+                retained=Path(case['output']);retained.mkdir()
+                producer.save(retained/'verification.json',{'status':'passed','scope':
+                    'first POSIX scripted public-parent-TUI fixture only; not human/full PI-D07/major qualification'})
+                return SimpleNamespace(returncode=0,timed_out=False,containment='exited',stdout='',stderr='')
+            try:
+                producer.parent_author_fixture(config,acquisition,output,spawn)
+            except TypeError as error:
+                self.assertEqual(str(error),'Object of type bytes is not JSON serializable')
+                self.fail('authenticated bytes documents prevented the bounded parent launch')
+            self.assertEqual(len(calls),1,'selected parent fixture must reach its owned child boundary once')
+            self.assertEqual(config['authenticated_payloads'],before,'full RPC/report authorities must remain unchanged')
+            self.assertIs(config['authenticated_payloads'][package_name]['documents']['artifact-package-cohort.json'],original_document)
+
     def exercise(self, *, worker_fault=None, author_timeout=False):
         # Reuse the original real _produce path, fixtures and default RPC
         # admission. Only its process-effect callback is inert.
@@ -292,17 +356,36 @@ class InstalledLinuxWiringTests(unittest.TestCase):
         calls,_,_=self.exercise(author_timeout=True)
         self.assertEqual(len(calls),1)
 
+    def test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin(self):
+        import re
+        root=Path(__file__).resolve().parents[2]
+        text=(root/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        step=re.search(r'^      - name: Observe the original retained Pi RPC installation\n(.*?)(?=^      - name: Retain original Pi coordinator and execution records)',text,re.S|re.M)
+        self.assertIsNotNone(step,'original coordinator step missing')
+        body=step.group(1)
+        self.assertNotIn('parent_author_args=()',body,
+            'empty-array expansion under nounset failed on the original Darwin runner')
+        expected=("          parent_author_arg=''\n"
+                  '          if [ "${{ matrix.system }}" = linux ]; then\n'
+                  '            parent_author_arg=--parent-author-fixture\n'
+                  '          fi\n')
+        self.assertEqual(body.count(expected),1,'one optional scalar must be empty outside Linux')
+        self.assertEqual(body.count('${parent_author_arg:+"$parent_author_arg"}'),1,
+            'alternate scalar expansion must omit the argument entirely when empty')
+        self.assertEqual(body.count('python -I -B .github/scripts/coordinate_pi_host.py'),1)
+        self.assertIn('set -euo pipefail',body)
+
     def test_actual_ci_selects_only_linux_and_retains_separate_original_outputs(self):
         from test_pi_ci_wiring import job
         root=Path(__file__).resolve().parents[2]
         text=(root/'.github/workflows/ci.yml').read_text(encoding='utf8')
         block=job(text,'pi-installed-package')
-        expected=('          parent_author_args=()\n'
+        expected=("          parent_author_arg=''\n"
                   '          if [ "${{ matrix.system }}" = linux ]; then\n'
-                  '            parent_author_args+=(--parent-author-fixture)\n'
+                  '            parent_author_arg=--parent-author-fixture\n'
                   '          fi\n')
         self.assertEqual(block.count(expected),1,'trusted installed Linux selection missing')
-        self.assertEqual(block.count('"${parent_author_args[@]}"'),1)
+        self.assertEqual(block.count('${parent_author_arg:+"$parent_author_arg"}'),1)
         self.assertIn("github.event_name == 'push'",block)
         self.assertIn("github.repository == 'arbiterForge/codeArbiter'",block)
         self.assertNotIn('pi_host_locks.py install',block)
@@ -313,6 +396,7 @@ class InstalledLinuxWiringTests(unittest.TestCase):
                      'git-init.partial-output','package-install.partial-output','parent.partial-output'):
             self.assertIn('${{ runner.temp }}/pi-observation-${{ matrix.system }}/producer/parent-author/'+path,block)
         self.assertEqual(owner.BODY_SECONDS,90)
+        self.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin()
 
 
     def test_public_selection_refuses_nonlinux_nonboolean_and_untrusted_context_before_effects(self):
@@ -341,8 +425,11 @@ class InstalledLinuxWiringTests(unittest.TestCase):
         original=Path.read_text;text=original(workflow,encoding='utf8')
         for before,after in (
             ('if [ "${{ matrix.system }}" = linux ]; then','if [ "${{ matrix.system }}" = windows ]; then'),
-            ('parent_author_args+=(--parent-author-fixture)','parent_author_args+=(--wrong-fixture)'),
-            ('"${parent_author_args[@]}"',''),
+            ('parent_author_arg=--parent-author-fixture','parent_author_arg=--wrong-fixture'),
+            ('${parent_author_arg:+"$parent_author_arg"}',''),
+            ("parent_author_arg=''",'parent_author_arg=()'),
+            ("parent_author_arg=''",''),
+            ('${parent_author_arg:+"$parent_author_arg"}','"$parent_author_arg"'),
             ('python -B .github/scripts/test_pi_parent_tui_observation.py',''),
             ('/producer/parent-author/parent.ansi','/unretained/parent.ansi'),
         ):

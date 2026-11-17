@@ -1,0 +1,42 @@
+{
+  "schema": "codearbiter.major.c06-owned-direct-child-development/1",
+  "recorded_at": "2026-11-17T03:24:51.763081+00:00",
+  "controller_anchor": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "branch": "codex/state-contracts-source-and-shard-cleanup",
+  "source_subjects": {
+    ".github/scripts/run_artifact_authority_shard.py": {
+      "preimage_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+      "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "bytes": 25652
+    },
+    ".github/scripts/test_ci20_native_pipeline.py": {
+      "preimage_sha256": "864c00a9fcdcb322c44eeda4f5c5ba39ae8465441401fcb3636f1eb38378ff55",
+      "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+      "bytes": 38285
+    }
+  },
+  "confirmed_defect": "Exact current run_all abandons earlier owned direct child when later Popen raises. Inert discriminator establishes source-level omission, not actual OS process leak.",
+  "repair": "Attempt kill of every acquired direct child before a common5second bounded wait pass; one failed kill/wait does not abandon later children. Unconfirmed cleanup is explicit with original failure cause. Temp removal failure cannot mask original. Original2100s execution limit, Popen argv/env, partition, original tests and retention guards remain.",
+  "actual_tests": {
+    "proper_named_target_RED": true,
+    "new_controls": 4,
+    "new_GREEN": 4,
+    "focused_total_PASS": 13,
+    "focused_original": 9,
+    "original_real_four_child_case_PASS": 1,
+    "original_real_four_child_case_seconds": 1.879,
+    "tiny_fixture_effects_once": 4,
+    "fixture_outcomes": "4pass+1deliberate supported skip; outercase no skip"
+  },
+  "source_accounting": "Canonical ledger still753PLANNED. Private proposed114source cells would reduce to639; not adopted or promoted by this code commit. Three earlier privateC06source proofs need a fresh source epoch after this repair.",
+  "parent_child_state": "1116 remains at immutable384269dc under exact-head hosted watch. This local followup is separate and unpushed.",
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "main_merge": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED",
+  "limits": [
+    "Direct owned children only; no descendant/OS containment guarantee.",
+    "5seconds bounds wait phase, not arbitrary time inside OS kill calls; ordinary timeout failure may enter the separate exception cleanup pass.",
+    "Full next-child hostedCI/Docs and fresh normalintegration/installed/scenario evidence remain separate."
+  ]
+}

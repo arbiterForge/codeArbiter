@@ -61,6 +61,7 @@ class Reader:
     def __init__(self, repo):
         self.repo = Path(repo).resolve()
         self.cache = {}
+        self.objects = {}
         self.total = self.queries = 0
         self.deadline = time.monotonic() + TRANSACTION_SECONDS
         self.process = self.worker = None
@@ -73,7 +74,7 @@ class Reader:
         env = local_read_git_env()
         env.update(GIT_NO_REPLACE_OBJECTS='1', GIT_NO_LAZY_FETCH='1', GIT_TERMINAL_PROMPT='0')
         self.process = start([git_executable(), '--no-replace-objects', '--no-lazy-fetch',
-                              '-C', str(self.repo), 'cat-file', '--batch'],
+                              '-C', str(self.repo), 'cat-file', '--batch-command'],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.DEVNULL, env=env)
         self.worker = threading.Thread(target=self._io, name='immutable-git-blobs', daemon=True)
@@ -99,7 +100,7 @@ class Reader:
                         raise BlobReadError('immutable blob reader failed')
                     publish(True, None)
                     return
-                process.stdin.write(query + b'\n')
+                process.stdin.write(b'info ' + query + b'\n')
                 process.stdin.flush()
                 header = process.stdout.readline(4352)
                 if header == query + b' missing\n':
@@ -110,14 +111,29 @@ class Reader:
                 match = re.fullmatch(rb'([0-9a-f]{40}|[0-9a-f]{64}) blob (0|[1-9][0-9]*)\n', header)
                 if match is None:
                     raise BlobReadError('malformed immutable blob header or object type')
+                oid = match[1]
                 size = int(match[2])
-                if size > MAX_BLOB or self.total + size > MAX_TOTAL:
+                if size > MAX_BLOB:
                     raise BlobReadError('immutable blob byte bound exceeded')
+                if oid in self.objects:
+                    value = self.objects[oid]
+                    if len(value) != size:
+                        raise BlobReadError('immutable blob metadata differs from verified object')
+                    publish(True, (oid, value, 0))
+                    continue
+                if self.total + size > MAX_TOTAL:
+                    raise BlobReadError('immutable blob byte bound exceeded')
+                process.stdin.write(b'contents ' + oid + b'\n')
+                process.stdin.flush()
+                if process.stdout.readline(4352) != header:
+                    raise BlobReadError('immutable blob contents identity differs from metadata')
                 value = _exact(process.stdout, size)
                 if process.stdout.read(1) != b'\n':
                     raise BlobReadError('malformed immutable blob framing')
-                self.total += size
-                publish(True, value)
+                # The caller alone publishes positive bytes and charges their
+                # body after this complete exchange. An abandoned worker can
+                # never repopulate either cache after timeout/abort.
+                publish(True, (oid, value, size))
         except (OSError, ValueError) as error:
             self.closed = True
             publish(False, BlobReadError(str(error)))
@@ -160,7 +176,11 @@ class Reader:
             self.queries += 1
             if self.process is None:
                 self._start()
-            value = self._exchange(query)
+            oid, value, fetched = self._exchange(query)
+            if self.closed:
+                raise BlobReadError('immutable blob transaction is closed')
+            self.total += fetched
+            self.objects[oid] = value
             self.cache[key] = value
             return value
 
@@ -170,23 +190,29 @@ class Reader:
             self.requests.put_nowait(None)
         except queue.Full:
             pass
-        containment = terminate_tree(self.process) if self.process is not None else 'exited'
-        if self.worker is not None:
-            self.worker.join(timeout=3)
-        self.cache.clear()
-        return containment
+        try:
+            containment = terminate_tree(self.process) if self.process is not None else 'exited'
+            if self.worker is not None:
+                self.worker.join(timeout=3)
+            return containment
+        finally:
+            self.cache.clear()
+            self.objects.clear()
 
     def close(self):
         try:
             if not self.closed and self.process is not None:
                 self._exchange(None)
         finally:
-            if self.process is not None and self.process.poll() is None:
-                self._abort()
-            elif self.worker is not None:
-                self.worker.join(timeout=3)
-            self.closed = True
-            self.cache.clear()
+            try:
+                if self.process is not None and self.process.poll() is None:
+                    self._abort()
+                elif self.worker is not None:
+                    self.worker.join(timeout=3)
+            finally:
+                self.closed = True
+                self.cache.clear()
+                self.objects.clear()
 
 
 @contextmanager

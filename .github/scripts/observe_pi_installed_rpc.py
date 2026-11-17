@@ -293,7 +293,9 @@ def parent_author_fixture(config, acquisition, output, spawn):
         workspace=str(workspace/'parent-author-fixture'),output=str(output/'parent-author'),
         installed=str(workspace/'installed-pi'),acquisition=acquisition)
     path=workspace/'parent-author-config.json';payloads=workspace/'parent-author-payloads.json'
-    save(path,case);save(payloads,config['authenticated_payloads'])
+    save(path,case)
+    save(payloads,{name:{key:value[key] for key in ('artifact_id','archive_sha256','members')}
+        for name,value in config['authenticated_payloads'].items()})
     argv=[config['python'],'-I','-B',str(repo/'.github/scripts/pi_parent_tui_observation.py'),
         '--config',str(path),'--authenticated-payloads',str(payloads)]
     done=spawn(argv,timeout=120,cwd=str(repo),

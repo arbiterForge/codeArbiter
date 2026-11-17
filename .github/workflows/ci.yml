@@ -4365,9 +4365,9 @@ jobs:
         run: |
           set -euo pipefail
           pi_workspace_parent="$(python -c 'import os; from pathlib import Path; print(Path(os.environ["GITHUB_WORKSPACE"]).resolve().parent)')"
-          parent_author_args=()
+          parent_author_arg=''
           if [ "${{ matrix.system }}" = linux ]; then
-            parent_author_args+=(--parent-author-fixture)
+            parent_author_arg=--parent-author-fixture
           fi
           python -I -B .github/scripts/coordinate_pi_host.py \
             --repo . --stage "${{ runner.temp }}/pi-stage" \
@@ -4375,7 +4375,7 @@ jobs:
             --expected-platform "${{ matrix.platform }}" \
             --workspace "$pi_workspace_parent/pi-observer-${{ matrix.system }}-${{ github.run_attempt }}" \
             --output-root "${{ runner.temp }}/pi-observation-${{ matrix.system }}" \
-            "${parent_author_args[@]}"
+            ${parent_author_arg:+"$parent_author_arg"}
           python - "${{ runner.temp }}/pi-observation-${{ matrix.system }}/qualification.json" <<'PY'
           import json, os, sys
           with open(sys.argv[1], encoding="utf-8") as stream:

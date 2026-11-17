@@ -1,0 +1,306 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+  "plugins/ca-pi/tools/src/audit-sink.ts": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+  "plugins/ca-pi/tools/src/compaction.ts": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff"
+ },
+ "disposition_ids": [
+  "disposition:machines:S17",
+  "disposition:transitions:S17:01",
+  "disposition:transitions:S17:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S17",
+   "frozen_row_sha256": "f85552af3957ffff8f749ff5b29ffb1812f3c26f269a09e33105e96230c0ca86",
+   "clause_ids": [
+    "disposition:transitions:S17:01",
+    "disposition:transitions:S17:02",
+    "disposition:transitions:S17:03",
+    "disposition:transitions:S17:04",
+    "disposition:transitions:S17:05",
+    "disposition:transitions:S17:06",
+    "disposition:transitions:S17:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 138,
+     "end": 165,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c05f3352a2e508880e63d9431bf6c53436e553d808b19f7e6b1618854b415338"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 201,
+     "end": 219,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "6d23faef3c0291821bfb5f575eac1a62a24297290ad37e9acf42b92c9a151134"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 254,
+     "end": 275,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "71242fec3069469cb5b02822377367023d7a850ec2505e146850134780cc08ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 338,
+     "end": 360,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "57b52e4e406aef66b7bc66a750059ee616c4a258b6884ea2273a279b1b9b544c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 477,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "7cd27a4d63d3770ab78bc363aa0e737be0203341c271ca51388205aa7cff25bb"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 234,
+     "end": 292,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "start": 173,
+     "end": 250,
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "d9dbc389d593ed7b2e25424e24f13357cf1244ef3bd53da9501cf8ac966cbb8f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 278,
+     "end": 298,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "f99ac485703277c810b09f888b85189d97d626bcff5ef189a0a3425d3188f5a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 388,
+     "end": 407,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c77a984ad265e7c888814c53a0c3b441d1e603777fc74186828c57d1df68d311"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 168,
+     "end": 190,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "004ca8898902a97cbeef3cff404e394b1c14358a1befedf144515f863dc8c6c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 221,
+     "end": 240,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "85f5fc11f0c689003470a2e9889f063c0e3039679dc889ca49a49113dfccb7ec"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 406,
+     "end": 420,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "9eb2a1a0cef979d2543c96f612b89d149494d4e242a6296539321b2c4fc1d06a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 421,
+     "end": 433,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c2d3606e18ac95e15f4a96a1a0ed11157a2939532fa20a6df29e6042e1daa868"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 490,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "43cc115d6df89060a29551f9fdc2cd50a23d71f7a005141235b965fd6728791c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 383,
+     "end": 441,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "422b79432d63a4945af20bfff02be57b45bcfddcb69128a62b07096cd6ed30b7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 466,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "de44aaf068ffa6db10f21806f22f25cd55d777158324e35ad0b42e88db5f8138"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 370,
+     "end": 380,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "fcb86c3161d689c9e6701b8bc8142f720b096d85ed9734ea0a23439b1c83f3ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 445,
+     "end": 463,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "54180d523f09b8fb0cfc5f92ebe3d39854a8c3a316cccd0825fe2f805df2f08b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 502,
+     "end": 532,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "e5456eb1171d2f92aadebb67bda8f0bb1f8dabf43d354d4bb7ce439a58f33fa6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+     "start": 156,
+     "end": 204,
+     "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+     "span_sha256": "b0fcd0984f4ebc0cbeb9443e04b5f0968fb33e75c21b7aad85585d5b127eb418"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. S17:07 dedup-only analytical route separately N/A, not compaction machine or actual audit path.",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:01",
+   "frozen_row_sha256": "a605b2b019e05f47316cc283546fd8decd9f7548a93225b9048f935f64dc3a71",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 138,
+     "end": 165,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "c05f3352a2e508880e63d9431bf6c53436e553d808b19f7e6b1618854b415338"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 201,
+     "end": 219,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "6d23faef3c0291821bfb5f575eac1a62a24297290ad37e9acf42b92c9a151134"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 254,
+     "end": 275,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "71242fec3069469cb5b02822377367023d7a850ec2505e146850134780cc08ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 338,
+     "end": 360,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "57b52e4e406aef66b7bc66a750059ee616c4a258b6884ea2273a279b1b9b544c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 477,
+     "end": 500,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "7cd27a4d63d3770ab78bc363aa0e737be0203341c271ca51388205aa7cff25bb"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "start": 234,
+     "end": 292,
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "start": 173,
+     "end": 250,
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "d9dbc389d593ed7b2e25424e24f13357cf1244ef3bd53da9501cf8ac966cbb8f"
+    }
+   ],
+   "semantic_assessment": "Trusted live lifecycle gate parses<=100000 host entries and unique bounded semantic IDs, asks actual bridge for standard keepRecent10/maxBytes8192 policy, validates protected boundary/actions/metrics/fingerprint. Actual bridge rejects>10000semantic rows and oversized serialized request.",
+   "intake_variances": [
+    "Intake last10messages/8192descriptors is false: keepRecent counts tool-bearing/result anchors plus lastassistant;8192 is byte-size policy for oversize tool-result selection, not prefix descriptor cap. No new message retention algorithm inferred."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S17:06",
+   "frozen_row_sha256": "0a28cd0b55010ca2da543092e094f8629be7413b0e26702bf0dde885d13b4d68",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 370,
+     "end": 380,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "fcb86c3161d689c9e6701b8bc8142f720b096d85ed9734ea0a23439b1c83f3ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 445,
+     "end": 463,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "54180d523f09b8fb0cfc5f92ebe3d39854a8c3a316cccd0825fe2f805df2f08b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compaction.ts",
+     "start": 502,
+     "end": 532,
+     "file_sha256": "fa6d6d30c6e54b3b6e12c5db68c02f0f36a466ba8c0552303a4e0b70fdf76cff",
+     "span_sha256": "e5456eb1171d2f92aadebb67bda8f0bb1f8dabf43d354d4bb7ce439a58f33fa6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+     "start": 156,
+     "end": 204,
+     "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+     "span_sha256": "b0fcd0984f4ebc0cbeb9443e04b5f0968fb33e75c21b7aad85585d5b127eb418"
+    }
+   ],
+   "semantic_assessment": "Only a valid host-confirmed fromExtension event with valid codearbiter detail fingerprint/auditCodes/metrics is considered; current lease/trust gate surrounds best-effort append. Sink verifies regular single-linked project-owned log before/after append andfsync; source only.",
+   "intake_variances": [
+    "Intake cache16confirmationIDs does not exist in baseline/current. MAX_AUDIT_METRICS16 bounds projected metricfields. Matching event means valid extension provenance/detail shape plus live lifecycle, not a stored prior proposal-ID lookup."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

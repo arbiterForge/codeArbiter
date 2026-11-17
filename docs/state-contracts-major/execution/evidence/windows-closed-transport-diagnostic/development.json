@@ -1,0 +1,50 @@
+{
+  "schema": "codearbiter.windows-closed-diagnostic-repair/1",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "scope": "Confirmed diagnostic operation/code loss and primary failure masking; actual Node4260 shutdown cause remains UNKNOWN.",
+  "subjects": {
+    ".github/scripts/_windows_rpc_timeout.py": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+      "sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+      "bytes": 32975
+    },
+    ".github/scripts/test_pi_package.py": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\test_pi_package.py",
+      "sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+      "bytes": 331763
+    }
+  },
+  "actual_author_checks": {
+    "original_target_RED_assertion_subcases": 9,
+    "known_pipe_code_RED": true,
+    "successor_predecessor_RED_assertion_subcases": 6,
+    "successor_final_focused_tests": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 0.13672939999378286
+  },
+  "review_correction": "Initial peer found NATIVE-DIAG-PRIMARY-01 (collector outcome hidden by later wait failure). Minimal successor retains primary status/failure/truncation with final cleanup_unknown. First new timeout test oracle corrected to existing unexpected category; original failing attempt retained.",
+  "independent_review": {
+    "result": "PASS",
+    "resolved_finding": "NATIVE-DIAG-PRIMARY-01",
+    "retained_initial": "initial-peer-finding.json",
+    "final": "successor-peer-review.json"
+  },
+  "limits": [
+    "Original5s/128KiB/32KiB and provider/profile/decoder/owned-worker boundaries preserved.",
+    "Only closed categories and bounded numeric error codes, no exception text/paths/argv/environment/raw debugger output.",
+    "No actual SDK/native/Pi/provider probe or Node cause proof."
+  ],
+  "Root_current_integration_check": {
+    "command": "C:/Python314/python.exe -B -X utf8 .github/scripts/test_pi_package.py DebuggerInboxTests",
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "actual_exit_code": 0,
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "unittest_seconds": 0.552
+  }
+}

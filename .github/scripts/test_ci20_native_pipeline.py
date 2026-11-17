@@ -214,6 +214,76 @@ class ShardContract(unittest.TestCase):
         cls.cases = authority.discover()
         cls.weights = authority.load_weights()
 
+
+    def test_later_spawn_failure_settles_earlier_children(self):
+        import subprocess
+        child = mock.Mock()
+        child.wait.return_value = 0
+        failure = OSError("later shard could not start")
+        with mock.patch.dict(authority.os.environ, {}, clear=True), \
+                mock.patch("subprocess.Popen", side_effect=[child, failure]):
+            with self.assertRaises(OSError) as caught:
+                authority.run_all(4, ["a", "b", "c", "d"], plan_sha256="a" * 64)
+        self.assertIs(caught.exception, failure)
+        child.kill.assert_called_once_with()
+        child.wait.assert_called_once()
+        cleanup_timeout = child.wait.call_args.kwargs["timeout"]
+        self.assertGreater(cleanup_timeout, 0)
+        self.assertLessEqual(cleanup_timeout, 5)
+
+    def test_exception_cleanup_attempts_every_child_and_reports_unconfirmed(self):
+        import subprocess
+        first, second = mock.Mock(), mock.Mock()
+        first.kill.side_effect = OSError("owned child refused termination")
+        first.wait.side_effect = subprocess.TimeoutExpired(["owned-shard"], 5)
+        second.wait.return_value = 0
+        failure = OSError("third shard could not start")
+        with mock.patch.dict(authority.os.environ, {}, clear=True), \
+                mock.patch("subprocess.Popen", side_effect=[first, second, failure]):
+            with self.assertRaisesRegex(RuntimeError, "direct-child cleanup unconfirmed") as caught:
+                authority.run_all(4, ["a", "b", "c", "d"], plan_sha256="a" * 64)
+        self.assertIs(caught.exception.__cause__, failure)
+        for child in (first, second):
+            child.kill.assert_called_once_with()
+            child.wait.assert_called_once()
+            self.assertGreaterEqual(child.wait.call_args.kwargs["timeout"], 0)
+            self.assertLessEqual(child.wait.call_args.kwargs["timeout"], 5)
+
+    def test_scratch_removal_failure_does_not_replace_spawn_error(self):
+        child = mock.Mock()
+        child.wait.return_value = 0
+        failure = OSError("later shard could not start")
+        with tempfile.TemporaryDirectory(prefix="authority-cleanup-error-") as raw:
+            scratch = mock.MagicMock()
+            scratch.__enter__.return_value = raw
+            scratch.__exit__.side_effect = PermissionError("scratch still open")
+            with mock.patch.dict(authority.os.environ, {}, clear=True), \
+                    mock.patch("subprocess.Popen", side_effect=[child, failure]), \
+                    mock.patch("tempfile.TemporaryDirectory", return_value=scratch):
+                with self.assertRaises(OSError) as caught:
+                    authority.run_all(4, ["a", "b", "c", "d"], plan_sha256="a" * 64)
+        self.assertIs(caught.exception, failure)
+        child.kill.assert_called_once_with()
+        child.wait.assert_called_once()
+        self.assertGreater(child.wait.call_args.kwargs["timeout"], 0)
+        self.assertLessEqual(child.wait.call_args.kwargs["timeout"], 5)
+        self.assertTrue(any("scratch cleanup" in note for note in caught.exception.__notes__))
+
+    def test_wait_exception_settles_every_owned_child(self):
+        first, second = mock.Mock(), mock.Mock()
+        failure = RuntimeError("owned wait observation failed")
+        first.wait.side_effect = [failure, 0]
+        second.wait.return_value = 0
+        with mock.patch.dict(authority.os.environ, {}, clear=True), \
+                mock.patch("subprocess.Popen", side_effect=[first, second]):
+            with self.assertRaises(RuntimeError) as caught:
+                authority.run_all(2, ["a", "b"], plan_sha256="a" * 64)
+        self.assertIs(caught.exception, failure)
+        for child in (first, second):
+            child.kill.assert_called_once_with()
+            self.assertGreater(child.wait.call_args.kwargs["timeout"], 0)
+            self.assertLessEqual(child.wait.call_args.kwargs["timeout"], 5)
+
     def test_dynamic_discovery_disjoint_nonempty_complete_and_class_atomic(self):
         shards, estimates = authority.partition(self.cases, 4, self.weights)
         expected = sorted(case.id() for case in self.cases)

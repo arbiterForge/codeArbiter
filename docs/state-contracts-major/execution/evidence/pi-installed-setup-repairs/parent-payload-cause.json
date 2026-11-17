@@ -1,0 +1,96 @@
+{
+  "schema": "original-parent-author-serialization-diagnosis/1",
+  "result": "CONFIRMED_TRANSPORT_DEFECT",
+  "head": "a7135d312e6f861703f14683f422d1f435260ebf",
+  "run": 44011128754,
+  "job": 133812633089,
+  "artifact": 14299380050,
+  "original_archive_sha256": "b4ed9bc71e778ed1b285aa4c28c171d0c51992551c93b73e6e46100550e25793",
+  "sources": {
+    "observe_pi_installed_rpc.py": {
+      "sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "bytes": 27952
+    },
+    "major_qualification_report.py": {
+      "sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+      "bytes": 139525
+    }
+  },
+  "source_functions": {
+    "observe_pi_installed_rpc.py": {
+      "raw": {
+        "line": 41,
+        "end_line": 46
+      },
+      "save": {
+        "line": 56,
+        "end_line": 59
+      },
+      "load": {
+        "line": 65,
+        "end_line": 65
+      },
+      "parent_author_fixture": {
+        "line": 288,
+        "end_line": 307
+      },
+      "_produce": {
+        "line": 310,
+        "end_line": 354
+      }
+    },
+    "major_qualification_report.py": {
+      "authenticated_payload": {
+        "line": 2322,
+        "end_line": 2395
+      }
+    }
+  },
+  "actual_authenticated_consumed_cohort": [
+    {
+      "role": "artifact-release-packages-a7135d312e6f861703f14683f422d1f435260ebf",
+      "artifact_id": 14298338060,
+      "archive_sha256": "1bdc57eed1def23aa6adce430f277ffad866df24f3ea65ca7b90888c1fbc2bd6",
+      "cohort_members": [
+        {
+          "path": "artifact-package-cohort.json",
+          "sha256": "c107698f8231f4d58c81b50be66db425dcdafcf5f566fa5a5642779cd30c1076"
+        }
+      ]
+    }
+  ],
+  "coordinator_inputs_sha256": "7d03ddd7ac526eea914d44eb01005882029b3506c23a40fe37fafb8af01915f5",
+  "worker_result_bytes": 7518081,
+  "immutable_load_default_bytes": 16777216,
+  "worker_result_fits_original_bound": true,
+  "original_rpc_case": {
+    "id": "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",
+    "run_count": 1,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "result": "passed",
+    "failure_sha256": []
+  },
+  "worker_supervision": {
+    "returncode": 0,
+    "timed_out": false,
+    "containment": "exited",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "failure_message_fixed_typeerror": "Object of type bytes is not JSON serializable",
+  "failure_message_sha256": "ceb1e5f512c71b5666d3c87547b885bac1c27bedb6a91754f9590a5487a782d0",
+  "source_trace": [
+    "authenticated_payload stores the authenticated artifact-package-cohort.json content as bytes in documents.",
+    "The Linux parent_author_fixture serializes config[authenticated_payloads] with save/json.dumps before invoking its bounded child.",
+    "A bytes-valued document is not JSON serializable; its fixed Python TypeError message exactly hashes to the original coordinator/producer refusal."
+  ],
+  "tui_reachability": "NOT_EXECUTED: serializer failure precedes spawn; no original parent supervision or TUI output member exists.",
+  "minimal_regression": "Prepare the real bytes-bearing authenticated payload under an inert owned spawn seam and require lossless bytes reconstruction plus unchanged authentication/size/privacy guards. The existing RPC owner and TUI assertions remain unchanged.",
+  "limits": [
+    "No cap increase is supported; 7518081-byte worker-result fits immutable 16MiB load bound.",
+    "No TUI behavior, human consent/full PI-D07 or whole-normal qualification claim.",
+    "Data/source analysis only, no archived code or subject process execution, replay or canonical edits."
+  ]
+}

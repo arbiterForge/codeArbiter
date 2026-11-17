@@ -1,0 +1,437 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/session-identity.ts": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+  "plugins/ca-pi/tools/src/sidebar-compositor.ts": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+  "plugins/ca-pi/tools/src/sidebar-manager.ts": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+  "plugins/ca-pi/tools/src/sidebar.ts": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653"
+ },
+ "disposition_ids": [
+  "disposition:machines:S19",
+  "disposition:transitions:S19:01",
+  "disposition:transitions:S19:02",
+  "disposition:transitions:S19:03",
+  "disposition:transitions:S19:04",
+  "disposition:transitions:S19:05",
+  "disposition:transitions:S19:06",
+  "disposition:transitions:S19:07",
+  "disposition:transitions:S19:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S19",
+   "frozen_row_sha256": "c308ddd143ab983b2a0ad76c3614d7b2ef74b413dca652085e258de4ece8792d",
+   "clause_ids": [
+    "disposition:transitions:S19:01",
+    "disposition:transitions:S19:02",
+    "disposition:transitions:S19:03",
+    "disposition:transitions:S19:04",
+    "disposition:transitions:S19:05",
+    "disposition:transitions:S19:06",
+    "disposition:transitions:S19:07",
+    "disposition:transitions:S19:08"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 55,
+     "end": 94,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "8ec47a1bc534fbb134b98878a26d138a07911719a892d1ce6a6ed93dadcf5a4c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/session-identity.ts",
+     "start": 15,
+     "end": 22,
+     "file_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+     "span_sha256": "a879fd31227e55da58ef0b727c9493ca059e530b4df3ce07d6291e27ec776e07"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 108,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "40e03ecd6ca410b60cc7017e0c461722a18efec2e11053ec6198b79a2138e7f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 179,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "a1ae8b6e85ef286869da3e5494442282bb3d412d975dad0456657958fbe202c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 81,
+     "end": 95,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "4003b15b54d7b24992e1ae103f69b062f3e1bd0b5e1361cb9d8a209d2daad871"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 291,
+     "end": 323,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "fce83700cbc98748a590194d0153895cd40a5323dabe085e1319907c75927a5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 186,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "3119005f26bd97a1770a443276516878614213d1c9b53ef39858e58086e8e4be"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 196,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "562ba661ec2311b9f9a34755b4ad87a0dcdeb6f46a6970d29ed331f419ccf501"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 209,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "9b9b403f2178fd6c730699ece10c25e45722feba3d6b66538ce4e95e19819958"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 124,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "336e582b2dfe25518b6ceec1ecc40dc3e3469e12626683bdc1b3ec4f1f4a83d5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 150,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "155f021841fb231c12cf0f1fcafbcb3c1ae20ae8d90e5fb9d4a54136333930a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 189,
+     "end": 288,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "6986393375d807c854018c5e3306e937405be6378080a05461797a96c7c32b15"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 157,
+     "end": 187,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "a358344bd8ae07c3a8fc6653e4b8d48de8aa92c102cc1b72a2e7fb2d9818f76e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 77,
+     "end": 79,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "81e312d4e2ca2764af63936cff1de292eb0731a4db30c206a602cc7aa14290fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 156,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "25f05e73aad956bd57eb19a9eecfea49229660efb98e2fc2aa98eb22be0cd1ba"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:01",
+   "frozen_row_sha256": "2bcc7f8a757ef31695d78032cc30312260110cd2c07ae6c3dfec08739a4be287",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 55,
+     "end": 94,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "8ec47a1bc534fbb134b98878a26d138a07911719a892d1ce6a6ed93dadcf5a4c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/session-identity.ts",
+     "start": 15,
+     "end": 22,
+     "file_sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+     "span_sha256": "a879fd31227e55da58ef0b727c9493ca059e530b4df3ce07d6291e27ec776e07"
+    }
+   ],
+   "semantic_assessment": "Trusted interactiveParent only; register exactlyonce, sessionwidth clamped24..60 and reset ondispose. No command or painting on child/RPC/JSON/print.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:02",
+   "frozen_row_sha256": "32a6735f1335e079c0727fdc8a540e70656952940cf5dd3ae7cd28072dc5b8a4",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 108,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "40e03ecd6ca410b60cc7017e0c461722a18efec2e11053ec6198b79a2138e7f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 179,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "a1ae8b6e85ef286869da3e5494442282bb3d412d975dad0456657958fbe202c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 81,
+     "end": 95,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "4003b15b54d7b24992e1ae103f69b062f3e1bd0b5e1361cb9d8a209d2daad871"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 291,
+     "end": 323,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "fce83700cbc98748a590194d0153895cd40a5323dabe085e1319907c75927a5c"
+    }
+   ],
+   "semantic_assessment": "Automatic install waits for footerTUI, makes firstgeometrydecision, width>=120 then metrics and capabilityprobe; install reads liveTUI/terminal after await.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:03",
+   "frozen_row_sha256": "0b2c3de22347938897751347aafd842ea4a58cf116e96dd470e8e4e9059dc242",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 108,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "40e03ecd6ca410b60cc7017e0c461722a18efec2e11053ec6198b79a2138e7f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 186,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "3119005f26bd97a1770a443276516878614213d1c9b53ef39858e58086e8e4be"
+    }
+   ],
+   "semantic_assessment": "First auto decision with rawcolumns<120 records auto-off-narrow; explicit on/toggle remains available. Missing TUI/geometry retries later rather than prematurely recording decision.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:04",
+   "frozen_row_sha256": "899a7a3ea0d46b30d77efccdbb83ac41199989eb36310719985c98c1f0ad29db",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 196,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "562ba661ec2311b9f9a34755b4ad87a0dcdeb6f46a6970d29ed331f419ccf501"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 209,
+     "end": 225,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "9b9b403f2178fd6c730699ece10c25e45722feba3d6b66538ce4e95e19819958"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 124,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "336e582b2dfe25518b6ceec1ecc40dc3e3469e12626683bdc1b3ec4f1f4a83d5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 291,
+     "end": 323,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "fce83700cbc98748a590194d0153895cd40a5323dabe085e1319907c75927a5c"
+    }
+   ],
+   "semantic_assessment": "Expliciton/toggle requires trustedTUI; metrics/probe and rawwidth>=clampedsidebar+60 before patching configurablecolumns/renderer, using live geometry. Existinginstalled doesnotduplicate hooks.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:05",
+   "frozen_row_sha256": "03adc3df2eb19825390d3bcdf39c873e67b0cb20364355f524aa0c3a72c4c104",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 150,
+     "end": 155,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "155f021841fb231c12cf0f1fcafbcb3c1ae20ae8d90e5fb9d4a54136333930a6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 189,
+     "end": 288,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "6986393375d807c854018c5e3306e937405be6378080a05461797a96c7c32b15"
+    }
+   ],
+   "semantic_assessment": "Live width changes clamp and request render; paint revalidates currenthook/finitegeometry, narrowtemporary skips; threeinvalidgeometrycycles dispose. Exceptions dispose and notifyonce; synchronized bounded rows preserve native render result.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:06",
+   "frozen_row_sha256": "2b7089caa10b52c825200e1eeb01d84b545dd7ffab0d4f2f6f78cc94c754e5e7",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-compositor.ts",
+     "start": 157,
+     "end": 187,
+     "file_sha256": "89e9576c36459258cd68f4c95e4cb4895d12777abd9ccd9c08a920c226301403",
+     "span_sha256": "a358344bd8ae07c3a8fc6653e4b8d48de8aa92c102cc1b72a2e7fb2d9818f76e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "semantic_assessment": "Dispose only restores own getter/wrapper, correctly deletes ownshadows of inheritedhooks and preservesforeignreplacements/currentrawresize; subsequentdispose no-op.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:07",
+   "frozen_row_sha256": "8e1f68c67f5f17d97273e2993c33b8ef4906ac5101be618086a402ff14c8924b",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 77,
+     "end": 79,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "81e312d4e2ca2764af63936cff1de292eb0731a4db30c206a602cc7aa14290fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "d7ccc57fc2daa97a429d24376620aa6b49bfe0a17cb302db607046f70d6bb52f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 156,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "25f05e73aad956bd57eb19a9eecfea49229660efb98e2fc2aa98eb22be0cd1ba"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "semantic_assessment": "Accepted PI-L02 correction: dispose/off incrementsgeneration before clearingcompositor, invalidating pendinginstall. Late metrics maycache but cannotupdate reason or patch retiredgeneration.",
+   "intake_variances": [
+    "Frozen baseline no-invalidation bug intentionally corrected by acceptedPI-L02; no claim oldpending-install survival preserved."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S19:08",
+   "frozen_row_sha256": "ed8958e39ab33e7ec03582c4672230830042d7963c0e0a2251b709f394413a38",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 179,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "a1ae8b6e85ef286869da3e5494442282bb3d412d975dad0456657958fbe202c4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 199,
+     "end": 206,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+     "span_sha256": "eb78e2713b5af0e9cae3a0dfeaf166e5c80fdb710c2a61a230417a07ba36bfa7"
+    }
+   ],
+   "semantic_assessment": "After metricspromise, actualgenerationcomparison refuses retiredinstall and concurrent samegeneration completion installs atmostonce againstliveTUI/terminal. Accepted replacement effect is no resurrection; newvalidsession can install.",
+   "intake_variances": [
+    "Old analytical/probe effect140->99afterdispose is historicalbug, not currentqualification or effectPASSED. Current guardimplementsPI-L02; no actualterminalprobe executed."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

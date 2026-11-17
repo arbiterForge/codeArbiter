@@ -1,0 +1,3254 @@
+{
+ "schema": "codearbiter.workflow-clause-inspection/1",
+ "actor": "/root/ci_repair_review",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "WF-04",
+  "WF-05",
+  "WF-06",
+  "WF-07",
+  "WF-09",
+  "WF-10",
+  "WF-11",
+  "WF-12",
+  "WF-13",
+  "WF-14"
+ ],
+ "clause_count": 53,
+ "rows": [
+  {
+   "cell": "disposition:transitions:WF-04:01",
+   "frozen_row_sha256": "b7b336e8784cc8ffe6f7dc71fc9e9805381ddc95b4f4121b7cab94f7068e98ba",
+   "frozen_baseline": {
+    "from": "Choice identified",
+    "event": "Recorded-intent check",
+    "guard": "Applies to brainstorming/sprint; not arbitration consumers",
+    "to": "Answered / constrains / silent",
+    "effects": "Read relevant indexed decisions, cite the highest applicable source and constrain options.",
+    "failure_retry": "Absent decision directories mean silent, not an automatic gap or stop.",
+    "source": [
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/core.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/lenses.md"
+     }
+    ],
+    "transition_id": "WF-04:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "SMARTS recorded-intent step applies only to sprint/brainstorming and exempts named arbitration consumers. Index-first relevant records are ranked by actual user steer, unsuperseded decision log, acceptedADR and plans; absent optional directories are silent, not automaticSTOP.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 22,
+     "end": 51,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "e6a0f4247a4f4b500422bd8f0ad8274f6c2625432a505969e9d949883957a8ef"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 17,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "19b7bceb4fdb115c944023c607a4dda7c5d92f931370533f541e6690f1fcedc1"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 28,
+     "end": 43,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "5c85b4fddea8c2d66f5872573f2c41190162ae95dff85d332cfe2141af437b55"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:02",
+   "frozen_row_sha256": "1ce370ef8043d492534ecd3e31e86d765caf4f1652971e46e9fecfecf5a3cada",
+   "frozen_baseline": {
+    "from": "Answered",
+    "event": "Proposed approach contradicts recorded intent",
+    "guard": "Higher current steer does not already resolve it",
+    "to": "Decision boundary",
+    "effects": "Interactive work routes to reconciliation/supersession; sprint surfaces the conflict.",
+    "failure_retry": "Do not quietly conform to a lower-ranked record against a higher steer.",
+    "source": [
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/core.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/lenses.md"
+     }
+    ],
+    "transition_id": "WF-04:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A material contradiction is surfaced with sourcecitations; highestcurrentsteer prevails over lowerrecord, genuine unresolved outcome goes to attributeddecisionowner. Sprint scopes pause to affecteddependencies and preserves global user/host stops.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 38,
+     "end": 45,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "cd17271180a794d41a3cfa8215cc0c3665069e10d13f664c45094398bc1b7be9"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 32,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "ddc98cd3e535bedb84cf2ff2a887e0fba329134f590ff956435ac6b95cfa9e7d"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 80,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "d9a7058a05750d7a6c73ec615d8455713360141e45425f9bb1d7a2497f3d7fe3"
+    }
+   ],
+   "intake_variances": [
+    "SMARTS old stop-and-surface wording is read with current scoped-conflict owner/PROGRAM; no invented whole-program stop or silent supersession."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:03",
+   "frozen_row_sha256": "dbb164383c855a38cb2f6f51d5271596e2059b71a89996eeef8d8acbcf53f0a6",
+   "frozen_baseline": {
+    "from": "Constrains or silent",
+    "event": "Evaluate viable methods",
+    "guard": "Use six qualitative lenses; no numerical score",
+    "to": "Rationale prepared",
+    "effects": "Preserve alternatives, material Weak/Unknown observations, assumptions and real priorities.",
+    "failure_retry": "A decision-critical Unknown prevents selection/strong recommendation; a tie stays tied.",
+    "source": [
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/core.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/lenses.md"
+     }
+    ],
+    "transition_id": "WF-04:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Six qualitative lenses share Strong/Adequate/Weak/Indifferent/Unknown, no numericweights/count winner. MaterialUnknowns name missingobservation/criticality; criticalUnknown preventsselection/strongrecommendation, unprioritizedtie remains tied. Alternatives are genuine, not manufactured.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 53,
+     "end": 137,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "0c67937507e1f5e088bea51a92d3deae08208d6952192c33924035ded5941265"
+    },
+    {
+     "path": "core/surface/includes/smarts/lenses.md",
+     "start": 11,
+     "end": 115,
+     "file_sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+     "span_sha256": "dbf52b9464e7eb5b4ba24eae7cfd6e27a0b3cb26b7f32b18c0c0b333e09543a8"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 50,
+     "end": 60,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "cdad42eff73a067f7d01831ebc3ab80c87521afa55cab534db5e93a09f363e4d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:04",
+   "frozen_row_sha256": "3a02b0d684384e1f0bf5b20118abdcebfd49d24cae25c42c2984526dfee6be53",
+   "frozen_baseline": {
+    "from": "Rationale prepared",
+    "event": "Persist selected approach",
+    "guard": "Choice is within actual authority",
+    "to": "Spec rationale retained",
+    "effects": "Write existing approach/decisions plus SEC-SMARTS, or the Markdown section; read back.",
+    "failure_retry": "Rationale, schema validity and a digest grant no execution authority.",
+    "source": [
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/core.md"
+     },
+     {
+      "path": "core/surface/includes/smarts/lenses.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/lenses.md"
+     }
+    ],
+    "transition_id": "WF-04:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Selected rationale is typed approach+decisions+SEC-SMARTS or one legacyMarkdownsection, then readback. Singleapproach gets only actualreason; savedrationale/schema/digest grants no actionauthority.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 139,
+     "end": 153,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "4117c508295b6881a94c85878ca8ca56f092fbd4f9d034b4674210bd4e9bee98"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 58,
+     "end": 89,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "108ed4a4a84a9bbf8ae11164c43b39f9308465dad4d66fdf68e41a4f22b247aa"
+    },
+    {
+     "path": "core/surface/includes/artifacts.md",
+     "start": 26,
+     "end": 47,
+     "file_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+     "span_sha256": "74f247dd39ec8df4aefb5fc75bc759669b470de22bd9dd16f3553ae7126c569a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:01",
+   "frozen_row_sha256": "3d3f3e03f567bbafb2d78bf19cfbfbad41973b5261429a74c6164f869c908b65",
+   "frozen_baseline": {
+    "from": "Spec available",
+    "event": "Build plan",
+    "guard": "Current criteria and scope are known",
+    "to": "Plan ready for implementation",
+    "effects": "Map criteria bijectively to bounded tasks, dependencies, steps and done_when obligations.",
+    "failure_retry": "Planning is not implementation; unresolved consequential gaps block their dependent output.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Writingplan maps existingcriterionIDs to coherent tasks, dependencies, steps/checks and completionconditions; checks coverage in bothdirections without claiming criterionlist captures allintent. Planning staysnonexecuting; blockedoutcomes affect only dependenttasks; same representation and CAS/readback preserved.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 9,
+     "end": 24,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "c291a1af69bec16b9fd29e9211608630443a70e561ed78b86629a131f8e99506"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 34,
+     "end": 108,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "340426e5374b1f695b2603ab62e35544ade8ed9adbb4a67227fc1ec9253cee86"
+    },
+    {
+     "path": "core/surface/includes/artifacts.md",
+     "start": 26,
+     "end": 47,
+     "file_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+     "span_sha256": "74f247dd39ec8df4aefb5fc75bc759669b470de22bd9dd16f3553ae7126c569a"
+    }
+   ],
+   "intake_variances": [
+    "Frozen bijectively is analytical shorthand for coverage bothdirections, not a one-task-per-criterion mathematicalbijection; coherent many-to-many work is explicitlyallowed."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:02",
+   "frozen_row_sha256": "4b125c2978503f16217271d24a6ba58e2772b410c3157d6d49688965efe784e6",
+   "frozen_baseline": {
+    "from": "Plan with eligible units",
+    "event": "Dispatch or execute",
+    "guard": "Dependencies and real scope/host constraints satisfied",
+    "to": "Units in progress",
+    "effects": "Use direct execution or scoped agents; isolate/serialize colliding writers.",
+    "failure_retry": "No approval receipt is created merely to move ordinary progress.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Actual dependency-clean tasks may execute directly or usefulscopedagents; writerisolation/serialization required on collision and host permissions govern. No newreviewer receipt or progressapproval grants execution.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 29,
+     "end": 47,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+     "span_sha256": "905ba33554d864de519c321026a9e4c01223c7c97766c802cb67b69804962c58"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 20,
+     "end": 59,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "e816bbcc5c1b33205de8c8131c41cba31d543621e09d3269e701513167910eb4"
+    },
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 19,
+     "end": 38,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "4eec20a535234933b74216e58037fedc7f68a9cea622c9494b8762a75a72cc35"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:03",
+   "frozen_row_sha256": "36b2679bb98b5de149ae20028794524cfa9d022400bb45c3981efd3256d24cfe",
+   "frozen_baseline": {
+    "from": "Unit in progress",
+    "event": "Author returns",
+    "guard": "Inspect actual result against assigned obligations",
+    "to": "Implementation ready for assessment",
+    "effects": "Retain performed work, pending checks and out-of-scope findings; assess relevant proof.",
+    "failure_retry": "Self-reported completion alone does not establish acceptance or independent review.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Coordinator inspects actual work, source/input identities/output/exit and unfinishedobligations before using a return. task-review/DONE are implementationreports, not independentreview/acceptance/checkpass; selectedoutcome and scope retained.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 61,
+     "end": 100,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "5411266ad82525f2d3b8fefe70d78b3abb6065ef1a306fafa2accb1cffa51162"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 102,
+     "end": 121,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "5e9f58bd909d5c8429e7c9e05b67696932c6922f4a1fc73346b1e40aff720742"
+    },
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 45,
+     "end": 58,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+     "span_sha256": "3c9d08c7bea03cc22e4ca4b9bfaec83567992e00d40d130c2fb81401695103ca"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:04",
+   "frozen_row_sha256": "0612d4fdd14cb112d9e0fcc362bb52992e2ec407d06bc80d31494dd8e73d9001",
+   "frozen_baseline": {
+    "from": "Assessment",
+    "event": "Relevant check or review fails",
+    "guard": "Failure applies to the changed subject",
+    "to": "Affected correction",
+    "effects": "Repair and rerun affected evidence.",
+    "failure_retry": "Do not erase valid unrelated work or rerun a blanket review chain solely because bookkeeping changed.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Relevantfailure remains visible and returns affectedwork to correction. Rerun affected/insufficientchecks or reviews, reuse unchangedapplicableevidence; no blanketchain restart from receipt/bookkeeping alone.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 63,
+     "end": 100,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "ba4d24a7c4d6e019947050f74b01e4629b84c96b8090af13a362c7c43427475a"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 91,
+     "end": 97,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "5b0287c29fbfa1285dec36a9648ab14fc62c5b34d72d7b84227d729dd3bcde7f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:05",
+   "frozen_row_sha256": "c3f9cc9f2bd63c6a6738cc17d682301a1893b47dca910485dc82c8e386a481d4",
+   "frozen_baseline": {
+    "from": "Execution",
+    "event": "Material design drift",
+    "guard": "Current implementation no longer fits the selected design",
+    "to": "Return to design owner",
+    "effects": "Record the variance and update the relevant spec/plan through its owner.",
+    "failure_retry": "Reversible in-scope method adjustments need no invented approval loop.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Materialrationale/designmismatch cites contradictedchoice and returns to owningdesignworkflow. Reversible in-scope method/step/runner changes are typed maintenance withreason, not repeatedoutcomeapproval.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 50,
+     "end": 56,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "205374ceeb3224d4f0790c6a240199723ba86e8f2f8673b4478448c950d4b14d"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 99,
+     "end": 108,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "58b4d169388f7878a30650d4b907872b8462ded658e1857664076f606360962a"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 59,
+     "end": 75,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "fb4f8cf8091b1016554591d9532f7796010f83de55c859314391f50fe3a88583"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 61,
+     "end": 66,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "699b790b6111ac8c2c37cbf5984e3712bbed8de9eb99b5c632d8b1e50a7abf5b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-05:06",
+   "frozen_row_sha256": "909da09373b1cec42fd55a1528744bd7315bba61511196fd60cf505188cd02c1",
+   "frozen_baseline": {
+    "from": "Interrupted execution",
+    "event": "Resume",
+    "guard": "Workers, worktree and native outcome inspected",
+    "to": "Reconciled progress",
+    "effects": "Record actual progress through receipt-free operations and continue eligible work.",
+    "failure_retry": "Never clear a genuine BLOCKED/user stop or label REVIEW as verified.",
+    "source": [
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/subagent-driven-development/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/artifacts.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-05:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Resume rediscoversexactsamepair/workID, inspectworkers/worktree/uncertainoutcomes beforeprogressreconcile. Receipt-free task-start/review/reconcile/accept-scope retains CAS/opID and userBLOCKED stop; no REVIEW/DONE becomes verified or duplicatework.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 10,
+     "end": 27,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+     "span_sha256": "5261719b33af269961c442bb0b34ce3b29bec9158e03c2f5c2394ccb4b8aefde"
+    },
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 31,
+     "end": 62,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+     "span_sha256": "5655ba59d6c168a1960fcaf63eee33a6fee577ea4bda3f4dc809ae9e9545ef12"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+     "start": 41,
+     "end": 49,
+     "file_sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+     "span_sha256": "af891db562b6375e2cba8f1d01f524a9f59122b9e1eeb8d62bc621eee7bcbb36"
+    },
+    {
+     "path": "core/surface/includes/artifacts.md",
+     "start": 123,
+     "end": 161,
+     "file_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+     "span_sha256": "23cc5967fb8d5d1387c868565b87fe4713635c8578dbc1639b0c6c5d6ba5ebe4"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:01",
+   "frozen_row_sha256": "606961d5d334f8621f653037bd693952a992ff667891214f164d9e8e1bf195cf",
+   "frozen_baseline": {
+    "from": "Obligations open",
+    "event": "Map acceptance obligations",
+    "guard": "Every criterion/regression/parity obligation has an appropriate check",
+    "to": "Mapped obligations",
+    "effects": "Record the obligation-to-test mapping and selected verification approach.",
+    "failure_retry": "An unmapped obligation remains missing; passing unrelated tests do not cover it.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Selectedfeature/fix/refactor source obligations each have ID/provingcheck; OPEN/MAPPED/COVERED requires actualadequateevidence, otherwise MISSING. Unrelatedpassingtests cannotcovermissingcriterion.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 12,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c82e86bf115b67e3d923d69cdd8c68a6a11b0c0a262a06ee19b79a342a729cf1"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 101,
+     "end": 110,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "f37eeec1514638e2c904cf884944e6e781a9c712556762ba91f2f788bd120a9e"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 3,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "abcab04243de9110c3f10bb0396b24097034cd9cfb0f85fb2513befe1526205b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:02",
+   "frozen_row_sha256": "0b1970ef7f5aa48732fd58d84d2a241967ac858798e6e204b74d2336f1b16ab2",
+   "frozen_baseline": {
+    "from": "Fix baseline",
+    "event": "Run named regression before repair",
+    "guard": "The failure demonstrates the target defect",
+    "to": "Target RED observed",
+    "effects": "Retain actual command, source and failing result before changing implementation.",
+    "failure_retry": "Infrastructure failure or an already-green target is not target RED.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Confirmedfix retains genuine namedtargetRED beforeimplementation then sameunchangedassertionsGREEN; adequatecurrentbug-originRED reusable. Setup/import/unrelatederror and alreadygreencheck are not targetRED; materialfixturechange renewsbaseline.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 63,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9a687b924c1094dce87abf81afeb0f90f7ee6d7841aa2e8d3fdb39c058d92fae"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 92,
+     "end": 99,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "5b297220a69fc93e44868fd18db56be01c4e6324edd1bbea039e048c75cd1d66"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 29,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "e7649f78229a8f4acfefba25aa64b9f25317d09607b0b3e59f347e708ec2d29f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:03",
+   "frozen_row_sha256": "a5f15e8a084c0c5da6f931244c540f9522e4c1f862a551b4745842741841e330",
+   "frozen_baseline": {
+    "from": "Feature/refactor baseline",
+    "event": "Establish relevant proof",
+    "guard": "Feature uses test-first where appropriate; refactor uses passing characterization",
+    "to": "Baseline evidence",
+    "effects": "Retain existing criterion tests or parity evidence when actually applicable.",
+    "failure_retry": "Do not fabricate RED for already-implemented behavior; a changed fixture needs renewed relevant baseline.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Featureprefers testfirst but alreadyimplementedclaim may use actualcriterionchecks/negativecontrols; refactor/backfill uses passingcharacterization withpreservedassertions. No manufacturedRED by breakinghealthyproduction.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 46,
+     "end": 81,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "9cc6e72a3d6cd9077b07fb6eae04b032e0d9755754b6b158ed2a2d4c6a484e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 8,
+     "end": 24,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "d3dfabc4c8cabf29903341318cc354843b606843c8a6effd64026e1e566eb6ef"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:04",
+   "frozen_row_sha256": "cf358300616d18f01bb2beab221c2685bcff8aa424082bde510c15848b2c2624",
+   "frozen_baseline": {
+    "from": "Baseline evidence",
+    "event": "Implement and run checks",
+    "guard": "Authorized bounded change",
+    "to": "Candidate GREEN or failing",
+    "effects": "Record actual behavior assertions, coverage, lint and declared checks.",
+    "failure_retry": "Failure returns to affected repair; stale or missing evidence stays pending.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Authorizedscope only; run proving/affectedexistingchecks then relevantcoverage/lint/typechecks and recordrealoutcomes. Contradictory/stale/missingproof stays pending until correctedaffectedcheck, neverwaive to pass.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 83,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "a86382f2a3319670b0621a216f3a76f60fb78c61978fa4c071bd601dd7465e27"
+    },
+    {
+     "path": "core/surface/includes/author-tdd-workflow.md",
+     "start": 31,
+     "end": 38,
+     "file_sha256": "2ebef4df4102260e233491bfb66e0449cea7ccda6a7e10b096f67bdf3c8f2a55",
+     "span_sha256": "2104bd26fb6ac06f8e90456c98459f47bbe9b874847fecb4569954ee15b23b5e"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:05",
+   "frozen_row_sha256": "bb8b5e0ad21d3f84bfa347ab0ab91a48e27a22108ca68b5fcc82548fd57887e2",
+   "frozen_baseline": {
+    "from": "Candidate proof",
+    "event": "Coverage assessment",
+    "guard": "Declared profile, stage, source, host and metric requirements are known",
+    "to": "PASS / BELOW THRESHOLD / PARTIAL / INVALID EVIDENCE",
+    "effects": "Apply stage thresholds 60/70/85/90 to the required metrics; retain unmeasured dimensions and critical-path proof.",
+    "failure_retry": "No tooling exemption needs its declaration; scoped local proof does not become complete hosted proof.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Declaredlanguageprofile/maturity determine metrics and60/70/85/90threshold. Statement-onlyGo staysunmeasuredforlines/branches; fullhostunion and criticalpathoraclesrequired; scopedlocalPARTIAL separatefromexactheadhosted. No-toolingexemption needs namedfullsourcecitation, never silence or guessedabsence.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 1,
+     "end": 75,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "6d1ba663c6b740534965b7403630351a3c5472be399659f0a7f8185440dba1d6"
+    },
+    {
+     "path": "core/surface/includes/maturity-coverage.md",
+     "start": 77,
+     "end": 142,
+     "file_sha256": "8d536d9ccae1588f054151fa399a7b43bfe8970898674f321085a96f87721d48",
+     "span_sha256": "32c26c6d038462bce7f26bdd5a7b41a398aabdcbc9c6660ebbfaa396165e00e6"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 112,
+     "end": 124,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "c8953c16f8cb8a6618f8ce46e92673326ecdf4c6b2ab7ebbfa4b81d517bd2443"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-06:06",
+   "frozen_row_sha256": "1d6694462c808b546a3cec23b683fdf3adff5a68c68ccf3140c941138dcbd287",
+   "frozen_baseline": {
+    "from": "Documentation-only change",
+    "event": "Determine applicability",
+    "guard": "Behavioral tests genuinely inapplicable",
+    "to": "Document verification",
+    "effects": "Perform actual reference/render/content checks and state the applicability boundary.",
+    "failure_retry": "No fabricated test success or silent exemption.",
+    "source": [
+     {
+      "path": "core/surface/skills/tdd/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tdd/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/author-tdd-workflow.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/author-tdd-workflow.md"
+     },
+     {
+      "path": "core/surface/includes/fresh-verification.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/fresh-verification.md"
+     },
+     {
+      "path": "core/surface/includes/maturity-coverage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/maturity-coverage.md"
+     },
+     {
+      "path": "core/surface/includes/verification-boundary.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/verification-boundary.md"
+     }
+    ],
+    "transition_id": "WF-06:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Documentation/nonexecutables use concrete reference/generation/schema/rendering validation and explicitlyinapplicable behavioral/coveragephase. No inventedtestsuccess/silentexemption; claimboundaries remain explicit.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 52,
+     "end": 61,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "e7e68d46c4f213e452ca35a7dd7736a952dfc016a5eed1782826b3a71f457d80"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 126,
+     "end": 140,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "bee78f636613cd5a0e23d12b080db775a48adc4113a765fb5319a7264788c95a"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 11,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "b48d8b762fe4383e8aa31c8889413722790a68f0005c43eb6e2f1cf3126eb7d0"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:01",
+   "frozen_row_sha256": "a100b36cd9758649c49b1a847b7c01d96deb8f26e0e72f7f151d3bdb22c69183",
+   "frozen_baseline": {
+    "from": "Diagnostic request",
+    "event": "Prepare bounded investigation",
+    "guard": "Current source/runtime and permissible probes are identified",
+    "to": "Evidence collection",
+    "effects": "Inspect without application/test/config repairs; assess scratch-probe effects separately.",
+    "failure_retry": "A diagnostic request does not itself grant repair or external mutation.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Diagnosis keeps symptom/expectation/source/runtime/callerauthority explicit and changes noapplication/test/config/index/history. Eachprobe has separate effects/authority/time/output/disclosurebounds and is refused ifunsafe; no repairauthorization from finding.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "e76db0b90abea8d4533f8d2b2323b8c3e1d87b797a37f4ce16f5b008945b344c"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 53,
+     "end": 87,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "5d94dc5b7a4e05209e5eb2e184b53c99625765f04679ba6047900a03e070e34a"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 112,
+     "end": 185,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d1cdc01686dc0c55cd9c963238dbee3ef0fbe3e24e35e5156529a9883e7df5de"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:02",
+   "frozen_row_sha256": "d6c668ef2b1ca6ec77dba0a7fe6bfd3b7af805a0e67db1bcf220532e2f210a81",
+   "frozen_baseline": {
+    "from": "Evidence collection",
+    "event": "Test hypotheses",
+    "guard": "Evidence supports, refutes or leaves a claim inconclusive",
+    "to": "Disposition",
+    "effects": "Return confirmed_code_defect, confirmed_noncode_cause, design_question, no_action or unresolved.",
+    "failure_retry": "Non-reproduction alone is not proof of no_action; do not force a hypothesis count.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Hypotheses are grounded discriminators withoutfixedcount; supported/refuted/inconclusive require applicablecapturecoverage. Exactlyfive outcomes withpositive no_action and honestunresolved; cause/evidence/reproduction/permission are separate.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 89,
+     "end": 110,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "2a516fd03d89aa209a29846a80047adc1ae490973e24e69014d74ac23fb0cac4"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 158,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "d5b13fd9a4d7899d539560e1b18b5a99319cb4c514657b0dce9d89b163a70478"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:03",
+   "frozen_row_sha256": "ac316dc6d1295393f140936be425c76d907e2870dde2fa42a97d48450f7f6070",
+   "frozen_baseline": {
+    "from": "Disposition",
+    "event": "Compose private handoff",
+    "guard": "Finite closed packet, at most 65,536 bytes",
+    "to": "Validation attempt",
+    "effects": "Send exact packet through the installed validator and retain original exit/stdout/stderr.",
+    "failure_retry": "Do not switch interpreter/helper after a verdict.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Privatehandoff uses generatedclosedreference/schema, measuresUTF8<=65536 beforeinstalledvalidator invocation, selectsonecompatiblePython/helper andliteralvalidate/stdin, retainsactualexit/stdout/stderr, neveralternatevalidator/interpreter afterverdict.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 249,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "7b05c0be2a229e7bfd4fb2ab652049ca83b578564cd134320c49e62fc9eaf28b"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 1,
+     "end": 41,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "de34211e4da366ec92e7382c389448ad726146e285990a395f88d7b960be5c12"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "eeb25f2187110f32454d495a142f61e29f6c8c5815d33282864a5b8ddb788980"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 74,
+     "end": 87,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "1181c8c50511edc2376e2e27aec03578ae79f91ca67a0343e8476496b99b7ea8"
+    },
+    {
+     "path": "core/surface/includes/helper-invocation.md",
+     "start": 184,
+     "end": 223,
+     "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+     "span_sha256": "78c26e11f8e6a3bcdfd5fbc337e03431b3f440c97dac13025b9f6301066c4f0d"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 62,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "d624b7eb6f5be6c59e9f0740acd06ce896f2e083c40f5528b563c394260e6f70"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:04",
+   "frozen_row_sha256": "2087f3e1dd388a81538540ad3bd95c621e5fcef79e23a0b89bf569903d6c5224",
+   "frozen_baseline": {
+    "from": "Validation attempt",
+    "event": "Validator exit 0",
+    "guard": "Packet structurally and semantically consistent",
+    "to": "Validated packet",
+    "effects": "Return the packet to the caller, which still owns any repair authorization.",
+    "failure_retry": "Validation is not causal truth, fresh evidence or permission.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only exit0 plusvalidtrue/noerrors permits validatedtransfer. It verifiesfinitepacketshape/consistency, not causaltruth/freshness/actionpermission. Callerretainsdiagnosis-only/fixauthority andrealregressionRED obligation.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 292,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ceb7d1120ba9649d4f1d3afdc47be55d32e72a0c9be0f7acbfead7b13936b123"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 324,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "80d0ddd8e0908a20b4ea683cddf3407617577046ca52f7f29d9889758a765e47"
+    },
+    {
+     "path": "core/surface/skills/debug/references/handoff.md",
+     "start": 1,
+     "end": 8,
+     "file_sha256": "134321561a1c18a88ebbd2ea5bfb47a8625ae02d36b8fa8e911cc48d47549148",
+     "span_sha256": "ba8fa6d7b883132f5be7e8cb1086a0351436eae7100955adb4e7f503218bade9"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 59,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "a07fcfbfc10075516553453b09f77f93171cd2034655a0308fcd1736b9d3ae66"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:05",
+   "frozen_row_sha256": "81f45d3d9a971faff525fe8c3eb890eeef6111d276c5025be31a83d8b00ac78e",
+   "frozen_baseline": {
+    "from": "Validation attempt",
+    "event": "Validator exit 2",
+    "guard": "Input/shape/value/reference/consistency rejection",
+    "to": "Terminal rejection under current prose",
+    "effects": "Preserve the rejection; prose forbids correction and resubmission.",
+    "failure_retry": "The implementation is stateless and has no rejection ledger. The one-shot rule is a model policy to reconsider, not a runtime invariant.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "AcceptedHW07 replacement preservesrejectedattemptbutpermitsopen correctedsubmission throughsamevalidator: shape fromactualfacts, semanticcause newevidence/notrelabel, staleidentityrealobservation; unchangedrefusal not blindlyretried andactualdenial staysdenied.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 308,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "61d74140fb6232f87e5a5bda77d7ce99e3884f7a033a90a804cb07265d0f9944"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 43,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "1a76af4970d5479110aed72d3e8335234619b75d746cfd72b6999304eb777b39"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 62,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "d624b7eb6f5be6c59e9f0740acd06ce896f2e083c40f5528b563c394260e6f70"
+    }
+   ],
+   "intake_variances": [
+    "Frozen terminal blanketone-shot prohibition is intentionally supersededbyHW07; statelessvalidatorneverhadrejectionledger, and no newpersistentdebugstore isclaimed. This sourceproof doesnot itselfsubmitapacket."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:06",
+   "frozen_row_sha256": "14ed1e79ebffd1bfa07235a11c53aea1a16885fca6c501c6a899963b0feade40",
+   "frozen_baseline": {
+    "from": "Validation attempt",
+    "event": "Validator exit 3",
+    "guard": "I/O or internal/output failure",
+    "to": "Unavailable",
+    "effects": "Preserve the failure and stop this handoff.",
+    "failure_retry": "No alternate interpreter or invented replacement result.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exit3/unavailablehelper blocksvalidatedhandoffandpreservesactualfailure; onlyafteroperationalcausechanges maysamebytesretrythroughsameinstalledvalidator. No alternateinterpreter/inventedresult/authoritybypass.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 271,
+     "end": 292,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ceb7d1120ba9649d4f1d3afdc47be55d32e72a0c9be0f7acbfead7b13936b123"
+    },
+    {
+     "path": "core/surface/skills/debug/references/preparation.md",
+     "start": 61,
+     "end": 68,
+     "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+     "span_sha256": "37dc45e4f2e565af68f0e19fd0f2cdf7a2b9bc72c03ff9b3dd61d0f3c6e81b19"
+    },
+    {
+     "path": "core/pysrc/debug-handoff.py",
+     "start": 43,
+     "end": 81,
+     "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+     "span_sha256": "bf0574f925064811979407ec4cef9b9907876220b59275974b097c4460f4fb78"
+    }
+   ],
+   "intake_variances": [
+    "HW07 authorizes changed-condition operationalrecovery; frozen stop-this-handoff remainstrueforcurrentfailure, not a permanentban on futurecorrectedcondition."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-07:07",
+   "frozen_row_sha256": "e4daeef040076bc6f0478cb6da212b47e20a2f843df040025e20158a04514d58",
+   "frozen_baseline": {
+    "from": "No action / unresolved / design question",
+    "event": "Return diagnosis",
+    "guard": "No separately authorized backlog action",
+    "to": "Caller handoff",
+    "effects": "Return evidence and uncertainties.",
+    "failure_retry": "Do not automatically create a task or ticket.",
+    "source": [
+     {
+      "path": "core/surface/skills/debug/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/preparation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/preparation.md"
+     },
+     {
+      "path": "core/surface/skills/debug/references/handoff.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/references/handoff.md"
+     },
+     {
+      "path": "core/surface/includes/helper-invocation.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/helper-invocation.md"
+     }
+    ],
+    "transition_id": "WF-07:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "no_action/unresolved/design_question returnciteduncertainty/owner/nextdiscriminatorwithoutautomaticADR/task/ticket/statewrite. Anyseparatelyauthorizedfollowup goes selectedtaskowner; disposition itselfcannotcallit.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 209,
+     "end": 237,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "85ad866c0d555966eb51902f7529895796f214fef3e9c8b927dae64be885481d"
+    },
+    {
+     "path": "core/surface/skills/debug/SKILL.md",
+     "start": 330,
+     "end": 360,
+     "file_sha256": "db9cab8c78897d1c591b2c64538a2489e6ec95d8cbfcd6e13f6605fa44fa81e9",
+     "span_sha256": "ca05e5330909e09dced8817f96dc1302bb8d5108e20ede09b2a18fcff39d0275"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:01",
+   "frozen_row_sha256": "67a4d5526e0ab0304a792dfece7ced7b1f2b028034d8f06692aa7d58ee8019a8",
+   "frozen_baseline": {
+    "from": "Batch planned",
+    "event": "Launch wave",
+    "guard": "Disjoint writes or verified isolation; actual host capacity",
+    "to": "Running units",
+    "effects": "Dispatch bounded units, default wave size four, preserving exact assignment identities.",
+    "failure_retry": "Do not launch colliding shared-worktree writers.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "CallerunitIDs/scopes/agentkind/completioncontract required. Mutatingunitsdisjoint or worktreeisolated/serialized, actualhostcapacity and defaultwave4 boundlaunch; read-onlybatchesneednoredundantcollisiontest.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 11,
+     "end": 38,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "eaa0e98293f793760ecd093375decee285e85f4d98b0b31cfef6718eaa379060"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:02",
+   "frozen_row_sha256": "562f9bae59980da1f595e0650c1bfdf164fc73d5f6047d328556cc9a3e1d80da",
+   "frozen_baseline": {
+    "from": "Running units",
+    "event": "Unit settles",
+    "guard": "Observed terminal result",
+    "to": "DONE / ERRORED / DEFERRED units",
+    "effects": "Retain each outcome and any findings, including partial/error results.",
+    "failure_retry": "No failed or omitted unit disappears from the batch.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Everyunit accountedDONE/ERRORED/DEFERRED; diagnosticpartialresultpreservedwithoutapplyingit asfinished. Oneerroredunitdoesnotdiscardothers, unknown/liveunitpreventscompletebatchresult.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 40,
+     "end": 56,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "c188f8ef2dd9f0b5794ae485a27ead4037265ec9646694ac071d2977cf6ab30f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:03",
+   "frozen_row_sha256": "68cdc1fb72d8df9882099ef25d12fb56f248522af7bc54e79f7e07b17b88a699",
+   "frozen_baseline": {
+    "from": "Review results collected",
+    "event": "Triage",
+    "guard": "Explicit review/checkpoint batch",
+    "to": "BLOCKS / DEFERRABLE / NON_BLOCKING / INCOMPLETE_RESULT",
+    "effects": "Classify applicability separately from severity; retain per-finding identity and owner.",
+    "failure_retry": "Do not use a review funnel for ordinary author/scout handoff merely because agents were used.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Onlyexplicitreview/checkpointbatchusesthetriagefunnel, withcompleteunitcontract. Classifyallfindings andincomplete/no-findingunits; CRITICAL/HIGH/actualescalationBLOCKS, MEDIUMdeferrable, LOWnonblocking. Author/scoutresultsreturndirectly.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 58,
+     "end": 77,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "b0c875a5786d3f9471fb00381f818eb9a08dcb0bb35bd7670b5205fefe989f85"
+    },
+    {
+     "path": "core/surface/agents/finding-triage.md",
+     "start": 10,
+     "end": 60,
+     "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+     "span_sha256": "c6712c672eea4163213c38a092b4651d4bdfa059991df667a90ed9901d1dc575"
+    },
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 31,
+     "end": 39,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "d96d07a32c5e91d3f1f9b2fbfc292353ac47205868a65dae16bfd780353b7d36"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:04",
+   "frozen_row_sha256": "0d724b99b4ddbb18bb69084fe1df6ffed61bf1e573368bacee2ed4413faadd01",
+   "frozen_baseline": {
+    "from": "Triage complete",
+    "event": "Aggregate verdict",
+    "guard": "All results and dispositions accounted for",
+    "to": "INCOMPLETE / BLOCKING_FINDINGS / PASS",
+    "effects": "INCOMPLETE takes precedence, then current blockers, otherwise PASS; preserve all findings.",
+    "failure_retry": "Missing results never produce PASS.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Aggregatecomplete triageonly; absent/errored/deferred/requiredproof yieldsINCOMPLETE beforeBLOCKING_FINDINGS, preservesblockers andeveryfindingonce. PASSrequiresneitherincomplete norblocker; readonlynopersistence.",
+   "witnesses": [
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 10,
+     "end": 33,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "0c20dbb19c04050bba04a1d92cd92d88486960615f661fec80af3681d607738c"
+    },
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 56,
+     "end": 64,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "1b39e69f66fbf9dcf945fa876d3fbabdc87b1d25db8bd65c21c3f53a629731fa"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:05",
+   "frozen_row_sha256": "d3408747b00b8385cd2b00e3ddf9430b976497eb266a9902592c2556fe0cdcd4",
+   "frozen_baseline": {
+    "from": "PR review requested",
+    "event": "Read target diff",
+    "guard": "Fetched once for the review scope",
+    "to": "Local review report",
+    "effects": "Apply selected review matrix without checking out or mutating the PR.",
+    "failure_retry": "Posting a comment needs actual authorization; a local report is not a GitHub approve/request-changes review.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "InboundPRdiffresolvedonce; absentgh/authrefuseswrong-localfallback. Reviewerreadsboundedactualscope/contextwithoutcheckout/sourcewrites; reportlocally, postcommentonlyexplicitlyauthorized andneverapprove/request-changes.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/review.md",
+     "start": 21,
+     "end": 59,
+     "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+     "span_sha256": "ff4021014db02952e523988b0adcb72f67151e350543658f9387406ad1c9a597"
+    },
+    {
+     "path": "core/surface/commands/review.md",
+     "start": 71,
+     "end": 87,
+     "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+     "span_sha256": "bce523ca7b835b10ca68148f6428651e1b5ed255af827c2a6b307ab7b285af84"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:06",
+   "frozen_row_sha256": "f78de1b1e550c64f4080eeebaed32d2a3c698340a9ce7aae1a4f09a2fd2fbbd8",
+   "frozen_baseline": {
+    "from": "Dependency review",
+    "event": "Unmaintained dependency found",
+    "guard": "Role marks maintenance HIGH but explicitly says not to block on maintenance alone",
+    "to": "Conflicting gate prescriptions",
+    "effects": "Dependency body says FLAG/user evaluation; shared reviewer contract says every HIGH blocks.",
+    "failure_retry": "Requires an explicit per-finding disposition/owner correction; cannot infer one from severity.",
+    "source": [
+     {
+      "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/dispatching-parallel-agents/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/review.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/review.md"
+     },
+     {
+      "path": "core/surface/agents/finding-triage.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/finding-triage.md"
+     },
+     {
+      "path": "core/surface/agents/verdict-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/verdict-aggregator.md"
+     },
+     {
+      "path": "core/surface/includes/review-matrix.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/review-matrix.md"
+     },
+     {
+      "path": "core/surface/includes/reviewer-contract.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+     }
+    ],
+    "transition_id": "WF-09:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "AcceptedD-HIGH choice resolvescontradiction: maintenance-onlyunmaintained/abandoned withoutsecurityfinding isMEDIUM/FLAG; mixedsecuritykeepsownseverity. SharedHIGH/CRITICALalwaysBLOCK; resubmissioncannotchangeseverityofunchangedfindings.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 31,
+     "end": 39,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "d96d07a32c5e91d3f1f9b2fbfc292353ac47205868a65dae16bfd780353b7d36"
+    },
+    {
+     "path": "core/surface/agents/dependency-reviewer.md",
+     "start": 52,
+     "end": 76,
+     "file_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+     "span_sha256": "39ce92a8f2f5b18caff16f562cb9b253933a059568b1825b7f1e9cd41fa4f8ad"
+    },
+    {
+     "path": "core/surface/agents/finding-triage.md",
+     "start": 34,
+     "end": 56,
+     "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+     "span_sha256": "26ce5b4c2947f93d20e28e3b92723855f42a7b96273967022c40ee6773e504d1"
+    }
+   ],
+   "intake_variances": [
+    "Frozen conflictingprescriptions are historicalbug, replaced byuserselecteddowngrade-maintenance-to-MEDIUM underHW09/HW20. No arbitrarynonblockingHIGHexception or source-onlyactualreviewclaim."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-10:01",
+   "frozen_row_sha256": "89b0752009f0300037455875716ef7b9b9ed852c25020e8276d1f14d05e944d3",
+   "frozen_baseline": {
+    "from": "Checkpoint requested",
+    "event": "Inspect current project",
+    "guard": "Current context, reviews and evidence collected",
+    "to": "In-memory verdict",
+    "effects": "Run review/triage/aggregation and preserve unknown or incomplete inputs.",
+    "failure_retry": "A checkpoint is not maturity promotion or a new implementation gate.",
+    "source": [
+     {
+      "path": "core/surface/commands/checkpoint.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/checkpoint.md"
+     },
+     {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/checkpoint-aggregator.md"
+     },
+     {
+      "path": "core/surface/commands/audit.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/audit.md"
+     }
+    ],
+    "transition_id": "WF-10:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Explicitcheckpointrequestsreviewbatchfollowedbyreadonlytriage/verdict, incompleteinputsremainvisible. Checkpointsurfacesfindings, notmaturitypromotion ornewimplementationpermissiongate.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 8,
+     "end": 28,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "069c0a266ddb5d2f4a7f02bda0ec8c9c45f7b723ac7f2421057057f4e6c07533"
+    },
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 48,
+     "end": 53,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "050c11e529faa1ef78c1b1e806428ad0bf3fb14b3873a272ad6ee81af255024f"
+    },
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 21,
+     "end": 33,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "310a2497c88c16c708add9f26d849f3a088bf15beeff5f74ab3ea94cdb62920d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-10:02",
+   "frozen_row_sha256": "57c3a51969abe663db7345dc27fce27dab66d3d733c78b26fe7509c807e5cb8b",
+   "frozen_baseline": {
+    "from": "In-memory verdict",
+    "event": "Persist checkpoint",
+    "guard": "Report complete enough to represent actual observations",
+    "to": "Dated checkpoint retained",
+    "effects": "Write a nonoverwriting dated/suffixed report, then store the override-count baseline.",
+    "failure_retry": "Do not substitute current data for missing historical fields or overwrite an earlier report.",
+    "source": [
+     {
+      "path": "core/surface/commands/checkpoint.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/checkpoint.md"
+     },
+     {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/checkpoint-aggregator.md"
+     },
+     {
+      "path": "core/surface/commands/audit.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/audit.md"
+     }
+    ],
+    "transition_id": "WF-10:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Separatecheckpointwriterretainsobservedreviewedcommit/UTCstart/dirtyflag, unknownsnotcurrentdata; createsdatedsuffixednewreportwithoutoverwrite andincludesallfindings/incompleteunits. Thenoverridecounterbareintegerbaselinewritten.",
+   "witnesses": [
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 12,
+     "end": 41,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "4551ba2c4d0a81072fcd393c56373353bbbc1605dd1e87281053520d24e500a9"
+    },
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 43,
+     "end": 50,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "3ad0b7c50227ac654644db2ac97a63e06de253cff80853d8b4e5c3672097cd7d"
+    },
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 114,
+     "end": 119,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "fa06c8bf3c0c88a464e2225e534776c3473fdec9535a3675524a30467cb569bd"
+    },
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 26,
+     "end": 35,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "ed79e08403d21adc6fd36fc9c999da146495129ed71472aafea10ec4cf37500e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-10:03",
+   "frozen_row_sha256": "191c5db6fb54f934e27771f30fef8145a444a07379f88c126ed44166d6dc99c3",
+   "frozen_baseline": {
+    "from": "Audit requested",
+    "event": "Resolve audit range",
+    "guard": "Exact commits/time or valid ancestor checkpoint source",
+    "to": "Audit evidence window",
+    "effects": "Inspect the actual range and preserve source identities.",
+    "failure_retry": "Invalid/missing baseline is unknown, not permission to invent one.",
+    "source": [
+     {
+      "path": "core/surface/commands/checkpoint.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/checkpoint.md"
+     },
+     {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/checkpoint-aggregator.md"
+     },
+     {
+      "path": "core/surface/commands/audit.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/audit.md"
+     }
+    ],
+    "transition_id": "WF-10:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Auditresolvesactualref/datewindow or latestvalidcheckpointrecorded_at/source_commitancestor, includingdirtylimitation. Missinganchors requireexplicitwindow; filename/overridecountnotanchorandnothingfabricated.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/audit.md",
+     "start": 13,
+     "end": 35,
+     "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+     "span_sha256": "5cb1a5f2dcfc865fb3142116e0f38451dfd920cfc2733a0e8a77cea84d389d77"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-10:04",
+   "frozen_row_sha256": "f4cffcd5b147c75726bd6ede91c600232a9d8215b89455f52e478bbbd24c62dc",
+   "frozen_baseline": {
+    "from": "Audit evidence window",
+    "event": "Emit report",
+    "guard": "Evidence retained",
+    "to": "Dated audit packet",
+    "effects": "Write a new bounded report; sources remain unchanged.",
+    "failure_retry": "An old audit remains commit-bound evidence, not current verification.",
+    "source": [
+     {
+      "path": "core/surface/commands/checkpoint.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/checkpoint.md"
+     },
+     {
+      "path": "core/surface/agents/checkpoint-aggregator.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/checkpoint-aggregator.md"
+     },
+     {
+      "path": "core/surface/commands/audit.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/audit.md"
+     }
+    ],
+    "transition_id": "WF-10:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Auditonlywritesnewdated/suffixedpacket, preservesallsourcefilesandrawattribution/verbatimrequiredlogentries, emptysectionsstated. Commit-boundrecorddoesnotbecomecurrentruntimeverification.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/audit.md",
+     "start": 21,
+     "end": 45,
+     "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+     "span_sha256": "3360674ceca418653c44142e5038b9b4e6583a1c3abeaf27a741e8d25adecb63"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:01",
+   "frozen_row_sha256": "09ef586966c796144be727b643b7a65bd3276d1610268787e7338624e4fd4617",
+   "frozen_baseline": {
+    "from": "Commit requested",
+    "event": "Resolve authority and branch",
+    "guard": "Existing explicit same-scope commit grant; attached nonprotected branch",
+    "to": "Candidate preparation",
+    "effects": "Carry authorization, establish content/index baseline and exact intended paths.",
+    "failure_retry": "Do not require the same grant again; do not commit on a forbidden branch.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Commitrequestrequiresactualsame-scopeexplicitgrant; carryclearumbrellagrantuntilrevoked/completed, notlooks-good/repositorytext. BeforemutationrecordHEAD/index/allpathbytesandselectsafe nonprotectedbranchwithoutreset/stash/discard/unrelatedtransfer.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 16,
+     "end": 57,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "dd35b9330565d22060f73bc830a5d3de610bfdfc3d02806c9dadf605155a842e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:02",
+   "frozen_row_sha256": "611564c4ea41aeae5d7f3ee0c9873b5119059c558d90b02b3927ef06a1bc0e28",
+   "frozen_baseline": {
+    "from": "Candidate preparation",
+    "event": "Classify staged change",
+    "guard": "Homogeneous change type and actual migration/security triggers known",
+    "to": "Check selection",
+    "effects": "Split unrelated change types and run impact-bounded declared verification, lint and secret checks.",
+    "failure_retry": "A check declaration is not a passing run; hosted complete checks remain merge requirements.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Classifystagedsubjecttype/scope andsplitunrelatedtypes; explicitmigration/security/CIdeploytriggersselectmandatorygates. Applicablelocalproof/lint/types/secretsrequired, exactheadhostedownsfullcrossplatformchecks; declaredcommandnotpassingrun.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 59,
+     "end": 95,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a53ad8264ac3ac84730a77b282fa2f5b0c65930178d59c57b95fc24441fe92a3"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 3,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "770a9f06d8347aff3c8d037779698aa1bff838a43ac57474f2307f696073ec04"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:03",
+   "frozen_row_sha256": "2cd5f8b6363c27dae9a1c798fe9c91b5ea755bd509415edf126260b2c5ff4e78",
+   "frozen_baseline": {
+    "from": "Checks gathered",
+    "event": "Inspect relevant criteria and context",
+    "guard": "Current applicable evidence and provenance",
+    "to": "Staged-diff review",
+    "effects": "Reuse valid proof; selectively refresh stale managed context through preview/apply. HTML knowledge stays advisory.",
+    "failure_retry": "No blanket rewrite or review cascade for unrelated bookkeeping.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Readactualcriterion/currentoutput; reuseapplicableproof. HTMLknowledgefreshnessadvisory; intersectmanagedv2claims/dependencies withstagedtrigger, inspectcompletebindingandtypedpreview/apply/readbackonlyownedfields. Legacyrefreshsimilarlyclaimscoped, unknownnotfakefresh.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 97,
+     "end": 168,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "cf4660c3bf65c0eb77b4c3545acee5b81faeeb87d3948ad2e8628ff7ffe0abca"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 183,
+     "end": 202,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "e566d7ba4a62de3a08d2232917082918bea2899c75f610260551be6caa472d3f"
+    },
+    {
+     "path": "core/surface/includes/fresh-verification.md",
+     "start": 3,
+     "end": 18,
+     "file_sha256": "99f24e5eafa17e451f3cd1bf36a9af9b7dba4938af41d11adf3ef19f9c788653",
+     "span_sha256": "6ee5c01ff49632b577a79ad831c1f281bcac918a518d1df87e92191efceb2a29"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:04",
+   "frozen_row_sha256": "cc3624fc8d5b7f8d11b11eb22193d6f5c03ef9b1973985aa786da0e467cf1a36",
+   "frozen_baseline": {
+    "from": "Staged-diff review",
+    "event": "Review full candidate",
+    "guard": "Exact intended paths/identities; necessary security/migration records match",
+    "to": "Ready for harvest",
+    "effects": "Validate staged scope and allowed colocation.",
+    "failure_retry": "Blocking scope errors unstage affected paths and stop the commit; do not hide them.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Readentirestagedcandidateandblockunexpectedsecret/stub/disabledtest/outofscopebytes. NarrowADR8board/nativework/provenancecolocationchecksidentity/contentnotbroadpathwaiver. GenuineindependentsecurityPASSmarkerbindscompletecandidate/worktree; blockunstagesaffectedonly.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 204,
+     "end": 250,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "eb8c9bbefc3254c3e978185ef1ec481cffff23ce30b4e40268d8da1533184567"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:05",
+   "frozen_row_sha256": "bfa6f3f02c78da1800e6fbb9e04dbe0488c33f0bb07ab4585eac7ae16217465f",
+   "frozen_baseline": {
+    "from": "Ready for harvest",
+    "event": "Harvest terminal findings",
+    "guard": "Current-work scope and promotion authority",
+    "to": "Final candidate",
+    "effects": "Promote selected findings through the work owner, stage only explicit paths and rescan newly staged material.",
+    "failure_retry": "No unrelated issue publication or accidental broad stage.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Capturequalifyingset-asideatdiscoverythenexistingPhase7authorizedharvestbeforestaging. Exactselectedowner/origin/uncertaineffectreconcile/readback retained; reviewnewworkbytes/identity andexplicitstageonly/rescanallnewfiles. No automaticissuepublication.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 240,
+     "end": 278,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "485bc6f39cc1fa1d51ffa2fd31dcd2afaefe4142ef137857e693cc5d28a833fa"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 119,
+     "end": 175,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "a2f82feb254e1de528969e5b97a3b66bb8e8d124a328f4cd6a406367f882f404"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:06",
+   "frozen_row_sha256": "6c63c630956390e689e68447a1827f1da268008f8304c05f7b33065427d6cc3b",
+   "frozen_baseline": {
+    "from": "Final candidate",
+    "event": "Commit",
+    "guard": "Required checks passed; conventional message and applicable changelog footer",
+    "to": "Commit attempt",
+    "effects": "Execute the commit and retain its result.",
+    "failure_retry": "A hook failure requires repair/restaging and a new commit attempt, not an automatic amend.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Conventionalmessage<=72/body/featfixCHANGELOGfooter andactualgatepass precedecommit. Retainactualresult; hookfailuremeansread/fix/restage/newcommit, neverautomaticamend.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 280,
+     "end": 300,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "0db15d7796642340e8862d2190bf7dd63c7e1392a677ec0f2e99096a701c2bce"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-11:07",
+   "frozen_row_sha256": "a0eb7c184b147dd8d094347f4e20013625d22c7ab79494acdcb125fa2d386d10",
+   "frozen_baseline": {
+    "from": "Commit attempt",
+    "event": "Commit succeeds",
+    "guard": "Compare actual postcommit tree/index with baseline",
+    "to": "Commit closure",
+    "effects": "Report the commit and any unexpected remaining changes.",
+    "failure_retry": "Success does not erase residue, grant merge authority or imply publication.",
+    "source": [
+     {
+      "path": "core/surface/skills/commit-gate/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/commit-gate/SKILL.md"
+     },
+     {
+      "path": "core/surface/includes/security-gate-record.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+     },
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     }
+    ],
+    "transition_id": "WF-11:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Aftercommitcompareallpreflight/newpathbytes/status/indexagainstcontentbaseline; selectedpayloadnoresidue, unrelatedpreexistingbytespreserved, unexplainednewchangespreventclosure. ReportSHA/branch/files/actualgates; no merge/releaseauthorityinferred.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 22,
+     "end": 26,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "a6ae50ec3096cc66f41e089719e44117b5de4622c1c54c089d895fb7be7afe3c"
+    },
+    {
+     "path": "core/surface/skills/commit-gate/SKILL.md",
+     "start": 292,
+     "end": 315,
+     "file_sha256": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+     "span_sha256": "b84cb2527c899beed2441d0cba8d5eac496ef3461e95ff495583cd2f85a9911d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:01",
+   "frozen_row_sha256": "66661b4601f4ede8844dd86f2f54b8b877fc0e65ebc781b5e8026b2666151425",
+   "frozen_baseline": {
+    "from": "Finish invoked",
+    "event": "Resolve mode",
+    "guard": "watch/cleanup mode identified before PR-creation requirements",
+    "to": "Mode-specific owner",
+    "effects": "Dispatch watch or cleanup directly with unchanged arguments.",
+    "failure_retry": "Conflicting modes refuse; quoted title text is not a mode switch.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Entryintentfromactualuser/callerbeforecreationpreflight; exact --watch/--cleanup mutuallyexclusivewithliteralargumentrules andreturntoowner. Quotedtitletextnotflag, absentflagsnormalfinish.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 9,
+     "end": 38,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "4890dcbfcf3c5db3633a82906e60c3be6f36b5c7a41767ef47c56b68d581d80e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:02",
+   "frozen_row_sha256": "6c32b561158b4b0cd1393e70044abdf270af7e8476705bd395df6ad4f9475b62",
+   "frozen_baseline": {
+    "from": "Finish invoked",
+    "event": "Resolve completion intent",
+    "guard": "Explicit PR choice, prior same-scope choice, or sprint default",
+    "to": "Selected PR/merge/keep/discard path",
+    "effects": "Reuse the choice; sprint defaults to opening a PR.",
+    "failure_retry": "Ask once if no choice establishes the consequential action.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "DirectPRrequestselectsopenonly; earliercoveredmergegrantretainedwithcurrentchecks, unrelatedgrantnotexpanded. Ambiguousfinishaskterminalchoiceonce; sprintdefaultopenPR, discardseparatenamedconsent.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 40,
+     "end": 51,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "040d82ee7d524fb98312f1aba8c2dd8633dbeba1a864d060162a37fc7ad9b330"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 114,
+     "end": 132,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "47aa8462936e09901d0e8bb4bd1f1da8529f78878a4347754991195c68ebd85a"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 99,
+     "end": 105,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "347768d5a5e097f186be23b0e5073051291d3b965fde00b2266efebabd32752e"
+    }
+   ],
+   "intake_variances": [
+    "Frozen keep/discardmenucompressesactualthreeoptionsOpenPR/MergeviaPR/Discard; keep-openisOpenPRresult, notinventedfourthterminaloption."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:03",
+   "frozen_row_sha256": "54a632424da155bf288b006c5fe9861890149d8e2fae5a2c18b9c053eecce841",
+   "frozen_baseline": {
+    "from": "PR/merge path",
+    "event": "Inspect candidate",
+    "guard": "Verified branch/base/head and base-to-head evidence",
+    "to": "Reviewable change",
+    "effects": "Prepare the PR and assess proof for the actual integrated subject.",
+    "failure_retry": "An empty staged diff is not proof of a whole branch.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Resolveactualbranch/base/currentHEADandentirebase-to-HEADdiff+checks/reviews/secrets, notemptystagedset. Reportplan/outcomedeltaandpendingproof. Reuseunchangedreviews, rerunaffectedonly; no receiptcreatedforPRpreparation.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 53,
+     "end": 89,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "1b5bae48586596228c0b8d6f0612252ae13d435496e16595d2ea2480c63a84b5"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 218,
+     "end": 243,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "d4d48c8041565ae6f198760163270af7adfd875ee6cf88d6409c32d1caa55061"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:04",
+   "frozen_row_sha256": "515f90e1b0175d765b09b43ef1f615fa0d461045d942fc8a609023bc8477e309",
+   "frozen_baseline": {
+    "from": "Merge selected",
+    "event": "Determine merge strategy",
+    "guard": "Accepted ADR source ancestry checked at exact base/head",
+    "to": "Merge-ready or blocked",
+    "effects": "Use true merge when needed to preserve bound acceptance sources; otherwise valid allowed strategy.",
+    "failure_retry": "Missing objects are not silently fetched as proof; recheck immediately before merge and bind matching head.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exactfetchedbase/headADRsourceancestryverifiedbyinstalledselfcontainedreadonlyhelperwithno-lazy-fetch. Missingobjects/records/unavailablehelperblock, absentboundsourceinbaserequirestruemerge; revalidateimmediatelywithmatch-headcommit, nochangereposettings/ledger.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 90,
+     "end": 110,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "fbe4523180447c71ad52413a81e9de76475249c792642b5c6a375f0b7e2f3b89"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 134,
+     "end": 142,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "5ebf2fe61c4ad2d5142e6f3667d18e98f38e796318e9485ff312875b218c12f6"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:05",
+   "frozen_row_sha256": "433f85321d028af2d8d19322f972d93fcf7398550dc69ec77e6f7fd82896155f",
+   "frozen_baseline": {
+    "from": "Merge-ready",
+    "event": "Merge authorized target",
+    "guard": "Current green evidence and same-scope explicit authority",
+    "to": "Merged",
+    "effects": "Perform the exact-head merge and observe result; sync mapped work only through its explicit owner.",
+    "failure_retry": "No automatic merge from CI green or generic finish intent.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Onlyexplicitcoveredmergeauthority+currentexactheadmergeaggregate+reviews+sourceancestryadmitsmergeviaPR/matchhead, neverdirectdefaultpush orforce. Mappedtrackeractiononlyseparatelyrequestedselectedowner, pertargetoutcome; noCIgreenautoauthority.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 134,
+     "end": 149,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "37d46127745f38e9c758d9e0339d12f4ff69e44eb1e3c4ab68cc5afc741db39a"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 271,
+     "end": 281,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "b4479a765b6f1b4a7320cfe5c0a28f9ce38adc2afafb7bef72add880c7ae5c30"
+    },
+    {
+     "path": "core/surface/includes/verification-boundary.md",
+     "start": 13,
+     "end": 29,
+     "file_sha256": "982d00d9eefb448f7e5d43651acb9955d0f9cb12d2b38625470bc6c586ea394d",
+     "span_sha256": "d9a006ded30256265609948f280012ede1c3ca0728a5311fbae749d116c1631b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-12:06",
+   "frozen_row_sha256": "0f651f85999dace37c2061277c6b6143604482393f5c12105e38f2fa5f1f30fb",
+   "frozen_baseline": {
+    "from": "Discard selected",
+    "event": "Delete branch/worktree",
+    "guard": "Named branch/path, lost commits and explicit confirmation",
+    "to": "Discarded or refused",
+    "effects": "Use the cleanup owner and report exact outcome.",
+    "failure_retry": "Unknown/unintegrated work is retained; no inferred deletion grant.",
+    "source": [
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     },
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-12:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Discardrequiresnamedbranchconfirmationwithun-pushedlossvisible;cleanupcompatibilityroutesexistingownerwithper-itemfetchedcontainmentandpathchecks. No title/content/incompleteevidencegrantsdeletion.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 28,
+     "end": 37,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "52025c0e147ca7499085b4bc5416f9ef953daf08ddfcfa3c48b9fbf6abe8f9ae"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 129,
+     "end": 142,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "325a746cbef04b9e2bc4bac46ea07ae7e18454df758ceb75eff960d786caac01"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 271,
+     "end": 281,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "b4479a765b6f1b4a7320cfe5c0a28f9ce38adc2afafb7bef72add880c7ae5c30"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:01",
+   "frozen_row_sha256": "6ed7986f8820233ad33a92c2499684f1bb60cf7b96a102622f733a60bcad9935",
+   "frozen_baseline": {
+    "from": "No watcher",
+    "event": "Explicit watch or configured authorized autoattach",
+    "guard": "Known PR; autoattach defaults off",
+    "to": "Detached watcher",
+    "effects": "Start gh pr checks --watch and return control.",
+    "failure_retry": "The documentation calls this server-side nonpolling; gh documents a refresh interval. It avoids model polling, not CLI polling.",
+    "source": [
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-13:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "ExplicitknownPRwatchorconfiguredactualopt-in, defaultoff/arbiterdormancy/authpreconditions preserved. Oneghwatchprocess internallyrefreshes; notserver-side/nonpolling, nomodeltimerloop. Actualcurrentheadchecksreadoncebeforeverdict.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 14,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "fe32c36e084aaf7d3dcdb8a3215dd0ad3473d703fb1b841045db6694fb7df13e"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 74,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "da467cb60dafd137c5eea5192bba706254cdfd3261120f2c42e230cbf8ab79d6"
+    },
+    {
+     "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+     "start": 250,
+     "end": 261,
+     "file_sha256": "8f84a617d0dd6e6f9ad592946c333aa020366e9d0873a49057615981ec31f520",
+     "span_sha256": "d369004e862eb3fb664c6267495c32575270c7fc08a8b1ab7304f2f8b790a55e"
+    }
+   ],
+   "intake_variances": [
+    "AcceptedHW18 correctsfalsebaselineprocess/pollingclaim; configuredlocaldefault10s issourcecitedgh2.93, notnewliveAPIverification. No watcherlaunchedhere."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:02",
+   "frozen_row_sha256": "f6da7a7b52ae5a0134709643a1f0fbb640db3cda3ad9c3d03f2a2c7c423f78f6",
+   "frozen_baseline": {
+    "from": "Watching",
+    "event": "Checks fail",
+    "guard": "Observed failure",
+    "to": "Failure report",
+    "effects": "Report failure and propose diagnosis; branch mode can invoke bounded spike/fix under its authority.",
+    "failure_retry": "Watch alone does not grant a source edit.",
+    "source": [
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-13:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Observedredretrievesoriginalfailedlogsandusescanonicaldepthresolver; proposehasntrackededit, branchonlyunmergeablespikeunderitsauthority. Missingauth/stoppedwatch/cancelledchecksnevergreen; timeoutred. Watchalonegrantsnorepairpermission.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 20,
+     "end": 24,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "91911b3139528dc1359f73d6b293cfb2edaa86aa16cc6ec9d171fa214345beba"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 68,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "5ab60cb90a61ff589e4e91ceb740a11fc3df426e844d7817d3dae6b863fc6029"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 88,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "e06f8239c1696dfc4a010f8f190c41c0f62fb896a4da2098bc329d0985931773"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-13:03",
+   "frozen_row_sha256": "21892058a1693dfea8921837675d6606be1fc7b30c84576eede5e8b47bcf695d",
+   "frozen_baseline": {
+    "from": "Watching",
+    "event": "Checks pass",
+    "guard": "Observed current result",
+    "to": "Offer merge",
+    "effects": "Report readiness and offer the authorized next step.",
+    "failure_retry": "Never auto-merge solely because checks are green.",
+    "source": [
+     {
+      "path": "core/surface/commands/watch.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+     },
+     {
+      "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/finishing-a-development-branch/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-13:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Currentcompleteexactheadgreenreportsandoffersmerge; watcherneverinvokesmerge. Cancelled/incomplete/currentheadmismatchnotgreenanddefaultbranchmergehardgatesremain.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 40,
+     "end": 52,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "60c6a3cffbaeaad2c92023dcdf755389a749ca65048873b71a6a1cebf584e3c5"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 69,
+     "end": 72,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "c1cafdac8350c6e3ad4a159b9bbe126a9c597cb8d1d29b044a9ff1e29760c7b6"
+    },
+    {
+     "path": "core/surface/commands/watch.md",
+     "start": 88,
+     "end": 99,
+     "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+     "span_sha256": "e06f8239c1696dfc4a010f8f190c41c0f62fb896a4da2098bc329d0985931773"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:01",
+   "frozen_row_sha256": "1d59208cd9d43e32eb61a78f66f111518c6c73f65cfd8c3f2f76072233b427f5",
+   "frozen_baseline": {
+    "from": "Workflow running",
+    "event": "Out-of-scope/deferrable finding appears",
+    "guard": "Finding is retained with exact source/origin",
+    "to": "Pending terminal harvest",
+    "effects": "Keep the finding and its classification for the terminal pass.",
+    "failure_retry": "Blocking user decisions remain blockers and cannot be downgraded into backlog.",
+    "source": [
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     },
+     {
+      "path": "core/surface/commands/standup.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+     }
+    ],
+    "transition_id": "WF-14:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Qualifyingsanitizedfollowupcapturedatdiscoverywithstableworkflow/workrun, exactextractororigin/sourcefingerprint andboundedschema. Failedcapturevisible durablefalse; blockingdecisions/userstopsnotdowngradedintobacklog.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 61,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f7db12bdafbeb25107d04dacc1a819fccb86dd066f67dc3644a00a11c66d9665"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 85,
+     "end": 90,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "42da1152a324dc6f74dc69a87ff712a1b9dfef149f9ff636a48765e4df333e19"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 74,
+     "end": 83,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "599a2ffb6df140d224e82a74427466061c32dafb0d49341766b8ba06c5a699bd"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 122,
+     "end": 131,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "39b1af6a86bbd30312c7826018a3ece29225e1c93bc63ac374098820a191993a"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 68,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "7ea01a2eb8fd35b395fa4a85e5a62533b655431428f9cd97d622655bee15c32c"
+    }
+   ],
+   "intake_variances": [
+    "AcceptedHW11-14 replaceterminal-onlyresidueexposurewithregister-at-discovery; no claimunregisteredconversationrecovered."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:02",
+   "frozen_row_sha256": "a2b1d802ccf91c0b51f79118ccdb8b7a23e34f488c9d2156af0a05eb6eba9fe2",
+   "frozen_baseline": {
+    "from": "Terminal pass",
+    "event": "Prepare promotions",
+    "guard": "Selected native/legacy work owner; dedup active and archived origins",
+    "to": "Promotion preview",
+    "effects": "Collect relevant candidates and present one batch in interactive mode.",
+    "failure_retry": "Titles alone are not identity; no automatic external issue creation.",
+    "source": [
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     },
+     {
+      "path": "core/surface/commands/standup.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+     }
+    ],
+    "transition_id": "WF-14:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Terminalpreviewreusesregisteredcandidates, sourceorigin\u2014not title\u2014dedup acrossactive/archive selectedowner; bounded32originqueryandfailedquerynopartialpreview. Interactiveonebatchneedsactualchoice; noreadsideautomaticremoteeffect.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 110,
+     "end": 155,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f9e06d9a3b2d91b758f1724ae693d7107ba81fa3aa981802705d35dc21aa42fb"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 147,
+     "end": 157,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "ec26069f4873156ac87dbcc3f2ebd8fb43746eb4e255078ee2ecf659cdceaa37"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:03",
+   "frozen_row_sha256": "ecfe7228fe57b16e806da2675b197e1a0943157e77a2b99b67232f996b18103c",
+   "frozen_baseline": {
+    "from": "Promotion preview",
+    "event": "Actual approval or in-scope sprint authority",
+    "guard": "Promotion is within current grant",
+    "to": "Promoted work",
+    "effects": "Use the work owner and retain stable IDs; record declined/triaged items.",
+    "failure_retry": "Uncertain writes reuse identity and inspect outcome instead of creating duplicates.",
+    "source": [
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     },
+     {
+      "path": "core/surface/commands/standup.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+     }
+    ],
+    "transition_id": "WF-14:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Onlyactualinteractiveconsentorcoveredin-scopesprintpromotion callsselectedobligationresume andexacttargetreadback. WorkownerstableIDs/operationIDs anduncertaineffectlookup/reconcileprecederetry; explicitdeclinekeepsaudit; blockingdecisionremainsactualownerquestion.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 63,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "81f7033a4f4a829d5ea112a3b756dc1be20ef4cddbc83fbafce0174c4937973b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 150,
+     "end": 187,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "aeaaea5dadab5907a63038e308c53a2c08df11cf8047d45c45a5091102e1f483"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2030,
+     "end": 2084,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "6452286d076e8eb9a55bf56e79793cb8cb25ac000d9969d1b52badf8be65b1ab"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:04",
+   "frozen_row_sha256": "c532c0c95b703383c81221a2ff3bd43973b33d87c23cba3a315c1fab5c3ced4c",
+   "frozen_baseline": {
+    "from": "Workflow running",
+    "event": "Interruption before terminal pass",
+    "guard": "Residue not yet persisted by another owner",
+    "to": "Unharvested residue at risk",
+    "effects": "Current guidance provides terminal-only harvest.",
+    "failure_retry": "No startup/standup knowledge-residue recovery loop was found in the inspected implementation. This is a lifecycle gap, not evidence that every finding is lost.",
+    "source": [
+     {
+      "path": "core/surface/includes/harvest.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md"
+     },
+     {
+      "path": "core/surface/commands/standup.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+     }
+    ],
+    "transition_id": "WF-14:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "AcceptedHW11-14 replacement suppliesboundedregisteredrecord/indexrecoveryandreadonlystartup/standupscan. Emptyregistercreatesnoobligation, matchingregisterreusesidentity, changedbindingrefuses; interruptedknownrecordreconcilesbeforeselectedresume. Unregisteredconversationremainsunrecoverableandpartial/unavailablescansarenotemptyorautomaticpermission.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "eeac7c89e028cb2d347fd073c321d3174279e7391d6b863deb52cb7875bdc14b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 16,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "9c77901ab1be6a3bbd8eee1ff4db7d067fcd0bba3c47bb276056611a49d3e0d5"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 147,
+     "end": 157,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "ec26069f4873156ac87dbcc3f2ebd8fb43746eb4e255078ee2ecf659cdceaa37"
+    },
+    {
+     "path": "core/pysrc/workflow-recovery.py",
+     "start": 15,
+     "end": 62,
+     "file_sha256": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+     "span_sha256": "9c6a3fd69e0920ecc3f61cb917be26fd9c42aa39a95c503335c5ed9776925eda"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1573,
+     "end": 1660,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "442b015877ec1964871301dd83b480df3b06255cd96ae7a914e98fe52477ce76"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1663,
+     "end": 1712,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "f53f3f9e8da9d65f4c74e926209df9b1af3ac73c83f193f4ba80c3b21adf4935"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2030,
+     "end": 2084,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "6452286d076e8eb9a55bf56e79793cb8cb25ac000d9969d1b52badf8be65b1ab"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2148,
+     "end": 2195,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "e459ada3b7037510c0a0878b83c8fcc3b0f0085463777c0fd30ed50e107bf1cc"
+    }
+   ],
+   "intake_variances": [
+    "Frozen no-startup/recoveryloop isoldconfirmedgapintentionallychanged; proofmapsactualboundedcapture/recoveryroute, notclaimseveryfindingdurable/actualrecoveryexecuted. Startupreadneverpromotes/repairs/launchesatarget."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "source_bindings_sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc",
+ "accepted_current_deltas": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

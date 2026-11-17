@@ -1,0 +1,388 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899"
+ },
+ "disposition_ids": [
+  "disposition:machines:S14",
+  "disposition:transitions:S14:01",
+  "disposition:transitions:S14:02",
+  "disposition:transitions:S14:03",
+  "disposition:transitions:S14:04",
+  "disposition:transitions:S14:05",
+  "disposition:transitions:S14:06",
+  "disposition:transitions:S14:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S14",
+   "frozen_row_sha256": "d4288f912a38a32823e009848ac051aa2cd2969f4ea323e2adef666dbef7a86b",
+   "clause_ids": [
+    "disposition:transitions:S14:01",
+    "disposition:transitions:S14:02",
+    "disposition:transitions:S14:03",
+    "disposition:transitions:S14:04",
+    "disposition:transitions:S14:05",
+    "disposition:transitions:S14:06",
+    "disposition:transitions:S14:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 112,
+     "end": 143,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "ec0156eb79544b56299ca9ebf4dca80c051cff79788176cd7d5befe7efa455de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 740,
+     "end": 777,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "16fbcd68ecb44e3b22ec05ab98159770b626bf6dd09a52ff0d1f118ef1411520"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 849,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "358a169df4847876bf8fd09a18765a14d129feb64047151be8f1518b1ec9f978"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 84,
+     "end": 110,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "42f19a9e8f9c788c8f84195d62a58f759f721eaba08ca12f22aaec6aeeeca69e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 746,
+     "end": 749,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "5e4477b8cadac24b2583307662b8acf35fb00500e89890ac43d44249b1e9e400"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 850,
+     "end": 877,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b5339e5f3f301bcdad3e7469e7eedf8d800906064e0d3c1a414622a7306a5622"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 934,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "1c4ed67b55a5d05cb4bcce6e210d4db7e831edb52f49ae9be6ce40b63bba15cf"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 857,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dc7679b05dde5ebefd7aaa8452ef00a6d3c6eace0d3b3fa0b947e39e740208c2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 637,
+     "end": 703,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "3860a81d5358ff5e0e187f867b8c3694d49358667cb6c04e93262b5122c012b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 894,
+     "end": 921,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "9108fe198fbc627ab9026fa4f0a02ca27611ad54ec2cd905ffac7c4e7ef9bcf1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4256c2611dd2ecc2a9c5b3fa8222df73fa048bb1a2f300e49521e86394861e81"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 713,
+     "end": 731,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "05b595ae8438e9c349d99a9a1a71e0986bcc36e9f361d4e1ac7b99feee2a0c8e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 923,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b0fbd1c361a57fcd3fd577a5cb7e5d0b073deb9d5ce5612f9b4c013aa7c7626b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 79,
+     "end": 82,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d5fcc0ecdb1cc353775f572d0bfe1fabb54b854d742247925b7fa800f0e88e37"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 779,
+     "end": 827,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "c52f6403d5189afa2be2a6abe5a558e1fdfc0865422b049b0ce62474a8003e29"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 870,
+     "end": 875,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "24616b70971ad6fc2a7136bf18c5ffc6d1764d9d09d6775837e5a53de9528469"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "329d726562a060da2cd6e0f4d9ac221f76e7dd3179e137d009f03fb790d1c742"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 882,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a88a0d43ce7ecfaf29ed83ac81cc37128a4fae4639e153f6c2a11819c9e3e752"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:01",
+   "frozen_row_sha256": "31130837d480796cc7f4143519b4af56abeacfcc4e5ed3340c2ee19fb94c103e",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 112,
+     "end": 143,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "ec0156eb79544b56299ca9ebf4dca80c051cff79788176cd7d5befe7efa455de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 740,
+     "end": 777,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "16fbcd68ecb44e3b22ec05ab98159770b626bf6dd09a52ff0d1f118ef1411520"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 849,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "358a169df4847876bf8fd09a18765a14d129feb64047151be8f1518b1ec9f978"
+    }
+   ],
+   "semantic_assessment": "Bridge constructor caches one validatePaths promise for absolute canonical Git/Python/script/package; script must be package-local, tool executables valid. Each call checks canonical project excludes executables and home outside project/package. Failed constructor admission does not silently resolve a replacement installation.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:02",
+   "frozen_row_sha256": "f6c17b93f6273059f4a5a58140f640c0c91279fc7eb19f188aaaaf857e41a996",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 84,
+     "end": 110,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "42f19a9e8f9c788c8f84195d62a58f759f721eaba08ca12f22aaec6aeeeca69e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 746,
+     "end": 749,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "5e4477b8cadac24b2583307662b8acf35fb00500e89890ac43d44249b1e9e400"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 850,
+     "end": 877,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b5339e5f3f301bcdad3e7469e7eedf8d800906064e0d3c1a414622a7306a5622"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 934,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "1c4ed67b55a5d05cb4bcce6e210d4db7e831edb52f49ae9be6ce40b63bba15cf"
+    }
+   ],
+   "semantic_assessment": "Serialize one request<=262144bytes then spawn cached Python with-B/script in canonical packagecwd, minimal OS/home and exact tool dirs, shellfalse, detachedPOSIX, pipeJSON. Stream default cap1MiB each.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:03",
+   "frozen_row_sha256": "8f66bd8b6583766db7c22cd48c2ba8c8cf305d71d8e701dbee3346be7895292e",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 830,
+     "end": 857,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "dc7679b05dde5ebefd7aaa8452ef00a6d3c6eace0d3b3fa0b947e39e740208c2"
+    }
+   ],
+   "semantic_assessment": "Already-aborted signal returns owning sanitized cancelled failure after path/request checks and before spawn.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:04",
+   "frozen_row_sha256": "aa8780b0c739c97312a13eb34c1584c9726a938764fbc12fd9969154c89c92e7",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 637,
+     "end": 703,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "3860a81d5358ff5e0e187f867b8c3694d49358667cb6c04e93262b5122c012b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 894,
+     "end": 921,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "9108fe198fbc627ab9026fa4f0a02ca27611ad54ec2cd905ffac7c4e7ef9bcf1"
+    }
+   ],
+   "semantic_assessment": "The first timeout10s/abort/stream overflow latches a reason, initiates POSIX group kill or bounded async Windows taskkill/fallback, and starts the2s settlement backstop. Close and the backstop use that latched reason if they win settlement. The separate child error callback can instead start settlement first with generic bridge launch failed, even after a reason was latched. This is not managed-runner verified containment.",
+   "intake_variances": [
+    "The frozen universal first-reason description overstates the pinned/current callback ordering: close/backstop select the latched reason, but child error can win settlement with the generic launch-failure detail. This records existing source behavior only, not runtime incidence or a newly authorized behavior change."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:05",
+   "frozen_row_sha256": "0d0c5de31dc6c13a183ff8aea4db88585c3eacc918ee3270541fb8b9bad9f293",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "4256c2611dd2ecc2a9c5b3fa8222df73fa048bb1a2f300e49521e86394861e81"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 713,
+     "end": 731,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "05b595ae8438e9c349d99a9a1a71e0986bcc36e9f361d4e1ac7b99feee2a0c8e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 923,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "b0fbd1c361a57fcd3fd577a5cb7e5d0b073deb9d5ce5612f9b4c013aa7c7626b"
+    }
+   ],
+   "semantic_assessment": "Only close0 and valid bounded JSON version1/allowlisted fields/outcome yields sanitized response; caller applies separate mutation versus advisory policy.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:06",
+   "frozen_row_sha256": "efd0c0c86cec3a4c6abce5987d82f6df886aaf36a8fd3b7485f94903a3268daf",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 79,
+     "end": 82,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "d5fcc0ecdb1cc353775f572d0bfe1fabb54b854d742247925b7fa800f0e88e37"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 779,
+     "end": 827,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "c52f6403d5189afa2be2a6abe5a558e1fdfc0865422b049b0ce62474a8003e29"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 870,
+     "end": 875,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "24616b70971ad6fc2a7136bf18c5ffc6d1764d9d09d6775837e5a53de9528469"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 909,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "329d726562a060da2cd6e0f4d9ac221f76e7dd3179e137d009f03fb790d1c742"
+    }
+   ],
+   "semantic_assessment": "Launch/error/nonzero/malformed/overflow produces fixed sanitized warn for advisory/read or block for mutation; bounded metadata-only failure audit cannot change fail direction, and selected footer/recovery observations avoid redundant audit.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S14:07",
+   "frozen_row_sha256": "59e984404dfb090c0de35057700924481103e14028579f64e5c2fe499563dae5",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 882,
+     "end": 930,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "a88a0d43ce7ecfaf29ed83ac81cc37128a4fae4639e153f6c2a11819c9e3e752"
+    }
+   ],
+   "semantic_assessment": "Close uses the latched failure reason and the2s backstop uses its recorded failure value if either wins settlement. The separate child error callback does not consult the latched reason and can settle first with generic bridge launch failed. Single settlement removes abort/timer state. Promise settlement is not evidence that descendants died; no universal first-reason-retention guarantee is claimed.",
+   "intake_variances": [
+    "The frozen universal first-reason description overstates the pinned/current callback ordering: close/backstop select the latched reason, but child error can win settlement with the generic launch-failure detail. This records existing source behavior only, not runtime incidence or a newly authorized behavior change."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

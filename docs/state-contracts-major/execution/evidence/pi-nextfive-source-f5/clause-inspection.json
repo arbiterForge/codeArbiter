@@ -1,0 +1,2743 @@
+{
+ "schema": "codearbiter.pi-clause-inspection/1",
+ "actor": "/root/ci_repair_review",
+ "source_commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "S06",
+  "S07",
+  "S08",
+  "S09",
+  "S10"
+ ],
+ "additional_cells": [
+  "disposition:machines:S03",
+  "disposition:transitions:S03:03"
+ ],
+ "clause_count": 47,
+ "source_bindings_sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67",
+ "rows": [
+  {
+   "cell": "disposition:transitions:S06:01",
+   "frozen_row_sha256": "c722671d4c360de50b4af639592e5f3a23c55248bb6af7eb9a4464d520d32b43",
+   "frozen_baseline": {
+    "event": "start",
+    "guard": "not disposed",
+    "to": "active",
+    "effects": "Insert activity; cap active projection at 16.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "symbol": "activity registry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activity.ts",
+      "lines": "1-254"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "symbol": "activity projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-data.ts",
+      "lines": "1-73"
+     }
+    ],
+    "from": "absent",
+    "transition_id": "S06:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Not-disposed registry validates bounded display event/clock, evicts expired entries, inserts by kind+id and caps active projection16. No execution authority.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 5,
+     "end": 14,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "7e60f8c59667d9f1c92dfe1f5b30f7dff0b8ce50703eb04693be27dd4adc86ce"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 148,
+     "end": 185,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "feeb9cc7857e5ca12cec83ce6000cced07cb5f04421dd451244539a00627f852"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S06:02",
+   "frozen_row_sha256": "05eeb12cfcbd2837818be43cf3c426a5fb87e6f109b14606398d6fa247f7b85c",
+   "frozen_baseline": {
+    "event": "complete",
+    "guard": "matching activity key",
+    "to": "recent completed",
+    "effects": "Move to recent collection; cap at eight.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "symbol": "activity registry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activity.ts",
+      "lines": "1-254"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "symbol": "activity projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-data.ts",
+      "lines": "1-73"
+     }
+    ],
+    "from": "active",
+    "transition_id": "S06:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Matching display key moves active to recent completed map bounded8; queued-never-run child display completion is not execution evidence.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 163,
+     "end": 188,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "4892f1501a25c315c80ab3adb6f1718b1453233d7dab22dae86d806bc6652b57"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+     "start": 32,
+     "end": 60,
+     "file_sha256": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+     "span_sha256": "9d6e4cb2db70edc7d957a7d291157fc2b8ba4e2f861bff6cb3cd1555199dac7f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S06:03",
+   "frozen_row_sha256": "7e413bef56fe01e15cbade0f1d55ea597609ad3cc9dfbefca80b10cf491b239a",
+   "frozen_baseline": {
+    "event": "duplicate completion",
+    "guard": "same key",
+    "to": "recent completed",
+    "effects": "Ignore duplicate completion.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "symbol": "activity registry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activity.ts",
+      "lines": "1-254"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "symbol": "activity projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-data.ts",
+      "lines": "1-73"
+     }
+    ],
+    "from": "recent completed",
+    "transition_id": "S06:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Existing recent key ignores duplicate completion without replacing or reordering its completed entry.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 171,
+     "end": 188,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "d16f9099acf3ec71b14f301176968eb95ea28904618fc4a36e83e256ce32d92c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S06:04",
+   "frozen_row_sha256": "c4593ff187e553245907f53776c9b0488becb3db79d78a3163df3e4c5278da97",
+   "frozen_baseline": {
+    "event": "snapshot/prune",
+    "guard": "active age >2h or recent age >5m",
+    "to": "expired",
+    "effects": "Evict display entry; does not cancel a process or revoke authority.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "symbol": "activity registry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activity.ts",
+      "lines": "1-254"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "symbol": "activity projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-data.ts",
+      "lines": "1-73"
+     }
+    ],
+    "from": "active or recent",
+    "transition_id": "S06:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Publish/snapshot evict active older2h and recent older5m by display-map deletion only; no process cancel or authority revocation follows.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 5,
+     "end": 14,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "7e60f8c59667d9f1c92dfe1f5b30f7dff0b8ce50703eb04693be27dd4adc86ce"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 190,
+     "end": 211,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "334ce334a8d43401f3df9a77bf90399d00372f1898f023ed3c2991c7ace415ac"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 232,
+     "end": 249,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "dc997cb39d1706f3638b53862f8ce7ece52273935d174fec8e5fb3440559bd9f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S06:05",
+   "frozen_row_sha256": "46bd3f0d2ffd4b7a37d841c5fc37b56ecbf06dd366f35e750d9fecf7e6e37b7d",
+   "frozen_baseline": {
+    "event": "dispose",
+    "guard": "session lifecycle ends",
+    "to": "disposed",
+    "effects": "Clear maps; suppress further display updates.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/activity.ts",
+      "symbol": "activity registry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activity.ts",
+      "lines": "1-254"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/sidebar-data.ts",
+      "symbol": "activity projection",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-data.ts",
+      "lines": "1-73"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S06:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dispose latches disposed and clears maps; later publish ignored/snapshot empty. Session replacement/shutdown disposes old display registry separately from process cleanup.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 152,
+     "end": 159,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "83ef4cf2f34cb19c7e53bb144d36ad3651bc836172f2f7f154910601fb1cf9e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 190,
+     "end": 218,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "b12c2fba6b2f62eca84d8b0ccf87a811cbaa25f982bbb4c6d5efdcd73b87b356"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 641,
+     "end": 653,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "edb8f2f64cfaf67d9551daef41a0167b98f130fb47e21e8b00b2d0b1329f3723"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 821,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "c33a76f54bb9431d7656e00e5baad4c6256db0bab10aa14a65cefb3244c3d784"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:01",
+   "frozen_row_sha256": "a393a19f2a732f76107fa36eadd2b652414f9ef0a209bb3b47f14fa7a296b30c",
+   "frozen_baseline": {
+    "event": "dispatch",
+    "guard": "live parent authorization; valid role/catalog; depth \u22644; \u22648 requests; \u22641 author",
+    "to": "queued",
+    "effects": "Choose single/chain/parallel mode; prepare redacted request and activity.",
+    "failure_retry": "Invalid mode/role/depth/shape returns explicit protocol or depth outcome before child launch.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "unvalidated",
+    "transition_id": "S07:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Public admission requires enabled/trusted ready parent lease and rechecks it after runtime resolution; canonical request validates mode, unique roles<=8, depth<=4, bounded task/limits; catalog requires known roles and<=1author before launch. Invalid shape/mode/role/depth becomes explicit protocol_error/depth_exceeded; oversized envelope refuses. Prior child output is redacted, not an invented universal task-content scrub.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 270,
+     "end": 301,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "c4c16768712890db9766a8efb8530d9a0ecd40fe0debce560a8a9b28418ae023"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 293,
+     "end": 335,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "9359e66a6246ffb1d0f8fed43d498406bbf18545e3d5f8cea9182755396667db"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 474,
+     "end": 558,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "4655135e15d1ca562e4be40f2d1e4e549e1c29be463ebda7057d156e9c3be33a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/roles.ts",
+     "start": 25,
+     "end": 69,
+     "file_sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+     "span_sha256": "68183a585724f1499c65841c126719172c2183dbbcc4f8f6908b2af1841f4289"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:02",
+   "frozen_row_sha256": "fd60d0a4ce73deb37db7b60d80d4e18df1450b94fca65c5e98ffc8b919062ffb",
+   "frozen_baseline": {
+    "event": "scheduler admission",
+    "guard": "\u22644 parallel child processes",
+    "to": "running",
+    "effects": "Run isolated child under its role/tool contract and cancellation scope.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "queued",
+    "transition_id": "S07:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "FIFO cursor uses at most min(concurrency<=4,selected.length) workers; each role gets fixed catalog tools/charter/skills and its cancellation scope; actual runner validates trusted package/runtime resource identities.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 163,
+     "end": 203,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "1e9e4a6cc70903ff790c25ff15f9ca8123f4910adea63c5cf67fd866721df509"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 390,
+     "end": 410,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "3688020eb3b3fb0706a915b5519dcff6ede70be901fbc6d6c78a96d505f0e781"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 179,
+     "end": 253,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:03",
+   "frozen_row_sha256": "260a5d07d2d69915dcaa9596d68ec2ea52c4ca927243d697f79d47941e9d001e",
+   "frozen_baseline": {
+    "event": "valid final JSON",
+    "guard": "exact required shape and judgment",
+    "to": "accepted / changes_requested / blocked",
+    "effects": "Preserve role judgment and structured output; best-effort audit.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "running",
+    "transition_id": "S07:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exact final JSON state+bounded nonempty summary admits accepted/changes_requested/blocked. Best-effort audit uses fixed metadata; parent effect/delegation axes stay independent of model judgment.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 40,
+     "end": 56,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "f89dd7888d928bd108879f6423bab78714db3fc209894bafe7cb59cddf091f06"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 205,
+     "end": 240,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "6b0cd116e49a56254a29a3897ab55681192d6085d7c7fe55a6093a4c03b75d5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 339,
+     "end": 368,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "1841deeb81eb0b8f948f89c147770b5acb01e642e62288268d71dc0663744fa4"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:04",
+   "frozen_row_sha256": "cc8b29b954fdea901f03d99fc149805e1523391c8888790220d31a3bd38e0e21",
+   "frozen_baseline": {
+    "event": "runtime failure",
+    "guard": "timeout/cancel/overflow/protocol/process failure",
+    "to": "matching technical terminal",
+    "effects": "Sanitize output; retain distinct terminal type; verify cleanup in runner.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "running",
+    "transition_id": "S07:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dispatcher preserves its cancelled/timeout/crashed/protocol_error outcomes; runner faults are fixed degraded, cleanup owned by runner. Valid bounded report material may remain visible on degraded/cancelled outcome without promoting effect/run success.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 333,
+     "end": 373,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "fd158dd42439b3129a02d7fe81bcefa460f84727a10175aa4d215bd2fc190da3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 682,
+     "end": 710,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 923,
+     "end": 936,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "34d1d5c7e93d7ad23040f65927c479b26a6bafc7bbf8ec1e260b6e4249f36a3b"
+    }
+   ],
+   "intake_variances": [
+    "Analytical timed-out/depth-exceeded/protocol-error names differ from canonical timeout/depth_exceeded/protocol_error; low-level runner faults intentionally collapse to degraded."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:05",
+   "frozen_row_sha256": "fb5b90581c0141acc7de8f472b841e2ef0d412b13025e20e293e0865bdb49edb",
+   "frozen_baseline": {
+    "event": "next child requested",
+    "guard": "previous judgment is accepted, changes_requested OR blocked",
+    "to": "next queued",
+    "effects": "Pass redacted prior result into next role.",
+    "failure_retry": "Technical terminal results stop the chain; a blocked review judgment alone does not stop it.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "chain child terminal",
+    "transition_id": "S07:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Chain advances on all three model judgments, including blocked; technical state stops. Prior summary is redacted into bounded next envelope; oversized envelope stops before launch.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 151,
+     "end": 153,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "aadbc41caaca222606cb6fa1bbbb076f3517fb2797b9e98ee95ab4d6d9bed6f7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 268,
+     "end": 291,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "842420737d7a29bb0f7f4cf4164670e3082c46b9e04c396529f63058152ad651"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 375,
+     "end": 390,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "a6fd00d036b4f467e8660fb6476dfb702825278e7b22ee240cb1a1196b0531a0"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:06",
+   "frozen_row_sha256": "d996e3f67406aae2be9ea810754fd3d620fb768c0418b078ada67acdc69806af",
+   "frozen_baseline": {
+    "event": "abort",
+    "guard": "not yet started",
+    "to": "cancelled",
+    "effects": "Do not spawn queued children; running children receive cancellation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "parallel queue",
+    "transition_id": "S07:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Initial abort returns cancelled for all roles; parallel queue checks before launch, running child controller receives cancellation, and runner checks abort before spawn and settles owned cleanup.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 330,
+     "end": 343,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "7b5f34cf5fe6fc0c6894d0a4ddf19cd26d193e90d6f904dc599300b14addf32e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 390,
+     "end": 408,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "82f4460756b3cbebea2c51757db244cbf4108815969f2b2184b379f3daace81f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 742,
+     "end": 764,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c8eaad914456151c5de31cfd61b7fa7b08c72c94662a479b6f0c209c14fdd8ab"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 864,
+     "end": 880,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "47b7c68e5a194c28be0a4be7bcc9fcde80d55c73a2b2e780088c6127470d503e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:07",
+   "frozen_row_sha256": "29c612a6e1e0d3c9ed11b216191ca5b43ec411997d292d112d36b81227325ab1",
+   "frozen_baseline": {
+    "event": "aggregate",
+    "guard": "combined payload \u2264262,144 bytes",
+    "to": "aggregate terminal",
+    "effects": "Priority order is cancelled > timed-out > depth-exceeded > oversized > protocol-error > crashed > degraded > blocked > changes_requested > accepted.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "children terminal",
+    "transition_id": "S07:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Aggregate judgment bytes<=262144 with child bound65536; exact priority cancelled>timeout>depth_exceeded>oversized>protocol_error>crashed>degraded>blocked>changes_requested>accepted. Signal abort wins; separately observed effect axes are retained when report material overflows.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 76,
+     "end": 84,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "2dd76b73a4f73f0fb24d16c2dd1132cd8e142f3eaa59c78c096b8d8cc328dd98"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 242,
+     "end": 265,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "be1f64dedb831db278d166aad4c93120b3d224e9629e427832c90103c69da812"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 411,
+     "end": 415,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "17f306a7af221030b53a6f2e2d1041605f36202255b9183f2d6a4b8bfcbe246b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S07:08",
+   "frozen_row_sha256": "2f1c7cef149fcea4a96dc0a42a54f5627988330ca02169421b6008d53ae506b7",
+   "frozen_baseline": {
+    "event": "finally",
+    "guard": "all started/queued activity items",
+    "to": "display completed",
+    "effects": "Complete activity projection even for children that never ran.",
+    "failure_retry": "Display completion is not evidence of execution or acceptance.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "symbol": "dispatch single/chain/parallel",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/dispatch.ts",
+      "lines": "1-572"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/roles.ts",
+      "symbol": "catalog role admission",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/roles.ts",
+      "lines": "1-69"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "symbol": "result contract",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/contracts.ts",
+      "lines": "1-260"
+     }
+    ],
+    "from": "any dispatch",
+    "transition_id": "S07:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Finally completes every allocated role activity ID, including unstarted roles. Fail-soft display publication cannot determine execution or acceptance.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 558,
+     "end": 581,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "0ffed0ef43595cf51a9ea0b17a7a7a86465ae5900d19dcc0d7b5134b5e781cdc"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 251,
+     "end": 254,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "6b285b96856aeaabab44f85f85795fef63e4639eb2fe5ce3c8590d2acd9cb5ac"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:01",
+   "frozen_row_sha256": "0ef6aac706040f5dcbb0d1ddf83cf2cf19a990545a660ee96d1815004f0fb165",
+   "frozen_baseline": {
+    "event": "private entry starts",
+    "guard": "strict inert launch flags, tools=[], no extra extensions/skills/prompts/themes/context/session; runtime exactly 1.0.2",
+    "to": "pending prompt",
+    "effects": "Load one private approval request; ordinary prompt/LLM flow is unavailable.",
+    "failure_retry": "Ordinary installed Pi flows are refused; supported host compatibility elsewhere is 1.1.0, so this entry is not a supported ordinary authority adapter.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "inert process",
+    "transition_id": "S08:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:02",
+   "frozen_row_sha256": "9dac07df267d96662367aef79add35597ef3d0e83b92a285c44895aa816f7e5c",
+   "frozen_baseline": {
+    "event": "show prompt",
+    "guard": "trusted TUI; current session UUID/lease; exact pending artifact identity",
+    "to": "pending prompt",
+    "effects": "Allow bounded human input for five minutes; show exact armed phrase.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "pending prompt",
+    "transition_id": "S08:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [
+    "S08:02 analytical phrase-display claim is false in baseline/current: dialog shows artifact/kind/revision/normative hash and requests already armed reply; it does not display the phrase. No new UI feature inferred."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:03",
+   "frozen_row_sha256": "b570afd605fc27756626888d8f83322927e6343a7dbc616f17908fd97f1273f5",
+   "frozen_baseline": {
+    "event": "cancel/timeout/unmatched phrase",
+    "guard": "phrase differs or lease stale",
+    "to": "cancelled or stale",
+    "effects": "Do not consume authorization; return explicit refusal.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "pending prompt",
+    "transition_id": "S08:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:04",
+   "frozen_row_sha256": "96fc44d73ddcf1b975ba383d2dc5b91e3429d2edcd3a0a8f0ace8feb6ae4c352",
+   "frozen_baseline": {
+    "event": "exact phrase",
+    "guard": "current pending hash/revision/generation",
+    "to": "phrase matched then consuming",
+    "effects": "Consume pending approval once through bridge, bound to generation UUID.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "pending prompt",
+    "transition_id": "S08:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:05",
+   "frozen_row_sha256": "1cb1017839c741409353ddd5950af5ea60d64d33ed2c6d0967a148e539a134e8",
+   "frozen_baseline": {
+    "event": "confirmed consume response",
+    "guard": "same current lease",
+    "to": "consumed",
+    "effects": "Return proof of the one consumed approval; shutdown one-shot process.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "consuming",
+    "transition_id": "S08:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:06",
+   "frozen_row_sha256": "a83f3283f4a7ce33aaa5323437b1008aa87a04696163efe0db9be8fd3cd859c8",
+   "frozen_baseline": {
+    "event": "response lost or lease stale after consume",
+    "guard": "effect may already be committed",
+    "to": "outcome unknown",
+    "effects": "Do not infer that approval failed; re-observe durable authorization before any retry.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "consuming",
+    "transition_id": "S08:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S08:07",
+   "frozen_row_sha256": "1c74b2c629c632849faaf716d20709e26d67da6f78de946cab536404591d8cf1",
+   "frozen_baseline": {
+    "event": "finally",
+    "guard": "one-shot lifecycle",
+    "to": "shut down",
+    "effects": "Always terminate private entry, without ordinary agent continuation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+      "symbol": "private entry",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+      "lines": "1-65"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+      "symbol": "approval dialog and consume",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+      "lines": "1-103"
+     }
+    ],
+    "from": "any terminal",
+    "transition_id": "S08:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE only to currently supported Pi1.5.0: optional artifact dialog advertises unavailable and private entry requires legacy1.0.2/strict inert sole-entry launch/empty tools. Retained legacy conditional source guards are not retired or qualified. ADR0043/PI-C01 keep ordinary progress and parent operation permission independent.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 17,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "75a32bbac4200594a05970121a728d695257458ddcc11f1cc8870f4ab9ee9878"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-entry.ts",
+     "start": 23,
+     "end": 63,
+     "file_sha256": "244a6b09e89e6c6ad82c5d0b913950387716b9d35bcb404db4f64c8439609f68",
+     "span_sha256": "0d859d80a45b0650f1daa9037a73ec85a87cc08f1ad6af63c755d728b731fda1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/approval-dialog.ts",
+     "start": 33,
+     "end": 103,
+     "file_sha256": "a595b32609c15dcb379258ab4cd5cb04592bd8c93b3fcd342e2b2e2abd38d2d7",
+     "span_sha256": "d4498a3ce8b8a216f0cac90b85673feac05580314337d7d81531a7d91abae398"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:01",
+   "frozen_row_sha256": "038fb9637d2529052c11d1623ef3657a70600a7d09615f093c3db07030e3457a",
+   "frozen_baseline": {
+    "event": "run request",
+    "guard": "active trusted Node/Pi identity; catalog charter/tools; canonical cwd; depth/size valid",
+    "to": "environment prepared",
+    "effects": "Mint nonce/challenge; bind broker; create private child home/session files; authorize exact selected provider.",
+    "failure_retry": "Any preflight mismatch refuses before prompt/task execution.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "preflight",
+    "transition_id": "S09:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Preflight validates active Node, current Pi compatibility, canonical cwd/package/role resources and bounded task; mint nonce/challenge, bind inference broker and prepare isolated selected-provider environment. Mismatch refuses before prompt/task; depth validation is dispatcher-owned.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 179,
+     "end": 253,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 742,
+     "end": 812,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "46a8c25b316cde2fcb657c19b572bdc968ec8349f8c8d64e36bf418a2332caae"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 842,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "730badeede138e7b7147b9d5d1673854e44a04db6f7f1ae20ee13ee79aae65fa"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:02",
+   "frozen_row_sha256": "d79bfa755b66df10509cf446ba9245a6e2ae05f275c8aa2522045e709776fa2c",
+   "frozen_baseline": {
+    "event": "managed spawn",
+    "guard": "inert RPC offline argv with --no-approve and exact extension",
+    "to": "spawn admission",
+    "effects": "Start child behind managed tree admission; await readiness before sending authorization material.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "environment prepared",
+    "transition_id": "S09:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Fixed RPC/offline argv disables approval/discovery/session and chooses exact packaged extension/charter/skills. Managed tree readiness must succeed before fd3 bootstrap or stdin handshake/task delivery.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 255,
+     "end": 276,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "1dc58b9de4828061d878fcef1273e1512d1f4f328b7e24393b60b37a5d5a29ed"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 843,
+     "end": 884,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "82e3bc925989a3e6423c5bd68923bfcc11645c5c5c47dc8a28cc21881efe562a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 940,
+     "end": 955,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "af18c24e0c27cbbd688648df7dde3c935517f020679f109e314b01ee7e45cdf6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1054,
+     "end": 1059,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "943406261a2e1f52d1e53ee1802c5be80514b7b87893f66479369ec9266cef5b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:03",
+   "frozen_row_sha256": "6ce494afef7b8572e77659b86b7d8367781ea759876592058bcf838f64b420dd",
+   "frozen_baseline": {
+    "event": "child bootstrap",
+    "guard": "child capability not consumed",
+    "to": "attestation pending",
+    "effects": "Consume bootstrap capability once; load built-in tool contracts; send digest-bound attestation and UI prompt.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "spawn admission",
+    "transition_id": "S09:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Bounded versioned fd3 envelope supplies one-shot nonce/optional separate operation endpoint. Child consumes nonce before async confirmation, installs wrappers and computes attestation over exact nonce/challenge/cwd/provider/model/tools/trust=false/RPC. Fixed5s configuration attestation is not human effect permission.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-extension.ts",
+     "start": 108,
+     "end": 157,
+     "file_sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+     "span_sha256": "bdc34b31f4628116e157d8823ce1b977827700fa660a9c13c89bc40023a35ade"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-extension.ts",
+     "start": 161,
+     "end": 181,
+     "file_sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+     "span_sha256": "e22847bd0fe0f8d881e96854186ebf7853c9d9b69f8d0bc4029604e7a3878295"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/attestation.ts",
+     "start": 4,
+     "end": 31,
+     "file_sha256": "33b768897d1d4b34312731603eb16b4af552b13fbd02f29c24b1dfff52ab98e8",
+     "span_sha256": "6d3085500c552638f8cc6411053cb27386206323e12da31370c502f58cda2733"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/delegation-contract.ts",
+     "start": 1,
+     "end": 35,
+     "file_sha256": "2cafdd5191c2021a02e6d7594b407c83a542f1778c0b11acc8942e9a3fbf7d2e",
+     "span_sha256": "c707b29f1088b4d28d52404cf11bb4e3f3921ab88b6fcaea74217ca3de3309c1"
+    }
+   ],
+   "intake_variances": [
+    "Accepted PI-D03 extends old32-byte-only bootstrap to bounded versioned envelope; ambient marker alone is not authority."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:04",
+   "frozen_row_sha256": "b8c20c0e43ab4fa89d7fbd3fb79e1b540d1bcc8044438172667d956cec36bb71",
+   "frozen_baseline": {
+    "event": "parent validates then confirms",
+    "guard": "nonce/challenge/digest/identity exact",
+    "to": "handshake confirmed",
+    "effects": "Parent sends confirmation; child acknowledges one handshake.",
+    "failure_retry": "Wrong ordering/replay/mismatch becomes fixed degraded protocol error; consumed capability is not retried.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "attestation pending",
+    "transition_id": "S09:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Parent accepts exact digest attestation only in initial phase, confirms once, then requires exact successful handshake ack. Wrong order/replay/identity/digest yields fixed degraded protocol refusal; consumed capability never automatically retried.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 957,
+     "end": 987,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "38cae5e572da8f7f34086889279f1a3aa9c048f231347a10fc703035a0130458"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-extension.ts",
+     "start": 108,
+     "end": 157,
+     "file_sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+     "span_sha256": "bdc34b31f4628116e157d8823ce1b977827700fa660a9c13c89bc40023a35ade"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 923,
+     "end": 936,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "34d1d5c7e93d7ad23040f65927c479b26a6bafc7bbf8ec1e260b6e4249f36a3b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:05",
+   "frozen_row_sha256": "9e2e8400d5c0ca140ed5cdb44bdd5bd0672e54954fa3fa219521cacf68e3e071",
+   "frozen_baseline": {
+    "event": "task prompt and acknowledgment",
+    "guard": "current lease and not aborted",
+    "to": "task submitted",
+    "effects": "Send authorized task once, then await agent_start.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "handshake confirmed",
+    "transition_id": "S09:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Task sent once after successful handshake ack, then matching correlated task ack and agent_start. Abort remains operative; effect grant currentness/expiry is separately checked, never inferred from handshake.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 976,
+     "end": 995,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "0273dcad09c27018c521a4fc1a3803fb0fcaabbe24f89ade1bd5afc80e2c2073"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 923,
+     "end": 940,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "79d2fa8ddfc18df0a37304bc5054b425013081e7a3f2e3ab75e77071de59864b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/parent-delegation.ts",
+     "start": 23,
+     "end": 43,
+     "file_sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+     "span_sha256": "a04468ef60386d130391790d73553dcc53afde2ec426c48a24e926811dca91de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/delegation-session.ts",
+     "start": 25,
+     "end": 39,
+     "file_sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+     "span_sha256": "8871ea5ae90ac895670f1ab9bc739b1b53e56d39b5aba4c63e6c7d8f6c569e80"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:06",
+   "frozen_row_sha256": "2bc19a044ba4ee57ecdc4492e3f345829202f174be8442ca0218031bfd2277c9",
+   "frozen_baseline": {
+    "event": "agent_start",
+    "guard": "expected sequence",
+    "to": "agent running",
+    "effects": "Collect authorized stream/tool events within limits.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "task submitted",
+    "transition_id": "S09:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Expected agent_start enters in-task closed event decoder; unexpected phases refuse. Limits: line65536/stdout1MiB/stderr16KiB/result65536 with bounded nested JSON/message/tool shapes.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 36,
+     "end": 47,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "d29f2b91869f773342813ecf54ab043bb12bc91c31f98dbd29fc6b4e1a5a4b38"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 579,
+     "end": 680,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "014f2cb02fe4251445990100e5d356c51bd0a9e7d7f96d62a598b667cb5fa2a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 985,
+     "end": 1014,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "0e18a42cc8ae8ca44e6bfaadfe2028da760f860dd70f7a3b8c74f2075eb124dc"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1016,
+     "end": 1034,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "f4a843e5ab07a6e9a99329b20e9ad4b08e407f2ea9e682c28fd89c66a6350ffe"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:07",
+   "frozen_row_sha256": "556875afdc0b447948dc55b610e70be24234c10f98e044800209ed0b1e37942e",
+   "frozen_baseline": {
+    "event": "agent_end",
+    "guard": "willRetry=false; exact assistant stop/model/provider; nonempty valid non-sensitive output",
+    "to": "result captured",
+    "effects": "Capture candidate final text.",
+    "failure_retry": "Early stop, retry marker, unexpected provider or sensitive output does not count as completion.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "agent running",
+    "transition_id": "S09:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "agent_end requires willRetry=false and exact final assistant provider/model/stop with no error, nonempty bounded secret-checked output. Retry/foreign/sensitive output never completes; model judgment grants no effect authority.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 712,
+     "end": 740,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "1a3d4b0b883f0333e6c2b682ddf5394f15ebf1498d9c95ae85fe350f38440057"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 994,
+     "end": 1007,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "f1f1627404eeb4cdc4db70873416afb9ffd7472fc5fde5f261c47cc193d28a89"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:08",
+   "frozen_row_sha256": "20da80a446764f4aa521550d5554bc0ee61ec2c3268e8553d98fc2fdf3f5697a",
+   "frozen_baseline": {
+    "event": "settled event",
+    "guard": "aborted=false and sequence exact",
+    "to": "settled",
+    "effects": "Close stdin and await child close.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "result captured",
+    "transition_id": "S09:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only nonaborted agent_settled after captured final output enters complete and closes stdin; unexpected ordering/abort refuses.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1001,
+     "end": 1015,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "bc34e015287bedf18c7a7e7d7e59ccde1ceb9433cc0f6b0e6c42f074a0767249"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:09",
+   "frozen_row_sha256": "7a78546dfa0d26bc4e88d6109aa55a964e85a5007b514060185ef3d96fb00f4a",
+   "frozen_baseline": {
+    "event": "close code 0 + verified tree cleanup",
+    "guard": "all protocol edges seen",
+    "to": "completed",
+    "effects": "Return bounded final result.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "settled",
+    "transition_id": "S09:09"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Completed result requires close0 plus complete protocol and verified process-tree cleanup. Failed environment/delegation cleanup degrades while preserving at most bounded report material. Conditional source contract only, not observed OS containment.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1035,
+     "end": 1076,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "57df4bec99a22ee5e2eebf5ce70b70edf16b07af62ddb66424e30c9842a2fa5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 990,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "be0b1e9b98197024b04a831be669bd577917990ba80841dbdb35774ae8f31aa0"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:10",
+   "frozen_row_sha256": "90e40192c6dc39274d47e2341448c09d94498fbf5a671ad25a64b7f69d4e3983",
+   "frozen_baseline": {
+    "event": "abort/deadline/line or stream overflow/protocol error/process error",
+    "guard": "any terminal fault",
+    "to": "degraded or typed failure",
+    "effects": "Terminate and verify process tree; return fixed sanitized diagnosis.",
+    "failure_retry": "Limits: line 65,536; stdout 1 MiB; stderr 16 KiB; result 65,536. Parent lease drift never returns successful stale result.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "any nonterminal",
+    "transition_id": "S09:10"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Preserved actual contract: AbortSignal/deadline/protocol/process/overflow fault closes input and settles cleanup with fixed degraded diagnosis. Dispatcher distinguishes its own cancel/timeout. Live lease/trust/expiry monitors retire effect grants and reject stale operations while settlement persists. Model text remains informational and cannot supply effect authority or mutate current lifecycle state; old display registry is disposed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 923,
+     "end": 940,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "79d2fa8ddfc18df0a37304bc5054b425013081e7a3f2e3ab75e77071de59864b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1016,
+     "end": 1058,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "f39ee868be1cc1846e1485896845dac1392459a9e2462df6dce12abbafd4d2df"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 350,
+     "end": 373,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "ee100faa5e51a6bc99a0bf9d02966ea10335334aa3ad73b3714a9208218275e8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/parent-delegation.ts",
+     "start": 23,
+     "end": 57,
+     "file_sha256": "b3f3d4891ff54940d0c1489302bccd5e8f1f290774574770b42538ae3aa5019b",
+     "span_sha256": "de6e0f23064fe1cdc5966007e8bcdb15175670171ac7923a27dab12c0a1f9535"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/delegation-session.ts",
+     "start": 25,
+     "end": 76,
+     "file_sha256": "047854d63e5ad579ec74dafeca25fe5b2dd754b4352b7dc7a8604294726c17f1",
+     "span_sha256": "321936aafda53a8c3e0b676ef7a8c42335c83b60af62225750113417794542b1"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 152,
+     "end": 159,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "83ef4cf2f34cb19c7e53bb144d36ad3651bc836172f2f7f154910601fb1cf9e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activity.ts",
+     "start": 214,
+     "end": 218,
+     "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+     "span_sha256": "521d9ca03d05956d20f7154ca16d90c7151dc572465c3392879843c76ae20cb9"
+    }
+   ],
+   "intake_variances": [
+    "PROGRAM+PI-D05/06 actual source interpretation selected by Root: frozen stronger implication of runner lease parameter/universal post-await model-report discard is analytical overstatement. No such global guard exists or is claimed; signal cancellation, grant retirement and independent model/effect axes are mapped."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S09:11",
+   "frozen_row_sha256": "5d1b945e76dc7e2ed4183ee507be444db07c1ae54cd2b65e8131c1b5a3aa21e1",
+   "frozen_baseline": {
+    "event": "write/edit/bash invocation",
+    "guard": "default execute policy, RPC UI, no delegated confirmation/audit",
+    "to": "blocked",
+    "effects": "Final tool guard refuses mutator because confirmation UI is unavailable.",
+    "failure_retry": "Read tool works. Author tool catalog therefore overstates usable mutation capability; preserve guard and add explicit scoped delegation if authoring is intended.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "symbol": "run isolated child",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts",
+      "lines": "1-1030"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/child-extension.ts",
+      "symbol": "bootstrap and protocol hooks",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+      "lines": "1-223"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/attestation.ts",
+      "symbol": "attestation format",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/attestation.ts",
+      "lines": "1-31"
+     }
+    ],
+    "from": "child ready",
+    "transition_id": "S09:11"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Default child without delegated bootstrap uses execute policy/RPC context, so mutators refuse missing genuine TUI while read remains. Accepted PI-D02/03 adds explicit author-only authenticated proxy with no child local mutation; real parent final gate owns permission/effect. No handshake-only author qualification.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-extension.ts",
+     "start": 74,
+     "end": 96,
+     "file_sha256": "66e72cd0053da2dbcb0e2acf42df50321d4941e815f144cb913257eceebcc5a4",
+     "span_sha256": "f2263a97818c1752f856d38a2cb7ee97f488eed71e2308afcf6594fc86c40a1d"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 444,
+     "end": 455,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+     "span_sha256": "202cb5a14448c42a44f0088db0dfc2011a869b95616704b360d2677b0b1b6b19"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 622,
+     "end": 657,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+     "span_sha256": "e958ed9fb98f25078c14462ae672718e64d53c8ed4ac6359a265ad322cf23f30"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/dispatch.ts",
+     "start": 184,
+     "end": 203,
+     "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+     "span_sha256": "f5106251895327b6e5608096ded8316d66afe9e7de7a4f01634028cb40293cb5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 1080,
+     "end": 1119,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "bec02173c10933e227aed46cce5a709ace921e8fc69064d9ee4f9a2e83be7bcf"
+    }
+   ],
+   "intake_variances": [
+    "Named accepted delegated-author change replaces historical blanket author-unavailable defect; default nondelegated guard is preserved."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:01",
+   "frozen_row_sha256": "f7d1edead377042c72d50324e4241ed1a6ebfbfe8d1f2eea8e3b5a922ff11ebe",
+   "frozen_baseline": {
+    "event": "prepare",
+    "guard": "canonical validated roots",
+    "to": "private root created",
+    "effects": "mkdtemp; construct allowlisted baseline environment and isolated home/agent/session locations.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "unprepared",
+    "transition_id": "S10:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Actual runner first validates canonical launch resources; environment owner mints private mkdtemp and constructs allowlisted OS env/private home/agent/session paths. No stronger OS isolation or extra canonicalization beyond source is claimed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 179,
+     "end": 253,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:02",
+   "frozen_row_sha256": "e246432a78eda8bf8e07c52e3facdc0cbb892ec5de4c8e4bb4efe3a5e2169773",
+   "frozen_baseline": {
+    "event": "operator/provider config read",
+    "guard": "bounded valid shapes; supported provider",
+    "to": "validated",
+    "effects": "Resolve only selected provider; parent retains actual upstream endpoint/key/headers; child receives loopback URL and opaque capability token.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "private root created",
+    "transition_id": "S10:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Bounded parent readers select only requested provider; structural/template/header shapes refuse unsafe values. Real endpoint/key/headers remain parent-only; child gets loopback base and per-child opaque token. ADR0049 narrows external endpoints to HTTPS, literal numeric127.0.0.1 HTTP only.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 321,
+     "end": 345,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "1ccb8fa67b0378ed0a622bae2f483e4c0ee8df1ebdea877d4a1ad53734a2638a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 635,
+     "end": 672,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7a2dcca7efcf9bc22db87d94e24c2d54f8c9b56827ad9efd7ed11c60325ee2a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 693,
+     "end": 771,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ca9ebdb28f65aac7680797949716e6313b8be83c484a86e836196ecdd65b058f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 852,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ff6bbd2c19156eab86c934b3a5b0abfe8e8aa2907a1929cae0133f7f593920af"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 64,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "dc25499f2cfe5dc09cc4308fab13741443bd4857ac4224e999e2600c7f8cd1fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:03",
+   "frozen_row_sha256": "f9dd172ff3b632d142cae6e2e4fb20bc2b3099fc90f3492ddfe8013edb0666a5",
+   "frozen_baseline": {
+    "event": "unsupported provider or malformed models/config",
+    "guard": "AWS/Vertex/Copilot/Codex/OAuth or invalid shape",
+    "to": "refused",
+    "effects": "No provider passthrough; do not expose parent credentials.",
+    "failure_retry": "Environment construction before the cleanup try can leave an empty root on early failure; later admission failure suppresses cleanup errors.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "private root created",
+    "transition_id": "S10:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Unsupported/OAuth/Bedrock/Vertex/Copilot/Codex routes or malformed models refuse without credential passthrough. mkdtemp/buildChildEnv precede cleanup try and can leave empty root on early validation failure; later failure suppresses cleanup exception while rethrowing original. Residual remains explicit.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 265,
+     "end": 271,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "0be3fe33d0894ce8f54238517dba3938aa422f49aaafc7db540374594d9ca3cd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 842,
+     "end": 886,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "9d2bdd9ca4375469b72736525a0b8fea4637e47923f220ad1ef70cc61043cdcc"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:04",
+   "frozen_row_sha256": "ea3f66b103fc5df446a6603f72b2e4cb7f34420711e87e94eca68973e2ed80e9",
+   "frozen_baseline": {
+    "event": "write isolated models",
+    "guard": "exclusive new credential-bearing file",
+    "to": "child-ready",
+    "effects": "Write minimal model config with retained file handle; no broad inherited home/session context.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "validated",
+    "transition_id": "S10:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exclusive wx0600 models.json retains handle and contains only selected minimal provider config, forced loopback endpoint and token env reference. Upstream reusable credential stays parent-only; private discovery/home/session settings explicit.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 858,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "f8f59b40428f7eeec476568fa499b82aa82919f35d8de2833f5ac1c3928e59ac"
+    }
+   ],
+   "intake_variances": [
+    "Historical credential-bearing-file wording differs from current token-reference config; retained-handle scrub remains, no reusable provider secret is projected."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:05",
+   "frozen_row_sha256": "3a89eb4e5b606b2f9770f5e850b3a933d8242b6360d0a8b1116e39ce101f7eda",
+   "frozen_baseline": {
+    "event": "cleanup",
+    "guard": "child scope finished",
+    "to": "cleanup pending",
+    "effects": "Truncate retained handle, remove named file, then recursive root cleanup with up to five bounded retries.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "child-ready or partial prepare",
+    "transition_id": "S10:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cleanup clears mutable handle slot, truncates and closes saved handle, removes named config, then owned root with maxRetries5/retryDelay50. Truncation does not resolve a swapped path; delegation/broker closure remains separately owned.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 811,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "87239e28a4d01cd759dde0941b8d8ef3139f25e259dec53dab4fbc0f356fd9ea"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1061,
+     "end": 1076,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "8ca1da030e6f7c59169e50510bdb322d29286ca3ac4469a5b13e6a0570863d0b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:06",
+   "frozen_row_sha256": "863834e4b85f2c16ac18a848c8e162c14cc70dd24a397afd70e5a71cf8d84c92",
+   "frozen_baseline": {
+    "event": "all sensitive remnants removed",
+    "guard": "verified filesystem operations",
+    "to": "cleaned",
+    "effects": "Close retained ownership and release root.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "cleanup pending",
+    "transition_id": "S10:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Returns only when handle scrub and recursive root removal succeed. Broker revoke clears parent upstream and closes owned sockets; cleanup refusal degrades runner. This is source ordering, not installed/kernel sanitization evidence.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 811,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "87239e28a4d01cd759dde0941b8d8ef3139f25e259dec53dab4fbc0f356fd9ea"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "4d5a8c7154450b839a0f49d2480db09d65f0628d95dbf34901912ef6f7f29ca6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:07",
+   "frozen_row_sha256": "8c1233617700622e67b0eace6d8c3b3dfd31206bf4124e9340d8a9ec5581a20b",
+   "frozen_baseline": {
+    "event": "retries exhausted",
+    "guard": "filesystem refuses cleanup",
+    "to": "cleanup failed",
+    "effects": "Throw explicit cleanup error.",
+    "failure_retry": "Do not report successful sanitization merely because the child exited; retain path diagnosis without credentials.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/child-env.ts",
+      "symbol": "prepare child environment and cleanup",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-env.ts",
+      "lines": "1-908"
+     }
+    ],
+    "from": "cleanup pending",
+    "transition_id": "S10:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exhausted removal/truncate failure throws fixed cleanup error; runner reports fixed isolation-cleanup degradation. Process exit is not sanitization, and no credential/path value is reflected in generic diagnosis.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 823,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7468b9fb7e38aae88d60af1f0d51c659bffa1525ffcb49a8bb54d71108f1065a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 682,
+     "end": 710,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:01",
+   "frozen_row_sha256": "b036cf560afbbdc47dd8e9bf3261d837868be271c71b28ff73a85ac8d2bb3b2e",
+   "frozen_baseline": {
+    "event": "enter plan",
+    "guard": "trusted live lease; safe canonical path; valid tasks/hash",
+    "to": "plan draft",
+    "effects": "Read plan, acquire ownership, persist revision 1 with mode=plan and disposition=draft.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "unowned execute",
+    "transition_id": "S03:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Trusted interactive parent with live lease/session/cwd and owned ca-plan reads canonical slug through bridge, verifies returned hash, parses same task identities, persists revision1 plan/draft entry before setting owned memory. No installed caller or runtime result renewed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 176,
+     "end": 257,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "f67fc3e2ce0f7abbd5bf575726a55fcc27a016689867ff9a3bb85778460f33ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 268,
+     "end": 278,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "86b85546c88bfe5de7b48643d081f012d84f54f0513df050fa9b3c23c801da72"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:02",
+   "frozen_row_sha256": "befab231d97a20da620e34b2aff3b6b94195deb67639d04ad1aafd7bc17a3d82",
+   "frozen_baseline": {
+    "event": "edit task state",
+    "guard": "same expected hash; legal task move",
+    "to": "plan edit pending",
+    "effects": "Permit PENDING\u2192IN_PROGRESS/ACCEPTED; IN_PROGRESS\u2192ACCEPTED; retain ACCEPTED; native edit is restricted to owned plan semantics.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pure task transition supports forward PENDING->IN_PROGRESS/ACCEPTED and IN_PROGRESS->ACCEPTED; accepted retains itself. File operation restricts canonical owned spec/plan paths, reads/hash-reconciles and sends expectedHash CAS. This maps helper semantics, not an unobserved host-native edit integration.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 281,
+     "end": 352,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "42205106475534a6d92207c7d7f765ebfa7740e893f80f70e767ddc6a6627814"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 461,
+     "end": 514,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "ba4703bbeeae0b2d9e412903e1400a42d442d6f2527dc6d1699e24e492ec7fec"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:03",
+   "frozen_row_sha256": "fe672f97380435b56f51c3728ffae9ddf42aa117a6d1154fa72755eac6e3f0ed",
+   "frozen_baseline": {
+    "event": "file write + observation succeed",
+    "guard": "unchanged lease and task IDs",
+    "to": "plan draft",
+    "effects": "Record new hash/revision and persisted state.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan edit pending",
+    "transition_id": "S03:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "NOT_APPLICABLE",
+   "assessment": "NOT_APPLICABLE exact never-implemented public-edit/live-controller/persisted-hash-revision composite. operatePlanFile returns a nextState but has no production caller or appendEntry port. Public enter/status/approve/cancel remains supported; disk statuses reconcile on restore while retaining last durable revision. Real CAS helper/state return are not retired.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "fe88875f1b15e4f0d80f6c6de24f18fa94f73b0832733612fa5802c918e6d2a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 212,
+     "end": 220,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "4f7983b7903921837ca72616fc5825bba0b24c54bee65861f3d87d7fcf10351e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 328,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "3dfeb87917f205a0494a3225b8bf341e68b4ada88bab041ce9a5021494a13796"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 14,
+     "end": 34,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "8896f127917372df2ce902bc51f26732b837e0f7028e4fd19f1c15ac3cfe484b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 375,
+     "end": 428,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "988b6946b6b4d407bd0071c678cd9b49d6140b6fe684e604c665634fcbd9cd02"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 363,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "87a84b7aec9fd02b0e1bf59a6182d1dad40738a8c092a355a27cb0735c9a9805"
+    }
+   ],
+   "intake_variances": [
+    "native-plan.ts and plan-mode.ts literal baseline/current bytes equal; schema has no hash and public command has no edit. PROGRAM intake correction selected by Root, not a feature or new ADR."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:04",
+   "frozen_row_sha256": "7d5e285624c5df751d0c23f35003a273b5850ffd2923241f893f7e755935ae91",
+   "frozen_baseline": {
+    "event": "write committed but response/readback lost",
+    "guard": "commit may have happened",
+    "to": "plan draft or unresolved edit",
+    "effects": "Return ok=false with committed=true; re-observe before retry; reconcile same task identities if post-commit file changed.",
+    "failure_retry": "Blind repeating an edit is not the implemented safe recovery.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan edit pending",
+    "transition_id": "S03:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After bridge reports committed with unobserved/invalid/different content, return ok:false+committed:true and available observed state only when exact task identities reconcile. No automatic second replace; observation precedes any safe retry. Conditional source recovery only; no actual effect reobserved.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "fe88875f1b15e4f0d80f6c6de24f18fa94f73b0832733612fa5802c918e6d2a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 501,
+     "end": 525,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "1f747e92694e08bbf59acaa8fdbdfd6cfbd4aa1a5009d8b6e617ce279dea1edc"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:05",
+   "frozen_row_sha256": "1b873bda98b30e509ca4be69b894c2000e7cdc81ab247d0e7be183a18c4ece92",
+   "frozen_baseline": {
+    "event": "approve",
+    "guard": "first read reconciles; interactive confirmation eligible",
+    "to": "plan draft awaiting confirmation",
+    "effects": "Prompt with 60-second bound.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Owned plan approval first reads/reconciles disk, checks ownership/session/trust and then bounded interactive confirmation with explicit timer/abort Promise.race no more than60000ms. Refusal/timeout does not approve or rewrite plan.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "f06191db839f8aa09948a720f58232440addee3d2f08a4ff721a72fe4c5cc713"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 302,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "17a0ba7a29789fc858a30e648297053503330c2049ccf1af6f857b2f5ed01a3c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:06",
+   "frozen_row_sha256": "5140efde45a51b988dc97da61c3f4e3868ff6b7b6eeab47a02618e5efd34f31a",
+   "frozen_baseline": {
+    "event": "approval confirmed",
+    "guard": "live lease; second read same hash",
+    "to": "approved execute",
+    "effects": "Persist approved revision with execute mode before updating owned in-memory state.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft awaiting confirmation",
+    "transition_id": "S03:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Second read must have identical hash and content; ownership and lease remain current. Construct approved/execute next revision; append encoded session entry successfully and revalidate owner before installing memory. No machine approval is inferred from unrelated recorded progress.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 303,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "d57a4ec73b2b6330e6be506529694c1474181a45378015f26808d8268ca6c350"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 369,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "0a947a53bfd5f3224280439c9298bad7eb47f5c578d9495b8b1719162947e60e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:07",
+   "frozen_row_sha256": "299d09c8a6df6e634fc4b6fdbcc3c2cafaf8126e5d2ed5b5041a6f3376a6d033",
+   "frozen_baseline": {
+    "event": "cancel/timeout/stale/file drift",
+    "guard": "any guard fails",
+    "to": "plan draft",
+    "effects": "Return refusal, preserve plan file and restrictions; re-read and ask again if needed.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft awaiting confirmation",
+    "transition_id": "S03:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cancelled/timedout dialog, stale lease/session/trust/ownership or differing second hash/content returns refusal before approve/persist/owned replacement. Approval path only reads plan, so refused attempt preserves file/restrictions. Caller must reread/reconfirm; no silent approval/fallback from this branch.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 321,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "04556b554aea6f4439495bc194d962ca16a63f0e347fb0f45ecee440f58e8ea4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "f06191db839f8aa09948a720f58232440addee3d2f08a4ff721a72fe4c5cc713"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:08",
+   "frozen_row_sha256": "f957d3c046888228efd77522494d8ec32c8641e67b518e690daa6542e90cb7e3",
+   "frozen_baseline": {
+    "event": "cancel plan",
+    "guard": "current owner",
+    "to": "cancelled execute",
+    "effects": "Persist execute/draft revision; preserve plan file.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Current owner cancel creates execute/draft next revision, persists custom entry before replacing owned state; does not delete or rewrite plan markdown. Cancel is distinct from approved disposition.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "03f513dba06ad90b60b595f4648e72a8e6cf7e57091c0c83eeb5eff8a1d04a1b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 372,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "08337b6a80463f017f302a5f205a899fe7408e0feb79f785aa87af9ce18efc53"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S03:09",
+   "frozen_row_sha256": "5f7875d418b942cb3cf514107c21a19f83535956ae5ca8990087985e7d3011d8",
+   "frozen_baseline": {
+    "event": "status/restore cannot validate file or owner",
+    "guard": "read failure, session mismatch, malformed state",
+    "to": "ownership lost then unowned execute",
+    "effects": "Clear owned plan and fall back to execute mode.",
+    "failure_retry": "This is a loss-of-restriction fallback, not proof that a plan was approved; preserve an explicit unavailable state in a future change.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft or approved execute",
+    "transition_id": "S03:09"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Restore clears first and accepts latest valid durable entry only with current owner/disk task identities. Status clears on failed read or owner drift after initial valid owner capture; initially absent context owner only reports no active session. mode() uses currentOwned lease, otherwise execute. No approval or universal eager foreign-context deletion is inferred.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 259,
+     "end": 274,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "9f16af4434c1dffdac8de6f902b3d1d675f3495d4c61ea145fc029fe3693f2ee"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 346,
+     "end": 363,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "10701112680be03393bc5c99801780b8fd3dd655c9750680be0cf3bbe4c048c2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 412,
+     "end": 428,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "53dd72cb71e18b0a48e93ad279e4ff7ab15953740fc502ad6ab0d796936ca8d8"
+    }
+   ],
+   "intake_variances": [
+    "Frozen owner/session clearing summary compresses several branches; this exact-source correction does not rewrite old row or proof."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  }
+ ],
+ "accepted_interpretations": [
+  "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+  "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+  "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+  "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+  "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves."
+ ]
+}

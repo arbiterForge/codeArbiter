@@ -1,0 +1,480 @@
+{
+ "schema": "codearbiter.workflow-entry-clause-inspection/1",
+ "actor": "/root",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "WF-02",
+  "WF-03"
+ ],
+ "clause_count": 9,
+ "clauses": [
+  {
+   "id": "WF-02:01",
+   "frozen_row_sha256": "0ef37bfe57417f4aa9270887854ce61b187465b122ea84448ab1ef34843cfd1d",
+   "frozen_clause": {
+    "from": "Working",
+    "event": "Two governing rules contradict",
+    "guard": "Conflict is detected",
+    "to": "STOP prescribed by conflict command",
+    "effects": "Record both exact rules and ask the user to resolve them; do not silently choose.",
+    "failure_retry": "The command says all work stops; other current workflows prescribe only dependent-work stops. This is a policy contradiction, not an implemented dependency analysis.",
+    "source": [
+     {
+      "path": "core/surface/commands/conflict.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/conflict.md"
+     },
+     {
+      "path": "core/surface/includes/safety-core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/safety-core.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-02:01"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 8,
+     "end": 28,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 76,
+     "end": 81,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    }
+   ],
+   "assessment": "Accepted PROGRAM explicit user change replaces universal conflict STOP with affected authority/data/decision scope and real dependents. Quote both sources, classify hierarchy, do not choose by recency; pause unknown dependencies for inspection. Continue independently authorized mutations. Child scope is updated/revoked and uncertain effects inspected before replay. Explicit global user/host stops remain global. Existing TESTED row is retained without renewal; this source mapping is used only to assess whole-family consistency.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-02:02",
+   "frozen_row_sha256": "a2ec64012794ee80ab3205a3a106a1f626dd7b59fefbdd24fcca1a7f4cffd9e9",
+   "frozen_clause": {
+    "from": "Conflict awaiting ruling",
+    "event": "User resolves the conflict",
+    "guard": "Actual resolution exists",
+    "to": "Resolved work may resume",
+    "effects": "Retain the ruling and resume according to its scope.",
+    "failure_retry": "No response, inferred choice or agent preference is a resolution.",
+    "source": [
+     {
+      "path": "core/surface/commands/conflict.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/conflict.md"
+     },
+     {
+      "path": "core/surface/includes/safety-core.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/safety-core.md"
+     },
+     {
+      "path": "core/surface/SPRINT.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md"
+     }
+    ],
+    "transition_id": "WF-02:02"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 25,
+     "end": 28,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 70,
+     "end": 81,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    }
+   ],
+   "assessment": "Actual user resolution permits only affected work to resume from its suspension point. Record the ruling; document update occurs only if authorized. Resolution neither grants unrelated changes nor erases prior history/denials. No response, recency or orchestrator preference substitutes for the user; independently authorized work never needed this unrelated ruling.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:01",
+   "frozen_row_sha256": "dfd62f12873152bdd441bf47b88d02ce56f09e90170ec0f9247466a90b3f63cd",
+   "frozen_clause": {
+    "from": "New feature",
+    "event": "Triage scope",
+    "guard": "At most two implementation/test files, 1\u20133 criteria, no protected/API/domain/dependency/new endpoint/command/config expansion",
+    "to": "Small lane",
+    "effects": "Log the bounded mini-spec and triage before implementation; route to TDD.",
+    "failure_retry": "Unknown or any exceeded condition selects the full lane.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:01"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 100,
+     "end": 129,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    }
+   ],
+   "assessment": "All small-lane criteria must hold: at most two implementation files plus their tests, no reference-map protected/API/domain/dependency expansion and no new dependency/endpoint/command/configuration, one-to-three testable criteria. Retain the actual source wording two implementation files plus tests, rather than treating the analytical shorthand as a total test-file limit. Record inline mini-spec and append triage before TDD, preserve commit/finish gates. Unknown/exceeded criterion selects full lane. Material choice alone invokes bounded SMARTS; ordinary safe method choices do not create another approval.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:02",
+   "frozen_row_sha256": "6a091538e28f9005442299366d7e6c52eac749dc3ab759cec09e7242dec30c7b",
+   "frozen_clause": {
+    "from": "New feature",
+    "event": "Triage exceeds small lane",
+    "guard": "Full feature scope",
+    "to": "Design lane",
+    "effects": "Brainstorm the spec, retain choices and criteria, then write the plan.",
+    "failure_retry": "A presentation checkpoint is not a new execution permission.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:02"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 128,
+     "end": 150,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 6,
+     "end": 17,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 8,
+     "end": 24,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7"
+    }
+   ],
+   "assessment": "Full lane retains selected-source brainstorming specification then matching writing-plans implementation plan with task/criterion linkage, then execution. Existing authorization permits ordinary artifact drafting. Consequential missing decisions remain real scoped questions; presentation or receipt state cannot independently authorize or deny work. Specification and plan keep one selected WORK identity.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:03",
+   "frozen_row_sha256": "f597b7ac2eb31323d2947bb5d87d94274761e1b017679e1de49d7bf076540975",
+   "frozen_clause": {
+    "from": "Existing feature",
+    "event": "Resume",
+    "guard": "Incomplete spec",
+    "to": "Design lane",
+    "effects": "Read the existing spec and continue its unfinished design work.",
+    "failure_retry": "Do not silently restart or discard history.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:03"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 73,
+     "end": 98,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    }
+   ],
+   "assessment": "Existing source identity and returned artifact format own resume. Incomplete spec resumes its missing requirements through brainstorming; it is not silently restarted. Existing decisions and history survive; no counterpart is converted/created to hide duplicate or mixed-format ownership.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:04",
+   "frozen_row_sha256": "3c775a9e1b375c19b57078d7e54fc0cf88fcf435206a6842e975636abb12ac0f",
+   "frozen_clause": {
+    "from": "Existing feature",
+    "event": "Resume",
+    "guard": "Spec exists, plan absent",
+    "to": "Planning lane",
+    "effects": "Create the matching plan in the selected artifact format.",
+    "failure_retry": "Mixed/duplicate format ownership refuses the dependent write.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:04"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 52,
+     "end": 70,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 75,
+     "end": 94,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 16,
+     "end": 26,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7"
+    }
+   ],
+   "assessment": "Spec with absent plan routes to writing-plans using same-slug and same selected format. The resolver must reject mixed/duplicate ownership before dependent writes. A selected lone spec continues in its own format. Typed writer refusal does not authorize Markdown fallback or a recreated counterpart.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:05",
+   "frozen_row_sha256": "aa849561d10f5367f7cc1583a9786d34b2220c571363f47ef05cc676ced0e537",
+   "frozen_clause": {
+    "from": "Existing feature",
+    "event": "Resume",
+    "guard": "Plan has outstanding tasks",
+    "to": "Execution lane",
+    "effects": "Inspect actual work and workers, then continue outstanding tasks.",
+    "failure_retry": "An uncertain operation reuses its ID/request or uses recovery; do not duplicate dispatch.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:05"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 75,
+     "end": 98,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 16,
+     "end": 35,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61"
+    }
+   ],
+   "assessment": "Plan with remaining/blocked/unverified work continues existing execution. Inspect actual workers/partial state, never infer completion because a process ended, never auto-clear BLOCKED or duplicate uncertain execution. Native HTML progress labels express implementation only; checks remain separately observed. Recovery or same operation identity handles uncertain results rather than a new dispatch.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:06",
+   "frozen_row_sha256": "82dfc1a0215de39076d98625ee0be6160ed59e2d5311f0b76af3a39fdd0b97d6",
+   "frozen_clause": {
+    "from": "Existing feature",
+    "event": "Resume",
+    "guard": "Implementation is complete and relevant checks hold",
+    "to": "Commit/finish lane",
+    "effects": "Use existing same-scope commit/PR/merge authority and the appropriate owner.",
+    "failure_retry": "Implementation completion is not automatic test, review, merge or publication proof.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:06"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 89,
+     "end": 94,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/skills/executing-plans/SKILL.md",
+     "start": 49,
+     "end": 61,
+     "file_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61"
+    }
+   ],
+   "assessment": "Completed plan work with applicable checks routes to commit/finish only under actual same-scope authority. Coordinator records actual checks/failures; ordinary artifact approval state is not another permission gate. Implementation DONE does not establish independent tests, review, merge, publication or provider effects.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  },
+  {
+   "id": "WF-03:07",
+   "frozen_row_sha256": "96a4d117356a7917e8b7b0031d8f2fade79369cf142e3933296b140c99396e3d",
+   "frozen_clause": {
+    "from": "Any feature phase",
+    "event": "Explicit start over",
+    "guard": "User requested restart",
+    "to": "New attempt with preserved history",
+    "effects": "Record the restart and retain earlier artifacts/decisions.",
+    "failure_retry": "No implicit start-over from a missing receipt or stale presentation.",
+    "source": [
+     {
+      "path": "core/surface/commands/feature.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/feature.md"
+     },
+     {
+      "path": "core/surface/skills/brainstorming/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/brainstorming/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/writing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/writing-plans/SKILL.md"
+     },
+     {
+      "path": "core/surface/skills/executing-plans/SKILL.md",
+      "symbol": "Complete workflow body",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/executing-plans/SKILL.md"
+     }
+    ],
+    "transition_id": "WF-03:07"
+   },
+   "witnesses": [
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 73,
+     "end": 98,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    },
+    {
+     "path": "core/surface/commands/feature.md",
+     "start": 163,
+     "end": 170,
+     "file_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916"
+    }
+   ],
+   "assessment": "Only explicit user start-over restarts an existing slug and is logged in append-only triage. Source-resume ladder and hard gate prohibit implicit restart of interrupted artifacts. Current WORK identity, specs/plan and historical decisions remain selected; missing receipts or stale presentation do not permit destructive replacement.",
+   "result": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_CHANGES",
+   "runtime_qualification": false
+  }
+ ],
+ "accepted_changes": [
+  "PROGRAM explicit scoped conflict continuation replaces old universal pause.",
+  "ADR0043 removes ordinary artifact permission ceremony; real security, source-integrity and host/delivery boundaries remain."
+ ],
+ "limits": [
+  "Workflow templates prescribe agent behavior; source review is not evidence that any host/agent actually executed the protocol.",
+  "Small-lane analytical shorthand is interpreted against the exact pinned/current two-implementation-files-plus-tests rule.",
+  "No frozen input, existing advanced row, runtime epoch or task status is changed."
+ ]
+}

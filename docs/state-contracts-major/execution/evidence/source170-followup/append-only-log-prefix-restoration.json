@@ -1,0 +1,7 @@
+{
+  "result": "RESTORED_EXACT_COMMITTED_PREFIX",
+  "cause": "Root read_text/write_text metadata writer normalized one historical CRLF. Corrected before commit; all new tail preserved.",
+  "committed_prefix_sha256": "82a622b6bfa40862020c69fea21992dba0ad09dda9ec7057e9dc607e46d902d2",
+  "new_tail_sha256": "2c66a931c31cc75df4e222fe1b163468ee554f03130506560b2453fdbc424464",
+  "prefix_bytes": 268874
+}

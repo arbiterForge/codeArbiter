@@ -1,0 +1,209 @@
+{
+ "schema": "codearbiter.c06-current-source-inspection/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "baseline_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "actor": "/root",
+ "clauses": [
+  {
+   "cell": "disposition:transitions:C06:01",
+   "frozen_row_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+   "frozen_clause": {
+    "from_state": "undiscovered",
+    "from": "undiscovered",
+    "event": "discover and partition",
+    "guard": "nonempty unique actual test inventory; shard count within 1..32",
+    "to": "partitioned",
+    "effects": "Group by fixture class, use weights only for scheduling, create nonempty disjoint plan and digest.",
+    "failure_retry": "Invalid inventory/weights/partition fails; weights cannot remove tests.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "partition",
+      "lines": [
+       78,
+       106
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:01"
+   },
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 35,
+     "end": 51,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 60,
+     "end": 76,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 79,
+     "end": 107,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 157,
+     "end": 161,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 164,
+     "end": 166,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 435,
+     "end": 484,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "assessment": "Actual discoverable unique inventory and whole fixture classes own membership. Weight hints only balance; count1..32/nonempty/disjoint/completeness and exact orderedplanSHA256 remain. Declared CI calls four shards; source correction does not change discovery/selection."
+  },
+  {
+   "cell": "disposition:transitions:C06:02",
+   "frozen_row_sha256": "349fffed5fad871f9d8ec2cab349e8287d8bb6d1f6f4ee818bbcf49e59d0df39",
+   "frozen_clause": {
+    "from_state": "partitioned",
+    "from": "partitioned",
+    "event": "run-all",
+    "guard": "valid plan",
+    "to": "running shards",
+    "effects": "Run up to four child shards with common deadline and plan identity.",
+    "failure_retry": "Spawn/deadline failures kill direct children and make the run fail; no broad process-tree guarantee.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "run_all",
+      "lines": [
+       185,
+       238
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:02"
+   },
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 314,
+     "end": 330,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 333,
+     "end": 432,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "assessment": "Run-all retains exact child argv/environment and common execution deadline, default2100seconds after launch. On later Popen or wait exception, attempt kill for every acquired direct child before a common5second wait pass; one cleanup failure cannot abandon later children. Wait-unconfirmed slots produce an explicit RuntimeError chained from the original failure. Temp cleanup failure adds a bounded note while preserving the original cause. Timeout path retains failingcode/log and bounds its post-kill wait, with separately bounded exception cleanup if it fails. No strict5secondtotalwall, descendant/process-tree or OS containment guarantee."
+  },
+  {
+   "cell": "disposition:transitions:C06:03",
+   "frozen_row_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+   "frozen_clause": {
+    "from_state": "running shards",
+    "from": "running shards",
+    "event": "child executes selected tests",
+    "guard": "selection matches actual discoverable tests",
+    "to": "observed shards",
+    "effects": "Collect per-test outcomes/timings and exclusive JSON observation.",
+    "failure_retry": "wasSuccessful, testsRun, selected population and non-vacuous execution are checked; skips/expected failures do not supply missing substantive execution.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "main",
+      "lines": [
+       241,
+       290
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:03"
+   },
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 110,
+     "end": 154,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 435,
+     "end": 484,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "assessment": "Each child rediscovers/partitions and runs its exact selected population. TimedResult records observed outcomes and durations. Passing requires wasSuccessful, testsRun equals selected and substantive execution beyond skip/expectedFailure; raw timing is exclusive create. No supported skip is silently promoted to execution."
+  },
+  {
+   "cell": "disposition:transitions:C06:04",
+   "frozen_row_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+   "frozen_clause": {
+    "from_state": "observed shards",
+    "from": "observed shards",
+    "event": "coverage join",
+    "guard": "same plan digest, every selected test appears exactly once, all required outcomes pass",
+    "to": "exact pass",
+    "effects": "Return success and timings.",
+    "failure_retry": "Missing, duplicate, foreign or failing observation rejects; no averaging over missing shards.",
+    "source": [
+     {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "symbol": "coverage_problems",
+      "lines": [
+       168,
+       182
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+     }
+    ],
+    "transition_id": "C06:04"
+   },
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 169,
+     "end": 183,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 226,
+     "end": 283,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 286,
+     "end": 308,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 333,
+     "end": 432,
+     "file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+   ],
+   "assessment": "Join rejects nonzero/missing/mismatched plans, duplicate/missing/foreign selected tests and nonpassing observations. Optional four-shard retention binds original timing/observation/argv, stable source/native context and exact exclusive output, descriptor last. Original real-four-child retention case passes on exact code bytes. This proof is source conformance; local inert/fixture tests do not qualify native targets or installed/wholeprogram outcomes."
+  }
+ ],
+ "named_change": "Confirmed partial-spawn omission fixed under Q01/C06; source invariant now implemented rather than declared unsupported.",
+ "limits": [
+  "Four canonical regressions and original real-four-child positive are retained in the code commit, not replayed or restated as installed/OS proof.",
+  "Only source-only PRESERVED dispositions; task/runtime/host/publication status unchanged."
+ ]
+}
