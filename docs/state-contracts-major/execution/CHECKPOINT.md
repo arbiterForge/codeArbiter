@@ -1,5 +1,11 @@
 # State-contract program checkpoint
 
+Local follow-up `codex/state-contracts-source-and-shard-cleanup` repairs the confirmed C06 partial-spawn cleanup gap. The named regression failed on the original owner, all4new controls and13focused checks passed, and the unchanged original four-Python-child retention case passed (four effects exactly once; validated observation bundle). Cleanup owns direct children only and reports unconfirmed settlement; it does not claim descendant containment. [Actual observations](evidence/c06-owned-direct-child-cleanup/development.json).
+
+PR1116 remains at its immutable384269dc head while complete CI/Docs finish. Canonical ledger remains753PLANNED;114private source-only proposals would reduce that to639 but are not adopted by this code repair. Task/runtime statuses remain unchanged. Parent1098/main remains held for user testing.
+
+## Previous retained checkpoint
+
 Child #1116 follow-up:29 independently reviewed source-only Pi cells reduce PLANNED accounting from782 to753 (49findings/149machines/555transitions). S03 machine/edit persistence remains PLANNED and unproven; all24 prior Pi source dispositions remain intact. This promotes no task or runtime epoch.
 
 At `f5dff55e`, both Linux unit failures now retain progress in required full-runtime hashing near the30second limit. The unit verification gets an explicit120second budget for two inventories; all original identity/assertion guards remain. Windows Pi coverage timed out in the original overfull-journal test; its4097-file setup moves to a60second fixture hook while the original scan body keeps5seconds. Inner original phase was not retained, so fixture setup is not claimed as a proven cause. Local21producer/pure and3wiring controls passed; journal19passed/1existing privilege skip.
