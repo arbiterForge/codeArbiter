@@ -1241,6 +1241,27 @@
         "disposition:findings:SF07"
       ],
       "scope": "Finite failed/malformed Git observation refusal, bounded read-only retry and fresh pre-stage dirty/unavailable/clean mutation decisions; fixture observations do not qualify arbitrary repository/concurrency or installed host state."
+    },
+    {
+      "id": "finite-cf02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-q02-implementation",
+      "observation": "q02-release",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_no_successful_ci_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_source_no_longer_on_main_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_expired_or_missing_artifacts_are_reported_not_hidden",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_selection_that_differs_from_the_approved_candidate_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_workflow_run_event_binds_its_own_run"
+      ],
+      "cells": [
+        "disposition:findings:C-F02"
+      ],
+      "scope": "Finite manual/automatic release source selection, explicit older-successful-source report, no-success/non-main/expired/missing/approved-candidate refusals and read-only route-observer boundaries. Original unfiltered release-workflow outcome only; not actual publication or whole R02/R03/Q02 qualification."
     }
   ]
 }

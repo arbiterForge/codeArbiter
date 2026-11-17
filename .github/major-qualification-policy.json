@@ -86,7 +86,9 @@
     "installed:pi:linux:1.5.0": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
     "installed:pi:windows:1.5.0": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
     "installed:sandbox:docker": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
-    "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+    "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:C-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:HOOK-F04": "major qualification / native"
   },
   "native_composite_cells": [
     "disposition:findings:N-F02",
@@ -133,5 +135,8 @@
   "native_launch_binding_tasks": [
     "HW-04",
     "NT-04"
+  ],
+  "native_launch_binding_findings": [
+    "disposition:findings:HOOK-F04"
   ]
 }

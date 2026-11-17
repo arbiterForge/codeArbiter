@@ -918,6 +918,17 @@ def _requirements(repo, source, run_id):
         require(native, 'npm binding task requires original native composition authority')
         native_fields.update(launch_binding_tasks=launch_tasks,
             launch_binding_inputs=launch.expected_inputs(repo, source, load))
+    launch_findings = policy.get('native_launch_binding_findings', [])
+    if launch_findings:
+        from major_native_observation import launch_finding_selection
+        launch_finding_selection(launch_findings)
+        require(set(launch_findings) <= set(cells) and 'HW-04' in launch_tasks,
+                'launch finding requires its original HW04 population')
+        # An already assessed source disposition retains its typed result and
+        # original epoch rather than being relabelled as native execution.
+        selected_launch_findings = [cell for cell in launch_findings if cell not in source_dispositions]
+        if selected_launch_findings:
+            native_fields['launch_binding_findings'] = selected_launch_findings
     return {**native_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),

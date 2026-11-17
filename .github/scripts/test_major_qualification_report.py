@@ -4003,5 +4003,89 @@ class FarmFiniteFindingObservationPrerequisiteTests(unittest.TestCase):
             self.assertIn(before, ci)
             with self.subTest(mutation=before), self.assertRaises((ValueError, KeyError)): self.farm_workflow_contract(ci.replace(before, after, 1))
 
+
+class ReleaseSelectionFiniteFindingTests(unittest.TestCase):
+    """Synthetic original-transport admission; no release execution."""
+    CELL = "disposition:findings:C-F02"
+    METHODS = (
+        "test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+        "test_route_publication_is_observed_after_every_target_settles",
+        "test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+        "test_no_successful_ci_is_refused",
+        "test_source_no_longer_on_main_is_refused",
+        "test_expired_or_missing_artifacts_are_reported_not_hidden",
+        "test_selection_that_differs_from_the_approved_candidate_is_refused",
+        "test_workflow_run_event_binds_its_own_run",
+    )
+    SELECTORS = tuple("python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest." + name for name in METHODS)
+
+    @contextmanager
+    def fixture(self):
+        with q02_python_source_fixture() as f:
+            owner.prepare_source_payload(f["repo"], f["staged"], f["job"], f["profile"])
+            req, payload = Q02ReadinessSourceProfileTests().authenticate(f)
+            req.update(cells=[self.CELL], cell_jobs={self.CELL: f["job"]})
+            group = {"id": "finite-cf02", "job": f["job"], "payload_name": f["payload"],
+                     "observation": "q02-release", "proof_kind": "source-test", "cells": [self.CELL],
+                     "selectors": list(self.SELECTORS), "scope": "Inert finite admission fixture, not release qualification."}
+            observed = {"format": owner.OBSERVATION, "source_commit": req["source_commit"],
+                        "source_tree": req["source_tree"], "ci_run_id": 7, "source_stable": True,
+                        "proof_kind": "source-test", "producer": "python-test-result-observer",
+                        "argv": [sys.executable, ".github/scripts/test_release_workflow.py"], "exit_code": 0,
+                        "tests": [{"id": s, "result": "passed"} for s in self.SELECTORS],
+                        "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": f["profile"],
+                            "payload_name": f["payload"], "manifest_sha256": payload["source_manifest_sha256"]}}
+            def build(observation=observed, selected=group, required=req, consumed=payload):
+                return owner.build_report(required, job_name=f["job"], job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": [selected]},
+                    observations={"q02-release": observation}, payloads={f["payload"]: consumed})
+            yield f, observed, group, req, payload, build
+
+    def test_c_f02_uses_complete_original_release_selection_transport(self):
+        with self.fixture() as (f, observed, group, req, payload, build):
+            try:
+                report = build()
+            except ValueError as error:
+                self.fail("C-F02 original release observer admission is unavailable: " + str(error))
+            self.assertEqual([row["cell"] for row in report["results"]], [self.CELL])
+            self.assertEqual(report["results"][0]["executed_population"], 8)
+            self.assertFalse(f["counter"].exists(), "Admission must not reexecute either original suite")
+            maps = owner.load_json(owner.ROOT / ".github/major-test-selections.json")
+            actual, = [g for g in maps["groups"] if g["cells"] == [self.CELL]]
+            self.assertEqual(set(actual["selectors"]), set(self.SELECTORS))
+            self.assertEqual((actual["observation"], actual["payload_name"], actual["job"]),
+                             ("q02-release", f["payload"], f["job"]))
+            self.assertEqual(owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+                             ["cell_job_bindings"][self.CELL], f["job"])
+
+    def test_c_f02_refuses_incomplete_foreign_source_profile_entrypoint_and_named_results(self):
+        with self.fixture() as (f, observed, group, req, payload, build):
+            for selector in self.SELECTORS:
+                for state in ("missing", "skipped", "failed", "duplicate", "reduced-map"):
+                    o, g = copy.deepcopy(observed), copy.deepcopy(group)
+                    row = next(t for t in o["tests"] if t["id"] == selector)
+                    if state == "missing": o["tests"].remove(row)
+                    elif state == "duplicate": o["tests"].append(dict(row))
+                    elif state == "reduced-map": g["selectors"].remove(selector)
+                    else: row["result"] = state
+                    with self.subTest(selector=selector, state=state), self.assertRaises(ValueError): build(o, g)
+            for mutation in ("source", "run", "manifest", "profile", "script", "filtered", "extra-map", "foreign-cell", "payload", "job"):
+                o, g, q, p = copy.deepcopy(observed), copy.deepcopy(group), copy.deepcopy(req), copy.deepcopy(payload)
+                if mutation == "source": o["source_commit"] = "f" * 40
+                elif mutation == "run": o["ci_run_id"] = 8
+                elif mutation == "manifest": p["source_manifest_sha256"] = "0" * 64
+                elif mutation == "profile": o["source_input_binding"]["profile"] = owner.SOURCE_PROFILE
+                elif mutation == "script": o["argv"][-1] = ".github/scripts/test_major_readiness.py"
+                elif mutation == "filtered": o["argv"].append("SourceSelectionTest")
+                elif mutation == "extra-map": g["selectors"].append("python:foreign.py:unexecuted")
+                elif mutation == "foreign-cell": g["cells"] = ["disposition:findings:C-F04"]; q.update(cells=g["cells"], cell_jobs=dict.fromkeys(g["cells"], f["job"]))
+                elif mutation == "payload": g["payload_name"] = "foreign"
+                elif mutation == "job": g["job"] = "foreign"
+                with self.subTest(mutation=mutation), self.assertRaises(ValueError): build(o, g, q, p)
+            extra = f["repo"] / "core/pysrc/unbound_finding_helper.py"
+            extra.write_text("# inert namespace control\n")
+            with self.assertRaises(ValueError): owner.prepare_source_payload(f["repo"], f["base"] / "refused", f["job"], f["profile"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1081,6 +1081,14 @@ def selected_recipes(cells):
     return {cell: copy.deepcopy(RECIPES[cell]) for cell in cells}
 
 
+def launch_finding_selection(value):
+    """Finite finding on the existing HW04 identity/count/consumer transport."""
+    import major_readiness as owner
+    owner.require(isinstance(value, list) and value == ['disposition:findings:HOOK-F04'],
+                  'invalid launch binding finding selection')
+    return value
+
+
 def runtime_requirements(req):
     import major_readiness as owner
     recipes = req.get('native_compositions')
@@ -1105,10 +1113,19 @@ def runtime_requirements(req):
         launch_cells = {'task:' + task for task in req['launch_binding_tasks']}
         owner.require(launch_cells < set(cells) and not launch_cells.intersection(recipes),
                       'npm binding task/runtime population differs')
-    consumed = set(recipes) | launch_cells
+    launch_findings = set()
+    if 'launch_binding_findings' in req:
+        launch_findings = set(launch_finding_selection(req['launch_binding_findings']))
+        owner.require('task:HW-04' in launch_cells
+                      and launch_findings < set(cells)
+                      and not launch_findings.intersection(recipes)
+                      and not launch_findings.intersection(req.get('source_dispositions', {}))
+                      and all(jobs[cell] == 'major qualification / native' for cell in launch_findings),
+                      'launch finding requires the original HW04 source and native authority')
+    consumed = set(recipes) | launch_cells | launch_findings
     return {**{key: value for key, value in req.items()
                if key not in ('native_compositions', 'native_module_sha256',
-                              'launch_binding_tasks', 'launch_binding_inputs')},
+                              'launch_binding_tasks', 'launch_binding_inputs', 'launch_binding_findings')},
             'cells': [cell for cell in cells if cell not in consumed],
             'cell_jobs': {cell: job for cell, job in jobs.items() if cell not in consumed}}
 
@@ -1208,6 +1225,10 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
         import ci20_native_binding as binding_owner
         for task in launch.tasks(req['launch_binding_tasks']):
             recipes['task:' + task] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
+        # A finding reuses the same complete original native consumers and the
+        # same mandatory sidecars below; it never adds another test execution.
+        for cell in req.get('launch_binding_findings', []):
+            recipes[cell] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
     platforms = sorted({platform for recipe in recipes.values() for platform in recipe})
     components = {platform: _component(req, run, artifacts, jobs, platform) for platform in platforms}
     owner.require(len({c['job_id'] for c in components.values()}) == len(platforms)

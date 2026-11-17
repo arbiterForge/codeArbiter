@@ -635,5 +635,93 @@ class RuntimePortabilityTests(unittest.TestCase):
 
 
 
+
+class HookF04FiniteFindingAdmissionTests(unittest.TestCase):
+    """Finding admission reuses the actual HW04 transport; fixture bytes only."""
+    CELL = "disposition:findings:HOOK-F04"
+
+    def fixture(self):
+        helper = AdmissionTests()
+        helper.setUp()
+        f = helper.f
+        f.req["cells"].append(self.CELL)
+        f.req["cell_jobs"][self.CELL] = "major qualification / native"
+        f.req["launch_binding_findings"] = [self.CELL]
+        return helper, f
+
+    def test_hook_f04_requires_complete_original_six_platform_launch_transport(self):
+        helper, f = self.fixture()
+        try:
+            record = f.produce()
+        except (ValueError, KeyError) as error:
+            self.fail("HOOK-F04 original HW04 launch admission is unavailable: " + str(error))
+        result, = [row for row in record["native"]["results"] if row["cell"] == self.CELL]
+        self.assertEqual({row["platform"] for row in result["components"]}, set(binding.PLATFORMS))
+        for row in result["components"]:
+            self.assertEqual(row["selectors"], launch.selectors(row["platform"]))
+        self.assertEqual(set(record["native"]["launch_components"]), set(binding.PLATFORMS))
+        for row in record["native"]["launch_components"].values():
+            self.assertEqual({x["workspace_count"] for x in row["observations"]}, set(launch.COUNTS))
+        self.assertEqual(f.verify(record)["state"], "PREPUBLICATION_READY")
+        policy = json.loads((ROOT / ".github/major-qualification-policy.json").read_bytes())
+        self.assertEqual(policy["native_launch_binding_findings"], [self.CELL])
+        self.assertEqual(len(native.RECIPES), 40)
+        self.assertEqual(tuple(launch.TASKS), ("HW-04", "NT-04"))
+
+    def test_hook_f04_refuses_missing_owner_or_unreviewed_finding_authority(self):
+        helper, f = self.fixture()
+        original = copy.deepcopy(f.req)
+        for mutation in ("missing-selection", "foreign", "duplicate", "empty", "missing-HW04", "missing-inputs", "foreign-job"):
+            f.req = copy.deepcopy(original)
+            if mutation == "missing-selection": f.req.pop("launch_binding_findings")
+            elif mutation == "foreign": f.req["launch_binding_findings"] = ["disposition:findings:HOOK-F01"]
+            elif mutation == "duplicate": f.req["launch_binding_findings"] *= 2
+            elif mutation == "empty": f.req["launch_binding_findings"] = []
+            elif mutation == "missing-HW04": f.req["launch_binding_tasks"] = ["NT-04"]
+            elif mutation == "missing-inputs": f.req.pop("launch_binding_inputs")
+            else: f.req["cell_jobs"][self.CELL] = "foreign"
+            with self.subTest(mutation=mutation), self.assertRaises((ValueError, KeyError)): f.produce()
+
+    def test_hook_f04_refuses_sidecar_identity_incomplete_named_case_and_projection_tampering(self):
+        helper, f = self.fixture()
+        record = f.produce()
+        changed = copy.deepcopy(record)
+        result = next(r for r in changed["native"]["results"] if r["cell"] == self.CELL)
+        result["components"][0]["selectors"].pop()
+        with self.assertRaises(ValueError): f.verify(changed)
+        for platform in sorted(binding.PLATFORMS):
+            identity = helper.sidecars[platform]
+            saved, metadata = f.data[identity], copy.deepcopy(helper.sidecar_metadata[identity])
+            helper.mutate_sidecar(platform, lambda files: files.pop("workspaces-32.json"))
+            with self.subTest(platform=platform), self.assertRaises(ValueError): f.produce()
+            f.data[identity] = saved
+            helper.sidecar_metadata[identity].clear(); helper.sidecar_metadata[identity].update(metadata)
+        for mutation in ("source", "profile", "runtime", "imports", "count", "launch"):
+            platform = "windows/amd64"; identity = helper.sidecars[platform]
+            saved, metadata = f.data[identity], copy.deepcopy(helper.sidecar_metadata[identity])
+            def corrupt(files):
+                raw = json.loads(files["workspaces-32.json"])
+                if mutation == "source": raw["source_commit"] = "f" * 40
+                elif mutation == "profile": raw["profile"] = "foreign"
+                elif mutation == "runtime": raw["runtime_after"]["isolated"] = 0
+                elif mutation == "imports": raw["imports"][0]["path"] = "core/pysrc/_host.py"
+                elif mutation == "count": raw["workspace_count"] = 31
+                else: raw["launch_files"].pop()
+                files["workspaces-32.json"] = json.dumps(raw).encode()
+            helper.mutate_sidecar(platform, corrupt)
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError): f.produce()
+            f.data[identity] = saved
+            helper.sidecar_metadata[identity].clear(); helper.sidecar_metadata[identity].update(metadata)
+        def skipped(files):
+            raw = json.loads(files["native-tests.json"])
+            row = next(r for r in raw["subtests"] if r["test"].endswith("/workspaces-32"))
+            row["result"] = "skip"
+            files["native-tests.json"] = json.dumps(raw).encode()
+            stamp = json.loads(files["ci20-native-tested.json"])
+            files["native-observation.json"] = json.dumps(existing.reports.admit_go(raw, stamp, f.tree)).encode()
+        f.rewrite("linux/arm64", skipped)
+        with self.assertRaises(ValueError): f.produce()
+
+
 if __name__ == '__main__':
     unittest.main()

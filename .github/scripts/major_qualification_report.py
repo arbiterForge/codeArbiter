@@ -1583,6 +1583,27 @@ def _hook_review_members(repo):
         require(actual == expected, "hook review agent inventory differs")
 
 
+Q02_FINDING_RECIPES = {
+    "disposition:findings:C-F02": {
+        "script": ".github/scripts/test_release_workflow.py",
+        "observation": "q02-release",
+        "selectors": frozenset(
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest." + name
+            for name in (
+                "test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+                "test_route_publication_is_observed_after_every_target_settles",
+                "test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+                "test_no_successful_ci_is_refused",
+                "test_source_no_longer_on_main_is_refused",
+                "test_expired_or_missing_artifacts_are_reported_not_hidden",
+                "test_selection_that_differs_from_the_approved_candidate_is_refused",
+                "test_workflow_run_event_binds_its_own_run",
+            )
+        ),
+    },
+}
+
+
 def _q02_python_command(argv):
     require(isinstance(argv, list) and len(argv) == 2 and all(type(v) is str and v for v in argv)
             and any(argv[1].replace("\\", "/") == script or argv[1].replace("\\", "/").endswith("/" + script)
@@ -2440,9 +2461,21 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                             and set(group["selectors"]) == HOOK_REVIEW_FINDING_SELECTORS,
                             "hook finding profile requires its complete exact declarative finding composition")
                 elif profile == Q02_SOURCE_PROFILE:
-                    require(set(group["cells"]) <= Q02_SOURCE_CELLS
-                            and set(group["selectors"]) <= Q02_REQUIRED_SELECTORS,
-                            "Q02 implementation profile cannot qualify another task or scope")
+                    if cell in Q02_FINDING_RECIPES:
+                        recipe = Q02_FINDING_RECIPES[cell]
+                        require(set(group["cells"]) == {cell}
+                                and set(group["selectors"]) == recipe["selectors"]
+                                and job_name == Q02_SOURCE_JOB
+                                and group["observation"] == recipe["observation"],
+                                "Q02 profile requires the complete exact finite finding composition")
+                        _q02_python_command(argv)
+                        require(argv[1].replace("\\", "/") == recipe["script"]
+                                or argv[1].replace("\\", "/").endswith("/" + recipe["script"]),
+                                "Q02 finite finding requires its original release entry point")
+                    else:
+                        require(set(group["cells"]) <= Q02_SOURCE_CELLS
+                                and set(group["selectors"]) <= Q02_REQUIRED_SELECTORS,
+                                "Q02 implementation profile cannot qualify another task or scope")
                 elif profile == SOURCE_PROFILE:
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
                 elif profile == SDK_SOURCE_PROFILE:

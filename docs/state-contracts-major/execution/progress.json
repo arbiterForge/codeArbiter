@@ -5282,6 +5282,15 @@
       "status": "LOCAL_TARGETED_CHECKS_AND_INDEPENDENT_REVIEW_PASS",
       "Windows_Pi_original_job": "134036424339 SUCCESS; old timeout cause UNKNOWN",
       "runtime_qualification": false
+    },
+    "two_existing_finding_maps": {
+      "controller_anchor": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+      "record": "docs/state-contracts-major/execution/evidence/two-finding-maps-d7/development.json",
+      "findings": [
+        "C-F02",
+        "HOOK-F04"
+      ],
+      "status": "LOCAL_ADMISSION_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
     }
   },
   "checkpoint_history": [

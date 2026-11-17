@@ -1,0 +1,37 @@
+{
+ "route": "ca-feature continuation of existing selected WORK/PROGRAM",
+ "criteria": [
+  {
+   "id": "CF02",
+   "claim": "Complete exact eight original source selection/report/refusal cases admitted only through original Q02 release transport",
+   "evidence": [
+    "target-red",
+    "target-green",
+    "controls"
+   ]
+  },
+  {
+   "id": "HF04",
+   "claim": "Complete original HW04 six-platform native consumers and same mandatory identity/count sidecars admitted for exactly HOOK-F04",
+   "evidence": [
+    "target-red",
+    "target-green",
+    "controls"
+   ]
+  },
+  {
+   "id": "BOUNDARIES",
+   "claim": "Incomplete/foreign/profile/script/source/namespace/case/sidecar/projection inputs refuse, with old native and Q02 contracts retained",
+   "evidence": [
+    "controls",
+    "affected",
+    "affected-fixture-successor",
+    "preservation.json"
+   ]
+  }
+ ],
+ "coverage": "No numeric Python tooling per exact CTX-TECH-STACK FACT-005; direct owning unittest/critical-path refusal evidence. No Go/TS/installed/native-runtime coverage is claimed.",
+ "syntax": "All5 changed Python sources compile via stdlib compile without pyc writes; JSON parses and preserves old fields/maps.",
+ "lint": "No separate Python lint/type tool declared for this surface; no dependency/tool install.",
+ "status": "Local implementation/checks complete; independent review, original strict owner/scans, actual normal exact-head CI and all actual runtime/task/human acceptance remain separately pending."
+}
