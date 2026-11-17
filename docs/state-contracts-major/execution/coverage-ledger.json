@@ -1187,85 +1187,157 @@
    "evidence": []
   },
   "SW-F01": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F01-preserved.json",
+     "sha256": "fe227699d73cb30033f21023414d5f9e328ef0f8f6e762eb97f0ecaac6ed238c"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Packaged prerequisites permit an already available Nixpacks path or the supported Node/Python fallback; they do not install host tooling or require Nixpacks universally. No model/runtime/installed/whole-task qualification."
   },
   "SW-F02": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F02-preserved.json",
+     "sha256": "fca546752921e5b922acb4688ca5d749b000cc079eba09df839082e8d23d7cb3"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Shell exit detaches and leaves the box running; destruction is a separate explicit named operation. No model/runtime/installed/whole-task qualification."
   },
   "SW-F03": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F03-preserved.json",
+     "sha256": "4091406c9ed25f841f71e6acfe3a841042a96aa43ca85a801779319f5756832b"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Named destroy targets only its instance and selected source volume; explicit broad prune uses distinct container and volume discovery sets captured at different times. No model/runtime/installed/whole-task qualification."
   },
   "SW-F04": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F04-preserved.json",
+     "sha256": "77ded1cdd2284dd12bb7ef892fc23a023f2f6f92964bf9e7a19e480e47111bc0"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Build preparation copies cloned source into an owned temporary host directory; runtime no-host-bind isolation is a separate narrower statement. No model/runtime/installed/whole-task qualification."
   },
   "SW-F05": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F05-preserved.json",
+     "sha256": "6a2e2500722af9bdf4c7f122a63845463fc42c3abdaf700c9170a2ff736eb132"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Ordinary accepted network policy names resolve to effective offline; experimental allowlist helpers do not grant ordinary-create capability. No model/runtime/installed/whole-task qualification."
   },
   "SW-F06": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
    "task_ids": [
     "SBX-C01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F06-preserved.json",
+     "sha256": "555b814b90d45d71efb170988d48ee2981156b038ac288991d3a3d8379db190f"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: All affected public surfaces describe stable v2 identity and observed provenance/image identity as prerequisites for reuse; equal dependency hash or tag existence alone does not qualify a hit. No model/runtime/installed/whole-task qualification."
   },
   "SW-F07": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
    "task_ids": [
     "SBX-D04"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F07-preserved.json",
+     "sha256": "2c4aa237d84832cd7378235356b4f34e90beb0e8c547491a453d4c687bd24271"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Consumer repositories use packaged prerequisites and do not need maintainer spike notes, maintainer decision files or manufactured consumer ADRs. No model/runtime/installed/whole-task qualification."
   },
   "SW-F08": {
-   "owner": null,
+   "owner": "sandbox",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "SBX-D04"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F08-preserved.json",
+     "sha256": "25d97e4072651ea9fb4487e33f7017578b1334211a7f49e4c5fc2d4e08b8bf08"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: A separate executable enforces its actual argv/token/co-mount/policy/hardening guards; five workflow phases are agent guidance rather than mechanically proved review or consent. No model/runtime/installed/whole-task qualification."
   },
   "SW-F09": {
-   "owner": null,
+   "owner": "hooks-workflows",
    "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
    "task_ids": [
     "HOST-D01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+     "ref": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/proofs/SW-F09-preserved.json",
+     "sha256": "f624694d213ced89fb2c177e1b4154af5cdcbcac35ef6ddbdcee7391353f4999"
+    }
+   ],
+   "candidate_contract_note": "Source-only finite normative correction: Activation gates governed repository effects after narrow pre-activation maintenance; opted-in Git/common bookkeeping and init-owned exclusion writes extend beyond .codearbiter without new permission. No model/runtime/installed/whole-task qualification."
   }
  },
  "machines": {
