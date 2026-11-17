@@ -3926,10 +3926,9 @@
     }
   ],
   "next_actions": [
-    "Finish finite Farm observation route, then inspect actual stable-code source clauses and adopt only genuinely supported source successors; original runtime epochs and all tasks stay distinct.",
-    "Admit actualoriginal native8 proof andSWnormative9onlyafterproperownerreview/validation; preserveepochs andhistories.",
-    "Push onecoherent1119successor andrequireexactnewheadCI/Docs beforeauthorizedmergeintomajor; main1098held.",
-    "Continue finite finding-specific originalobservations,13installedmatrix andgenuinelyuncovered participant/upgrade/rollback journeys; no taskpromotionfromsuitetotals."
+    "Finish one actual stable-code source reinspection batch, including original stale families and finite supported normative findings; retain all old source/runtime evidence and unsupported clauses.",
+    "Push coherent1119successor and require its exact-head CI/Docs and required merge gate before authorized child merge into major; main1098held for user testing.",
+    "Consume genuine original normal integration observations for finite mapped findings; complete actual installed/participant/upgrade/rollback journeys without promoting tasks from suite totals."
   ],
   "delivery_state": "SOURCE_OBSERVER_AND_WORDING_LOCAL_SUCCESSOR_NATIVE_DIAGNOSIS_ACTIVE_MAIN_HELD",
   "trusted_readiness_reference": null,
@@ -5091,10 +5090,10 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-17T10:09:51.862536+00:00",
-    "controller_anchor": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+    "recorded_at": "2026-11-17T12:13:53.849457+00:00",
+    "controller_anchor": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
     "integration_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-    "delivery_pr": 1116,
+    "delivery_pr": 1119,
     "previous_child": {
       "pr": 1115,
       "state": "MERGED",
@@ -5122,7 +5121,7 @@
       "total": 57,
       "meaning": "Disposition accounting only; missing implementation is not inferred."
     },
-    "current_staged_integrity": "Current713source and allretainedrecords pendingexactstagedowner;64source-only bindingsneedsemanticrefreshaftercode/docschange.",
+    "current_staged_integrity": "Actual all-source projection before Farm commit:1723pure-source rows,970authenticated current and753stale. Exact new staged original-owner check pending; no stale source proof automatically renewed.",
     "native_component_recipes": 40,
     "source_disposition_change": {
       "prior_epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
@@ -5263,6 +5262,19 @@
       "record": "docs/state-contracts-major/execution/evidence/visible-stdin-guard-d5/development.json",
       "status": "LOCAL_REGRESSION_AND_INDEPENDENT_REVIEW_PASS",
       "main_merge": "HELD_FOR_USER_TESTING"
+    },
+    "farm_finite_finding_observer": {
+      "record": "docs/state-contracts-major/execution/evidence/farm-finding-observer-ddd/development.json",
+      "findings": 4,
+      "named_selectors": 33,
+      "positive_source_inputs": 47,
+      "status": "LOCAL_CRITERION_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+    },
+    "remaining_dispositions_snapshot": {
+      "findings_PLANNED": 49,
+      "machines_PLANNED": 0,
+      "transitions_PLANNED": 0,
+      "source_applicability_is_separate": true
     }
   },
   "checkpoint_history": [

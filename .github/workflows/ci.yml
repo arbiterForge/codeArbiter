@@ -2335,6 +2335,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     defaults:
       run:
         working-directory: plugins/ca/tools
@@ -2411,13 +2414,93 @@ jobs:
             exit 1
           fi
           echo "farm.js is in sync with farm.ts"
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.x"
+      - name: Prepare Farm source-test inputs
+        id: farm_source_prepare
+        shell: bash
+        run: >-
+          python -B ../../../.github/scripts/major_qualification_report.py prepare-source
+          --repo ../../.. --source-profile farm-tools-v1
+          --output "$RUNNER_TEMP/farm-source-inputs"
+          --job-name "[CHECK] | [CA  ] | Farm dispatcher contract"
       - name: Test
         # Includes farm-dist.test.ts (issue #407), which executes the REBUILT
         # farm.js under plain Node. Before it, CI proved source behaviour and
         # deterministic generation but never that the ESM bundle users actually
         # run starts, parses argv, resolves its bundled modules, or preserves
         # exit semantics. A byte-identical artifact is not a working one.
-        run: npm test
+        id: farm_tools_observed
+        shell: bash
+        run: >-
+          python -B ../../../.github/scripts/major_qualification_report.py observe-vitest
+          --repo ../../.. --execution-cwd plugins/ca/tools
+          --source-payload "$RUNNER_TEMP/farm-source-inputs"
+          --raw-results "$RUNNER_TEMP/farm-vitest.json"
+          --output "$RUNNER_TEMP/farm-vitest-observation.json"
+          -- npm test -- --reporter=default --reporter=json
+          --outputFile.json="$RUNNER_TEMP/farm-vitest.json"
+      - name: Preserve original Farm named test results
+        # Failed reports remain diagnostic; only successful original jobs/runs
+        # can qualify through the existing authenticated evidence reader.
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: farm-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/farm-vitest.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+
+      - name: Upload Farm source-test inputs
+        id: farm_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && steps.farm_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-farm-dispatcher
+          path: ${{ runner.temp }}/farm-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original Farm source-test observation
+        if: ${{ !cancelled() && (success() || failure()) && steps.farm_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: farm-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/farm-vitest-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Emit original Farm source qualification report
+        id: farm_qualification_emit
+        if: ${{ !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.farm_tools_observed.outcome == 'success' && steps.farm_source_upload.outcome == 'success' }}
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B .github/scripts/major_qualification_report.py emit \
+            --repo . --output "$RUNNER_TEMP/qualification.json" \
+            --job-name "[CHECK] | [CA  ] | Farm dispatcher contract" \
+            --observation "farm-tools=$RUNNER_TEMP/farm-vitest-observation.json" \
+            --payload-root "major-source-inputs-farm-dispatcher=${{ github.workspace }}"
+          python -c 'import json,os; from pathlib import Path; r=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); j=r["job_id"]; assert type(j) is int and j>0; f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(j),file=f); f.close()'
+      - name: Upload major qualification report
+        if: steps.farm_qualification_emit.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.farm_qualification_emit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
 
   ca-sandbox-tools:
     name: "[CHECK] | [SBX ] | Sandbox driver contract"

@@ -171,10 +171,11 @@ def reviewed_cold_event_guards(block: str) -> set[str]:
 
 
 def reviewed_vitest_source_event_guards(block: str, job_id: str) -> set[str]:
-    """Only the two original source-report emitters can omit PR/queue reports."""
+    """Only the three original source-report emitters can omit PR/queue reports."""
     roles = {
         "coverage-union-pi": ("Pi", "pi", " && matrix.os == 'windows-latest'"),
         "ca-sandbox-tools": ("Sandbox", "sandbox", ""),
+        "tools": ("Farm", "farm", ""),
     }
     if job_id not in roles or not block.startswith("  " + job_id + ":"):
         raise ValueError("unknown Vitest source-report owner")
@@ -3071,7 +3072,7 @@ class WorkflowContractTest(unittest.TestCase):
             block = jobs.get(job_id, "")
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
-            vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools") else set()
+            vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
             sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
             # Job-level AND step-level conditions: a step gated to

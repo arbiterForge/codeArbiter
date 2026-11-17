@@ -166,3 +166,8 @@ site/**/*.json    text eol=lf
 # unittest subcase label's trailing space and Docker stderr's final blank line.
 /docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.stderr whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/stderr.log whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+
+# Farm source observations bind these exact manifest and example-input bytes.
+/.github/fixtures/artifact-release-manifest.json text eol=lf
+/core/artifact-release-manifest.json text eol=lf
+/plugins/ca/tools/.env.example text eol=lf

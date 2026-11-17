@@ -3642,5 +3642,366 @@ class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
                 self.fail("original overflow report boundary lacks its real target/survivor composition: " + str(exc))
             self.assertEqual([r["cell"] for r in report["results"]], ["disposition:findings:SF09"])
 
+
+class FarmFiniteFindingObservationPrerequisiteTests(unittest.TestCase):
+    """Criterion for original Farm source-test report admission, not runtime proof."""
+    PROFILE = "farm-tools-v1"
+    JOB = "[CHECK] | [CA  ] | Farm dispatcher contract"
+    PAYLOAD = "major-source-inputs-farm-dispatcher"
+    UPLOAD = "Upload Farm source-test inputs"
+    PATHS = frozenset(('.github/fixtures/artifact-release-manifest.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/workflows/ci.yml',
+ 'core/artifact-release-manifest.json',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca/tools/.env.example',
+ 'plugins/ca/tools/__fixtures__/simple.plan.json',
+ 'plugins/ca/tools/artifact-manifest.test.ts',
+ 'plugins/ca/tools/artifact-manifest.ts',
+ 'plugins/ca/tools/exec.test.ts',
+ 'plugins/ca/tools/exec.ts',
+ 'plugins/ca/tools/farm-cleanup-observation.test.ts',
+ 'plugins/ca/tools/farm-dist.test.ts',
+ 'plugins/ca/tools/farm-interruption.test.ts',
+ 'plugins/ca/tools/farm-recovery.test.ts',
+ 'plugins/ca/tools/farm-recovery.ts',
+ 'plugins/ca/tools/farm-registry-lock.test.ts',
+ 'plugins/ca/tools/farm-surface.test.ts',
+ 'plugins/ca/tools/farm.js',
+ 'plugins/ca/tools/farm.test.ts',
+ 'plugins/ca/tools/farm.ts',
+ 'plugins/ca/tools/farm.unit.test.ts',
+ 'plugins/ca/tools/mutation.test.ts',
+ 'plugins/ca/tools/mutation.ts',
+ 'plugins/ca/tools/package-lock.json',
+ 'plugins/ca/tools/package.json',
+ 'plugins/ca/tools/plan-contract.test.ts',
+ 'plugins/ca/tools/plan.schema.json',
+ 'plugins/ca/tools/redactor.test.ts',
+ 'plugins/ca/tools/redactor.ts',
+ 'plugins/ca/tools/state-contracts.test.ts',
+ 'plugins/ca/tools/tsconfig.json',
+ 'plugins/ca/tools/vitest.config.ts',
+ 'plugins/ca/tools/worktree-fs.test.ts',
+ 'plugins/ca/tools/worktree-fs.ts'))
+    EXPECTED = {'disposition:findings:SF04': {'selectors': ['vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations candidate-five-fields',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations qualified-declaration-six-fields',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-field',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-format',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations malformed-context',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-context-platform',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations wrong-context-binary',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-context-field',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations wrong-platform-path',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unqualified-context',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations bounds UTF-8 bytes before parsing',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations rejects duplicate and '
+                                             'escaped-duplicate keys'],
+                               'scope': 'Finite shared Farm parser acceptance of the optional sixth '
+                                        'context_qualification declaration and all original '
+                                        'malformed/unknown/duplicate/bounded input refusals. Fixtures are '
+                                        'synthetic schema declarations, never native runtime or context '
+                                        'qualification.'},
+ 'disposition:findings:SF05': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 '
+                                             'exclusive identities preserve evidence under a same-ID race',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 '
+                                             'reconciles a post-merge crash in real Git without changing a '
+                                             'ref or calling an author',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-merge process interruption preserves unknown cleanup '
+                                             'and concurrent receipt-only recovery (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-merge process interruption preserves unknown cleanup '
+                                             'and concurrent receipt-only recovery (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-commit process interruption retains unacknowledged '
+                                             'candidate without recovered green (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-commit process interruption retains unacknowledged '
+                                             'candidate without recovered green (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real pre-merge interruption preserves pending merge resources '
+                                             'through receipt-only recovery (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real pre-merge interruption preserves pending merge resources '
+                                             'through receipt-only recovery (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'unblocked real post-merge hook control publishes normal green '
+                                             'receipt (bundle)',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #397: a failed report publication leaves the '
+                                             "previous run's complete report intact — never a truncated one",
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #387: a green run whose farm-report.json cannot '
+                                             'be published exits non-zero and never claims a Report path',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) FARM-R01 journal publication failure drains '
+                                             'independent tasks and retains their real outcomes',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #387: a failure to publish farm-report.md also '
+                                             'fails the run'],
+                               'scope': 'Finite JSON/Markdown/effect-journal receipt failure remains '
+                                        'explicit, previous complete report survives and independently '
+                                        'running tasks drain; receipt-only recovery through actual '
+                                        'source/bundle interruptions never calls an author or changes '
+                                        'recorded refs/registry/original evidence. Deterministic local HTTP '
+                                        'replies substitute model/provider; no real provider, installed '
+                                        'approval or global process-containment qualification.'},
+ 'disposition:findings:SF06': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 '
+                                             'preserves failed containment and admits no reset or second '
+                                             'author',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate '
+                                             'retains executor outcome instead of flattening code 125 into '
+                                             'test failure',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 '
+                                             'uncontained sample setup retains scratch resources without '
+                                             'authoring or reset'],
+                               'scope': 'Finite preservation of failed containment through actual '
+                                        'gate/runTask/setup consumers: no reset, mutation or second author; '
+                                        'retained outcome and scratch resources remain unknown. Executor '
+                                        'observations are injected, not OS containment proof.'},
+ 'disposition:findings:SF07': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 '
+                                             'refuses unknown Git drift instead of inventing a clean '
+                                             'observation',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 '
+                                             'bounded read-only retry accepts only a successful current '
+                                             'observation',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage dirty drift controls dependent mutations',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage unavailable drift controls dependent mutations',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage clean drift controls dependent mutations'],
+                               'scope': 'Finite failed/malformed Git observation refusal, bounded read-only '
+                                        'retry and fresh pre-stage dirty/unavailable/clean mutation '
+                                        'decisions; fixture observations do not qualify arbitrary '
+                                        'repository/concurrency or installed host state.'}}
+
+    def test_original_unfiltered_farm_findings_have_closed_source_and_named_report_admission(self):
+        # Existing public API must admit this finite original owner. The current
+        # absence is an assertion failure, never a missing method/import seam.
+        try:
+            spec = owner.source_profile(self.PROFILE)
+        except ValueError as exc:
+            self.fail("original Farm finding source profile is unavailable: " + str(exc))
+        self.assertEqual(spec, {"paths": self.PATHS, "job": self.JOB,
+            "payload": self.PAYLOAD, "upload": self.UPLOAD, "root": "plugins/ca/tools"})
+        configured = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        groups = [g for g in configured if set(g["cells"]) & set(self.EXPECTED)]
+        self.assertEqual(len(groups), len(self.EXPECTED))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        for cell, row in self.EXPECTED.items():
+            group, = [g for g in groups if cell in g["cells"]]
+            self.assertEqual(group["cells"], [cell])
+            self.assertEqual(group["job"], self.JOB)
+            self.assertEqual(policy["cell_job_bindings"][cell], self.JOB)
+            self.assertEqual(group["payload_name"], self.PAYLOAD)
+            self.assertEqual(group["observation"], "farm-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(set(group["selectors"]), set(row["selectors"]))
+        fixture_spec = {"job": self.JOB, "payload": self.PAYLOAD, "root": "plugins/ca/tools",
+            "test": "plugins/ca/tools/state-contracts.test.ts", "paths": sorted(self.PATHS)}
+        with mock.patch.dict(TS_PROFILE_FIXTURES, {self.PROFILE: fixture_spec}), vitest_source_fixture(self.PROFILE) as f:
+            source_job = {"id": 9, "name": self.JOB, "status": "in_progress", "conclusion": None,
+                "steps": [{"name": self.UPLOAD, "status": "completed", "conclusion": "success"}]}
+            payload = VitestSourceProducerTests.authenticate(self, f, job=source_job)
+            observed = {"format": owner.OBSERVATION, **f["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": f["command"], "exit_code": 0,
+                "tests": [{"id": s, "result": "passed"} for s in sorted({s for r in self.EXPECTED.values() for s in r["selectors"]})],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": self.PROFILE,
+                    "payload_name": self.PAYLOAD,
+                    "manifest_sha256": owner.readiness.digest((f["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+            required = {**f["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            report = owner.build_report(required, job_name=self.JOB, job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": groups}, observations={"farm-tools": observed},
+                payloads={self.PAYLOAD: payload})
+            self.assertEqual({r["cell"] for r in report["results"]}, set(self.EXPECTED))
+            self.assertTrue(all(r["result"] == "PASSED" for r in report["results"]))
+
+    @contextmanager
+    def bound_farm(self):
+        fixture = {"job": self.JOB, "payload": self.PAYLOAD, "root": "plugins/ca/tools",
+            "test": "plugins/ca/tools/state-contracts.test.ts", "paths": sorted(self.PATHS)}
+        with mock.patch.dict(TS_PROFILE_FIXTURES, {self.PROFILE: fixture}), vitest_source_fixture(self.PROFILE) as f:
+            source_job = {"id": 9, "name": self.JOB, "status": "in_progress", "conclusion": None,
+                "steps": [{"name": self.UPLOAD, "status": "completed", "conclusion": "success"}]}
+            payload = VitestSourceProducerTests.authenticate(self, f, job=source_job)
+            groups = [g for g in owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+                if set(g["cells"]) & set(self.EXPECTED)]
+            observed = {"format": owner.OBSERVATION, **f["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": ["npm", "test"], "exit_code": 0,
+                "tests": [{"id": name, "result": "passed"} for name in sorted({s for r in self.EXPECTED.values() for s in r["selectors"]})],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": self.PROFILE,
+                    "payload_name": self.PAYLOAD, "manifest_sha256": payload["source_manifest_sha256"]}}
+            req = {**f["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            def build(o=observed, consumed=payload, selected=groups, required=req, job=self.JOB):
+                return owner.build_report(required, job_name=job, job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": selected},
+                    observations={"farm-tools": o}, payloads={self.PAYLOAD: consumed})
+            yield f, observed, payload, groups, req, build
+
+    def test_farm_exact_selector_unions_and_source_identities_refuse_partial_or_forged_credit(self):
+        with self.bound_farm() as (f, observed, payload, groups, req, build):
+            self.assertEqual(len(build()["results"]), 4)
+            for name in sorted({s for g in groups for s in g["selectors"]}):
+                for state in ("missing", "skipped", "failed", "duplicate"):
+                    changed = copy.deepcopy(observed); row = next(t for t in changed["tests"] if t["id"] == name)
+                    if state == "missing": changed["tests"].remove(row)
+                    elif state == "duplicate": changed["tests"].append(dict(row))
+                    else: row["result"] = state
+                    with self.subTest(selector=name, state=state), self.assertRaisesRegex(ValueError, "selected named test"):
+                        build(o=changed)
+            for index, group in enumerate(groups):
+                for selector in group["selectors"]:
+                    selected = copy.deepcopy(groups); selected[index]["selectors"].remove(selector)
+                    with self.subTest(reduced=selector), self.assertRaisesRegex(ValueError, "complete exact finite finding"):
+                        build(selected=selected)
+                selected = copy.deepcopy(groups); selected[index]["selectors"].append("vitest:foreign.test.ts:invented")
+                with self.assertRaises(ValueError): build(selected=selected)
+            for failure in ("source", "run", "unstable", "exit", "profile", "manifest", "upload", "role", "job"):
+                o, consumed, selected, required = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups), copy.deepcopy(req)
+                job = self.JOB
+                if failure == "source": o["source_commit"] = "f" * 40
+                if failure == "run": o["ci_run_id"] = 8
+                if failure == "unstable": o["source_stable"] = False
+                if failure == "exit": o["exit_code"] = 1
+                if failure == "profile": o["source_input_binding"]["profile"] = "sandbox-tools-v1"
+                if failure == "manifest": consumed["source_manifest_sha256"] = "0" * 64
+                if failure == "upload": consumed["source_upload_job_id"] = True
+                if failure == "role": selected[0]["payload_name"] = "unrelated-native-archive"
+                if failure == "job":
+                    job = "foreign Farm owner"
+                    for g in selected: g["job"] = job
+                    required["cell_jobs"] = dict.fromkeys(required["cells"], job)
+                with self.subTest(failure=failure), self.assertRaises(ValueError): build(o, consumed, selected, required, job)
+            for cell in ("task:FARM-R01", "installed:farm:linux", "disposition:machines:S29", "disposition:findings:SF01"):
+                selected = copy.deepcopy(groups[:1]); selected[0]["cells"] = [cell]
+                required = {**req, "cells": [cell], "cell_jobs": {cell: self.JOB}}
+                with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=selected, required=required)
+
+    def test_external_manifest_inputs_and_exact_farm_namespace_are_actually_bound(self):
+        with self.bound_farm() as (f, *_):
+            stage = f["base"] / "prepared"
+            self.assertEqual(owner.prepare_source_payload(f["repo"], stage, self.JOB, self.PROFILE), f["manifest"])
+            for name in ("core/artifact-release-manifest.json", ".github/fixtures/artifact-release-manifest.json"):
+                target = f["repo"] / name; before = target.read_bytes()
+                try:
+                    target.write_bytes(before + b"changed external declaration\n")
+                    with self.subTest(input=name), self.assertRaises(ValueError):
+                        owner.prepare_source_payload(f["repo"], f["base"] / "refused", self.JOB, self.PROFILE)
+                finally: target.write_bytes(before)
+            extra = f["repo"] / "plugins/ca/tools/unbound-contract.ts"; extra.write_bytes(b"unbound")
+            try:
+                with self.assertRaises(ValueError): owner._ts_members(f["repo"], self.PROFILE)
+            finally: extra.unlink()
+            self.assertEqual(owner.source_profile(self.PROFILE)["paths"], self.PATHS)
+
+    def test_final_farm_reader_authenticates_exact_original_upload_owner(self):
+        cell = "disposition:findings:SF05"; source = {"id": 8, "name": self.PAYLOAD}
+        artifact = {"id": 10, "name": "major-qualification-9"}
+        job = {"id": 9, "name": self.JOB, "status": "completed", "conclusion": "success"}
+        req = {"source_commit": "a" * 40, "source_tree": "b" * 40, "ci_run_id": 7,
+            "cells": [cell], "cell_jobs": {cell: self.JOB}, "required_artifact_names": [self.PAYLOAD]}
+        raw = io.BytesIO()
+        with zipfile.ZipFile(raw, "w") as archive: archive.writestr("source-member", b"inert final-reader role fixture")
+        content = raw.getvalue(); members = owner.readiness.members(content)
+        report = {"schema": "codearbiter-major-qualification/2", **{k: req[k] for k in ("source_commit", "source_tree", "ci_run_id")},
+            "job_id": 9, "payloads": [{"artifact_id": 8, "archive_sha256": owner.readiness.digest(content), "members": members}],
+            "results": [{"cell": cell, "result": "PASSED", "commands": [{"argv": ["npm", "test"], "exit_code": 0}],
+                "selected_population": 1, "executed_population": 1, "payload_artifact_id": 8}]}
+        jobs = [job, {"id": 11, "name": "major readiness producer"}]
+        with mock.patch.object(owner.readiness, "read_artifact_json", return_value=report), \
+             mock.patch.object(owner.readiness, "artifact_bytes", return_value=content), \
+             mock.patch.object(owner.readiness, "validate_upload") as attribution:
+            owner.readiness.produce(req, [source, artifact], jobs)
+            self.assertEqual(attribution.call_args_list, [mock.call(job, artifact, "Upload major qualification report"),
+                                                       mock.call(job, source, self.UPLOAD)])
+            def refuse(_job, _artifact, step):
+                if step == self.UPLOAD: raise owner.readiness.ReadinessError("original Farm source upload refused")
+            attribution.side_effect = refuse
+            with self.assertRaises(owner.readiness.ReadinessError): owner.readiness.produce(req, [source, artifact], jobs)
+            attribution.side_effect = None
+            foreign = {**job, "name": "foreign Farm source owner"}
+            with self.assertRaises(owner.readiness.ReadinessError):
+                owner.readiness.produce({**req, "cell_jobs": {cell: foreign["name"]}}, [source, artifact], [foreign, jobs[1]])
+
+    @staticmethod
+    def farm_workflow_contract(ci):
+        import re
+        import test_ci_impact as reader
+        block = reader.workflow_jobs(ci)["tools"]
+        predicate, = reader.reviewed_vitest_source_event_guards(block, "tools")
+        if block.count('GH_TOKEN: ${{ github.token }}') != 1 or 'continue-on-error:' in block:
+            raise ValueError("Farm authority or suppression differs")
+        if '    permissions:\n      contents: read\n      actions: read\n' not in block:
+            raise ValueError("Farm metadata permissions differ")
+        steps = {part.splitlines()[0]: part for part in re.split(r'(?m)^      - name: ', block)[1:]}
+        original = steps["Test"]
+        required = ['id: farm_tools_observed', '--execution-cwd plugins/ca/tools', '--source-payload "$RUNNER_TEMP/farm-source-inputs"',
+            '-- npm test -- --reporter=default --reporter=json', '--outputFile.json="$RUNNER_TEMP/farm-vitest.json"']
+        if any(t not in original for t in required) or block.count('-- npm test') != 1 or re.search(r'(?m)^        if:', original):
+            raise ValueError("original Farm execution differs or repeats")
+        if any(t in original for t in ('--filter', '--testNamePattern', 'GH_TOKEN:', '|| true')):
+            raise ValueError("original Farm population or credentials differ")
+        prepare, upload, emit = (steps[n] for n in ('Prepare Farm source-test inputs', 'Upload Farm source-test inputs',
+                                                   'Emit original Farm source qualification report'))
+        if not block.index('      - name: Fail if committed farm.js is stale') < block.index('      - name: Prepare Farm source-test inputs') < block.index('      - name: Test'):
+            raise ValueError("Farm build/source/test ordering differs")
+        if ('--source-profile farm-tools-v1' not in prepare or 'GH_TOKEN:' in prepare or
+            'name: major-source-inputs-farm-dispatcher' not in upload or
+            '--observation "farm-tools=$RUNNER_TEMP/farm-vitest-observation.json"' not in emit or
+            '--payload-root "major-source-inputs-farm-dispatcher=${{ github.workspace }}"' not in emit or
+            '--output "$RUNNER_TEMP/qualification.json"' not in emit):
+            raise ValueError("closed Farm producer role differs")
+        if block.index('      - name: Upload Farm source-test inputs') > block.index('      - name: Emit original Farm source qualification report'):
+            raise ValueError("Farm report precedes source upload")
+        return predicate
+
+    def test_farm_original_once_workflow_and_closed_authority_refuse_mutants(self):
+        ci = (owner.ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn("github.event_name == 'push'", self.farm_workflow_contract(ci))
+        for before, after in (
+            ('--source-profile farm-tools-v1', '--source-profile sandbox-tools-v1'),
+            ('-- npm test -- --reporter=default --reporter=json', '-- npm test -- --filter selected --reporter=default --reporter=json'),
+            ('--reporter=default --reporter=json', '--reporter=json'),
+            ('id: farm_tools_observed\n', 'id: farm_tools_observed\n        if: false\n'),
+            ('id: farm_tools_observed\n', 'id: farm_tools_observed\n        env:\n          GH_TOKEN: ${{ github.token }}\n'),
+            ('steps.farm_tools_observed.outcome == \'success\'', 'steps.farm_tools_observed.outcome != \'skipped\''),
+            ('steps.farm_source_upload.outcome == \'success\'', 'steps.farm_source_upload.outcome != \'skipped\''),
+            ('Emit original Farm source qualification report', 'Emit unreviewed Farm source qualification report'),
+            ('major-source-inputs-farm-dispatcher=${{ github.workspace }}', 'foreign-inputs=${{ github.workspace }}'),
+            ('--observation "farm-tools=', '--observation "foreign-tools='),
+        ):
+            self.assertIn(before, ci)
+            with self.subTest(mutation=before), self.assertRaises((ValueError, KeyError)): self.farm_workflow_contract(ci.replace(before, after, 1))
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

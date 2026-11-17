@@ -691,6 +691,89 @@ TS_FINDING_RECIPES = {
     ))},
 }
 
+# Farm reuses the original unfiltered source-test observer; native manifest
+# declarations do not confer native runtime or installed-host qualification.
+TS_PROFILE_PATHS["farm-tools-v1"] = TS_COMMON_PATHS | frozenset(('.github/fixtures/artifact-release-manifest.json',
+ 'core/artifact-release-manifest.json',
+ 'plugins/ca/tools/.env.example',
+ 'plugins/ca/tools/__fixtures__/simple.plan.json',
+ 'plugins/ca/tools/artifact-manifest.test.ts',
+ 'plugins/ca/tools/artifact-manifest.ts',
+ 'plugins/ca/tools/exec.test.ts',
+ 'plugins/ca/tools/exec.ts',
+ 'plugins/ca/tools/farm-cleanup-observation.test.ts',
+ 'plugins/ca/tools/farm-dist.test.ts',
+ 'plugins/ca/tools/farm-interruption.test.ts',
+ 'plugins/ca/tools/farm-recovery.test.ts',
+ 'plugins/ca/tools/farm-recovery.ts',
+ 'plugins/ca/tools/farm-registry-lock.test.ts',
+ 'plugins/ca/tools/farm-surface.test.ts',
+ 'plugins/ca/tools/farm.js',
+ 'plugins/ca/tools/farm.test.ts',
+ 'plugins/ca/tools/farm.ts',
+ 'plugins/ca/tools/farm.unit.test.ts',
+ 'plugins/ca/tools/mutation.test.ts',
+ 'plugins/ca/tools/mutation.ts',
+ 'plugins/ca/tools/package-lock.json',
+ 'plugins/ca/tools/package.json',
+ 'plugins/ca/tools/plan-contract.test.ts',
+ 'plugins/ca/tools/plan.schema.json',
+ 'plugins/ca/tools/redactor.test.ts',
+ 'plugins/ca/tools/redactor.ts',
+ 'plugins/ca/tools/state-contracts.test.ts',
+ 'plugins/ca/tools/tsconfig.json',
+ 'plugins/ca/tools/vitest.config.ts',
+ 'plugins/ca/tools/worktree-fs.test.ts',
+ 'plugins/ca/tools/worktree-fs.ts'))
+TS_PROFILE_ROOTS["farm-tools-v1"] = "plugins/ca/tools"
+TS_PROFILE_JOBS["farm-tools-v1"] = "[CHECK] | [CA  ] | Farm dispatcher contract"
+TS_PROFILE_PAYLOADS["farm-tools-v1"] = "major-source-inputs-farm-dispatcher"
+TS_PROFILE_UPLOADS["farm-tools-v1"] = "Upload Farm source-test inputs"
+TS_PROFILE_CELLS["farm-tools-v1"] = frozenset()
+TS_FINDING_RECIPES.update({
+    'disposition:findings:SF04': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys',
+    ))},
+    'disposition:findings:SF05': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)',
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact — never a truncated one",
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path',
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes',
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run',
+    ))},
+    'disposition:findings:SF06': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset',
+    ))},
+    'disposition:findings:SF07': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations',
+    ))},
+})
+
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
 
 

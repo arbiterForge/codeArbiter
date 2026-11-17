@@ -1,0 +1,10 @@
+{
+ "original_epoch": "91a22bf4ea29a156dd601c9385667d7f1feadedc",
+ "implementation_epoch": "d5f41252f4610d614eb51d709357ec511730313d",
+ "original_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-finding-prerequisite-b_o1vbd2\\delivery.json",
+ "original_delivery_sha256": "90c30acd1428b6e58623bdb2ee3e6bb73bc9f6242fffc4667eb5d9c9011e9d72",
+ "source_profile_AST_identical": true,
+ "Farm_profile_absent_in_d5": true,
+ "criterion_fragment_sha256": "5199953ad35cb4d9fdb077a9daa914c9ba79bb8ed7d0c18d04981f1f1a2328f1",
+ "replay": "not repeated merely because HEAD changed"
+}

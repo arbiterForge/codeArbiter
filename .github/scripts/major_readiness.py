@@ -1329,10 +1329,11 @@ def produce(req, artifacts, jobs):
                         require(job.get("name") == "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
                                 "mapped source-test payload original owner differs")
                         validate_upload(job, payload, "Upload mapped-work source-test inputs")
-                    elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver"):
+                    elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver", "major-source-inputs-farm-dispatcher"):
                         owner_name, upload_step = {
                             "major-source-inputs-pi-windows-coverage": ("Coverage union (Pi)  <os: windows-latest>", "Upload Pi source-test inputs"),
                             "major-source-inputs-sandbox-driver": ("[CHECK] | [SBX ] | Sandbox driver contract", "Upload Sandbox source-test inputs"),
+                            "major-source-inputs-farm-dispatcher": ("[CHECK] | [CA  ] | Farm dispatcher contract", "Upload Farm source-test inputs"),
                         }[payload["name"]]
                         require(job.get("name") == owner_name, "source-test payload original owner differs")
                         validate_upload(job, payload, upload_step)
