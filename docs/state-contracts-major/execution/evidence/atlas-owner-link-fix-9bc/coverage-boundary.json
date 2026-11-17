@@ -1,0 +1,99 @@
+{
+ "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.codearbiter\\context\\tech-stack.html",
+ "sha256": "bcbe7f53b4067b44fc4a5165fce0975bfab23e207c9e7989ac2f0b663281adda",
+ "owning_fact": "Coverage",
+ "declared_site_profile": "lines-branches",
+ "declared_site_production_scope": "scripts/**/*.ts excluding scripts/**/*.test.ts",
+ "stage": 2,
+ "floor_percent": 70,
+ "supported_full_measurement_host": "Ubuntu",
+ "this_measurement_host": "Windows",
+ "this_scope": "Only changed atlas-model.ts and atlas-render.ts; partial affected-source report, not full-tree or supported Ubuntu qualification.",
+ "per_file": {
+  "atlas-model.ts": {
+   "lines": {
+    "total": 71,
+    "covered": 70,
+    "skipped": 0,
+    "pct": 98.59
+   },
+   "functions": {
+    "total": 22,
+    "covered": 19,
+    "skipped": 0,
+    "pct": 86.36
+   },
+   "statements": {
+    "total": 152,
+    "covered": 122,
+    "skipped": 0,
+    "pct": 80.26
+   },
+   "branches": {
+    "total": 182,
+    "covered": 154,
+    "skipped": 0,
+    "pct": 84.61
+   }
+  },
+  "atlas-render.ts": {
+   "lines": {
+    "total": 27,
+    "covered": 27,
+    "skipped": 0,
+    "pct": 100
+   },
+   "functions": {
+    "total": 48,
+    "covered": 47,
+    "skipped": 0,
+    "pct": 97.91
+   },
+   "statements": {
+    "total": 76,
+    "covered": 73,
+    "skipped": 0,
+    "pct": 96.05
+   },
+   "branches": {
+    "total": 66,
+    "covered": 58,
+    "skipped": 0,
+    "pct": 87.87
+   }
+  }
+ },
+ "combined": {
+  "lines": {
+   "total": 98,
+   "covered": 97,
+   "skipped": 0,
+   "pct": 98.97
+  },
+  "statements": {
+   "total": 228,
+   "covered": 195,
+   "skipped": 0,
+   "pct": 85.52
+  },
+  "functions": {
+   "total": 70,
+   "covered": 66,
+   "skipped": 0,
+   "pct": 94.28
+  },
+  "branches": {
+   "total": 248,
+   "covered": 212,
+   "skipped": 0,
+   "pct": 85.48
+  },
+  "branchesTrue": {
+   "total": 0,
+   "covered": 0,
+   "skipped": 0,
+   "pct": "Unknown"
+  }
+ },
+ "unchanged_config": true
+}

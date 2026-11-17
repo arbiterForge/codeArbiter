@@ -1,0 +1,220 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: authored literal31-clause pinned/current/callee assessment; no execution or independent self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+  "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+  "core/surface/commands/status.md": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+  "core/surface/commands/task.md": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-20",
+  "disposition:transitions:WF-20:01",
+  "disposition:transitions:WF-20:02",
+  "disposition:transitions:WF-20:03",
+  "disposition:transitions:WF-20:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-20",
+   "frozen_row_sha256": "8880f7f789e772b79406c0cf6e81710f1073b67324c72ae5febcd6d7e1bef8b7",
+   "clause_ids": [
+    "disposition:transitions:WF-20:01",
+    "disposition:transitions:WF-20:02",
+    "disposition:transitions:WF-20:03",
+    "disposition:transitions:WF-20:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 8,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "3f1eac404f64ea9b2b19ca00ba0b9c2a4c45fb249a9aed00988453f7f0382280"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 26,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "8dcff0c7403c5079190761586f0452896494bd9a27fdb50fb55926ac61da9849"
+    },
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 24,
+     "end": 42,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "2aa50f00d6fc9553323df339195983008a0c9b16c841600d49f967d7e7ed26e4"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 362,
+     "end": 403,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "31582bf15d96092aa605ae80cec70d0427c920caf76ac77e8e27fcf5c8529a2a"
+    },
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 44,
+     "end": 62,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "38fa3c7f98aabc4782a5fc8921006a93e83a2f8d8af278d2fabf487ebf91b7ee"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 327,
+     "end": 359,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "56345d227aab7abc5c36d64c9fc9ab5572e2f5ed86f3bc94c171f8273c4b16e5"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 29,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "0b1a16dd0fceeb0e8011aa2e6f8463cb74969e14accaea3358c354aaf9229f84"
+    },
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 26,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "99134a9d5f5484d161999c8f9bfa3c7c3cc999e744b269d939d1f4928efd4ead"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen literal transitions assessed against pinned/current owner and named applicable changes; includes advanced edges for machine analysis without modifying them. Guidance conformance only; explicit exceptions stay in clause-inspection.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-20:01",
+   "frozen_row_sha256": "2c687928cfaf71af8877e140694fce5751e986136f9e0edaad90c49dcc85b05c",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 8,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "3f1eac404f64ea9b2b19ca00ba0b9c2a4c45fb249a9aed00988453f7f0382280"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 26,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "8dcff0c7403c5079190761586f0452896494bd9a27fdb50fb55926ac61da9849"
+    }
+   ],
+   "semantic_assessment": "Select exact installed helper and current native/legacy owner; existing board remains legacy until explicit adoption. Route same user intent and stable WORK-ID through selected facade, preserving origins/history and original owner. Mixed/nonregular/unsafe store refuses; no parallel native/board creation, title-based guessing, or fallback to another writer.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-20:02",
+   "frozen_row_sha256": "cdb4616dfc56edc3648a47717ea5497a94ca41a28ee140c1073554022ae9d2e4",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 24,
+     "end": 42,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "2aa50f00d6fc9553323df339195983008a0c9b16c841600d49f967d7e7ed26e4"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 362,
+     "end": 403,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "31582bf15d96092aa605ae80cec70d0427c920caf76ac77e8e27fcf5c8529a2a"
+    }
+   ],
+   "semantic_assessment": "Actual authorized work outcome plus stable operation identity guards mutation; expected revision/hash pair selected from actual owner. Create/start/complete/reopen preserves stable IDs, explicit origin and idempotent native operation. Already performed queued work can be recorded complete directly. No invented start ritual or completion-to-passing-evidence inference. Native uncertain retry reuses request/preimage; legacy stale update refuses and requires row inspection.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-20:03",
+   "frozen_row_sha256": "b899d91e239d2459fa0eae0ef3d6f0f98a971c767ba10e3afc304ae05f43c983",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 44,
+     "end": 62,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "38fa3c7f98aabc4782a5fc8921006a93e83a2f8d8af278d2fabf487ebf91b7ee"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 327,
+     "end": 359,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "56345d227aab7abc5c36d64c9fc9ab5572e2f5ed86f3bc94c171f8273c4b16e5"
+    }
+   ],
+   "semantic_assessment": "Only configured native mapping and explicit sync operation transmit under selected provider timing; absent map leaves ordinary lifecycle available. Local transition records durable target intent/wait reason without GitHub request; explicit sync reports issue/Project targets separately. Local completion is not remote delivery. Reconcile uncertain send, preserve disabled-map effects and report Project read/update race without remote CAS claim.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-20:04",
+   "frozen_row_sha256": "12e3c3b6396e7c576de706cfaac32b26f688aa3419185b86455122410cd8d1b8",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 29,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "0b1a16dd0fceeb0e8011aa2e6f8463cb74969e14accaea3358c354aaf9229f84"
+    },
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 26,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "99134a9d5f5484d161999c8f9bfa3c7c3cc999e744b269d939d1f4928efd4ead"
+    }
+   ],
+   "semantic_assessment": "Membership-bound paging and actual observations guard bounded status counts; explicit selected read does not become per-frame native call. Separate implementation/progress, checks/applicability, user stops, work count and recovery complete/partial/unavailable state. Over256/incomplete/changed/unsafe membership yields unknown count with reported total, not zero. Missing ledger means no registered obligations, not completed history; status does not repair or perform downstream effects.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  }
+ ],
+ "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

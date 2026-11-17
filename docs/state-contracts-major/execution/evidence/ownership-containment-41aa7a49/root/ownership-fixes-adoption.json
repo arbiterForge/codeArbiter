@@ -1,0 +1,112 @@
+{
+  "subjects": {
+    "core/pysrc/wire-statusline.py": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\core\\pysrc\\wire-statusline.py",
+        "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "bytes": 22421
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\core\\pysrc\\wire-statusline.py",
+        "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+        "bytes": 22680
+      }
+    },
+    "plugins/ca/hooks/tests/test_wire_statusline.py": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+        "sha256": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+        "bytes": 58377
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+        "sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+        "bytes": 61907
+      }
+    },
+    "plugins/ca/hooks/wire-statusline.py": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca\\hooks\\wire-statusline.py",
+        "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "bytes": 22421
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\wire-statusline.py",
+        "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+        "bytes": 22680
+      }
+    },
+    "plugins/ca-codex/hooks/wire-statusline.py": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca-codex\\hooks\\wire-statusline.py",
+        "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "bytes": 22421
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-codex\\hooks\\wire-statusline.py",
+        "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+        "bytes": 22680
+      }
+    },
+    "plugins/ca-pi/hooks/wire-statusline.py": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca-pi\\hooks\\wire-statusline.py",
+        "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+        "bytes": 22421
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-pi\\hooks\\wire-statusline.py",
+        "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+        "bytes": 22680
+      }
+    },
+    "site/scripts/link-audit/lib.ts": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\scripts\\link-audit\\lib.ts",
+        "sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+        "bytes": 9128
+      },
+      "predecessor": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\scripts\\link-audit\\lib.ts",
+        "sha256": "53c2444f104bf036752a8469ac3c7d9875fbcb1b1b40ece7d8887c5b76932f60",
+        "bytes": 9265
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\scripts\\link-audit\\lib.ts",
+        "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+        "bytes": 9643
+      },
+      "canonical_original_unchanged": true,
+      "original_git_blob_oid": "a7212208bd1655e10cfe7c1d9d073915c550091b"
+    },
+    "site/test/link-audit/lib.test.ts": {
+      "original": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\test\\link-audit\\lib.test.ts",
+        "sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+        "bytes": 13780
+      },
+      "predecessor": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\test\\link-audit\\lib.test.ts",
+        "sha256": "eafe97b104135534c362af9f0388625ee80c01cd2006e91bc6009007b6db250b",
+        "bytes": 15433
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\test\\link-audit\\lib.test.ts",
+        "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+        "bytes": 16373
+      },
+      "canonical_original_unchanged": true,
+      "original_git_blob_oid": "86f13a6184fda75fcb80293805d760b25b5e844b"
+    }
+  },
+  "changed": [
+    "core/pysrc/wire-statusline.py",
+    "plugins/ca-codex/hooks/wire-statusline.py",
+    "plugins/ca-pi/hooks/wire-statusline.py",
+    "plugins/ca/hooks/tests/test_wire_statusline.py",
+    "plugins/ca/hooks/wire-statusline.py",
+    "site/scripts/link-audit/lib.ts",
+    "site/test/link-audit/lib.test.ts"
+  ],
+  "preexisting_preserved": 11
+}

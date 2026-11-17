@@ -1,0 +1,23 @@
+test_added_persistent_artifact_tool_is_named (owned_startup_green.ArtifactSurfaceTest.test_added_persistent_artifact_tool_is_named) ... ok
+test_added_spec_command_is_named (owned_startup_green.ArtifactSurfaceTest.test_added_spec_command_is_named) ... ok
+test_authority_guidance_names_the_codex_only_production_seam (owned_startup_green.ArtifactSurfaceTest.test_authority_guidance_names_the_codex_only_production_seam) ... ok
+test_detached_update_review_is_exact_and_keeps_startup_pin (owned_startup_green.ArtifactSurfaceTest.test_detached_update_review_is_exact_and_keeps_startup_pin) ... ok
+test_eager_schema_negative_control (owned_startup_green.ArtifactSurfaceTest.test_eager_schema_negative_control) ... ok
+test_nested_persistent_tool_source_is_discovered (owned_startup_green.ArtifactSurfaceTest.test_nested_persistent_tool_source_is_discovered) ... ok
+test_no_added_discovery (owned_startup_green.ArtifactSurfaceTest.test_no_added_discovery) ... ok
+test_other_registration_removal_still_fails (owned_startup_green.ArtifactSurfaceTest.test_other_registration_removal_still_fails) ... ok
+test_pi_prompt_approval_is_explicitly_unsupported (owned_startup_green.ArtifactSurfaceTest.test_pi_prompt_approval_is_explicitly_unsupported) ... ok
+test_policy_baseline_is_in_candidate_history (owned_startup_green.ArtifactSurfaceTest.test_policy_baseline_is_in_candidate_history) ... ok
+test_recovery_startup_delta_rejects_changed_effect_missing_and_duplicate_blocks (owned_startup_green.ArtifactSurfaceTest.test_recovery_startup_delta_rejects_changed_effect_missing_and_duplicate_blocks) ... ok
+test_retired_registration_cannot_silently_return (owned_startup_green.ArtifactSurfaceTest.test_retired_registration_cannot_silently_return) ... ok
+test_reviewed_additions_are_named_and_justified (owned_startup_green.ArtifactSurfaceTest.test_reviewed_additions_are_named_and_justified) ... ok
+test_reviewed_removals_are_exact_and_attributed (owned_startup_green.ArtifactSurfaceTest.test_reviewed_removals_are_exact_and_attributed) ... ok
+test_reviewed_startup_content_still_rejects_drift_and_eager_schema (owned_startup_green.ArtifactSurfaceTest.test_reviewed_startup_content_still_rejects_drift_and_eager_schema) ... ok
+test_reviewed_startup_digest_is_narrow_and_history_independent (owned_startup_green.ArtifactSurfaceTest.test_reviewed_startup_digest_is_narrow_and_history_independent) ... ok
+test_startup_fixtures_do_not_eager_load_artifact_content (owned_startup_green.ArtifactSurfaceTest.test_startup_fixtures_do_not_eager_load_artifact_content) ... ok
+test_startup_fixtures_match_baseline (owned_startup_green.ArtifactSurfaceTest.test_startup_fixtures_match_baseline) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.300s
+
+OK

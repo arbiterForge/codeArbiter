@@ -1,0 +1,53 @@
+
+ RUN  v4.1.12 C:/Users/brenn/AppData/Local/Temp/ca-site-link-containment-successor-85m2n50h/original-red/site
+
+ ↓ test/link-audit/lib.test.ts > extractTargets > pulls href and src attribute values out of raw HTML
+ ↓ test/link-audit/lib.test.ts > isExternalOrSkippable > skips protocol-relative URLs
+ ↓ test/link-audit/lib.test.ts > isExternalOrSkippable > skips URLs with a scheme
+ ↓ test/link-audit/lib.test.ts > isExternalOrSkippable > skips pure fragments
+ ↓ test/link-audit/lib.test.ts > isExternalOrSkippable > skips empty targets
+ ↓ test/link-audit/lib.test.ts > isExternalOrSkippable > does not skip root-absolute or page-relative internal-looking targets
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > resolves a base-prefixed root-absolute target to a dist file
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > classifies a base-less root-absolute target as outside-base (regression: previously silently skipped)
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > resolves a page-relative target against the page's URL directory
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > classifies a page-relative target that normalizes outside the base as outside-base
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > maps an extensionless route to its directory index
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > maps a file-like target (has an extension) verbatim
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile > returns null for an empty target
+ ↓ test/link-audit/lib.test.ts > auditDist > resolves base-prefixed internal links and reports base-less ones and dangling ones as failures
+ ↓ test/link-audit/lib.test.ts > auditDist page-inventory invariant > fails an existing but HTML-empty dist even when both required assets are present
+ ↓ test/link-audit/lib.test.ts > auditDist page-inventory invariant > fails a dist that contains only non-HTML files
+ ↓ test/link-audit/lib.test.ts > auditDist page-inventory invariant > passes a minimal one-page dist, preserving the single-item boundary
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > a complete build reports nothing missing
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > a missing favicon is reported
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > a missing _astro directory is reported as a missing logo
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > an _astro directory with no logo asset is reported
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > an unhashed logo.svg does not satisfy the hashed-logo pin
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > a differently named hashed svg does not satisfy the hashed-logo pin
+ ↓ test/link-audit/lib.test.ts > missingRequiredAssets > both assets missing are reported together
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile on an apex domain (base '') > resolves a root-absolute target with no prefix to strip
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile on an apex domain (base '') > treats every root-absolute target as inside the base
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile on an apex domain (base '') > maps a file-like target verbatim
+ ↓ test/link-audit/lib.test.ts > resolveToDistFile on an apex domain (base '') > cannot classify anything as outside-base, so escapes fall to the missing-file check
+ ↓ test/link-audit/lib.test.ts > auditDist links to redirect pages > passes a link to the command page and does not flag the redirect page for forwarding
+ ↓ test/link-audit/lib.test.ts > auditDist links to redirect pages > fails a link that lands on a redirect page, naming the page it should link to
+ ↓ test/link-audit/lib.test.ts > auditDist links to redirect pages > fails a page-relative link that lands on a redirect page
+ ↓ test/link-audit/lib.test.ts > auditDist links to redirect pages > reports every link to a redirect page, one failure each
+ ↓ test/link-audit/lib.test.ts > auditDist root-absolute dot segments > rejects root-absolute dot-segment escapes even when a sibling exists (base "/codeArbiter")
+ ↓ test/link-audit/lib.test.ts > auditDist root-absolute dot segments > rejects root-absolute dot-segment escapes even when a sibling exists (base "")
+ ↓ test/link-audit/lib.test.ts > auditDist root-absolute dot segments > keeps in-base dot normalization, query/fragment and relative links valid (base "/codeArbiter")
+ ↓ test/link-audit/lib.test.ts > auditDist root-absolute dot segments > keeps in-base dot normalization, query/fragment and relative links valid (base "")
+ × test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "/codeArbiter", target "/codeArbiter/..\\outside.html") 7ms
+   → expected [] to have a length of 1 but got +0
+ × test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "", target "/..\\outside.html") 3ms
+   → expected [] to have a length of 1 but got +0
+ × test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "/codeArbiter", target "..\\outside.html") 2ms
+   → expected [] to have a length of 1 but got +0
+ × test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "", target "..\\outside.html") 2ms
+   → expected [] to have a length of 1 but got +0
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 36 skipped (40)
+   Start at  00:48:37
+   Duration  189ms (transform 39ms, setup 0ms, import 69ms, tests 14ms, environment 0ms)
+

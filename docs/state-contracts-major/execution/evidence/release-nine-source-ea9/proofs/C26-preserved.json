@@ -1,0 +1,346 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal46-clause C21-C29 immutable current/pinned inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/pi-promotion-targets.json": "c7f8950c9c17db77f7cf43a5e8c6791ceca12a1ce11fd6c4439bbd224ae59a0f",
+  ".github/scripts/pi_promotion.py": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+  ".github/workflows/pi-promotion.yml": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+  "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/compatibility.ts": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+  "plugins/ca/hooks/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70"
+ },
+ "disposition_ids": [
+  "disposition:machines:C26",
+  "disposition:transitions:C26:01",
+  "disposition:transitions:C26:02",
+  "disposition:transitions:C26:03",
+  "disposition:transitions:C26:04",
+  "disposition:transitions:C26:05",
+  "disposition:transitions:C26:06",
+  "disposition:transitions:C26:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/source-bindings.json",
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json",
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C26",
+   "frozen_row_sha256": "df6576c39906671eb339f4a1a9fe150094b5180d08fbe45d734a669beba27be6",
+   "clause_ids": [
+    "disposition:transitions:C26:01",
+    "disposition:transitions:C26:02",
+    "disposition:transitions:C26:03",
+    "disposition:transitions:C26:04",
+    "disposition:transitions:C26:05",
+    "disposition:transitions:C26:06",
+    "disposition:transitions:C26:07"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 26,
+     "end": 67,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "2442e546026521a5e7c795d30fad79866b7c7512239c64091c5bc9524ea580ba"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "c0879334a7042625254c8e487f8aad233538ba549ebc8f61d2d5a7dfaf7d6b46"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 69,
+     "end": 141,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "20a98753dd43c1ff4c7088c3ebdfe5580ec5a3d5d4faa983dbc8d526b5d805da"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 660,
+     "end": 677,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "50f8e8ed0ac0235a546ec92b3ae9307d2a5af226e10a3605437951eafc29c82a"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 300,
+     "end": 408,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "a7d7adfc0b7e0e54debf69934e216ceee645172054f7d565cc6e8fddd774cc6c"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 414,
+     "end": 534,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "4631f802b38c717debeeea76c6cd835fb3b08ab0c65f7af00f5bcf76f2550574"
+    },
+    {
+     "path": "plugins/ca/hooks/knowledge.py",
+     "start": 65,
+     "end": 116,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4e4693465cf880f8fbade779d0f185cc6577c0b0d27fd31abec51d6654cacf08"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "start": 54,
+     "end": 73,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "65fb6eb5d16924a0cfcf91247c1e60c983f371e2ed9da6f65816a76e15c6bc71"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 142,
+     "end": 159,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "d10dbb04838a025413163134996514bb413aaf45547b1ba6394cb3da6be0f851"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 581,
+     "end": 649,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "9812ef5f4d1b13b19cab4f5cea47fb8e91e14a63d5260d70e2a662c623b3636c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 160,
+     "end": 176,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "b30d41157b0cef61136394c6ec2a769a2861977dadc5f4be2b9f0fcbabc9e8e2"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 244,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "0d8e5cea16dcbbc277c6a2ecc6f93a1a4bfef0bab4721f373f5c1753c5bdb99d"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 3,
+     "end": 23,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "aa357c4ff2184292c5a61c2ade00fa3d9d698d5da530cef367fad2e2b217e58c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 188,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "1e25585c9ba9d6e79e3587ca8f5b426dcad3541be478267c1c8b4b63e12b72b7"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses including already advanced rows are mapped to exact current/pinned owner/caller spans. Accepted repairs and baseline overstatements are explicit per clause; no stronger execution/identity/rollback/coverage behavior is inferred. Advanced row histories are preserved.",
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:01",
+   "frozen_row_sha256": "b21dcd4b17c8b4ea4fb9895f5d10b739cf1848108819fcf841f30b156b808914",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 26,
+     "end": 67,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "2442e546026521a5e7c795d30fad79866b7c7512239c64091c5bc9524ea580ba"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "c0879334a7042625254c8e487f8aad233538ba549ebc8f61d2d5a7dfaf7d6b46"
+    }
+   ],
+   "semantic_assessment": "Default-branch resolve guard precedes candidate outputs; stable exact candidate must strictly exceed policy last_verified. Reviewed compatibility source parses one/two ordered supported versions and Node floor. No public ref is written in resolve.",
+   "intake_variances": [
+    "parse_candidate checks stable version/strict advancement, not registry candidate engine compatibility. Parsed Node floor is policy metadata; no extra candidate-runtime support proof is invented."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:02",
+   "frozen_row_sha256": "9bf57230804c2c1b156c76eb2fffb7c4382c3bc79a2425df47d847a06ae7647f",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 69,
+     "end": 141,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "20a98753dd43c1ff4c7088c3ebdfe5580ec5a3d5d4faa983dbc8d526b5d805da"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 660,
+     "end": 677,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "50f8e8ed0ac0235a546ec92b3ae9307d2a5af226e10a3605437951eafc29c82a"
+    }
+   ],
+   "semantic_assessment": "Three OS validation cells install reviewed baseline, capture baseline help, build reviewed artifacts and execute declared runtime/security/package/fixture contracts. Candidate graph remains PENDING_REVIEW data and is not installed. Allowlisted wrapper IDs retain failures without copying child streams into receipt.",
+   "intake_variances": [
+    "Current HTML knowledge integration adds pinnedGo/native writer preparation; that is workflow source wiring, not a local build or successful hosted validation claim."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:03",
+   "frozen_row_sha256": "85d37c7556e54ccf2490afd8ae8e68747f7758417b5cc1ee04a1baed02088775",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 300,
+     "end": 408,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "a7d7adfc0b7e0e54debf69934e216ceee645172054f7d565cc6e8fddd774cc6c"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 414,
+     "end": 534,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "4631f802b38c717debeeea76c6cd835fb3b08ab0c65f7af00f5bcf76f2550574"
+    },
+    {
+     "path": "plugins/ca/hooks/knowledge.py",
+     "start": 65,
+     "end": 116,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4e4693465cf880f8fbade779d0f185cc6577c0b0d27fd31abec51d6654cacf08"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "start": 54,
+     "end": 73,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "65fb6eb5d16924a0cfcf91247c1e60c983f371e2ed9da6f65816a76e15c6bc71"
+    }
+   ],
+   "semantic_assessment": "Official path allowlist, contained targets, distinct release paths and exact replacement counts are validated. Current code prepares all text writes and release metadata first; HTML tech-stack uses current-record read, exact native revision/model CAS and readback through fixed owner. Later publication/I/O failure can still leave partial effects.",
+   "intake_variances": [
+    "Accepted context migration replaces raw HTML/legacy tech-stack writes with installed owner. Current preflight is stronger than frozen sequential-validate/write behavior; it does not add cross-file transactional rollback or justify refreshing failed source epochs."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:04",
+   "frozen_row_sha256": "3725217ac08c4d2d563aa1990a254cabbdb929129f98cc5ef7a8626b1eb13aee",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 142,
+     "end": 159,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "d10dbb04838a025413163134996514bb413aaf45547b1ba6394cb3da6be0f851"
+    }
+   ],
+   "semantic_assessment": "After prospective apply, reviewed generators rebuild and declared type/parity/security/docs/fixture gates execute. Unreviewed candidate remains data; successful prospective checks are not support acceptance or candidate runtime execution.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:05",
+   "frozen_row_sha256": "73fc5bc95c384c1539fd7050228e14313ffbab1bb6d4bdaf9368bacd37a79540",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 581,
+     "end": 649,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "9812ef5f4d1b13b19cab4f5cea47fb8e91e14a63d5260d70e2a662c623b3636c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 160,
+     "end": 176,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "b30d41157b0cef61136394c6ec2a769a2861977dadc5f4be2b9f0fcbabc9e8e2"
+    }
+   ],
+   "semantic_assessment": "Failed recognized contracts store only allowlisted IDs; receipt candidate/platform tokens and option deltas are bounded, missing/unrecognized state renders unattributed. Failure render/upload is conditional failure(), retaining14days; cancellation or early infrastructure failure may leave no receipt.",
+   "intake_variances": [
+    "Frozen always-receipt wording means failure-path rendering here, not unconditional execution after cancellation. Arbitrary child stdout remains job log only."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:06",
+   "frozen_row_sha256": "f871c387d93106fa57a96625120c1dfa2112ba7a18ebdee84207a1c2970b5638",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 244,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "0d8e5cea16dcbbc277c6a2ecc6f93a1a4bfef0bab4721f373f5c1753c5bdb99d"
+    }
+   ],
+   "semantic_assessment": "Manual create_pr=true plus successful resolve/three-platform dependencies enables open-pr job. Fresh candidate capture precedes token-bearing push step, deterministic branch is built/staged with explicit allowlist, unrelated tracked/untracked changes and staged native artifacts refuse; existing open PR avoids duplicate creation. No tag/package publish occurs.",
+   "intake_variances": [
+    "Current knowledge narrative path is selected by owner; ignored local native bookkeeping is excluded explicitly, not committed or qualified. The token exists only in final push step."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:07",
+   "frozen_row_sha256": "8b1d8f48dd7f01c855fcec87468c9e0e2c798c03f0fe1c713aa2564e974a3116",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 3,
+     "end": 23,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "aa357c4ff2184292c5a61c2ade00fa3d9d698d5da530cef367fad2e2b217e58c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 188,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "1e25585c9ba9d6e79e3587ca8f5b426dcad3541be478267c1c8b4b63e12b72b7"
+    }
+   ],
+   "semantic_assessment": "Schedule or manual create_pr=false cannot satisfy open-pr condition. Validation may finish with inert candidate data/owner work pending, without public promotion or support acceptance.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "scope": "Reasoned source-only preservation with explicit accepted/intake deltas; no actual hosted/account/installed/runtime/promotion/publication qualification.",
+ "limits": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

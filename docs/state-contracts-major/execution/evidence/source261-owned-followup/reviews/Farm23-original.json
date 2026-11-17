@@ -1,0 +1,345 @@
+{
+ "schema": "bounded-independent-source-review/1",
+ "verdict": "PASS_WITH_LOW_PROSE_FINDINGS",
+ "review_complete": true,
+ "scope": "Farm S21-S32: 100 literal clauses, 23 private proposed source-only dispositions, retention of89 advanced edges",
+ "proposal_delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\delivery.json",
+  "sha256": "e29f178914c87d9f525f423d1b3985115bfdc654b407b559d657fef55e5975c3"
+ },
+ "source_epoch": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "observed_head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "current_source_join": "All19 current committed and physical positive inputs equal EA9 literal bytes despite unrelated HEAD movement",
+ "findings": [
+  {
+   "id": "FARM23-PROSE-01",
+   "severity": "LOW",
+   "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\clause-inspection.json",
+   "cell": "disposition:transitions:S29:02",
+   "field": "assessment",
+   "title": "Error-event output handling is broader than the actual executor",
+   "evidence": "Assessment says ordinary error/close returns accumulated output. In source plugins/ca/tools/exec.ts333-335 the error callback emits code1/out=String(e)/stdout empty/stderr=String(e); only close337-339 returns accumulated stdout/stderr. Frozen S29:02 concerns ordinary close, so its supported clause remains valid.",
+   "correction": "State ordinary close preserves accumulated output; if mentioning the error callback, state its separate fixed code1/String(e)/empty-stdout projection. Mirror this narrow prose correction in the S29 proof semantic_mapping."
+  },
+  {
+   "id": "FARM23-PROSE-02",
+   "severity": "LOW",
+   "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\clause-inspection.json",
+   "cell": "disposition:transitions:S31:01",
+   "field": "assessment",
+   "title": "Owned-temp cleanup statement includes an uncovered close-error path",
+   "evidence": "Assessment says Error closes/removes owned temp and propagates. Source atomicWriteFile1655-1676 cleans up write/sync/chmod failures and rename failures; the successful-write path awaits fh.close at1670 outside either cleanup catch. A close rejection can leave its temp. No actual close failure is claimed, and the frozen exclusive-write/mode behavior is still supported.",
+   "correction": "Scope cleanup to the actual guarded error branches and explicitly avoid an all-errors/no-temp-remains guarantee. Mirror in S31 proof semantic_mapping."
+  }
+ ],
+ "substantive_result": "No source-only disposition blocker found. Two LOW statements should be narrowed before canonical adoption; no production change or runtime replay is implied.",
+ "binding_check": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-independent-review-cy76yghl\\binding-check.json",
+  "sha256": "156365f46c1f4878546b96ef84cbe1726ce003b313fdfce3a7664de86429b839"
+ },
+ "full_subjects": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\delivery.json",
+   "sha256": "e29f178914c87d9f525f423d1b3985115bfdc654b407b559d657fef55e5975c3",
+   "bytes": 7189
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\adoption-filemap.json",
+   "sha256": "6c309c78ff36a2b89477ef254c95b3a1b4e912c48a63a8e4cbd3023fdd2885a1",
+   "bytes": 5232
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\authored-clause-data.json",
+   "sha256": "a8456d058990de0601e388669c6e27fadbf554bdfd50a526f65f81e7f89c4149",
+   "bytes": 31488
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\cas-proposal.json",
+   "sha256": "ccd5b1360884a0fd828be5cca94e84b64d8361209a508197cd23c033f302659c",
+   "bytes": 207549
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\clause-inspection.json",
+   "sha256": "3dc51b1fb0c5acde078e47d545798fe148d76938b683f73e11c5df58e9d2cb96",
+   "bytes": 201228
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\collector-setup-history.json",
+   "sha256": "d19f5aadae20a1f54a571ad479a9d3baf3cbb4a51eb8e08223a10f0b5ebc03f7",
+   "bytes": 324
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\farm-twelve-source-context.json",
+   "sha256": "cc53b874dfdbecf04917ecbc7789318d7ba9a30dc3f5ed7a42a568ebd3d7675a",
+   "bytes": 12978
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\farm-twelve-source-input.txt",
+   "sha256": "12018d4d8e2ca34b97fdce3934204ae52eaa75b1de93a75c847814de9c18832c",
+   "bytes": 17603
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\inherited-evidence-inventory.json",
+   "sha256": "19672882618a89df5e884b32bfc17348014e7b6210d33ff6ba4e2839f9caf7c7",
+   "bytes": 1607
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S21-preserved.json",
+   "sha256": "933611af7968a6c49163f53a015f547a85d4595a4708fa328ed0ef81702293f8",
+   "bytes": 13067
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S22-preserved.json",
+   "sha256": "d0a8bcf165f33ea586f25b91236ebe2adc726bc4b87d538337ccc0d4a08c4c97",
+   "bytes": 19243
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S23-preserved.json",
+   "sha256": "efb6045c13d12fa482481406cc9beb275ad007b2e05410ce4104b3f14d310dde",
+   "bytes": 13198
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S24-preserved.json",
+   "sha256": "36164fc18c6096670999a6494be09ed26a7e1da3c64f6b7bd40ee61dece2fa8b",
+   "bytes": 12204
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S25-preserved.json",
+   "sha256": "70c94b8ff88fbd81429a5024ba021fb60c175ca3390a3ef4176879b73e7754d8",
+   "bytes": 9037
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S26-preserved.json",
+   "sha256": "affc62c5f35a3ec161095d1899724b098c81d4ec109273620c7ca7bfc1178797",
+   "bytes": 8541
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S27-preserved.json",
+   "sha256": "39bbfd450adef539e298ebe3873a666e09a35803380cf1a0ffd406a4f8e192b5",
+   "bytes": 8806
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S28-preserved.json",
+   "sha256": "1ddecc622a1ddbec59642103d8acb55945e56bd88778f7de8cd7d6fb3655cb9a",
+   "bytes": 10281
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S29-preserved.json",
+   "sha256": "45371f8dfdbf67eaa851ecd563db5f9f41a6a8b088ca1b04be73481771cbf777",
+   "bytes": 7606
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S30-preserved.json",
+   "sha256": "5afea1c0b862b1315f9e62df4f14827b1c289a669a635cad7185c3ac4eb13c07",
+   "bytes": 7626
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S31-preserved.json",
+   "sha256": "7ecab4549e99b5f5221c894428deb32fdad02d0b7c07f1829558331dabd219e4",
+   "bytes": 7899
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\proofs\\S32-preserved.json",
+   "sha256": "0c607df35d37d0f31dff44d4b0ce8e1b3ea233302fed51a8021834516294ee7a",
+   "bytes": 7931
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\source-aliases.json",
+   "sha256": "bdca7d3230fd836d8e5aa0bec6bea6540b66d1b238011ff8e561e74769e4a020",
+   "bytes": 502
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\source-bindings-before.json",
+   "sha256": "84e1763482ce9f654ba56260eb33fa88afc038f96e49ed71918de96f88d3ff3e",
+   "bytes": 4089
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\source-bindings.json",
+   "sha256": "f1c80dc6fb32d804476cb4c08c0300f1c1a558a663ff0966a7d528ebd1673ae3",
+   "bytes": 9145
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\summary.json",
+   "sha256": "53262c216646de1d1014247c06ebcb7f5e4dfe91816431b58ff4dc1e7a4f1581",
+   "bytes": 1958
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-twelve-source-ea9-64fzmk5i\\validation.json",
+   "sha256": "3965982f5df0bc34e35270fa9656c2c9af6562b4d87d8573e34240080fa878e8",
+   "bytes": 795
+  }
+ ],
+ "counts": {
+  "frozen_clauses": 100,
+  "proposed_machines": 12,
+  "proposed_edges": 11,
+  "retained_advanced_edges": 89,
+  "positive_source_files": 19,
+  "baseline_files": 5,
+  "witness_spans": 175,
+  "source_proofs": 12,
+  "adoption_files": 15
+ },
+ "CAS_membership": [
+  {
+   "section": "machines",
+   "id": "S21",
+   "expected_row_sha256": "183c01886e665326bcad3ab4ce0cb075db0859e6e34a44a5840b7d16a3f1357e",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S21:01",
+   "expected_row_sha256": "183c01886e665326bcad3ab4ce0cb075db0859e6e34a44a5840b7d16a3f1357e",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S21:02",
+   "expected_row_sha256": "183c01886e665326bcad3ab4ce0cb075db0859e6e34a44a5840b7d16a3f1357e",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S21:03",
+   "expected_row_sha256": "183c01886e665326bcad3ab4ce0cb075db0859e6e34a44a5840b7d16a3f1357e",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S21:04",
+   "expected_row_sha256": "183c01886e665326bcad3ab4ce0cb075db0859e6e34a44a5840b7d16a3f1357e",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S22",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:02",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:03",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:04",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:05",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:06",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S22:07",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S23",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "S23:07",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S24",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S25",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S26",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S27",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S28",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S29",
+   "expected_row_sha256": "fa266ce319a36311bcc27d639b4089c6030626b24757dc96361b66ca56003ffd",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S30",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S31",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "S32",
+   "expected_row_sha256": "f7583e347e9c4ae40f8b424ba9c91f60aada7bbbd94c62d6fdc35baf8e0f35ea",
+   "set_status": "PRESERVED"
+  }
+ ],
+ "semantic_review": {
+  "S21": "Canonical backend/plan/runtime and lease checks; output counted not returned, no local elapsed timer, cancellation cleanup uncertainty explicitly retained.",
+  "S22": "Same-version manifest optional schema, pinned platform-specific executable and native typed binding/provider seal; no fallback/consent or installed success inferred.",
+  "S23": "Exclusive run claim and nonforced integration creation, reservation/dependency/limiter ordering, breaker drains, partial outcome and receipt-only recovery; initialization/hard-stop limits explicit.",
+  "S24": "Setup fingerprint/cache scope, guarded writes/protected test/drift/quality checks, finite author retries; fatal post-apply differs from early retryable worker refusal; R02/R03 replacements explicit.",
+  "S25": "All samples awaited, index-order requalification, fatal qualification/unknown containment prevents winner masking, losing-resource cleanup debt explicit.",
+  "S26": "Fresh drift before explicit staging, single commit, exact effect identities, serialized merge and verified rollback/rebase, task-green separate from run cleanup debt.",
+  "S27": "Per-attempt abort deadline/internal retry/cooldown rules, no response-byte cap or external cancellation interface invented; reported usage and diagnostic redaction remain bounded by owning implementation.",
+  "S28": "Lexical anti-gaming is suspicion; score admission requires successful cleanup/exit, nonzero reruns unclassified; defaults configurable and first unsafe restoration failure stops subsequent restoration.",
+  "S29": "Observed code/timeout/containment axes and Windows root-only residual retained; one ordinary-error output prose correction noted.",
+  "S30": "Exclusive common-dir ownership, absence vs unknown registry/disk checks, prune only positively stale registry and bounded remaining-resource/branch retries; histories not renewed.",
+  "S31": "Exclusive per-file publish/sync/rename retry, JSON then Markdown partial publication and convenience mirrors; one close-failure cleanup prose limit noted.",
+  "S32": "Frozen base, configurable entitlement screening/status0 survivor distinction, detached no-commit evaluation, observed cleanup before recommendation; no actual provider outcome claimed."
+ },
+ "retention": "All89 advanced rows including status, active refs, full histories and original runtime epochs are exact source/current ledger equals; no TESTED renewal or current runtime applicability inferred from historical proofs.",
+ "limits": [
+  "Private proposal review; not staged and no index/OID fabrication",
+  "No owner validator/test/runtime/API/network/provider/native/install execution",
+  "No canonical/source/index/ref/marker/ledger writes",
+  "No machine task/scenario/host/main/publication qualification",
+  "Prior parked progress and all unrelated Darwin/native receipts unchanged"
+ ]
+}

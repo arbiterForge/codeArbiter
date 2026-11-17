@@ -1,0 +1,9 @@
+{
+ "owner_revision": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "linked_blob": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+ "owner_path": "core/pysrc/prompt-submit.py",
+ "correct_owner_link": true,
+ "old_owner_link_absent": true,
+ "rendered_bytes": 816950,
+ "rendered_sha256": "63cbbc3207be9d86d803f2c6217827a99fdb20041b6eeed0e34a72f3c2c1f7ac"
+}

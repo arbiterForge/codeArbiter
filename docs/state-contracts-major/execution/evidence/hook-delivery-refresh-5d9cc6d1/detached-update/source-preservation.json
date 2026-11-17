@@ -1,0 +1,23 @@
+{
+ "result": "PASS",
+ "original_test_methods": 81,
+ "candidate_test_methods": 82,
+ "entire_old_test_module_AST_unchanged_after_removing_only1new_method": true,
+ "entire_production_AST_equal_after_reverting_only_minusB_argv_and_docstring": true,
+ "all4_private_production_copies_equal": true,
+ "null_stdio_platform_detachment_and_fail_silent_caller_unchanged": true,
+ "all5_syntax_compile_PASS": true,
+ "canonical5_subjects_unchanged": true,
+ "coverage": {
+  "status": "NO_NUMERIC_PYTHON_TOOLING",
+  "typed_record": "CTX-TECH-STACK/FACT-005",
+  "reader_receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\tech-stack-coverage-records.json",
+   "sha256": "1419e36fc6f5aa432afc650109829576e3e09ea34131b886f0848ceb4bae7493",
+   "bytes": 11317
+  },
+  "coverage_document_byte_equal_ac826_to_current_HEAD": true,
+  "verbatim_passage": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface.\nGo native statements are not the no-tooling exemption."
+ },
+ "limits": "Only8 focused SessionStart update tests run; entire old test AST retained but unrelated startup suite not executed."
+}

@@ -1,0 +1,226 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; no independent self-review or runtime qualification"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+  "core/surface/includes/security-gate-record.md": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+  "core/surface/skills/crypto-compliance/SKILL.md": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+  "core/surface/skills/secret-handling/SKILL.md": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+  "core/surface/skills/security-architecture/SKILL.md": "040d20696fa81c1d87f436875479cc11f5685c1a4376b5fe006abbee444215df",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-26",
+  "disposition:transitions:WF-26:01",
+  "disposition:transitions:WF-26:02",
+  "disposition:transitions:WF-26:03",
+  "disposition:transitions:WF-26:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/source-bindings.json",
+   "sha256": "f626283d1d1932962a94cde87936799776cecf5b877bc07ac8a6708384f13a68"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/clause-inspection.json",
+   "sha256": "5c621baecd5fe9e412e848d439014de399b4615807914ef2f809dd97c73c61e1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "f110caf5b33b12ea165fe8cd831a8c891276aacb674699f73baa0a6b46193dca"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-26",
+   "frozen_row_sha256": "469ea1385a7f61414f7fec3c11422e72aa6fe0471aab85d92145db1c2a9e3541",
+   "clause_ids": [
+    "disposition:transitions:WF-26:01",
+    "disposition:transitions:WF-26:02",
+    "disposition:transitions:WF-26:03",
+    "disposition:transitions:WF-26:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 11,
+     "end": 25,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "5b40b15377cf72eba7cef4c2870cd7c85817b20e4c6679c9242c909cb303104a"
+    },
+    {
+     "path": "core/surface/skills/crypto-compliance/SKILL.md",
+     "start": 11,
+     "end": 28,
+     "file_sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+     "span_sha256": "801fd67ecde27daccf55a8fcb5a32cf4d6abb4a7d729601d7bec9f76de793b96"
+    },
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 69,
+     "end": 84,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "b5b3f28435a1fc9ee3d299af696c0523f5c0feed04c28b04689e6b04c9a4cebf"
+    },
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 23,
+     "end": 54,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "b910e97d03cd6c1d4f8eba53738ca318254ce06929793ded3f627719d742b379"
+    },
+    {
+     "path": "core/surface/skills/crypto-compliance/SKILL.md",
+     "start": 17,
+     "end": 42,
+     "file_sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+     "span_sha256": "af6b5731442e1b986e8ab7d07d465f676f79771be7dd844e3e7f9277c3376b9d"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 50,
+     "end": 68,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "b6a9636f84a11f11bed46fe7cba105241cca929393a05d9a6a2f6f9ae686e815"
+    },
+    {
+     "path": "core/surface/skills/security-architecture/SKILL.md",
+     "start": 16,
+     "end": 31,
+     "file_sha256": "040d20696fa81c1d87f436875479cc11f5685c1a4376b5fe006abbee444215df",
+     "span_sha256": "06a30aaf6d33edfc43a31555bdf1c13b62e2f13a527f3f54eb0031e62d8316a1"
+    },
+    {
+     "path": "core/surface/skills/security-architecture/SKILL.md",
+     "start": 33,
+     "end": 81,
+     "file_sha256": "040d20696fa81c1d87f436875479cc11f5685c1a4376b5fe006abbee444215df",
+     "span_sha256": "2e3f331053a7921fa6797036e98b4bd53ab5dec54e88f0687e422092737fe2ff"
+    }
+   ],
+   "semantic_assessment": "All literal clauses assessed against exact pinned/current owners and named accepted scopes; guidance/source conformance only, not execution.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-26:01",
+   "frozen_row_sha256": "47d05ebbcd66caecdbcce6f46cf08bcae436473139be39a7468935255d58dfa9",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 11,
+     "end": 25,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "5b40b15377cf72eba7cef4c2870cd7c85817b20e4c6679c9242c909cb303104a"
+    },
+    {
+     "path": "core/surface/skills/crypto-compliance/SKILL.md",
+     "start": 11,
+     "end": 28,
+     "file_sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+     "span_sha256": "801fd67ecde27daccf55a8fcb5a32cf4d6abb4a7d729601d7bec9f76de793b96"
+    },
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 69,
+     "end": 84,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "b5b3f28435a1fc9ee3d299af696c0523f5c0feed04c28b04689e6b04c9a4cebf"
+    }
+   ],
+   "semantic_assessment": "Complete current format-selected policy plus operative scope blocks is required; a scope-only file is insufficient. Trace secret origin/access/runtime transport/sinks/lifetime and each actual primitive/library/parameter/TLS setting against that policy. Missing/unreadable or real contradictory policy blocks affected decision/flow; independent authorized work continues. Policy absence is distinct from finding severity.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-26:02",
+   "frozen_row_sha256": "31dca725992449410b00a79eca59a7866714f8f567f859f4dc48b50ba2c9d71f",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 23,
+     "end": 54,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "b910e97d03cd6c1d4f8eba53738ca318254ce06929793ded3f627719d742b379"
+    },
+    {
+     "path": "core/surface/skills/crypto-compliance/SKILL.md",
+     "start": 17,
+     "end": 42,
+     "file_sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+     "span_sha256": "af6b5731442e1b986e8ab7d07d465f676f79771be7dd844e3e7f9277c3376b9d"
+    }
+   ],
+   "semantic_assessment": "Unapproved source/access/primitive or forbidden sink/lifetime yields exact scoped finding. Do not record a security PASS for denied flow; retain risk and route actual repair/authorized exception through its owner. process.env alone neither approves nor rejects; approved parent environment does not permit unrelated child leakage. No raw secret or real sensitive flow was executed/read here.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-26:03",
+   "frozen_row_sha256": "c2f61a5199feeed55137dfb2737569db0e994385366a41a77d0bf9d99391ab31",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/surface/skills/secret-handling/SKILL.md",
+     "start": 50,
+     "end": 68,
+     "file_sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+     "span_sha256": "b6a9636f84a11f11bed46fe7cba105241cca929393a05d9a6a2f6f9ae686e815"
+    }
+   ],
+   "semantic_assessment": "Genuine independent gate PASS on exact intended staged worktree/candidate precedes producer. Shared producer binds worktree, whole staged diff and sensitive diagnostics under HW17; unrelated staged edits invalidate too. Producer/digest only records correspondence; self-review, stale/wrong-tree/unreadable/unstaged subjects are not PASS. Override and binary bypass remain distinct.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-26:04",
+   "frozen_row_sha256": "41a970240a238990e2a056829a8826f43beb22f229ac56e4892ef4e0cfb52e61",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/security-architecture/SKILL.md",
+     "start": 16,
+     "end": 31,
+     "file_sha256": "040d20696fa81c1d87f436875479cc11f5685c1a4376b5fe006abbee444215df",
+     "span_sha256": "06a30aaf6d33edfc43a31555bdf1c13b62e2f13a527f3f54eb0031e62d8316a1"
+    },
+    {
+     "path": "core/surface/skills/security-architecture/SKILL.md",
+     "start": 33,
+     "end": 81,
+     "file_sha256": "040d20696fa81c1d87f436875479cc11f5685c1a4376b5fe006abbee444215df",
+     "span_sha256": "2e3f331053a7921fa6797036e98b4bd53ab5dec54e88f0687e422092737fe2ff"
+    }
+   ],
+   "semantic_assessment": "Explicit requested sensitive-design scope and complete real boundary policy select optional read-only threat assessment. Enumerate entry/egress/trust/data and STRIDE; label each mitigation PRESENT/PLANNED/GAP and report actionable owner constraints. Only genuinely critical exploitable unmitigated exposure stops dependent work; lesser gaps are constraints. No automatic code, controls or user-attributed ADR authored by assessment.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  }
+ ],
+ "scope": "Only listed WF25/26/33/35 source-conformance cells. All WF31/WF34 selected rows excluded pending actual canonical repair epoch.",
+ "limits": [
+  "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source.",
+  "Only20 healthy PLANNED cells proposed: four machines+16 edges in WF25/26/33/35. All14 selected WF31/WF34 machine/edge rows stay PLANNED until canonical corrections are committed. No advanced rows exist here; all unrelated history/epochs retained.",
+  "Model instructions, manual selection/cache, source helper behavior and actual host/effect qualification remain distinct. No universal install hook, hostile process containment, billing completeness, permission or review authenticity invented.",
+  "Frozen historical bug/recovery text remains verbatim. HW01/02, HW05, D-HIGH/HW09/20, HW17, HW14, HW21, PI-D06, FARM-R01 and ADR43 accepted scopes are explicit; real user/host/security/main/publication boundaries remain.",
+  "After actual repair/source epoch changes, affected proof inputs require bounded reinspection; this partial packet must not be hash-restamped into a new epoch. Root owns independent review/strict admission/adoption."
+ ]
+}

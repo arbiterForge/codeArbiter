@@ -1,0 +1,182 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+  "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+  "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX03",
+  "disposition:transitions:SX03:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX03",
+   "frozen_row_sha256": "2f42795abe0047289c46d40d25f898190edde5706d972fe300c4cd72b17d1e8a",
+   "clause_ids": [
+    "disposition:transitions:SX03:01",
+    "disposition:transitions:SX03:02",
+    "disposition:transitions:SX03:03",
+    "disposition:transitions:SX03:04",
+    "disposition:transitions:SX03:05",
+    "disposition:transitions:SX03:06"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 158,
+     "end": 378,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "31846a71dc013000f33dfcebbc50129b00a792348a1947d86aad16a9c037ecb1"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 405,
+     "end": 467,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "9a2051a6cdf298e065588f6b7e5eed1a2ffe58e6d5d1939a3afc37691585bbdc"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 588,
+     "end": 620,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "b886a33a052763faa1017e755a2389a95ad75e3e053d81059fb4218524d696d5"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 469,
+     "end": 560,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "953b3264ed2f5e6bce41b8591d4f744ba0a8252e9506084a82acab8620d50f1b"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 661,
+     "end": 694,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "3f8450743b41f8e0b3d409aa05c7dd1b3068646674e1dde5fb5b4660f9428967"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 561,
+     "end": 586,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "b69e4d3dc78ee98aad8b81f6ff2151d5d17346563f6a52ee029ed5a6c9e3d769"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 379,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "5e983efbac160965b718ca92a752dcf3083322be906e5018523ce09042559009"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 622,
+     "end": 740,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "54e1c2d03190441ee189960d8d2418c9b1b0f00fea490a7d6ea8c183f6afbde9"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 800,
+     "end": 890,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "2a4b9ccc3a37f6d074c465cf108c86a956f6b1ccd1b8916de311a80f86e90138"
+    },
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 891,
+     "end": 933,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "088da600a3317eebdaee073c5c00641b32e5406d199b6ade2bfe6df87ea09771"
+    },
+    {
+     "path": "site/src/pages/release-applicability.json.ts",
+     "start": 1,
+     "end": 11,
+     "file_sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+     "span_sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a"
+    },
+    {
+     "path": "site/src/release-applicability-presentation.ts",
+     "start": 1,
+     "end": 41,
+     "file_sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+     "span_sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX03:06",
+   "frozen_row_sha256": "04f25be47abf8de823504d6c947c60182f397323efd1e2f8a757cc1b5cbfc388",
+   "witnesses": [
+    {
+     "path": "site/scripts/release-applicability.ts",
+     "start": 891,
+     "end": 933,
+     "file_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+     "span_sha256": "088da600a3317eebdaee073c5c00641b32e5406d199b6ade2bfe6df87ea09771"
+    },
+    {
+     "path": "site/src/pages/release-applicability.json.ts",
+     "start": 1,
+     "end": 11,
+     "file_sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+     "span_sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a"
+    },
+    {
+     "path": "site/src/release-applicability-presentation.ts",
+     "start": 1,
+     "end": 41,
+     "file_sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+     "span_sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732"
+    }
+   ],
+   "semantic_assessment": "Generator serializes schema3 data; static endpoint emits it and presentation rejects inconsistent applicability booleans. R-08 publication stays separate in observed-published versus selected-tag text. Unavailable/linked/oversize/malformed observation stays unknown. No endpoint/page/live API execution claimed.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

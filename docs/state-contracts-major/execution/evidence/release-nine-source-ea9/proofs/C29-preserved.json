@@ -1,0 +1,257 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal46-clause C21-C29 immutable current/pinned inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/site_playwright_observation.py": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+  ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C29",
+  "disposition:transitions:C29:01",
+  "disposition:transitions:C29:02",
+  "disposition:transitions:C29:03",
+  "disposition:transitions:C29:04",
+  "disposition:transitions:C29:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/source-bindings.json",
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json",
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C29",
+   "frozen_row_sha256": "b4e687d947c4325a51ebfc1478ab46f5f5efed0ed3aa5f0bc6d7add20032b460",
+   "clause_ids": [
+    "disposition:transitions:C29:01",
+    "disposition:transitions:C29:02",
+    "disposition:transitions:C29:03",
+    "disposition:transitions:C29:04",
+    "disposition:transitions:C29:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 19,
+     "end": 151,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "cc32099aa6116d1a3112165d7b1471274be4854a716c931b789ff9b18a644325"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 269,
+     "end": 285,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "b8034d16e746acff2b9fb4af0603c93513c8f58b3a22dc8cf2185fb2777728f4"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 170,
+     "end": 267,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "e1fbae647f87056a60d92fadb3de7ca7bf7d5fc372558de8086b9d2b7907b854"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 294,
+     "end": 376,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "0bc14c97b95eb2242d53e1b67f7f28c8eefabfca6aa9eebdbf100e2d93542fc7"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 466,
+     "end": 495,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "81bdf07c592c1518386e21726bd39a4f78b6c158939a95f55d06a7b5fcd1fa82"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 378,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "6c813b9c37ca6f8f1aeeb8581f018593037bf3fb15dfd13e6e6bd495f33c2133"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 579,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "087cbcaabf679fd2fc9d88c4cb1db5f85bc40c10187327dae9c94ee280fbe0a8"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 588,
+     "end": 617,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "4fa844ce1ff26fcf8b0277564706fe1c9a5796f8149a40c0069ea6ccecc0c687"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 584,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "c65e4e90a6b7250bdcf5483e68a738ec83dda49fcaffaf991212604da53b38a1"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses including already advanced rows are mapped to exact current/pinned owner/caller spans. Accepted repairs and baseline overstatements are explicit per clause; no stronger execution/identity/rollback/coverage behavior is inferred. Advanced row histories are preserved.",
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:01",
+   "frozen_row_sha256": "fa80e6003942f274d8c91e7b5f42da0a42ccdc2b6e4e06142549bb7670a48922",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 19,
+     "end": 151,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "cc32099aa6116d1a3112165d7b1471274be4854a716c931b789ff9b18a644325"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 269,
+     "end": 285,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "b8034d16e746acff2b9fb4af0603c93513c8f58b3a22dc8cf2185fb2777728f4"
+    }
+   ],
+   "semantic_assessment": "Matching PR/main-or-integration push paths, explicit manual and release workflow completion select independent site-check/build. Release completion need not be successful; per-ref newer PR/push supersedes, workflow_run does not cancel. Exact qualified-run dispatch instead selects separate preparation path.",
+   "intake_variances": [
+    "P-01 adds integration-only validation; R-05 aligns PR/push direct gate inputs. Workflow_run builds checkout source, not implied release bytes."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:02",
+   "frozen_row_sha256": "8f94f11e0638bfc4f92bfdc4119b2e470930514feb11515c5c17774e27badedd",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 170,
+     "end": 267,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "e1fbae647f87056a60d92fadb3de7ca7bf7d5fc372558de8086b9d2b7907b854"
+    }
+   ],
+   "semantic_assessment": "Site-check installs deps, enforces audit/generated/typecheck/voice, captures exact coverage inputs/toolchain before tests, then compares inputs and validates finite numeric lines/branches summary. Tests/source drift refuse; coverage upload runs only when not cancelled.",
+   "intake_variances": [
+    "R-05 now validates rule-owner-only changes on PRs too. Numeric completeness is checked here; actual coverage percentages and full run outcome require original hosted evidence."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:03",
+   "frozen_row_sha256": "cc981d16d1f3965e59730cd71c1dac836b0263d382982d9bb8b3d8e16f525036",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 294,
+     "end": 376,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "0bc14c97b95eb2242d53e1b67f7f28c8eefabfca6aa9eebdbf100e2d93542fc7"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 466,
+     "end": 495,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "81bdf07c592c1518386e21726bd39a4f78b6c158939a95f55d06a7b5fcd1fa82"
+    }
+   ],
+   "semantic_assessment": "Build/link audit, observed runnerChrome, browser components and original browser gate precede Pages upload. Program trusted push chooses observer while ordinary validation uses browser command. Completed browser/failure diagnostics retain without forgiving failure; report emits only under trusted program push with source/job/artifact checks.",
+   "intake_variances": [
+    "Accepted Q02/Q03 separates Docs qualification from deployment. No source inspection establishes actual Chrome/browser behavior or successful report issuance."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:04",
+   "frozen_row_sha256": "c5717f53bf1bd71c9c6f6d4647b9de3ec1a87b0bdd1582c9fda1cd77f615aa28",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 378,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "6c813b9c37ca6f8f1aeeb8581f018593037bf3fb15dfd13e6e6bd495f33c2133"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 579,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "087cbcaabf679fd2fc9d88c4cb1db5f85bc40c10187327dae9c94ee280fbe0a8"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 588,
+     "end": 617,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "4fa844ce1ff26fcf8b0277564706fe1c9a5796f8149a40c0069ea6ccecc0c687"
+    }
+   ],
+   "semantic_assessment": "Ordinary deploy needs successful build+site-check, approved event/main, no active program candidate and no qualified-run input. Program promotion uses explicit current-main dispatch with verified PREPUBLICATION_READY envelope/source-tree and exact original archive/tar/member identities, then readback; only deploy job holds Pages/OIDC writes.",
+   "intake_variances": [
+    "Q02/Q03 intentionally suppress ordinary deployment during program qualification and add a separate noncircular qualified exact-tar main-only route. PR/integration validation never gains deploy authority."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:05",
+   "frozen_row_sha256": "17f4b2367b04d77db79882f9e5fee5f37404f0a181026216afff1014b51bb7b4",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 378,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "6c813b9c37ca6f8f1aeeb8581f018593037bf3fb15dfd13e6e6bd495f33c2133"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 584,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "c65e4e90a6b7250bdcf5483e68a738ec83dda49fcaffaf991212604da53b38a1"
+    }
+   ],
+   "semantic_assessment": "Dependent scoped deploy-pages action publishes accepted current-run artifact and environment URL; platform failure is not source success and no custom rollback is implemented. Qualified path deploy depends on completed exact-transfer preparation/readback, never a rebuild substituted for qualified tar.",
+   "intake_variances": [
+    "The source declaration does not establish deployed/public readback or authorize publication/main merge."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "scope": "Reasoned source-only preservation with explicit accepted/intake deltas; no actual hosted/account/installed/runtime/promotion/publication qualification.",
+ "limits": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

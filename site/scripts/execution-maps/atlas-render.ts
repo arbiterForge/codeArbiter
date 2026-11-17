@@ -25,7 +25,7 @@ function sourceUpdate(atlas:Atlas,node?:AtlasNode):string {
   const update=atlas.sourceUpdate;if(!update)return '';
   const changes=node?update.changes.filter(change=>change.nodes.includes(node.id)):update.changes;
   if(!changes.length)return '';
-  return `<aside class="callout" data-atlas-source-update><strong>${h(update.title)}</strong><p>${h(update.summary)}</p><details><summary>Current source changes</summary><ul>${changes.map(change=>`<li>${h(change.summary)} <a href="${h(sourceHref({path:change.path,revision:update.revision}))}" target="_blank" rel="noopener">${h(change.path)}</a></li>`).join('')}</ul></details></aside>`;
+  return `<aside class="callout" data-atlas-source-update><strong>${h(update.title)}</strong><p>${h(update.summary)}</p><details><summary>Current source changes</summary><ul>${changes.map(change=>`<li>${h(change.summary)} <a href="${h(sourceHref({path:change.path,revision:change.revision===undefined?update.revision:change.revision}))}" target="_blank" rel="noopener">${h(change.path)}</a></li>`).join('')}</ul></details></aside>`;
 }
 const chips=(names:string[])=>`<div class="chips">${names.map(name=>`<button type="button" data-route="${h(name)}">/${h(name)}</button>`).join('')}</div>`;
 export function commandDetails(atlas:Atlas,c:AtlasCommand,base:string):string {

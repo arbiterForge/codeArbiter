@@ -1392,6 +1392,65 @@ class TestSpawnBackgroundUpdateRefresh(unittest.TestCase):
             self.fail(f"spawn_background_update_refresh must fail-silent, raised: {e}")
         self.assertIsNone(result)
 
+    def test_detached_refresh_does_not_write_installed_bytecode(self):
+        """The detached interpreter needs its own no-bytecode flag, not ours."""
+        from pathlib import Path
+        import hashlib
+        import subprocess
+
+        real_popen = subprocess.Popen
+        with tempfile.TemporaryDirectory(prefix="ca-detached-bytecode-") as scratch:
+            root = Path(scratch)
+            plugin = root / "plugin"
+            hooks = plugin / "hooks"
+            hooks.mkdir(parents=True)
+            (hooks / "bytecode_fixture.py").write_text("VALUE = 'owned inert import'\n", encoding="utf-8")
+            (hooks / "update-refresh.py").write_text(
+                "import json, os, sys\nfrom pathlib import Path\nimport bytecode_fixture\n"
+                "report = {'dont_write_bytecode': sys.dont_write_bytecode, "
+                "'value': bytecode_fixture.VALUE, 'pid': os.getpid(), 'argv': sys.orig_argv}\n"
+                "(Path(__file__).resolve().parents[2] / 'child.json').write_text(json.dumps(report), encoding='utf-8')\n",
+                encoding="utf-8",
+            )
+
+            def inventory():
+                return {path.relative_to(plugin).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                        for path in plugin.rglob("*") if path.is_file()}
+
+            before = inventory()
+            # Only the owned child's environment is changed. In particular it
+            # cannot inherit the test runner's bytecode suppression or cache prefix.
+            child_env = {key: value for key, value in os.environ.items()
+                         if key.upper() in ("PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP")}
+            child_env["PYTHONNOUSERSITE"] = "1"
+            seen = []
+
+            def owned_child(argv, **kwargs):
+                seen.append(list(argv))
+                return real_popen(argv, env=child_env, **kwargs)
+
+            proc = None
+            try:
+                with mock.patch.object(_mod.subprocess, "Popen", side_effect=owned_child):
+                    proc = _mod._detached_update_refresh_spawner(str(plugin))
+                self.assertEqual(proc.wait(timeout=10), 0)
+                report = json.loads((root / "child.json").read_text(encoding="utf-8"))
+                self.assertEqual(report["value"], "owned inert import")
+                self.assertEqual(report["pid"], proc.pid)
+                after = inventory()
+                print("DETACHED_REFRESH_PROBE " + json.dumps({
+                    "child": report, "spawn_argv": seen, "before": before, "after": after,
+                }, sort_keys=True))
+                with self.subTest(oracle="interpreter flag"):
+                    self.assertTrue(report["dont_write_bytecode"],
+                                    "detached Python lost no-bytecode protection")
+                with self.subTest(oracle="installed inventory"):
+                    self.assertEqual(after, before, "detached import mutated the installed payload")
+            finally:
+                if proc is not None and proc.poll() is None:
+                    proc.kill()
+                    proc.wait(timeout=5)
+
     def test_default_spawner_never_awaited_and_returns_handle_or_none(self):
         # Use the REAL default spawner but target a harmless, fast, no-op python
         # invocation in place of the real refresh script, proving the call returns

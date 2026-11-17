@@ -1,0 +1,15 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\run-owning.py",
+  "TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl",
+ "exit_code": 1,
+ "elapsed_seconds": 0.24035939999157563,
+ "production_sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+ "test_sha256": "3eca42c44bb7fea002d3f04e42e217d0053e3dc29febab40e86f939489217745",
+ "stdout_sha256": "3d789291ed9a88334386e026f4721682182d3c1bdc46e5f922a750517ccc9f36",
+ "stderr_sha256": "e27ecaf4fb9b355994e0cce96c129f3647a0009c84847642adaad9ec659a938b"
+}

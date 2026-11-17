@@ -1,0 +1,253 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: authored literal31-clause pinned/current/callee assessment; no execution or independent self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_adrlifecyclewrite.py": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+  "core/surface/commands/adr-status.md": "5ebf347bbf893c8256159d0d1953e152eec6135fbc4b48052ff968c2de0d05eb",
+  "core/surface/includes/smarts/decision-log-format.md": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+  "core/surface/skills/decision-lifecycle/SKILL.md": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+  "core/surface/skills/decision-lifecycle/references/authoring.md": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-15",
+  "disposition:transitions:WF-15:01",
+  "disposition:transitions:WF-15:02",
+  "disposition:transitions:WF-15:03",
+  "disposition:transitions:WF-15:04",
+  "disposition:transitions:WF-15:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-15",
+   "frozen_row_sha256": "48c6ceea87ce684e012e1e3473f8aea2f242c434acc468934f9553231ebd5507",
+   "clause_ids": [
+    "disposition:transitions:WF-15:01",
+    "disposition:transitions:WF-15:02",
+    "disposition:transitions:WF-15:03",
+    "disposition:transitions:WF-15:04",
+    "disposition:transitions:WF-15:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 13,
+     "end": 51,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "c039503e0f167c71c23dcd051ff218ec8c48b19b03b841fee6c7a28e7e65c72b"
+    },
+    {
+     "path": "core/surface/commands/adr-status.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "5ebf347bbf893c8256159d0d1953e152eec6135fbc4b48052ff968c2de0d05eb",
+     "span_sha256": "19245313c2c2468ad7aa506dacc8d7c6da5d4554b0f561bd85eaa91b333809cb"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 18,
+     "end": 89,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "ac83ac31cb4e3d1707a2bda3710fe03e5dd1de28c9ca36caaceb8bbaaee30ef6"
+    },
+    {
+     "path": "core/surface/includes/smarts/decision-log-format.md",
+     "start": 7,
+     "end": 56,
+     "file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+     "span_sha256": "da6424262178965b719bd1508fb47256e77c77dc4227b32cb25db30ba45fe028"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 91,
+     "end": 124,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "da1664bbdeaf7c6008e68197d6d1c0e0ec7ff2c5e5744ca9a4cef3dc4a7de42b"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclewrite.py",
+     "start": 95,
+     "end": 157,
+     "file_sha256": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+     "span_sha256": "6edd8444faaf2d1de641e9af18b59b63c79aa37b8e49db0188c7100ad3c26274"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 53,
+     "end": 72,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "f88147b2a14a12485507fe2dc98a47a5ba9f5fc4c7b6be9870c1ddc7202e5864"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 126,
+     "end": 157,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "17ad3250e246d0579b34470ba574d0c084fd2e2c3f9afb241a9b82e12ddb3405"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 61,
+     "end": 65,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "7f6e111bc2eea9277284585e84daceb805b25b5c7a8fc039e1073621451e6ae4"
+    }
+   ],
+   "semantic_assessment": "All 5 frozen literal transitions assessed against pinned/current owner and named applicable changes; includes advanced edges for machine analysis without modifying them. Guidance conformance only; explicit exceptions stay in clause-inspection.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-15:01",
+   "frozen_row_sha256": "4581eb49da1ff50023e6048a9bcc778a3e45b0f10d5390c1e15d57edb267e5e6",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 13,
+     "end": 51,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "c039503e0f167c71c23dcd051ff218ec8c48b19b03b841fee6c7a28e7e65c72b"
+    },
+    {
+     "path": "core/surface/commands/adr-status.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "5ebf347bbf893c8256159d0d1953e152eec6135fbc4b48052ff968c2de0d05eb",
+     "span_sha256": "19245313c2c2468ad7aa506dacc8d7c6da5d4554b0f561bd85eaa91b333809cb"
+    }
+   ],
+   "semantic_assessment": "Mode is selected from actual request/caller before writable prerequisites; invalid/ambiguous arguments stay read-only. Status reports exact stems and lifecycle evidence without marker, log, staging, repair or authoring. No fallthrough to authoring; absent and unreadable storage differ. Optional challenge supplies neither initialization nor mutation authority.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-15:02",
+   "frozen_row_sha256": "694da4ecea59cbdf9dbdf2a9e96331e9cb0718b5727e74701ce4a18ac7c659fc",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 18,
+     "end": 89,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "ac83ac31cb4e3d1707a2bda3710fe03e5dd1de28c9ca36caaceb8bbaaee30ef6"
+    },
+    {
+     "path": "core/surface/includes/smarts/decision-log-format.md",
+     "start": 7,
+     "end": 56,
+     "file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+     "span_sha256": "da6424262178965b719bd1508fb47256e77c77dc4227b32cb25db30ba45fe028"
+    }
+   ],
+   "semantic_assessment": "Actual user-confirmed content, full-stem indexing and unused next sequential number guard authoring; general trust is insufficient. Resolve exact project_root through installed guards, arm one marker, author Proposed record and attributed append-only log, then remove exact marker on every controlled exit. Thirty-minute freshness is retained, not crash-safe cleanup; report remaining marker and original failure when cleanup fails, and do not continue writing.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-15:03",
+   "frozen_row_sha256": "48b354ee75df9012166f50ac6d1a2a0dd29dfd37b07b0901040ec081252aca8a",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 91,
+     "end": 124,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "da1664bbdeaf7c6008e68197d6d1c0e0ec7ff2c5e5744ca9a4cef3dc4a7de42b"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclewrite.py",
+     "start": 95,
+     "end": 157,
+     "file_sha256": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+     "span_sha256": "6edd8444faaf2d1de641e9af18b59b63c79aa37b8e49db0188c7100ad3c26274"
+    }
+   ],
+   "semantic_assessment": "Explicit acceptance and independently reviewed complete obligations are separate from implementation; committed accepted ADR source is required. Commit accepted body/log first, then shipped adr-acceptance writer computes/verifies exact committed bindings and appends locked event for a subsequent commit. No invented source identity or second binding; dirty/current-body/ancestry mismatch refuses. Writer naming a reviewer is cooperative attribution, not proof of an actual independent review.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-15:04",
+   "frozen_row_sha256": "33fc6ef0372ce13aa0dee381545b93bfd236e96062c6e441e88682b771ce1d81",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 53,
+     "end": 72,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "f88147b2a14a12485507fe2dc98a47a5ba9f5fc4c7b6be9870c1ddc7202e5864"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 126,
+     "end": 157,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "17ad3250e246d0579b34470ba574d0c084fd2e2c3f9afb241a9b82e12ddb3405"
+    }
+   ],
+   "semantic_assessment": "Every sealed obligation needs current input-bound implementation and fresh verification evidence for the requested derived claim. Append implementation/verification/invalidation or reviewed correction events; accepted remains Accepted/Planned until complete applicable evidence. Missing, unsealed, stale, expired or mismatched evidence narrows the derived report. Correction preserves original malformed event and cannot substitute a new user decision.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-15:05",
+   "frozen_row_sha256": "5335f489b1c0fd2e1d8cd952ef60e3ebfc47a09bdb48427275359393fc2f03fb",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/decision-log-format.md",
+     "start": 7,
+     "end": 56,
+     "file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+     "span_sha256": "da6424262178965b719bd1508fb47256e77c77dc4227b32cb25db30ba45fe028"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 61,
+     "end": 65,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "7f6e111bc2eea9277284585e84daceb805b25b5c7a8fc039e1073621451e6ae4"
+    }
+   ],
+   "semantic_assessment": "Only actual user instruction changes status or records deferral; exact full-stem supersession disambiguates identities. Append forward Supersedes/log entry or a deferred entry with real re-evaluation trigger; retain prior body/history. No inference from silence or back-reference edits. The explicitly documented identifier-only maintainer correction is a narrow separate allowance, not decision-content rewriting.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  }
+ ],
+ "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

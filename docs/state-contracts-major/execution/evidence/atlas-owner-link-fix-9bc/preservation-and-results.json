@@ -1,0 +1,214 @@
+{
+ "schema": "codearbiter.private-fix-preservation/1",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "obligations": [
+  {
+   "id": "OWNER-LINK",
+   "oracle": "Exact current owner URL emitted by renderReadingGuide with preserved legacy fallback/global base.",
+   "original_assertion_RED": true,
+   "current_GREEN": true
+  },
+  {
+   "id": "OWNER-REVISION-VALIDATION",
+   "oracle": "Malformed/moving/nonstring explicit revision is refused by model and renderer; missing revision preserves legacy fallback.",
+   "original_assertion_RED": true,
+   "current_GREEN": true
+  },
+  {
+   "id": "CURRENT-OWNER-JOIN",
+   "oracle": "Offline Git9bc:path resolves exact reviewed blob5fcb6c3e; loadAtlas(actualRoot) and complete118 inventory remain current.",
+   "GREEN": true
+  }
+ ],
+ "production_delta": [
+  "AtlasSourceUpdate changes accept optional revision:string.",
+  "validateAtlas checks optional revision is an exact lowercase40-hex string. sourceHref rejects nonstring coercions, including arrays.",
+  "sourceUpdate rendering selects owner revision if defined, otherwise the unchanged global source base.",
+  "Prompt JSON row alone gains9bc revision, plus the separately sealed reviewed blob/summary refresh."
+ ],
+ "preservation": {
+  "twelve_old_test_calls_and_assertions_literal_unchanged": true,
+  "new_two_methods_test_bytes_identical_RED_and_GREEN": true,
+  "all_other_data_rows_and_global_f65_revision_unchanged": true,
+  "production_atlas_ts_and_all17_unselected_dependencies_byte_EOL_unchanged": true,
+  "no_guard_weakened": true,
+  "unchanged_subjects": [
+   {
+    "path": "site/scripts/execution-maps/atlas.ts",
+    "sha256": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+    "bytes": 40202
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-command.ts",
+    "sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+    "bytes": 1043
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-theme.ts",
+    "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "bytes": 1559
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/catalog.json",
+    "sha256": "6fbfcba700cc69467b0d4445b0e52cb42fb7a3139a7f30985261470416ed3f3d",
+    "bytes": 4597
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/commands.json",
+    "sha256": "19a1a61f4c21d192033e6ab02097413a8ed7ff883974afd69a0c6ff55261f871",
+    "bytes": 44319
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/sources.json",
+    "sha256": "a6bbf420799fe363349d700bf6695d4e62fe4904cb360735cb36017d6da0e445",
+    "bytes": 19830
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/all-routes.json",
+    "sha256": "3052931640dad653d53c4080ba20726a2dea0899f4ebc2247aaafc8ea6a079eb",
+    "bytes": 20279
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/feature-sprint.json",
+    "sha256": "1bd9e3e41da775e404e19a64155b8cb008252415e81561467a42efb86bda8cf6",
+    "bytes": 16826
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/context-layers.json",
+    "sha256": "8a8f1d557fbde280633efd19fef07c700c69f2ac5b8e964e917c5a6979f3936b",
+    "bytes": 21489
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/change-lanes.json",
+    "sha256": "f15ce1e25a5c5898580ff13ba71a5454dcc950a1b11cecb5779d77eaf567c57f",
+    "bytes": 15704
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/review-delivery.json",
+    "sha256": "a0cd5f4265451804e6475806240ca7b8394aa5b18086f4ff51450934a3d13dcc",
+    "bytes": 16827
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/knowledge-operations.json",
+    "sha256": "114f235223d266b13e0338b894adb2aa5e9c43d2fc2504efbeddfcbda394844e",
+    "bytes": 14475
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/brownfield-lifecycle.json",
+    "sha256": "c7b7a9a0e05efd7f752f9a299e45bc24f08867ae0f07bcce209427f80a582aad",
+    "bytes": 14302
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/debug-handoff.json",
+    "sha256": "5dd0eda33bac13adbfa3b847b4328f59729ee08e4d5fd37920ec3e9bc4e87eba",
+    "bytes": 15593
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/tribunal-lifecycle.json",
+    "sha256": "4bd0351ed32afb061736ee016ef950afe4405de87a6d0b6badddeae9e9b7950c",
+    "bytes": 18172
+   },
+   {
+    "path": "site/scripts/execution-maps/atlas-data/assistive-update.json",
+    "sha256": "13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50",
+    "bytes": 36593
+   },
+   {
+    "path": "site/src/styles/design-system.css",
+    "sha256": "4e10af0859a341d409fe7e8a426e03bdeb484574bfb67271ee3370f6763b4203",
+    "bytes": 23774
+   }
+  ]
+ },
+ "actual_results": {
+  "original_render_RED": {
+   "argv": [
+    "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "--root",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture",
+    "--config",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+    "--reporter=json",
+    "--outputFile",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.named.json",
+    "-t",
+    "links each current-source owner to its reviewed revision with legacy fallback"
+   ],
+   "exit": 1,
+   "seconds": 0.7461619000241626,
+   "stdout_sha256": "b660f2f37479eae85cf8d32d3d0f4dd7ba87ab53851057764cc75cc8e8b26ac1",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "test_sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada",
+   "production": "Original exact9bc model and renderer, no fix written."
+  },
+  "original_shape_RED": {
+   "argv": [
+    "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "--root",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture",
+    "--config",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+    "--reporter=json",
+    "--outputFile",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.named.json",
+    "-t",
+    "rejects invalid optional current-source revisions instead of falling back"
+   ],
+   "exit": 1,
+   "seconds": 0.6369522000022698,
+   "test_sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada"
+  },
+  "owning_GREEN": {
+   "methods": 14,
+   "original": 12,
+   "new": 2,
+   "skipped": 0,
+   "seconds": 0.7997556000191253
+  },
+  "strict_scoped_typecheck": {
+   "argv": [
+    "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\bin\\tsc",
+    "--project",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\tsconfig.json",
+    "--pretty",
+    "false"
+   ],
+   "exit": 0,
+   "seconds": 0.6748442999960389,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualRoot_loader": {
+   "root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+   "inventory": 118,
+   "mismatches": 0,
+   "seconds": 3.664356299996143,
+   "render_readback": {
+    "owner_revision": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+    "linked_blob": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+    "owner_path": "core/pysrc/prompt-submit.py",
+    "correct_owner_link": true,
+    "old_owner_link_absent": true,
+    "rendered_bytes": 816950,
+    "rendered_sha256": "63cbbc3207be9d86d803f2c6217827a99fdb20041b6eeed0e34a72f3c2c1f7ac"
+   }
+  }
+ },
+ "prior_source_review_and_refresh_reuse": {
+  "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-reviewed-persona-refresh-h9rtx_jb\\delivery.json",
+  "sha256": "0650dd389670e9f45c49567df45f9e98c5d4996a0dbb8e67fde6b9a37cb5c1c6",
+  "scope": "Exact owner blob/summary and affected o-runtime/c-live/c-persona review, original finite inventory and source pin precedence. New current loader checks also repeated full118 once with this final data."
+ },
+ "limits": [
+  "No canonical/index/ref/marker/ledger writes, installs, network/API/provider/browser/fullsite/native/host-runtime effects.",
+  "Optional revision validation is closed shape validation; the actual inspected prompt revision:path binding is separately verified through offline Git, not a fabricated universal source-link attestation.",
+  "Focused Windows coverage is partial; complete site/Ubuntu measurement and exact-head hosted CI remain separate.",
+  "Author delivery awaits Root independent inspection; not self-independent approval or qualification."
+ ]
+}

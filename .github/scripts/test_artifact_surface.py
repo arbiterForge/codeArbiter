@@ -39,6 +39,9 @@ STARTUP_CONTENT_SHA256 = {
 # bounded recovery presentation seam. Preserve the previous full-content pin:
 # only byte-exact accepted changes are normalized for its comparison.
 _REVIEWED_STARTUP_REPLACEMENTS = (
+    # Exact detached-launch delta reviewed in commit6d8; keep the full historical pin.
+    (b'    """Default spawner: launch `<python> -B <plugin>/hooks/update-refresh.py` fully\n', b'    """Default spawner: launch `<python> <plugin>/hooks/update-refresh.py` fully\n'),
+    (b'    return subprocess.Popen([sys.executable, "-B", script], **kw)\n', b'    return subprocess.Popen([sys.executable, script], **kw)\n'),
     (b'# The active startup path owns setup and a state briefing. Mode cleanup and\n# healing an already host-owned global statusline pin precede activation; an\n# absent activation flag therefore does not imply zero maintenance effects.\n# Enabled startup may install Git enforcement and spawn bounded fetch/update\n# work. The explicit-root init --check --passive path is the inspection boundary.\n# Persona delivery belongs to prompt-submit.py on each applicable turn, rather\n# than SessionStart. Recovery scans read only the existing Git-common ledger;\n# a separate optional per-session marker remembers notices emitted by this hook.\n#\n', b'# Detects an arbiter-enabled repo and injects the orchestrator persona + startup\n# state into context. A plugin has no CLAUDE.md to load an always-on persona, so\n# the SessionStart hook does it: in a repo whose `.codearbiter/CONTEXT.md`\n# frontmatter sets `arbiter: enabled`, this prints ORCHESTRATOR.md (+ live state)\n# to stdout, which Claude Code adds to context.\n#\n'),
     (b'# After the narrow maintenance above, the activation flag gates project startup.\n', b'# In any repo WITHOUT the flag, the hook exits silently (dormant) \xe2\x80\x94 the plugin\n# can be installed globally and stays out of the way everywhere else.\n'),
     (b'    # This notice never performs a target effect or repairs the recovery store.\n    if host.name != "pi":\n        # Pi owns typed snapshot/UI/prompt delivery and its current-lease dedup.\n        try:\n            import _workflowrecoverylib\n            recovery_notice = _workflowrecoverylib.presentation(root, session_id)\n            if recovery_notice["text"]:\n                print(recovery_notice["text"], flush=True)\n                _workflowrecoverylib.record_notice_emitted(root, session_id, recovery_notice["fingerprint"])\n        except Exception:  # An optional notice cannot disable normal startup.\n            print("codeArbiter: workflow recovery notice unavailable; independent authorized work continues.")\n\n', b''),
@@ -378,6 +381,20 @@ class ArtifactSurfaceTest(unittest.TestCase):
         self.assertNotEqual(content, drift)
         self.assertNotEqual(hashlib.sha256(reviewed_startup_bytes(path, drift)).hexdigest(),
                             STARTUP_CONTENT_SHA256[path])
+
+    def test_detached_update_review_is_exact_and_keeps_startup_pin(self) -> None:
+        path = "core/pysrc/session-start.py"
+        content = (ROOT / path).read_bytes()
+        accepted = b'    return subprocess.Popen([sys.executable, "-B", script], **kw)\n'
+        previous = b'    return subprocess.Popen([sys.executable, script], **kw)\n'
+        self.assertEqual(content.count(accepted), 1)
+        self.assertEqual(hashlib.sha256(reviewed_startup_bytes(path, content)).hexdigest(),
+                         STARTUP_CONTENT_SHA256[path])
+        for altered in (content.replace(accepted, previous),
+                        content.replace(accepted, accepted.replace(b'"-B"', b'"-I"')),
+                        content + accepted):
+            with self.subTest(length=len(altered)), self.assertRaisesRegex(AssertionError, "reviewed bytes"):
+                reviewed_startup_bytes(path, altered)
 
     def test_startup_fixtures_do_not_eager_load_artifact_content(self) -> None:
         forbidden = self.baseline["forbidden_startup_markers"]

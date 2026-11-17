@@ -1,0 +1,77 @@
+{
+  "schema": "codearbiter.private-startup-pin-guard-maintenance/1",
+  "state": "FOCUSED_PASS_AWAITING_REVIEW",
+  "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+  "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "subjects": [
+    {
+      "path": ".github/scripts/test_artifact_surface.py",
+      "preimage_sha256": "90e3e5750cffec61ff500d52b89813f48486edb41b6fbfcea93e7f54a8670c17",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\candidate.py",
+      "sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+      "bytes": 20774
+    }
+  ],
+  "red": {
+    "tests": 4,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0,
+    "success": false,
+    "source_head": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+    "fixture_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "module_sha256": "507830c58d8b9fb38338a0af767c9cb4b3388cad27889063f8ac846fb80cb90d",
+    "runtime_product_execution": false
+  },
+  "green": {
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true,
+    "source_head": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+    "fixture_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "module_sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+    "runtime_product_execution": false
+  },
+  "historical_pin": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
+  "preserved": "All17old test method ASTs, historical baseline/pin, accepted recovery normalization and negative eager-schema/drift controls unchanged. Existing final recovery tuple remains last.",
+  "delta": "Two exact approved replacements plus one guarded negative-control test. No application source or qualification rule weakened.",
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\candidate.py",
+      "sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+      "bytes": 20774
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\green.json",
+      "sha256": "27b79f833e1642b64a8ec0bbff9d80e316b0eca426a4c14909d74036331d329d",
+      "bytes": 377
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\green.stderr",
+      "sha256": "684a9ab1104e25ed78140e4797ee72f298c1f3fb999bbfd2eb2069b4792a123c",
+      "bytes": 2792
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\original.py",
+      "sha256": "90e3e5750cffec61ff500d52b89813f48486edb41b6fbfcea93e7f54a8670c17",
+      "bytes": 19456
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\red.json",
+      "sha256": "a7739d8440faec78640df0dfa9e908db37fe5f9370291a2e61517eb8ff8d0a8b",
+      "bytes": 377
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\red.py",
+      "sha256": "507830c58d8b9fb38338a0af767c9cb4b3388cad27889063f8ac846fb80cb90d",
+      "bytes": 20360
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\red.stderr",
+      "sha256": "4b1371dccbc92b5c9735610c260e9e2466a2483f23db3f2575d938ea4b3de532",
+      "bytes": 4762
+    }
+  ]
+}

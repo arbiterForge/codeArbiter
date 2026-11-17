@@ -1,0 +1,14 @@
+test_default_spawner_never_awaited_and_returns_handle_or_none (test_session_start.TestSpawnBackgroundUpdateRefresh.test_default_spawner_never_awaited_and_returns_handle_or_none) ... ok
+test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode)
+The detached interpreter needs its own no-bytecode flag, not ours. ... ok
+test_spawner_invoked_with_plugin_root (test_session_start.TestSpawnBackgroundUpdateRefresh.test_spawner_invoked_with_plugin_root) ... ok
+test_spawner_raising_is_swallowed (test_session_start.TestSpawnBackgroundUpdateRefresh.test_spawner_raising_is_swallowed) ... ok
+test_ac1_newer_cached_latest_yields_notice (test_session_start.TestUpdateNoticeLine.test_ac1_newer_cached_latest_yields_notice) ... ok
+test_ac2_equal_cached_latest_yields_no_notice (test_session_start.TestUpdateNoticeLine.test_ac2_equal_cached_latest_yields_no_notice) ... ok
+test_ac2_no_cache_file_yields_no_notice (test_session_start.TestUpdateNoticeLine.test_ac2_no_cache_file_yields_no_notice) ... ok
+test_ac3_corrupt_cache_degrades_to_no_notice_no_raise (test_session_start.TestUpdateNoticeLine.test_ac3_corrupt_cache_degrades_to_no_notice_no_raise) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.138s
+
+OK

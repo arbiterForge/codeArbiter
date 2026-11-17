@@ -1,0 +1,34 @@
+{
+ "schema": "codearbiter.inherited-source-evidence/1",
+ "evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/preserved.json",
+   "sha256": "c46d296f3ec09198ff49d31d396366d76a51857bb1430ff72fab9db922e09270",
+   "bytes": 13349,
+   "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+   "result": "PRESERVED",
+   "input_mismatches_at_EA9": [
+    "plugins/ca/tools/farm.js",
+    "plugins/ca/tools/farm.ts",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+    "plugins/ca/tools/farm-registry-lock.test.ts"
+   ],
+   "reuse": "Retained advanced-row historical identity/outcomes only. No replay, source-epoch renewal or blanket current runtime applicability inferred."
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+   "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+   "bytes": 17165,
+   "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+   "result": "PASSED",
+   "input_mismatches_at_EA9": [
+    "plugins/ca/tools/farm.js",
+    "plugins/ca/tools/farm.ts",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts",
+    "plugins/ca/tools/farm-registry-lock.test.ts"
+   ],
+   "reuse": "Retained advanced-row historical identity/outcomes only. No replay, source-epoch renewal or blanket current runtime applicability inferred."
+  }
+ ],
+ "limits": "All89 advanced rows retain exact original state/history. New23-cell proposal is independently reasoned source-only; old executed commands are not copied as new runs."
+}

@@ -936,7 +936,7 @@ def update_notice_line(plugin):
 
 
 def _detached_update_refresh_spawner(plugin):
-    """Default spawner: launch `<python> <plugin>/hooks/update-refresh.py` fully
+    """Default spawner: launch `<python> -B <plugin>/hooks/update-refresh.py` fully
     DETACHED — same decoupling as _detached_fetch_spawner (child stdout/stderr to
     DEVNULL, new session/process group so it outlives this process and is never
     awaited)."""
@@ -950,7 +950,7 @@ def _detached_update_refresh_spawner(plugin):
         kw["creationflags"] = flags
     else:
         kw["start_new_session"] = True
-    return subprocess.Popen([sys.executable, script], **kw)
+    return subprocess.Popen([sys.executable, "-B", script], **kw)
 
 
 def spawn_background_update_refresh(plugin, spawner=None):

@@ -1,0 +1,191 @@
+{
+ "schema": "codearbiter.private-fix-successor/1",
+ "state": "IMPLEMENTED_FOCUSED_LOCAL_PASS",
+ "route": "ca-fix",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "finding": "SITE-LINK-CONTAINMENT-01",
+ "source_epoch": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "predecessor": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\predecessor.json",
+  "sha256": "7d477a6e4ffe0631803faac2e82d001af8748f89e0c4d7ad998e482346e50ef7",
+  "bytes": 2855
+ },
+ "subjects": {
+  "site/scripts/link-audit/lib.ts": {
+   "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\scripts\\link-audit\\lib.ts",
+    "sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+    "bytes": 9128
+   },
+   "predecessor": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\scripts\\link-audit\\lib.ts",
+    "sha256": "53c2444f104bf036752a8469ac3c7d9875fbcb1b1b40ece7d8887c5b76932f60",
+    "bytes": 9265
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\scripts\\link-audit\\lib.ts",
+    "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+    "bytes": 9643
+   },
+   "canonical_original_unchanged": true,
+   "original_git_blob_oid": "a7212208bd1655e10cfe7c1d9d073915c550091b"
+  },
+  "site/test/link-audit/lib.test.ts": {
+   "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\test\\link-audit\\lib.test.ts",
+    "sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+    "bytes": 13780
+   },
+   "predecessor": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\test\\link-audit\\lib.test.ts",
+    "sha256": "eafe97b104135534c362af9f0388625ee80c01cd2006e91bc6009007b6db250b",
+    "bytes": 15433
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\test\\link-audit\\lib.test.ts",
+    "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+    "bytes": 16373
+   },
+   "canonical_original_unchanged": true,
+   "original_git_blob_oid": "86f13a6184fda75fcb80293805d760b25b5e844b"
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate.patch",
+  "sha256": "307035eaec6ea48b5d52e026110acd3f87856b602770560beb21d8775e7e57a9",
+  "bytes": 4548
+ },
+ "successor_delta": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\successor.patch",
+  "sha256": "cee9fc69f3f56497532da289e84a37890ea27f9667dcf18e71c3c4d5e8fa59ee",
+  "bytes": 2320
+ },
+ "fix": "Retain root-absolute posix normalization; after filesystem join reject a relative result equal to parent, starting with parent plus host separator, or itself absolute. No outside target is read by that guarded resolution path.",
+ "outcomes": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\outcomes.json",
+  "sha256": "3dec153b81587754d3ac522f5e02c08b0d3792102dc09530708244717803b906",
+  "bytes": 3884
+ },
+ "dependencies": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\dependency-joins.json",
+  "sha256": "7a2c9045375ec93d0c2dc706025124667788ced15b788a2a3d4799c47e0251d2",
+  "bytes": 3244
+ },
+ "evidence": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate.patch",
+   "sha256": "307035eaec6ea48b5d52e026110acd3f87856b602770560beb21d8775e7e57a9",
+   "bytes": 4548
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\successor.patch",
+   "sha256": "cee9fc69f3f56497532da289e84a37890ea27f9667dcf18e71c3c4d5e8fa59ee",
+   "bytes": 2320
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\dependency-joins.json",
+   "sha256": "7a2c9045375ec93d0c2dc706025124667788ced15b788a2a3d4799c47e0251d2",
+   "bytes": 3244
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\outcomes.json",
+   "sha256": "3dec153b81587754d3ac522f5e02c08b0d3792102dc09530708244717803b906",
+   "bytes": 3884
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\intermediate-red.json",
+   "sha256": "2b2886d1a16f9467ccf29add141040b8b363c420cb704d0e3cfb0aa7ba605ef9",
+   "bytes": 1070
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\original-backslash-red.json",
+   "sha256": "e3fe47398e05d11c2440683b6c2e03e5a330da13e6be48ebe6e622543476ad4a",
+   "bytes": 1125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\green.json",
+   "sha256": "883cd6f6c292744b499ac16332e813969155693f35f4c64ede858a1865f320f1",
+   "bytes": 1075
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\typecheck.json",
+   "sha256": "7e939d039cd62f4707df0e47c9666b215491692315c42b5169dae6e415311580",
+   "bytes": 898
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor-join.json",
+   "sha256": "7942f41d926d32086c39b398ba2e29e129dafcf1a16017150bba4e7f8bf6d470",
+   "bytes": 211
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\vitest.private.mjs",
+   "sha256": "1acb033992c2c048817ea8bffb041f912a70c0fb2d86decb8c3d0b56c5b59bd4",
+   "bytes": 735
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\tsconfig.private.json",
+   "sha256": "353cc022daf509cbfa6d8f718487136809c21631216f6cc8260f7f72137b7c33",
+   "bytes": 768
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\regression-intermediate-red.test.ts",
+   "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "bytes": 16373
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\coverage\\coverage-summary.json",
+   "sha256": "c9683aa9da2daa3dc029956d7e08d22ffb6b73bdf09707b659954e4e70129ce8",
+   "bytes": 697
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\coverage\\coverage-final.json",
+   "sha256": "53164bd5d93565dd19e5be087aa53d9ec9b83b623f86e7aa3688864bf9e9b05c",
+   "bytes": 20721
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stdout",
+   "sha256": "3082b8be623ccff614576c3576059cd3c1d2e4e05bc5da981452fa640bd6995e",
+   "bytes": 5729
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stderr",
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stdout",
+   "sha256": "0b6076cf7dac8eacb4cc1097a4d41a436fbce47175f28afb9fe017d7aa5a9763",
+   "bytes": 5589
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stderr",
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stdout",
+   "sha256": "19a851d91cde11e677b0c9105de2478b97567ea8852a4a75829dc46c75c0877a",
+   "bytes": 5859
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  }
+ ],
+ "limits": [
+  "Private Windows unit/component execution only; no Ubuntu/full-site coverage or typecheck, site build, browser, network, install or publication qualification. Maintained coverage scope/config/thresholds unchanged.",
+  "Final guard establishes lexical host-path containment for classified internal targets; no symlink, hostile concurrent filesystem or OS/process sandbox claim; no broader URL parser redesign.",
+  "All SX06 source dispositions remain pending until actual canonical repair epoch. Parent owns independent review, adoption, exact-head hosted qualification and canonical/marker/ledger writes."
+ ]
+}

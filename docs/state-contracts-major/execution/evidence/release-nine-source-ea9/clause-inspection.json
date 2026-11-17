@@ -1,0 +1,2214 @@
+{
+ "schema": "codearbiter.literal-clause-source-inspection/1",
+ "actor": "/root/crypto_evidence_review",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "C21",
+  "C22",
+  "C23",
+  "C24",
+  "C25",
+  "C26",
+  "C27",
+  "C28",
+  "C29"
+ ],
+ "clause_count": 46,
+ "source_bindings_sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5",
+ "rows": [
+  {
+   "cell": "disposition:transitions:C21:01",
+   "frozen_row_sha256": "07b85698e91bdf355bc581c25d5da24501b55a1b10aa34237e2d53146c61848b",
+   "frozen_baseline": {
+    "from_state": "unchecked ledgers",
+    "from": "unchecked ledgers",
+    "event": "validate offline history",
+    "guard": "frozen original baseline digest/population, closed legacy digest/grades/epoch and disjointness valid",
+    "to": "offline valid",
+    "effects": "Validate source-controlled evidence before any API availability shortcut.",
+    "failure_retry": "Malformed or changed historical baseline fails even without token.",
+    "source": [
+     {
+      "path": ".github/scripts/check_tag_immutability.py",
+      "symbol": "validate_original_receipt_baseline",
+      "lines": [
+       208,
+       225
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py"
+     }
+    ],
+    "transition_id": "C21:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Production CLI validates original fixed-floor identity/population, exact closed44 legacy identities/15-28-1 grades/epoch and ledger disjointness before the missing-token branch. Invalid local history returns nonzero even when live observation cannot run. Explicit injected unit-test records deliberately bypass the production floor.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 189,
+     "end": 283,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "ccbcdfc605ab3efd6652197d259afdeafc4c7e5685e366cbf3c42df0cc73020a"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 502,
+     "end": 524,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "05b12c554237a73f8b832429b69e0153af3a9ad0de33e4a906706d41adb96872"
+    }
+   ],
+   "intake_variances": [
+    "R-06 adds typed outcomes without changing compatible exits. The original floor is a fixed subset, so later trusted original receipts may append."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:02",
+   "frozen_row_sha256": "d1f9c6028aca8b8e4e6c4af063a6b72252c5b6a97c66268f8ec19297a1c71091",
+   "frozen_baseline": {
+    "from_state": "offline valid",
+    "from": "offline valid",
+    "event": "live inventory unavailable/no auth",
+    "guard": "ordinary mode without --require-recorded",
+    "to": "API unavailable / partial skip",
+    "effects": "Print unavailable/skip and return zero.",
+    "failure_retry": "A green ordinary check under this branch is not live immutability verification; strict mode fails.",
+    "source": [
+     {
+      "path": ".github/scripts/check_tag_immutability.py",
+      "symbol": "main",
+      "lines": [
+       457,
+       540
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py"
+     }
+    ],
+    "transition_id": "C21:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Missing repository/token or non200/unavailable live reads retain ordinary skipped/unavailable zero exit; strict require-recorded refuses. Malformed successful inventory refuses in either mode. Optional typed observation distinguishes zero-exit availability from verified identity.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 408,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "8f8a2101020a3cb294ce92580246f63a6d72a7bc5d742fe8b3bf027274e032b4"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 457,
+     "end": 487,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "fb39c56c1944ad6005c830d945c06bb3b93e582ca2a135f83db220434cd81cdf"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 491,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "580b32c710fe61453b07d6e8355772624e759a263fb0f85ad424949634a3347b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:03",
+   "frozen_row_sha256": "ce36e684f6697b16f415ae302f87bbfd030314902f4bfd52d08827b57c1d093e",
+   "frozen_baseline": {
+    "from_state": "offline valid",
+    "from": "offline valid",
+    "event": "live matching refs received",
+    "guard": "HTTP successful inventory shape/unique names/hash/type valid",
+    "to": "live observed",
+    "effects": "Audit each original and legacy recorded tag against remote identity.",
+    "failure_retry": "Malformed successful inventory fails rather than being downgraded to unavailable.",
+    "source": [
+     {
+      "path": ".github/scripts/check_tag_immutability.py",
+      "symbol": "read_live_tags",
+      "lines": [
+       371,
+       405
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py"
+     }
+    ],
+    "transition_id": "C21:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Complete matching-ref response must be a list of unique nonempty tag names with40-hex Git object identifiers and admitted Git types. Successful malformed JSON/inventory raises InvalidInventory rather than returning unavailable; no local mutation is performed.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 371,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "d7720371a852aad25285526df1f9d5922ec7b846445ce4712d5a530284134bf0"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 526,
+     "end": 534,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "9da1e43423d86cdd2b82beb37899ca77f8ba9ca81256c03e29a3a39862cf98f9"
+    }
+   ],
+   "intake_variances": [
+    "Live comparison uses direct ref object IDs, not a separate live peel. Permitted working tree/blob refs do not hide release-ref drift."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:04",
+   "frozen_row_sha256": "b3cd4d449d5a2a63abe263d43d9d72c837224c784036db4e11e3049d7e42b1b3",
+   "frozen_baseline": {
+    "from_state": "live observed",
+    "from": "live observed",
+    "event": "recorded tag comparison",
+    "guard": "direct/peeled identity unchanged and tag exists",
+    "to": "live unchanged",
+    "effects": "Report verified unchanged tags.",
+    "failure_retry": "Moved or missing recorded tags block ordinary and strict mode.",
+    "source": [
+     {
+      "path": ".github/scripts/check_tag_immutability.py",
+      "symbol": "audit",
+      "lines": [
+       299,
+       326
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py"
+     }
+    ],
+    "transition_id": "C21:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Recorded original and legacy direct ref objects must still exist and equal their independently retained object identities. Missing or moved objects fail ordinary and strict modes. Legacy checks retain observation-grade meaning rather than inventing original-publication history.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 299,
+     "end": 350,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "1305c9d438ec47b548bdc49e6567a58890a30ad8463408bed18ff18f3c6ef153"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 533,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "44c64e003c43f52571aad1c78f7ccf5de5d331b5c6e0356f12bb6de26adac51a"
+    }
+   ],
+   "intake_variances": [
+    "Frozen direct/peeled wording is represented by recorded object+commit metadata; live audit compares direct objects. This is unchanged baseline behavior, not newly added peeling."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:05",
+   "frozen_row_sha256": "89f7e208ea24e92a9ac799d7869934316cc3ef427f8bba1721405e7be8ab27d5",
+   "frozen_baseline": {
+    "from_state": "live observed",
+    "from": "live observed",
+    "event": "new governed tag encountered",
+    "guard": "not in either source ledger",
+    "to": "new unrecorded",
+    "effects": "Ordinary mode warns and succeeds; strict require-recorded fails.",
+    "failure_retry": "No automated receipt-recording mutation or retroactive history proof occurs.",
+    "source": [
+     {
+      "path": ".github/scripts/check_tag_immutability.py",
+      "symbol": "unrecorded",
+      "lines": [
+       353,
+       361
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py"
+     }
+    ],
+    "transition_id": "C21:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Governed live refs absent from disjoint union warn and succeed ordinarily; strict require-recorded rejects. No receipt writer, tag repair or retroactive history mutation occurs here.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 353,
+     "end": 361,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "11609c4e1f34ab09da02f5d68e475a4977041ad5bba4fd501afc9db675d43061"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 549,
+     "end": 569,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "3d366dff99dcdf3c02ea1cf490cbbb6ce706ded704d63d0d0f65d6793367da4e"
+    }
+   ],
+   "intake_variances": [
+    "ADR0040 explicitly keeps missing-record warnings distinct from recorded movement and strict audit requirements."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C22:01",
+   "frozen_row_sha256": "ce4b34410556fe7ab0fcd0262ec4fa533ab2caa90ee9c40c72a6059b03ddb67a",
+   "frozen_baseline": {
+    "from_state": "unknown posture",
+    "from": "unknown posture",
+    "event": "read repository, protection and merge queue settings",
+    "guard": "token and API responses available",
+    "to": "observed posture",
+    "effects": "Normalize booleans and required context population without treating missing fields as false.",
+    "failure_retry": "API transport/unreadable settings become unknown with diagnostics.",
+    "source": [
+     {
+      "path": ".github/scripts/check_branch_protection.py",
+      "symbol": "read_enforcement",
+      "lines": [
+       208,
+       240
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py"
+     }
+    ],
+    "transition_id": "C22:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Repository REST, merge-queue GraphQL query and protection REST normalize only literal booleans and valid context entries. Unavailable reads become None, protection404 becomes definite absent; no setting is changed.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 156,
+     "end": 240,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "e5fbbceee246fdc20d3b97bac988170600512b50b44fe12c762e4c41636c00d6"
+    },
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 243,
+     "end": 284,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "9d67439ed0d4a89f57e82996666f0afd2bd378e7a35d88593f03cffe38a0b88b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C22:02",
+   "frozen_row_sha256": "89e89eed27260a5b31cd86fa145d85abc6a2f9efbb00161723941530510cbe7e",
+   "frozen_baseline": {
+    "from_state": "observed posture",
+    "from": "observed posture",
+    "event": "audit definite violation",
+    "guard": "protection absent, linear history required, merge commits disallowed, no strict-update/no merge queue, or required context absent",
+    "to": "observed violation",
+    "effects": "Return nonzero and named policy violation.",
+    "failure_retry": "No setting is mutated; owner must correct actual policy or governed expectation.",
+    "source": [
+     {
+      "path": ".github/scripts/check_branch_protection.py",
+      "symbol": "audit",
+      "lines": [
+       88,
+       133
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py"
+     }
+    ],
+    "transition_id": "C22:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Definite absent protection, required linear history, disabled merge commits, both freshness mechanisms explicitly false, or absent merge-readiness context yields named finding/nonzero. Unknown observations cannot suppress an independently observed violation.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 88,
+     "end": 133,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "12a5f6eacb2eea707691a60936ff0334511e068c32f6ec4f458477237240d09b"
+    },
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 331,
+     "end": 351,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "aaef75e684df339cc4323101976e8c1971617943c591dac0630c6dbbef2a80c5"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C22:03",
+   "frozen_row_sha256": "9ecd15d3f6258248e994b3fad490460807402a68fd927cb0b2a0688036436a81",
+   "frozen_baseline": {
+    "from_state": "observed posture",
+    "from": "observed posture",
+    "event": "audit complete acceptable observations",
+    "guard": "all needed fields known and acceptable",
+    "to": "observed safe",
+    "effects": "Return success with verified posture.",
+    "failure_retry": "This is time-of-read evidence, not a permanent guarantee.",
+    "source": [
+     {
+      "path": ".github/scripts/check_branch_protection.py",
+      "symbol": "audit",
+      "lines": [
+       88,
+       133
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py"
+     }
+    ],
+    "transition_id": "C22:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "No definite findings and no relevant unreadable requirements yields verified zero exit. An enabled queue settles freshness even when strict itself is unreadable. This remains a time-of-read observation and never a settings mutation.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 136,
+     "end": 153,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "123c5c1cf79c428f4d8533305ed4f8983cf95b8fbf34dead81b2d95d3e865de0"
+    },
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 331,
+     "end": 357,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "1eeb81b7ca46cb1f11cb15d41c2904d18f0c30e03d46a3a07c78be75234cc1e7"
+    }
+   ],
+   "intake_variances": [
+    "R-06 adds optional typed verified outcome; compatible audit guards and exits are retained."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C22:04",
+   "frozen_row_sha256": "eb96c777ae5947178123e11eeea39e29ac8dddafe3a8ef61df808edd0d98bef4",
+   "frozen_baseline": {
+    "from_state": "unknown or partially known posture",
+    "from": "unknown or partially known posture",
+    "event": "audit without definite violation",
+    "guard": "one or more required observations unavailable",
+    "to": "partially unavailable",
+    "effects": "Print partial skip and return zero.",
+    "failure_retry": "Do not present this outcome as verified branch protection.",
+    "source": [
+     {
+      "path": ".github/scripts/check_branch_protection.py",
+      "symbol": "audit",
+      "lines": [
+       88,
+       133
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py"
+     }
+    ],
+    "transition_id": "C22:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "No definite violation with unavailable necessary fields prints partial skip and returns zero/unavailable; missing credentials returns skipped. Typed result preserves the difference from verified posture.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 136,
+     "end": 153,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "123c5c1cf79c428f4d8533305ed4f8983cf95b8fbf34dead81b2d95d3e865de0"
+    },
+    {
+     "path": ".github/scripts/check_branch_protection.py",
+     "start": 302,
+     "end": 351,
+     "file_sha256": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+     "span_sha256": "80f770351b88d925a0da10af328be1e76afa9bf8f595c53e0fcba17739a46a70"
+    }
+   ],
+   "intake_variances": [
+    "R-06 does not turn ordinary advisory unavailability into accepted required-major evidence."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C23:01",
+   "frozen_row_sha256": "4f93986b3c21c15cf81d0dd2cc71c11176dcec02220a92f4d8c033ca93da5b3e",
+   "frozen_baseline": {
+    "from_state": "unvalidated identity",
+    "from": "unvalidated identity",
+    "event": "validate app actors",
+    "guard": "canonical positive IDs; publisher not generic Actions actor 15368; publisher and verifier distinct",
+    "to": "valid distinct actors",
+    "effects": "Permit narrowly scoped publisher and independently observed verifier identities.",
+    "failure_retry": "Missing/shared/default actor identities fail before token creation.",
+    "source": [
+     {
+      "path": ".github/scripts/validate_codex_distribution_identity.py",
+      "symbol": "validate",
+      "lines": [
+       21,
+       29
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/validate_codex_distribution_identity.py"
+     }
+    ],
+    "transition_id": "C23:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Canonical positive App/installation strings reject missing/default Actions actor15368; publisher and verifier App IDs must differ before mint steps. Both App roles are dedicated, not merely the publisher.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/validate_codex_distribution_identity.py",
+     "start": 15,
+     "end": 29,
+     "file_sha256": "7aeef0279072186b3823d24b8021123b1e6987844f568898ab346793dbf23f6b",
+     "span_sha256": "1b724be861e028cd6b0a5a7fd0e0175003d8eeaf3a2eff63fa983aec145c5617"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 291,
+     "end": 303,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "7c875c5f15bf37ef1c2ea12b004ded6dba68e95f7d246ed0933de22f43426295"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C23:02",
+   "frozen_row_sha256": "c63c01f1f417098c27a71a1048d9485ee30e5644e1438a535f6a9da25501e9f3",
+   "frozen_baseline": {
+    "from_state": "valid distinct actors",
+    "from": "valid distinct actors",
+    "event": "mint installation token",
+    "guard": "private key, app and installation identities valid; HTTPS nonredirect response succeeds",
+    "to": "token minted",
+    "effects": "Write temporary 0600 key, sign short-lived JWT via openssl, call installation-token endpoint, mask and append token output; delete key on exit.",
+    "failure_retry": "API/signing/output errors fail; a token already minted before output failure is not explicitly revoked by this script.",
+    "source": [
+     {
+      "path": ".github/scripts/create_codex_distribution_token.py",
+      "symbol": "mint",
+      "lines": [
+       26,
+       57
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/create_codex_distribution_token.py"
+     }
+    ],
+    "transition_id": "C23:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Caller scopes separate private-key environments, umask077/trap cleanup and separate files; mint signs RS256 with openssl SHA256, uses short-lived JWT and nonredirect HTTPS30s installation endpoint. Nonempty token is masked then appended to GITHUB_OUTPUT. Already minted token is not explicitly revoked if output fails.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/create_codex_distribution_token.py",
+     "start": 17,
+     "end": 57,
+     "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba",
+     "span_sha256": "33fc57807782a3fb084f3836af2f11432387bbefd43938926ce913de3b2289df"
+    },
+    {
+     "path": ".github/scripts/create_codex_distribution_token.py",
+     "start": 60,
+     "end": 73,
+     "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba",
+     "span_sha256": "25c0fe14c00927b7ea7d71348297ccec3d76e2cd8a4e232e655b949e7010c3db"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 304,
+     "end": 331,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "41b0ba107dc4ca01ad0fb63b08fbcf90da30777b131517a623f85a206b58b95a"
+    }
+   ],
+   "intake_variances": [
+    "Temporary-key creation/deletion belongs to the workflow caller, not mint itself. Source declares permissions/lifetime handling, not actual hosted secret or token issuance proof."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C23:03",
+   "frozen_row_sha256": "62de73454b94f45305ce2d0dd9c3d44644357ee7d4d659776762a6b1e55e9baf",
+   "frozen_baseline": {
+    "from_state": "token minted for independent verifier",
+    "from": "token minted for independent verifier",
+    "event": "read distribution rulesets",
+    "guard": "exact expected active policies, ref patterns/rules and sole dedicated publisher bypass",
+    "to": "rulesets verified",
+    "effects": "Read and validate two distribution policies.",
+    "failure_retry": "Wrong identity, insufficient/missing/extra policy or unavailable API reports failure.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_codex_distribution_rulesets.py",
+      "symbol": "verify",
+      "lines": [
+       17,
+       53
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_codex_distribution_rulesets.py"
+     }
+    ],
+    "transition_id": "C23:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dedicated distinct actor IDs, exactly two expected policy declarations and one matching active named ruleset per declaration are checked. Ref include/exclude, required control subset and exact sole publisher bypass must match; unavailable API or duplicate matching policy rejects.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_distribution_rulesets.py",
+     "start": 17,
+     "end": 89,
+     "file_sha256": "d2d02c7f3f3f8ca80a9f4930aae3bc6c23f17c0a0180ff84bcab3f02b1df082a",
+     "span_sha256": "16614652ac332bfab114a9f6fb1efd3d4f3c8ba6518796ff3d0fc9f1c77bed6b"
+    },
+    {
+     "path": ".github/codex-distribution-policy.json",
+     "start": 1,
+     "end": 31,
+     "file_sha256": "4be1fd044694dc6800febb7d85755b38b71d670556dc5a66c112d3b7c2970db2",
+     "span_sha256": "4be1fd044694dc6800febb7d85755b38b71d670556dc5a66c112d3b7c2970db2"
+    }
+   ],
+   "intake_variances": [
+    "Unrelated additional rulesets and extra protective rule types are allowed by the baseline verifier; exactness concerns each named match/ref/bypass, not the global repository ruleset count."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C23:04",
+   "frozen_row_sha256": "b715d7e720ac3b40e87041703457048bd3c33d4093e5877a1765a581d98b6461",
+   "frozen_baseline": {
+    "from_state": "ruleset audit fails in publish workflow",
+    "from": "ruleset audit fails in publish workflow",
+    "event": "advisory audit step",
+    "guard": "continue-on-error and warning handling configured",
+    "to": "ruleset warning",
+    "effects": "Publication can continue with visible warning under ADR 40.",
+    "failure_retry": "No inference that repository settings were changed or independently verified by this audit task.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Audit Codex distribution rulesets (advisory)",
+      "lines": [
+       377,
+       377
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C23:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only Codex with a supplied verifier token invokes audit; continue-on-error plus explicit warning handles audit failure. Channel publication remains a distinct step. The audit neither changes settings nor grants itself an independent live verification result.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 409,
+     "end": 451,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "f78b392b10f28e5bf035b5c141f5e611fb06cbd050b0c8ba3c12ef6515f00582"
+    }
+   ],
+   "intake_variances": [
+    "ADR0040 retains advisory Codex ruleset audit; absence or failure is never proof of live controls."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:01",
+   "frozen_row_sha256": "2208065cd351dc6f823a7431e28211548bc30ae8c04c0abfc5db807cd3d950ab",
+   "frozen_baseline": {
+    "from_state": "candidate unresolved",
+    "from": "candidate unresolved",
+    "event": "resolve registry candidate",
+    "guard": "exact/new version selector satisfies declared policy; registry-only dependency URL policy",
+    "to": "resolved immutable version",
+    "effects": "Read bounded registry metadata and choose exact version; validate approved HTTPS registry origin.",
+    "failure_retry": "Unknown/malformed version/dependency/source rejects; no execution of candidate package.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "resolve_candidate",
+      "lines": [
+       359,
+       371
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C24:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Registry-only selectors reject file/git/workspace/link/foreign URLs; approved origin is credential-free default-port HTTPS registry.npmjs.org. Bounded metadata and reviewed npm-bundled semver choose one exact stable version without importing candidate code.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 79,
+     "end": 134,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "cb9aa0ce6f630be014f215397a533fa3a0a458f080c0f76773ad957c797b154b"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 137,
+     "end": 217,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "de917f4f44f428f2b02275169ae2faac0fdd54502233a2942f0bacdfa6a4a0fa"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 276,
+     "end": 371,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "3b1fbcee4e2f53e56500a8ab28fcc232746198dd9fd6daef103e6df55758b554"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:02",
+   "frozen_row_sha256": "d5ea5bad58f663b938183e2f14cabde95f113fa5cecfc3cc23fb8a577b9ccb1b",
+   "frozen_baseline": {
+    "from_state": "resolved immutable version",
+    "from": "resolved immutable version",
+    "event": "capture candidate",
+    "guard": "destination new/empty; aggregate deadline and package/metadata/depth bounds hold",
+    "to": "capture running",
+    "effects": "Write wrapper/npmrc; fetch and integrity-check tarball without extracting or running scripts; inspect bounded archive metadata.",
+    "failure_retry": "Transient fetch errors receive bounded retries; non-200/unsafe archive/integrity mismatch fails and may leave partial destination.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "capture_candidate",
+      "lines": [
+       1074,
+       1204
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C24:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "New or empty destination gets private wrapper/npmrc. Root tarball is downloaded over approved HTTPS, byte/deadline capped, SHA512 compared, then stream-inspected without extraction or scripts; links/special files, oversized members/archive/ratio and ambiguous metadata refuse. Partial output may remain.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 424,
+     "end": 540,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "a7c560e03f201937c4184a94bb589f5d12f99a3308a3f6e1a29eceecf96736d0"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1123,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "2b87719329c97a98f51e214e2b3567ef1db75d07d64e105489552a355bb1143a"
+    }
+   ],
+   "intake_variances": [
+    "Metadata transport errors have three bounded attempts; tarball HTTP/transport failures are not universally retried. The fixed600s metadata walk is not an install/runtime deadline."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:03",
+   "frozen_row_sha256": "7ef6b5170d1b2f8ce363af6ebf4c0f52aa1def784eb4489e4a7415fba02b9a43",
+   "frozen_baseline": {
+    "from_state": "capture running",
+    "from": "capture running",
+    "event": "construct complete lock graph",
+    "guard": "published shrinkwrap available, or exact source install-lock is bound to package source metadata; registry edges valid",
+    "to": "capture running with lock",
+    "effects": "Build wrapper lock, fill dependency digests and capture exact graph.",
+    "failure_retry": "Unsupported file/git/workspace/link dependency, graph bound or ambiguous source fails.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "_wrapper_lock_from_published_shrinkwrap",
+      "lines": [
+       613,
+       657
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C24:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Published shrinkwrap or exact-source install lock is bound to root manifest/version/metadata. Safe package paths, count1024/depth64 and registry-only edges are validated; source fallback verifies package graph metadata and fills registry digests. Unsupported or incomplete dependency targets refuse.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 543,
+     "end": 662,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "175ea3b6c02ab034559afdd346bc8c97b7f7eeb26d8cb3b0b0a682b301aa02f3"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 803,
+     "end": 855,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "917a3a057ab2ed0c96631990a05d0c9dfcba6e24412edbd7e5fc4bec199ef6ec"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1124,
+     "end": 1187,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6d048248f55e8f72eee12b102f372b8e699b02f7a637ea15fd7e2afed751425d"
+    }
+   ],
+   "intake_variances": [
+    "Exact upstream source metadata is unverified capture input until later dependency/provenance review; it does not authorize execution. Existing published SHA512 entries can be retained without downloading every dependency tarball."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:04",
+   "frozen_row_sha256": "44ffbb5ba96cafb347b3ec1e260688c313a206a88eeaa38306e41eaf57e08375",
+   "frozen_baseline": {
+    "from_state": "capture running with lock",
+    "from": "capture running with lock",
+    "event": "capture completes",
+    "guard": "all inert validations successful",
+    "to": "pending review",
+    "effects": "Write review.json schema v1 with PENDING_REVIEW, clean temporary config/cache.",
+    "failure_retry": "No operation silently marks this reviewer PASS; installation admission remains closed.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "capture_candidate",
+      "lines": [
+       1074,
+       1204
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C24:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Successful capture writes exact v1 PENDING_REVIEW with lock/config SHA256 and source identity, removes temporary cache/config and validates pending receipt shape. No code path sets PASS, and reviewed install requires v2 PASS.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 858,
+     "end": 920,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "d8fe35b2cc7b4fb2f52aaa4769ffcdf3f263ab00def40655a0bb6d7e110ad83d"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1187,
+     "end": 1209,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6368322bb424f94e1f3a4479ed99a6de5d67237c191c53532a17ca8f97a395f6"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:05",
+   "frozen_row_sha256": "ff472b350ea01d80ef84ceae18461172cd3e99dc48759f811ff1e147fdd46bb5",
+   "frozen_baseline": {
+    "from_state": "failed partial capture",
+    "from": "failed partial capture",
+    "event": "retry same destination",
+    "guard": "destination no longer empty",
+    "to": "rejected retry",
+    "effects": "Avoid overwriting partial evidence.",
+    "failure_retry": "Use a fresh owned destination or explicit cleanup before retry.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "capture_candidate",
+      "lines": [
+       1074,
+       1204
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C24:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Any nonempty resolved output destination rejects before wrapper write; failed partial captures therefore require a fresh owned destination or separately authorized cleanup. No automatic overwrite/retry is introduced.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1099,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "78af374e5565b53cf289aa12395ab65ddc3eed1cfdcaef8d1f731f4c8ce29855"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:01",
+   "frozen_row_sha256": "444d04d5f3be3a25825401beb79abb07a2a0524836dc99bce4bd9a25e797e3e7",
+   "frozen_baseline": {
+    "from_state": "pending or untrusted review",
+    "from": "pending or untrusted review",
+    "event": "validate host lock",
+    "guard": "exact v2 PASS receipt, declared reviewer string, source identity, license/audit/signature/provenance summaries and lock/config digests",
+    "to": "reviewed valid",
+    "effects": "Validate full registry-only lock graph and expected installed versions.",
+    "failure_retry": "PENDING_REVIEW, malformed receipt or identity mismatch rejects; reviewer-string schema is not cryptographic reviewer authentication.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "_validate_review_receipt",
+      "lines": [
+       757,
+       795
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Reviewed directory requires private exact-version manifest, v3 graph, registry-only resolved URLs/SHA512 and exact lock/config/root/source bindings. Exact v2 PASS review fields, fixed reviewer string and license/audit/lifecycle/signature/provenance summaries must validate; pending rejects.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 762,
+     "end": 800,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "18beff68a6440d9eb2f96f31aad4a9b28e3ea08859cd37a33d2d2f8f6e9e1fa6"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 822,
+     "end": 920,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "a08cb982a973fa72fd4c07085f3c850df3ea0d66b8d85af8e1b6c542836b99f8"
+    }
+   ],
+   "intake_variances": [
+    "Reviewer identity string is a schema assertion, not cryptographic reviewer authentication. Current reviewed version1.5.0 supersedes frozen1.1.0 literal without broadening the version-set check."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:02",
+   "frozen_row_sha256": "0ed031105d528f1b81cc4f1df3cf39800693370659e427a738567fb0a98596b6",
+   "frozen_baseline": {
+    "from_state": "reviewed valid",
+    "from": "reviewed valid",
+    "event": "validate accepted advisories",
+    "guard": "exact GHSA/package/version bound to baseline lock; severity/reason/date valid; deadline <=30 days and not expired",
+    "to": "reviewed valid or review expired/invalid",
+    "effects": "Compute permitted expected audit findings.",
+    "failure_retry": "Expired or broad/unbound exception fails before installation; exceptions must be intentionally renewed by source change.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "_validate_accepted_advisories",
+      "lines": [
+       693,
+       741
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Optional advisories bind unique GHSA/package/installed version, nonempty reason/severity, different baseline version containing that same package version, review date and nonexpired backstop within30days. Expired/broad/mismatched exception rejects before install.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 698,
+     "end": 759,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "25fb39c9a0d01394587bece23c9cc1ee5b6f68da5c75a19cad84a783a9356d6e"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 903,
+     "end": 907,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "a105f189a383eee62407fd453a7a77c09a2cc701df114e34bd6f60906fcbc514"
+    }
+   ],
+   "intake_variances": [
+    "ADR0041 requires strict audit reduction at dependency review. Installer enforces the recorded exact accepted identities/backstop; source inspection does not independently establish historical strict subset."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:03",
+   "frozen_row_sha256": "c7825cad665b884ebebb77f1cb6cb92f41c54355e9f90140a040cc0880001c4d",
+   "frozen_baseline": {
+    "from_state": "reviewed valid",
+    "from": "reviewed valid",
+    "event": "install-plan",
+    "guard": "full directory review/lock validation succeeds",
+    "to": "install planned",
+    "effects": "Return immutable npm ci --ignore-scripts plan and controlled paths.",
+    "failure_retry": "Plan generation does not install or mark host available.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "install_plan",
+      "lines": [
+       918,
+       935
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "install_plan first validates reviewed host graph then returns fixed npm ci --ignore-scripts with explicit registry/cache/prefix and path entry. It does not perform installation or publish host availability.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 919,
+     "end": 940,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "08a7a1f98abb94843fd934d8a8eca52cf02cbc44e254ae495583b068b6cff14a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:04",
+   "frozen_row_sha256": "13823a988c6d1eb0f3cedc5e9c486a3009a4b3ab3b69e215ab212c9050018260",
+   "frozen_baseline": {
+    "from_state": "install planned",
+    "from": "install planned",
+    "event": "install into isolated prefix",
+    "guard": "new empty target outside repository; controlled registry/environment",
+    "to": "installing",
+    "effects": "Copy manifest/lock/npmrc, use clean cache/config and npm ci --ignore-scripts.",
+    "failure_retry": "Failure leaves partial owned prefix; no silent overwrite on rerun.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "install",
+      "lines": [
+       938,
+       957
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Install refuses repository-contained and nonempty prefixes, copies only manifest/lock/npmrc, creates controlled npm config/cache environment and invokes the fixed plan. A command failure can leave partial owned prefix and prevents subsequent PATH append.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 665,
+     "end": 688,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "7ec089b3f1e92c6b3e1fe73e6977f2232780ca3bceb3ce3febb683cd8a1abdeb"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 943,
+     "end": 962,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "4d6bb0daa97f837a52c38a1402146edccc28de24589d1cf50394532dad14d271"
+    }
+   ],
+   "intake_variances": [
+    "No per-command wall timeout is supplied to install/audit subprocesses; retry counts are not descendant containment or a whole install deadline."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:05",
+   "frozen_row_sha256": "c03cb6ea48c4782faa0490d2667b8cbac2b66036b0803917afe5995389110ced",
+   "frozen_baseline": {
+    "from_state": "installing",
+    "from": "installing",
+    "event": "audit production and all dependency scopes",
+    "guard": "audit output only exact accepted advisory identities/installed versions",
+    "to": "audited",
+    "effects": "Run audit with bounded registry-error retries (15 and 45 seconds); actual unexpected finding blocks without retry disguise.",
+    "failure_retry": "Malformed reports, unexpected advisory or wrong installed version fails.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "_audit_install",
+      "lines": [
+       1026,
+       1071
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Both production and complete audit scopes accept only return0/1 and valid vulnerability inventories. Only recognized registry-error envelopes retry15/45seconds, while malformed reports, unexpected GHSA/package or actual installed-version mismatch refuse immediately.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 965,
+     "end": 1055,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "2252699907ccddc85deca4da7ada18d6f934d8e6593193bd0609356700ef0ac4"
+    }
+   ],
+   "intake_variances": [
+    "Audit subprocesses themselves have no explicit timeout; bounded retries describe attempts/backoffs only."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C25:06",
+   "frozen_row_sha256": "99fc8dc7164ad55fcd770deaaae116f6e7345115581d48f80d0890e109a41cb3",
+   "frozen_baseline": {
+    "from_state": "audited",
+    "from": "audited",
+    "event": "signature audit and installed version read-back",
+    "guard": "signature check succeeds within bounded retries and exact requested host version installed",
+    "to": "available",
+    "effects": "Append host launcher directory to GITHUB_PATH only after successful admission.",
+    "failure_retry": "Signature retries are bounded; final failure leaves partial prefix unavailable.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_host_locks.py",
+      "symbol": "install",
+      "lines": [
+       938,
+       957
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_host_locks.py"
+     }
+    ],
+    "transition_id": "C25:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Signature audit allows at most three attempts15/45seconds; exact installed agent version readback follows. GITHUB_PATH append occurs only after all checks return successfully. Final failure leaves prefix unavailable and does not silently reuse it.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 943,
+     "end": 962,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "4d6bb0daa97f837a52c38a1402146edccc28de24589d1cf50394532dad14d271"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1056,
+     "end": 1076,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "75078811674a081f8bb90399af01f05b8fad019669919c45951cb440a3f1f989"
+    }
+   ],
+   "intake_variances": [
+    "No signature-audit wall deadline or successful actual installation is claimed by this source review."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:01",
+   "frozen_row_sha256": "b21dcd4b17c8b4ea4fb9895f5d10b739cf1848108819fcf841f30b156b808914",
+   "frozen_baseline": {
+    "from_state": "baseline",
+    "from": "baseline",
+    "event": "resolve promotion candidate",
+    "guard": "trusted default-branch workflow; candidate strictly newer under supported-version/Node-floor policy",
+    "to": "newer candidate",
+    "effects": "Resolve exact candidate and supported baseline without writing public state.",
+    "failure_retry": "Same/older/invalid candidate rejects; no implicit no-op promotion.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_promotion.py",
+      "symbol": "parse_candidate",
+      "lines": [
+       276,
+       282
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_promotion.py"
+     }
+    ],
+    "transition_id": "C26:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Default-branch resolve guard precedes candidate outputs; stable exact candidate must strictly exceed policy last_verified. Reviewed compatibility source parses one/two ordered supported versions and Node floor. No public ref is written in resolve.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 26,
+     "end": 67,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "2442e546026521a5e7c795d30fad79866b7c7512239c64091c5bc9524ea580ba"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "c0879334a7042625254c8e487f8aad233538ba549ebc8f61d2d5a7dfaf7d6b46"
+    }
+   ],
+   "intake_variances": [
+    "parse_candidate checks stable version/strict advancement, not registry candidate engine compatibility. Parsed Node floor is policy metadata; no extra candidate-runtime support proof is invented."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:02",
+   "frozen_row_sha256": "9bf57230804c2c1b156c76eb2fffb7c4382c3bc79a2425df47d847a06ae7647f",
+   "frozen_baseline": {
+    "from_state": "newer candidate",
+    "from": "newer candidate",
+    "event": "capture candidate and execute reviewed baseline validation",
+    "guard": "all three platforms; candidate remains PENDING_REVIEW inert data",
+    "to": "baseline-runtime validated",
+    "effects": "Install reviewed baseline, build and run runtime/security/parity/platform tests; capture candidate graph without executing it.",
+    "failure_retry": "Failed contract stores allowlisted compact failure receipt; arbitrary stdout is not copied into receipt.",
+    "source": [
+     {
+      "path": ".github/workflows/pi-promotion.yml",
+      "symbol": "69",
+      "lines": [
+       69,
+       69
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/pi-promotion.yml"
+     }
+    ],
+    "transition_id": "C26:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Three OS validation cells install reviewed baseline, capture baseline help, build reviewed artifacts and execute declared runtime/security/package/fixture contracts. Candidate graph remains PENDING_REVIEW data and is not installed. Allowlisted wrapper IDs retain failures without copying child streams into receipt.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 69,
+     "end": 141,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "20a98753dd43c1ff4c7088c3ebdfe5580ec5a3d5d4faa983dbc8d526b5d805da"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 660,
+     "end": 677,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "50f8e8ed0ac0235a546ec92b3ae9307d2a5af226e10a3605437951eafc29c82a"
+    }
+   ],
+   "intake_variances": [
+    "Current HTML knowledge integration adds pinnedGo/native writer preparation; that is workflow source wiring, not a local build or successful hosted validation claim."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:03",
+   "frozen_row_sha256": "85d37c7556e54ccf2490afd8ae8e68747f7758417b5cc1ee04a1baed02088775",
+   "frozen_baseline": {
+    "from_state": "baseline-runtime validated",
+    "from": "baseline-runtime validated",
+    "event": "apply prospective promotion",
+    "guard": "allowed official targets, exact before-match counts and release metadata agreements",
+    "to": "prospective edits",
+    "effects": "Patch supported version references, package patch/changelog and declared files in disposable checkout.",
+    "failure_retry": "Targets are validated/written sequentially after release planning; later failure may leave earlier local edits. No transaction rollback.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_promotion.py",
+      "symbol": "apply_promotion",
+      "lines": [
+       407,
+       453
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_promotion.py"
+     }
+    ],
+    "transition_id": "C26:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Official path allowlist, contained targets, distinct release paths and exact replacement counts are validated. Current code prepares all text writes and release metadata first; HTML tech-stack uses current-record read, exact native revision/model CAS and readback through fixed owner. Later publication/I/O failure can still leave partial effects.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 300,
+     "end": 408,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "a7d7adfc0b7e0e54debf69934e216ceee645172054f7d565cc6e8fddd774cc6c"
+    },
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 414,
+     "end": 534,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "4631f802b38c717debeeea76c6cd835fb3b08ab0c65f7af00f5bcf76f2550574"
+    },
+    {
+     "path": "plugins/ca/hooks/knowledge.py",
+     "start": 65,
+     "end": 116,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4e4693465cf880f8fbade779d0f185cc6577c0b0d27fd31abec51d6654cacf08"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "start": 54,
+     "end": 73,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "65fb6eb5d16924a0cfcf91247c1e60c983f371e2ed9da6f65816a76e15c6bc71"
+    }
+   ],
+   "intake_variances": [
+    "Accepted context migration replaces raw HTML/legacy tech-stack writes with installed owner. Current preflight is stronger than frozen sequential-validate/write behavior; it does not add cross-file transactional rollback or justify refreshing failed source epochs."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:04",
+   "frozen_row_sha256": "3725217ac08c4d2d563aa1990a254cabbdb929129f98cc5ef7a8626b1eb13aee",
+   "frozen_baseline": {
+    "from_state": "prospective edits",
+    "from": "prospective edits",
+    "event": "rebuild and static/fixture validation",
+    "guard": "reviewed toolchain only; all declared prospective checks pass",
+    "to": "prospective static validated",
+    "effects": "Build adapters and validate type/contracts/docs against changed declarations.",
+    "failure_retry": "Does not run unreviewed candidate runtime; exact candidate approval remains a later owner/review step.",
+    "source": [
+     {
+      "path": ".github/workflows/pi-promotion.yml",
+      "symbol": "141",
+      "lines": [
+       141,
+       141
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/pi-promotion.yml"
+     }
+    ],
+    "transition_id": "C26:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After prospective apply, reviewed generators rebuild and declared type/parity/security/docs/fixture gates execute. Unreviewed candidate remains data; successful prospective checks are not support acceptance or candidate runtime execution.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 142,
+     "end": 159,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "d10dbb04838a025413163134996514bb413aaf45547b1ba6394cb3da6be0f851"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:05",
+   "frozen_row_sha256": "73fc5bc95c384c1539fd7050228e14313ffbab1bb6d4bdaf9368bacd37a79540",
+   "frozen_baseline": {
+    "from_state": "any failed validation",
+    "from": "any failed validation",
+    "event": "always receipt rendering/upload",
+    "guard": "bounded stable contract ID and sanitized candidate/platform fields",
+    "to": "failure receipt",
+    "effects": "Emit compact evidence artifact retained 14 days.",
+    "failure_retry": "Unrecognized failed step maps to unattributed; no false pass.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_promotion.py",
+      "symbol": "record_failure",
+      "lines": [
+       533,
+       548
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_promotion.py"
+     }
+    ],
+    "transition_id": "C26:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Failed recognized contracts store only allowlisted IDs; receipt candidate/platform tokens and option deltas are bounded, missing/unrecognized state renders unattributed. Failure render/upload is conditional failure(), retaining14days; cancellation or early infrastructure failure may leave no receipt.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_promotion.py",
+     "start": 581,
+     "end": 649,
+     "file_sha256": "eaaee25b9486c8829977a45a4f2946fa00ac8974bb30b2d6fb5c52dc6ed29f12",
+     "span_sha256": "9812ef5f4d1b13b19cab4f5cea47fb8e91e14a63d5260d70e2a662c623b3636c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 160,
+     "end": 176,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "b30d41157b0cef61136394c6ec2a769a2861977dadc5f4be2b9f0fcbabc9e8e2"
+    }
+   ],
+   "intake_variances": [
+    "Frozen always-receipt wording means failure-path rendering here, not unconditional execution after cancellation. Arbitrary child stdout remains job log only."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:06",
+   "frozen_row_sha256": "f871c387d93106fa57a96625120c1dfa2112ba7a18ebdee84207a1c2970b5638",
+   "frozen_baseline": {
+    "from_state": "all three platforms validated",
+    "from": "all three platforms validated",
+    "event": "manual create_pr=true",
+    "guard": "trusted default-branch workflow; fresh candidate capture completed before write credentials",
+    "to": "draft PR",
+    "effects": "Apply deterministic branch, stage exact allowlist, reject unrelated changes, commit/push and open draft if none exists.",
+    "failure_retry": "Existing open PR is not duplicated; branch/push errors are reported; no tag or package publish.",
+    "source": [
+     {
+      "path": ".github/workflows/pi-promotion.yml",
+      "symbol": "169",
+      "lines": [
+       169,
+       169
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/pi-promotion.yml"
+     }
+    ],
+    "transition_id": "C26:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Manual create_pr=true plus successful resolve/three-platform dependencies enables open-pr job. Fresh candidate capture precedes token-bearing push step, deterministic branch is built/staged with explicit allowlist, unrelated tracked/untracked changes and staged native artifacts refuse; existing open PR avoids duplicate creation. No tag/package publish occurs.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 244,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "0d8e5cea16dcbbc277c6a2ecc6f93a1a4bfef0bab4721f373f5c1753c5bdb99d"
+    }
+   ],
+   "intake_variances": [
+    "Current knowledge narrative path is selected by owner; ignored local native bookkeeping is excluded explicitly, not committed or qualified. The token exists only in final push step."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C26:07",
+   "frozen_row_sha256": "8b1d8f48dd7f01c855fcec87468c9e0e2c798c03f0fe1c713aa2564e974a3116",
+   "frozen_baseline": {
+    "from_state": "all three platforms validated",
+    "from": "all three platforms validated",
+    "event": "schedule or manual create_pr=false",
+    "guard": "no explicit draft-PR creation option",
+    "to": "owner review required",
+    "effects": "Return validated candidate evidence without creating public promotion.",
+    "failure_retry": "Success is proposal qualification, not runtime support acceptance.",
+    "source": [
+     {
+      "path": ".github/workflows/pi-promotion.yml",
+      "symbol": "169",
+      "lines": [
+       169,
+       169
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/pi-promotion.yml"
+     }
+    ],
+    "transition_id": "C26:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Schedule or manual create_pr=false cannot satisfy open-pr condition. Validation may finish with inert candidate data/owner work pending, without public promotion or support acceptance.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 3,
+     "end": 23,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "aa357c4ff2184292c5a61c2ade00fa3d9d698d5da530cef367fad2e2b217e58c"
+    },
+    {
+     "path": ".github/workflows/pi-promotion.yml",
+     "start": 178,
+     "end": 188,
+     "file_sha256": "df973fade1a736fd81af2c7f794a721b9dde3ca2099d7c0410bf0d375a07942a",
+     "span_sha256": "1e25585c9ba9d6e79e3587ca8f5b426dcad3541be478267c1c8b4b63e12b72b7"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C27:01",
+   "frozen_row_sha256": "9093251eab3dfcec0bcebce0a3ddda5d43dde255ac44923ebef0d410818b867d",
+   "frozen_baseline": {
+    "from_state": "measurements",
+    "from": "measurements",
+    "event": "assemble pi_evidence",
+    "guard": "caller supplies commit/local measurements; requested hosted job population and CodeQL success found",
+    "to": "assembled evidence",
+    "effects": "Write JSON and exact rendered Markdown after shape validation.",
+    "failure_retry": "Builder alone reads job/run data but does not independently bind supplied commit to each job head; final verifier is separate.",
+    "source": [
+     {
+      "path": ".github/scripts/pi_evidence.py",
+      "symbol": "main",
+      "lines": [
+       102,
+       146
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_evidence.py"
+     }
+    ],
+    "transition_id": "C27:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Builder combines caller-provided local measurements/commit with successful named hosted jobs and CodeQL, validates strict shape, then writes exact JSON/Markdown rendering. It does not authenticate supplied commit against each API job; final verifier remains separate.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_evidence.py",
+     "start": 50,
+     "end": 95,
+     "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652",
+     "span_sha256": "cff85d5f9cd64056c952a2a1d56cfa81fa598aca6d2d505ac99ee9b0c19c578a"
+    },
+    {
+     "path": ".github/scripts/pi_evidence.py",
+     "start": 102,
+     "end": 145,
+     "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652",
+     "span_sha256": "1d227401d75e148506d96b842a87b13506e7a890e1f3613be346b123802734b8"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C27:02",
+   "frozen_row_sha256": "6ff8957095ccdcd3be2aa7bcbe8e17be1a12684b67cc8b4e7c3d201138bdce34",
+   "frozen_baseline": {
+    "from_state": "assembled evidence",
+    "from": "assembled evidence",
+    "event": "pre-closure verification",
+    "guard": "hardcoded historical plan task/obligation states match: early work accepted, closure tasks in specified progress, hosted evidence pending",
+    "to": "pre-closure pass",
+    "effects": "Permit explicitly provisional measurement/status shape.",
+    "failure_retry": "Not a final support claim; pending hosted fields cannot satisfy final phase.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_pi_support.py",
+      "symbol": "verify",
+      "lines": [
+       478,
+       542
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_pi_support.py"
+     }
+    ],
+    "transition_id": "C27:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Preclosure enforces historical task/obligation phases plus provisional local rows, pending hosted/CodeQL values and null commit. It does not meet final-phase positive hosted requirements; source utility remains tied to its historical feat/pi-support plan.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 95,
+     "end": 182,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "2ae746aa578c139d77b4881099118e62141dee7f9ab0c6f7a7e3033120a14617"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 478,
+     "end": 504,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "15145d78cfda4c08c2aff15cb2ba3351cbd9f0685e9b9fcc7d2fb590772d0ee8"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 518,
+     "end": 539,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "1c59a03055f2e9ed838a0db46608a1531a7a89fa68833c28f14a2c9560bd66c5"
+    }
+   ],
+   "intake_variances": [
+    "Current supported literal is1.5.0. Reasoned source preservation is not executing this historic closure verifier against the present major program."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C27:03",
+   "frozen_row_sha256": "884d0598c8da354d9813b0fcfe2ab8e560c452ff6647e227f5daf68b49119401",
+   "frozen_baseline": {
+    "from_state": "assembled evidence",
+    "from": "assembled evidence",
+    "event": "final shape/plan qualification",
+    "guard": "all 14 tasks accepted, all 38 obligations covered, exact owner binding/required rows and positive hosted timings, valid commit",
+    "to": "final candidate",
+    "effects": "Require complete final evidence population and exact generated Markdown.",
+    "failure_retry": "Missing/extra rows or remaining open obligations rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_pi_support.py",
+      "symbol": "strict_promotion",
+      "lines": [
+       95,
+       198
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_pi_support.py"
+     }
+    ],
+    "transition_id": "C27:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Final requires accepted tasks1..14, covered38 obligations with one owner each, exact nonempty test bindings, complete closed promotion rows, positive finite hosted times and exact generated Markdown. Missing/extra rows or incomplete labels reject.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 95,
+     "end": 198,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "aac227741c7f67458bd2545ea93cf4d3c20bb7b1a5de6063e5dd4298646ca030"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 478,
+     "end": 539,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "b2a3967b77b4e273dec01f875d0b35fd50ab46ecaad3edd2060b9b4f317c11fd"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C27:04",
+   "frozen_row_sha256": "57ee79eb1e359111a74ca945b49aea45b7f3d146777df78b1bb1384d340e1af0",
+   "frozen_baseline": {
+    "from_state": "final candidate",
+    "from": "final candidate",
+    "event": "bind source and hosted checks",
+    "guard": "commit ancestor of HEAD; descendants only allowed evidence edits; complete paginated check population exact head/status/success",
+    "to": "final verified",
+    "effects": "Verify source ancestry, worktree scope and required checks for named commit.",
+    "failure_retry": "Duplicate/incomplete paginated checks, wrong head, disallowed descendant/untracked edits or failing status rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_pi_support.py",
+      "symbol": "_hosted_checks_match",
+      "lines": [
+       311,
+       327
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_pi_support.py"
+     }
+    ],
+    "transition_id": "C27:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Final nonfixture commit must be ancestor and subsequent tracked/untracked changes restricted to finite evidence allowlist. Hosted query paginates within30s, validates total count/unique integer check IDs, then requires each named check completed/success at exact commit.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 267,
+     "end": 368,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "38758b50c9eee1ca9685c9e49b6ea6843030324f369eb821af4623a9777755b6"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 505,
+     "end": 539,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "a37fce34e84790bea83f0e5f9739d0ea612a8229448b1d3789b1c0ac52f7abfd"
+    }
+   ],
+   "intake_variances": [
+    "Distinct successful required names may coexist with other historical check rows; uniqueness guard is check-ID population, not a blanket prohibition on repeated check names."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C27:05",
+   "frozen_row_sha256": "bc1e7ea53deb9ce8c56c0eb62024b54014515c270efb087029e7209cd839bdea",
+   "frozen_baseline": {
+    "from_state": "fixture mode",
+    "from": "fixture mode",
+    "event": "verify fixture checks",
+    "guard": "explicit fixture flag",
+    "to": "fixture verdict",
+    "effects": "Evaluate supplied test evidence for verifier tests.",
+    "failure_retry": "Not interchangeable with real hosted qualification.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_pi_support.py",
+      "symbol": "fixture_checks",
+      "lines": [
+       245,
+       256
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_pi_support.py"
+     }
+    ],
+    "transition_id": "C27:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only explicit fixture_mode chooses supplied fixture branch/generated/local/inventory bindings and skips live hosted attestation. Real mode uses real gates and hosted reads. Fixture verdict is not actual hosted/runtime acceptance.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 245,
+     "end": 256,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "2a3c565d823a709329a0a243f20441100eb35380da54e2303a7e80f2aa7c364a"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 478,
+     "end": 481,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "277869dfc86d983c81550e38a481d6e02e6d3f8c944210bd6da86756147d7c8a"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 518,
+     "end": 539,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "1c59a03055f2e9ed838a0db46608a1531a7a89fa68833c28f14a2c9560bd66c5"
+    },
+    {
+     "path": ".github/scripts/verify_pi_support.py",
+     "start": 545,
+     "end": 551,
+     "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+     "span_sha256": "e356a71dd0633e439b3de46244e34be923045c72315580db618c87db892642a9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C28:01",
+   "frozen_row_sha256": "d846475a0290a0c226fdae0700daef850fb0bfc26d487444d231f6bdd679f775",
+   "frozen_baseline": {
+    "from_state": "current pinned preview",
+    "from": "current pinned preview",
+    "event": "resolve candidate",
+    "guard": "exact preview-MAJOR.MINOR or highest bounded listed preview; published non-prerelease immutable release and matching annotated tag/source manifest",
+    "to": "candidate resolved",
+    "effects": "Fetch bounded public metadata and manifest at exact peeled commit; require nonempty equal available/runnable/guided lesson inventory.",
+    "failure_retry": "Redirect/unavailable/malformed release/tag/manifest or lower version rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/academy_promotion.py",
+      "symbol": "resolve_candidate",
+      "lines": [
+       179,
+       229
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/academy_promotion.py"
+     }
+    ],
+    "transition_id": "C28:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Bounded public API resolves requested exact preview or highest within10x100 inventory, rejects redirect/oversize/malformed responses, and binds immutable published release, annotated tag object, peeled commit and exact-source manifest with equal ordered unique nonempty lesson inventories.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 72,
+     "end": 229,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "b74970382f28506241d7cfe1034dfe71ddb635c2064e00f0518cdeae43b4171c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C28:02",
+   "frozen_row_sha256": "125d50e1cb4aec73913a76e69acc885ccb7d606ba4f203dfb1be091379fc8a24",
+   "frozen_baseline": {
+    "from_state": "candidate resolved",
+    "from": "candidate resolved",
+    "event": "compare same release",
+    "guard": "allow-current and submodule HEAD/exact test commit equal resolved source",
+    "to": "up-to-date",
+    "effects": "Return no-change outputs; skip apply/build proposal work.",
+    "failure_retry": "Same version with mismatched source fails rather than updating immutable identity.",
+    "source": [
+     {
+      "path": ".github/scripts/academy_promotion.py",
+      "symbol": "_verify_current_source",
+      "lines": [
+       289,
+       294
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/academy_promotion.py"
+     }
+    ],
+    "transition_id": "C28:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "allow-current resolution requires same submodule HEAD and test-pinned commit, emits up_to_date. Workflow skips candidate checkout/apply/generation/typecheck when current; same release with drift refuses.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 276,
+     "end": 294,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "b4394a995fd48c140c311e1fc79c10ac8685d3ae668ad62dec63a93ce181f8e6"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 306,
+     "end": 329,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "476de994ce942cb19c6a3b721b17094e3f903ba47dc1fe107d01e66457a6fa4c"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 102,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "0f180faec27cf31824ac8d3028641113f76ee8c00c2d01750a1d49e3280fee58"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C28:03",
+   "frozen_row_sha256": "2ba27a4352a304356d83c06aae40fb606302426087c05c972356a146fd9e9913",
+   "frozen_baseline": {
+    "from_state": "candidate resolved",
+    "from": "candidate resolved",
+    "event": "new preview apply",
+    "guard": "strictly greater; expected-current compare-and-set; exact one replacement per declared consumer/test/fixture field; submodule exact commit",
+    "to": "new candidate bound",
+    "effects": "Update declared consumer/test/fixture contents sequentially inside disposable checkout.",
+    "failure_retry": "Later I/O failure can leave partial checkout; no public branch/release is written.",
+    "source": [
+     {
+      "path": ".github/scripts/academy_promotion.py",
+      "symbol": "apply_candidate",
+      "lines": [
+       241,
+       273
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/academy_promotion.py"
+     }
+    ],
+    "transition_id": "C28:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "New release strictly advances expected-current with exact one consumer/test/fixture/commit replacement and exact submodule prerequisite. Two local writes are sequential and can partially complete on I/O failure; no public ref/release is written.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 241,
+     "end": 286,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "a99eb59881e3ac915e0b80d85541902fb0b46d5dfc506c17c470cdb24a8d71e2"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 330,
+     "end": 338,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "cd71891e01909ac3a43a217344f59d4ad61792051476b5e9a576f83a1308acf3"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 78,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "33ed76b91850f0e4b4779602b08b7dedc2ef594aec7789d31948acadc42cd6b9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C28:04",
+   "frozen_row_sha256": "c741b87585f62b000fe328ab0855470c55891bbed1ee1a32ab58cfbe3daa0819",
+   "frozen_baseline": {
+    "from_state": "new candidate bound",
+    "from": "new candidate bound",
+    "event": "workflow generated/typechecked verification",
+    "guard": "local annotated tag object and peel rechecked; reviewed site toolchain",
+    "to": "prospective verified",
+    "effects": "Generate source inputs, run promotion consumer contract and typecheck.",
+    "failure_retry": "Any source or test disagreement fails.",
+    "source": [
+     {
+      "path": ".github/workflows/academy-promotion.yml",
+      "symbol": "57",
+      "lines": [
+       57,
+       57
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/academy-promotion.yml"
+     }
+    ],
+    "transition_id": "C28:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Workflow re-fetches immutable tag, checks exact annotated object and peel, checks out detached commit, then reviewed site dependencies/generation/consumer contract/typecheck gate prospective source. Any step failure prevents a completed validation.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 94,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "1492e5ddd93c90a13e4480e558a88bcf57c3ccab2835103bf23e429cd6e6847e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C28:05",
+   "frozen_row_sha256": "83de0a7f694b3afb750900ee07ff8f9d929febd4ebe6ebd41ae7b11dd413f4a7",
+   "frozen_baseline": {
+    "from_state": "prospective verified",
+    "from": "prospective verified",
+    "event": "scheduled run finds new candidate",
+    "guard": "candidate differs from current",
+    "to": "owner promotion pending",
+    "effects": "Intentionally exit nonzero as pending-owner signal.",
+    "failure_retry": "Failure here is a workflow attention state, not failed candidate validation; manual successful run reports required owner action.",
+    "source": [
+     {
+      "path": ".github/workflows/academy-promotion.yml",
+      "symbol": "103",
+      "lines": [
+       103,
+       103
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/academy-promotion.yml"
+     }
+    ],
+    "transition_id": "C28:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After valid new scheduled candidate, explicit pending-owner step exits1; current candidate skips it. Manual new candidate reports required governed owner action without creating promotion refs.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 95,
+     "end": 108,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "807a0058588ba769166201f0b72454629a7a6d580cd45b47c26ca97a6e57553c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:01",
+   "frozen_row_sha256": "fa80e6003942f274d8c91e7b5f42da0a42ccdc2b6e4e06142549bb7670a48922",
+   "frozen_baseline": {
+    "from_state": "not selected",
+    "from": "not selected",
+    "event": "matching PR/push, manual or release workflow_run completion",
+    "guard": "declared paths/events; workflow_run is completion without success predicate",
+    "to": "building",
+    "effects": "Run independent site-check and build; PR/push same-ref newer runs cancel earlier, release workflow_run does not.",
+    "failure_retry": "Release failure can still trigger docs build; build uses checked-out current source, not implied released artifact.",
+    "source": [
+     {
+      "path": ".github/workflows/docs.yml",
+      "symbol": "68",
+      "lines": [
+       68,
+       68
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+     }
+    ],
+    "transition_id": "C29:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Matching PR/main-or-integration push paths, explicit manual and release workflow completion select independent site-check/build. Release completion need not be successful; per-ref newer PR/push supersedes, workflow_run does not cancel. Exact qualified-run dispatch instead selects separate preparation path.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 19,
+     "end": 151,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "cc32099aa6116d1a3112165d7b1471274be4854a716c931b789ff9b18a644325"
+    },
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 269,
+     "end": 285,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "b8034d16e746acff2b9fb4af0603c93513c8f58b3a22dc8cf2185fb2777728f4"
+    }
+   ],
+   "intake_variances": [
+    "P-01 adds integration-only validation; R-05 aligns PR/push direct gate inputs. Workflow_run builds checkout source, not implied release bytes."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:02",
+   "frozen_row_sha256": "8f94f11e0638bfc4f92bfdc4119b2e470930514feb11515c5c17774e27badedd",
+   "frozen_baseline": {
+    "from_state": "building",
+    "from": "building",
+    "event": "site-check",
+    "guard": "dependency audit accepted, generated applicability/typecheck/voice pass",
+    "to": "checks passed",
+    "effects": "Bind coverage inputs before/after tests and retain numeric coverage/source/toolchain evidence.",
+    "failure_retry": "Audit/typecheck/voice/test/source-drift failure blocks deploy; evidence retained when not canceled.",
+    "source": [
+     {
+      "path": ".github/workflows/docs.yml",
+      "symbol": "96",
+      "lines": [
+       96,
+       96
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+     }
+    ],
+    "transition_id": "C29:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Site-check installs deps, enforces audit/generated/typecheck/voice, captures exact coverage inputs/toolchain before tests, then compares inputs and validates finite numeric lines/branches summary. Tests/source drift refuse; coverage upload runs only when not cancelled.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 170,
+     "end": 267,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "e1fbae647f87056a60d92fadb3de7ca7bf7d5fc372558de8086b9d2b7907b854"
+    }
+   ],
+   "intake_variances": [
+    "R-05 now validates rule-owner-only changes on PRs too. Numeric completeness is checked here; actual coverage percentages and full run outcome require original hosted evidence."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:03",
+   "frozen_row_sha256": "cc981d16d1f3965e59730cd71c1dac836b0263d382982d9bb8b3d8e16f525036",
+   "frozen_baseline": {
+    "from_state": "building",
+    "from": "building",
+    "event": "build/link/browser gate",
+    "guard": "Astro build, links and real browser checks pass",
+    "to": "browser passed",
+    "effects": "Record Chrome version, retain browser review and failure diagnostics, upload Pages artifact on successful build.",
+    "failure_retry": "Failed browser gate prevents Pages artifact/deployment; diagnostic retention differs by success/failure.",
+    "source": [
+     {
+      "path": ".github/workflows/docs.yml",
+      "symbol": "209",
+      "lines": [
+       209,
+       209
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+     }
+    ],
+    "transition_id": "C29:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Build/link audit, observed runnerChrome, browser components and original browser gate precede Pages upload. Program trusted push chooses observer while ordinary validation uses browser command. Completed browser/failure diagnostics retain without forgiving failure; report emits only under trusted program push with source/job/artifact checks.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 294,
+     "end": 376,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "0bc14c97b95eb2242d53e1b67f7f28c8eefabfca6aa9eebdbf100e2d93542fc7"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 466,
+     "end": 495,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "81bdf07c592c1518386e21726bd39a4f78b6c158939a95f55d06a7b5fcd1fa82"
+    }
+   ],
+   "intake_variances": [
+    "Accepted Q02/Q03 separates Docs qualification from deployment. No source inspection establishes actual Chrome/browser behavior or successful report issuance."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:04",
+   "frozen_row_sha256": "c5717f53bf1bd71c9c6f6d4647b9de3ec1a87b0bdd1582c9fda1cd77f615aa28",
+   "frozen_baseline": {
+    "from_state": "checks passed and browser passed",
+    "from": "checks passed and browser passed",
+    "event": "deploy admission",
+    "guard": "event push/workflow_run/manual and ref main; both prerequisites success",
+    "to": "deployable",
+    "effects": "Request scoped Pages/id-token permissions and declared deployment environment.",
+    "failure_retry": "PR validation never meets deployment event condition.",
+    "source": [
+     {
+      "path": ".github/workflows/docs.yml",
+      "symbol": "262",
+      "lines": [
+       262,
+       262
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+     }
+    ],
+    "transition_id": "C29:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Ordinary deploy needs successful build+site-check, approved event/main, no active program candidate and no qualified-run input. Program promotion uses explicit current-main dispatch with verified PREPUBLICATION_READY envelope/source-tree and exact original archive/tar/member identities, then readback; only deploy job holds Pages/OIDC writes.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 378,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "6c813b9c37ca6f8f1aeeb8581f018593037bf3fb15dfd13e6e6bd495f33c2133"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 579,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "087cbcaabf679fd2fc9d88c4cb1db5f85bc40c10187327dae9c94ee280fbe0a8"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 588,
+     "end": 617,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "4fa844ce1ff26fcf8b0277564706fe1c9a5796f8149a40c0069ea6ccecc0c687"
+    }
+   ],
+   "intake_variances": [
+    "Q02/Q03 intentionally suppress ordinary deployment during program qualification and add a separate noncircular qualified exact-tar main-only route. PR/integration validation never gains deploy authority."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C29:05",
+   "frozen_row_sha256": "17f4b2367b04d77db79882f9e5fee5f37404f0a181026216afff1014b51bb7b4",
+   "frozen_baseline": {
+    "from_state": "deployable",
+    "from": "deployable",
+    "event": "deploy-pages action",
+    "guard": "Pages platform/environment accepts artifact",
+    "to": "deployed",
+    "effects": "Publish site artifact and expose environment URL.",
+    "failure_retry": "Platform failure is reported; no custom rollback state machine in workflow.",
+    "source": [
+     {
+      "path": ".github/workflows/docs.yml",
+      "symbol": "277",
+      "lines": [
+       277,
+       277
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+     }
+    ],
+    "transition_id": "C29:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dependent scoped deploy-pages action publishes accepted current-run artifact and environment URL; platform failure is not source success and no custom rollback is implemented. Qualified path deploy depends on completed exact-transfer preparation/readback, never a rebuild substituted for qualified tar.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/docs.yml",
+     "start": 378,
+     "end": 467,
+     "file_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+     "span_sha256": "6c813b9c37ca6f8f1aeeb8581f018593037bf3fb15dfd13e6e6bd495f33c2133"
+    },
+    {
+     "path": ".github/scripts/site_playwright_observation.py",
+     "start": 530,
+     "end": 584,
+     "file_sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+     "span_sha256": "c65e4e90a6b7250bdcf5483e68a738ec83dda49fcaffaf991212604da53b38a1"
+    }
+   ],
+   "intake_variances": [
+    "The source declaration does not establish deployed/public readback or authorize publication/main merge."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "intake_interpretations": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

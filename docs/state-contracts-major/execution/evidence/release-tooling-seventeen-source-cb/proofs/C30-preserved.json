@@ -1,0 +1,234 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".github/scripts/prepare_adr_acceptance.py": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+  "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C30",
+  "disposition:transitions:C30:01",
+  "disposition:transitions:C30:02",
+  "disposition:transitions:C30:03",
+  "disposition:transitions:C30:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C30",
+   "frozen_row_sha256": "f3810e51d8abdad0e78c3eb59651765424ca140b821f8acb0c91e549897e88ea",
+   "clause_ids": [
+    "disposition:transitions:C30:01",
+    "disposition:transitions:C30:02",
+    "disposition:transitions:C30:03",
+    "disposition:transitions:C30:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 63,
+     "end": 73,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "f6aa53bdcbb180b47a7f429f7b10fb18184947fe53496c817366c264a583cf5c"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 76,
+     "end": 83,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "18a877d1a3e49c8e9501a919d29986ed97c95d89b490c7ce8d27a3e26179807a"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 111,
+     "end": 153,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "cbb5835f06b5f17d546e479bd5b2372accaf9e57dc172a9f2fd49cba645c009a"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 126,
+     "end": 165,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "daa6e4f67d4ceadcdefa7d727d759f558fd38bf77beba7a33652707ccbc7ef26"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 86,
+     "end": 108,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "3dff945539c29f64984461cee06941c7061ae3452f59b94ac3bfa1b653925b10"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 156,
+     "end": 165,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "b0564c97e961a0d6d5d680a36f37b5c625ec8dd06b50a6393754195163fe5794"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 168,
+     "end": 177,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "56a6f0f4499fc02223fee5f64d58c2dfc04804c1daaa07eed08e5bcb37d7592b"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "Creation bounds the supplied interval; current freshness is checked by the consuming lifecycle validator, not established by write_packet alone.",
+    "No hostile same-user race or crash-complete directory durability guarantee is inferred.",
+    "The frozen adjective bounded is not a byte/depth limit in this reader: json.load is unbounded. No such bound or freshness is claimed."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C30:01",
+   "frozen_row_sha256": "39998a18bf498f6286a91c9c1984c9af178d205190dcfd7140efab2d347cb9d6",
+   "witnesses": [
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 63,
+     "end": 73,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "f6aa53bdcbb180b47a7f429f7b10fb18184947fe53496c817366c264a583cf5c"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 76,
+     "end": 83,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "18a877d1a3e49c8e9501a919d29986ed97c95d89b490c7ce8d27a3e26179807a"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 111,
+     "end": 153,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "cbb5835f06b5f17d546e479bd5b2372accaf9e57dc172a9f2fd49cba645c009a"
+    },
+    {
+     "path": "core/pysrc/_adrlifecycle.py",
+     "start": 126,
+     "end": 165,
+     "file_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+     "span_sha256": "daa6e4f67d4ceadcdefa7d727d759f558fd38bf77beba7a33652707ccbc7ef26"
+    }
+   ],
+   "semantic_assessment": "A staged accepted ADR, HEAD decision ledger, nonempty reviewer list and positive at-most-four-hour reviewed/expires interval are required. The canonical acceptance constructor seals and validates obligations before the packet binds repository/common/Git roots, HEAD, index tree, ADR body/blob, decision-log hashes and obligations digest. Invalid construction fails before exclusive packet installation.",
+   "intake_variances": [
+    "Creation bounds the supplied interval; current freshness is checked by the consuming lifecycle validator, not established by write_packet alone."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C30:02",
+   "frozen_row_sha256": "8d827682a101772d0846096857e7e45a351bd3c3d3e0d691be8e0acea2bf715c",
+   "witnesses": [
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 63,
+     "end": 73,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "f6aa53bdcbb180b47a7f429f7b10fb18184947fe53496c817366c264a583cf5c"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 86,
+     "end": 108,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "3dff945539c29f64984461cee06941c7061ae3452f59b94ac3bfa1b653925b10"
+    }
+   ],
+   "semantic_assessment": "The current worktree Git-metadata packet must be absent under an exact realpath-safe administration directory. A temporary JSON file is flushed/fsynced then hardlinked without replacing an existing target; finally removes the temporary name. Existing authority requires explicit clearing, not overwrite.",
+   "intake_variances": [
+    "No hostile same-user race or crash-complete directory durability guarantee is inferred."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C30:03",
+   "frozen_row_sha256": "805eeb299e4369cd78654e4d360023c19067b7d5d2bbfb030aeda4c50b5c1add",
+   "witnesses": [
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 63,
+     "end": 73,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "f6aa53bdcbb180b47a7f429f7b10fb18184947fe53496c817366c264a583cf5c"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 156,
+     "end": 165,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "b0564c97e961a0d6d5d680a36f37b5c625ec8dd06b50a6393754195163fe5794"
+    }
+   ],
+   "semantic_assessment": "Reading requires the safe packet path and a regular nonlinked file. JSON parsing returns a dictionary only; OSError, UnicodeError and ValueError become unavailable/None. Read content is merely input to staged-transition validation, never authority by itself.",
+   "intake_variances": [
+    "The frozen adjective bounded is not a byte/depth limit in this reader: json.load is unbounded. No such bound or freshness is claimed."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C30:04",
+   "frozen_row_sha256": "b7e2e9002f6082c365cdfd405809eda3518b6108eacf90a01f2e52c8bdf64a7d",
+   "witnesses": [
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 63,
+     "end": 73,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "f6aa53bdcbb180b47a7f429f7b10fb18184947fe53496c817366c264a583cf5c"
+    },
+    {
+     "path": ".github/scripts/prepare_adr_acceptance.py",
+     "start": 168,
+     "end": 177,
+     "file_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+     "span_sha256": "56a6f0f4499fc02223fee5f64d58c2dfc04804c1daaa07eed08e5bcb37d7592b"
+    }
+   ],
+   "semantic_assessment": "Clear is idempotent when absent. A present path must be regular and nonlinked before unlink; unsafe targets refuse rather than being followed. Clearing concerns only this worktree packet.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "C30 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

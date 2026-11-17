@@ -33,7 +33,7 @@
  * Uses Node built-ins + a small regex HTML scan only — no added dependency.
  */
 import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
-import { join, posix, relative, sep } from "node:path";
+import { isAbsolute, join, posix, relative, sep } from "node:path";
 
 // Single source of truth, shared with astro.config.mjs — never a local copy.
 // This constant previously held its own literal with a "must match
@@ -107,8 +107,9 @@ export function resolveToDistFile(
   let absUrlPath: string;
   let normalizedPath: string;
   if (urlPath.startsWith("/")) {
-    // Root-absolute.
-    normalizedPath = urlPath;
+    // Normalize before checking the base or joining to dist: raw dot segments
+    // must not let a sibling outside dist satisfy this audit.
+    normalizedPath = posix.normalize(urlPath);
     if (normalizedPath !== base && !normalizedPath.startsWith(`${base}/`)) {
       return { kind: "outside-base", normalizedPath };
     }
@@ -134,7 +135,14 @@ export function resolveToDistFile(
     rel = `${absUrlPath}/index.html`; // extensionless route -> directory index
   }
 
-  return { kind: "resolved", distFile: join(distRoot, ...rel.split("/").filter(Boolean)) };
+  const distFile = join(distRoot, ...rel.split("/").filter(Boolean));
+  // The host filesystem may recognize separators the URL rules do not (for
+  // example backslashes on Windows). Refuse a lexical escape before any read.
+  const fromDist = relative(distRoot, distFile);
+  if (fromDist === ".." || fromDist.startsWith(`..${sep}`) || isAbsolute(fromDist)) {
+    return { kind: "outside-base", normalizedPath };
+  }
+  return { kind: "resolved", distFile };
 }
 
 export interface AuditFailure {

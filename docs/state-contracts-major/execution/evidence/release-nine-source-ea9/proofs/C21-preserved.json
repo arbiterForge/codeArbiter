@@ -1,0 +1,278 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal46-clause C21-C29 immutable current/pinned inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/legacy-published-tags.json": "d9ae0a45cec0a873c8ed5d28e9f3fc255a6e7cfb4c79e3ccfba80b8294a7e8db",
+  ".github/published-tags.json": "228be5607f1dd582f491b7b0b0aae678277f9447b90f4e6460b8db7629a769ec",
+  ".github/scripts/_verdictlib.py": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b",
+  ".github/scripts/check_tag_immutability.py": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C21",
+  "disposition:transitions:C21:01",
+  "disposition:transitions:C21:02",
+  "disposition:transitions:C21:03",
+  "disposition:transitions:C21:04",
+  "disposition:transitions:C21:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/source-bindings.json",
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json",
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C21",
+   "frozen_row_sha256": "be0b03caeeee59b6f6e90cadc23d7ae039a895b014982f30fbfcdf42aa6d19a6",
+   "clause_ids": [
+    "disposition:transitions:C21:01",
+    "disposition:transitions:C21:02",
+    "disposition:transitions:C21:03",
+    "disposition:transitions:C21:04",
+    "disposition:transitions:C21:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 189,
+     "end": 283,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "ccbcdfc605ab3efd6652197d259afdeafc4c7e5685e366cbf3c42df0cc73020a"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 502,
+     "end": 524,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "05b12c554237a73f8b832429b69e0153af3a9ad0de33e4a906706d41adb96872"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 408,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "8f8a2101020a3cb294ce92580246f63a6d72a7bc5d742fe8b3bf027274e032b4"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 457,
+     "end": 487,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "fb39c56c1944ad6005c830d945c06bb3b93e582ca2a135f83db220434cd81cdf"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 491,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "580b32c710fe61453b07d6e8355772624e759a263fb0f85ad424949634a3347b"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 371,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "d7720371a852aad25285526df1f9d5922ec7b846445ce4712d5a530284134bf0"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 526,
+     "end": 534,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "9da1e43423d86cdd2b82beb37899ca77f8ba9ca81256c03e29a3a39862cf98f9"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 299,
+     "end": 350,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "1305c9d438ec47b548bdc49e6567a58890a30ad8463408bed18ff18f3c6ef153"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 533,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "44c64e003c43f52571aad1c78f7ccf5de5d331b5c6e0356f12bb6de26adac51a"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 353,
+     "end": 361,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "11609c4e1f34ab09da02f5d68e475a4977041ad5bba4fd501afc9db675d43061"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 549,
+     "end": 569,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "3d366dff99dcdf3c02ea1cf490cbbb6ce706ded704d63d0d0f65d6793367da4e"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses including already advanced rows are mapped to exact current/pinned owner/caller spans. Accepted repairs and baseline overstatements are explicit per clause; no stronger execution/identity/rollback/coverage behavior is inferred. Advanced row histories are preserved.",
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:01",
+   "frozen_row_sha256": "07b85698e91bdf355bc581c25d5da24501b55a1b10aa34237e2d53146c61848b",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 189,
+     "end": 283,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "ccbcdfc605ab3efd6652197d259afdeafc4c7e5685e366cbf3c42df0cc73020a"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 502,
+     "end": 524,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "05b12c554237a73f8b832429b69e0153af3a9ad0de33e4a906706d41adb96872"
+    }
+   ],
+   "semantic_assessment": "Production CLI validates original fixed-floor identity/population, exact closed44 legacy identities/15-28-1 grades/epoch and ledger disjointness before the missing-token branch. Invalid local history returns nonzero even when live observation cannot run. Explicit injected unit-test records deliberately bypass the production floor.",
+   "intake_variances": [
+    "R-06 adds typed outcomes without changing compatible exits. The original floor is a fixed subset, so later trusted original receipts may append."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:02",
+   "frozen_row_sha256": "d1f9c6028aca8b8e4e6c4af063a6b72252c5b6a97c66268f8ec19297a1c71091",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 408,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "8f8a2101020a3cb294ce92580246f63a6d72a7bc5d742fe8b3bf027274e032b4"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 457,
+     "end": 487,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "fb39c56c1944ad6005c830d945c06bb3b93e582ca2a135f83db220434cd81cdf"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 491,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "580b32c710fe61453b07d6e8355772624e759a263fb0f85ad424949634a3347b"
+    }
+   ],
+   "semantic_assessment": "Missing repository/token or non200/unavailable live reads retain ordinary skipped/unavailable zero exit; strict require-recorded refuses. Malformed successful inventory refuses in either mode. Optional typed observation distinguishes zero-exit availability from verified identity.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:03",
+   "frozen_row_sha256": "ce36e684f6697b16f415ae302f87bbfd030314902f4bfd52d08827b57c1d093e",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 371,
+     "end": 425,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "d7720371a852aad25285526df1f9d5922ec7b846445ce4712d5a530284134bf0"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 526,
+     "end": 534,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "9da1e43423d86cdd2b82beb37899ca77f8ba9ca81256c03e29a3a39862cf98f9"
+    }
+   ],
+   "semantic_assessment": "Complete matching-ref response must be a list of unique nonempty tag names with40-hex Git object identifiers and admitted Git types. Successful malformed JSON/inventory raises InvalidInventory rather than returning unavailable; no local mutation is performed.",
+   "intake_variances": [
+    "Live comparison uses direct ref object IDs, not a separate live peel. Permitted working tree/blob refs do not hide release-ref drift."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:04",
+   "frozen_row_sha256": "b3cd4d449d5a2a63abe263d43d9d72c837224c784036db4e11e3049d7e42b1b3",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 299,
+     "end": 350,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "1305c9d438ec47b548bdc49e6567a58890a30ad8463408bed18ff18f3c6ef153"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 533,
+     "end": 546,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "44c64e003c43f52571aad1c78f7ccf5de5d331b5c6e0356f12bb6de26adac51a"
+    }
+   ],
+   "semantic_assessment": "Recorded original and legacy direct ref objects must still exist and equal their independently retained object identities. Missing or moved objects fail ordinary and strict modes. Legacy checks retain observation-grade meaning rather than inventing original-publication history.",
+   "intake_variances": [
+    "Frozen direct/peeled wording is represented by recorded object+commit metadata; live audit compares direct objects. This is unchanged baseline behavior, not newly added peeling."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C21:05",
+   "frozen_row_sha256": "89f7e208ea24e92a9ac799d7869934316cc3ef427f8bba1721405e7be8ab27d5",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 353,
+     "end": 361,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "11609c4e1f34ab09da02f5d68e475a4977041ad5bba4fd501afc9db675d43061"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 549,
+     "end": 569,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "3d366dff99dcdf3c02ea1cf490cbbb6ce706ded704d63d0d0f65d6793367da4e"
+    }
+   ],
+   "semantic_assessment": "Governed live refs absent from disjoint union warn and succeed ordinarily; strict require-recorded rejects. No receipt writer, tag repair or retroactive history mutation occurs here.",
+   "intake_variances": [
+    "ADR0040 explicitly keeps missing-record warnings distinct from recorded movement and strict audit requirements."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "scope": "Reasoned source-only preservation with explicit accepted/intake deltas; no actual hosted/account/installed/runtime/promotion/publication qualification.",
+ "limits": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

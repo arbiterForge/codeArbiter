@@ -1,0 +1,88 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".github/scripts/test_artifact_authoring.py": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/measure-knowledge-retrieval.py": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+ },
+ "disposition_ids": [
+  "disposition:machines:T09"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:T09",
+   "frozen_row_sha256": "c479f5b0ecc04e379386f0bd53185315b9044b57ba2eafea1e9dce80d7058408",
+   "clause_ids": [
+    "disposition:transitions:T09:01",
+    "disposition:transitions:T09:02",
+    "disposition:transitions:T09:03",
+    "disposition:transitions:T09:04"
+   ],
+   "witnesses": [
+    {
+     "path": "tools/measure-knowledge-retrieval.py",
+     "start": 79,
+     "end": 126,
+     "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+     "span_sha256": "57182a9a404e24b8ea38be3f0592eee98f9e4581d4f655812ba0a42ac6036792"
+    },
+    {
+     "path": ".github/scripts/test_artifact_authoring.py",
+     "start": 995,
+     "end": 1033,
+     "file_sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+     "span_sha256": "60bb38daeb5bacbe416792170b00c3c263565cb14b6b43dd6c3190bf7b50f607"
+    },
+    {
+     "path": "tools/measure-knowledge-retrieval.py",
+     "start": 129,
+     "end": 144,
+     "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+     "span_sha256": "e20111d0f803b8ce84c04ed2b8dc520a7c66c8fb1a042e4e04491f42522b37a2"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "No cold-cache enforcement or measured speedup is inferred from source; parent environment is inherited."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "T09 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

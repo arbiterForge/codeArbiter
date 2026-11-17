@@ -1,0 +1,380 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: authored literal31-clause pinned/current/callee assessment; no execution or independent self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/artifacts/internal/operations/knowledge_merge.go": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+  "core/artifacts/internal/operations/migration.go": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+  "core/artifacts/internal/store/transaction.go": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+  "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+  "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+  "core/surface/includes/artifacts-attestation.md": "a6cee9eefaea087572d2c76e772d4a85b0022b89b1e4ab4cb870aadde7c147b3",
+  "core/surface/includes/artifacts.md": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+  "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+  "core/surface/skills/context-check/SKILL.md": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-19",
+  "disposition:transitions:WF-19:01",
+  "disposition:transitions:WF-19:02",
+  "disposition:transitions:WF-19:03",
+  "disposition:transitions:WF-19:04",
+  "disposition:transitions:WF-19:05",
+  "disposition:transitions:WF-19:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-19",
+   "frozen_row_sha256": "a3dc98fcf99a8f9b28cfc19862995a22dafe60ce0d96e12ad26381a40a48dadf",
+   "clause_ids": [
+    "disposition:transitions:WF-19:01",
+    "disposition:transitions:WF-19:02",
+    "disposition:transitions:WF-19:03",
+    "disposition:transitions:WF-19:04",
+    "disposition:transitions:WF-19:05",
+    "disposition:transitions:WF-19:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 10,
+     "end": 49,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "0f6190ff8195fca9e99373cef1c28b36dad0c052d4ccab0fb6619e04115b997e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 42,
+     "end": 73,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "004bc496e865b4e5251c9517a67a67619f6bd1c9f81ce1dbe05c3a76945d1472"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 87,
+     "end": 117,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "d54c893ef3ede68db0a5ce45e73e51d44bfd1fdb2ae68e12744dd1c67829626e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 119,
+     "end": 135,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "2b7e567df711b39ee67d89c5b3c9cd5da7322bae13d6415535e3e026c3233057"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 137,
+     "end": 163,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "716f75ecc8e5f6cf7d2e2bf08be4fcc628f0328aca33a1f40b889f20e990a61d"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 226,
+     "end": 248,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "57e560db60a8cf9d647feeaa362f8f6a9670feda9494695130a43427ea6489c2"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "start": 37,
+     "end": 96,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "272095dd347b9399c788cbb88f07a6216b2c7b0e1d807097e4abe2d7e83202fa"
+    },
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 119,
+     "end": 136,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "92b5415f0b70dae214cc59d9207fcef40b6619951e4143850ef7fa903e31ba60"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8"
+    },
+    {
+     "path": "core/surface/includes/artifacts-attestation.md",
+     "start": 505,
+     "end": 513,
+     "file_sha256": "a6cee9eefaea087572d2c76e772d4a85b0022b89b1e4ab4cb870aadde7c147b3",
+     "span_sha256": "dd834a183cd0760cd2d90720c5cc58969872babe64432cc8a34c522d51bda019"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 20,
+     "end": 109,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "ad5594770c76acbd0fb478010f01bc3791aa9c88fa873d378832d79f316e8e64"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 139,
+     "end": 184,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "90b32f0299f561fd0b96faf0a289cfc586393caa7447927f0e41393ceb0601e6"
+    },
+    {
+     "path": "core/artifacts/internal/store/transaction.go",
+     "start": 572,
+     "end": 626,
+     "file_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+     "span_sha256": "d67f60671c364c82946e7ed0b4e9865f6575416d6e4d350bb160dea641393c10"
+    },
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 137,
+     "end": 142,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "9de818a8223b396d5fd995c84598d85336740c8c3bb4b5cba9f5b13f9c269003"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 469,
+     "end": 488,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "c41890af163d4bdf9a761c54d9c09276168a9462b19f1aaa3c18158b53c023b1"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 50,
+     "end": 115,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "56fc94e154143fef2ae1635aa55b2b73328810b5c92e79138bca44836fc298e8"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 260,
+     "end": 329,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "df6ef26a10b343b3e07c4d0b5840cbc404d0c5ee9a34bed0536ae3cde352b572"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen literal transitions assessed against pinned/current owner and named applicable changes; includes advanced edges for machine analysis without modifying them. Guidance conformance only; explicit exceptions stay in clause-inspection.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:01",
+   "frozen_row_sha256": "e3e5fda4f06d5284d33015974de9ef9c5ff2e6c1af9ee6f369ca2548369b3207",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 10,
+     "end": 49,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "0f6190ff8195fca9e99373cef1c28b36dad0c052d4ccab0fb6619e04115b997e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 42,
+     "end": 73,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "004bc496e865b4e5251c9517a67a67619f6bd1c9f81ce1dbe05c3a76945d1472"
+    }
+   ],
+   "semantic_assessment": "Inspect actual format; HTML records belong to knowledge.py, Markdown belongs to retained managed paired owner. Use exact active native records or direct Markdown; current narrative read is revision-bound and excludes retired data. Do not scrape rendered HTML. Mixed/unsafe ownership refuses affected writes, not safe unrelated work; retained historical notes are not revived policy or new authority.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:02",
+   "frozen_row_sha256": "ea0117e4d552cb08bb39b022aced8173d8ae2d213b8e1e1300cde1837741e4ad",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 87,
+     "end": 117,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "d54c893ef3ede68db0a5ce45e73e51d44bfd1fdb2ae68e12744dd1c67829626e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 119,
+     "end": 135,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "2b7e567df711b39ee67d89c5b3c9cd5da7322bae13d6415535e3e026c3233057"
+    }
+   ],
+   "semantic_assessment": "Freshness requires bounded current membership/content and exact provenance coverage; missing/partial/unknown inputs remain unknown. Report legacy drift and every enrolled v2 identity state separately, with actual affected source scope and semantic limitations. Hash/current identity alone does not prove meaning; empty v1 drift does not establish v2 freshness, and selected incremental scope is not full coverage.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:03",
+   "frozen_row_sha256": "701f7fca392ad98dec7a71468f4512e18de1fabcee79d7ffac157805b3d3a7c1",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 137,
+     "end": 163,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "716f75ecc8e5f6cf7d2e2bf08be4fcc628f0328aca33a1f40b889f20e990a61d"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 226,
+     "end": 248,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "57e560db60a8cf9d647feeaa362f8f6a9670feda9494695130a43427ea6489c2"
+    }
+   ],
+   "semantic_assessment": "Supported absent/v1 adoption or v2 update requires explicit selected fields and current pair/source identity. Preview preserves unselected managed and unowned bytes plus legacy provenance history; material normative adoption stays with actual decision owner. Unsupported/ambiguous/oversized layout refuses only that write; preserve bytes and continue authorized task reading. No raw Write/Edit or regex fallback.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:04",
+   "frozen_row_sha256": "adb59b8f508a6e796b146cdeba3b30704455c7d86594836bd3ab334d9bf9e1a9",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 226,
+     "end": 248,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "57e560db60a8cf9d647feeaa362f8f6a9670feda9494695130a43427ea6489c2"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "start": 37,
+     "end": 96,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "272095dd347b9399c788cbb88f07a6216b2c7b0e1d807097e4abe2d7e83202fa"
+    }
+   ],
+   "semantic_assessment": "Exact returned preview ref/hash and current expected document/provenance/source identity guard paired apply. Writer commits selected document and provenance together under native lock; readback retains initialized marker and foreign spans. Stale preview requires reinspection, not force apply; uncertain operation retries identical request/ID or recovery. This is CAS, not new artifact approval authority.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:05",
+   "frozen_row_sha256": "19ed77cb41a32cff523a90a96cece046d9d5a13dc16c8c872c1cbd0dcdb5deaa",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 119,
+     "end": 136,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "92b5415f0b70dae214cc59d9207fcef40b6619951e4143850ef7fa903e31ba60"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8"
+    },
+    {
+     "path": "core/surface/includes/artifacts-attestation.md",
+     "start": 505,
+     "end": 513,
+     "file_sha256": "a6cee9eefaea087572d2c76e772d4a85b0022b89b1e4ab4cb870aadde7c147b3",
+     "span_sha256": "dd834a183cd0760cd2d90720c5cc58969872babe64432cc8a34c522d51bda019"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 20,
+     "end": 109,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "ad5594770c76acbd0fb478010f01bc3791aa9c88fa873d378832d79f316e8e64"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 139,
+     "end": 184,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "90b32f0299f561fd0b96faf0a289cfc586393caa7447927f0e41393ceb0601e6"
+    },
+    {
+     "path": "core/artifacts/internal/store/transaction.go",
+     "start": 572,
+     "end": 626,
+     "file_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+     "span_sha256": "d67f60671c364c82946e7ed0b4e9865f6575416d6e4d350bb160dea641393c10"
+    }
+   ],
+   "semantic_assessment": "Conversion requires actual user format choice plus complete returned section dispositions/current fingerprint; no silent cutover. Keep two distinct conversion owners: knowledge.py converts repository context through section inventory/coverage and expected cutover; explicit legacy spec/plan conversion uses migration-preview/apply with complete nonoverlapping line mapping and reviewed draft pair. Both preserve original bytes/history; this is not a universal refresh or approval ceremony. Original approval/status prose is historical data, not transferred authority. Changed context token or spec/plan preview refuses. Completed spec/plan migration rollback checks every current after-image and refuses intervening edits; uncertain transactions use recovery rather than rollback. No operation executed here.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-19:06",
+   "frozen_row_sha256": "0c8cf8cb3747a833b7fc2abddb2f8a2297a23a823ccbf5910fe05f6fd2f3b6bb",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 137,
+     "end": 142,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "9de818a8223b396d5fd995c84598d85336740c8c3bb4b5cba9f5b13f9c269003"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 469,
+     "end": 488,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "c41890af163d4bdf9a761c54d9c09276168a9462b19f1aaa3c18158b53c023b1"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 50,
+     "end": 115,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "56fc94e154143fef2ae1635aa55b2b73328810b5c92e79138bca44836fc298e8"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 260,
+     "end": 329,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "df6ef26a10b343b3e07c4d0b5840cbc404d0c5ee9a34bed0536ae3cde352b572"
+    }
+   ],
+   "semantic_assessment": "Only known knowledge/decomposition path with actual three Git stages/current SHA selects native merge owner. Native record-level merge combines disjoint edits and reports any renumbering; competing same-record edits retain unresolved conflict instead of silently selecting one. Both-changed refusal preserves competing evidence for resolution; not a promise to auto-commit both semantic sides. No manual HTML rewrite or semantic choice supplied by this proof.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  }
+ ],
+ "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

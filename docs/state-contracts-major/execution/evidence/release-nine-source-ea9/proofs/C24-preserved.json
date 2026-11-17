@@ -1,0 +1,271 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal46-clause C21-C29 immutable current/pinned inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/pi_host_locks.py": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C24",
+  "disposition:transitions:C24:01",
+  "disposition:transitions:C24:02",
+  "disposition:transitions:C24:03",
+  "disposition:transitions:C24:04",
+  "disposition:transitions:C24:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/source-bindings.json",
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json",
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C24",
+   "frozen_row_sha256": "eb408fce3feecff9d82210bf88924d57db4c35e1240cf4a6c72afeef5203d9f6",
+   "clause_ids": [
+    "disposition:transitions:C24:01",
+    "disposition:transitions:C24:02",
+    "disposition:transitions:C24:03",
+    "disposition:transitions:C24:04",
+    "disposition:transitions:C24:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 79,
+     "end": 134,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "cb9aa0ce6f630be014f215397a533fa3a0a458f080c0f76773ad957c797b154b"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 137,
+     "end": 217,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "de917f4f44f428f2b02275169ae2faac0fdd54502233a2942f0bacdfa6a4a0fa"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 276,
+     "end": 371,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "3b1fbcee4e2f53e56500a8ab28fcc232746198dd9fd6daef103e6df55758b554"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 424,
+     "end": 540,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "a7c560e03f201937c4184a94bb589f5d12f99a3308a3f6e1a29eceecf96736d0"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1123,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "2b87719329c97a98f51e214e2b3567ef1db75d07d64e105489552a355bb1143a"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 543,
+     "end": 662,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "175ea3b6c02ab034559afdd346bc8c97b7f7eeb26d8cb3b0b0a682b301aa02f3"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 803,
+     "end": 855,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "917a3a057ab2ed0c96631990a05d0c9dfcba6e24412edbd7e5fc4bec199ef6ec"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1124,
+     "end": 1187,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6d048248f55e8f72eee12b102f372b8e699b02f7a637ea15fd7e2afed751425d"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 858,
+     "end": 920,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "d8fe35b2cc7b4fb2f52aaa4769ffcdf3f263ab00def40655a0bb6d7e110ad83d"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1187,
+     "end": 1209,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6368322bb424f94e1f3a4479ed99a6de5d67237c191c53532a17ca8f97a395f6"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1099,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "78af374e5565b53cf289aa12395ab65ddc3eed1cfdcaef8d1f731f4c8ce29855"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses including already advanced rows are mapped to exact current/pinned owner/caller spans. Accepted repairs and baseline overstatements are explicit per clause; no stronger execution/identity/rollback/coverage behavior is inferred. Advanced row histories are preserved.",
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:01",
+   "frozen_row_sha256": "2208065cd351dc6f823a7431e28211548bc30ae8c04c0abfc5db807cd3d950ab",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 79,
+     "end": 134,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "cb9aa0ce6f630be014f215397a533fa3a0a458f080c0f76773ad957c797b154b"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 137,
+     "end": 217,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "de917f4f44f428f2b02275169ae2faac0fdd54502233a2942f0bacdfa6a4a0fa"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 276,
+     "end": 371,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "3b1fbcee4e2f53e56500a8ab28fcc232746198dd9fd6daef103e6df55758b554"
+    }
+   ],
+   "semantic_assessment": "Registry-only selectors reject file/git/workspace/link/foreign URLs; approved origin is credential-free default-port HTTPS registry.npmjs.org. Bounded metadata and reviewed npm-bundled semver choose one exact stable version without importing candidate code.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:02",
+   "frozen_row_sha256": "d5ea5bad58f663b938183e2f14cabde95f113fa5cecfc3cc23fb8a577b9ccb1b",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 424,
+     "end": 540,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "a7c560e03f201937c4184a94bb589f5d12f99a3308a3f6e1a29eceecf96736d0"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1123,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "2b87719329c97a98f51e214e2b3567ef1db75d07d64e105489552a355bb1143a"
+    }
+   ],
+   "semantic_assessment": "New or empty destination gets private wrapper/npmrc. Root tarball is downloaded over approved HTTPS, byte/deadline capped, SHA512 compared, then stream-inspected without extraction or scripts; links/special files, oversized members/archive/ratio and ambiguous metadata refuse. Partial output may remain.",
+   "intake_variances": [
+    "Metadata transport errors have three bounded attempts; tarball HTTP/transport failures are not universally retried. The fixed600s metadata walk is not an install/runtime deadline."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:03",
+   "frozen_row_sha256": "7ef6b5170d1b2f8ce363af6ebf4c0f52aa1def784eb4489e4a7415fba02b9a43",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 543,
+     "end": 662,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "175ea3b6c02ab034559afdd346bc8c97b7f7eeb26d8cb3b0b0a682b301aa02f3"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 803,
+     "end": 855,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "917a3a057ab2ed0c96631990a05d0c9dfcba6e24412edbd7e5fc4bec199ef6ec"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1124,
+     "end": 1187,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6d048248f55e8f72eee12b102f372b8e699b02f7a637ea15fd7e2afed751425d"
+    }
+   ],
+   "semantic_assessment": "Published shrinkwrap or exact-source install lock is bound to root manifest/version/metadata. Safe package paths, count1024/depth64 and registry-only edges are validated; source fallback verifies package graph metadata and fills registry digests. Unsupported or incomplete dependency targets refuse.",
+   "intake_variances": [
+    "Exact upstream source metadata is unverified capture input until later dependency/provenance review; it does not authorize execution. Existing published SHA512 entries can be retained without downloading every dependency tarball."
+   ],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:04",
+   "frozen_row_sha256": "44ffbb5ba96cafb347b3ec1e260688c313a206a88eeaa38306e41eaf57e08375",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 858,
+     "end": 920,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "d8fe35b2cc7b4fb2f52aaa4769ffcdf3f263ab00def40655a0bb6d7e110ad83d"
+    },
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1187,
+     "end": 1209,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "6368322bb424f94e1f3a4479ed99a6de5d67237c191c53532a17ca8f97a395f6"
+    }
+   ],
+   "semantic_assessment": "Successful capture writes exact v1 PENDING_REVIEW with lock/config SHA256 and source identity, removes temporary cache/config and validates pending receipt shape. No code path sets PASS, and reviewed install requires v2 PASS.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  },
+  {
+   "cell": "disposition:transitions:C24:05",
+   "frozen_row_sha256": "ff472b350ea01d80ef84ceae18461172cd3e99dc48759f811ff1e147fdd46bb5",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_host_locks.py",
+     "start": 1079,
+     "end": 1099,
+     "file_sha256": "1e0076d395c5e8718863523d53f81ddc3effd8b9ae9879b6f501ad3c86c63390",
+     "span_sha256": "78af374e5565b53cf289aa12395ab65ddc3eed1cfdcaef8d1f731f4c8ce29855"
+    }
+   ],
+   "semantic_assessment": "Any nonempty resolved output destination rejects before wrapper write; failed partial captures therefore require a fresh owned destination or separately authorized cleanup. No automatic overwrite/retry is introduced.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "scope": "Reasoned source-only preservation with explicit accepted/intake deltas; no actual hosted/account/installed/runtime/promotion/publication qualification.",
+ "limits": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

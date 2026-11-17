@@ -1,0 +1,184 @@
+{
+ "schema": "codearbiter.major.hook-delivery-refresh-repairs/1",
+ "controller_anchor": "5d9cc6d134775d913ee71acaeecdcb1a2ff94021",
+ "integration_base": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "normal_original": {
+  "CI": 44025115372,
+  "CI_result": "FAILURE",
+  "Docs": 44025115366,
+  "Docs_result": "SUCCESS",
+  "checks": {
+   "success": 91,
+   "failure": 1,
+   "skipped": 10
+  },
+  "terminal_receipt_sha256": "c00c9529bccaa0c0905a6140e870a1a6e90e40d2716ee57e06830a412af48ca4",
+  "final_delivery_sha256": "3ea22dc9b42d11ae2cc296bf9863b1d5b8af1b82f73e99a6edecf1353be0e996",
+  "RPC": "PASS,1test/0failure/0error/0skip",
+  "parent": "Actual scripted public TUI exited0 with three consent prompts and six local fixture provider requests. First acceptance guard is proved true by immutable monotonic complete/exit-key assignments plus original observations; actual refusal is input-drift. Effects acceptance after that refusal did not execute.",
+  "inventory": "273 to283 members: exactly ten added pyc files, zero removed or changed original members. Source/runtime/graph/payload equal.",
+  "writer_attribution": "Shared detached updater launch drops -B and matches observed import family; original detached PID/argv not retained, so sole historical writer not proved."
+ },
+ "repairs": {
+  "persona": "Invalidate old delivery record on atomic update failure; report when update and invalidation both fail. Cross-process originalRED2/expandedRED4; final52 owning tests PASS. Double storage denial can still preserve stale tuple and suppress a future return; no universal durable redelivery claim.",
+  "detached_update": "Launch detached updater with explicit -B. Original inert child RED2 observed bytecode mutation; final8 focused tests PASS and exact complete member inventory unchanged. Null stdio and platform detachment remain unchanged."
+ },
+ "verification_reuse": "Retained exact-source private results are reused; no tests replayed merely because docs-only HEAD advanced. Independent detached review still pending at import time; final staged binding owns admission.",
+ "evidence_inventory": {
+  "persona/author-delivery.json": {
+   "sha256": "d1299dfb6382fb92c1a5bf55b5c35836e35ea3a9c715f247b2bfb96c69058435",
+   "bytes": 9980,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\delivery.json"
+  },
+  "persona/red.json": {
+   "sha256": "26d4a8345773faff151f9e19413df56fd7e1d7aa0f210a0e743d1e10f897cb92",
+   "bytes": 765,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\red.json"
+  },
+  "persona/expanded-red.json": {
+   "sha256": "a73a8f4aa4efbc2d988d61bbbf1bf485451a4644710c8b48e70f63e1c3cc2c55",
+   "bytes": 871,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\expanded-red.json"
+  },
+  "persona/green.json": {
+   "sha256": "dad6f7e880c66ad6d0a6d01f99efa56b21db5bdff6e0478c81321665f211b2e8",
+   "bytes": 658,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\green.json"
+  },
+  "persona/source-preservation.json": {
+   "sha256": "33fe1f24ea44f8573e67f85ba091bb201c1d48c1cb8c51c8ce5fb58e40a26ef5",
+   "bytes": 1781,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\source-preservation.json"
+  },
+  "persona/dependency-joins.json": {
+   "sha256": "287a86959b4f67d5382502a9372cbd017b87580d06f2f6ab338d10fe732641dd",
+   "bytes": 9701,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\dependency-joins.json"
+  },
+  "persona/outcomes.json": {
+   "sha256": "beee5008453bd057b4d1dfdc9e33971e219d402a7133a773041f066b8d4c30a9",
+   "bytes": 3148,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\outcomes.json"
+  },
+  "persona/red.stdout": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\red.stdout"
+  },
+  "persona/red.stderr": {
+   "sha256": "3088d187bc568d2198ac0d547a6fa269ac7b887bf44ea54af31d6d97bb36c13e",
+   "bytes": 3172,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\red.stderr"
+  },
+  "persona/expanded-red.stdout": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\expanded-red.stdout"
+  },
+  "persona/expanded-red.stderr": {
+   "sha256": "10142154b3ff3a2c59fe5a9cd843e4f37791d724dc281ae9f87654c2ebc74716",
+   "bytes": 5728,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\expanded-red.stderr"
+  },
+  "persona/green.stdout": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\green.stdout"
+  },
+  "persona/green.stderr": {
+   "sha256": "82ec8b93d6535e9784bdfed329d8bc6e93f34060147f66e8fae621f7b3cb4622",
+   "bytes": 9388,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\green.stderr"
+  },
+  "detached-update/author-delivery.json": {
+   "sha256": "513528e1bea14792dfb88fd03b396ad87845545c746e151c4ddc4881057fc8c5",
+   "bytes": 9658,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\delivery.json"
+  },
+  "detached-update/red.json": {
+   "sha256": "cd0c3e42fb60bf4212aafd46701493ff4d031c05e5a4fd001e7a633ee4b3da6a",
+   "bytes": 762,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\red.json"
+  },
+  "detached-update/green.json": {
+   "sha256": "899caf0a0f99567258cb1e572ab7fafb113d59f168402ef1d5db570e5ff52d83",
+   "bytes": 667,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\green.json"
+  },
+  "detached-update/source-preservation.json": {
+   "sha256": "a50bc5e92b6adaa224694cdde9d14618040d666921d448910cc0c3dac70aecac",
+   "bytes": 1456,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\source-preservation.json"
+  },
+  "detached-update/dependency-joins.json": {
+   "sha256": "235fa908141c88de7156b4456c409e210cc6e0502165fe55ac544da97ca16a56",
+   "bytes": 4295,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\dependency-joins.json"
+  },
+  "detached-update/owned-child-observations.json": {
+   "sha256": "375d741219a980a7c2fc5b7c0075d5e1aa38fe4dec1c330523694228a4964884",
+   "bytes": 1915,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\owned-child-observations.json"
+  },
+  "detached-update/outcomes.json": {
+   "sha256": "98133c2097a9f5979fec1e938c0da81caecfb0822a8cc43963fc3a093bcc102a",
+   "bytes": 2571,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\outcomes.json"
+  },
+  "detached-update/red.stdout": {
+   "sha256": "3d789291ed9a88334386e026f4721682182d3c1bdc46e5f922a750517ccc9f36",
+   "bytes": 940,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\red.stdout"
+  },
+  "detached-update/red.stderr": {
+   "sha256": "e27ecaf4fb9b355994e0cce96c129f3647a0009c84847642adaad9ec659a938b",
+   "bytes": 3340,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\red.stderr"
+  },
+  "detached-update/green.stdout": {
+   "sha256": "5539a5922b363b9d4d6d21b0e426565790daf3a60f3609c365e6798476477536",
+   "bytes": 829,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\green.stdout"
+  },
+  "detached-update/green.stderr": {
+   "sha256": "88e71faff9a708f7fdd64a10f2018ec39e7f6957c3cffd9186a62c240255b6d8",
+   "bytes": 1365,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\green.stderr"
+  },
+  "persona/independent-review.json": {
+   "sha256": "acac8896c3803280bc66bbf4d96fab92c71d29a3a8feda41c11a4ad04b38925d",
+   "bytes": 15710,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-independent-review-4tdbq9da\\review.json"
+  },
+  "normal-ac82/bounded-diagnosis.json": {
+   "sha256": "9951cd77a1211709426b326d27fe2ec8d3a3852b4eedb4dae3fcd521019bcc16",
+   "bytes": 12078,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\bounded-diagnosis.json",
+   "original_sha256": "c7148f223f23e64f86801d187a33b906cf472557e31d717ffee7e8b987a80b63",
+   "representation": "EXPLICIT_PASSIVE_PROJECTION"
+  },
+  "normal-ac82/bounded-diagnosis-successor.json": {
+   "sha256": "19e8768a402c0363dd4276ec49c6bad951ea20ce6cf56deaf00060370e26c1a7",
+   "bytes": 14352,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\bounded-diagnosis-successor.json",
+   "original_sha256": "fe8680b6c0f9c49c8a543aa8f8e659753c00fcc8b06502cc527ff541c3b2dd44",
+   "representation": "EXPLICIT_PASSIVE_PROJECTION"
+  },
+  "normal-ac82/installed-inventory-delta.json": {
+   "sha256": "56852ca91a1f050c858ccca7abd6366c69f52e9512363357bf13fe7a6d073bc4",
+   "bytes": 2412,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\installed-inventory-delta.json",
+   "original_sha256": "b0f0925f4c4f769bba9bc68884d4f7a05ff41e54c04e5dc98806370a6792b28f",
+   "representation": "EXPLICIT_PASSIVE_PROJECTION"
+  }
+ },
+ "private_context_and_original_test_snapshots": "Remain in author private directories; exact original/final test and production preservation hashes retained. Production/test final subjects are committed normally.",
+ "source_accounting": {
+  "selected_source_records": 520,
+  "PLANNED": 322,
+  "promotion": false
+ },
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED",
+ "runtime_task_promotion": false
+}

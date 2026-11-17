@@ -725,6 +725,112 @@ class TestPersonaFollowsRealTransitions(_Fixture):
         self.assertIn("OPS-MODE-MARK", self._turn())
         self.assertEqual(self.overrides_log().count("MODE: ops enter"), 1)
 
+    def test_failed_delivery_record_write_does_not_suppress_return_persona(self):
+        """Separate hook processes must not trust A after an emitted B cannot record."""
+        import subprocess
+
+        child = r"""
+import importlib.util, json, os, sys
+source, plugin, host_name, fail_record = sys.argv[1:]
+spec = importlib.util.spec_from_file_location('persona_delivery_child', source)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+class FixtureHost(module.hostapi.Host):
+    name = host_name
+    def plugin_root(self):
+        return plugin
+original = module._hooklib.write_text_atomic
+failures = []
+def refuse_delivery(path, text, *args, **kwargs):
+    if (fail_record == 'yes' and not failures
+            and os.path.basename(path).startswith(module.MODEDELIVERY_PREFIX)
+            and json.loads(text).get('mode') == 'dangerous'):
+        failures.append(path)
+        raise OSError('injected delivery-record write failure')
+    return original(path, text, *args, **kwargs)
+module._hooklib.write_text_atomic = refuse_delivery
+code = module.run(FixtureHost())
+if fail_record == 'yes':
+    assert len(failures) == 1, 'the precise delivery-record fault was not exercised'
+    sys.stderr.write('DELIVERY_WRITE_FAULT_OBSERVED\n')
+raise SystemExit(code or 0)
+"""
+        home = os.path.join(self.root, "_isolated-home")
+        os.makedirs(home)
+        env = {key: value for key, value in os.environ.items()
+               if key in ("PATH", "SystemRoot", "SYSTEMROOT", "WINDIR", "TEMP", "TMP")}
+        env.update(HOME=home, USERPROFILE=home, CODEX_HOME=home,
+                   CLAUDE_PROJECT_DIR=self.root, CLAUDE_PLUGIN_ROOT=self.plugin_root,
+                   PYTHONPATH=os.pathsep.join(sys.path), PYTHONDONTWRITEBYTECODE="1")
+
+        def turn(host_name, prompt, fail=False):
+            completed = subprocess.run(
+                [sys.executable, "-B", "-c", child, ps.__file__, self.plugin_root,
+                 host_name, "yes" if fail else "no"],
+                input=json.dumps(_ups(prompt, session_id="write-failure-" + host_name)),
+                text=True, encoding="utf-8", capture_output=True, env=env,
+                cwd=self.root, timeout=15,
+            )
+            expected = 2 if prompt.startswith("mode --") and host_name == "claude" else 0
+            self.assertEqual(completed.returncode, expected, completed.stderr)
+            if fail:
+                self.assertIn("DELIVERY_WRITE_FAULT_OBSERVED", completed.stderr)
+            output = completed.stdout
+            if host_name == "codex" and output:
+                output = json.loads(output)["hookSpecificOutput"].get("additionalContext", "")
+            return output
+
+        for host_name in ("claude", "codex"):
+            with self.subTest(host=host_name):
+                self.assertIn(self.MARKS["arbiter"], turn(host_name, "first"))
+                self.assertEqual(turn(host_name, "unchanged"), "")
+                turn(host_name, "mode --dangerous")
+                self.assertIn(self.MARKS["dangerous"], turn(host_name, "next", fail=True))
+                turn(host_name, "mode --arbiter")
+                self.assertIn(self.MARKS["arbiter"], turn(host_name, "return"),
+                              "failed B record left stale A suppressing the return persona")
+                self.assertEqual(turn(host_name, "unchanged after return"), "")
+
+    def test_double_denied_delivery_record_update_reports_remaining_limit(self):
+        """If neither update nor removal is possible, old durable state can remain."""
+        from unittest import mock
+
+        original_write = _hooklib.write_text_atomic
+        original_remove = ps.os.remove
+        for host in (None, _CodexHost()):
+            host_name = "claude" if host is None else host.name
+            session = "double-denial-" + host_name
+            with self.subTest(host=host_name):
+                self.assertIn("ARBITER-MODE-MARK",
+                              self.invoke(_ups("first", session_id=session), host=host)[1])
+                self.invoke(_ups("mode --dangerous", session_id=session), host=host)
+                path = ps._delivery_record_path(self.root, session)
+                denied = []
+
+                def refuse_write(target, text, *args, **kwargs):
+                    if target == path:
+                        denied.append("update")
+                        raise OSError("injected write denial")
+                    return original_write(target, text, *args, **kwargs)
+
+                def refuse_remove(target, *args, **kwargs):
+                    if target == path:
+                        denied.append("invalidate")
+                        raise OSError("injected remove denial")
+                    return original_remove(target, *args, **kwargs)
+
+                with mock.patch.object(_hooklib, "write_text_atomic", side_effect=refuse_write), \
+                        mock.patch.object(ps.os, "remove", side_effect=refuse_remove):
+                    rc, out, err = self.invoke(_ups("next", session_id=session), host=host)
+                self.assertEqual(rc, 0)
+                self.assertIn("DANGEROUS-MODE-MARK", out)
+                self.assertIn("delivery dedup is unconfirmed", err)
+                self.assertEqual(denied, ["update", "invalidate"])
+                self.assertEqual(ps._read_delivery_record(self.root, session), ("arbiter", 0))
+                self.invoke(_ups("mode --arbiter", session_id=session), host=host)
+                self.assertEqual(self.invoke(_ups("return", session_id=session), host=host)[1], "",
+                                 "double-denied storage cannot establish cross-hook invalidation")
+
     def test_unreadable_delivery_record_fails_toward_redelivery(self):
         self.assertIn("ARBITER-MODE-MARK", self._turn())
         path = ps._delivery_record_path(self.root, "s1")

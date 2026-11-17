@@ -1,0 +1,220 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: authored literal31-clause pinned/current/callee assessment; no execution or independent self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+  "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+  "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+  "core/surface/commands/override.md": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+  "core/surface/includes/security-gate-record.md": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+  "core/surface/skills/crypto-compliance/SKILL.md": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+  "core/surface/skills/secret-handling/SKILL.md": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-24",
+  "disposition:transitions:WF-24:01",
+  "disposition:transitions:WF-24:02",
+  "disposition:transitions:WF-24:03",
+  "disposition:transitions:WF-24:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-24",
+   "frozen_row_sha256": "f21cc2219591abe12f728687a40b488a0e607a220eadb02cd6fb0239c1090d85",
+   "clause_ids": [
+    "disposition:transitions:WF-24:01",
+    "disposition:transitions:WF-24:02",
+    "disposition:transitions:WF-24:03",
+    "disposition:transitions:WF-24:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 11,
+     "end": 37,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "b460ed25a3a9440283b3d9aff3c82deee3e8b0f39d6a98ed6ef06a2c9e22eb01"
+    },
+    {
+     "path": "core/pysrc/_overrideappendlib.py",
+     "start": 99,
+     "end": 152,
+     "file_sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+     "span_sha256": "e196582d5d4b7997988316379a17eb5ca44117f2163bb3757fd104cc4d4d17e3"
+    },
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 57,
+     "end": 117,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "9b2c1b94f3b4bbbcbefa7429d3eb2411698c6944536ecf05d700505273d1af2c"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/pysrc/security-pass.py",
+     "start": 165,
+     "end": 183,
+     "file_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+     "span_sha256": "c1c05b59ef96835b159bc0b6a17eacbc988d8298b5af38f70717d3684c0ced05"
+    },
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 38,
+     "end": 54,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "629e1393a4907fdf37217ce8f986a2584972875467e311b7dd3f92d4f7a08c7b"
+    },
+    {
+     "path": "core/pysrc/_appendonlyconflictlib.py",
+     "start": 348,
+     "end": 440,
+     "file_sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+     "span_sha256": "f8f672bee58c603f646e077dced8876dfc7dde2920988256b3ce9e23ca363077"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen literal transitions assessed against pinned/current owner and named applicable changes; includes advanced edges for machine analysis without modifying them. Guidance conformance only; explicit exceptions stay in clause-inspection.",
+   "intake_variances": [
+    "Singular stage-only clause does not literally cover gate-events.log repair: unchanged pinned/current helper stages exact target plus mandatory clean overrides.log sink; no unrelated paths."
+   ],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-24:01",
+   "frozen_row_sha256": "8a357edde93538beba17a2887f7397ded9211b85c0b9518f97117f8c049bd25c",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 11,
+     "end": 37,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "b460ed25a3a9440283b3d9aff3c82deee3e8b0f39d6a98ed6ef06a2c9e22eb01"
+    },
+    {
+     "path": "core/pysrc/_overrideappendlib.py",
+     "start": 99,
+     "end": 152,
+     "file_sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+     "span_sha256": "e196582d5d4b7997988316379a17eb5ca44117f2163bb3757fd104cc4d4d17e3"
+    }
+   ],
+   "semantic_assessment": "Specific gate/reason and actual operator identity guard ordinary scoped override; security-critical gates use heavier route. Append attributed audit row under shared canonical audit-path lock and fsync before bypass action. Failed audit append forbids bypass; no standing grant, rewrite or concurrent raw-append escape during conflict repair.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-24:02",
+   "frozen_row_sha256": "80c9c81d2ada20cc0ceb45ecbe56ba285151d8175b8f13552ad7f4792963a2cc",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 57,
+     "end": 117,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "9b2c1b94f3b4bbbcbefa7429d3eb2411698c6944536ecf05d700505273d1af2c"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    }
+   ],
+   "semantic_assessment": "User must acknowledge exact critical/crypto-secret/irreversible finding in own words and authorize exact action; bare yes/general trust insufficient. Mandatory SECURITY-OVERRIDE audit precedes reviewed-text bypass producer; genuine unavailable-text binary uses distinct combined audited producer. Attributed bypass, binary marker and independent-review PASS remain distinct. Autonomous sprint cannot auto-decide security-critical override or impersonate reviewer evidence.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-24:03",
+   "frozen_row_sha256": "9a569a44caa4b20f8411f728e07c2dcaf321df521683ef2dee93d6b8f96407d5",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/pysrc/security-pass.py",
+     "start": 165,
+     "end": 183,
+     "file_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+     "span_sha256": "c1c05b59ef96835b159bc0b6a17eacbc988d8298b5af38f70717d3684c0ced05"
+    }
+   ],
+   "semantic_assessment": "Actual independent PASS applies to same reviewed worktree, complete staged candidate and sensitive diagnostic hashes; marker physical main-worktree location does not change reviewed subject root. Standalone approved producer records exact candidate only after genuine review; producer success is not semantic reviewer PASS. Unstaged/untracked/other-worktree/stale rows excluded; unrelated staged edit invalidates. commit -a refusal depends on guarded/absorbed candidate, not universal command ban.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  },
+  {
+   "cell": "disposition:transitions:WF-24:04",
+   "frozen_row_sha256": "c1258038a94115d17ef025f100580f69763b1375a090cbd22f97ec0645549414",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 38,
+     "end": 54,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "629e1393a4907fdf37217ce8f986a2584972875467e311b7dd3f92d4f7a08c7b"
+    },
+    {
+     "path": "core/pysrc/_appendonlyconflictlib.py",
+     "start": 348,
+     "end": 440,
+     "file_sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+     "span_sha256": "f8f672bee58c603f646e077dced8876dfc7dde2920988256b3ce9e23ca363077"
+    }
+   ],
+   "semantic_assessment": "Only supported regular three-stage append-only audit conflict with original prefix, two valid append suffixes and actual attributed reason is admissible. Keep base then deterministic suffix union and audit repair; actual bounded stage set is selected log plus mandatory clean overrides.log sink when target is gate-events.log, one path when target itself is overrides.log. Frozen singular stage-only wording is analytical shorthand, not universal one-file effect: unchanged pinned/current helper deliberately stages this exact audited set and validates/rolls back own outputs. No arbitrary rewrite/truncation/general staging bypass.",
+   "intake_variances": [
+    "Singular stage-only clause does not literally cover gate-events.log repair: unchanged pinned/current helper stages exact target plus mandatory clean overrides.log sink; no unrelated paths."
+   ],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  }
+ ],
+ "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

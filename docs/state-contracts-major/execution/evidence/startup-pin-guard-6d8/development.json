@@ -1,0 +1,9 @@
+{
+ "schema": "codearbiter.major.startup-pin-guard-maintenance/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "cause": "Original PR1118 Linux core job rejects accepted -B/docstring startup delta through existing full-content guard.",
+ "repair": "Add exactly two approved new-to-old byte mappings to existing normalization owner. Retain historical89a78459 full pin, baseline, all previous normalizations and17original test methods. New negatives reject missing, duplicate and wrong launcher flags.",
+ "tests": "Proper private original4assertionFAIL/0errors, then18PASS. First separate copied-module harness setup failed due inventory path and is not counted as regression RED. Canonical module execution follows adoption.",
+ "review_sha256": "4d5db05091dd97ef541ee347703da1feada2f66b1985e39901357242f0a32fbd",
+ "limits": "Only test/verification contract maintenance; no application/package or frozen source change. No runtime/task/installed acceptance. Main1098 and publication remain held."
+}

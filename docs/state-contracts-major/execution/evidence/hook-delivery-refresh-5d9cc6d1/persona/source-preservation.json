@@ -1,0 +1,27 @@
+{
+ "schema": "codearbiter.private-source-preservation/1",
+ "result": "PASS",
+ "original_test_methods": 50,
+ "candidate_test_methods": 52,
+ "original_entire_test_module_AST_equal_after_removing_only_new_methods": true,
+ "changed_production_functions": [
+  "_record_delivered",
+  "_invalidate_injection_markers"
+ ],
+ "unchanged_production_function_count": 23,
+ "all4_private_prompt_submit_copies_byte_equal": true,
+ "all5_candidate_syntax_compile_PASS": true,
+ "canonical5_subjects_unchanged": true,
+ "coverage": {
+  "status": "NO_NUMERIC_TOOLING_FOR_THIS_SURFACE",
+  "surface": "core/pysrc/*.py and generated plugins/*/hooks/*.py",
+  "typed_record": "CTX-TECH-STACK/FACT-005",
+  "typed_reader_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\tech-stack-coverage-records.json",
+  "typed_reader_receipt_sha256": "1419e36fc6f5aa432afc650109829576e3e09ea34131b886f0848ceb4bae7493",
+  "source_doc_ac826_equals_41aa7": true,
+  "source_doc_sha256": "bcbe7f53b4067b44fc4a5165fce0975bfab23e207c9e7989ac2f0b663281adda",
+  "verbatim_policy_passage": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface.\nGo native statements are not the no-tooling exemption."
+ },
+ "lint": "Python syntax compilation plus owning unittest; no dependency/tool install or unrelated linter invented",
+ "scope": "No native/provider/host install qualification, no Root write; only original source resources read through private bootstrap."
+}
