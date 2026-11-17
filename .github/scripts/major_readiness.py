@@ -1106,7 +1106,9 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
     for row in rows:
         if row["cell"] in composed:
             require(row == composed[row["cell"]], "readiness differs from original component evidence")
-            qualified_ids.update(evidence_payload_ids(row))
+            # The closed composition checked its own payload population before
+            # comparison. Ordinary job-local rows still use the legacy bound.
+            qualified_ids.update(row["evidence_artifact_ids"])
             continue
         job = by_job.get(row.get("job_id"), {})
         require(row.get("result") == "PASSED" and job.get("conclusion") == "success"
@@ -1233,8 +1235,8 @@ def evidence_payload_ids(row):
     return bounded_payload_ids(row["evidence_artifact_ids"])
 
 
-def bounded_payload_ids(values):
-    require(isinstance(values, list) and 1 <= len(values) <= 2
+def bounded_payload_ids(values, *, limit=2):
+    require(limit in (2, 3) and isinstance(values, list) and 1 <= len(values) <= limit
             and all(type(value) is int and value > 0 for value in values)
             and values == sorted(set(values)), "invalid bounded plural payload identities")
     return values

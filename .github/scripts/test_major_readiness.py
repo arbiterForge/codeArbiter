@@ -548,15 +548,20 @@ if __name__ == "__main__":
 ''', encoding='utf-8')
             identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
             output = parent / 'compatibility.json'
+            legacy_output = parent / 'legacy.json'
             with (mock.patch.object(reports, 'source_identity', return_value=identity),
                   mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
                   mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES,
                                   {profile: dict(spec, scripts=tuple({*spec['scripts'], script}))})):
                 self.assertEqual(reports.observe_python(repo, script, [], output, parent / 'source', profile), 0)
+                self.assertEqual(reports.observe_python(repo, script, [], legacy_output), 0)
             record = json.loads(output.read_bytes())
             self.assertEqual([(test['id'].rsplit('.', 1)[-1], test['result']) for test in record['tests']],
                              [('test_case', 'passed'), ('test_negative_control', 'passed')])
             self.assertEqual(record['test_result_scope'], 'entrypoint-text-runner')
+            legacy = json.loads(legacy_output.read_bytes())
+            self.assertNotIn('test_result_scope', legacy)
+            self.assertEqual([test['result'] for test in legacy['tests']], ['passed', 'passed', 'failed'])
 
     def test_compatibility_findings_require_their_distinct_original_populations(self):
         import major_qualification_report as reports
@@ -629,6 +634,93 @@ if __name__ == "__main__":
         jobs = fixtures(scope=False)
         with self.assertRaisesRegex(owner.ReadinessError, 'original entrypoint runner'):
             owner.produce(req, self.artifacts, jobs)
+
+    def test_catalog_finding_joins_three_source_payloads_and_two_members_of_one_hook_upload(self):
+        import major_qualification_report as reports
+
+        cell = 'disposition:findings:W-F08'
+        profile = 'command-catalog-component-v1'
+        script = '.github/scripts/test_command_catalog.py'
+        badge_job = '[CHECK] | [CA  ] | Documentation consistency'
+        fallback = dict(job=badge_job, payload='major-source-inputs-command-catalog',
+                        upload='Upload command catalog source-test inputs', scripts=(script,), paths={script})
+        deployed_spec = reports.PYTHON_COMPONENT_PROFILES.get(profile)
+        spec = deployed_spec or fallback
+        badge = reports.source_component(profile, script, 'command-catalog-observation-',
+            'Retain original command catalog observation', 'command-catalog-observation.json', (
+                'CommandCatalogGuardTest.test_exact_catalog_passes',
+                'CommandCatalogGuardTest.test_extra_catalog_route_fails',
+                'CommandCatalogGuardTest.test_live_generated_catalog_is_exact',
+                'CommandCatalogGuardTest.test_missing_catalog_route_fails',
+            ))
+        generator = reports.SOURCE_FINDING_COMPOSITIONS['disposition:findings:W-F09'][0]
+        funnel = reports.source_component(reports.HOOK_REVIEW_SOURCE_PROFILE, reports.HOOK_REVIEW_SOURCE_SCRIPT,
+            'python-source-observations-', 'Retain original Python source-test observations',
+            'python-hook-review-observation.json',
+            [selector.split(':__main__.', 1)[1] for selector in reports.HOOK_REVIEW_FINDING_SELECTORS])
+        deployed_recipe = reports.SOURCE_FINDING_COMPOSITIONS.get(cell)
+        recipe = deployed_recipe or (badge, generator, funnel)
+        req = dict(self.req, cells=[cell], source_finding_composite_cells=[cell],
+                   cell_jobs={cell: 'major qualification / compatibility'})
+        jobs = [dict(self.jobs[0], steps=[]), dict(self.jobs[1], name=badge_job, steps=[]), dict(self.jobs[-1], steps=[])]
+        by_job = {job['name']: job for job in jobs}
+        source = b'owned original-source fixture'
+        with (mock.patch.dict(reports.SOURCE_FINDING_COMPOSITIONS, {cell: recipe}),
+              mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES, {profile: spec})):
+            req['source_finding_inputs'] = reports.source_finding_input_pins([cell], req['source_commit'],
+                                                                           lambda _source, _path: source)
+            uploads = {}
+            for component in recipe:
+                role = component['profile']
+                descriptor = reports.source_profile(role)
+                job = by_job[descriptor['job']]
+                files = dict.fromkeys(sorted(descriptor['paths']), source)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=role, source_commit=req['source_commit'],
+                    source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                    workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                        bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                manifest_sha = owner.digest(files[reports.SOURCE_MANIFEST])
+                self.archive(descriptor['payload'], job, descriptor['upload'], files)
+                observation = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', component['script']], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=role, payload_name=descriptor['payload'], manifest_sha256=manifest_sha),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                key = (job['name'], component['artifact_prefix'], component['upload'])
+                uploads.setdefault(key, {})[component['member']] = json.dumps(observation).encode()
+            for (job, prefix, step_name), files in uploads.items():
+                self.archive(prefix + req['source_commit'] + '-7-3', by_job[job], step_name, files)
+            record = owner.produce(req, self.artifacts, jobs)
+            row, = record['results']
+            self.assertEqual([len(item['selectors']) for item in row['source_components']], [4, 3, 6])
+            self.assertEqual(len(row['evidence_artifact_ids']), 3)
+            self.assertEqual([item['job_id'] for item in row['source_components']], [21, 20, 20])
+            self.assertEqual(row['source_components'][1]['observation_artifact_id'], row['source_components'][2]['observation_artifact_id'])
+            self.assertEqual(deployed_recipe, (badge, generator, funnel))
+            self.assertIsNotNone(deployed_spec)
+            with mock.patch.dict(reports.SOURCE_FINDING_COMPOSITIONS, {
+                cell: (badge, generator, dict(funnel, member=generator['member'])),
+            }), self.assertRaisesRegex(owner.ReadinessError, 'stale, filtered or unsuccessful'):
+                owner.produce(req, self.artifacts, jobs)
+            with self.assertRaisesRegex(owner.ReadinessError, 'bounded plural'):
+                owner.evidence_payload_ids(row)  # Normal job-local rows retain their original bound.
+            ready = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                                 {'major-readiness.json': b'{}'})
+            self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=ready,
+                                          archive_digest=ready['digest'][7:], jobs=jobs,
+                                          build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
+    def test_badge_owner_retains_the_single_original_catalog_command(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        badge = workflow.split('\n  badge-consistency:\n', 1)[1].split('\n  prose-sandbox:\n', 1)[0]
+        parts = ('python3 .github/scripts/check_badge_consistency.py', 'prepare-source', 'observe-python',
+                 '-- .github/scripts/test_command_catalog.py', 'Upload command catalog source-test inputs',
+                 'Retain original command catalog observation')
+        self.assertEqual([badge.count(part) for part in parts], [1] * len(parts))
+        self.assertEqual([badge.index(part) for part in parts], sorted(badge.index(part) for part in parts))
+        self.assertNotIn('secrets.', badge)
+        self.assertNotIn('GH_TOKEN', badge)
 
     def test_recovery_runtime_observer_runs_the_unfiltered_source_entry_once(self):
         import tempfile

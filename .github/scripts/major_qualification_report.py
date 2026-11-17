@@ -941,8 +941,37 @@ RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
 RECOVERY_NATIVE_PLATFORM = "windows/amd64"
 RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
 RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
+CATALOG_SOURCE_PROFILE = "command-catalog-component-v1"
+CATALOG_SCRIPT = ".github/scripts/test_command_catalog.py"
+CATALOG_FINDING_CELL = "disposition:findings:W-F08"
+CATALOG_COMMAND_PATHS = frozenset("plugins/ca/commands/" + PurePosixPath(path).name
+    for path in SOURCE_PATHS if path.startswith("core/surface/commands/") and path.endswith(".md"))
 PYTHON_COMPONENT_PROFILES = {
     ROUTE_RELEASE_SOURCE_PROFILE: ROUTE_RELEASE_SOURCE,
+    CATALOG_SOURCE_PROFILE: {
+        "job": "[CHECK] | [CA  ] | Documentation consistency",
+        "payload": "major-source-inputs-command-catalog",
+        "upload": "Upload command catalog source-test inputs",
+        "scripts": (CATALOG_SCRIPT,),
+        "paths": CATALOG_COMMAND_PATHS | frozenset((
+            CATALOG_SCRIPT,
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/check_command_catalog.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_gitexec.py",
+            "core/surface/skills/INDEX.md",
+            "plugins/ca/COMMANDS.md",
+            "plugins/ca/skills/INDEX.md",
+            "plugins/ca-codex/routines/INDEX.md",
+            "plugins/ca-pi/routines/INDEX.md",
+        )),
+    },
     RECOVERY_RUNTIME_PROFILE: {
         "job": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
         "payload": "major-source-inputs-workflow-recovery-runtime",
@@ -2722,6 +2751,10 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES): _source_root_members(repo)
     elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
+    if profile == CATALOG_SOURCE_PROFILE:
+        current = {path.relative_to(repo).as_posix() for path in (repo / "plugins/ca/commands").glob("*.md")
+                   if path.stem.upper() != "INDEX"}
+        require(current == CATALOG_COMMAND_PATHS, "command catalog source namespace differs")
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
     entries = []
     for row in rows.split(b"\0"):
@@ -2918,6 +2951,11 @@ ROUTE_RELEASE_COMPONENT = route_release_component((
     "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
     "ObserveIntegrationTest.test_tag_only_response_fails_the_aggregate_end_to_end",
 ))
+ROUTE_GENERATOR_REVIEW_COMPONENT = route_generator_component((
+    "CommandCatalogTest.test_real_registry_taxonomy_and_host_gaps_are_frozen",
+    "CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+    "ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface",
+))
 
 
 SOURCE_FINDING_COMPOSITIONS = {
@@ -2948,12 +2986,23 @@ SOURCE_FINDING_COMPOSITIONS = {
             "CommandRouteCompatibilityTest.test_first_containing_declarations_are_stable_when_manifests_advance",
         )),
     ),
+    CATALOG_FINDING_CELL: (
+        source_component(CATALOG_SOURCE_PROFILE, CATALOG_SCRIPT,
+            "command-catalog-observation-", "Retain original command catalog observation", "command-catalog-observation.json", (
+                "CommandCatalogGuardTest.test_exact_catalog_passes",
+                "CommandCatalogGuardTest.test_extra_catalog_route_fails",
+                "CommandCatalogGuardTest.test_live_generated_catalog_is_exact",
+                "CommandCatalogGuardTest.test_missing_catalog_route_fails",
+            )),
+        ROUTE_GENERATOR_REVIEW_COMPONENT,
+        source_component(HOOK_REVIEW_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_SCRIPT,
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-hook-review-observation.json", (
+                selector.split(":__main__.", 1)[1] for selector in HOOK_REVIEW_FINDING_SELECTORS
+            )),
+    ),
     "disposition:findings:W-F09": (
-        route_generator_component((
-            "CommandCatalogTest.test_real_registry_taxonomy_and_host_gaps_are_frozen",
-            "CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
-            "ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface",
-        )),
+        ROUTE_GENERATOR_REVIEW_COMPONENT,
         route_release_component((
             "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
             "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
@@ -3109,7 +3158,7 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                 payloads.update(recovery_payloads)
             rows[cell] = {"cell": cell, "result": "PASSED", **recovery}
             continue
-        components, owners = [], {}
+        components, owners, captures, capture_members = [], {}, {}, set()
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
             evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
             components.append(evidence)
@@ -3118,10 +3167,18 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                               "components under the same source profile must share original job and source payload")
             readiness.require(payloads.setdefault(payload["artifact_id"], payload) == payload,
                               "original source payload bytes differ between components")
-        identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()))
-        readiness.require(len({job_id for job_id, _ in owners.values()}) == len(owners),
-                          "each original source profile requires a distinct owning job")
-        readiness.require(len({*identities, *(c["observation_artifact_id"] for c in components)}) == len(identities) + len(components),
+            capture_role = (evidence["job_id"], component["artifact_prefix"], component["upload"])
+            capture_member = (capture_role, component["member"])
+            readiness.require(captures.setdefault(capture_role, evidence["observation_artifact_id"]) == evidence["observation_artifact_id"]
+                              and capture_member not in capture_members,
+                              "original shared observation archive member is ambiguous or repeated")
+            capture_members.add(capture_member)
+        identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()),
+                                                   limit=3 if cell == CATALOG_FINDING_CELL else 2)
+        expected_jobs = {source_profile(profile)["job"] for profile in owners}
+        readiness.require(len({job_id for job_id, _ in owners.values()}) == len(expected_jobs),
+                          "original source profiles require their exact owning jobs")
+        readiness.require(len({*identities, *captures.values()}) == len(identities) + len(captures),
                           "each original component requires distinct source and observation artifacts")
         rows[cell] = {"cell": cell, "result": "PASSED", "source_components": components,
                       "evidence_artifact_ids": identities}
