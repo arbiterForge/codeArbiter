@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "codex/state-contracts-prune-boundary",
-  "head": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+  "head": "4c785732b25f372c36cd75306703029b072a0a70",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-17T10:09:51.862536+00:00",
+  "recorded_at": "2026-11-17T19:25:06.633954+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3926,11 +3926,11 @@
     }
   ],
   "next_actions": [
-    "Finish staged security/authority review for six Python routes, then compose original Docs named-result producer and exact namespace additions; push coherent successor and require whole exact-head CI/Docs before child integration merge.",
-    "Push coherent1119successor and require its exact-head CI/Docs and required merge gate before authorized child merge into major; main1098held for user testing.",
-    "Consume genuine original normal integration observations for finite mapped findings; complete actual installed/participant/upgrade/rollback journeys without promoting tasks from suite totals."
+    "Complete recovery evidence against the original installed inputs and reconcile the remaining source and runtime dispositions.",
+    "Resolve the npm audit gate and verify a fresh child head against the required CI and Docs checks.",
+    "Verify the original normal integration installed, upgrade and rollback outcomes and participant acceptance."
   ],
-  "delivery_state": "SOURCE_OBSERVER_AND_WORDING_LOCAL_SUCCESSOR_NATIVE_DIAGNOSIS_ACTIVE_MAIN_HELD",
+  "delivery_state": "LOCAL_SUCCESSOR_VERIFIED_CHILD_MERGE_BLOCKED_MAIN_HELD",
   "trusted_readiness_reference": null,
   "distribution_settlement_references": [],
   "process_rules": [
@@ -5090,8 +5090,8 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-17T12:13:53.849457+00:00",
-    "controller_anchor": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+    "recorded_at": "2026-11-17T19:25:06.633954+00:00",
+    "controller_anchor": "4c785732b25f372c36cd75306703029b072a0a70",
     "integration_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
     "delivery_pr": 1119,
     "previous_child": {
@@ -5115,27 +5115,20 @@
     "acceptance_feature_commit": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
     "observations": "docs/state-contracts-major/execution/evidence/observer-wording-304/development.json",
     "whole_baseline_planned": {
-      "findings": 49,
+      "findings": 33,
       "machines": 0,
-      "transitions": 8,
-      "total": 57,
-      "meaning": "Disposition accounting only; missing implementation is not inferred."
+      "transitions": 0,
+      "added_transitions": 0,
+      "total": 33
     },
-    "current_staged_integrity": "Actual all-source projection before Farm commit:1723pure-source rows,970authenticated current and753stale. Exact new staged original-owner check pending; no stale source proof automatically renewed.",
+    "current_staged_integrity": "PASSED_105_FROZEN_2127_RECORDED",
     "native_component_recipes": 40,
     "source_disposition_change": {
-      "prior_epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
-      "prior_authenticated_source_records": 777,
-      "unchanged_current_source_records": 713,
-      "affected_records_pending_reinspection": 64,
-      "qualification": "SOURCE_ONLY",
-      "additional_retired_NA_binding_pending": "SW01:16",
-      "total_semantic_reinspection_bindings": 65,
-      "provisional_semantic_assessment": {
-        "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/source-semantic-reinspection.json",
-        "sha256": "f821f296a9c33e649105653742e85463ff036e888a63d5a54a5754cf0f76749c",
-        "bytes": 33829
-      }
+      "new_finite_source_findings": 16,
+      "same_status_renewals": 240,
+      "applicable_pure_source": 1218,
+      "stale_pure_source": 521,
+      "total": 1739
     },
     "task_status_promotion": false,
     "runtime_epoch_renewal": false,
@@ -5219,19 +5212,22 @@
       "local_writer_branch": "codex/state-contracts-prune-boundary",
       "delivery_pr": 1119,
       "target": "major/state-contracts",
-      "code_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+      "code_commit": "4c785732b25f372c36cd75306703029b072a0a70",
       "latest_original_f262": "Native membership registry omitted8passing reader tests; exact8name fix locally verified, successor requires fresh checks.",
       "main_merge": "HELD_FOR_USER_TESTING",
-      "latest_original_304": "CI failure: WindowsPi doctorEOF; DocsSUCCESS/all6nativeadaptersPASS. New localcollector/docs successor is notyetpushed."
+      "latest_original_304": "CI failure: WindowsPi doctorEOF; DocsSUCCESS/all6nativeadaptersPASS. New localcollector/docs successor is notyetpushed.",
+      "hosted_head": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+      "hosted_ci_run": 44152342841,
+      "hosted_docs_run": 44152342782,
+      "merge_state": "BLOCKED_PENDING_FRESH_QUALIFICATION"
     },
     "next_private_followup": {
       "branch": "codex/state-contracts-prune-boundary",
-      "delivery_pr": null,
-      "code_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
-      "observations": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/development.json",
-      "canonical_PLANNED": 57,
-      "task_status_promotion": false,
-      "runtime_epoch_renewal": false
+      "delivery_pr": 1119,
+      "code_commit": "4c785732b25f372c36cd75306703029b072a0a70",
+      "audit": "GHSA-fc5q-39xc-vjpf; affected build and test graphs; no upstream patch; scoped policy decision pending",
+      "windows_pi": "Original raw read-context RPC settled before EOF, then timed out. Passive trace fix committed locally.",
+      "runtime_recovery": "Nine cases wired to the original job; twelve installed fixture cases require consumed-native proof"
     },
     "native_shutdown": "Original4260 cause unknown; diagnostic-loss repair passes focused/inert checks, not a Node exit fix.",
     "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_IN_INTEGRATION_RUNTIME_QUALIFICATION_SEPARATE",
@@ -6870,6 +6866,240 @@
         },
         "native_shutdown": "Original4260 cause unknown; diagnostic-loss repair passes focused/inert checks, not a Node exit fix.",
         "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_IN_INTEGRATION_RUNTIME_QUALIFICATION_SEPARATE"
+      }
+    },
+    {
+      "source_commit": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+      "superseded_live_checkpoint": {
+        "recorded_at": "2026-11-17T12:13:53.849457+00:00",
+        "controller_anchor": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+        "integration_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+        "delivery_pr": 1119,
+        "previous_child": {
+          "pr": 1115,
+          "state": "MERGED",
+          "exact_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "merge_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+          "ci_run": 43954090117,
+          "docs_run": 43954091033,
+          "checks": {
+            "successful": 92,
+            "expected_skipped": 8,
+            "failed": 0
+          }
+        },
+        "normal_ci_run": 44046125471,
+        "normal_docs_run": 44046125414,
+        "normal_docs_result": "FAILURE_SINGLE_GENERATOR_TIMEOUT_CAUSE_UNKNOWN",
+        "normal_ci_result": "SUCCESS",
+        "new_local_pages_fix": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+        "acceptance_feature_commit": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
+        "observations": "docs/state-contracts-major/execution/evidence/observer-wording-304/development.json",
+        "whole_baseline_planned": {
+          "findings": 49,
+          "machines": 0,
+          "transitions": 8,
+          "total": 57,
+          "meaning": "Disposition accounting only; missing implementation is not inferred."
+        },
+        "current_staged_integrity": "Actual all-source projection before Farm commit:1723pure-source rows,970authenticated current and753stale. Exact new staged original-owner check pending; no stale source proof automatically renewed.",
+        "native_component_recipes": 40,
+        "source_disposition_change": {
+          "prior_epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+          "prior_authenticated_source_records": 777,
+          "unchanged_current_source_records": 713,
+          "affected_records_pending_reinspection": 64,
+          "qualification": "SOURCE_ONLY",
+          "additional_retired_NA_binding_pending": "SW01:16",
+          "total_semantic_reinspection_bindings": 65,
+          "provisional_semantic_assessment": {
+            "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/source-semantic-reinspection.json",
+            "sha256": "f821f296a9c33e649105653742e85463ff036e888a63d5a54a5754cf0f76749c",
+            "bytes": 33829
+          }
+        },
+        "task_status_promotion": false,
+        "runtime_epoch_renewal": false,
+        "main_merge": "HELD_FOR_USER_TESTING",
+        "publication": "NOT_AUTHORIZED",
+        "framework_report_fix_commit": "4875171e1a03a41bd06b0d18154be2650efae19c",
+        "current_child_original": {
+          "pr": 1118,
+          "head_commit": "3766b0115bb1a568b375d778bc6da9cb48e57816",
+          "merge_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+          "merged_at": "2026-11-17T08:22:03Z",
+          "original_checks_passed": 88,
+          "original_checks_skipped": 11,
+          "CI": 44041677698,
+          "Docs": 44041677642,
+          "result": "SUCCESS"
+        },
+        "actual_HW15_local_cases": 1,
+        "actual_HW26_abrupt_local_cases": 1,
+        "local_corrective_observations": {
+          "unit_diagnostics": {
+            "proper_tiny_owned_timeout_RED": 1,
+            "new_controls": 3,
+            "pure_npm_plus_partition_passed": 72,
+            "seconds": 10.73,
+            "canonical_partition_after_Pi_fold_passed": 52,
+            "canonical_partition_seconds": 0.128,
+            "pure_method_ownership": 20,
+            "full_runtime_unit_ownership": 1
+          },
+          "ucrt": {
+            "proper_RED_methods": 4,
+            "proper_RED_failing_subcases": 2,
+            "GREEN_methods": 9,
+            "GREEN_original_real_shell_methods": 5,
+            "GREEN_seconds": 10.225,
+            "local_actual_UCRT_install_exercised": false
+          },
+          "native_preflight": {
+            "author_affected": 18,
+            "author_seconds": 0.685,
+            "Root_missing_directory_RED": 1,
+            "Root_final_class_PASS": 15,
+            "Root_final_seconds": 0.46
+          },
+          "verification_phase_budgets": {
+            "unit_verification_seconds": 120,
+            "original_unit_seconds": 30,
+            "rationale": "The verification now hashes two full runtime inventories. Actual Linux last-flushed progress reached required hashing at29.4/30.0seconds. This is a finite verification budget change, not a demonstrated production hash defect or exact syscall diagnosis.",
+            "journal_fixture_hook_seconds": 60,
+            "journal_body_seconds": 5,
+            "journal_rationale": "Move original4097-file preparation to separately bounded beforeEach for its exact existing test title. Retain both original assertions and explicit5second scan body. Original Windows failure did not retain inner phase; setup cause is not claimed.",
+            "local_checks": {
+              "python_full_original_producer_plus_pure": {
+                "passed": 21,
+                "failed": 0,
+                "skipped": 0,
+                "unittest_seconds": 16.19
+              },
+              "unchanged_wiring_owner": {
+                "passed": 3,
+                "failed": 0,
+                "skipped": 0,
+                "unittest_seconds": 0.036
+              },
+              "journal": {
+                "total": 20,
+                "passed": 19,
+                "existing_windows_privilege_skip": 1,
+                "failed": 0,
+                "coverage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+                "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+              }
+            },
+            "production_RPC_seconds": 30,
+            "parallel_hashing_or_cache": false
+          }
+        },
+        "pending_child": {
+          "branch": "codex/state-contracts-mode-and-adoption",
+          "local_writer_branch": "codex/state-contracts-prune-boundary",
+          "delivery_pr": 1119,
+          "target": "major/state-contracts",
+          "code_commit": "4c785732b25f372c36cd75306703029b072a0a70",
+          "latest_original_f262": "Native membership registry omitted8passing reader tests; exact8name fix locally verified, successor requires fresh checks.",
+          "main_merge": "HELD_FOR_USER_TESTING",
+          "latest_original_304": "CI failure: WindowsPi doctorEOF; DocsSUCCESS/all6nativeadaptersPASS. New localcollector/docs successor is notyetpushed.",
+          "hosted_head": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+          "hosted_ci_run": 44152342841,
+          "hosted_docs_run": 44152342782,
+          "merge_state": "BLOCKED_PENDING_FRESH_QUALIFICATION"
+        },
+        "next_private_followup": {
+          "branch": "codex/state-contracts-prune-boundary",
+          "delivery_pr": null,
+          "code_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+          "observations": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/development.json",
+          "canonical_PLANNED": 57,
+          "task_status_promotion": false,
+          "runtime_epoch_renewal": false
+        },
+        "native_shutdown": "Original4260 cause unknown; diagnostic-loss repair passes focused/inert checks, not a Node exit fix.",
+        "pending_pi_http_policy": "USER_DECIDED_ADR0049_IMPLEMENTED_IN_INTEGRATION_RUNTIME_QUALIFICATION_SEPARATE",
+        "sdk_phase_retention": "Reviewed source/test capability adopted locally; proper inert-worker RED/GREEN and negative controls retained. Node shutdown cause unresolved; actual runtime qualification pending.",
+        "native_evidence_reconciliation": {
+          "pending_original_owner": true,
+          "actual_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+          "new_tested_edges": 8,
+          "same_status_history_replacements": 133,
+          "remaining_planned_findings": 49,
+          "record": "docs/state-contracts-major/execution/evidence/observer-wording-304/native-adoption/development.json"
+        },
+        "binary_full_candidate_fix": {
+          "controller_anchor": "2ed6575320cc49b57186b997ed119789f7a754aa",
+          "record": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/development.json",
+          "status": "LOCAL_REGRESSION_AND_INDEPENDENT_SECURITY_REVIEW_PASS",
+          "runtime_source_restamped": false
+        },
+        "pi_sandbox_finite_finding_routes": {
+          "controller_anchor": "91a22bf4ea29a156dd601c9385667d7f1feadedc",
+          "record": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/development.json",
+          "routes": 7,
+          "selectors": 38,
+          "status": "LOCAL_MAPPING_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+        },
+        "visible_stdin_guard_fix": {
+          "controller_anchor": "d5f41252f4610d614eb51d709357ec511730313d",
+          "record": "docs/state-contracts-major/execution/evidence/visible-stdin-guard-d5/development.json",
+          "status": "LOCAL_REGRESSION_AND_INDEPENDENT_REVIEW_PASS",
+          "main_merge": "HELD_FOR_USER_TESTING"
+        },
+        "farm_finite_finding_observer": {
+          "record": "docs/state-contracts-major/execution/evidence/farm-finding-observer-ddd/development.json",
+          "findings": 4,
+          "named_selectors": 33,
+          "positive_source_inputs": 47,
+          "status": "LOCAL_CRITERION_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+        },
+        "remaining_dispositions_snapshot": {
+          "findings_PLANNED": 49,
+          "machines_PLANNED": 0,
+          "transitions_PLANNED": 0,
+          "source_applicability_is_separate": true
+        },
+        "original_0ef_failure_repair": {
+          "controller_anchor": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "record": "docs/state-contracts-major/execution/evidence/reviewed-bindings-0ef/development.json",
+          "status": "LOCAL_TARGETED_CHECKS_AND_INDEPENDENT_REVIEW_PASS",
+          "Windows_Pi_original_job": "134036424339 SUCCESS; old timeout cause UNKNOWN",
+          "runtime_qualification": false
+        },
+        "two_existing_finding_maps": {
+          "controller_anchor": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+          "record": "docs/state-contracts-major/execution/evidence/two-finding-maps-d7/development.json",
+          "findings": [
+            "C-F02",
+            "HOOK-F04"
+          ],
+          "status": "LOCAL_ADMISSION_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+        },
+        "release_fixture_timeout_diagnostics": {
+          "controller_anchor": "1b991ceb37f2fa0b4614a9970387c6609a1bffaa",
+          "record": "docs/state-contracts-major/execution/evidence/release-fixture-phases-1b/development.json",
+          "status": "LOCAL_20_OWNING_TESTS_AND_INDEPENDENT_REVIEW_PASS",
+          "original_timeout_cause": "UNKNOWN",
+          "child_budget_seconds": 20
+        },
+        "six_python_findings": {
+          "controller_anchor": "b4d8fcf9ffd4078b57b7abfe700f09a5ce3ebaef",
+          "record": "docs/state-contracts-major/execution/evidence/six-python-findings-b4/development.json",
+          "status": "LOCAL_SCOPED_CHECKS_PASS_HOSTED_PENDING",
+          "findings": [
+            "C-F05",
+            "C-F06",
+            "C-F07",
+            "HOOK-F01",
+            "HOOK-F03",
+            "T-F02"
+          ],
+          "selector_count": 39,
+          "runtime_qualification": false,
+          "previous_EB_run": "DocsSUCCESS/CI FAILURE86PASS6FAIL8SKIP;WindowsPi1252causeUNKNOWN"
+        }
       }
     }
   ]

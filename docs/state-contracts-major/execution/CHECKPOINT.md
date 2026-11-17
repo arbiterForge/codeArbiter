@@ -1,5 +1,17 @@
 # State-contract program checkpoint
 
+## November 17 continuation
+
+The local successor includes both Python source uploader routes, the complete readiness fixtures, and a shared profile check that rejects mixing two profiles from the same job. The C-F04 release-order check requires the original Hooks and Generated surface evidence from the same CI attempt. The Workflow recovery reader can authenticate nine cases from its original runtime suite. The installed recovery complement is still in progress. All 123 local readiness tests passed.
+
+The source reader authenticated 1,218 of 1,739 source records against the candidate. The ledger gained 16 finite source findings and refreshed 240 existing bindings with their prior proof history. There are 521 stale source records and 33 planned findings. The task list records 72 implemented and unqualified tasks, nine in progress, and one waiting to start.
+
+The hosted head of #1119 is `4d1145ad`. The Docs build and three plugin toolchains failed the high severity picomatch audit. GitHub lists no patched release. The original Windows Pi 1.5.0 job collected all 57 RPC records, settled the agent, and closed stdin before the process timed out. The retained debugger captured no stack. The tested read-context provider now attaches the passive shutdown trace locally. The shutdown cause still needs evidence.
+
+#1098 remains a draft for user testing before any merge to `main`. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44152342841) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44152342782) · [Advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+## Earlier checkpoints
+
 The current local successor binds a finite W-F03 original policy observation, selects the fast native registry guard on all nine actual inputs, retains bounded SDK diagnostic phases, and corrects initialization/Sandbox prose. Proper affected regressions and scoped independent reviews are retained. The Windows Pi shutdown cause remains unresolved; no runtime deadline was increased.
 
 Eight remaining native transitions now have exact six-platform named test compositions at original D482.133 native component records and7 bookmark/directory records receive same-status successors with old history preserved, replacing expired/near-expiry artifacts without new execution.49 findings remain PLANNED; this is accounting, not49 missing features.65 changed source-only bindings have provisional clause reassessment and require successors at the actual new committed code/docs epoch.
