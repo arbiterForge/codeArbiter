@@ -1,0 +1,17 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\restart-final-owned-check.py",
+  "interrupt"
+ ],
+ "exit": 0,
+ "seconds": 0.1592543000006117,
+ "source_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+ "test_sha256": "dc860c2d14cfc82186b8acd54d78ee951ec2b8f91118d8f0263b3d602cefda10",
+ "script_sha256": "e6ccc3fd7108dac3b279a0d358e2fb8eb8f8e52ebd287b78ce4677d668ef74e6",
+ "stdout_sha256": "2995b8c28cea678e4242919e6cc34ec9a74c63bc5c752e5279a3fc15a1f05a83",
+ "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

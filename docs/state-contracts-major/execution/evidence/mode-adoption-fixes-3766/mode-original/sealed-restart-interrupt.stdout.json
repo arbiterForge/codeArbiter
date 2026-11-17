@@ -1,0 +1,8 @@
+{
+ "schema": "codearbiter.exact-raw-utf8-projection/1",
+ "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart-interrupt.stdout",
+ "original_sha256": "96dc2f79c6f9a4e113403a8d0d370e92a114e7ef3c931abd17f5f04e3412cb90",
+ "original_bytes": 704,
+ "utf8_text": "{\"phase\": \"interrupt\", \"pid\": 58688, \"outcome\": {\"requested\": \"ops\", \"result\": \"failed\", \"raw_before\": \"dangerous\", \"raw_after\": \"ops\", \"raw_changed\": true, \"raw_diagnostic\": null, \"effective_before\": \"dangerous\", \"effective_after\": \"ops\", \"audit\": \"owed\", \"owed_rows\": 2, \"next_action\": \"the owed rows replay at the next session start or compaction; re-send `mode --ops` to retry now\"}, \"pending_rows\": [\"[2025-01-01T00:00:00Z] | BY: session-mode | HOST: claude | SESSION: s1 | MODE: dangerous exit | NOTE: transition:dbc168c750b199f57141ed539739a321\\n\", \"[2025-01-01T00:00:00Z] | BY: session-mode | HOST: claude | SESSION: s1 | MODE: ops enter | NOTE: transition:dbc168c750b199f57141ed539739a321\\n\"]}\r\n",
+ "scope": "Reversible JSON transport of exact original UTF8 output; original Temp bytes retained unchanged. This projection is not the original raw file."
+}

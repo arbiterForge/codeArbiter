@@ -1,0 +1,19 @@
+{
+ "predecessor_seal_unchanged": true,
+ "only_production_function_AST_changed": "flip_outcome",
+ "delta": "Only AUDIT_OWED recovery guidance changed: remove dependence on repository-global owed row count; explicitly condition replay on durably retained transition rows and explain unrecorded prior exit limit. No new state/cache/protocol.",
+ "all_other_production_AST_equal": true,
+ "all_caps_constants_mode_queue_retry_success_noop_behavior_code_unchanged": true,
+ "all_predecessor_test_AST_equal_after_removing_one_added_regression": true,
+ "new_regression": "TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded",
+ "new_regression_cases": [
+  "foreign-session prior pending enter",
+  "same-session and requested-mode prior pending enter"
+ ],
+ "old_assertions_changed": [],
+ "four_mirrors_equal": false,
+ "five_syntax_compiles_in_memory": true,
+ "canonical_repair_preimages_still_exact": true,
+ "dependency_joins_unchanged": true,
+ "observed_root_HEAD": "9bc844c61d4ef05ec16796a9671628913f10a5a6"
+}

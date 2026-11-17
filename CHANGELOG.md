@@ -16,6 +16,8 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
 - Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
 - Preserve no-bytecode execution when SessionStart launches the detached updater.
 - Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.

@@ -1,0 +1,14 @@
+{
+ "kind": "PYTHON_NO_TOOLING_EXEMPTION",
+ "current_document_path": ".codearbiter/context/tech-stack.html",
+ "current_document_sha256": "bcbe7f53b4067b44fc4a5165fce0975bfab23e207c9e7989ac2f0b663281adda",
+ "typed_reader_record_receipt": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\tech-stack-coverage-records.json",
+  "sha256": "1419e36fc6f5aa432afc650109829576e3e09ea34131b886f0848ceb4bae7493",
+  "bytes": 11317
+ },
+ "record": "CTX-TECH-STACK FACT-005 / NOTE-005 / CMD094",
+ "passage": "There is no coverage tooling for the Python hooks or build tools (core/pysrc/*.py, plugins/*/hooks/*.py, .github/scripts/*.py, tools/*.py). Those surfaces use direct unittest and behavioral checks, not TypeScript instrumentation.",
+ "changed_module_checks": "83 focused mode tests (82 pass, 1 existing platform skip), 24 unchanged prompt-owner tests pass, actual two-process persisted pair recovery; targeted failure controls inspect actual log bytes, raw/effective mode and durable queue. No numeric percentage invented.",
+ "not_executed": "Three unchanged TestContextDomainVocabulary native knowledge/text checks; broader installed/native/host/platform qualification stays with Root/CI."
+}

@@ -1,0 +1,36 @@
+{
+ "source_sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+ "script_sha256": "e6ccc3fd7108dac3b279a0d358e2fb8eb8f8e52ebd287b78ce4677d668ef74e6",
+ "checks": [
+  {
+   "phase": "interrupt",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\restart-final-owned-check.py",
+    "interrupt"
+   ],
+   "exit": 0,
+   "seconds": 0.16963920000125654,
+   "stdout_sha256": "96dc2f79c6f9a4e113403a8d0d370e92a114e7ef3c931abd17f5f04e3412cb90",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "phase": "recover",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\restart-final-owned-check.py",
+    "recover"
+   ],
+   "exit": 0,
+   "seconds": 0.19365709999692626,
+   "stdout_sha256": "5ebeffee84efeb14d0b078b803790ff59d3f88365d4faf54b9e783923dcf293c",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+ ]
+}

@@ -1,0 +1,168 @@
+{
+ "schema": "codearbiter.private-fix-delivery/1",
+ "state": "PRIVATE_CANDIDATE_FOR_INDEPENDENT_REVIEW",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "finding": "WORK-ADOPTION-NONREGULAR-READ-01",
+ "named_original_source_epoch": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "observed_root_HEAD_at_seal": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "subjects": {
+  "core/pysrc/_workadopt.py": {
+   "preimage_sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+   "preimage_bytes": 9946,
+   "preimage_git_oid": "8c1d380094a66b4de42d5d96ffc6f75eb90a0334",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\core\\pysrc\\_workadopt.py",
+    "sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+    "bytes": 11275
+   }
+  },
+  ".github/scripts/test_work_adopt.py": {
+   "preimage_sha256": "4a7f86863b02b26f82f00e7ebed7d655abc0a82379f640c1d79b6727dfb8183f",
+   "preimage_bytes": 6178,
+   "preimage_git_oid": "3e5d2e347208de9a69a76f7d939970eb74f3dbf3",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\.github\\scripts\\test_work_adopt.py",
+    "sha256": "3cd415d63047b566b617c47c4716097061b836b75d0a4e4635d10181f1b5398b",
+    "bytes": 15474
+   }
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fix.diff",
+  "sha256": "c41d57e00d7f9985759a9d132546d51517ed453594bb2ba9ec9347a11b98e32d",
+  "bytes": 12294
+ },
+ "verification": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\verification.json",
+  "sha256": "9e0eabf3d4eb1891fc05e0619e07b86b77e059ea5cb31ec3d53dcdd37d64c6bd",
+  "bytes": 4829
+ },
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\adoption-filemap.json",
+  "sha256": "ee8989a2167a1280f938286f75f2495d7fbcf4d17432082d06456ba6f79aa643",
+  "bytes": 792
+ },
+ "inputs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\work-adoption-regular-reader-fix-input.txt",
+   "sha256": "46a5067824d56277c318b2a2c1c8250d309d7ce78596288a588e3f735a595f42",
+   "bytes": 8716
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\work-adoption-regular-reader-fix-context.json",
+   "sha256": "ca214268b4654a557689223799a55c7111b0e515df7c68e6b7a081de491b58c6",
+   "bytes": 14105
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\work-adoption-regular-reader-fix-config.json",
+   "sha256": "4c06b55dd394d95e75d115e56fed6297c3dca485a29c070a15aed830cdb775c8",
+   "bytes": 2673
+  }
+ ],
+ "unchanged_dependency_joins": {
+  "core/pysrc/work.py": {
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_workgithub.py": {
+   "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+   "bytes": 83583,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_gitexec.py": {
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_artifactlib.py": {
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_hooklib.py": {
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_sensitivelib.py": {
+   "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+   "bytes": 35303,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_pathnorm.py": {
+   "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+   "bytes": 3712,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_protectedlib.py": {
+   "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+   "bytes": 18440,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_protectedstatelib.py": {
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_scopelib.py": {
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_activationlib.py": {
+   "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "bytes": 13390,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/hostapi.py": {
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "bytes": 38083,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_worklib.py": {
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/taskwrite.py": {
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_arbiterstatelib.py": {
+   "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "bytes": 14372,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_modelib.py": {
+   "sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "bytes": 44894,
+   "physical_root_unchanged": true
+  },
+  "core/pysrc/_taskboardlib.py": {
+   "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "bytes": 69125,
+   "physical_root_unchanged": true
+  }
+ },
+ "normative_oracle": {
+  "contract": "hooks:work-adoption:01",
+  "exact_guard": "open<=1MiB, archive<=8MiB; regular safe paths; every row accounted;<=507 rows",
+  "authority": "Existing frozen preserve-guard promise and explicit Root repair authorization; HW15 is verification-only, not independent behavior authority."
+ },
+ "repair": "Only _read and os/stat imports change. Refuse pre-open links/reparse/nonregular entries; request available nofollow/nonblock/binary/cloexec flags; verify acquired regular descriptor and before/after identity; read only limit+1 bytes; finally close one acquired descriptor. Ordinary/optional absence/UTF8/row/native operation semantics retained.",
+ "original_target_RED": "test_work_adopt.AdoptionInventoryTest.test_nonregular_archive_and_replay_refuse_before_read: three intended ValueError-not-raised failures on exact original; genuine EOF pipe descriptor acquisition, no FIFO hang.",
+ "limits": [
+  "No real native cutover, actual work mutation, host/installed/provider/API/network/Docker/SDK or broad-suite replay. No source-cell promotion; lifecycle adoption claims remain held until actual repair epoch.",
+  "Flags are platform-available, not a universal OS guarantee. Windows has no O_NONBLOCK/O_NOFOLLOW equivalent here; pre-open type/reparse checks and acquired descriptor checks still enforce tested local conditions, not universal pre-open race freedom.",
+  "Leaf identity validation is not ancestor confinement, symlink-proof namespace locking, cross-process global atomicity or immutable content snapshot. External writers may still alter same-inode data; existing byte bounds and native exact-source validation remain owners.",
+  "Controlled pipe/metadata/fault injection checks are source-level owning regressions. They do not prove live FIFO/device behavior, exploit prevention or OS sandbox confinement.",
+  "Existing Python numeric coverage exemption cited exactly; no new dependency or tooling installed. Parent owns independent review and canonical/mirror adoption."
+ ]
+}

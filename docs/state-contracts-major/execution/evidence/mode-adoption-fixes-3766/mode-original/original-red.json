@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\run-focused.py",
+  "TestFlip.test_transition_exits_prior_mode_exactly_once"
+ ],
+ "exit": 1,
+ "seconds": 0.1680505000113044,
+ "source_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+ "test_sha256": "e8c481ead2cb2e39a20dfd881ec4c864089b1e724201e7966e3aef92f0b4fa91",
+ "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.stderr",
+ "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.stdout"
+}

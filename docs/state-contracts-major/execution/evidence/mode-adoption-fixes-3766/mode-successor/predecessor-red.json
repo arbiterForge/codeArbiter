@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\run-focused.py",
+  "TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded"
+ ],
+ "exit": 1,
+ "seconds": 0.20975140001974069,
+ "source_sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+ "test_sha256": "dc860c2d14cfc82186b8acd54d78ee951ec2b8f91118d8f0263b3d602cefda10"
+}

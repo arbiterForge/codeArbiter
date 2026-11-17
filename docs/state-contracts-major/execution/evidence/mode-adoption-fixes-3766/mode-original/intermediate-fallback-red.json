@@ -1,0 +1,15 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\run-focused.py",
+  "TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit"
+ ],
+ "exit": 1,
+ "seconds": 0.21084059998975135,
+ "source_sha256": "81aa030d9e15f83c6efffc28b3c2696bb0ef5f3cec5baff8fde72412b1341e12",
+ "test_sha256": "d2b40141c36400c8518f081424920c7a02ade611f08c01a8fa1a2908776c005c",
+ "classification": "RED on intermediate pair candidate, not original source regression"
+}
