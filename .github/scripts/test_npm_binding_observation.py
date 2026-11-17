@@ -14,6 +14,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 
 
+PRODUCER_UNIT_TIMEOUT_SECONDS = 120
 PROGRESS_LIMIT = 32768
 PROGRESS_PHASES = ('starting','source-before','runtime-before-enumeration','runtime-before-hashing',
     'runtime-before-done','binding','imports','launch-identities','source-after',
@@ -47,7 +48,7 @@ def read_producer_progress(path):
         return result
     try:value=json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:require(False))
     except (ValueError,UnicodeError,RecursionError):raise ValueError('producer progress refused') from None
-    bounds={'elapsed_ms':60000,'runtime_ordinal':2,'discovered_files':32768,'completed_files':32768,
+    bounds={'elapsed_ms':PRODUCER_UNIT_TIMEOUT_SECONDS * 1000,'runtime_ordinal':2,'discovered_files':32768,'completed_files':32768,
             'completed_bytes':512<<20,'directories':2048,'entries':65536,'links':32768}
     require(type(value) is dict and set(value)==set(bounds)|{'format','phase'}
         and value['format']=='codearbiter.npm-producer-progress/1' and value['phase'] in PROGRESS_PHASES)
@@ -196,7 +197,7 @@ class ProducerBoundaryTests(unittest.TestCase):
             platform = {'win32':'windows','darwin':'darwin','linux':'linux'}[sys.platform] + '/amd64'
             result = producer_child_run([sys.executable,'-I','-S','-B','-X','utf8','-c',scripts[0],
                                      str(core),str(work),'0',platform], env=env, cwd=base,
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=PRODUCER_UNIT_TIMEOUT_SECONDS)
             self.assertEqual(result.returncode, 0, result.stderr.decode('utf8', 'replace')[-2000:])
             self.assertIsInstance(json.loads(result.stdout), list, 'original binding stdout remains a list')
             sidecar = output / 'workspaces-0.json'
@@ -511,7 +512,9 @@ class IdentityLimitTests(unittest.TestCase):
                   'elapsed_ms':20,'runtime_ordinal':1,'discovered_files':128,'completed_files':127,
                   'completed_bytes':4096,'directories':2,'entries':130,'links':0}
             path.write_text(json.dumps(good));self.assertEqual(read_producer_progress(path),good)
-            for value in ({**good,'payload':'PRIVATE_PROGRESS_CANARY'},{**good,'phase':'PRIVATE_PROGRESS_CANARY'},
+            late={**good,'elapsed_ms':PRODUCER_UNIT_TIMEOUT_SECONDS * 1000}
+            path.write_text(json.dumps(late));self.assertEqual(read_producer_progress(path),late)
+            for value in ({**good,'elapsed_ms':PRODUCER_UNIT_TIMEOUT_SECONDS * 1000 + 1},{**good,'payload':'PRIVATE_PROGRESS_CANARY'},{**good,'phase':'PRIVATE_PROGRESS_CANARY'},
                           {**good,'completed_bytes':(512<<20)+1},{**good,'elapsed_ms':True},
                           {**good,'completed_files':32769},{**good,'entries':65537},
                           {**good,'directories':2049},{**good,'runtime_ordinal':3}):

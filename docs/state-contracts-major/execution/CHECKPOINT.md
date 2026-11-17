@@ -1,5 +1,13 @@
 # State-contract program checkpoint
 
+Child #1116 follow-up:29 independently reviewed source-only Pi cells reduce PLANNED accounting from782 to753 (49findings/149machines/555transitions). S03 machine/edit persistence remains PLANNED and unproven; all24 prior Pi source dispositions remain intact. This promotes no task or runtime epoch.
+
+At `f5dff55e`, both Linux unit failures now retain progress in required full-runtime hashing near the30second limit. The unit verification gets an explicit120second budget for two inventories; all original identity/assertion guards remain. Windows Pi coverage timed out in the original overfull-journal test; its4097-file setup moves to a60second fixture hook while the original scan body keeps5seconds. Inner original phase was not retained, so fixture setup is not claimed as a proven cause. Local21producer/pure and3wiring controls passed; journal19passed/1existing privilege skip.
+
+All three Pi adapter jobs passed at f5. The original successful Windows diagnostics archive authenticates nine completed provider warmups and one same-PID11-thread native capture. This confirms current diagnostic execution only and does not resolve oldPID7040 causality. Whole exact-head CI remains blocked by the known failures. [Observations](evidence/pr1116-verification-budgets/development.json). Parent1098 remains held from main for user testing.
+
+## Previous retained checkpoint
+
 The diagnostic batch also adds a separately owned5s hash-only provider warmup before additional observed Windows RPC targets, retaining all original fresh failure/worker verification and target30s cap. Unknown helper containment blocks target spawn. Four new controls and Root's first-directory retention regression pass;15 final class controls pass locally. Actual protected-DLL/Pi execution and recovered stack remain unproven.
 
 Child #1116 at `bbc6f39d` is terminal BLOCK:66 checks passed,6 failed,13 skipped; Docs passed, CI and merge readiness failed. Both Linux producer units exceeded the unchanged30s cap under Python3.14.10; the new correction retains bounded phase/count/byte diagnostics without claiming a performance fix. Windows Hook selected unsupported Git `ucrt64/bin`; two genuine UCRT regression failures now pass along with all9 focused discovery/real-shell methods.

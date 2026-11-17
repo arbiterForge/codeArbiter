@@ -1,0 +1,30 @@
+{
+  "source": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "run_id": 44002348079,
+  "attempt": 1,
+  "job_id": 133769377367,
+  "job_name": "Coverage union (Pi)  <os: windows-latest>",
+  "failed_steps": [
+    {
+      "number": 10,
+      "name": "Observe original Pi coverage invocation",
+      "conclusion": "failure"
+    }
+  ],
+  "metadata_sha256": "e8c3c455316c7fc8e03e39310c8a73c044449e07c491b0009f20d21052f655d8",
+  "log_sha256": "82658205202768a52b6a11167d66ca83762f49b7a90cf64b28831570b364c7ed",
+  "log_bytes": 53776,
+  "named_failure_methods": [],
+  "source_frames": [],
+  "fixed_failure_categories": [
+    {
+      "line": 397,
+      "matched_fixed_category": "Test timed out in"
+    },
+    {
+      "line": 417,
+      "matched_fixed_category": "Process completed with exit code"
+    }
+  ],
+  "cause": "UNKNOWN_PENDING_SOURCE_TRACE"
+}

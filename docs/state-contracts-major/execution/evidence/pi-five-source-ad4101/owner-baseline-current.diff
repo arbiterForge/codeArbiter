@@ -1,0 +1,791 @@
+diff --git a/plugins/ca-pi/tools/src/audit-sink.ts b/plugins/ca-pi/tools/src/audit-sink.ts
+index 12273ef810eb0bd876edfd54880744535eefd159..d1b0aa766e1c21b7cee71168b6f16c6df4357a99 100644
+--- a/plugins/ca-pi/tools/src/audit-sink.ts
++++ b/plugins/ca-pi/tools/src/audit-sink.ts
+@@ -23,7 +23,7 @@
+  * change the enforcement outcome the caller already decided. Callers keep their own fail
+  * direction and emit only their own bounded diagnostic.
+  */
+-import { constants as fsConstants } from "node:fs";
++import { constants as fsConstants, type BigIntStats } from "node:fs";
+ import { lstat, open, realpath } from "node:fs/promises";
+ import { relative, resolve } from "node:path";
+ 
+@@ -39,8 +39,8 @@ const AUDIT_STATE_DIRECTORY = ".codearbiter";
+ export const MAX_AUDIT_LINE_BYTES = 2_048;
+ 
+ export interface AuditSinkStatsPort {
+-  readonly dev: number;
+-  readonly ino: number;
++  readonly dev: number | bigint;
++  readonly ino: number | bigint;
+   readonly nlink: number;
+   readonly size: number;
+   isDirectory(): boolean;
+@@ -62,19 +62,47 @@ export interface AuditSinkIoPort {
+   open(path: string, flags: number, mode?: number): Promise<AuditSinkHandlePort>;
+ }
+ 
+-export const NODE_AUDIT_SINK_IO: AuditSinkIoPort = Object.freeze({ realpath, lstat, open });
++function exactAuditStats(value: BigIntStats): AuditSinkStatsPort {
++  const size = Number(value.size);
++  const nlink = Number(value.nlink);
++  if (!Number.isSafeInteger(size) || !Number.isSafeInteger(nlink)) throw new Error("unsafe audit metadata");
++  return { dev: value.dev, ino: value.ino, size, nlink,
++    isDirectory: () => value.isDirectory(), isFile: () => value.isFile(),
++    isSymbolicLink: () => value.isSymbolicLink() };
++}
++
++// Default numeric Stats can round adjacent Windows file IDs to the same number.
++// Keep exact identities at both the pathname and opened-handle boundaries.
++export const NODE_AUDIT_SINK_IO: AuditSinkIoPort = Object.freeze({
++  realpath,
++  lstat: async (path: string) => exactAuditStats(await lstat(path, { bigint: true })),
++  open: async (path: string, flags: number, mode?: number) => {
++    const handle = await open(path, flags, mode);
++    return {
++      stat: async () => exactAuditStats(await handle.stat({ bigint: true })),
++      appendFile: async (data: string, options: { encoding: "utf8" }) => await handle.appendFile(data, options),
++      sync: async () => await handle.sync(), close: async () => await handle.close(),
++    };
++  },
++});
++
++function sameIdentity(left: number | bigint, right: number | bigint): boolean {
++  const exact = (value: number | bigint) => typeof value === "bigint"
++    ? value >= 0n : Number.isSafeInteger(value) && value >= 0;
++  return exact(left) && exact(right) && BigInt(left) === BigInt(right);
++}
+ 
+ function sameAuditFile(left: AuditSinkStatsPort, right: AuditSinkStatsPort): boolean {
+   return left.isFile() && right.isFile()
+     && !left.isSymbolicLink() && !right.isSymbolicLink()
+     && left.nlink === 1 && right.nlink === 1
+-    && left.dev === right.dev && left.ino === right.ino;
++    && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
+ }
+ 
+ function sameAuditDirectory(left: AuditSinkStatsPort, right: AuditSinkStatsPort): boolean {
+   return left.isDirectory() && right.isDirectory()
+     && !left.isSymbolicLink() && !right.isSymbolicLink()
+-    && left.dev === right.dev && left.ino === right.ino;
++    && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
+ }
+ 
+ async function openedAuditTarget(
+diff --git a/plugins/ca-pi/tools/src/bridge.ts b/plugins/ca-pi/tools/src/bridge.ts
+index 5bc15e9cee1cad2360849eb4c22245b13b34082c..8673ad825ff9b43e8fbaa1635acfd44a1c50dbe6 100644
+--- a/plugins/ca-pi/tools/src/bridge.ts
++++ b/plugins/ca-pi/tools/src/bridge.ts
+@@ -11,6 +11,7 @@ import type {
+   ExtensionContextPort,
+   PiFooterActivationState,
+   PiFooterMode,
++  PiWorkflowRecoverySnapshot,
+   PiFooterStatusSnapshotPortResult,
+   PiFooterUsageUpdateResult,
+   PiUsageSnapshotPortResult,
+@@ -74,6 +75,12 @@ export interface BridgeClientOptions {
+   shouldAuditFailure?: (request: BridgeRequest) => boolean;
+ }
+ 
++/** Owning selector shared by production and read-only observation checks. */
++export function shouldAuditBridgeFailure(request: BridgeRequest): boolean {
++  return request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot"
++    && request.event !== "workflow_recovery_snapshot";
++}
++
+ function minimalEnvironment(
+   identities?: { git: string; python: string },
+   userHome?: string,
+@@ -573,6 +580,59 @@ export async function readFooterStatusSnapshot(
+   }
+ }
+ 
++const RECOVERY_KEYS = new Set(["status", "revision", "pending", "claimed", "unavailable", "cursor", "bytesRead", "reason", "notice", "fingerprint"]);
++const RECOVERY_REASONS = new Set(["io-temporary", "storage-unavailable", "capacity", "unsupported-version", "unknown-kind", "corrupt-record", "changed-binding", "source-stale", "owner-ambiguous", "authorization-denied", "explicit-stop", "material-unavailable", "uncertain-effect", "target-unavailable", "busy", "invalid", "inactive", "untrusted-helper", "scan-timeout"]);
++const boundedInteger = (value: unknown, maximum: number): value is number => typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= maximum;
++
++/** Decode only the owning read-only snapshot; never infer empty state from a bad reply. */
++export function workflowRecoveryResult(response: BridgeResponse): PiWorkflowRecoverySnapshot | undefined {
++  if (!validResponse(response) || response.outcome !== "notice" || response.auditCode !== "PI_WORKFLOW_RECOVERY"
++    || !exactKeys(response as unknown as Record<string, unknown>, new Set(["version", "outcome", "auditCode", "resultPatch"]))) return undefined;
++  const patch = record(response.resultPatch);
++  const value = patch === undefined ? undefined : record(patch.workflowRecovery);
++  if (patch === undefined || !exactKeys(patch, new Set(["workflowRecovery"])) || value === undefined || !exactKeys(value, RECOVERY_KEYS)
++    || !["absent", "complete", "partial", "unavailable"].includes(value.status as string)
++    || !(value.revision === null || boundedInteger(value.revision, 10_000_000_000))
++    || !boundedInteger(value.pending, 32) || !boundedInteger(value.claimed, 32) || !boundedInteger(value.unavailable, 32)
++    || value.pending + value.claimed + value.unavailable > 32 || !boundedInteger(value.bytesRead, 262_144)
++    || !(value.reason === null || (typeof value.reason === "string" && RECOVERY_REASONS.has(value.reason)))
++    || !(value.cursor === null || (typeof value.cursor === "string" && value.cursor.length <= 256 && /^[A-Za-z0-9_-]+={0,2}$/u.test(value.cursor)))
++    || (value.status === "partial" && value.cursor === null)
++    || (["absent", "complete"].includes(value.status as string) && value.cursor !== null)
++    || (value.status !== "unavailable" && value.reason !== null)
++    || typeof value.notice !== "string" || value.notice.length > 768 || CONTROL_RE.test(value.notice)
++    || (value.status === "absent" && (value.revision !== null || value.pending + value.claimed + value.unavailable !== 0 || value.notice !== ""))
++    || ((value.status === "partial" || value.status === "unavailable" || value.pending + value.claimed + value.unavailable > 0) && value.notice.trim() === "")
++    || typeof value.fingerprint !== "string" || !/^[a-f0-9]{64}$/u.test(value.fingerprint)) return undefined;
++  return Object.freeze({ ...value }) as unknown as PiWorkflowRecoverySnapshot;
++}
++
++/** One-second read-only observation using the existing authenticated bridge/abort cleanup. */
++export async function readWorkflowRecoverySnapshot(
++  bridge: BridgePort,
++  context: Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">,
++  activation: PiFooterActivationState,
++): Promise<PiWorkflowRecoverySnapshot | undefined> {
++  if (activation.enabled !== true || context.signal?.aborted) return undefined;
++  try { if (context.isProjectTrusted?.() !== true) return undefined; } catch { return undefined; }
++  const controller = new AbortController();
++  const abort = () => controller.abort();
++  context.signal?.addEventListener("abort", abort, { once: true });
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  const deadline = new Promise<undefined>((resolveDeadline) => {
++    timer = setTimeout(() => { controller.abort(); resolveDeadline(undefined); }, 1_000);
++  });
++  try {
++    const rawSessionId = callMember(context.sessionManager, "getSessionId");
++    const sessionId = typeof rawSessionId === "string" && rawSessionId.length <= 1_024 ? rawSessionId : undefined;
++    const response = await Promise.race([bridge.call({ version: 1, event: "workflow_recovery_snapshot", cwd: context.cwd,
++      ...(sessionId === undefined ? {} : { sessionId }) }, controller.signal), deadline]);
++    if (response === undefined || controller.signal.aborted || context.isProjectTrusted?.() !== true) return undefined;
++    return workflowRecoveryResult(response);
++  } catch { return undefined; }
++  finally { if (timer !== undefined) clearTimeout(timer); context.signal?.removeEventListener("abort", abort); }
++}
++
+ // Mirrors process-tree.ts's WINDOWS_HELPER_CLEANUP_MS: taskkill must never block the event loop.
+ const WINDOWS_TASKKILL_TIMEOUT_MS = 1_000;
+ // Bounded backstop: if 'close' never arrives after a kill attempt, force-settle the pending call.
+@@ -799,7 +859,7 @@ export class BridgeClient implements BridgePort {
+     return await new Promise<BridgeResponse>((resolveResponse) => {
+       let child: ReturnType<typeof spawn>;
+       try {
+-        child = spawnImpl(paths.python, [...(this.options.pythonPrefixArgs ?? []), paths.script], {
++        child = spawnImpl(paths.python, [...(this.options.pythonPrefixArgs ?? []), "-B", paths.script], {
+           cwd: paths.root,
+           detached: process.platform !== "win32",
+           env: minimalEnvironment({ git: paths.git, python: paths.python }, userHome),
+diff --git a/plugins/ca-pi/tools/src/contracts.ts b/plugins/ca-pi/tools/src/contracts.ts
+index 0971af311d436f9e4791b1d9649115908343d99a..a31105774d85096c6875acb0409bedf1823d7b82 100644
+--- a/plugins/ca-pi/tools/src/contracts.ts
++++ b/plugins/ca-pi/tools/src/contracts.ts
+@@ -258,3 +258,17 @@ export interface Collision {
+   reason: CollisionReason;
+   owner?: string;
+ }
++
++/** Bounded read-only page projection; counts never imply a complete backlog. */
++export interface PiWorkflowRecoverySnapshot {
++  status: "absent" | "complete" | "partial" | "unavailable";
++  revision: number | null;
++  pending: number;
++  claimed: number;
++  unavailable: number;
++  cursor: string | null;
++  bytesRead: number;
++  reason: string | null;
++  notice: string;
++  fingerprint: string;
++}
+diff --git a/plugins/ca-pi/tools/src/extension.ts b/plugins/ca-pi/tools/src/extension.ts
+index c3a18b286af5ff850f10efc4f429071b74e61f8f..efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f 100644
+--- a/plugins/ca-pi/tools/src/extension.ts
++++ b/plugins/ca-pi/tools/src/extension.ts
+@@ -7,11 +7,12 @@ import { fileURLToPath, pathToFileURL } from "node:url";
+ import { types as utilTypes } from "node:util";
+ 
+ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+-import { compatibilityDirection } from "./compatibility.ts";
++import { compatibilityDirection, privateApprovalCapability, PRIVATE_APPROVAL_LEGACY_PI_VERSION } from "./compatibility.ts";
+ import type { HostCompatibility } from "./compatibility.ts";
+-import { BridgeClient, resolveGitExecutable, resolvePythonCommand } from "./bridge.ts";
++import { BridgeClient, readWorkflowRecoverySnapshot, shouldAuditBridgeFailure, resolveGitExecutable, resolvePythonCommand } from "./bridge.ts";
+ import type {
+   BridgePort,
++  PiWorkflowRecoverySnapshot,
+   BuiltinToolFactories,
+   CommandCatalogEntry,
+   ExtensionContextPort,
+@@ -56,6 +57,12 @@ import { lexicallyInside } from "./path-boundary.ts";
+ import { safeDiagnostic } from "./redaction.ts";
+ import { createDispatchTool } from "./dispatch.ts";
+ import type { DispatchRequest, DispatchResult } from "./dispatch.ts";
++import type { PiRole } from "./roles.ts";
++import type { ParentDelegationChannel } from "./runner.ts";
++import { openParentDelegation } from "./parent-delegation.ts";
++import { openDelegationJournal, readDelegationRecovery } from "./delegation-journal.ts";
++import type { DelegationRecoverySummary } from "./delegation-journal.ts";
++import { createDelegatedExecutor, credentialBlindHostEnvironment } from "./delegated-executor.ts";
+ import { createFarmPreviewTool } from "./farm.ts";
+ import type { FarmPreviewInput, FarmResult } from "./farm.ts";
+ import {
+@@ -190,6 +197,8 @@ export interface ParentDependencies {
+   catalog: readonly CommandCatalogEntry[];
+   packageRoot: string;
+   loadPersona: () => Promise<string>;
++  readWorkflowRecovery?: (context: ExtensionContextPort) => Promise<PiWorkflowRecoverySnapshot | undefined>;
++  readDelegationRecovery?: (cwd: string) => Promise<DelegationRecoverySummary>;
+   readActivation?: (cwd: string) => Promise<boolean>;
+   resetBridge?: () => void;
+   prepareFooterBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
+@@ -228,6 +237,10 @@ export interface ParentDependencies {
+ }
+ 
+ const PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
++const PI_PERSONA_UNAVAILABLE_STATUS = "codeArbiter host: pi degraded - persona unavailable; run /ca-doctor";
++/** Injected instead of the persona while it is unavailable, so the model is told
++ * honestly that it is running without its governing instructions. */
++const PI_PERSONA_UNAVAILABLE_PROMPT = "codeArbiter persona unavailable; governance instructions are not loaded. Run /ca-doctor.";
+ 
+ function hasAffirmativeProjectTrust(context: { isProjectTrusted?: () => boolean }): boolean {
+   try {
+@@ -248,6 +261,8 @@ interface PiDispatchInstallOptions {
+   isLifecycleReady?: () => boolean;
+   dispatch?: (request: DispatchRequest, signal: AbortSignal) => Promise<DispatchResult>;
+   currentActivity?: () => ActivityPublisher | undefined;
++  openDelegation?: (context: ToolExecutionContextPort, parentToolCallId: string, role: PiRole, runId: string,
++    signal: AbortSignal, isCurrent: () => boolean) => Promise<ParentDelegationChannel>;
+ }
+ 
+ export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInstallOptions): void {
+@@ -263,12 +278,13 @@ export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInsta
+         return { lease, isCurrent: (candidate) => currentLifecycle() === candidate };
+       } catch { return undefined; }
+     },
+-    resolveRuntime: (context: ToolExecutionContextPort) => {
++    resolveRuntime: (context: ToolExecutionContextPort, parentToolCallId?: string) => {
+       if (typeof context.cwd !== "string"
+         || typeof context.model?.provider !== "string" || context.model.provider.trim() === ""
+         || typeof context.model.id !== "string" || context.model.id.trim() === "") {
+         throw new Error("Pi dispatch runtime context is unavailable.");
+       }
++      const lease = currentLifecycle();
+       return {
+         nodePath: process.execPath,
+         piCliPath: options.piCliPath,
+@@ -279,6 +295,10 @@ export function installPiDispatch(pi: PiDispatchTarget, options: PiDispatchInsta
+         childExtensionPath: resolve(options.packageRoot, "extensions", "codearbiter-child.js"),
+         parentEnv: process.env,
+         platform: process.platform,
++        ...(options.openDelegation === undefined || parentToolCallId === undefined || lease === undefined ? {} : {
++          openDelegation: (role: PiRole, runId: string, signal: AbortSignal) => options.openDelegation!(context,
++            parentToolCallId, role, runId, signal, () => currentLifecycle() === lease && hasAffirmativeProjectTrust(context)),
++        }),
+       };
+     },
+     ...(options.currentActivity === undefined ? {} : { activity: options.currentActivity }),
+@@ -441,7 +461,19 @@ export async function loadPersonaFrom(packageRoot: string): Promise<string> {
+ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies): void {
+   let enabled = false;
+   let persona = "";
++  // PI-L01: persona readiness is an independent prerequisite. It is never
++  // stored as, or cleared by, bridge health.
++  let personaReady = false;
++  // Set only once a load attempt for this lifecycle failed or returned empty, so
++  // an in-flight first load still reports "starting", not "unavailable".
++  let personaFailed = false;
++  let personaLoad: { lifecycle: LifecycleLease; promise: Promise<boolean> } | undefined;
+   let state = "";
++  let workflowRecovery: PiWorkflowRecoverySnapshot | undefined;
++  let workflowPresentation: { notice: string; key: string } | undefined;
++  let workflowRead: { lifecycle: LifecycleLease; promise: Promise<void> } | undefined;
++  const workflowUiDelivered = new Set<string>();
++  const workflowPromptDelivered = new Set<string>();
+   let ownershipDegraded: string | undefined;
+   let bridgeDegraded: string | undefined;
+   let commandInvocationDegraded: string | undefined;
+@@ -487,7 +519,9 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
+     noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
+   });
+   const readActivation = dependencies.readActivation ?? isEnabled;
+-  dependencies.installDispatch?.(() => readyLifecycle, currentActivity);
++  // Dispatch admission shares the prerequisite vector used for the prompt and
++  // the governed status: no author/reviewer run starts without the persona.
++  dependencies.installDispatch?.(() => (personaReady ? readyLifecycle : undefined), currentActivity);
+   dependencies.installCompaction?.(() => readyLifecycle);
+   dependencies.installFarmPreview?.(() => readyLifecycle);
+   const publishStatus = (context: ExtensionContextPort, text: string | undefined) => {
+@@ -499,13 +533,75 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
+     readyLifecycle = undefined;
+     enabled = false;
+     persona = "";
++    personaReady = false;
++    personaFailed = false;
++    personaLoad = undefined;
+     state = "";
++    workflowRecovery = undefined;
++    workflowPresentation = undefined;
++    workflowRead = undefined;
++    workflowUiDelivered.clear();
++    workflowPromptDelivered.clear();
+     ownershipDegraded = undefined;
+     bridgeDegraded = undefined;
+     commandInvocationDegraded = undefined;
+     footerActivationEnabled = false;
+   };
+-  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? bridgeDegraded;
++  const observeWorkflowRecovery = (lifecycle: LifecycleLease, context: ExtensionContextPort): Promise<void> => {
++    if (dependencies.readWorkflowRecovery === undefined || !enabled || readyLifecycle !== lifecycle
++      || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return Promise.resolve();
++    if (workflowRead?.lifecycle === lifecycle) return workflowRead.promise;
++    const entry = { lifecycle, promise: Promise.resolve() };
++    workflowRead = entry;
++    entry.promise = (async () => {
++      let observed: PiWorkflowRecoverySnapshot | undefined;
++      try { observed = await dependencies.readWorkflowRecovery!(context); } catch { /* unknown stays unavailable */ }
++      if (!enabled || readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
++      // A missing observation cannot erase a previously observed unresolved page.
++      if (observed !== undefined) workflowRecovery = observed;
++      const notice = observed?.notice ?? "codeArbiter: workflow recovery observation unavailable. Inspect with the installed workflow-recovery.py scan; independent authorized work continues.";
++      const key = observed?.fingerprint ?? `unavailable:${workflowRecovery?.fingerprint ?? "unknown"}`;
++      workflowPresentation = { notice: observed === undefined && workflowRecovery?.notice
++        ? `${workflowRecovery.notice} ${notice}` : notice, key };
++      // Pi's supported no-UI context implements notify as a no-op. Do not
++      // record UI delivery there; the returned prompt remains its own sink.
++      if (context.hasUI === true && notice !== "" && !workflowUiDelivered.has(key)) {
++        try { context.ui.notify(notice, "warning"); workflowUiDelivered.add(key); } catch { /* retry presentation later */ }
++      }
++    })().finally(() => { if (workflowRead === entry) workflowRead = undefined; });
++    return entry.promise;
++  };
++  const personaDegraded = () => (enabled && personaFailed && !personaReady ? PI_PERSONA_UNAVAILABLE_STATUS : undefined);
++  const degradedStatus = () => ownershipDegraded ?? commandInvocationDegraded ?? personaDegraded() ?? bridgeDegraded;
++  /** Load (or retry) the persona for one lifecycle. Concurrent callers share one
++   * read; a result that lands after the lifecycle retired is discarded. */
++  const ensurePersona = (lifecycle: LifecycleLease): Promise<boolean> => {
++    if (personaReady) return Promise.resolve(true);
++    if (personaLoad?.lifecycle === lifecycle) return personaLoad.promise;
++    const entry: { lifecycle: LifecycleLease; promise: Promise<boolean> } = { lifecycle, promise: Promise.resolve(false) };
++    personaLoad = entry;
++    entry.promise = (async () => {
++      let loaded: unknown;
++      try {
++        loaded = await dependencies.loadPersona();
++      } catch {
++        if (activeLifecycle === lifecycle) personaFailed = true;
++        return false;
++      } finally {
++        if (personaLoad === entry) personaLoad = undefined;
++      }
++      if (activeLifecycle !== lifecycle) return false;
++      if (typeof loaded !== "string" || loaded.trim() === "") {
++        personaFailed = true;
++        return false;
++      }
++      persona = loaded;
++      personaReady = true;
++      personaFailed = false;
++      return true;
++    })();
++    return entry.promise;
++  };
+   const doctorHealth = (context: ExtensionContextPort) => {
+     const footerHealth = footer.health();
+     // `enabled` records the authority under which this session initialized.
+@@ -618,9 +714,26 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
+       context.ui.notify(bridgeDegraded, "error");
+       throw new Error(bridgeDegraded, { cause: error });
+     }
+-    try {
+-      persona = await dependencies.loadPersona();
++    void observeWorkflowRecovery(lifecycle, context);
++    if (!await ensurePersona(lifecycle)) {
+       if (!isCurrent()) return;
++      context.ui.notify(PI_PERSONA_UNAVAILABLE_STATUS, "error");
++    }
++    if (!isCurrent()) return;
++    if (dependencies.readDelegationRecovery !== undefined) {
++      // Recovery observation does not delay ordinary ready work and cannot restore authority.
++      void dependencies.readDelegationRecovery(context.cwd).then((recovery) => {
++        if (!isCurrent() || !hasAffirmativeProjectTrust(context)) return;
++        if (recovery.state === "pending") context.ui.notify(
++          `Pi delegation has ${recovery.count} unresolved operation(s). Run /ca-doctor; inspect retained outcomes before any new attempt.`, "warning");
++        else if (recovery.state === "unavailable") context.ui.notify(
++          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.", "warning");
++      }).catch(() => {
++        if (isCurrent() && hasAffirmativeProjectTrust(context)) context.ui.notify(
++          "Pi delegation recovery observation is unavailable. Run /ca-doctor before retrying an uncertain effect.", "warning");
++      });
++    }
++    try {
+       const response = await dependencies.bridge.call({ version: 1, event: "session_start", cwd: context.cwd }, context.signal ?? neverAborted);
+       if (!isCurrent()) return;
+       state = response.context ?? "host: pi";
+@@ -643,7 +756,15 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
+     const lifecycle = readyLifecycle;
+     if (!enabled || lifecycle === undefined) return;
+     ownershipDegraded = ownershipStatus(pi, dependencies, nativePlanRegistered, nativeJobsRegistered);
+-    if (degradedStatus() !== undefined) publishStatus(context, degradedStatus());
++    await observeWorkflowRecovery(lifecycle, context);
++    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
++    // The retry edge for a failed persona read: only a persona read clears it.
++    const personaWasReady = personaReady;
++    await ensurePersona(lifecycle);
++    if (readyLifecycle !== lifecycle) return;
++    if (degradedStatus() !== undefined || personaWasReady !== personaReady) {
++      publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
++    }
+     try {
+       const response = await dependencies.bridge.call({
+         version: 1,
+@@ -664,7 +785,14 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
+       publishStatus(context, degradedStatus());
+     }
+     const systemPrompt = typeof event.systemPrompt === "string" ? event.systemPrompt : "";
+-    return { systemPrompt: appendPrompt(systemPrompt, persona, state) };
++    if (readyLifecycle !== lifecycle || !hasAffirmativeProjectTrust(context) || context.signal?.aborted) return;
++    const recoveryText = workflowPresentation !== undefined && !workflowPromptDelivered.has(workflowPresentation.key)
++      ? workflowPresentation.notice : "";
++    const result = { systemPrompt: appendPrompt(systemPrompt, personaReady ? persona : PI_PERSONA_UNAVAILABLE_PROMPT,
++      recoveryText === "" ? state : `${state}\n${recoveryText}`) };
++    // Returning the prompt is this sink's delivery boundary; UI delivery has its own key.
++    if (workflowPresentation !== undefined && recoveryText !== "") workflowPromptDelivered.add(workflowPresentation.key);
++    return result;
+   });
+ 
+   pi.on("agent_start", (_event, context) => {
+@@ -884,8 +1012,6 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+   let pythonResolutionAttempted = false;
+   let concreteBridge: BridgeClient | undefined;
+   let unavailableBridge: BridgeClient | undefined;
+-  const shouldAuditBridgeFailure = (request: Parameters<BridgePort["call"]>[0]) =>
+-    request.event !== "footer_usage_update" && request.event !== "footer_status_snapshot";
+   const bridge: BridgePort = {
+     call: async (request, signal) => {
+       const selectedPython = pythonCommand;
+@@ -933,6 +1059,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+     }
+   };
+   const enforcement = new EnforcementInstaller();
++  const delegatedExecutors = new Map<string, Promise<ReturnType<typeof createDelegatedExecutor>>>();
+   enforcement.ensureBootstrap(pi, toolClasses);
+   installParent(pi, {
+     bridge,
+@@ -944,6 +1071,8 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+     },
+     enforcementReadiness: enforcement,
+     loadPersona: async () => await loadPersonaFrom(packageRoot),
++    readWorkflowRecovery: (context) => readWorkflowRecoverySnapshot(bridge, context, { enabled: true }),
++    readDelegationRecovery,
+     resetBridge,
+     prepareFooterBridge: (cwd) => { prepareBridgeIdentity(cwd); },
+     readFooterUpdateVersion: async () => await readCachedUpdateVersion(packageRoot),
+@@ -953,6 +1082,41 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+       piCliPath: runtime.cliEntry,
+       currentLifecycle,
+       currentActivity,
++      openDelegation: async (context, parentToolCallId, role, runId, signal, isCurrent) => {
++        if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
++          throw new Error("Parent delegation unavailable (no-parent-ui).");
++        }
++        if (typeof context.cwd !== "string" || !isCurrent()) throw new Error("Parent delegation context is unavailable.");
++        const worktree = await realpath(context.cwd);
++        const observeCommandBinding = async () => {
++          const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
++          const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
++          if (shellPath === undefined) return null;
++          return Object.freeze({ shellPath, commandPrefix: settings.getShellCommandPrefix() });
++        };
++        const commandBinding = await observeCommandBinding();
++        const commandIdentity = JSON.stringify(commandBinding);
++        let executor = delegatedExecutors.get(worktree);
++        if (executor === undefined) {
++          executor = (async () => {
++            const journal = await openDelegationJournal(worktree);
++            if (journal === undefined) throw new Error("Parent delegation journal is unavailable.");
++            return createDelegatedExecutor({ journal,
++              write: (root) => runtime.createWriteToolDefinition(root), edit: (root) => runtime.createEditToolDefinition(root),
++              shell: async () => {
++                const settings = runtime.SettingsManager.create(worktree, runtime.getAgentDir(), { projectTrusted: true });
++                const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
++                return shellPath === undefined ? undefined : { shellPath, commandPrefix: settings.getShellCommandPrefix() };
++              }, environment: process.env });
++          })();
++          delegatedExecutors.set(worktree, executor);
++          executor.catch(() => { delegatedExecutors.delete(worktree); });
++        }
++        return await openParentDelegation({ runId, role, parentToolCallId, worktree, signal, isCurrent, commandBinding,
++          enabled: async () => await isEnabled(worktree) && JSON.stringify(await observeCommandBinding()) === commandIdentity, executor: await executor,
++          gate: async (request, operationSignal, effect, description) => await enforcement.executeDelegated(request.tool,
++            `${parentToolCallId}:${request.requestId}`, request.params as Record<string, unknown>, operationSignal, context, effect, description) });
++      },
+     }),
+     installCompaction: (currentLifecycle) => installPiCompaction(pi, {
+       packageRoot,
+@@ -994,7 +1158,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+       resolveLaunch: async (cwd) => {
+         const settings = runtime.SettingsManager.create(cwd, runtime.getAgentDir(), { projectTrusted: true });
+         const shellPath = await resolvePiBackgroundShell(settings.getShellPath(), process.env, process.platform);
+-        const env = boundedPiEnvironment(process.env);
++        const env = boundedPiEnvironment(credentialBlindHostEnvironment(process.env, process.platform));
+         if (shellPath === undefined || env === undefined) return undefined;
+         const commandPrefix = settings.getShellCommandPrefix();
+         return Object.freeze({
+@@ -1069,7 +1233,29 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
+         projectTrusted: trustedForDoctor,
+         executeBash: async () => await enforcement.runDoctorWrapperSelfTest(context.signal),
+       });
+-      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest]);
++      const recovery = enabledForDoctor && trustedForDoctor ? await readDelegationRecovery(context.cwd) : undefined;
++      const recoveryText = recovery === undefined ? "not inspected (project trust or activation unavailable)"
++        : recovery.state === "clear" ? "no unresolved retained operations observed"
++          : recovery.state === "unavailable" ? "observation unavailable; unknown outcomes remain unknown"
++            : `${recovery.count} unresolved operation(s); read-only observation required, never automatic effect replay\n`
++              + recovery.operationIds.join("\n");
++      const parentUI = context.mode === "tui" && context.hasUI === true && typeof context.ui?.confirm === "function";
++      return formatPiDoctorReport([...diagnosePi(input), wrapperSelfTest, {
++        id: "author-delegation", state: parentUI ? "healthy" : "degraded",
++        message: `${parentUI
++          ? "per-operation parent confirmation available; executor and journal checked for each live author run"
++          : "unavailable (no-parent-ui); read-only reviewer capability remains separate"}. `
++          + "Execution uses trusted-host-exact-operation-v1 with host filesystem/network access. Source capability is not packaged-author qualification.",
++        remediation: "Use a trusted parent TUI for concrete operation confirmation; require exact supported-host author qualification before promotion.",
++      }, {
++        id: "delegation-recovery", state: recovery?.state === "pending" || recovery?.state === "unavailable" ? "degraded" : "healthy",
++        message: recoveryText, remediation: "Inspect retained observations before retrying dependent effects; never replay uncertain operations automatically.",
++      }, {
++        id: "private-artifact-approval", state: "healthy",
++        message: `${privateApprovalCapability(runtimeIdentity.version).state} on Pi ${runtimeIdentity.version}; `
++          + `legacy private entry is runtime-gated to ${PRIVATE_APPROVAL_LEGACY_PI_VERSION}. This does not qualify host-observed approval or grant delegation authority.`,
++        remediation: "Treat this optional legacy capability separately from ordinary author delegation.",
++      }]);
+     },
+     installEnforcement: (cwd, context, getMode, backgroundToolFactory) => {
+       const guardPi = pi;
+diff --git a/plugins/ca-pi/tools/src/sidebar-manager.ts b/plugins/ca-pi/tools/src/sidebar-manager.ts
+index 6e19aca43cce5f1a8dbad8dab1f008a8292b2601..cab4e87b6d38ea2f3decdeb921d70a0e2dad1fd5 100644
+--- a/plugins/ca-pi/tools/src/sidebar-manager.ts
++++ b/plugins/ca-pi/tools/src/sidebar-manager.ts
+@@ -74,6 +74,9 @@ class Manager implements SidebarManager {
+   private autoDecided = false;
+   private lastReason: string | undefined;
+   private metrics: FooterTextMetrics | undefined;
++  /** PI-L02: disposal or explicit off retires pending installs; a late metrics
++   * result may be cached but must not patch a retired generation's terminal. */
++  private generation = 0;
+ 
+   constructor(private readonly ports: SidebarManagerPorts) {}
+ 
+@@ -105,6 +108,7 @@ class Manager implements SidebarManager {
+   }
+ 
+   dispose(): void {
++    this.generation += 1;
+     try { this.compositor?.dispose(); } catch { /* Restore is fail-soft; native stays authoritative. */ }
+     this.compositor = undefined;
+     this.expected = false;
+@@ -127,23 +131,37 @@ class Manager implements SidebarManager {
+   }
+ 
+   private async install(context: ExtensionContextPort): Promise<boolean> {
+-    const tui = this.ports.currentTui();
+-    const terminal = this.ports.terminal();
+-    if (tui === undefined || terminal === undefined) {
+-      this.lastReason = tui === undefined ? "no-tui" : "no-terminal";
++    const generation = this.generation;
++    if (this.ports.currentTui() === undefined || this.ports.terminal() === undefined) {
++      this.lastReason = this.ports.currentTui() === undefined ? "no-tui" : "no-terminal";
+       return false;
+     }
+     if (this.metrics === undefined) {
++      let loaded: FooterTextMetrics | undefined;
+       try {
+-        this.metrics = await this.ports.loadMetrics?.();
++        loaded = await this.ports.loadMetrics?.();
+       } catch {
+-        this.metrics = undefined;
++        loaded = undefined;
+       }
++      // The metrics loader is runtime-scoped, so a late result may still be
++      // cached; but a disposed session never records a reason or installs.
++      if (loaded !== undefined) this.metrics ??= loaded;
++      if (generation !== this.generation) return false;
+       if (this.metrics === undefined) {
+         this.lastReason = "no-metrics";
+         return false;
+       }
+     }
++    // A concurrent install in this same session may have finished first.
++    if (this.compositor?.installed === true) return true;
++    // Read the live TUI and terminal only after the await: geometry or the
++    // footer handle may have changed while metrics loaded.
++    const tui = this.ports.currentTui();
++    const terminal = this.ports.terminal();
++    if (tui === undefined || terminal === undefined) {
++      this.lastReason = tui === undefined ? "no-tui" : "no-terminal";
++      return false;
++    }
+     const notify = (message: string) => {
+       try { context.ui.notify(message, "warning"); } catch { /* Notification is best-effort. */ }
+     };
+@@ -179,6 +197,7 @@ class Manager implements SidebarManager {
+   }
+ 
+   private turnOff(context: ExtensionContextPort): void {
++    this.generation += 1;
+     this.userDisabled = true;
+     this.autoDecided = true;
+     try { this.compositor?.dispose(); } catch { /* Restore is fail-soft. */ }
+diff --git a/plugins/ca-pi/tools/src/status.ts b/plugins/ca-pi/tools/src/status.ts
+index 2c9e1fec1655d4ccb4d38afec662cc1df28eaa18..c201adc31895209a66dcb21feea869afe30725be 100644
+--- a/plugins/ca-pi/tools/src/status.ts
++++ b/plugins/ca-pi/tools/src/status.ts
+@@ -66,6 +66,7 @@ export class PiFooterLifecycle {
+   private activationEnabled = false;
+   private expected = false;
+   private installed = false;
++  private componentOwner: object | undefined;
+   private refreshQueue: Promise<void> = Promise.resolve();
+ 
+   constructor(
+@@ -133,11 +134,14 @@ export class PiFooterLifecycle {
+     }
+     if (this.context !== context || generation !== this.generation) return;
+     const factory: PiFooterFactoryPort = (tui, _theme, footerData) => {
+-      if (this.context !== context) {
++      if (this.context !== context || generation !== this.generation) {
+         return { render: () => [], invalidate: () => undefined };
+       }
++      const componentOwner = {};
++      this.componentOwner = componentOwner;
+       this.tui = tui;
+       this.footerData = footerData;
++      let disposed = false;
+       let unsubscribe: (() => void) | undefined;
+       try {
+         const result = footerData.onBranchChange?.(() => requestRender(tui));
+@@ -187,9 +191,20 @@ export class PiFooterLifecycle {
+           }
+         },
+         dispose: () => {
++          if (disposed) return;
++          disposed = true;
+           try { unsubscribe?.(); } catch { /* Host subscription disposal is fail-soft. */ }
+-          if (this.tui === tui) this.tui = undefined;
+-          if (this.footerData === footerData) this.footerData = undefined;
++          // Pi disposes the old custom component before installing another
++          // extension's footer. Retire only this live owner, without touching UI.
++          if (this.componentOwner === componentOwner && this.context === context
++              && generation === this.generation) {
++            this.componentOwner = undefined;
++            this.generation += 1;
++            this.installed = false;
++            this.context = undefined;
++            this.tui = undefined;
++            this.footerData = undefined;
++          }
+         },
+       };
+     };
+@@ -253,6 +268,7 @@ export class PiFooterLifecycle {
+     const context = this.context;
+     this.generation += 1;
+     this.context = undefined;
++    this.componentOwner = undefined;
+     this.footerData = undefined;
+     this.tui = undefined;
+     this.usageCursor = -1;
+diff --git a/plugins/ca-pi/tools/src/tool-guard.ts b/plugins/ca-pi/tools/src/tool-guard.ts
+index 96a64165572d50c38ca81adf3aeae49fccef9306..2d4cd560f4571c759040ea756b2ae7d4db270acb 100644
+--- a/plugins/ca-pi/tools/src/tool-guard.ts
++++ b/plugins/ca-pi/tools/src/tool-guard.ts
+@@ -500,6 +500,7 @@ function wrappedDefinition(
+   onTrustWithdrawn: () => void,
+   allowNativeFallback = true,
+   bridgeToolName = toolName,
++  delegatedConfirmation?: string,
+ ): ToolDefinitionPort {
+   const original = factory(cwd);
+   if (original.name !== toolName || typeof original.execute !== "function") {
+@@ -618,7 +619,7 @@ function wrappedDefinition(
+           ? "current"
+           : "lifecycle-stale";
+       };
+-      if (policy.decision === "ask") {
++      if (policy.decision === "ask" || delegatedConfirmation !== undefined) {
+         const confirmation = confirmationUi(context);
+         if (confirmation === undefined) {
+           await audit("denied");
+@@ -633,7 +634,9 @@ function wrappedDefinition(
+           confirmed = await confirmation.confirm.call(
+             confirmation.ui,
+             CONFIRMATION_TITLE,
+-            confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence),
++            delegatedConfirmation ?? (policy.decision === "ask"
++              ? confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence)
++              : "Allow this exact governed operation?"),
+             { timeout: CONFIRMATION_TIMEOUT_MS, signal },
+           ) === true;
+         } catch {
+@@ -751,6 +754,7 @@ export class EnforcementInstaller {
+   private fallbackSessionId: string | undefined;
+   private lifecycleGeneration: LifecycleGeneration | undefined;
+   private trustRevoked = false;
++  private delegatedBuiltins: { pi: ToolGuardPiPort; bridge: BridgePort; options: WrapBuiltinsOptions; generation: LifecycleGeneration } | undefined;
+ 
+   private sessionIdFor(context: ToolExecutionContextPort | undefined): string {
+     const native = nativeSessionId(context);
+@@ -812,6 +816,7 @@ export class EnforcementInstaller {
+     this.trustRevoked = false;
+     this.fallbackSessionId = undefined;
+     this.lifecycleGeneration = undefined;
++    this.delegatedBuiltins = undefined;
+   }
+ 
+   ensureGuard(pi: ToolGuardPiPort, descriptor: Readonly<Record<string, ToolCategory>>, wrapperSourcePath: string): void {
+@@ -839,6 +844,53 @@ export class EnforcementInstaller {
+       (context) => this.sessionIdFor(context),
+       () => this.revokeForTrustWithdrawal(),
+     );
++    if (this.lifecycleGeneration !== undefined) {
++      this.delegatedBuiltins = { pi, bridge, options, generation: this.lifecycleGeneration };
++    }
++  }
++
++  /** Reuse the parent's final gate while substituting only its owned effect executor.
++   * Context is the original parent dispatch context, never child-supplied data. */
++  async executeDelegated(
++    tool: "write" | "edit" | "bash", toolCallId: string, params: Record<string, unknown>, signal: AbortSignal,
++    context: ToolExecutionContextPort, effect: (approved: Record<string, unknown>) => Promise<Record<string, unknown>>,
++    executionDescription?: string,
++  ): Promise<{ admitted: boolean; reason?: "no-parent-ui"; result: Record<string, unknown> }> {
++    const declined = () => ({ admitted: false, result: { isError: true,
++      content: [{ type: "text", text: "Parent permission gate refused the delegated operation." }] } });
++    if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
++      return { ...declined(), reason: "no-parent-ui" };
++    }
++    const saved = this.delegatedBuiltins;
++    if (saved === undefined || saved.generation !== this.lifecycleGeneration || !this.ready) {
++      return declined();
++    }
++    const { pi, bridge, options, generation } = saved;
++    const policy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
++    if (policy === undefined) return declined();
++    let admitted = false;
++    const factory = () => ({ name: tool, execute: async (_id: string, approved: Record<string, unknown>) => {
++      admitted = true;
++      return await effect(approved);
++    } });
++    let snapshot: Record<string, unknown>;
++    try { snapshot = canonicalSnapshot(params) as Record<string, unknown>; }
++    catch { return declined(); }
++    const exact = JSON.stringify(snapshot);
++    const confirmation = `Delegated ${tool} in ${options.cwd}\n${exact}\nSHA-256: ${createHash("sha256").update(exact).digest("hex")}\n`
++      + (executionDescription === undefined ? "" : `${executionDescription}\n`)
++      + "The parent executes this exact request on the trusted host. Approved commands have host filesystem and network access.";
++    const definition = wrappedDefinition(pi, tool, factory, factory, options.descriptor[tool] ?? "OTHER", options.cwd,
++      bridge, generation, () => this.lifecycleGeneration, () => this.ready, (ctx) => this.sessionIdFor(ctx),
++      policy, options.getMode ?? (() => "execute"), options.permissionAudit, options.wrapperSourcePath,
++      options.projectTrust, () => this.revokeForTrustWithdrawal(), false, tool, confirmation);
++    try {
++      const result = await definition.execute(toolCallId, snapshot, signal, undefined, context);
++      return { admitted, result };
++    } catch (error) {
++      if (admitted) throw error; // The owned executor must retain a possible effect outcome.
++      return declined();
++    }
+   }
+ 
+   ensureCustomTool(pi: ToolGuardPiPort, bridge: BridgePort, options: WrapCustomToolOptions): void {

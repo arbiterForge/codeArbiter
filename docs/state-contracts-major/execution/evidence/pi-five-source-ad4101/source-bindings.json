@@ -1,0 +1,312 @@
+{
+ "schema": "codearbiter.pi-five-source-bindings/1",
+ "source_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "context_packet_sha256": "c5486348358d012977fe67a5ec16ef4de5dff49e773fee01773593b246b1a114",
+ "frozen_hash_method": "SHA256(sorted compact ensure_ascii JSON of exact full row)",
+ "files": {
+  "plugins/ca-pi/tools/src/activation.ts": {
+   "index_oid": "2897ef473a6d7c965b7bfa3bb22cab8efaf3eae9",
+   "sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+   "bytes": 3634,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/activity.ts": {
+   "index_oid": "800c2f3beb1dbcac54cf68dc377a35b028f9e59f",
+   "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+   "bytes": 8980,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/audit-sink.ts": {
+   "index_oid": "d1b0aa766e1c21b7cee71168b6f16c6df4357a99",
+   "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+   "bytes": 9787,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/background-jobs.ts": {
+   "index_oid": "49e8cb5cbc4cef16bf2bf92eb243b1737102d371",
+   "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+   "bytes": 37964,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/bridge.ts": {
+   "index_oid": "8673ad825ff9b43e8fbaa1635acfd44a1c50dbe6",
+   "sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+   "bytes": 45669,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/command-ownership.ts": {
+   "index_oid": "1afd91e771db5b81f343a365ca152f2e906c2d8d",
+   "sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+   "bytes": 9913,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/commands.ts": {
+   "index_oid": "0d4f977f31dcecf0ec5f2355a7bce4e3be4db85a",
+   "sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+   "bytes": 5045,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/contracts.ts": {
+   "index_oid": "a31105774d85096c6875acb0409bedf1823d7b82",
+   "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+   "bytes": 7509,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/extension.ts": {
+   "index_oid": "efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f",
+   "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+   "bytes": 64790,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/native-background.ts": {
+   "index_oid": "4be0d19ada0205afe27c308866ba4ee1ae554506",
+   "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+   "bytes": 18809,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/native-plan.ts": {
+   "index_oid": "025576315d5120c52453c51c675a851bcac0bfaa",
+   "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+   "bytes": 16091,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/notices.ts": {
+   "index_oid": "9adc9bc49f0166cc013f0a91934ecbe09e7bb0c8",
+   "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+   "bytes": 2690,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/plan-mode.ts": {
+   "index_oid": "cc9c93b21c88b426a2d4fae6cd3d059b1287d5cf",
+   "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+   "bytes": 25588,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/policy.ts": {
+   "index_oid": "733aed5fe68a865e53acd9b4f4fd676be2d49571",
+   "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+   "bytes": 12721,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/process-tree.ts": {
+   "index_oid": "404c1068078e1a1d2d7c956ea4a31bc3fa3a6495",
+   "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+   "bytes": 51594,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/redaction.ts": {
+   "index_oid": "cdb1825417ded089fad81b4f586bcee65a344be1",
+   "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+   "bytes": 4571,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/session-identity.ts": {
+   "index_oid": "675b7f04b937d78d7afba04ec55e1c215c4ad33e",
+   "sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+   "bytes": 1455,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+   "index_oid": "cab4e87b6d38ea2f3decdeb921d70a0e2dad1fd5",
+   "sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+   "bytes": 9210,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/status.ts": {
+   "index_oid": "c201adc31895209a66dcb21feea869afe30725be",
+   "sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+   "bytes": 11759,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-pi/tools/src/tool-guard.ts": {
+   "index_oid": "2d4cd560f4571c759040ea756b2ae7d4db270acb",
+   "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+   "bytes": 46425,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "index_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "index_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "index_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "index_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/execution/coverage-ledger.json": {
+   "index_oid": "3b799471f7fa4d1558317ab3b7f0191215551b62",
+   "sha256": "ff71dcfda8b297b9539bc90f835b309980c90e54b5ba335d5af84e89359c64b9",
+   "bytes": 1785281,
+   "immutable_git_blob_join": true
+  },
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "index_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "immutable_git_blob_join": true
+  },
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+   "index_oid": "886b3c4f08dbad58b896b9ad026ece7b29d600f2",
+   "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "bytes": 2450,
+   "immutable_git_blob_join": true
+  }
+ },
+ "baseline_files": {
+  "plugins/ca-pi/tools/src/activation.ts": {
+   "index_oid": "2897ef473a6d7c965b7bfa3bb22cab8efaf3eae9",
+   "sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+   "bytes": 3634,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/activity.ts": {
+   "index_oid": "800c2f3beb1dbcac54cf68dc377a35b028f9e59f",
+   "sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+   "bytes": 8980,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/audit-sink.ts": {
+   "index_oid": "12273ef810eb0bd876edfd54880744535eefd159",
+   "sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+   "bytes": 8336,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/background-jobs.ts": {
+   "index_oid": "49e8cb5cbc4cef16bf2bf92eb243b1737102d371",
+   "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+   "bytes": 37964,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/bridge.ts": {
+   "index_oid": "5bc15e9cee1cad2360849eb4c22245b13b34082c",
+   "sha256": "87d98382f90b223e1356cf0b2895929690655b113f6be18aac682bb411ba9a84",
+   "bytes": 40807,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/command-ownership.ts": {
+   "index_oid": "1afd91e771db5b81f343a365ca152f2e906c2d8d",
+   "sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+   "bytes": 9913,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/commands.ts": {
+   "index_oid": "0d4f977f31dcecf0ec5f2355a7bce4e3be4db85a",
+   "sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+   "bytes": 5045,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/contracts.ts": {
+   "index_oid": "0971af311d436f9e4791b1d9649115908343d99a",
+   "sha256": "46ff5c3869f48042389c14cf954ea38cfa8e8392252311af60a523b425582e77",
+   "bytes": 7118,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/extension.ts": {
+   "index_oid": "c3a18b286af5ff850f10efc4f429071b74e61f8f",
+   "sha256": "34810c6a83c6dba10ff5a58d63a38ae909d1f92f80ae2450c5772eea21271093",
+   "bytes": 51543,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/native-background.ts": {
+   "index_oid": "4be0d19ada0205afe27c308866ba4ee1ae554506",
+   "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+   "bytes": 18809,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/native-plan.ts": {
+   "index_oid": "025576315d5120c52453c51c675a851bcac0bfaa",
+   "sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+   "bytes": 16091,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/notices.ts": {
+   "index_oid": "9adc9bc49f0166cc013f0a91934ecbe09e7bb0c8",
+   "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+   "bytes": 2690,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/plan-mode.ts": {
+   "index_oid": "cc9c93b21c88b426a2d4fae6cd3d059b1287d5cf",
+   "sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+   "bytes": 25588,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/policy.ts": {
+   "index_oid": "733aed5fe68a865e53acd9b4f4fd676be2d49571",
+   "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+   "bytes": 12721,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/process-tree.ts": {
+   "index_oid": "404c1068078e1a1d2d7c956ea4a31bc3fa3a6495",
+   "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+   "bytes": 51594,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/redaction.ts": {
+   "index_oid": "cdb1825417ded089fad81b4f586bcee65a344be1",
+   "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+   "bytes": 4571,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/session-identity.ts": {
+   "index_oid": "675b7f04b937d78d7afba04ec55e1c215c4ad33e",
+   "sha256": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+   "bytes": 1455,
+   "current_equal": true
+  },
+  "plugins/ca-pi/tools/src/sidebar-manager.ts": {
+   "index_oid": "6e19aca43cce5f1a8dbad8dab1f008a8292b2601",
+   "sha256": "7d2677843e661b8c24f11af652e3954f14036691ae1a1210570f85b456b5c72b",
+   "bytes": 8156,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/status.ts": {
+   "index_oid": "2c9e1fec1655d4ccb4d38afec662cc1df28eaa18",
+   "sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+   "bytes": 11076,
+   "current_equal": false
+  },
+  "plugins/ca-pi/tools/src/tool-guard.ts": {
+   "index_oid": "96a64165572d50c38ca81adf3aeae49fccef9306",
+   "sha256": "48434edf40a82ae39a43f7955eb4e10be2101f5ca60080c46a7df015fa0f6207",
+   "bytes": 43140,
+   "current_equal": false
+  }
+ },
+ "current_public_owner_lookup": {
+  "argv": [
+   "git",
+   "--no-lazy-fetch",
+   "-C",
+   "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+   "grep",
+   "-n",
+   "operatePlanFile",
+   "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+   "--",
+   "plugins/ca-pi/tools/src"
+  ],
+  "sha256": "4ec5cad13668bb00ba5a4bb247891224b164e640f76f7882b88e01488863ee73",
+  "matches": [
+   "ad4101ab36c30e9b46b69e32455911d3311f8bd6:plugins/ca-pi/tools/src/plan-mode.ts:461:export async function operatePlanFile("
+  ],
+  "limit": "Only exact symbol use in Pi src; not a proven absence in all external/public clients."
+ }
+}

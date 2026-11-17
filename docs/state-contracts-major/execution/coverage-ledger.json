@@ -4082,8 +4082,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S02": {
    "owner": "pi",
@@ -4095,8 +4102,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S03": {
    "owner": "pi",
@@ -4116,8 +4130,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S04-preserved.json",
+     "sha256": "d1cb7ba91228ca49b8cc9daaa737c08612cff5003f145d526bd7461bd620d2fd"
+    }
+   ]
   },
   "S05": {
    "owner": "pi",
@@ -4127,8 +4148,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S05-preserved.json",
+     "sha256": "4ec8f82dc73dcb23d9bf16faa5a9080e03094e8dc92051f89beeddd9594e0594"
+    }
+   ]
   },
   "S06": {
    "owner": "pi",
@@ -23467,8 +23495,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:02": {
    "owner": "pi",
@@ -23482,8 +23517,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:03": {
    "owner": "pi",
@@ -23497,8 +23539,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:04": {
    "owner": "pi",
@@ -23512,8 +23561,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:05": {
    "owner": "pi",
@@ -23527,8 +23583,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:06": {
    "owner": "pi",
@@ -23542,8 +23605,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:07": {
    "owner": "pi",
@@ -23557,8 +23627,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:08": {
    "owner": "pi",
@@ -23572,8 +23649,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:09": {
    "owner": "pi",
@@ -23587,8 +23671,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:10": {
    "owner": "pi",
@@ -23602,8 +23693,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S02:01": {
    "owner": "pi",
@@ -23615,8 +23713,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:02": {
    "owner": "pi",
@@ -23628,8 +23733,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:03": {
    "owner": "pi",
@@ -23641,8 +23753,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:04": {
    "owner": "pi",
@@ -23654,8 +23773,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:05": {
    "owner": "pi",
@@ -23667,8 +23793,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:06": {
    "owner": "pi",
@@ -23680,8 +23813,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:07": {
    "owner": "pi",
@@ -23693,8 +23833,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:08": {
    "owner": "pi",
@@ -23706,8 +23853,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:09": {
    "owner": "pi",
@@ -23719,8 +23873,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:10": {
    "owner": "pi",
@@ -23732,8 +23893,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:11": {
    "owner": "pi",
@@ -23745,8 +23913,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:12": {
    "owner": "pi",
@@ -23758,8 +23933,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:13": {
    "owner": "pi",
@@ -23771,8 +23953,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:14": {
    "owner": "pi",
@@ -23784,8 +23973,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S03:01": {
    "owner": "pi",
@@ -23936,8 +24132,15 @@
     "PI-D02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S03-preserved.json",
+     "sha256": "63c871efaf5f794f4c34b9fe7eacb7eb207d1d60798e150a46519303bd0d3d81"
+    }
+   ]
   },
   "S03:08": {
    "owner": "pi",

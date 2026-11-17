@@ -371,3 +371,7 @@ regexes = [
   '''\Abbc6f39d688296e56ae6f3d5543e018f93288a7a\z''',
   '''\Ad203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab\z''',
 ]
+
+[[allowlists]]
+description = "Exact public PR1116 head f5dff55e, independently verified against the Git commit and live PR head. Retained original Linux progress and successful Windows diagnostic records label it API head; it is a public source identifier with no access authority. Only this complete value is exempted."
+regexes = ['''\Af5dff55e71530806c58a5dd6c352935d369ac5ae\z''']
