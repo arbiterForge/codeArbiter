@@ -1,0 +1,11 @@
+{
+  "schema": "codearbiter.visible-stdin-guard-development/1",
+  "controller_anchor": "d5f41252f4610d614eb51d709357ec511730313d",
+  "author": "/root/crypto_evidence_review",
+  "reviewer": "/root",
+  "fix": "Expose the literal PowerShell here-string interpreter before intact original code. Python stdin/default stdin selects inline-code guards, while explicit script/module/code stdin-data retains prior scope. Bound consumer argv to quote-aware shell boundary and remain conservative on uncertain syntax.",
+  "actual_regression_sequence": "H18 RED7; H22 original/predecessor RED2 each; default stdin RED3; combined options RED2; tail borrowing RED10; final21 selected methods PASS. Existing two full-hook owned-Git fixture methods not included in author capture.",
+  "review": "Root independent review found and verified repair of real predecessor tail-borrowing gap; all old guard functions except one run_guards call and all old test classes unchanged; three generated mirrors identical.",
+  "coverage": "FACT005/NOTE005 Python no numeric tooling: direct critical refusal/allow controls, not percentage or global grammar closure.",
+  "limits": "No command bodies executed by author. No installed-host/model/native/SDK/Pi/whole-task qualification or runtime epoch renewal. Original unsupported read remains conservative; main1098/publication held."
+}

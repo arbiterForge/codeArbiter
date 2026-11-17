@@ -16,6 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
 - Add closed original-observation mappings for seven finite Pi and Sandbox findings, retaining exact named selectors and existing job authority.
 - Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
 - Clarify initialization and Sandbox discovery owners; retain original review-policy evidence and select fast native-suite guards for every owned input.

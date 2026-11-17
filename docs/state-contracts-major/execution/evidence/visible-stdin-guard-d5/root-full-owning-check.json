@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_literal_python_reads.py",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "private_fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-stdin-full-owning-muskj88m",
+  "exit_code": 0,
+  "seconds": 6.550181900005555,
+  "environment_keys": [
+    "APPDATA",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "source_sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+  "tests_sha256": "b1345cde7b7ee68658fca334aa84d90b92e1d392997a73a83194100d4f48bbb7",
+  "streams": {
+    "stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    "stderr": {
+      "sha256": "9e1989b400db3b61dcb25ab94e4b7dd7bbff7cd8e6b4f3dd6c18ad7922ed76f0",
+      "bytes": 3942,
+      "utf8_text": "test_actual_knowledge_reader_then_protected_file_reads (__main__.CompoundReadRegression.test_actual_knowledge_reader_then_protected_file_reads) ... ok\r\ntest_complete_hook_allows_compound_reads_and_keeps_three_write_guards (__main__.CompoundReadRegression.test_complete_hook_allows_compound_reads_and_keeps_three_write_guards) ... ok\r\ntest_descriptor_redirection_keeps_each_protected_target_in_its_invocation (__main__.CompoundReadRegression.test_descriptor_redirection_keeps_each_protected_target_in_its_invocation) ... ok\r\ntest_inline_nested_heredoc_and_later_interpreter_writes_remain_denied (__main__.CompoundReadRegression.test_inline_nested_heredoc_and_later_interpreter_writes_remain_denied) ... ok\r\ntest_uncertain_shell_syntax_keeps_conservative_scope (__main__.CompoundReadRegression.test_uncertain_shell_syntax_keeps_conservative_scope) ... ok\r\ntest_complete_hook_preserves_read_access_and_actual_write_denials (__main__.LiteralPythonReadTest.test_complete_hook_preserves_read_access_and_actual_write_denials) ... ok\r\ntest_literal_path_reads_and_batched_prints (__main__.LiteralPythonReadTest.test_literal_path_reads_and_batched_prints) ... ok\r\ntest_literal_reads_in_both_shells_have_a_read_only_guard_view (__main__.LiteralPythonReadTest.test_literal_reads_in_both_shells_have_a_read_only_guard_view) ... ok\r\ntest_literal_validation_data_does_not_select_verifier_authority (__main__.LiteralPythonReadTest.test_literal_validation_data_does_not_select_verifier_authority) ... ok\r\ntest_shell_boundaries_expansion_and_size_limits_remain_closed (__main__.LiteralPythonReadTest.test_shell_boundaries_expansion_and_size_limits_remain_closed) ... ok\r\ntest_unknown_code_and_import_shadowing_are_not_exempted (__main__.LiteralPythonReadTest.test_unknown_code_and_import_shadowing_are_not_exempted) ... ok\r\ntest_combined_python_value_options_do_not_hide_visible_stdin_code (__main__.PowerShellStdinOwnership.test_combined_python_value_options_do_not_hide_visible_stdin_code) ... ok\r\ntest_existing_visible_write_forms_remain_denied (__main__.PowerShellStdinOwnership.test_existing_visible_write_forms_remain_denied) ... ok\r\ntest_later_statement_preserves_nonstdin_script_data_owner (__main__.PowerShellStdinOwnership.test_later_statement_preserves_nonstdin_script_data_owner) ... ok\r\ntest_literal_reads_and_nonexecutor_data_are_not_write_authority (__main__.PowerShellStdinOwnership.test_literal_reads_and_nonexecutor_data_are_not_write_authority) ... ok\r\ntest_nonstdin_writer_script_filename_data_keeps_existing_exception (__main__.PowerShellStdinOwnership.test_nonstdin_writer_script_filename_data_keeps_existing_exception) ... ok\r\ntest_powershell_here_string_stdin_protected_write_precedes_interpreter (__main__.PowerShellStdinOwnership.test_powershell_here_string_stdin_protected_write_precedes_interpreter) ... ok\r\ntest_powershell_visible_stdin_registered_state_write_is_h22_blocked (__main__.PowerShellStdinOwnership.test_powershell_visible_stdin_registered_state_write_is_h22_blocked) ... ok\r\ntest_python_default_stdin_mode_keeps_visible_state_writes_denied (__main__.PowerShellStdinOwnership.test_python_default_stdin_mode_keeps_visible_state_writes_denied) ... ok\r\ntest_registered_state_inline_write_guard_remains_denied (__main__.PowerShellStdinOwnership.test_registered_state_inline_write_guard_remains_denied) ... ok\r\ntest_stdin_body_cannot_forge_a_sanctioned_gate_marker (__main__.PowerShellStdinOwnership.test_stdin_body_cannot_forge_a_sanctioned_gate_marker) ... ok\r\ntest_stdin_body_ownership_keeps_audit_and_decision_write_guards (__main__.PowerShellStdinOwnership.test_stdin_body_ownership_keeps_audit_and_decision_write_guards) ... ok\r\ntest_visible_stdin_consumer_boundary_does_not_borrow_later_script_argv (__main__.PowerShellStdinOwnership.test_visible_stdin_consumer_boundary_does_not_borrow_later_script_argv) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 23 tests in 6.389s\r\n\r\nOK\r\n"
+    }
+  },
+  "scope": "Full owning unittest module, including real hook subprocesses and owned Git fixture reads. Subject unsafe commands remain classifier input and are never shell-executed. No real HOME or protected repository settings/state mutation."
+}

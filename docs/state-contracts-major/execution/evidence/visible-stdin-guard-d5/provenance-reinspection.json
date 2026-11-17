@@ -1,0 +1,17 @@
+{
+  "scope": "ca-commit Phase5.5 legacy v1 selected-source reinspection only",
+  "worklist": [
+    "CHANGELOG.md",
+    "plugins/ca-codex/CHANGELOG.md",
+    "plugins/ca-pi/CHANGELOG.md"
+  ],
+  "selected_document": "release-targets",
+  "selected_paths": [
+    "CHANGELOG.md",
+    "plugins/ca-codex/CHANGELOG.md",
+    "plugins/ca-pi/CHANGELOG.md"
+  ],
+  "assessment": "All three changelog/path/independent-release owner claims still hold. Only truthful release-note entries changed; four complete target declarations and version/payload/wiring ownership were inspected. No executable declaration, target row, tag, version or publication change.",
+  "unselected_entries_preserved": true,
+  "unselected_drift_not_claimed_fresh": true
+}

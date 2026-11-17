@@ -3926,7 +3926,7 @@
     }
   ],
   "next_actions": [
-    "Finish confirmed H18 stdin-ownership fix and finite Farm observation route before final source reinspection; source65/SW9 proposals stay at actual2ed and changed-input subsets must be held.",
+    "Finish finite Farm observation route, then inspect actual stable-code source clauses and adopt only genuinely supported source successors; original runtime epochs and all tasks stay distinct.",
     "Admit actualoriginal native8 proof andSWnormative9onlyafterproperownerreview/validation; preserveepochs andhistories.",
     "Push onecoherent1119successor andrequireexactnewheadCI/Docs beforeauthorizedmergeintomajor; main1098held.",
     "Continue finite finding-specific originalobservations,13installedmatrix andgenuinelyuncovered participant/upgrade/rollback journeys; no taskpromotionfromsuitetotals."
@@ -5257,6 +5257,12 @@
       "routes": 7,
       "selectors": 38,
       "status": "LOCAL_MAPPING_AND_INDEPENDENT_REVIEW_PASS_ORIGINAL_RUNTIME_PENDING"
+    },
+    "visible_stdin_guard_fix": {
+      "controller_anchor": "d5f41252f4610d614eb51d709357ec511730313d",
+      "record": "docs/state-contracts-major/execution/evidence/visible-stdin-guard-d5/development.json",
+      "status": "LOCAL_REGRESSION_AND_INDEPENDENT_REVIEW_PASS",
+      "main_merge": "HELD_FOR_USER_TESTING"
     }
   },
   "checkpoint_history": [
