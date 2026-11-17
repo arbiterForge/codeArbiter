@@ -5370,6 +5370,208 @@ def platform_package_suites():
 
 
 class DebuggerInboxTests(unittest.TestCase):
+    def test_collector_outcome_survives_final_wait_failure(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector = native._collect
+        owner_temp = tempfile.TemporaryDirectory
+        for outcome, failure in (("deadline", "deadline"), ("output_limit", "output-limit"),
+                                 ("debugger_failed", "worker-exit")):
+            for error_kind in ("os-error", "timeout"):
+                with self.subTest(outcome=outcome, error=error_kind), owner_temp() as directory:
+                    root = Path(directory).resolve()
+                    error = OSError(5, "PRIVATE_WAIT_ERROR") if error_kind == "os-error" else native.subprocess.TimeoutExpired("PRIVATE_WAIT_ARGV", 0)
+                    if error_kind == "os-error": error.winerror = 233
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(), returncode=1,
+                        poll=mock.Mock(return_value=1), wait=mock.Mock(side_effect=error),
+                        kill=mock.Mock(), _handle=SimpleNamespace(Close=mock.Mock()))
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    def real_collect(child, available, *, deadline, _diagnostic):
+                        return collector(child, lambda stream: native.MAX_OUTPUT if outcome == "output_limit" else 0,
+                            deadline=deadline, _diagnostic=_diagnostic,
+                            _read=lambda stream, count: b"x" * count,
+                            _clock=lambda: deadline + 1 if outcome == "deadline" else 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=lambda **kwargs: owner_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                             {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process), \
+                         mock.patch.object(native, "_collect", side_effect=real_collect):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                    diagnostic = actual["diagnostic"]
+                    self.assertEqual(actual["status"], "cleanup_unknown")
+                    self.assertEqual(diagnostic["primaryStatus"], outcome)
+                    self.assertEqual(diagnostic["failure"], failure)
+                    self.assertEqual(diagnostic["cleanupFailure"], {"operation": "worker-wait",
+                        "exception": "os-error" if error_kind == "os-error" else "unexpected", "errno": 5 if error_kind == "os-error" else None,
+                        "winerror": 233 if error_kind == "os-error" else None})
+                    self.assertEqual(diagnostic["collectedBytes"], native.MAX_OUTPUT if outcome == "output_limit" else 0)
+                    self.assertEqual(actual["truncated"], outcome == "output_limit")
+                    self.assertNotIn("PRIVATE_", json.dumps(actual))
+                    self.assertNotIn(str(root), json.dumps(actual))
+                    self.assertLess(len(json.dumps(actual).encode()), native.MAX_JSON)
+                    process.kill.assert_not_called()
+
+
+
+    def test_final_owned_worker_cleanup_keeps_poll_and_wait_operations(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        for operation in ("worker-poll", "worker-wait"):
+            with self.subTest(operation=operation), collector_temp() as directory:
+                root = Path(directory).resolve()
+                error = OSError(5, "PRIVATE_FINAL_CLEANUP_CANARY"); error.winerror = 233
+                process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                    poll=mock.Mock(side_effect=error) if operation == "worker-poll" else mock.Mock(return_value=None),
+                    wait=mock.Mock(side_effect=error), kill=mock.Mock(), _handle=SimpleNamespace(Close=mock.Mock()))
+                kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                     mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                         {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                     mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                     mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                     mock.patch.object(native.subprocess, "Popen", return_value=process), \
+                     mock.patch.object(native, "_collect", return_value=("transport_failed", b"")):
+                    actual = native._debugger(33, kernel, time.monotonic() + 5,
+                        binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                self.assertEqual(actual["status"], "cleanup_unknown")
+                self.assertEqual(actual["diagnostic"]["failure"], "transport")
+                self.assertEqual(actual["diagnostic"]["primaryStatus"], "transport_failed")
+                self.assertEqual(actual["diagnostic"]["cleanupFailure"], {"operation": operation,
+                    "exception": "os-error", "errno": 5, "winerror": 233})
+                self.assertNotIn("PRIVATE_FINAL_CLEANUP_CANARY", json.dumps(actual))
+                self.assertEqual(process.kill.call_count, int(operation == "worker-wait"))
+
+    def test_closed_transport_error_codes_reject_bool_range_and_exception_text(self):
+        import _windows_rpc_timeout as native
+        def diagnostic():
+            return {"failure": None, "operation": None, "exception": None, "errno": None,
+                "winerror": None, "primaryStatus": None, "cleanupFailure": None}
+        for code, expected_errno, expected_winerror in ((True, None, None), (2**32, None, None),
+                (-(2**31)-1, None, None), (5, 5, 5)):
+            with self.subTest(code=code):
+                row = diagnostic()
+                error = OSError("PRIVATE_CODE_CANARY")
+                error.errno = code; error.winerror = code
+                native._transport_failure(row, "pipe-read", error, "transport_failed")
+                self.assertEqual(row["errno"], expected_errno)
+                self.assertEqual(row["winerror"], expected_winerror)
+                self.assertEqual(row["exception"], "os-error")
+                self.assertEqual(row["operation"], "pipe-read")
+                self.assertEqual(row["primaryStatus"], "transport_failed")
+                cleanup = PermissionError(13, "PRIVATE_SECONDARY_CANARY"); cleanup.winerror = 5
+                native._transport_failure(row, "temporary-root-cleanup", cleanup, "cleanup_unknown", cleanup=True)
+                native._transport_failure(row, "worker-final-cleanup", OSError(99, "PRIVATE_THIRD_CANARY"), "cleanup_unknown", cleanup=True)
+                self.assertEqual(row["operation"], "pipe-read")
+                self.assertEqual(row["primaryStatus"], "transport_failed")
+                self.assertEqual(row["cleanupFailure"], {"operation": "temporary-root-cleanup",
+                    "exception": "os-error", "errno": 13, "winerror": 5})
+                self.assertNotIn("PRIVATE_", json.dumps(row))
+
+    def test_pipe_known_winerror_is_retained_before_closed_transport(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        kernel = object.__new__(native.WindowsKernel)
+        kernel.api = SimpleNamespace(PeekNamedPipe=mock.Mock(return_value=False))
+        with mock.patch.dict(sys.modules, {"msvcrt": SimpleNamespace(get_osfhandle=lambda descriptor: 77)}), \
+             mock.patch.object(native.ctypes, "get_last_error", return_value=233, create=True):
+            with self.assertRaises(OSError) as caught:
+                kernel.available(SimpleNamespace(fileno=lambda: 1))
+        self.assertEqual(getattr(caught.exception, "winerror", None), 233,
+            "known PeekNamedPipe WinError was erased before closed transport attribution")
+
+    def test_parent_retains_closed_transport_operation_and_primary_failure(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        for mode in ("pipe-peek", "pipe-read", "worker-poll", "worker-wait", "worker-launch",
+                     "request-write", "request-close", "temporary-root-cleanup", "worker-final-cleanup"):
+            with self.subTest(operation=mode), collector_temp(prefix="ca-closed-diagnostic-fixture-") as directory:
+                root = Path(directory).resolve()
+                primary = OSError(5, "PRIVATE_TRANSPORT_CANARY", str(root / "private-error-path"))
+                primary.winerror = 233
+                secondary = PermissionError(13, "PRIVATE_CLEANUP_CANARY", str(root / "private-cleanup-path"))
+                secondary.winerror = 5
+                class Root:
+                    def __init__(self, **kwargs): self.owner = collector_temp(dir=root, **kwargs)
+                    def __enter__(self): return self.owner.__enter__()
+                    def __exit__(self, *args):
+                        self.owner.__exit__(*args)
+                        if mode in ("pipe-peek", "temporary-root-cleanup"): raise secondary
+                class Input(io.BytesIO):
+                    refused = False
+                    def write(self, value):
+                        if mode == "request-write": raise primary
+                        return super().write(value)
+                    def close(self):
+                        if mode == "request-close" and not self.refused:
+                            self.refused = True
+                            raise primary
+                        super().close()
+                response = bytearray(json.dumps(self._attribution_worker_result()).encode())
+                polls = [0]
+                def poll():
+                    polls[0] += 1
+                    if mode == "worker-poll" and polls[0] == 1: raise primary
+                    return 0
+                def wait(timeout):
+                    if mode == "worker-wait": raise primary
+                    return 0
+                process = SimpleNamespace(stdin=Input(), stdout=io.BytesIO(), returncode=0,
+                    poll=poll, wait=wait, kill=mock.Mock(),
+                    _handle=SimpleNamespace(Close=mock.Mock(side_effect=primary if mode == "worker-final-cleanup" else None)))
+                def available(stream):
+                    if mode == "pipe-peek": raise primary
+                    return 0 if mode in ("worker-poll", "worker-wait") else len(response)
+                def read(stream, count):
+                    if mode == "pipe-read": raise primary
+                    value = bytes(response[:count]); del response[:count]; return value
+                collect = native._collect
+                def inert_collect(child, pipe_available, *, deadline, **kwargs):
+                    return collect(child, pipe_available, deadline=deadline, _read=read, **kwargs)
+                kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=available)
+                with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=Root), \
+                     mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                         {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                     mock.patch.object(native, "_regular", side_effect=lambda path, **kwargs: Path(path)), \
+                     mock.patch.object(native, "_worker_environment", return_value={}), \
+                     mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                     mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                     mock.patch.object(native.subprocess, "Popen", side_effect=primary if mode == "worker-launch" else None,
+                                       return_value=process) as launch, \
+                     mock.patch.object(native, "_collect", side_effect=inert_collect):
+                    actual = native._debugger(33, kernel, time.monotonic() + 5,
+                        binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                diagnostic = actual["diagnostic"]
+                if mode == "pipe-peek":
+                    self.assertEqual(diagnostic["failure"], "transport",
+                        "secondary temporary cleanup must not overwrite the primary transport failure")
+                self.assertEqual(diagnostic.get("operation"), mode, "closed failing operation was erased")
+                self.assertEqual(diagnostic.get("exception"), "os-error")
+                self.assertEqual(diagnostic.get("errno"), 13 if mode == "temporary-root-cleanup" else 5)
+                self.assertEqual(diagnostic.get("winerror"), 5 if mode == "temporary-root-cleanup" else 233)
+                self.assertEqual(diagnostic.get("workerSpawned"), mode != "worker-launch")
+                self.assertIn(diagnostic.get("workerExited"), (None, True))
+                self.assertIn(diagnostic.get("workerReturnCode"), (None, 0))
+                self.assertIs(type(diagnostic.get("collectedBytes")), int)
+                self.assertTrue(0 <= diagnostic["collectedBytes"] <= native.MAX_OUTPUT)
+                self.assertEqual(set(diagnostic), {"phase", "failure", "elapsedMs", "remainingMs", "operation",
+                    "exception", "errno", "winerror", "workerSpawned", "workerExited", "workerReturnCode",
+                    "collectedBytes", "cleanupFailure", "primaryStatus"})
+                if mode == "pipe-peek":
+                    self.assertEqual(diagnostic["primaryStatus"], "transport_failed")
+                    self.assertEqual(diagnostic["cleanupFailure"], {"operation": "temporary-root-cleanup",
+                        "exception": "os-error", "errno": 13, "winerror": 5})
+                self.assertNotIn("PRIVATE_TRANSPORT_CANARY", json.dumps(actual))
+                self.assertNotIn("PRIVATE_CLEANUP_CANARY", json.dumps(actual))
+                self.assertNotIn(str(root), json.dumps(actual))
+                self.assertLess(len(json.dumps(actual).encode()), native.MAX_JSON)
+                launch.assert_called_once()
+                kernel.duplicate_query.assert_called_once_with(11)
+                process.kill.assert_not_called()  # The inert worker already reports exited; no target exists.
     def test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes(self):
         import _windows_rpc_timeout as native
         import _boundedproc as bounded
@@ -5735,7 +5937,7 @@ class DebuggerInboxTests(unittest.TestCase):
                         requests.append(json.loads(self.getvalue()))
                     super().close()
             process.stdin = Input()
-            def collect(child, available, *, deadline):
+            def collect(child, available, *, deadline, _diagnostic=None):
                 self.assertIs(child, process)
                 response = sdk.run(requests[-1], native, engine_factory=Backend)
                 return "captured", json.dumps(response).encode()

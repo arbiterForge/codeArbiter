@@ -42,6 +42,49 @@ def _failure_kind(error: Exception) -> str:
     return "os-error" if isinstance(error, OSError) else "unexpected"
 
 
+TRANSPORT_OPERATIONS = frozenset(("worker-launch", "request-write", "request-close",
+    "pipe-peek", "pipe-read", "worker-poll", "worker-wait",
+    "temporary-root-cleanup", "worker-final-cleanup"))
+TRANSPORT_STATUSES = frozenset(("unavailable", "transport_failed", "cleanup_unknown",
+    "deadline", "output_limit", "debugger_failed", "input_refused", "identity_refused",
+    "engine_failed", "unrecognized"))
+
+
+def _error_code(error, name, minimum, maximum):
+    try:
+        value = getattr(error, name, None)
+    except Exception:
+        return None
+    return value if type(value) is int and minimum <= value <= maximum else None
+
+
+def _transport_failure(diagnostic, operation, error, status, *, cleanup=False):
+    """Retain closed categories/codes only; never exception text or arguments."""
+    if diagnostic is None:
+        return
+    detail = {"operation": operation if operation in TRANSPORT_OPERATIONS else None,
+              "exception": _failure_kind(error),
+              "errno": _error_code(error, "errno", -(2**31), 2**31 - 1),
+              "winerror": _error_code(error, "winerror", 0, 2**32 - 1)}
+    status = status if status in TRANSPORT_STATUSES else "cleanup_unknown" if cleanup else None
+    if cleanup and (diagnostic["primaryStatus"] is not None or diagnostic["failure"] is not None):
+        diagnostic["primaryStatus"] = diagnostic["primaryStatus"] or status
+        if diagnostic["cleanupFailure"] is None:
+            diagnostic["cleanupFailure"] = detail
+    elif diagnostic["operation"] is None:
+        diagnostic.update(detail, primaryStatus=status)
+    elif diagnostic["cleanupFailure"] is None:
+        diagnostic["cleanupFailure"] = detail
+
+
+def _worker_observed(diagnostic, code):
+    if diagnostic is None:
+        return
+    valid = type(code) is int and -(2**31) <= code <= 2**32 - 1
+    diagnostic["workerExited"] = False if code is None else True if valid else None
+    diagnostic["workerReturnCode"] = code if valid else None
+
+
 def _phase(progress, name):
     if progress is not None:
         progress["phase"] = name
@@ -196,9 +239,12 @@ class WindowsKernel:
         import msvcrt
         count = wintypes.DWORD()
         if not self.api.PeekNamedPipe(msvcrt.get_osfhandle(stream.fileno()), None, 0, None, ctypes.byref(count), None):
-            if ctypes.get_last_error() == 109:  # ERROR_BROKEN_PIPE is EOF, never target absence.
+            code = ctypes.get_last_error()
+            if code == 109:  # ERROR_BROKEN_PIPE is EOF, never target absence.
                 return 0
-            raise OSError("debugger pipe unavailable")
+            error = OSError("debugger pipe unavailable")
+            error.winerror = code
+            raise error
         return count.value
 
 
@@ -212,41 +258,60 @@ def _worker_environment(root: Path) -> dict[str, str]:
     return env
 
 
-def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic, _sleep=time.sleep):
+def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic, _sleep=time.sleep, _diagnostic=None):
     """Poll available pipe bytes on Windows; never block a reader thread or communicate."""
     read = _read or (lambda stream, size: os.read(stream.fileno(), size))
     raw = bytearray()
     status = "transport_failed"
+    operation = "pipe-peek"
     try:
         while _clock() < deadline:
+            operation = "pipe-peek"
             count = available(process.stdout)
             if count:
                 if len(raw) == MAX_OUTPUT:
                     status = "output_limit"
                     break
+                operation = "pipe-read"
                 block = read(process.stdout, min(count, MAX_OUTPUT - len(raw), 4096))
                 raw.extend(block)
                 if len(raw) > MAX_OUTPUT:
                     status = "output_limit"
                     break
-            elif process.poll() is not None:
-                status = "captured" if process.returncode == 0 else "debugger_failed"
-                break
             else:
+                operation = "worker-poll"
+                code = process.poll()
+                _worker_observed(_diagnostic, code)
+                if code is not None:
+                    status = "captured" if process.returncode == 0 else "debugger_failed"
+                    break
                 _sleep(min(0.01, max(0, deadline - _clock())))
         else:
             status = "deadline"
-    except Exception:
+    except Exception as error:
         status = "transport_failed"
+        _transport_failure(_diagnostic, operation, error, status)
     finally:
-        if status != "captured" and process.poll() is None:
-            try:
-                process.kill()  # Only this Popen-owned debugger, never the observed Node.
-            except OSError:
-                pass
+        if _diagnostic is not None:
+            _diagnostic["collectedBytes"] = min(len(raw), MAX_OUTPUT)
+            if status != "captured" and _diagnostic["primaryStatus"] is None:
+                _diagnostic["primaryStatus"] = status
         try:
-            process.wait(timeout=max(0, deadline - _clock()))
-        except (OSError, subprocess.TimeoutExpired):
+            if status != "captured":
+                operation = "worker-poll"
+                code = process.poll()
+                _worker_observed(_diagnostic, code)
+                if code is None:
+                    operation = "worker-final-cleanup"
+                    try:
+                        process.kill()  # Only this Popen-owned debugger, never the observed Node.
+                    except OSError as error:
+                        _transport_failure(_diagnostic, operation, error, status, cleanup=True)
+            operation = "worker-wait"
+            code = process.wait(timeout=max(0, deadline - _clock()))
+            _worker_observed(_diagnostic, code)
+        except Exception as error:
+            _transport_failure(_diagnostic, operation, error, "cleanup_unknown", cleanup=True)
             status = "cleanup_unknown"
     return status, bytes(raw[:MAX_OUTPUT])
 
@@ -258,7 +323,10 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
               "temporarilySuspends": False, "toolHashes": None,
               "publisherSignature": "not-verified", "toolVersion": "not-observed", "profile": None,
               "worker": None, "diagnostic": {"phase": "provider-select", "failure": None,
-                  "elapsedMs": 0, "remainingMs": max(0, min(5000, round((deadline - started) * 1000)))}}
+                  "elapsedMs": 0, "remainingMs": max(0, min(5000, round((deadline - started) * 1000))),
+                  "operation": None, "exception": None, "errno": None, "winerror": None,
+                  "workerSpawned": False, "workerExited": None, "workerReturnCode": None,
+                  "collectedBytes": 0, "cleanupFailure": None, "primaryStatus": None}}
     diagnostic = result["diagnostic"]
     try:
         profile, sdk, hashes = _tool_profile(deadline, _progress=diagnostic)
@@ -269,6 +337,7 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
     result["toolHashes"] = hashes
     result["profile"] = profile
     process, duplicate = None, None
+    operation = None
     try:
         _phase(diagnostic, "worker-prepare")
         with tempfile.TemporaryDirectory(prefix="ca-rpc-native-") as directory:
@@ -282,26 +351,34 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
             encoded = json.dumps(request, separators=(",", ":")).encode("utf-8")
             if len(encoded) > 4096 or time.monotonic() >= deadline:
                 diagnostic["failure"] = "deadline" if time.monotonic() >= deadline else "refused"
-                return {**result, "status": "deadline"}
+                result["status"] = "deadline"
+                operation = "temporary-root-cleanup"
+                return result
             startup = subprocess.STARTUPINFO()
             startup.lpAttributeList = {"handle_list": [duplicate]}
             _phase(diagnostic, "worker-launch")
+            operation = "worker-launch"
             process = subprocess.Popen([sys.executable, "-I", "-B", str(worker), "--worker"],
                 cwd=root, env=_worker_environment(root), startupinfo=startup, close_fds=True,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0,
                 creationflags=subprocess.CREATE_NO_WINDOW)
             result["temporarilySuspends"] = True
+            diagnostic["workerSpawned"] = True
+            operation = "worker-final-cleanup"
             kernel.close(duplicate)
             duplicate = None
+            operation = "request-write"
             if process.stdin.write(encoded) != len(encoded):
                 raise OSError("worker input incomplete")
+            operation = "request-close"
             process.stdin.close()
             _phase(diagnostic, "worker-transport")
-            status, raw = _collect(process, kernel.available, deadline=deadline)
+            status, raw = _collect(process, kernel.available, deadline=deadline, _diagnostic=diagnostic)
             if status != "captured":
-                result.update(status=status, truncated=status == "output_limit")
+                primary = diagnostic["primaryStatus"] or status
+                result.update(status=status, truncated=primary == "output_limit")
                 diagnostic["failure"] = {"deadline": "deadline", "output_limit": "output-limit",
-                    "cleanup_unknown": "cleanup", "debugger_failed": "worker-exit"}.get(status, "transport")
+                    "cleanup_unknown": "cleanup", "debugger_failed": "worker-exit"}.get(primary, "transport")
             else:
                 _phase(diagnostic, "worker-decode")
                 decoded = decode_result(raw, pid, binding["created"], profile=profile, version=3)
@@ -319,27 +396,41 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
                             "identity_refused": "refused", "input_refused": "refused",
                             "unrecognized": "unrecognized"}.get(decoded["status"], "engine")
             del raw  # Unexpected SDK/worker text is never a retained diagnostic.
+            operation = "temporary-root-cleanup"
     except Exception as error:
-        result.update(status="transport_failed", threads=[])
-        diagnostic["failure"] = _failure_kind(error)
+        if operation == "temporary-root-cleanup" and diagnostic["failure"] is not None:
+            _transport_failure(diagnostic, operation, error, result["status"], cleanup=True)
+        else:
+            result.update(status="transport_failed", threads=[])
+            diagnostic["failure"] = _failure_kind(error)
+            _transport_failure(diagnostic, operation, error, result["status"])
     finally:
         if duplicate is not None:
             try:
                 kernel.close(duplicate)
-            except Exception:
+            except Exception as error:
+                _transport_failure(diagnostic, "worker-final-cleanup", error, result["status"], cleanup=True)
                 result.update(status="cleanup_unknown", threads=[])
                 diagnostic["failure"] = diagnostic["failure"] or "cleanup"
         if process is not None:
+            cleanup_operation = "worker-poll"
             try:
-                if process.poll() is None:
+                code = process.poll()
+                _worker_observed(diagnostic, code)
+                if code is None:
+                    cleanup_operation = "worker-final-cleanup"
                     process.kill()  # Only this worker; target cleanup remains the parent's.
-                    process.wait(timeout=max(0, deadline - time.monotonic()))
+                    cleanup_operation = "worker-wait"
+                    code = process.wait(timeout=max(0, deadline - time.monotonic()))
+                    _worker_observed(diagnostic, code)
+                cleanup_operation = "worker-final-cleanup"
                 if process.stdin is not None and not process.stdin.closed:
                     process.stdin.close()
                 if process.stdout is not None:
                     process.stdout.close()
                 process._handle.Close()
-            except Exception:
+            except Exception as error:
+                _transport_failure(diagnostic, cleanup_operation, error, result["status"], cleanup=True)
                 result.update(status="cleanup_unknown", threads=[])
                 diagnostic["failure"] = diagnostic["failure"] or "cleanup"
         diagnostic["elapsedMs"] = min(2**31 - 1, max(0, round((time.monotonic() - started) * 1000)))

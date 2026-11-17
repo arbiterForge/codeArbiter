@@ -1,0 +1,79 @@
+{
+ "schema": "bounded-independent-code-review/1",
+ "scope": "native closed transport diagnostics exact two subjects",
+ "verdict": "NEEDS_CORRECTION",
+ "findings": [
+  {
+   "id": "NATIVE-DIAG-PRIMARY-01",
+   "severity": "MEDIUM",
+   "path": ".github/scripts/_windows_rpc_timeout.py",
+   "line": 312,
+   "title": "Cleanup wait still erases status-based collector failures",
+   "evidence": "When _collect first reaches deadline (290), output_limit (279) or debugger_failed (286), diagnostic.failure and primaryStatus can both remain None. If the final wait raises, line312 passes cleanup_unknown to _transport_failure; its lines70-75 store cleanup_unknown as primaryStatus. _debugger then maps returned cleanup_unknown to failure=cleanup at377-378. The pre-cleanup outcome is no longer retained.",
+   "scope": "Source-confirmed diagnostic loss, not an actual Node-exit cause or unsafe attach finding.",
+   "remediation": "Retain the existing noncaptured collector status before cleanup; keep cleanup_unknown as the authoritative final cleanup state and retain wait details separately. Ensure the closed primary failure classification derives from the retained primary status rather than secondary cleanup.",
+   "missing_regression": "An inert real _collect path ending deadline/output_limit/debugger_failed followed by wait OSError/TimeoutExpired; assert original primary outcome survives and cleanup uncertainty stays visible. Existing final-worker test mocks _collect then only faults outer cleanup, after diagnostic.failure is set."
+  }
+ ],
+ "proposal_delivery_sha256": "4f69ebebaeb3e357a93d5b4f55bad406107a3f716103c511623c77e8f018b417",
+ "final_delivery_sha256": "a8d17b8ee4f30f9a7242cfb789759bf6b926d9b9a10c90b059bce41b09f446a9",
+ "patch_sha256": "dc6db8ecd533f6d2bcbe6d178727fe24147bd9fd1a3e1100acfbaafe63d712ea",
+ "full_subjects": [
+  {
+   "path": ".github/scripts/_windows_rpc_timeout.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+    "bytes": 28281
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+    "bytes": 32777
+   },
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  {
+   "path": ".github/scripts/test_pi_package.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\test_pi_package.py",
+    "sha256": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166",
+    "bytes": 316443
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+    "bytes": 328069
+   },
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  }
+ ],
+ "raw_files_sha256_verified": 46,
+ "retained_final_result": {
+  "tests_run": 16,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "successful": true,
+  "seconds": 0.1487409999826923
+ },
+ "original_assertion_ASTs_preserved": true,
+ "source_boundaries_reviewed": [
+  "Fixed operation categories and bounded exact-int errno/WinError/returncode fields contain no raw exception/path/argv/env text",
+  "Existing 5s/128KiB/32KiB bounds, provider hashes, schema3 decoder and target identity remain unchanged",
+  "Kill/wait actions target only Popen-owned worker; no Node target cleanup authority added",
+  "Known pipe error109 remains EOF; error233 now retained closed",
+  "Primary exception plus secondary temporary cleanup path is covered; status-based collector primary gap remains"
+ ],
+ "related_parent_review": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-parent-native-code-peer-ed98wpn2\\parent-review.json",
+  "sha256": "a5ecf4147d8377d409c8498f4427e7c350a81ad26bbcfe37d8181814eecd3dbc",
+  "verdict": "PASS"
+ },
+ "limits": [
+  "Read-only static review and retained evidence inspection; no tests/runtime/API replay",
+  "No canonical/index/ref/marker changes or staged OID claim",
+  "Actual Node4260 exit/wait cause UNKNOWN",
+  "Darwin author-owned hunks excluded"
+ ]
+}

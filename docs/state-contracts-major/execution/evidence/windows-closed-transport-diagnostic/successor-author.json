@@ -1,0 +1,170 @@
+{
+ "schema": "codearbiter.private-fix-successor/1",
+ "status": "IMPLEMENTATION_COMPLETE_AWAITING_BOUNDED_PEER_FOLLOWUP",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "finding": "NATIVE-DIAG-PRIMARY-01",
+ "predecessor": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\delivery.json",
+  "sha256": "4f69ebebaeb3e357a93d5b4f55bad406107a3f716103c511623c77e8f018b417",
+  "bytes": 30320
+ },
+ "peer_finding": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-parent-native-code-peer-ed98wpn2\\native-review.json",
+  "sha256": "a8eee7aefd8ed34b107edde54cba2dbf3a6a25751038b2be3686018286febbef",
+  "bytes": 4413
+ },
+ "subjects": [
+  {
+   "relative_path": ".github/scripts/_windows_rpc_timeout.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+    "bytes": 32777
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+    "bytes": 32975
+   }
+  },
+  {
+   "relative_path": ".github/scripts/test_pi_package.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+    "bytes": 328069
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+    "bytes": 331763
+   }
+  }
+ ],
+ "delta_patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\delta.patch",
+  "sha256": "5ac0ea24f2544636a5eca7b6cd5446fa0189202c2a8b6199027fe0510a07e4bb",
+  "bytes": 5422
+ },
+ "change": "Before collector cleanup, retain established noncaptured primaryStatus; derive closed primary failure and output-limit truncation from that status while cleanup_unknown remains authoritative final cleanup state. No new operation, deadline, decoder, provider policy or error category.",
+ "regression": {
+  "name": "DebuggerInboxTests.test_collector_outcome_survives_final_wait_failure",
+  "scope": "Real inert _collect through _debugger: deadline/output_limit/debugger_failed each followed by OSError and TimeoutExpired from existing final wait. Returned cleanup_unknown, prior primaryStatus/failure/truncation, closed cleanup details and privacy asserted. No actual child launched.",
+  "corrected_RED": {
+   "tests_run": 1,
+   "failures": 6,
+   "errors": 0,
+   "skips": 0,
+   "successful": false,
+   "seconds": 0.03983429999789223
+  },
+  "RED_source_is_sealed_predecessor": true,
+  "RED_before_successor_implementation": "Initial red established six real primaryStatus assertions before source edits; corrected oracle RED then repeated on exact predecessor, preserving correction chronology.",
+  "final_GREEN": {
+   "tests_run": 17,
+   "failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "successful": true,
+   "seconds": 0.13672939999378286
+  },
+  "new_method_AST_equal_to_corrected_RED": true,
+  "history_note": "First focused successor run had three failures because my added oracle expected timeout for TimeoutExpired; existing closed _failure_kind yields unexpected. Only this new oracle corrected. Initial result/raw logs retained; no production category expansion."
+ },
+ "preservation": {
+  ".github/scripts/_windows_rpc_timeout.py": {
+   "changed_existing_functions": [
+    "_collect",
+    "_debugger"
+   ],
+   "added_functions": [],
+   "all_other_existing_function_ASTs_equal": true,
+   "compile": "PASS"
+  },
+  ".github/scripts/test_pi_package.py": {
+   "changed_existing_functions": [],
+   "added_functions": [
+    "DebuggerInboxTests.test_collector_outcome_survives_final_wait_failure"
+   ],
+   "all_other_existing_function_ASTs_equal": true,
+   "compile": "PASS"
+  }
+ },
+ "reuse": {
+  "predecessor_preservation": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\preservation.json",
+   "sha256": "40596d0661849ca59c8018f794899d34e26768296a95bfaaaaa90a034afd3c3b",
+   "bytes": 6380
+  },
+  "retained": "All predecessor production functions except _collect/_debugger and all predecessor test methods exact AST equal. Provider/decoder/5s/128KiB/32KiB/privacy/dependency conclusions reused by exact predecessor joins; prior 16 cases included in final17.",
+  "dependency_bytes_unchanged": true
+ },
+ "raw": {
+  "red-command.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\red-command.json",
+   "sha256": "b1f6e0f3dad088563114c5634621abd10ba65f5f666c345a47fe39eec8512f66",
+   "bytes": 937
+  },
+  "red-result.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\red-result.json",
+   "sha256": "1bf55ffa1785b074eaabb04b54fefc55f4f6768f28f80d413b98daed28e55815",
+   "bytes": 127
+  },
+  "red.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\red.stderr",
+   "sha256": "24c16e770587d2a71b7050698c6773e5591585926f9a198bbf4d8aa4240dc2c4",
+   "bytes": 6022
+  },
+  "initial-green-command.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\initial-green-command.json",
+   "sha256": "aa84d510b351fcb8336b5dc1e754922ed6f95456384b63fe78f6c500bbd6cf50",
+   "bytes": 2432
+  },
+  "initial-green-result.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\initial-green-result.json",
+   "sha256": "9b0a85a240e9aa23d4aa6a65ed386d0502ffd414a0787af347e7ec57ce633a5e",
+   "bytes": 127
+  },
+  "initial-green.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\initial-green.stderr",
+   "sha256": "3b853a561e79fcbcdaa3e014ec27372996c23f0c82b7aa023b6e44188c718b0d",
+   "bytes": 8265
+  },
+  "corrected-red-command.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\corrected-red-command.json",
+   "sha256": "67eb1d012c2f781253edd321d826305a270029653bb1886af8ac1971a47934e2",
+   "bytes": 947
+  },
+  "corrected-red-result.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\corrected-red-result.json",
+   "sha256": "ef2ea269a121b7282230cb3bef0bbc37ae063bf211acd89b1650337f78495854",
+   "bytes": 126
+  },
+  "corrected-red.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\corrected-red.stderr",
+   "sha256": "370f5dd49f808b37aaf4e8d953cf43cb989fd48abb20d16c49a6112cbe20a3be",
+   "bytes": 6022
+  },
+  "final-green-command.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\final-green-command.json",
+   "sha256": "5329128868202ef855b4bf389c3dce2c91b9e74b07aecfe37ed743dcb774eefc",
+   "bytes": 2439
+  },
+  "final-green-result.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\final-green-result.json",
+   "sha256": "11cc8039e9439b204b0f799bde4dc11febe23d9ccb392b93baa60e0ffc9e85c7",
+   "bytes": 126
+  },
+  "final-green.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\final-green.stderr",
+   "sha256": "17df11fdec6f4c14460154e409d1327e0fc96fdf68ff4bd4dbe020f3223ff991",
+   "bytes": 3701
+  }
+ },
+ "limits": [
+  "Private Temp candidates only; no canonical/index/ref/marker/ledger writes or staged OID claim.",
+  "No native/SDK/Pi/provider/API/network/install probe, real child or full suite replay.",
+  "Actual Node4260 failure cause remains UNKNOWN; successor corrects retained diagnostics only.",
+  "Author receipt, not independent approval."
+ ]
+}

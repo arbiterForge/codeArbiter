@@ -1,0 +1,382 @@
+{
+ "schema": "codearbiter.immutable-positive-blob-reuse-fix/1",
+ "state": "PRIVATE_CANDIDATE_READY_FOR_ROOT",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "actor": "/root/ci_repair_review",
+ "source_epoch": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "observed_head_after": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "subjects": [
+  {
+   "path": ".github/scripts/_immutable_git_blobs.py",
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\_immutable_git_blobs.py",
+   "preimage_sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+   "preimage_bytes": 8275,
+   "sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+   "bytes": 9589
+  },
+  {
+   "path": ".github/scripts/test_immutable_git_blobs.py",
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\test_immutable_git_blobs.py",
+   "preimage_sha256": "461a322ee324bd94bb48694f627217227135f97bfeab844f888db32cf4128258",
+   "preimage_bytes": 13450,
+   "sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9",
+   "bytes": 20221
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\changes.patch",
+  "sha256": "c12456c5b9de1983f5dab8148c66248f4d4c6c12885dcb3e4b6c819858760a8f",
+  "bytes": 16127
+ },
+ "bug_origin": {
+  "reader_preimage": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+  "trace": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-reader-byte-diagnosis-wnxvspif\\observation.json",
+   "sha256": "5eaa91d155e863fea1cad01aff1a733d4d464c964cc53d463d0c405d33e37a09",
+   "bytes": 7158
+  },
+  "regression": "test_identical_blobs_across_commits_do_not_consume_payload_budget_twice",
+  "actual_original": "Full owner reached268433308 payload bytes at8081 queries;83453818 unique and184979490 duplicated bytes. Passive trace establishes duplicate transport charging, not a no-API claim for the original owner."
+ },
+ "actual_results": {
+  "red_command": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+    "red",
+    "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+   "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+   ],
+   "credential_blind_profile": true,
+   "exit_code": 1,
+   "seconds": 0.9214333999843802,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "cfc4a0f3a1d98ed56cbc0cc4c90d358480251ebbfe49be46155362a19d22c020",
+   "stdout_bytes": 0,
+   "stderr_bytes": 2204,
+   "source_sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+   "test_sha256": "ad64a0b4771d7f964f6123f5ab77bd64398d81b5fd2734ca3de85b44c5e4ac7c"
+  },
+  "red": {
+   "tests_run": 1,
+   "failures": 1,
+   "errors": 0,
+   "skips": 0,
+   "seconds": 0.7165186000056565,
+   "named": [
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice",
+     "result": "FAIL"
+    }
+   ],
+   "successful": false
+  },
+  "green_target_command": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+    "green-target",
+    "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+   "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+   ],
+   "credential_blind_profile": true,
+   "exit_code": 0,
+   "seconds": 0.4744531000033021,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "c6cb0a6d250babeca4634c4ff535c757fcbc32451449b00f81724d75ee31ef53",
+   "stdout_bytes": 0,
+   "stderr_bytes": 305,
+   "source_sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+   "test_sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9"
+  },
+  "green_owning_command": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+    "owning-green",
+    "test_immutable_git_blobs"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+   "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+   ],
+   "credential_blind_profile": true,
+   "exit_code": 0,
+   "seconds": 11.56580449998728,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "3dcea3aa80acca4f39d0ec000ae1a0134f8cb1633cbc28761eacf39a0c006238",
+   "stdout_bytes": 0,
+   "stderr_bytes": 2991,
+   "source_sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+   "test_sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9"
+  },
+  "green": {
+   "tests_run": 16,
+   "failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "seconds": 11.427470800001174,
+   "named": [
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_abandoned_response_cannot_block_worker_cleanup",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_aborted_late_worker_cannot_repopulate_positive_caches",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_cache_is_transaction_repo_and_source_local",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_contents_identity_and_cached_alias_size_must_match_metadata",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_corrupt_headers_types_payloads_framing_and_bounds_kill_transaction",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_invalid_source_and_literal_path_reject_before_spawn",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_missing_is_not_cached_or_absence_and_does_not_poison_other_reads",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_no_replace_objects_and_repository_selectors_cannot_redirect",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_owning_validate_keeps_injected_loader_and_its_blob_reads",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_primary_exception_cause_and_context_survive_cleanup_failure",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_query_total_and_transaction_deadline_bounds",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_timeout_has_bounded_cleanup_and_dead_transaction",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_trailing_stdout_and_failed_final_exit_refuse",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_transaction_reads_exact_bytes_with_one_git_process",
+     "result": "PASS"
+    },
+    {
+     "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_unique_changed_blob_still_consumes_budget_and_refuses_before_contents",
+     "result": "PASS"
+    }
+   ],
+   "successful": true
+  }
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\preservation.json",
+  "sha256": "f4b8606bcfde6535257c1252cd879e1e588f854fc987e9b084fbe5dd5a5d31a3",
+  "bytes": 2471
+ },
+ "limits": [
+  "Only two private source/test candidates; no canonical/index/ref/marker/ledger or foreign staged-corpus writes.",
+  "Existing Python/Git disposable fixtures only. No full corpus owner, hosted/API/network/provider/native/Go/SDK/Docker/build/install replay.",
+  "All existing bounds preserved. Actual fetched positive bodies consume the byte budget; metadata-only aliases do not fetch the same body again.",
+  "Positive bytes reused only transaction/repository-local by Git-resolved opaque OID, with blob type/size and exact info/contents header correlation. No SHA1 implementation, proof/authentication/absence/readiness cache.",
+  "Full-owner current-corpus success, performance and hosted compatibility remain for Root after adoption. Existing containment diagnostics remain truthful.",
+  "Python no-coverage-tooling policy reused; no percentage invented. Same target assertion RED before repair, exact target AST GREEN and16 meaningful owning methods PASS."
+ ],
+ "raw_files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\changes.patch",
+   "sha256": "c12456c5b9de1983f5dab8148c66248f4d4c6c12885dcb3e4b6c819858760a8f",
+   "bytes": 16127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\drive.py",
+   "sha256": "96d927fad7fb537d95e480ffeff629ae66c9ee908dd58704101ac7e44f3f56f2",
+   "bytes": 2053
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target-command.json",
+   "sha256": "9284094f24a41e6c428504be1fa744ae9d2578e222787ce840967658d7cb9d39",
+   "bytes": 1210
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target-result.json",
+   "sha256": "00b60e571ab63a9e3c87d91d6abd2842d0ff8eea980cf5151edc00b81a4966bb",
+   "bytes": 293
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target.stderr",
+   "sha256": "c6cb0a6d250babeca4634c4ff535c757fcbc32451449b00f81724d75ee31ef53",
+   "bytes": 305
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\immutable-reader-fix-context.json",
+   "sha256": "e5daca35201963cd057f48af38e67d598a8ef01902436a101495051464bfa0fa",
+   "bytes": 21986
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\immutable-reader-fix-input.txt",
+   "sha256": "9d2070d394bc16019b91af692bc3bfe0cebe01c8a32179a3a5083323602440fe",
+   "bytes": 13038
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green-command.json",
+   "sha256": "e6f7064ac48bc3fd0f244ef7fa2ffb5f7a2d9f6965902283425edd64b5837a12",
+   "bytes": 1114
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green-result.json",
+   "sha256": "b989bfc15c69ac7e78646e99bb2255364713a2d50fad033f818e30cbac2e54fe",
+   "bytes": 2543
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green.stderr",
+   "sha256": "3dcea3aa80acca4f39d0ec000ae1a0134f8cb1633cbc28761eacf39a0c006238",
+   "bytes": 2991
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\preservation.json",
+   "sha256": "f4b8606bcfde6535257c1252cd879e1e588f854fc987e9b084fbe5dd5a5d31a3",
+   "bytes": 2471
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red-command.json",
+   "sha256": "39c10d1cb729dba4e574bad17a58d2cca8474d053a4fe663b0444a7de3d91137",
+   "bytes": 1202
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red-result.json",
+   "sha256": "1bab609df31201fa5b5b43c20fb1035175bd41611a6c876460723666dc360e40",
+   "bytes": 294
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red.stderr",
+   "sha256": "cfc4a0f3a1d98ed56cbc0cc4c90d358480251ebbfe49be46155362a19d22c020",
+   "bytes": 2204
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\regression-red-test.py",
+   "sha256": "ad64a0b4771d7f964f6123f5ab77bd64398d81b5fd2734ca3de85b44c5e4ac7c",
+   "bytes": 14767
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+   "sha256": "36539d5e29880ebe4887a71b2b000560e73a12bea931dc61131ccf3930379c05",
+   "bytes": 1655
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\seal.py",
+   "sha256": "80db1b56ba8f43985e0eb5717acbc3bcaf5ab60cf13dd6b7650fcfbc84a06f24",
+   "bytes": 7663
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\source-after.json",
+   "sha256": "a9aa3fcf271d040b8540f8385c175432df92f0e56278ebda8f3de384c77db1d1",
+   "bytes": 1350
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\source-before.json",
+   "sha256": "2f76d95ffff84fd1970a34265476d0f1d5df239e670f9001c2e19907c3f00916",
+   "bytes": 1395
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "codearbiter.independent-review-admission-projection/1",
+  "verdict": "PASS",
+  "original_review": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-parent-native-code-peer-ed98wpn2\\parent-review.json",
+    "sha256": "a5ecf4147d8377d409c8498f4427e7c350a81ad26bbcfe37d8181814eecd3dbc",
+    "bytes": 4187
+  },
+  "reviewer": null,
+  "full_subjects": [
+    {
+      "path": ".github/scripts/observe_pi_installed_rpc.py",
+      "preimage_sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "preimage_bytes": 27952,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\repo\\.github\\scripts\\observe_pi_installed_rpc.py",
+      "sha256": "d938a17303589d102770cd8f3e62b46b29f45d3d2e001cfd314bf3fe9cf656c5",
+      "bytes": 28068,
+      "binding": "SEALED_PRIVATE_NOT_STAGED"
+    },
+    {
+      "path": ".github/scripts/test_pi_parent_tui_observation.py",
+      "preimage_sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+      "preimage_bytes": 23571,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-parent-payload-fix-4beabed2\\repo\\.github\\scripts\\test_pi_parent_tui_observation.py",
+      "sha256": "0bfc8dab49c2f78310e240aafef3144c08260a68c8ca557f45db6066b38cf3d2",
+      "bytes": 28479,
+      "binding": "SEALED_PRIVATE_NOT_STAGED"
+    }
+  ],
+  "findings": [],
+  "scope": "parent authenticated-payload JSON projection only",
+  "limits": "Projection of the real retained independent review, not a new review. Exact private original remains retained. Other-author source scopes only; no runtime or whole program acceptance."
+}

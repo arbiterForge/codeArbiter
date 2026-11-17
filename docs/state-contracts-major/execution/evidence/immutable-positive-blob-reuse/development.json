@@ -1,0 +1,240 @@
+{
+  "schema": "codearbiter.reader-shared-repair/1",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_epoch": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "cause": "Identical immutable blob bodies transported repeatedly across literal source/path aliases; original256MiB cap exceeded with83.45MB unique content.",
+  "repair": "Resolve each literal source/path through Git info; fetch each new verified opaque blob identity once. Preserve all per-blob/total/query/deadline/cleanup and absence/authentication boundaries.",
+  "actual_author_tests": {
+    "red_command": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+        "red",
+        "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+      "environment_keys": [
+        "APPDATA",
+        "COMSPEC",
+        "GIT_CONFIG_GLOBAL",
+        "GIT_CONFIG_NOSYSTEM",
+        "GIT_TERMINAL_PROMPT",
+        "HOME",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "PYTHONDONTWRITEBYTECODE",
+        "PYTHONNOUSERSITE",
+        "PYTHONUTF8",
+        "SYSTEMROOT",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "credential_blind_profile": true,
+      "exit_code": 1,
+      "seconds": 0.9214333999843802,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "cfc4a0f3a1d98ed56cbc0cc4c90d358480251ebbfe49be46155362a19d22c020",
+      "stdout_bytes": 0,
+      "stderr_bytes": 2204,
+      "source_sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+      "test_sha256": "ad64a0b4771d7f964f6123f5ab77bd64398d81b5fd2734ca3de85b44c5e4ac7c"
+    },
+    "red": {
+      "tests_run": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 0.7165186000056565,
+      "named": [
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice",
+          "result": "FAIL"
+        }
+      ],
+      "successful": false
+    },
+    "green_target_command": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+        "green-target",
+        "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+      "environment_keys": [
+        "APPDATA",
+        "COMSPEC",
+        "GIT_CONFIG_GLOBAL",
+        "GIT_CONFIG_NOSYSTEM",
+        "GIT_TERMINAL_PROMPT",
+        "HOME",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "PYTHONDONTWRITEBYTECODE",
+        "PYTHONNOUSERSITE",
+        "PYTHONUTF8",
+        "SYSTEMROOT",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "credential_blind_profile": true,
+      "exit_code": 0,
+      "seconds": 0.4744531000033021,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c6cb0a6d250babeca4634c4ff535c757fcbc32451449b00f81724d75ee31ef53",
+      "stdout_bytes": 0,
+      "stderr_bytes": 305,
+      "source_sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+      "test_sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9"
+    },
+    "green_owning_command": {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+        "owning-green",
+        "test_immutable_git_blobs"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo",
+      "environment_keys": [
+        "APPDATA",
+        "COMSPEC",
+        "GIT_CONFIG_GLOBAL",
+        "GIT_CONFIG_NOSYSTEM",
+        "GIT_TERMINAL_PROMPT",
+        "HOME",
+        "LOCALAPPDATA",
+        "PATH",
+        "PATHEXT",
+        "PYTHONDONTWRITEBYTECODE",
+        "PYTHONNOUSERSITE",
+        "PYTHONUTF8",
+        "SYSTEMROOT",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "credential_blind_profile": true,
+      "exit_code": 0,
+      "seconds": 11.56580449998728,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3dcea3aa80acca4f39d0ec000ae1a0134f8cb1633cbc28761eacf39a0c006238",
+      "stdout_bytes": 0,
+      "stderr_bytes": 2991,
+      "source_sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+      "test_sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9"
+    },
+    "green": {
+      "tests_run": 16,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 11.427470800001174,
+      "named": [
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_abandoned_response_cannot_block_worker_cleanup",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_aborted_late_worker_cannot_repopulate_positive_caches",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_cache_is_transaction_repo_and_source_local",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_contents_identity_and_cached_alias_size_must_match_metadata",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_corrupt_headers_types_payloads_framing_and_bounds_kill_transaction",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_identical_blobs_across_commits_do_not_consume_payload_budget_twice",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_invalid_source_and_literal_path_reject_before_spawn",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_missing_is_not_cached_or_absence_and_does_not_poison_other_reads",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_no_replace_objects_and_repository_selectors_cannot_redirect",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_owning_validate_keeps_injected_loader_and_its_blob_reads",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_primary_exception_cause_and_context_survive_cleanup_failure",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_query_total_and_transaction_deadline_bounds",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_timeout_has_bounded_cleanup_and_dead_transaction",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_trailing_stdout_and_failed_final_exit_refuse",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_transaction_reads_exact_bytes_with_one_git_process",
+          "result": "PASS"
+        },
+        {
+          "id": "test_immutable_git_blobs.ImmutableBlobReaderTest.test_unique_changed_blob_still_consumes_budget_and_refuses_before_contents",
+          "result": "PASS"
+        }
+      ],
+      "successful": true
+    }
+  },
+  "independent_review_sha256": "c252e2690ed652e9cf88d71b88fa372a6853cf937920a2e02cec86a5c94fe537",
+  "original_normal_run": "A713 CI failure88PASS4FAIL10SKIP combinedDocs. Windows shutdown cause unknown; Darwin shell and Linux pre-TUI bytes serialization confirmed. No TUI execution proven.",
+  "full_owner": {
+    "result": "PASSED",
+    "records": 1577,
+    "frozen": 105,
+    "applicable": 659,
+    "stale": 918,
+    "seconds": 39.612,
+    "fixture_commit": "3fb3499548eb4bf5e81e797d3cefed6ffb0a465c",
+    "scope": "Actual combined source170/private staged fixture using exact reviewed reader bytes; run before separate optional-CI/native-diagnostic changes. Final combined branch validation remains separate.",
+    "strict_source_projection_records": 259
+  },
+  "limits": [
+    "Source conformance and code checks do not confer installed/human/release acceptance.",
+    "No bounds raised; no corpus-specific validator workaround; original failedPID cause unknown."
+  ]
+}
