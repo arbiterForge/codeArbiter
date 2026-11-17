@@ -1,5 +1,11 @@
 # State-contract program checkpoint
 
+The #1119 successor includes the already reviewed mode/reader and prune repairs, final source60 admission and an exact eight-name native-suite registry correction. The original reader tests passed; snapshot membership failed because the expected list still named seven tests. The existing static eight-suite guard reproduced that mismatch and now passes. The next committed head requires fresh CI and Docs before merge.
+
+Original normal `d4822a56` CI44046125471 finished SUCCESS; Docs44046125414 failed the single five-second Generator timeout (91 successful checks,1 failure,10 skipped). Its scoped Linux Pi RPC/scripted-parent package observation passed with all273 installed files unchanged. This does not qualify other hosts, human consent/fullPI-D07 or the whole normal run. Source777 is committed and authenticated;57 disposition obligations remain. #1098 stays held from `main` and publication remains unauthorized. [Current observations](evidence/work-adopt-registry-e408/development.json).
+
+## Previous retained checkpoint
+
 The prune hook now refuses canonical prefix siblings such as `.claude-other` before `self_heal`. Commit `2e09c637` includes the shared owner, all host mirrors and seven new boundary cases; the actual focused run passed13 tests with no skips after three original sibling regressions failed. These are local Windows checks with explicit race/platform limits.
 
 60 additional source mappings complete current-source coverage of the remaining hook/work machines and edges:777 source records authenticate privately, and57 PLANNED dispositions remain (49 findings,8 native transitions). All28 previously advanced rows and their evidence histories remain exact. Source conformance does not promote tasks, runtime, installed hosts or participant acceptance. [Current observations](evidence/remaining-source60-followup/development.json).
