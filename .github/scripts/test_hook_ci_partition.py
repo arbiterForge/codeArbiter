@@ -129,7 +129,20 @@ MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
 # Finite reviewed roles: original suites stay in the legacy digest; metadata
 # does not become a merge-queue test. Exact blocks keep commands, guards,
 # credentials and uploader pins reviewable, as for native qualification above.
-PYTHON_SOURCE_ROLES = {'Prepare hook finding source-test inputs': '      - name: Prepare hook finding source-test inputs\n'
+ROUTE_GENERATOR_SOURCE_STEPS = ('Prepare single-owner hook source-test inputs',
+                                'Observe original surface-generator unit tests')
+PYTHON_SOURCE_ROLES = {'Observe original surface-generator unit tests': (
+                          '      - name: Observe original surface-generator unit tests\n'
+                          '        id: route_generator_observed\n'
+                          "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+                          '        shell: bash\n'
+                          '        run: >-\n'
+                          '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+                          '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                          '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+                          '          --output "${{ runner.temp }}/python-route-generator-observation.json"\n'
+                          '          -- .github/scripts/test_build_surface.py\n'),
+ 'Prepare hook finding source-test inputs': '      - name: Prepare hook finding source-test inputs\n'
                                             '        id: hook_finding_source_prepare\n'
                                             "        if: matrix.os == 'windows-latest' && matrix.partition == "
                                             "'contracts'\n"
@@ -532,9 +545,12 @@ def python_source_roles(block: str) -> dict[str,str]:
             == ['          GH_TOKEN: ${{ github.token }}'], 'Python source credentials escaped metadata emission')
     require(block.count('${{ github.token }}')==1 and 'secrets.' not in block,
             'Python source credentials escaped metadata emission')
-    expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in PYTHON_SOURCE_ROLES]
+    roles_in_order = [*ROUTE_GENERATOR_SOURCE_STEPS,
+                      *(name for name in PYTHON_SOURCE_ROLES if name not in ROUTE_GENERATOR_SOURCE_STEPS)]
+    expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in roles_in_order]
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
-    for name,entry in (('Test interrupted output publication','test_generated_output.py'),
+    for name,entry in (('Run surface-generator unit tests','test_build_surface.py'),
+                       ('Test interrupted output publication','test_generated_output.py'),
                        ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
                        ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
@@ -760,6 +776,7 @@ def validate(
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         observed_original = roles and cmd in ('python .github/scripts/test_review_funnel.py',
+                                               'python .github/scripts/test_build_surface.py',
                                                'python .github/scripts/test_generated_output.py',
                                                'python .github/scripts/test_check_skill_proof_fresh.py',
                                                'python .github/scripts/test_major_readiness.py',

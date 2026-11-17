@@ -518,6 +518,118 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         positions = [surface.index(fragment) for fragment in fragments]
         self.assertEqual(positions, sorted(positions))
 
+    def test_compatibility_observer_uses_the_outer_unittest_result(self):
+        import tempfile
+        import major_qualification_report as reports
+
+        script = '.github/scripts/test_command_route_compatibility.py'
+        profile = reports.ROUTE_RELEASE_SOURCE_PROFILE
+        spec = reports.source_profile(profile)
+        with tempfile.TemporaryDirectory(prefix='outer-unittest-fixture-') as temporary:
+            parent = Path(temporary)
+            repo = parent / 'repo'
+            fixture = repo / script
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text('''import unittest
+
+class CompatibilityFixture(unittest.TestCase):
+    def test_case(self):
+        self.assertFalse(getattr(self, "nested", False))
+
+    def test_negative_control(self):
+        nested = self.__class__("test_case")
+        nested.nested = True
+        result = unittest.TestResult()
+        nested.run(result)
+        self.assertFalse(result.wasSuccessful())
+
+if __name__ == "__main__":
+    unittest.main()
+''', encoding='utf-8')
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            output = parent / 'compatibility.json'
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES,
+                                  {profile: dict(spec, scripts=tuple({*spec['scripts'], script}))})):
+                self.assertEqual(reports.observe_python(repo, script, [], output, parent / 'source', profile), 0)
+            record = json.loads(output.read_bytes())
+            self.assertEqual([(test['id'].rsplit('.', 1)[-1], test['result']) for test in record['tests']],
+                             [('test_case', 'passed'), ('test_negative_control', 'passed')])
+            self.assertEqual(record['test_result_scope'], 'entrypoint-text-runner')
+
+    def test_compatibility_findings_require_their_distinct_original_populations(self):
+        import major_qualification_report as reports
+
+        sf14, wf09 = 'disposition:findings:SF14', 'disposition:findings:W-F09'
+        source = b'owned immutable source fixture'
+        grouped = {}
+        for cell in (sf14, wf09):
+            for component in reports.SOURCE_FINDING_COMPOSITIONS[cell]:
+                _, selectors = grouped.setdefault(component['script'], (component, set()))
+                selectors.update(component['selectors'])
+        req = dict(self.req, cells=[sf14, wf09], source_finding_composite_cells=[sf14, wf09],
+                   cell_jobs=dict.fromkeys((sf14, wf09), 'major qualification / compatibility'))
+        req['source_finding_inputs'] = reports.source_finding_input_pins(req['cells'], req['source_commit'],
+                                                                       lambda _source, _path: source)
+
+        def fixtures(omit=None, scope=True):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            jobs = [dict(job, steps=[]) for job in self.jobs]
+            by_job = {job['name']: job for job in jobs}
+            manifests = {}
+            for profile in req['source_finding_inputs']:
+                spec = reports.source_profile(profile)
+                job = by_job[spec['job']]
+                files = dict.fromkeys(sorted(spec['paths']), source)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                                source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                                workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                    bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                manifests[profile] = owner.digest(files[reports.SOURCE_MANIFEST])
+                self.archive(spec['payload'], job, spec['upload'], files)
+            for script, (component, selectors) in grouped.items():
+                profile = component['profile']
+                spec = reports.source_profile(profile)
+                observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=profile, payload_name=spec['payload'], manifest_sha256=manifests[profile]),
+                    tests=[dict(id=selector, result='passed') for selector in sorted(selectors) if selector != omit])
+                if scope and script == reports.ROUTE_COMPATIBILITY_SCRIPT:
+                    observed['test_result_scope'] = reports.OUTER_UNITTEST_RESULT
+                members = {component['member']: json.dumps(observed).encode()}
+                if script == reports.ROUTE_GENERATOR_SCRIPT:
+                    members['python-q02-release-observation.json'] = b'{}'
+                self.archive(component['artifact_prefix'] + req['source_commit'] + '-7-3', by_job[spec['job']],
+                             component['upload'], members)
+            return jobs
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        self.assertEqual([list(map(lambda c: len(c['selectors']), row['source_components'])) for row in record['results']],
+                         [[1, 11, 13], [3, 4, 2]])
+        self.assertEqual([c['job_id'] for c in record['results'][0]['source_components']], [20, 21, 21])
+        self.assertEqual(len(record['artifacts']), 2)
+        for own_cell, other_cell, missing in (
+            (sf14, wf09, 'ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate'),
+            (wf09, sf14, 'ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface'),
+        ):
+            selector = next(s for component in reports.SOURCE_FINDING_COMPOSITIONS[own_cell]
+                            for s in component['selectors'] if s.endswith(missing))
+            jobs = fixtures(omit=selector)
+            with self.subTest(cell=own_cell), self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+                owner.produce(req, self.artifacts, jobs)
+            other_req = dict(req, cells=[other_cell], source_finding_composite_cells=[other_cell],
+                             cell_jobs={other_cell: req['cell_jobs'][other_cell]})
+            self.assertEqual(owner.produce(other_req, self.artifacts, jobs)['results'][0]['cell'], other_cell)
+        jobs = fixtures(scope=False)
+        with self.assertRaisesRegex(owner.ReadinessError, 'original entrypoint runner'):
+            owner.produce(req, self.artifacts, jobs)
+
     def test_recovery_runtime_observer_runs_the_unfiltered_source_entry_once(self):
         import tempfile
         import major_qualification_report as reports
@@ -607,7 +719,7 @@ class CrossJobSourceFindingTest(unittest.TestCase):
                     'protocol': 'codearbiter.artifact-api/0.1.0', 'schema_version': '0.3.2',
                     'binaries': {'windows/amd64': {'file': name, 'sha256': owner.digest(binary), 'native_tested': True}}}
         with tempfile.TemporaryDirectory(prefix='inert-recovery-copy-') as folder:
-            scratch = Path(folder)
+            scratch = Path(folder).resolve(strict=True)
             root = scratch / 'repo'
             source = scratch / 'workflow-recovery-native'
             source.mkdir()
@@ -632,7 +744,8 @@ class CrossJobSourceFindingTest(unittest.TestCase):
                 output = scratch / f'workflow-recovery-{role}-installation.json'
                 with (self.subTest(role=role), mock.patch.object(recovery_cli, 'ROOT', root),
                       mock.patch.dict(sys.modules, {'test_artifact_authoring': owner_module}),
-                      mock.patch.dict(os.environ, {'ARTIFACT_TEST_INSTALLATION': str(source), 'RUNNER_TEMP': str(scratch),
+                      mock.patch.dict(os.environ, {'ARTIFACT_TEST_INSTALLATION': str(root / '..' / source.name),
+                                                  'RUNNER_TEMP': str(scratch),
                                                   'WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION': str(output)})):
                     try:
                         cls.setUpClass()

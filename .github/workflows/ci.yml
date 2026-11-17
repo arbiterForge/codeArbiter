@@ -3411,13 +3411,32 @@ jobs:
         # exiting non-zero with a clear stderr message (no swallowed
         # subprocess return codes, no raw traceback on a creation failure).
         run: python .github/scripts/test_codex_parity_fixture.py
+      - name: Prepare single-owner hook source-test inputs
+        id: single_hook_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --output "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Run surface-generator unit tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # codex-support M3: determinism/idempotence of tools/build-surface.py,
         # token inversion (Claude render inverts extraction byte-exactly),
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
+      - name: Observe original surface-generator unit tests
+        id: route_generator_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-route-generator-observation.json"
+          -- .github/scripts/test_build_surface.py
       - name: Prepare hook finding source-test inputs
         id: hook_finding_source_prepare
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -3461,15 +3480,6 @@ jobs:
         # pre-load resident copy. The suite above carries the seeded mismatch;
         # this command checks all four live canonical/generated surface pairs.
         run: python .github/scripts/check_destructive_registry.py
-      - name: Prepare single-owner hook source-test inputs
-        id: single_hook_prepare
-        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
-        shell: bash
-        run: >-
-          python -B .github/scripts/major_qualification_report.py prepare-source
-          --repo . --source-profile hooks-single-owner-findings-v1
-          --output "${{ runner.temp }}/single-owner-hook-source-inputs"
-          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
       - name: Run mode-plane core contract (ADR-0030)
         if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # #437. The mode plane's own library: whole-prompt token matching (a
@@ -4586,7 +4596,11 @@ jobs:
             --source-payload "${{ runner.temp }}/route-release-state-source-inputs" \
             --output "${{ runner.temp }}/route-release-state-observation.json" \
             -- .github/scripts/test_command_route_release_state.py
-          python3 .github/scripts/test_command_route_compatibility.py
+          python3 -B .github/scripts/major_qualification_report.py observe-python \
+            --repo . --source-profile route-release-state-component-v1 \
+            --source-payload "${{ runner.temp }}/route-release-state-source-inputs" \
+            --output "${{ runner.temp }}/route-compatibility-observation.json" \
+            -- .github/scripts/test_command_route_compatibility.py
       - name: Upload release-state classifier source-test inputs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -4601,6 +4615,15 @@ jobs:
         with:
           name: route-release-state-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/route-release-state-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+      - name: Retain original route compatibility observation
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: route-compatibility-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/route-compatibility-observation.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false

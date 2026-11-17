@@ -142,6 +142,12 @@ class ReportTest(unittest.TestCase):
                 if (row.get("owner") or owners[row["task_ids"][0]]) == "hooks-workflows":
                     cells.append("disposition:" + group + ":" + row[key])
         self.assertEqual(len(cells), 895)
+        # Keep dedicated source-test and cross-job admissions separate from
+        # this ordinary report serialization fixture.
+        source_cells = {*owner.SOURCE_FINDING_COMPOSITIONS, *owner.RECOVERY_FINDING_CELLS,
+                        *owner.PYTHON_FINDING_RECIPES, *owner.SOURCE_PROFILE_CELLS,
+                        owner.HOOK_F02_CELL, "task:Q-02"}
+        cells = [cell for cell in cells if cell not in source_cells]
         hosts = json.loads((repo / "core/hosts.json").read_text())["hosts"]
         files = ["release.json"] + ["ca-artifact-" + p + (".exe" if p.startswith("windows") else "")
             for p in ("darwin-amd64", "darwin-arm64", "linux-amd64", "linux-arm64", "windows-amd64", "windows-arm64")]
@@ -4339,9 +4345,12 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                     run_git_phase([git,'-C',str(repo),*args],phase='init' if args[0] in ('init','config') else 'index' if args[0]=='add' else 'commit',trace_dir=base)
                 staged=base/'inputs';owner.prepare_source_payload(repo,staged,spec['job'],profile)
                 output=base/'observation.json'
-                with mock.patch.object(owner.runpy,'run_path',wraps=owner.runpy.run_path) as original:
-                    self.assertEqual(owner.observe_python(repo,'.github/scripts/test_pi_payload_identity.py',[],output,staged,profile),0)
-                    self.assertEqual(original.call_count,1)
+                with (mock.patch.object(sys, "dont_write_bytecode", False),
+                      mock.patch.object(owner.runpy, "run_path", wraps=owner.runpy.run_path) as original):
+                    self.assertEqual(owner.observe_python(
+                        repo, ".github/scripts/test_pi_payload_identity.py", [], output, staged, profile), 0)
+                    self.assertEqual(original.call_count, 1)
+                    self.assertFalse(sys.dont_write_bytecode)
                 observed=owner.load_json(output)
                 self.assertEqual({r['id'] for r in observed['tests']},set(self.EXPECTED['disposition:findings:HOOK-F03']['selectors']))
                 self.assertTrue(all(r['result']=='passed' for r in observed['tests']))

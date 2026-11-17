@@ -898,13 +898,20 @@ Q02_SOURCE_CELLS = frozenset(("task:Q-02",))
 Q02_SOURCE_SCRIPTS = frozenset((".github/scripts/test_major_readiness.py", ".github/scripts/test_release_workflow.py"))
 ROUTE_RELEASE_SOURCE_PROFILE = "route-release-state-component-v1"
 ROUTE_RELEASE_SOURCE_SCRIPT = ".github/scripts/test_command_route_release_state.py"
+ROUTE_COMPATIBILITY_SCRIPT = ".github/scripts/test_command_route_compatibility.py"
+ROUTE_GENERATOR_SCRIPT = ".github/scripts/test_build_surface.py"
+OUTER_UNITTEST_RESULT = "entrypoint-text-runner"
 ROUTE_RELEASE_SOURCE = {
     "job": "[CHECK] | [CORE] | Generated surface",
     "payload": "major-source-inputs-route-release-state",
     "upload": "Upload release-state classifier source-test inputs",
-    "scripts": (ROUTE_RELEASE_SOURCE_SCRIPT,),
+    "scripts": (ROUTE_RELEASE_SOURCE_SCRIPT, ROUTE_COMPATIBILITY_SCRIPT),
     "paths": frozenset((
         ROUTE_RELEASE_SOURCE_SCRIPT,
+        ROUTE_COMPATIBILITY_SCRIPT,
+        ".codearbiter/plans/reaudit-ra11-catalog-rationalization.md",
+        ".codearbiter/specs/reaudit-ra11-catalog-rationalization.md",
+        ".codearbiter/sprint-log.md",
         ".github/major-qualification-policy.json",
         ".github/scripts/_boundedproc.py",
         ".github/scripts/_contextverificationlib.py",
@@ -922,7 +929,7 @@ ROUTE_RELEASE_SOURCE = {
         "plugins/ca-codex/.codex-plugin/plugin.json",
         "plugins/ca-pi/package.json",
         "tools/command_compatibility.py",
-    )),
+    )) | frozenset(path for path in SOURCE_PATHS if path.startswith("core/surface/")),
 }
 RECOVERY_RUNTIME_PROFILE = "workflow-recovery-runtime-v1"
 RECOVERY_RUNTIME_SCRIPT = ".github/scripts/test_workflow_recovery.py"
@@ -2523,6 +2530,7 @@ def _finding_python_command(argv, profile, script=None):
     permitted = {row["script"] for row in PYTHON_FINDING_RECIPES.values() if row["profile"] == profile}
     if profile == "hooks-single-owner-findings-v1":
         permitted |= {row["script"] for row in HOOK_F02_COMPONENTS.values()}
+        permitted.add(ROUTE_GENERATOR_SCRIPT)
     require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv),
             "single-owner profile requires its unfiltered Python entry point")
     path = argv[1].replace("\\", "/")
@@ -2879,6 +2887,39 @@ def source_component(profile, script, artifact_prefix, upload, member, cases):
             "selectors": sorted(f"python:{script}:__main__.{case}" for case in cases)}
 
 
+def route_release_component(cases):
+    return source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_SCRIPT,
+        "route-release-state-observation-", "Retain original release-state classifier observation",
+        "route-release-state-observation.json", cases)
+
+
+def route_compatibility_component(cases):
+    return source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_COMPATIBILITY_SCRIPT,
+        "route-compatibility-observation-", "Retain original route compatibility observation",
+        "route-compatibility-observation.json", cases)
+
+
+def route_generator_component(cases):
+    return source_component("hooks-single-owner-findings-v1", ROUTE_GENERATOR_SCRIPT,
+        "python-source-observations-", "Retain original Python source-test observations",
+        "python-route-generator-observation.json", cases)
+
+
+ROUTE_RELEASE_COMPONENT = route_release_component((
+    "ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate",
+    "ReleaseStateClassifierTest.test_exact_non_draft_release_is_published",
+    "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
+    "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
+    "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
+    "ReleaseStateClassifierTest.test_release_tag_mismatch_is_not_publication",
+    "ReleaseStateClassifierTest.test_release_target_mismatch_is_not_publication",
+    "ReleaseStateClassifierTest.test_tag_payload_mismatch_is_not_publication",
+    "ObserveIntegrationTest.test_exact_tags_payloads_and_release_responses_pass_end_to_end",
+    "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
+    "ObserveIntegrationTest.test_tag_only_response_fails_the_aggregate_end_to_end",
+))
+
+
 SOURCE_FINDING_COMPOSITIONS = {
     "disposition:findings:C-F04": (
         source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
@@ -2886,21 +2927,43 @@ SOURCE_FINDING_COMPOSITIONS = {
             "python-q02-release-observation.json", (
                 "SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
             )),
-        source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_SCRIPT,
-            "route-release-state-observation-", "Retain original release-state classifier observation",
-            "route-release-state-observation.json", (
-                "ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate",
-                "ReleaseStateClassifierTest.test_exact_non_draft_release_is_published",
-                "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
-                "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
-                "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
-                "ReleaseStateClassifierTest.test_release_tag_mismatch_is_not_publication",
-                "ReleaseStateClassifierTest.test_release_target_mismatch_is_not_publication",
-                "ReleaseStateClassifierTest.test_tag_payload_mismatch_is_not_publication",
-                "ObserveIntegrationTest.test_exact_tags_payloads_and_release_responses_pass_end_to_end",
-                "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
-                "ObserveIntegrationTest.test_tag_only_response_fails_the_aggregate_end_to_end",
-            )),
+        ROUTE_RELEASE_COMPONENT,
+    ),
+    "disposition:findings:SF14": (
+        route_generator_component(("CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",)),
+        ROUTE_RELEASE_COMPONENT,
+        route_compatibility_component((
+            "CommandRouteCompatibilityTest.test_source_route_set_is_frozen_except_explicit_retirement",
+            "CommandRouteCompatibilityTest.test_canonical_argument_hints_expose_modes_without_stealing_pr_titles",
+            "CommandRouteCompatibilityTest.test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+            "CommandRouteCompatibilityTest.test_package_descriptions_do_not_freeze_inventory_counts",
+            "CommandRouteCompatibilityTest.test_ra11_governance_and_operator_prose_remains_unambiguous",
+            "CommandRouteCompatibilityTest.test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice",
+            "CommandRouteCompatibilityTest.test_markdown_format_procedures_stay_byte_frozen_in_their_references",
+            "CommandRouteCompatibilityTest.test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes",
+            "CommandRouteCompatibilityTest.test_status_recovery_projection_keeps_exact_read_only_bounded_contract",
+            "CommandRouteCompatibilityTest.test_status_recovery_normalization_does_not_hide_unrelated_body_drift",
+            "CommandRouteCompatibilityTest.test_mode_markers_and_notices_close_over_each_safe_replacement",
+            "CommandRouteCompatibilityTest.test_compatibility_clock_starts_only_on_independent_publication",
+            "CommandRouteCompatibilityTest.test_first_containing_declarations_are_stable_when_manifests_advance",
+        )),
+    ),
+    "disposition:findings:W-F09": (
+        route_generator_component((
+            "CommandCatalogTest.test_real_registry_taxonomy_and_host_gaps_are_frozen",
+            "CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+            "ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface",
+        )),
+        route_release_component((
+            "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
+            "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
+            "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
+            "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
+        )),
+        route_compatibility_component((
+            "CommandRouteCompatibilityTest.test_compatibility_clock_starts_only_on_independent_publication",
+            "CommandRouteCompatibilityTest.test_source_route_set_is_frozen_except_explicit_retirement",
+        )),
     ),
 }
 
@@ -2984,7 +3047,8 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
     readiness.require(manifest["profile"] == profile and source_member_digest(manifest["members"]) == req["source_finding_inputs"][profile],
                       "original component source bytes differ from the immutable source")
     capture_archive = readiness.artifact_bytes(capture, req)
-    observed, _ = source_component_archive(capture_archive, component["member"], shared=profile == Q02_SOURCE_PROFILE)
+    observed, _ = source_component_archive(capture_archive, component["member"],
+                                           shared=component["artifact_prefix"] == "python-source-observations-")
     argv = observed.get("argv") if isinstance(observed, dict) else None
     readiness.require(isinstance(observed, dict) and observed.get("format") == OBSERVATION
                       and observed.get("source_commit") == req["source_commit"] and observed.get("source_tree") == req["source_tree"]
@@ -2997,6 +3061,9 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
     admit_source_observation(observed, {"source_manifest_sha256": next(row["sha256"] for row in members
         if row["path"] == SOURCE_MANIFEST), "source_upload_job_id": job["id"], "members": members,
         "documents": {SOURCE_MANIFEST: manifest}}, req, job["name"], job["id"])
+    if component["script"] == ROUTE_COMPATIBILITY_SCRIPT:
+        readiness.require(observed.get("test_result_scope") == OUTER_UNITTEST_RESULT,
+                          "route compatibility requires the original entrypoint runner results")
     tests = observed.get("tests")
     readiness.require(isinstance(tests, list) and len(tests) <= MAX_TESTS
                       and all(isinstance(test, dict) and set(test) == {"id", "result"}
@@ -3042,15 +3109,19 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                 payloads.update(recovery_payloads)
             rows[cell] = {"cell": cell, "result": "PASSED", **recovery}
             continue
-        components = []
+        components, owners = [], {}
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
             evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
             components.append(evidence)
-            payloads[payload["artifact_id"]] = payload
-        identities = readiness.bounded_payload_ids(sorted(c["source_artifact_id"] for c in components))
-        readiness.require(len({c["job_id"] for c in components}) == len(components),
-                          "each original component requires a distinct owning job")
-        readiness.require(len({*identities, *(c["observation_artifact_id"] for c in components)}) == 2 * len(components),
+            identity = (evidence["job_id"], payload["artifact_id"])
+            readiness.require(owners.setdefault(component["profile"], identity) == identity,
+                              "components under the same source profile must share original job and source payload")
+            readiness.require(payloads.setdefault(payload["artifact_id"], payload) == payload,
+                              "original source payload bytes differ between components")
+        identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()))
+        readiness.require(len({job_id for job_id, _ in owners.values()}) == len(owners),
+                          "each original source profile requires a distinct owning job")
+        readiness.require(len({*identities, *(c["observation_artifact_id"] for c in components)}) == len(identities) + len(components),
                           "each original component requires distinct source and observation artifacts")
         rows[cell] = {"cell": cell, "result": "PASSED", "source_components": components,
                       "evidence_artifact_ids": identities}
@@ -3189,11 +3260,24 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     before = source_identity(repo, profile)
     source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
+    outer_only = profile == ROUTE_RELEASE_SOURCE_PROFILE and relative == ROUTE_COMPATIBILITY_SCRIPT
+    outer_result = None
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
 
+    def make_result(original):
+        def wrapped(runner):
+            nonlocal outer_result
+            result = original(runner)
+            if outer_result is None:
+                outer_result = result
+            return result
+        return wrapped
+
     def start(original):
         def wrapped(result, test):
+            if outer_only and result is not outer_result:
+                return original(result, test)
             test_id = test.id()
             require(isinstance(test_id, str) and 0 < len(test_id.encode("utf-8")) <= 2048
                     and len(rows) < MAX_TESTS, "Python named observation exceeds bound")
@@ -3205,14 +3289,14 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
 
     def outcome(original, name):
         def wrapped(result, test, *args, **kwargs):
-            if id(test) in active:
+            if (not outer_only or result is outer_result) and id(test) in active:
                 active[id(test)]["result"] = name
             return original(result, test, *args, **kwargs)
         return wrapped
 
     def subtest(original):
         def wrapped(result, test, sub, error):
-            if error is not None and id(test) in active:
+            if (not outer_only or result is outer_result) and error is not None and id(test) in active:
                 active[id(test)]["result"] = "failed"
             return original(result, test, sub, error)
         return wrapped
@@ -3223,6 +3307,14 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
         sys.argv[:] = [str(script), *arguments]
         sys.path[0] = str(script.parent)
         with ExitStack() as stack:
+            # In-process imports must leave the checked source tree clean,
+            # even when the caller did not start Python with -B.
+            stack.enter_context(mock.patch.object(sys, "dont_write_bytecode", True))
+            if outer_only:
+                # The compatibility suite directly runs an inner TestCase as
+                # a negative control. Its outer runner owns the suite result.
+                stack.enter_context(mock.patch.object(unittest.TextTestRunner, "_makeResult",
+                                                      make_result(unittest.TextTestRunner._makeResult)))
             stack.enter_context(mock.patch.object(unittest.TestResult, "startTest", start(unittest.TestResult.startTest)))
             for name, state in (("addSuccess", "passed"), ("addFailure", "failed"), ("addError", "failed"),
                                 ("addSkip", "skipped"), ("addExpectedFailure", "expected-failure"),
@@ -3254,6 +3346,9 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                        "argv": [sys.executable, str(script), *arguments],
                        "exit_code": code, "tests": rows}
     if source_binding is not None: document["source_input_binding"] = source_binding
+    if outer_only:
+        require(outer_result is not None and rows, "route compatibility entrypoint runner outcomes missing")
+        document["test_result_scope"] = OUTER_UNITTEST_RESULT
     if installation_output is not None and code == 0:
         require(installation_output.lstat().st_size <= 4096, "workflow recovery installation observation exceeds bound")
         document["workflow_recovery_installation"] = load_json(installation_output)
