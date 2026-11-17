@@ -2122,12 +2122,12 @@ IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
 
 
 @contextmanager
-def autocrlf_source_checkout(profile):
+def autocrlf_source_checkout(profile, additional_paths=()):
     """Actual declared input bytes and attributes in a disposable local Git clone."""
     with tempfile.TemporaryDirectory(prefix="ca-source-autocrlf-") as temporary:
         base=Path(temporary).resolve();seed=base/'seed';seed.mkdir()
-        paths=owner.TS_PROFILE_PATHS[profile]
-        for relative in paths:
+        paths=owner.source_profile(profile)["paths"]
+        for relative in paths.union(additional_paths):
             path=seed/relative;path.parent.mkdir(parents=True,exist_ok=True)
             path.write_bytes((owner.ROOT/relative).read_bytes())
         (seed/'.gitattributes').write_bytes((owner.ROOT/'.gitattributes').read_bytes())
@@ -2171,6 +2171,20 @@ class SourceBytePolicyTests(unittest.TestCase):
                     owner.source_input_snapshot(f['repo'],profile)
                 with self.assertRaisesRegex(ValueError,'unknown source input profile'):
                     owner.source_input_snapshot(f['repo'],'foreign-profile')
+
+    def test_recovery_source_prepares_from_a_fresh_autocrlf_checkout(self):
+        profile = owner.RECOVERY_RUNTIME_PROFILE
+        spec = owner.source_profile(profile)
+        surface = {path for path in owner.SOURCE_PATHS if path.startswith("core/surface/")}
+        with autocrlf_source_checkout(profile, surface) as fixture:
+            repo = fixture["repo"]
+            payload = fixture["base"] / "recovery-source"
+            manifest = owner.prepare_source_payload(repo, payload, spec["job"], profile)
+            self.assertEqual({member["path"] for member in manifest["members"]}, spec["paths"])
+            contract = "core/workflow-recovery-contract.json"
+            expected = owner.git(repo, "show", "HEAD:" + contract, raw=True)
+            self.assertEqual((repo / contract).read_bytes(), expected)
+            self.assertEqual((payload / contract).read_bytes(), expected)
 
     def test_byte_diagnostic_rejects_foreign_unbounded_or_extra_data_and_never_emits_content(self):
         relative='.github/major-qualification-policy.json'

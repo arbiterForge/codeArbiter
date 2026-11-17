@@ -155,6 +155,7 @@ site/**/*.json    text eol=lf
 # Keep fresh Windows checkouts canonical without touching historical/raw files.
 /.github/major-qualification-policy.json text eol=lf
 /.github/major-test-selections.json text eol=lf
+/core/workflow-recovery-contract.json text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/go/go.mod text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/go/main.go text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt text eol=lf
