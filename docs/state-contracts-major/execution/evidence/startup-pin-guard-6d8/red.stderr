@@ -1,0 +1,59 @@
+test_startup_fixtures_match_baseline (owned_startup_red.ArtifactSurfaceTest.test_startup_fixtures_match_baseline) ... FAIL
+test_reviewed_startup_digest_is_narrow_and_history_independent (owned_startup_red.ArtifactSurfaceTest.test_reviewed_startup_digest_is_narrow_and_history_independent) ... FAIL
+test_reviewed_startup_content_still_rejects_drift_and_eager_schema (owned_startup_red.ArtifactSurfaceTest.test_reviewed_startup_content_still_rejects_drift_and_eager_schema) ... FAIL
+test_detached_update_review_is_exact_and_keeps_startup_pin (owned_startup_red.ArtifactSurfaceTest.test_detached_update_review_is_exact_and_keeps_startup_pin) ... FAIL
+
+======================================================================
+FAIL: test_startup_fixtures_match_baseline (owned_startup_red.ArtifactSurfaceTest.test_startup_fixtures_match_baseline)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-startup-content-guard-fix-tn3yvrn8\red.py", line 341, in test_startup_fixtures_match_baseline
+    self.assertEqual(digest, expected_digest, fixture["path"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26' != '89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5'
+- a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26
++ 89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5
+ : core/pysrc/session-start.py
+
+======================================================================
+FAIL: test_reviewed_startup_digest_is_narrow_and_history_independent (owned_startup_red.ArtifactSurfaceTest.test_reviewed_startup_digest_is_narrow_and_history_independent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-startup-content-guard-fix-tn3yvrn8\red.py", line 351, in test_reviewed_startup_digest_is_narrow_and_history_independent
+    self.assertEqual(hashlib.sha256(reviewed_startup_bytes(path, (ROOT / path).read_bytes())).hexdigest(), expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26' != '89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5'
+- a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26
++ 89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5
+
+
+======================================================================
+FAIL: test_reviewed_startup_content_still_rejects_drift_and_eager_schema (owned_startup_red.ArtifactSurfaceTest.test_reviewed_startup_content_still_rejects_drift_and_eager_schema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-startup-content-guard-fix-tn3yvrn8\red.py", line 356, in test_reviewed_startup_content_still_rejects_drift_and_eager_schema
+    self.assertEqual(hashlib.sha256(approved).hexdigest(), expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26' != '89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5'
+- a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26
++ 89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5
+
+
+======================================================================
+FAIL: test_detached_update_review_is_exact_and_keeps_startup_pin (owned_startup_red.ArtifactSurfaceTest.test_detached_update_review_is_exact_and_keeps_startup_pin)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-startup-content-guard-fix-tn3yvrn8\red.py", line 388, in test_detached_update_review_is_exact_and_keeps_startup_pin
+    self.assertEqual(hashlib.sha256(reviewed_startup_bytes(path, content)).hexdigest(),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     STARTUP_CONTENT_SHA256[path])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26' != '89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5'
+- a75c4dc84660a184804a2507bdbbe1e29bfce31f70d361a743a92c0f66071d26
++ 89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.049s
+
+FAILED (failures=4)

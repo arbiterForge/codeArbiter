@@ -1,0 +1,82 @@
+{
+ "schema": "codearbiter.independent-bounded-review/1",
+ "role": "Security and affected functional/critical-test review",
+ "reviewer": "/root/crypto_evidence_review",
+ "author": "Root; reviewer did not author candidate",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "verdict": "PASS",
+ "gate_status": "PASS",
+ "findings": [],
+ "open_findings": [],
+ "full_subjects": {
+  ".github/scripts/test_artifact_surface.py": {
+   "index_oid": null,
+   "sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+   "bytes": 20774,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\candidate.py",
+   "preimage_sha256": "90e3e5750cffec61ff500d52b89813f48486edb41b6fbfcea93e7f54a8670c17",
+   "binding_kind": "private candidate; not staged"
+  }
+ },
+ "patch_sha256": "0e1f25fe4e3496c421beac6345991999e3ed126bf47c94d083bac4ebcf718f0b",
+ "patch_serialization": "UTF8 difflib unified_diff of exact private preimage/candidate, not staged Git binary patch",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-startup-content-guard-fix-tn3yvrn8\\delivery.json",
+  "sha256": "adcd2f66130e713ee64f47103f621ce43708d8c313f9c1f71660eafcafbef993"
+ },
+ "corroborating_immutable_source": {
+  "path": "core/pysrc/session-start.py",
+  "git_blob_oid": "f7c09b4505b787811cca20c7600843cd18ecbf6a",
+  "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+  "bytes": 71649,
+  "normalized_sha256": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5"
+ },
+ "checks_reviewed": {
+  "all17_original_test_method_ASTs_unchanged": true,
+  "new_method": "test_detached_update_review_is_exact_and_keeps_startup_pin",
+  "retained_full_content_pin": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
+  "exact_new_to_old_two_tuple_prefix": true,
+  "all_prior_normalizations_unchanged_and_recovery_still_last": true,
+  "every_literal_normalization_count_exactly_one": true,
+  "new_negative_vectors": [
+   "missing approved flag",
+   "wrong flag -I",
+   "duplicated approved launch"
+  ],
+  "old_drift_eager_schema_and_recovery_negatives_preserved": true,
+  "author_red": {
+   "tests": 4,
+   "failures": 4,
+   "errors": 0,
+   "skipped": 0,
+   "success": false,
+   "source_head": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "fixture_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+   "module_sha256": "507830c58d8b9fb38338a0af767c9cb4b3388cad27889063f8ac846fb80cb90d",
+   "runtime_product_execution": false
+  },
+  "author_green": {
+   "tests": 18,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "success": true,
+   "source_head": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "fixture_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+   "module_sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+   "runtime_product_execution": false
+  }
+ },
+ "policy": {
+  "path": "CTX-SECURITY-CONTROLS complete32records",
+  "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+  "all16constraints_read": true,
+  "all16notes_verified_exact_constraint_text": true
+ },
+ "security_assessment": "Two exact approved source-to-historical byte mappings retain a full SHA256 startup-content guard and exact multiplicity checks. No secret origin/sink/lifetime, TLS, dependency, runtime launch, permission, original baseline or qualification change. New literal negative controls reject absent/duplicate/altered approved launch.",
+ "limits": [
+  "No tests or subject/runtime replay by reviewer; inert AST/literal/hash joins only.",
+  "Author first private harness setup defect is not product RED; proper4-failure RED and18-success GREEN receipts retained.",
+  "Existing original PR1118 CI is failed and remains separate. This review is not hosted success, installed qualification, commit or merge authority."
+ ]
+}

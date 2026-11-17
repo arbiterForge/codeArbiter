@@ -1,0 +1,11 @@
+{
+  "tests": 18,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "success": true,
+  "source_head": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+  "fixture_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "module_sha256": "6c1f824d31d3b919cfe32405f2fb745c74ecc818c66b734c9f527c871f4a20f8",
+  "runtime_product_execution": false
+}
