@@ -1379,6 +1379,191 @@
         "disposition:findings:T-F02"
       ],
       "scope": "Actual SMARTS predicate/producer-refusal on inert output fixtures; model reasoning quality and whole T01 remain unassessed."
+    },
+    {
+      "id": "finite-hookf02-modelib",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf02-modelib",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled",
+        "python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F02"
+      ],
+      "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "finite-hookf02-prompt",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf01",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F02"
+      ],
+      "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "docs-source-gen-b01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs slugifies names with no collisions",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes colliding slugs in order of appearance",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes triple collisions deterministically",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs preserves input length and order",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs reserves every emitted slug, including suffixed forms (HW-24)",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs never emits a duplicate for names already ending in numeric suffixes"
+      ],
+      "cells": [
+        "disposition:findings:GEN-B01"
+      ],
+      "scope": "Complete slug reservation/collision complement only; does not assert former production reachability."
+    },
+    {
+      "id": "docs-source-gen-f01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/configuration-reference.test.ts:configuration reference describes the prune nudge threshold with the runtime predicate and default (HW-22)",
+        "vitest:site/test/generator/configuration-reference.test.ts:configuration reference is deterministic"
+      ],
+      "cells": [
+        "disposition:findings:GEN-F01"
+      ],
+      "scope": "Runtime-predicate wording, default and deterministic configuration reference; no model comprehension claim."
+    },
+    {
+      "id": "docs-source-gen-f02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture extracts a multi-line adjacent f-string call, concatenating placeholder text verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles nested parens inside a plain string literal without truncating the call",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles `+` concatenation, ignoring the non-literal trailing call but tracking its parens",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture finds two distinct tags in the same file",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a bare-assignment variable tag to its single literal tag",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a conditional-assignment variable tag to BOTH tags with the same message and line pin",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture counts an unresolvable variable-tag call (loop unpack) into `skipped`, not silently dropped",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture excludes the block()/remind() definition sites themselves",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture records 1-based line numbers and the source file basename",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) finds at least 60 attributed call sites in the real hooks",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) attributes at least one H-10b entry (the conditional-assignment split) with its real message",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the genuinely unresolvable loop-unpack call site in `skipped`",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts H-01's protected-branch commit message from _bashguardlib.py verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the same real-hook structural assertions after unrelated _bashguardlib.py line insertions",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts an H-09b message from _bashguardlib.py verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) excludes quoted, commented and docstring fake block calls",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) marks a dynamic recovery suffix instead of presenting a partial message as complete",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) leaves an assignment beyond the 30-line window as an explicit skipped gap",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script to its EventName (matcher) label",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script with no matcher to a bare EventName label",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor hand-maps git-enforce.py to the git backstop label, bypassing hooks.json",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor attributes extracted shared-library gates to their registered entry hook",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor returns an empty list for a script registered nowhere",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders frontmatter with title Hook Gates",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference orders sections in natural gate-ID order: H-09 before H-09b before H-10",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows the Blocking badge for a block-only tag",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows both badges when a tag has both a block and a remind call site",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders a line-pinned permalink in the expected format",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference wraps f-string placeholders in backticks",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) never claims runtime equivalence",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) names a dynamic recovery fragment instead of presenting a partial message as complete",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) lists skipped call sites with source links"
+      ],
+      "cells": [
+        "disposition:findings:GEN-F02"
+      ],
+      "scope": "All bounded extraction, dynamic/skipped/lexical attribution and rendered honesty complements; no runtime Python equivalence."
+    },
+    {
+      "id": "docs-source-sx-f01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/endpoint.test.ts:release applicability endpoint statically serves the canonical generated record as JSON",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation loads the exact supported direct-hook replay claim while allowing fixture detail (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing schema before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects unsupported schema before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects relabeled evidence kind before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects host discovery promoted to true before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing proof evidence before generation (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects invalid JSON proof evidence before generation (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ../outside.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins/ca/hooks/../pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins\\ca\\hooks\\pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path /plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path C:/plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ./plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path whose parent symlink escapes the repository (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path that resolves to a directory (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation writes the strict deterministic record from the repository's real evidence (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation reports each host's highest stable release tag, not the lagging receipt ledger (R-01)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation fails closed without writing output when build identity evidence is inconsistent (O-10)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation generates and builds fresh fixtures before top-level test and coverage runners",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+      ],
+      "cells": [
+        "disposition:findings:SX-F01"
+      ],
+      "scope": "Source applicability versus observed publication with data/presentation/endpoint cases and successful original rendered followup; no live publication/browser authority."
     }
   ]
 }

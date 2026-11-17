@@ -94,7 +94,12 @@
     "disposition:findings:C-F05": "[CHECK] | [REPO] | Impact planner contract",
     "disposition:findings:C-F06": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:findings:C-F07": "[CHECK] | [REPO] | Impact planner contract",
-    "disposition:findings:T-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+    "disposition:findings:T-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:HOOK-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:GEN-B01": "Site | [Test] - Generator",
+    "disposition:findings:GEN-F01": "Site | [Test] - Generator",
+    "disposition:findings:GEN-F02": "Site | [Test] - Generator",
+    "disposition:findings:SX-F01": "Site | [Test] - Generator"
   },
   "native_composite_cells": [
     "disposition:findings:N-F02",

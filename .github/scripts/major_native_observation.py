@@ -1314,7 +1314,7 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
     owner.require(record.get('native') == expected, 'native composite differs from authenticated original components')
     inner = record.get('runtime')
     owner.require(isinstance(inner, dict) and inner.get('schema') in
-                  (owner.SCHEMA, 'codearbiter-major-readiness/2'),
+                  (owner.SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-site-source-readiness/1'),
                   'native composition runtime schema is invalid')
     return owner.verify(record=inner, requirements=runtime, run=run, artifact=artifact,
                         archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,

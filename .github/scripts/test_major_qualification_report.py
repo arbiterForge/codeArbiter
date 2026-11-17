@@ -4364,5 +4364,163 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 path=repo/'tools/test_measurement_contracts.py';path.unlink()
                 with self.subTest(profile=profile,mutation='missing'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
 
+
+class HookF02CompleteCompositionTests(unittest.TestCase):
+    CELL='disposition:findings:HOOK-F02'
+    COMPONENTS=[{'script': '.github/scripts/test_modelib.py',
+  'observation': 'finite-hookf02-modelib',
+  'selectors': ['python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled',
+                'python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once']},
+ {'script': '.github/scripts/test_prompt_submit.py',
+  'observation': 'finite-hookf01',
+  'selectors': ['python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode']}]
+
+    def fixture(self):
+        _,spec,base_req,payload,prompt,old_group,_=SingleOwnerPythonFindingProfileTests().fixture('disposition:findings:HOOK-F01')
+        req=copy.deepcopy(base_req);req.update(cells=[self.CELL],cell_jobs={self.CELL:spec['job']})
+        groups=[];observations={}
+        for component in self.COMPONENTS:
+            o=copy.deepcopy(prompt);o['argv']=['python',component['script']]
+            if component['script'].endswith('test_modelib.py'):o['tests']=[]
+            o['tests'].extend({'id':selector,'result':'passed'} for selector in component['selectors'])
+            observations[component['observation']]=o
+            groups.append({'id':'finite-hookf02-'+('modelib' if component['script'].endswith('test_modelib.py') else 'prompt'),
+                'job':spec['job'],'payload_name':spec['payload'],'observation':component['observation'],
+                'proof_kind':'source-test','selectors':list(component['selectors']),'cells':[self.CELL],
+                'scope':'HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit.'})
+        def build(obs=observations,gs=groups,r=req,p=payload):
+            return owner.build_report(r,job_name=spec['job'],job_id=9,
+                selections={'schema':owner.SELECTIONS,'groups':gs},observations=obs,payloads={spec['payload']:p})
+        return spec,req,payload,observations,groups,build
+
+    def test_a_complete_two_original_owners_admit_one_finite_finding(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        try:report=build()
+        except ValueError as error:self.fail('actual same-job source-report boundary lacks complete HOOK-F02 composition: '+str(error))
+        result,=report['results']
+        self.assertEqual(result['cell'],self.CELL)
+        self.assertEqual(result['selected_population'],37)
+        self.assertEqual(result['executed_population'],37)
+        self.assertEqual(len(result['commands']),2)
+        self.assertEqual(len(report['payloads']),1)
+
+    def test_b_both_complete_components_and_each_named_guard_effect_and_retry_are_required(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        for index in range(2):
+            for mode in ('missing-group','repeat-group','missing-observation','one-observation-twice'):
+                obs,gs=copy.deepcopy(observations),copy.deepcopy(groups)
+                if mode=='missing-group':gs.pop(index)
+                elif mode=='repeat-group':extra=copy.deepcopy(gs[index]);extra['id']+='-duplicate';gs.append(extra)
+                elif mode=='missing-observation':obs.pop(gs[index]['observation'])
+                else:gs[index]['observation']=gs[1-index]['observation']
+                with self.subTest(component=index,mode=mode),self.assertRaises(ValueError):build(obs,gs)
+        for component in self.COMPONENTS:
+            key=component['observation']
+            for selector in component['selectors']:
+                for mode in ('missing','duplicate','skipped','failed','partial-group'):
+                    obs,gs=copy.deepcopy(observations),copy.deepcopy(groups)
+                    row=next(r for r in obs[key]['tests'] if r['id']==selector)
+                    if mode=='missing':obs[key]['tests'].remove(row)
+                    elif mode=='duplicate':obs[key]['tests'].append(dict(row))
+                    elif mode=='partial-group':next(g for g in gs if g['observation']==key)['selectors'].remove(selector)
+                    else:row['result']=mode
+                    with self.subTest(selector=selector,mode=mode),self.assertRaises(ValueError):build(obs,gs)
+
+    def test_c_no_component_can_borrow_foreign_source_script_command_job_or_authority(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        for key in observations:
+            for mode in ('source','tree','run','stable','exit','filtered','wrong-script','profile','payload','manifest','producer'):
+                obs=copy.deepcopy(observations);o=obs[key]
+                if mode=='source':o['source_commit']='f'*40
+                elif mode=='tree':o['source_tree']='f'*40
+                elif mode=='run':o['ci_run_id']=8
+                elif mode=='stable':o['source_stable']=False
+                elif mode=='exit':o['exit_code']=1
+                elif mode=='filtered':o['argv'].append('-k')
+                elif mode=='wrong-script':o['argv'][-1]='.github/scripts/test_verdictlib.py'
+                elif mode=='profile':o['source_input_binding']['profile']='impact-single-owner-findings-v1'
+                elif mode=='payload':o['source_input_binding']['payload_name']='major-source-inputs-hooks-windows-contracts'
+                elif mode=='manifest':o['source_input_binding']['manifest_sha256']='f'*64
+                else:o['producer']='go-named-ci20-join'
+                with self.subTest(component=key,mode=mode),self.assertRaises(ValueError):build(obs)
+        for index in range(2):
+            for mode in ('job','different-payload','proof-kind','extra-selector','foreign-cell','composite-cell'):
+                gs,r=copy.deepcopy(groups),copy.deepcopy(req);g=gs[index]
+                if mode=='job':g['job']='foreign'
+                elif mode=='different-payload':g['payload_name']='major-source-inputs-hooks-windows-contracts'
+                elif mode=='proof-kind':g['proof_kind']='native-module'
+                elif mode=='extra-selector':g['selectors'].append('python:foreign.py:unexecuted')
+                elif mode=='foreign-cell':g['cells']=['disposition:findings:W-F02'];r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                else:g['cells'].append('task:HW-02');r.update(cells=[self.CELL,'task:HW-02'],cell_jobs={self.CELL:spec['job'],'task:HW-02':spec['job']})
+                with self.subTest(component=index,mode=mode),self.assertRaises(ValueError):build(gs=gs,r=r)
+        obs,gs,p=copy.deepcopy(observations),copy.deepcopy(groups),copy.deepcopy(payload)
+        binding={'inert':'foreign native authority'};p['native_bindings']=[binding]
+        for o in obs.values():o.update(proof_kind='native-module',producer='go-named-ci20-join',native_binding=binding)
+        for g in gs:g['proof_kind']='native-module'
+        with self.assertRaises(ValueError):build(obs,gs,p=p)
+        for mutation in ('missing-uploader','wrong-uploader','missing-manifest-member'):
+            p=copy.deepcopy(payload)
+            if mutation=='missing-uploader':p.pop('source_upload_job_id')
+            elif mutation=='wrong-uploader':p['source_upload_job_id']=10
+            else:p['members'].pop(0)
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):build(p=p)
+
+    def test_d_prompt_record_is_reused_without_another_execution_or_payload(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        _,_,_,_,_,existing,_=SingleOwnerPythonFindingProfileTests().fixture('disposition:findings:HOOK-F01')
+        req.update(cells=['disposition:findings:HOOK-F01',self.CELL],cell_jobs={'disposition:findings:HOOK-F01':spec['job'],self.CELL:spec['job']})
+        groups.append(existing)
+        with mock.patch.object(owner.runpy,'run_path',side_effect=AssertionError('admission must never execute original suites')):
+            report=build()
+        results={r['cell']:r for r in report['results']}
+        self.assertEqual(results[self.CELL]['executed_population'],37)
+        self.assertEqual(results['disposition:findings:HOOK-F01']['executed_population'],13)
+        self.assertEqual(len(observations),2)
+        self.assertEqual(len(report['payloads']),1)
+        self.assertEqual(results[self.CELL]['payload_artifact_id'],results['disposition:findings:HOOK-F01']['payload_artifact_id'])
+
+    def test_e_configuration_contains_only_the_complete_finite_two_group_finding(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        actual=owner.load_json(owner.ROOT/'.github/major-test-selections.json')
+        selected=[g for g in actual['groups'] if self.CELL in g['cells']]
+        self.assertEqual(selected,groups)
+        self.assertEqual(owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')['cell_job_bindings'][self.CELL],spec['job'])
+        self.assertEqual(len(owner.PYTHON_FINDING_RECIPES),6)
+        self.assertTrue({'.github/scripts/test_modelib.py','.github/scripts/test_prompt_submit.py','core/pysrc/_modelib.py','core/pysrc/prompt-submit.py'}<=spec['paths'])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

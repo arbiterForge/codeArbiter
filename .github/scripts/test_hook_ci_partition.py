@@ -112,6 +112,21 @@ PYTHON_SOURCE_ROLES = {'Prepare hook finding source-test inputs': '      - name:
                                                  '}}/single-owner-hook-source-inputs"\n'
                                                  '          --job-name "[CHECK] | [CORE] | Hook contract  <os: '
                                                  'windows-latest · partition: contracts>"\n',
+ 'Observe original mode transition and audit tests': '      - name: Observe original mode transition and audit tests\n'
+                                                     '        id: single_hookf02_modelib_observed\n'
+                                                     "        if: matrix.os == 'windows-latest' && matrix.partition == "
+                                                     "'contracts'\n"
+                                                     '        shell: bash\n'
+                                                     '        run: >-\n'
+                                                     '          python -B '
+                                                     '.github/scripts/major_qualification_report.py observe-python\n'
+                                                     '          --repo . --source-profile '
+                                                     'hooks-single-owner-findings-v1\n'
+                                                     '          --source-payload "${{ runner.temp '
+                                                     '}}/single-owner-hook-source-inputs"\n'
+                                                     '          --output "${{ runner.temp '
+                                                     '}}/python-finite-hookf02-modelib-observation.json"\n'
+                                                     '          -- .github/scripts/test_modelib.py\n',
  'Observe original persona transition tests': '      - name: Observe original persona transition tests\n'
                                               '        id: single_hookf01_observed\n'
                                               "        if: matrix.os == 'windows-latest' && matrix.partition == "
@@ -339,6 +354,7 @@ PYTHON_SOURCE_ROLES = {'Prepare hook finding source-test inputs': '      - name:
                                                      "steps.hook_review_observed.outcome == 'success' && "
                                                      "steps.hook_finding_source_upload.outcome == 'success' && "
                                                      "steps.single_hook_prepare.outcome == 'success' && "
+                                                     "steps.single_hookf02_modelib_observed.outcome == 'success' && "
                                                      "steps.single_hookf01_observed.outcome == 'success' && "
                                                      "steps.single_hookf03_observed.outcome == 'success' && "
                                                      "steps.single_cf06_observed.outcome == 'success' && "
@@ -364,6 +380,9 @@ PYTHON_SOURCE_ROLES = {'Prepare hook finding source-test inputs': '      - name:
                                                      '}}/python-q02-readiness-observation.json" \\\n'
                                                      '            --observation "q02-release=${{ runner.temp '
                                                      '}}/python-q02-release-observation.json" \\\n'
+                                                     '            --observation "finite-hookf02-modelib=${{ '
+                                                     'runner.temp }}/python-finite-hookf02-modelib-observation.json" '
+                                                     '\\\n'
                                                      '            --observation "finite-hookf01=${{ runner.temp '
                                                      '}}/python-finite-hookf01-observation.json" \\\n'
                                                      '            --observation "finite-hookf03=${{ runner.temp '
@@ -464,6 +483,7 @@ def python_source_roles(block: str) -> dict[str,str]:
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
                        ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
                        ('Run hosted release-workflow contract tests','test_release_workflow.py'),
+                       ('Run mode-plane core contract (ADR-0030)', 'test_modelib.py'),
                        ('Run prompt-seam interceptor contract (ADR-0030)', 'test_prompt_submit.py'),
                        ('Run typed qualification-outcome contract tests', 'test_verdictlib.py')
                        ):
@@ -689,7 +709,8 @@ def validate(
                                                'python .github/scripts/test_major_readiness.py',
                                                'python .github/scripts/test_release_workflow.py',
                                                'python .github/scripts/test_prompt_submit.py',
-                                               'python .github/scripts/test_verdictlib.py')
+                                               'python .github/scripts/test_verdictlib.py',
+                                               'python .github/scripts/test_modelib.py')
         if not observed_original:
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['native_setup']==1,'Expected exactly one ordinary native qualification')
@@ -1136,6 +1157,41 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
             role=PYTHON_SOURCE_ROLES[name]
             for replacement in ('',role+role,role.replace("matrix.os == 'windows-latest'","matrix.os != 'windows-latest'",1)):
                 with self.subTest(role=name),self.assertRaises(ValueError):python_source_roles(hooks.replace(role,replacement,1))
+
+
+class HookF02CompositionWorkflowTests(unittest.TestCase):
+    def current(self):
+        return (Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+
+    def test_original_modelib_once_reuses_prior_prompt_and_has_prepared_source_first(self):
+        text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block);validate(text)
+        steps=step_blocks(block);prepare=roles['Prepare single-owner hook source-test inputs']
+        modelib=roles['Observe original mode transition and audit tests'];prompt=roles['Observe original persona transition tests']
+        self.assertLess(steps.index(prepare),steps.index(modelib))
+        self.assertLess(steps.index(modelib),steps.index(prompt))
+        self.assertEqual(sum(command(step)=='python .github/scripts/test_modelib.py' for step in steps),1)
+        for entry in ('test_modelib.py','test_prompt_submit.py'):
+            self.assertEqual(sum(bool(command(step) and command(step).endswith('-- .github/scripts/'+entry)) for step in steps),1)
+        emitter=roles['Emit original Python source qualification report']
+        self.assertEqual(emitter.count('--observation "finite-hookf01='),1)
+        self.assertEqual(emitter.count('--observation "finite-hookf02-modelib='),1)
+        self.assertIn("steps.single_hookf02_modelib_observed.outcome == 'success'",emitter)
+        self.assertEqual(emitter.count('--payload-root "major-source-inputs-hooks-single-owner='),1)
+
+    def test_missing_repeated_filtered_or_late_component_cannot_emit_a_complete_finding(self):
+        text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block)
+        modelib=roles['Observe original mode transition and audit tests'];prepare=roles['Prepare single-owner hook source-test inputs'];emitter=roles['Emit original Python source qualification report']
+        mutants=[block.replace(modelib,'',1),block.replace(modelib,modelib+modelib,1),
+                 block.replace(prepare,'',1).replace(modelib,modelib+prepare,1)]
+        for before,after in (('-- .github/scripts/test_modelib.py','-- .github/scripts/test_modelib.py TestFlip'),
+                             ('--source-profile hooks-single-owner-findings-v1','--source-profile python-tools-v1'),
+                             ('        shell: bash','        env:\n          GH_TOKEN: ${{ github.token }}\n        shell: bash')):
+            self.assertIn(before,modelib);mutants.append(block.replace(modelib,modelib.replace(before,after,1),1))
+        for before,after in ((" && steps.single_hookf02_modelib_observed.outcome == 'success'",''),
+                             ('--observation "finite-hookf02-modelib=','--observation "foreign=')):
+            self.assertIn(before,emitter);mutants.append(block.replace(emitter,emitter.replace(before,after,1),1))
+        for value in mutants:
+            with self.subTest(mutation=value[-100:]),self.assertRaises(ValueError):validate(text.replace(block,value,1))
 
 def main() -> int:
     results=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))

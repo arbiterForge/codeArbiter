@@ -44,6 +44,8 @@ on:
       - ".github/scripts/validate_codex_plugin.py"
       - "core/artifacts/internal/authority/receipt.go"
       # The Docs producer and its controls need a same-source validation run.
+      - ".github/scripts/site_vitest_observation.py"
+      - ".github/scripts/test_site_vitest_observation.py"
       - ".github/scripts/site_playwright_observation.py"
       - ".github/scripts/test_site_playwright_observation.py"
       - ".github/scripts/major_readiness.py"
@@ -88,6 +90,8 @@ on:
       - ".github/scripts/validate_codex_plugin.py"
       - "core/artifacts/internal/authority/receipt.go"
       # Match the push producer/control input set; this grants no deploy right.
+      - ".github/scripts/site_vitest_observation.py"
+      - ".github/scripts/test_site_vitest_observation.py"
       - ".github/scripts/site_playwright_observation.py"
       - ".github/scripts/test_site_playwright_observation.py"
       - ".github/scripts/major_readiness.py"
@@ -150,6 +154,9 @@ jobs:
   site-check:
     if: github.event_name != 'workflow_dispatch' || inputs.qualified_core_run_id == ''
     name: Site | [Test] - Generator
+    permissions:
+      contents: read
+      actions: read
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -159,6 +166,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # release applicability validates historical manifests and proof bytes
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.23.4 # Astro 7.4.2 requires Node >=22.23.4
@@ -169,6 +177,11 @@ jobs:
           python-version: "3.14"
       - name: Test separate Docs authority and exact Pages transfer
         run: python -B ../.github/scripts/test_site_playwright_observation.py
+      - name: Test original Docs source authority
+        run: python -B ../.github/scripts/test_site_vitest_observation.py
+      - name: Identify source qualification mode
+        id: docs-source-mode
+        run: echo "active=${{ hashFiles('.github/integration-candidate.json') != '' }}" >> "$GITHUB_OUTPUT"
       - name: Install deps
         run: npm ci
       - name: Audit (CVE gate - fail on HIGH)
@@ -228,8 +241,25 @@ jobs:
               "inputs": {p.as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
           }
           (evidence / "source.json").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+      - name: Prepare original Docs source-test inputs
+        if: ${{ steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          mkdir "$RUNNER_TEMP/docs-site-source"
+          python -B ../.github/scripts/site_vitest_observation.py prepare-source --repo .. \
+            --output "$RUNNER_TEMP/docs-site-source/source-inputs"
       - name: Test with coverage
-        run: npm run coverage
+        id: docs-source-tests
+        env:
+          DOCS_SOURCE_OBSERVE: ${{ steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          if [ "$DOCS_SOURCE_OBSERVE" = true ]; then
+            python -B ../.github/scripts/site_vitest_observation.py observe --repo .. \
+              --source-payload "$RUNNER_TEMP/docs-site-source/source-inputs" \
+              --raw-results "$RUNNER_TEMP/docs-site-source/primary-vitest.json" \
+              --output "$RUNNER_TEMP/docs-site-source/observation.json"
+          else
+            npm run coverage
+          fi
       - name: Retain numeric site coverage summary
         id: coverage-summary
         shell: python
@@ -265,6 +295,44 @@ jobs:
           path: ${{ runner.temp }}/site-coverage
           if-no-files-found: ignore
           retention-days: 5
+
+      - name: Upload original Docs source-test inputs
+        if: ${{ !cancelled() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-site-vitest-findings
+          path: ${{ runner.temp }}/docs-site-source/source-inputs
+          include-hidden-files: true
+          overwrite: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Emit original Docs source-test qualification
+        id: docs-source-report
+        if: ${{ success() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B ../.github/scripts/site_vitest_observation.py emit --repo .. \
+            --observation "$RUNNER_TEMP/docs-site-source/observation.json" \
+            --output "$RUNNER_TEMP/docs-site-source/docs-site-test-qualification.json"
+      - name: Upload Docs source-test qualification report
+        if: ${{ success() && steps.docs-source-report.outputs.job_id != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-docs-site-test-qualification-${{ steps.docs-source-report.outputs.job_id }}
+          path: ${{ runner.temp }}/docs-site-source/docs-site-test-qualification.json
+          overwrite: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain original Docs source-test observation
+        if: ${{ !cancelled() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docs-site-source-observation
+          path: ${{ runner.temp }}/docs-site-source/observation.json
+          overwrite: false
+          if-no-files-found: ignore
+          retention-days: 14
 
   build:
     if: github.event_name != 'workflow_dispatch' || inputs.qualified_core_run_id == ''

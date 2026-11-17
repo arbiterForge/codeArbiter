@@ -1704,6 +1704,8 @@ _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset(['.gitattributes',
  '.github/scripts/run_concurrent_suites.py',
  '.github/scripts/sandbox_live_report_profile.py',
  '.github/scripts/site_playwright_observation.py',
+ '.github/scripts/site_vitest_observation.py',
+ '.github/scripts/test_site_vitest_observation.py',
  '.github/scripts/tag_publication_receipt.py',
  '.github/scripts/test_academy_promotion.py',
  '.github/scripts/test_acquire_nixpacks.py',
@@ -2379,8 +2381,51 @@ PYTHON_FINDING_RECIPES = {'disposition:findings:HOOK-F01': {'profile': 'hooks-si
                                 'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; model '
                                          'reasoning quality and whole T01 remain unassessed.'}}
 
+HOOK_F02_CELL = "disposition:findings:HOOK-F02"
+HOOK_F02_COMPONENTS = {'finite-hookf02-modelib': {'script': '.github/scripts/test_modelib.py',
+                            'selectors': frozenset({'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once'})},
+ 'finite-hookf01': {'script': '.github/scripts/test_prompt_submit.py',
+                    'selectors': frozenset({'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode'})}}
+
 def _finding_python_command(argv, profile, script=None):
     permitted = {row["script"] for row in PYTHON_FINDING_RECIPES.values() if row["profile"] == profile}
+    if profile == "hooks-single-owner-findings-v1":
+        permitted |= {row["script"] for row in HOOK_F02_COMPONENTS.values()}
     require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv),
             "single-owner profile requires its unfiltered Python entry point")
     path = argv[1].replace("\\", "/")
@@ -3185,6 +3230,14 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,
             "semantic cell mapping is missing, extra or assigned to another job")
+    if HOOK_F02_CELL in expected:
+        components = [group for group in selected_groups if HOOK_F02_CELL in group["cells"]]
+        spec = source_profile("hooks-single-owner-findings-v1")
+        require(len(components) == 2 and {group["observation"] for group in components} == set(HOOK_F02_COMPONENTS)
+                and all(group["proof_kind"] == "source-test" and group["job"] == spec["job"]
+                        and group["payload_name"] == spec["payload"] and set(group["cells"]) == {HOOK_F02_CELL}
+                        for group in components),
+                "HOOK-F02 requires both complete original source-test components exactly once under their owning job and payload")
     if "task:Q-02" in expected:
         q02_groups = [g for g in selected_groups if "task:Q-02" in g["cells"]]
         require(all(g["proof_kind"] == "source-test" and g["payload_name"] == Q02_SOURCE_PAYLOAD for g in q02_groups),
@@ -3279,12 +3332,19 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 spec = source_profile(profile)
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
                 if profile in PYTHON_FINDING_PROFILES:
-                    recipe = PYTHON_FINDING_RECIPES.get(cell)
-                    require(isinstance(recipe, dict) and recipe["profile"] == profile
-                            and set(group["cells"]) == {cell} and set(group["selectors"]) == recipe["selectors"]
-                            and group["observation"] == recipe["observation"] and job_name == spec["job"],
-                            "single-owner profile requires its complete exact finite finding")
-                    _finding_python_command(argv, profile, recipe["script"])
+                    if cell == HOOK_F02_CELL:
+                        component = HOOK_F02_COMPONENTS.get(group["observation"])
+                        require(profile == "hooks-single-owner-findings-v1" and isinstance(component, dict)
+                                and set(group["cells"]) == {cell} and set(group["selectors"]) == component["selectors"]
+                                and job_name == spec["job"], "HOOK-F02 component script, job or complete finite selectors differ")
+                        _finding_python_command(argv, profile, component["script"])
+                    else:
+                        recipe = PYTHON_FINDING_RECIPES.get(cell)
+                        require(isinstance(recipe, dict) and recipe["profile"] == profile
+                                and set(group["cells"]) == {cell} and set(group["selectors"]) == recipe["selectors"]
+                                and group["observation"] == recipe["observation"] and job_name == spec["job"],
+                                "single-owner profile requires its complete exact finite finding")
+                        _finding_python_command(argv, profile, recipe["script"])
                 elif profile == HOOK_REVIEW_SOURCE_PROFILE:
                     require(set(group["cells"]) == {HOOK_REVIEW_FINDING_CELL}
                             and set(group["selectors"]) == HOOK_REVIEW_FINDING_SELECTORS,

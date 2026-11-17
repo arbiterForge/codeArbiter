@@ -403,6 +403,35 @@ def run_step_index(job: str, command: str) -> int:
     )
 
 
+def docs_coverage_step_index(job: str) -> int:
+    """Recognize the original coverage invocation and its exact observation wrapper."""
+    direct = run_step_index(job, "npm run coverage")
+    if direct >= 0:
+        return direct
+    from test_hook_ci_partition import step_blocks
+
+    expected = "\n".join((
+        '      - name: Test with coverage',
+        '        id: docs-source-tests',
+        '        env:',
+        '          DOCS_SOURCE_OBSERVE: ${{ steps.docs-source-mode.outputs.active == \'true\' && '
+        'github.event_name == \'push\' && contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), github.ref) }}',
+        '        run: |',
+        '          if [ "$DOCS_SOURCE_OBSERVE" = true ]; then',
+        '            python -B ../.github/scripts/site_vitest_observation.py observe --repo .. \\',
+        '              --source-payload "$RUNNER_TEMP/docs-site-source/source-inputs" \\',
+        '              --raw-results "$RUNNER_TEMP/docs-site-source/primary-vitest.json" \\',
+        '              --output "$RUNNER_TEMP/docs-site-source/observation.json"',
+        '          else',
+        '            npm run coverage',
+        '          fi',
+    ))
+    matching = [step for step in step_blocks(job) if step.rstrip() == expected]
+    if len(matching) != 1:
+        return -1
+    return job[:job.index(expected)].count("\n")
+
+
 def push_trigger_paths(workflow: str) -> list[str]:
     """Quoted globs under the workflow's `on.push.paths:` block.
 
@@ -2391,7 +2420,7 @@ class WorkflowContractTest(unittest.TestCase):
         site_check = jobs["site-check"]
         generate = run_step_index(site_check, "npm run gen")
         typecheck = run_step_index(site_check, "npm run typecheck")
-        tests = run_step_index(site_check, "npm run coverage")
+        tests = docs_coverage_step_index(site_check)
         self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
         self.assertGreater(typecheck, generate, "site-check typechecks before generation")
         self.assertGreater(tests, generate, "site-check tests before generation")
@@ -4019,8 +4048,10 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
 
     def test_existing_suite_runs_once_with_coverage_and_retains_its_report(self):
         job = self._job()
-        self.assertEqual(re.findall(r"(?m)^        run: (npm (?:test|run coverage))$", job),
+        self.assertEqual(re.findall(r"(?m)^ +(?:run: )?(npm (?:test|run coverage))$", job),
                          ["npm run coverage"])
+        coverage = docs_coverage_step_index(job)
+        self.assertGreaterEqual(coverage, 0, "original Docs coverage invocation is missing or changed")
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         self.assertEqual(scripts["coverage"].replace("vitest run --coverage", "vitest run"), scripts["test"])
         self.assertEqual(scripts["precoverage"], scripts["pretest"])
@@ -4029,8 +4060,8 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
         self.assertIn('include: ["scripts/**/*.ts"]', config)
         self.assertIn('exclude: ["scripts/**/*.test.ts"]', config)
         self.assertNotRegex(config, r"(?m)^\s*thresholds:")
-        self.assertLess(job.index("id: coverage-source"), job.index("run: npm run coverage"))
-        self.assertLess(job.index("run: npm run coverage"), job.index("id: coverage-summary"))
+        self.assertLess(job[:job.index("id: coverage-source")].count("\n"), coverage)
+        self.assertLess(coverage, job[:job.index("id: coverage-summary")].count("\n"))
         artifact = next((step for step in job.split("\n      - ")
                          if "name: site-coverage-${{ github.sha }}" in step), "")
         self.assertIn("uses: actions/upload-artifact@", artifact)
@@ -4276,7 +4307,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         readonly = "    permissions:\n      contents: read\n      actions: read\n"
         privileged = "    permissions:\n      contents: read\n      pages: write\n      id-token: write\n"
         for job_id, job in jobs.items():
-            if job_id in ("build", "qualified-pages"):
+            if job_id in ("build", "qualified-pages", "site-check"):
                 expected = readonly
             elif job_id in ("deploy", "deploy-qualified"):
                 expected = privileged
@@ -4286,6 +4317,18 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             self.assertEqual(actual, [expected] if expected else [],
                              "only exact reviewed job roles may declare permissions")
             self.assertNotIn("secrets.", job)
+        from test_hook_ci_partition import step_blocks
+
+        site_check = jobs["site-check"]
+        checkout, = [step for step in step_blocks(site_check) if "actions/checkout@" in step]
+        self.assertEqual(re.findall(r"(?m)^          persist-credentials: (.+)$", checkout), ["false"])
+        emit, = [step for step in step_blocks(site_check)
+                 if step.startswith("      - name: Emit original Docs source-test qualification\n")]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("success() && steps.docs-source-mode.outputs.active == 'true'", emit)
+        self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", site_check),
+                         ["          GH_TOKEN: ${{ github.token }}"])
+        self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emit)
         qualified = jobs["deploy-qualified"]
         self.assertRegex(qualified, r"(?m)^    needs: qualified-pages$")
         self.assertIn("    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.qualified_core_run_id != ''\n", qualified)

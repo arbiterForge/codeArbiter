@@ -3461,24 +3461,6 @@ jobs:
         # pre-load resident copy. The suite above carries the seeded mismatch;
         # this command checks all four live canonical/generated surface pairs.
         run: python .github/scripts/check_destructive_registry.py
-      - name: Run mode-plane core contract (ADR-0030)
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # #437. The mode plane's own library: whole-prompt token matching (a
-        # substring match would let a pasted diff containing the token flip the
-        # mode), marker_root resolution, the asymmetric fail direction, no-op
-        # flips appending nothing, and legacy DEV: rows backing only the
-        # dangerous mode. Also pins CONTEXT.md's domain vocabulary string-equal
-        # to _modelib.MODES, so a docs-only rename fails here.
-        run: python .github/scripts/test_modelib.py
-      - name: Run composed-persona contract (ADR-0030)
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        # #437. safety-core.md + the active mode body IS the injected persona,
-        # so this pins the anchors that must survive every mode (the conflict
-        # ladder, diagnose-don't-bypass, the irreversible set, the secrets
-        # prohibition) and the ORDERING that keeps the anti-circumvention rule
-        # from binding over nothing. Also proves every hook's §N citation
-        # resolves in all three modes.
-        run: python .github/scripts/test_persona_composition.py
       - name: Prepare single-owner hook source-test inputs
         id: single_hook_prepare
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -3488,6 +3470,34 @@ jobs:
           --repo . --source-profile hooks-single-owner-findings-v1
           --output "${{ runner.temp }}/single-owner-hook-source-inputs"
           --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+      - name: Run mode-plane core contract (ADR-0030)
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
+        # #437. The mode plane's own library: whole-prompt token matching (a
+        # substring match would let a pasted diff containing the token flip the
+        # mode), marker_root resolution, the asymmetric fail direction, no-op
+        # flips appending nothing, and legacy DEV: rows backing only the
+        # dangerous mode. Also pins CONTEXT.md's domain vocabulary string-equal
+        # to _modelib.MODES, so a docs-only rename fails here.
+        run: python .github/scripts/test_modelib.py
+      - name: Observe original mode transition and audit tests
+        id: single_hookf02_modelib_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-hookf02-modelib-observation.json"
+          -- .github/scripts/test_modelib.py
+      - name: Run composed-persona contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        # #437. safety-core.md + the active mode body IS the injected persona,
+        # so this pins the anchors that must survive every mode (the conflict
+        # ladder, diagnose-don't-bypass, the irreversible set, the secrets
+        # prohibition) and the ORDERING that keeps the anti-circumvention rule
+        # from binding over nothing. Also proves every hook's §N citation
+        # resolves in all three modes.
+        run: python .github/scripts/test_persona_composition.py
       - name: Run prompt-seam interceptor contract (ADR-0030)
         if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # #437. The flip must produce NO model turn, and the Codex envelope is
@@ -3875,7 +3885,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3888,6 +3898,7 @@ jobs:
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
             --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
             --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
+            --observation "finite-hookf02-modelib=${{ runner.temp }}/python-finite-hookf02-modelib-observation.json" \
             --observation "finite-hookf01=${{ runner.temp }}/python-finite-hookf01-observation.json" \
             --observation "finite-hookf03=${{ runner.temp }}/python-finite-hookf03-observation.json" \
             --observation "finite-cf06=${{ runner.temp }}/python-finite-cf06-observation.json" \
