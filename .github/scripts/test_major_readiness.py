@@ -253,8 +253,9 @@ class ReadinessTest(unittest.TestCase):
                     owner.produce(self.requirements, artifacts, self.jobs)
 
     def test_complete_frozen_population_receipt_fits_existing_json_bound(self):
-        # Serialization/admission capacity fixture, not executed qualification:
-        # prerequisite validation and actual named execution remain separate.
+        # Exercise serialization at the full population size with inert evidence.
+        import site_vitest_observation as docs
+
         repo = Path(__file__).resolve().parents[2]
         corpus = repo / owner.CORPUS / 'contracts'
         tasks = json.loads((corpus / 'tasks.json').read_text())['tasks']
@@ -270,7 +271,11 @@ class ReadinessTest(unittest.TestCase):
         cells.extend(json.loads((repo / '.github/major-qualification-policy.json').read_text())['required_installed_cells'])
         self.assertEqual(len(cells), 2230)
         job = 'capacity fixture original job'
-        req = dict(self.requirements, cells=sorted(cells), cell_jobs={c: job for c in cells})
+        docs_cells = docs.CELLS.intersection(cells)
+        self.assertEqual(docs_cells, docs.CELLS)
+        core_cells = sorted(set(cells) - docs_cells)
+        req = dict(self.requirements, cells=sorted(cells),
+                   cell_jobs={cell: docs.JOB if cell in docs_cells else job for cell in cells})
         output = io.BytesIO()
         with zipfile.ZipFile(output, 'w') as z:
             z.writestr('ca.tar.gz', b'exact package fixture')
@@ -279,7 +284,8 @@ class ReadinessTest(unittest.TestCase):
             'source_tree': req['source_tree'], 'ci_run_id': 7, 'job_id': 20,
             'payloads': [{'artifact_id': 12, 'archive_sha256': owner.digest(content), 'members': owner.members(content)}],
             'results': [{'cell': cell, 'result': 'PASSED', 'commands': [{'argv': ['fixture-only'], 'exit_code': 0}],
-                'selected_population': 1, 'executed_population': 1, 'payload_artifact_id': 12} for cell in cells]}
+                'selected_population': 1, 'executed_population': 1, 'payload_artifact_id': 12}
+                for cell in core_cells]}
         raw = json.dumps(report, indent=2).encode()
         archive = io.BytesIO()
         with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as z:
@@ -287,10 +293,25 @@ class ReadinessTest(unittest.TestCase):
         artifacts = [dict(self.build_artifacts[0], digest='sha256:' + owner.digest(content)),
                      {'id': 30, 'name': 'major-qualification-20'}]
         jobs = [{'id': 20, 'name': job, 'conclusion': 'success'}, self.jobs[-1]]
-        with mock.patch.object(owner, 'validate_upload'), \
-             mock.patch.object(owner, 'artifact_bytes', side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content):
+        docs_source = {
+            'run_id': 8, 'run_attempt': 1, 'job_id': 21,
+            'source_artifact_id': 31, 'source_archive_sha256': '3' * 64,
+            'report_artifact_id': 32, 'report_archive_sha256': '4' * 64,
+            'results': [{'cell': cell, 'result': 'PASSED', 'commands': [
+                {'argv': ['fixture-only'], 'exit_code': 0}],
+                'selected_population': len(docs.RECIPES[cell]),
+                'executed_population': len(docs.RECIPES[cell]), 'payload_artifact_id': 31}
+                for cell in sorted(docs_cells)],
+        }
+        with (mock.patch.object(owner, 'validate_upload'),
+              mock.patch.object(owner, 'artifact_bytes',
+                                side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content),
+              mock.patch.object(docs, 'admit', return_value=docs_source) as admit_docs):
             receipt = owner.produce(req, artifacts, jobs)
-        self.assertEqual(len(receipt['results']), 2230)
+        admit_docs.assert_called_once_with(req)
+        self.assertEqual(receipt['schema'], docs.ENVELOPE)
+        results = receipt['core']['results'] + receipt['docs_source']['results']
+        self.assertEqual(sorted(row['cell'] for row in results), sorted(cells))
         self.assertLess(len(raw), 4 * 1024 * 1024)
         self.assertLess(len(json.dumps(receipt, indent=2).encode()), 4 * 1024 * 1024)
 
@@ -353,10 +374,11 @@ class CompletedPopulationTest(unittest.TestCase):
                                                          'sha256': 'e' * 64, 'commit': 'f' * 40}])
 
     def setUp(self):
-        # This fixture exercises reviewed source dispositions. The opt-in
-        # launch-binding task's original native archives have their own fixture.
+        # Launch-binding task and finding archives have their own fixtures.
+        # This fixture exercises the complete reviewed source population.
         policy = json.loads((self.repo / '.github/major-qualification-policy.json').read_bytes())
         policy['native_launch_binding_tasks'] = []
+        policy['native_launch_binding_findings'] = []
         self.overrides = {
             owner.CORPUS + 'execution/progress.json': json.dumps(self.progress).encode(),
             owner.CORPUS + 'execution/coverage-ledger.json': json.dumps(self.ledger).encode(),
